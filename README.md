@@ -1,23 +1,40 @@
 member-data
-
 ---
-Copyright (c) 2020 helpberkeley.org
+A program to fetch member-data from helpberkeley.org, and post information
+about it to back to topics on the site.
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+Currently the site postings are designed for assisting restaurant order
+data reconciliation, driver dispatcher, and administrative member
+data tasks.
 
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
+### Building
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-#
+*mvn install* builds the standard jar file and additional an uber jar file
+containing all of the required dependencies.
+
+*mvn test* runs local tests which use simulated data and do not require access
+to the website.
+
+The uber jar contains org.helpberkeley.memberdata.Main.main as the entry
+point and requires authentication to be configured.
+
+
+### Authentication Requirements:
+
+A Java properties file named memberdata.properties must be created
+and added somewhere within the classpath.
+
+The properties file must contain the following properties:
+* Api-Username - a username from the helpberkeley.org site.
+* Api-Key - a valid API key for that user.
+
+API keys are generated in the Admin->API page.
+
+Example:
+
+```
+Api-Username   aloyisus
+Api-Key        123456789abcdef987654321
+```
+
+###[License](LICENSE.txt)
