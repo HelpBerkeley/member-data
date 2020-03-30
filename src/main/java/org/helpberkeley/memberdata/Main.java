@@ -36,23 +36,34 @@ import java.util.Properties;
 
 public class Main {
 
-    static final String PROPERTIES_FILE = "memberdata.properties";
+    static final String MEMBERDATA_PROPERTIES = "memberdata.properties";
+    static final String HISTORY_PROPERTIES = "history.properties";
     static final String API_USER_PROPERTY = "Api-Username";
     static final String API_KEY_PROPERTY = "Api-Key";
+    static final String MEMBER_DATA_HASHCODE_PROPERTY = "MemberData-HashCode";
+
+    // FIX THIS, DS: make this less fragile
+    static final long MEMBER_DATA_FOR_DISPATCHES_TOPID_ID = 86;
+    static final long MEMBER_DATA_REQUIRING_ATTENTION_TOPIC_ID = 129;
 
     public static void main(String[] args) throws IOException, InterruptedException {
 
-        // Load properties file
-        Properties properties = loadProperties();
+        // Load member data properties
+        Properties memberDataProperties = loadProperties(MEMBERDATA_PROPERTIES);
+
+        // Load history
+//        Properties history = loadProperties(HISTORY_PROPERTIES);
 
         // Set up an HTTP client
-        ApiClient apiClient = new ApiClient(properties);
+        ApiClient apiClient = new ApiClient(memberDataProperties);
 
         // Create a User loader
         Loader loader = new Loader(apiClient);
 
         // Load the member data from the website
         List<User> users = loader.load();
+
+        // FIX THIS, DS: how to track differences and only post when changed?
 
         // If there are any problems with the user data,
         // post them to the problems topic
@@ -68,20 +79,18 @@ public class Main {
 //        postTableSortedByUserName(apiClient);
 //        printCSVSortedByUser(apiClient);
 //        getPostTest(apiClient);
-//        updateTest(apiClient);
 //        latestPosts(apiClient);
 //        postCSVTable(apiClient);
-//        uploadFile(apiClient);
 
     }
 
-    static Properties loadProperties() throws IOException {
+    static Properties loadProperties(final String fileName) throws IOException {
 
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-        URL propertiesFile = classLoader.getResource(PROPERTIES_FILE);
+        URL propertiesFile = classLoader.getResource(fileName);
 
         if (propertiesFile == null) {
-            System.out.println("Required propeteries file " + PROPERTIES_FILE + " cannot be found");
+            System.out.println("Required propeteries file " + fileName + " cannot be found");
             System.exit(1);
         }
 
@@ -138,7 +147,7 @@ public class Main {
 
         Post post = new Post();
         post.title = label;
-        post.topic_id = 86;
+        post.topic_id = MEMBER_DATA_FOR_DISPATCHES_TOPID_ID;
         post.raw = postRaw.toString();
         post.createdAt = ZonedDateTime.now(ZoneId.systemDefault())
                 .format(DateTimeFormatter.ofPattern("uuuu.MM.dd.HH.mm.ss"));
@@ -160,7 +169,7 @@ public class Main {
 
         Post post = new Post();
         post.title = "Member data requiring attention";
-        post.topic_id = 129;
+        post.topic_id = MEMBER_DATA_REQUIRING_ATTENTION_TOPIC_ID;
         post.createdAt = ZonedDateTime.now(ZoneId.systemDefault())
                 .format(DateTimeFormatter.ofPattern("uuuu.MM.dd.HH.mm.ss"));
 
@@ -228,15 +237,6 @@ public class Main {
         HttpResponse<String> response = apiClient.getLatestTopics();
 
         System.out.println(JsonWriter.formatJson(response.body()));
-    }
-
-    static void updateTest(ApiClient apiClient) throws IOException, InterruptedException {
-
-        String oldBody = "a1b2c3d4e5";
-        String newBody = "abcdefghij";
-
-        HttpResponse<String> response = apiClient.updatePost(32, 239, oldBody, newBody);
-        System.out.println(response);
     }
 
 //
@@ -308,13 +308,6 @@ public class Main {
         }
 
         return postRaw.toString();
-    }
-
-    static void uploadFile(ApiClient apiClient) throws IOException, InterruptedException {
-        Upload upload = new Upload("xyzzy.cvs", "a,b,c,\n1,2,3\n");
-
-        HttpResponse<String> response = apiClient.uploadFile(upload);
-        System.out.println(response);
     }
 }
 
