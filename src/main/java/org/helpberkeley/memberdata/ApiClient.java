@@ -31,6 +31,8 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.Properties;
 
+import static java.net.HttpURLConnection.HTTP_OK;
+
 public class ApiClient {
 
     private static final String BASE_URL = "https://www.helpberkeley.org/";
@@ -75,7 +77,12 @@ public class ApiClient {
                 .build();
     }
 
-    HttpResponse<String> get(final String endpoint) throws IOException, InterruptedException {
+    private HttpResponse<String> get(final String endpoint) throws IOException, InterruptedException {
+
+        // FIX THIS, DS: hack to avoid getting rate limited.
+        nap(500);
+
+        System.out.println("GET " + endpoint);
 
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(endpoint))
@@ -84,7 +91,34 @@ public class ApiClient {
                 .header("Api-Key", apiKey)
                 .build();
 
-        return client.send(request, HttpResponse.BodyHandlers.ofString());
+        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+        if (response.statusCode() != HTTP_OK) {
+            // FIX THIS, DS: create a dedicated unchecked for this?
+            throw new Error("post(" + POSTS_ENDPOINT + " failed: " + response.statusCode() + ": " + response.body());
+        }
+
+        return response;
+    }
+
+    HttpResponse<String> post(final String json) throws IOException, InterruptedException {
+
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(POSTS_ENDPOINT))
+                .header("Api-Username", apiUser)
+                .header("Api-Key", apiKey)
+                .header("Content-Type", "application/json")
+                .POST(HttpRequest.BodyPublishers.ofString(json))
+                .build();
+
+        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+        if (response.statusCode() != HTTP_OK) {
+            // FIX THIS, DS: create a dedicated unchecked for this?
+            throw new Error("post(" + POSTS_ENDPOINT + " failed: " + response.statusCode() + ": " + response.body());
+        }
+
+        return response;
     }
 
     HttpResponse<String> getActiveUsers() throws IOException, InterruptedException {
@@ -131,21 +165,6 @@ public class ApiClient {
         return get(endpoint);
     }
 
-    HttpResponse<String> post(final String json) throws IOException, InterruptedException {
-
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(POSTS_ENDPOINT))
-                .header("Api-Username", apiUser)
-                .header("Api-Key", apiKey)
-                .header("Content-Type", "application/json")
-                .POST(HttpRequest.BodyPublishers.ofString(json))
-                .build();
-
-        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-
-        return response;
-    }
-
     HttpResponse<String> uploadFile(Upload upload) throws IOException, InterruptedException {
 
         HttpRequest request = HttpRequest.newBuilder()
@@ -181,5 +200,11 @@ public class ApiClient {
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
         return response;
+    }
+
+    private void nap(long milliseconds) {
+        try {
+            Thread.sleep(milliseconds);
+        } catch (InterruptedException ignored) { }
     }
 }

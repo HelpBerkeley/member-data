@@ -63,13 +63,16 @@ public class Main {
         // Load the member data from the website
         List<User> users = loader.load();
 
-        // FIX THIS, DS: how to track differences and only post when changed?
-
         // If there are any problems with the user data,
         // post them to the problems topic
         if (! loader.getExceptions().isEmpty()) {
-            postUserExceptions(apiClient, loader.getExceptions());
+            // FIX THIS, DS: reenable this automated posting when there is
+            //               support for checking the previous post
+            //               for differences.
+//            postUserExceptions(apiClient, loader.getExceptions());
+            loader.getExceptions().forEach(e -> System.out.println(e.getMessage()));
         }
+        
 
         // Post the member data to the member data for drivers topic
         postMemberData(apiClient, users);
