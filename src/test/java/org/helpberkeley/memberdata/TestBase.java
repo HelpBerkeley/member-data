@@ -96,7 +96,7 @@ public class TestBase {
 
     protected User createUserWithCity(final String city) throws UserException {
         return User.createUser(TEST_NAME_1, TEST_USER_NAME_1,
-                TEST_ID_1, TEST_PHONE_1, city, TEST_PHONE_1, TEST_NEIGHBORHOOD_1);
+                TEST_ID_1, TEST_ADDRESS_1, city, TEST_PHONE_1, TEST_NEIGHBORHOOD_1);
     }
 
     User createUserWithPhone(final String phone) throws UserException {
@@ -115,5 +115,11 @@ public class TestBase {
     protected User createUserWithNeighborhood(final String neighborhood) throws UserException {
         return User.createUser(TEST_NAME_1, TEST_USER_NAME_1,
                 TEST_ID_1, TEST_PHONE_1, User.BERKELEY, TEST_PHONE_1, neighborhood);
+    }
+    protected User createUserWithCityAndNeighborhood(
+            final String city, final String neighborhood) throws UserException {
+
+        return User.createUser(TEST_NAME_1, TEST_USER_NAME_1,
+                TEST_ID_1, TEST_PHONE_1, city, TEST_PHONE_1, neighborhood);
     }
 }

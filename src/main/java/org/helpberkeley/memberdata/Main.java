@@ -69,7 +69,7 @@ public class Main {
             // FIX THIS, DS: reenable this automated posting when there is
             //               support for checking the previous post
             //               for differences.
-//            postUserExceptions(apiClient, loader.getExceptions());
+            postUserExceptions(apiClient, loader.getExceptions());
 
             for (UserException userException : loader.getExceptions()) {
                 User user = userException.user;

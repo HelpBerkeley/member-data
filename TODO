@@ -1,9 +1,5 @@
 ------------------------
 
-Add audit for unknown in neighborhood.
-
-------------------------
-
 Save checksum (String.hashcode() on json export) for member-data
 to external file. Load and check against new member-data to
 decide if an updated member-data reply needs to be generated.

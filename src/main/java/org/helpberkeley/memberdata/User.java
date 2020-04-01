@@ -68,6 +68,7 @@ public class User {
     static final String AUDIT_ERROR_MISSING_PHONE = "missing phone";
     static final String AUDIT_ERROR_MISSING_NEIGHBORHOOD = "missing neighborhood";
     static final String AUDIT_ERROR_CITY_IS_NOT_BERKELEY = "City is not " + BERKELEY + ": ";
+    static final String AUDIT_ERROR_NEIGHBORHOOD_UNKNOWN = "Neighborhood : ";
 
     static final String NOT_PROVIDED = "none";
 
@@ -171,7 +172,7 @@ public class User {
 
         builder.append(USERNAME_COLUMN);
         builder.append("=");
-        builder.append(userName == null ? NOT_PROVIDED : name);
+        builder.append(userName == null ? NOT_PROVIDED : userName);
         builder.append(':');
 
         builder.append(ID_FIELD);
@@ -181,22 +182,22 @@ public class User {
 
         builder.append(ADDRESS_COLUMN);
         builder.append("=");
-        builder.append(address == null ? NOT_PROVIDED : name);
+        builder.append(address == null ? NOT_PROVIDED : address);
         builder.append(':');
 
         builder.append(CITY_COLUMN);
         builder.append("=");
-        builder.append(city == null ? NOT_PROVIDED : name);
+        builder.append(city == null ? NOT_PROVIDED : city);
         builder.append(':');
 
         builder.append(PHONE_NUMBER_COLUMN);
         builder.append("=");
-        builder.append(phoneNumber == null ? NOT_PROVIDED : name);
+        builder.append(phoneNumber == null ? NOT_PROVIDED :phoneNumber);
         builder.append(':');
 
         builder.append(NEIGHBORHOOD_COLUMN);
         builder.append("=");
-        builder.append(neighborhood == null ? NOT_PROVIDED : name);
+        builder.append(neighborhood == null ? NOT_PROVIDED : neighborhood);
         builder.append(':');
 
         return builder.toString();
@@ -234,6 +235,7 @@ public class User {
         removeCommas();
         auditAndNormalizePhoneNumber();
         auditAndNormalizeCity();
+        auditNeighborhood();
         minimizeAddress();
     }
 
@@ -338,8 +340,27 @@ public class User {
         address = newAddress;
     }
 
+    // must be insensitive to null data
+    private void auditNeighborhood() {
+        if (neighborhood == null) {
+            return;
+        }
+
+        // Doesn't matter unless we start delivering outside of Berkeley.
+        if (! cityIsBerkeley()) {
+            return;
+        }
+
+        if (neighborhood.toLowerCase().trim().contains("unknown")) {
+            dataErrors.add(AUDIT_ERROR_NEIGHBORHOOD_UNKNOWN + neighborhood);
+        }
+    }
 
     private boolean cityIsBerkeley() {
+
+        if (city == null) {
+            return false;
+        }
 
         // Convert to lower case
         String cityName = city.toLowerCase();
@@ -443,6 +464,7 @@ public class User {
                 && userName.equals(((User)obj).userName)
                 && (id == ((User)obj).id)
                 && address.equals(((User)obj).address)
+                && city.equals(((User)obj).city)
                 && phoneNumber.equals(((User)obj).phoneNumber)
                 && neighborhood.equals(((User)obj).neighborhood)
                 && groupMembership.equals(((User)obj).groupMembership);

@@ -249,18 +249,9 @@ public class UserTest extends TestBase {
     @Test
     public void cityInequalityTest() throws UserException {
 
-        User user1 = createUserWithPhone(TEST_ADDRESS_1);
-
-        String city = "Somewhere Else";
-
-        Throwable thrown = catchThrowable(() -> createUserWithCity(city));
-        assertThat(thrown).isInstanceOf(UserException.class);
-        UserException userException = (UserException)thrown;
-        assertThat(userException.user).isNotNull();
-        assertThat(userException.user.getDataErrors()).contains(
-                User.AUDIT_ERROR_CITY_IS_NOT_BERKELEY + city);
-
-        assertThat(user1).isNotEqualTo(userException.user);
+        User user1 = createUserWithCity(User.BERKELEY);
+        User user2 = createUserWithCity("Some other city");
+        assertThat(user1).isNotEqualTo(user2);
     }
 
     @Test
@@ -309,17 +300,6 @@ public class UserTest extends TestBase {
     }
 
     @Test
-    public void nonBerkeleyCityTest() {
-
-        String city = "Oakland";
-
-        Throwable thrown = catchThrowable(() -> createUserWithCity(city));
-        assertThat(thrown).isInstanceOf(UserException.class);
-        UserException userException = (UserException)thrown;
-        assertThat(userException.user).isNotNull();
-    }
-
-    @Test
     public void minimizeAddressTest() throws UserException {
         for (Address address : testAddresses) {
             User user = createUserWithAddress(address.original);
@@ -334,5 +314,26 @@ public class UserTest extends TestBase {
             User user = createUserWithCity(city.original);
             assertThat(user.getCity()).isEqualTo(city.expected);
         }
+    }
+
+    @Test
+    public void unknownBerkeleyNeighborhoodTest() throws UserException {
+
+        String[] unknowns = { "Unknown", "unknown", " unknown " };
+
+        for (String neighborhood : unknowns) {
+            Throwable thrown = catchThrowable(() -> createUserWithNeighborhood(neighborhood));
+            assertThat(thrown).isInstanceOf(UserException.class);
+            UserException userException = (UserException) thrown;
+            assertThat(userException.user).isNotNull();
+            assertThat(userException.user.getDataErrors()).contains(
+                    User.AUDIT_ERROR_NEIGHBORHOOD_UNKNOWN + neighborhood);
+        }
+    }
+
+    @Test
+    public void unknownNonBerkeleyNeighborhoodTest() throws UserException {
+        User user = createUserWithCityAndNeighborhood("Oakland", "unknown");
+        assertThat(user.getDataErrors()).isEmpty();
     }
 }
