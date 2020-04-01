@@ -13,20 +13,38 @@ import static org.assertj.core.api.Assertions.catchThrowable;
  */
 public class UserTest extends TestBase {
 
-    private static class PhoneNumber {
+    private static class TestField {
         String original;
         String expected;
 
-        PhoneNumber(final String original, final String expected) {
+        TestField(final String original, final String expected) {
             this.original = original;
             this.expected = expected;
+        }
+
+    }
+    private static class PhoneNumber extends TestField {
+        PhoneNumber(final String original, final String expected) {
+            super(original, expected);
+        }
+    }
+    private static class Address extends TestField {
+        Address(final String original, final String expected) {
+            super(original, expected);
+        }
+    }
+    private static class City extends TestField {
+        City(final String original, final String expected) {
+            super(original, expected);
         }
     }
 
     private static final List<PhoneNumber> testPhoneNumbers = new ArrayList<>();
+    private static final List<Address> testAddresses = new ArrayList<>();
+    private static final List<City> testCities = new ArrayList<>();
 
     /**
-     * Create a variety of differently formed phones numbers that we are able to parse
+     * Create a variety of differently formed phone numbers that we are able to parse
      *
      * FIX THIS, DS: add other variations as we learn them.
      */
@@ -42,6 +60,35 @@ public class UserTest extends TestBase {
         testPhoneNumbers.add(new PhoneNumber("510 555  1212", "510-555-1212"));
         testPhoneNumbers.add(new PhoneNumber("510-555-1212", "510-555-1212"));
 
+    }
+
+    /**
+     * Create a variety of differently formed addresses that we should be able to trim
+     *
+     * FIX THIS, DS: add other variations as we learn them.
+     */
+    @BeforeClass
+    public static void createTestAddresses() {
+        testAddresses.add(new Address("123 ABC St. Berkeley, CA 94708", "123 ABC St."));
+        testAddresses.add(new Address("123 abc berkeley california 94708", "123 abc"));
+        testAddresses.add(new Address("1142 #7 Berkeley Way", "1142 #7 Berkeley Way"));
+        testAddresses.add(new Address("1010 Tenth St.", "1010 Tenth St."));
+    }
+
+    /**
+     * Create a variety of differently (mis)spellings of Berkeley we should be able to detect
+     *
+     * FIX THIS, DS: add other variations as we learn them.
+     */
+    @BeforeClass
+    public static void createTestCities() {
+        testCities.add(new City("Berkeley", "Berkeley"));
+        testCities.add(new City("Berkeley ", "Berkeley"));
+        testCities.add(new City(" Berkeley ", "Berkeley"));
+        testCities.add(new City("berkeley", "Berkeley"));
+        testCities.add(new City("berkly", "Berkeley"));
+        testCities.add(new City("berekly", "Berkeley"));
+        testCities.add(new City("berkley", "Berkeley"));
     }
 
     @Test
@@ -272,9 +319,20 @@ public class UserTest extends TestBase {
         assertThat(userException.user).isNotNull();
     }
 
-    @Override
-    public boolean equals(Object obj) {
-        return super.equals(obj);
+    @Test
+    public void minimizeAddressTest() throws UserException {
+        for (Address address : testAddresses) {
+            User user = createUserWithAddress(address.original);
+            assertThat(user.getAddress()).isEqualTo(address.expected);
+        }
     }
 
+    @Test
+    public void isBerkeleyTest() throws UserException {
+
+        for (City city : testCities) {
+            User user = createUserWithCity(city.original);
+            assertThat(user.getCity()).isEqualTo(city.expected);
+        }
+    }
 }

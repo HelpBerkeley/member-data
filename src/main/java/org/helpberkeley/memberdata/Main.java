@@ -70,7 +70,13 @@ public class Main {
             //               support for checking the previous post
             //               for differences.
 //            postUserExceptions(apiClient, loader.getExceptions());
-            loader.getExceptions().forEach(e -> System.out.println(e.getMessage()));
+
+            for (UserException userException : loader.getExceptions()) {
+                User user = userException.user;
+                for (String dataError : user.getDataErrors()) {
+                    System.out.println(user.getUserName() + ": " + dataError);
+                }
+            }
         }
         
 

@@ -234,6 +234,7 @@ public class User {
         removeCommas();
         auditAndNormalizePhoneNumber();
         auditAndNormalizeCity();
+        minimizeAddress();
     }
 
     // Must be insensitive to null data
@@ -305,11 +306,36 @@ public class User {
             return;
         }
 
-        if (!cityIsBerkeley()) {
-            dataErrors.add(AUDIT_ERROR_CITY_IS_NOT_BERKELEY + city);
-        } else {
+        if (cityIsBerkeley()) {
             city = BERKELEY;
         }
+    }
+
+    // Try to remove the city portion of the address, if it is Berkeley.
+    private void minimizeAddress() {
+
+        if (address == null) {
+            return;
+        }
+
+        String lowerCase = address.toLowerCase();
+
+        // Berkeley Way is a street in Berkeley
+        if (lowerCase.contains("berkeley way")) {
+            return;
+        }
+
+        int index = lowerCase.indexOf(" berkeley");
+        if (index == -1) {
+            return;
+        }
+
+        String newAddress = address.substring(0, index);
+
+        // FIX THIS, DS: what kind of validation can be done here
+        //               to prevent chopping off street address info?
+
+        address = newAddress;
     }
 
 
@@ -317,6 +343,9 @@ public class User {
 
         // Convert to lower case
         String cityName = city.toLowerCase();
+
+        // Remove leading trailing whitespace
+        cityName = cityName.trim();
 
         // Remove all vowels by y
         cityName = cityName.replaceAll("[aeiou]", "");
