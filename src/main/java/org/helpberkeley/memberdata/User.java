@@ -134,19 +134,13 @@ public class User {
         this.neighborhood = neighborhood;
     }
 
-    void addGroups(List<Group> groups) {
+    private void addGroups(List<Group> groups) {
 
         for (Group group : groups) {
             if (group.hasUserName(userName)) {
                 groupMembership.add(group.name);
             }
         }
-    }
-
-    // Test entry point
-    void addGroup(String group) {
-        assert ! groupMembership.contains(group) : group;
-        groupMembership.add(group);
     }
 
     boolean isConsumer() {
@@ -351,6 +345,11 @@ public class User {
             return;
         }
 
+        // If not a consumer, we don't need neighborhood information.
+        if (! groupMembership.contains(Group.CONSUMER)) {
+            return;
+        }
+
         if (neighborhood.toLowerCase().trim().contains("unknown")) {
             dataErrors.add(AUDIT_ERROR_NEIGHBORHOOD_UNKNOWN + neighborhood);
         }
@@ -401,7 +400,7 @@ public class User {
         return false;
     }
 
-    static User createUser(Map<String, Object> fieldMap) throws UserException {
+    static User createUser(Map<String, Object> fieldMap, List<Group> groups) throws UserException {
 
         String name = (String) fieldMap.get(NAME_FIELD);
         String userName = (String) fieldMap.get(USERNAME_FIELD);
@@ -425,6 +424,7 @@ public class User {
 
         User user = new User(name, userName, id, address, city, phoneNumber, neighborhood);
         user.auditNullFields();
+        user.addGroups(groups);
         user.normalizeData();
 
         if (! user.dataErrors.isEmpty()) {
@@ -442,10 +442,44 @@ public class User {
             final String address,
             final String city,
             final String phoneNumber,
-            final String neighborhood) throws UserException {
+            final String neighborhood,
+            final String... groups) throws UserException {
 
 
         User user = new User(name, userName, id, address, city, phoneNumber, neighborhood);
+        for (String group : groups) {
+            assert ! user.groupMembership.contains(group) : group;
+            user.groupMembership.add(group);
+        }
+
+        user.auditNullFields();
+        user.normalizeData();
+
+        if (! user.dataErrors.isEmpty()) {
+            throw new UserException(user);
+        }
+
+        return user;
+    }
+
+    // CTOR for test usage
+    static User createUser(
+            final String name,
+            final String userName,
+            final long id,
+            final String address,
+            final String city,
+            final String phoneNumber,
+            final String neighborhood,
+            final List<String> groups) throws UserException {
+
+
+        User user = new User(name, userName, id, address, city, phoneNumber, neighborhood);
+        for (String group : groups) {
+            assert ! user.groupMembership.contains(group) : group;
+            user.groupMembership.add(group);
+        }
+
         user.auditNullFields();
         user.normalizeData();
 

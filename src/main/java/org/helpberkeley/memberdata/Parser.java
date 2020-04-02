@@ -53,13 +53,13 @@ public class Parser {
         return activeUserIds;
     }
 
-    static User user(final String userJson) throws UserException {
+    static User user(final String userJson, final List<Group> groups) throws UserException {
         Map<String, Object> options = new HashMap<>();
         options.put(JsonReader.USE_MAPS, Boolean.TRUE);
 
         Object obj = JsonReader.jsonToJava(userJson, options);
         // FIX THIS, DS: learn how to do this with this cast
-        return User.createUser((Map<String, Object>)obj);
+        return User.createUser((Map<String, Object>)obj, groups);
     }
 
     static Group group(final String userJson) {

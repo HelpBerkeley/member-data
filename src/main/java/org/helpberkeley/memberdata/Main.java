@@ -188,6 +188,8 @@ public class Main {
             for (String error : user.getDataErrors()) {
                 postRaw.append("User: ");
                 postRaw.append(user.getUserName());
+                postRaw.append(", Name: ");
+                postRaw.append(user.getName());
                 postRaw.append(": ");
                 postRaw.append(error);
                 postRaw.append('\n');

@@ -71,8 +71,7 @@ public class Loader {
      */
     public List<User> load() throws IOException, InterruptedException {
         loadGroups();
-        loadUsers();
-        users.forEach(user -> user.addGroups(groups));
+        loadUsers(groups);
 
         return users;
     }
@@ -103,7 +102,7 @@ public class Loader {
         }
     }
 
-    private void loadUsers() throws IOException, InterruptedException {
+    private void loadUsers(final List<Group> groups) throws IOException, InterruptedException {
         // There isn't an endpoint that gives us a list of active users with their profile data.
         // So, first fetch the active users page
         HttpResponse<String> response = apiClient.getActiveUsers();
@@ -119,7 +118,7 @@ public class Loader {
             }
             response = apiClient.getUser(userId);
             try {
-                users.add(Parser.user(response.body()));
+                users.add(Parser.user(response.body(), groups));
             } catch (UserException ex) {
                 userExceptions.add(ex);
 

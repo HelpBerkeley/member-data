@@ -52,31 +52,29 @@ public class TestBase {
     final List<String>  TEST_USER_3_GROUPS = List.of(Group.DRIVER, Group.DISPATCHER);
 
     protected User createTestUser1() throws UserException {
-        User user = User.createUser(TEST_NAME_1, TEST_USER_NAME_1,
-                TEST_ID_1, TEST_ADDRESS_1, User.BERKELEY, TEST_PHONE_1, TEST_NEIGHBORHOOD_1);
-        TEST_USER_1_GROUPS.forEach(user::addGroup);
-        return user;
+        return User.createUser(TEST_NAME_1, TEST_USER_NAME_1, TEST_ID_1, TEST_ADDRESS_1,
+                User.BERKELEY, TEST_PHONE_1, TEST_NEIGHBORHOOD_1, TEST_USER_1_GROUPS);
     }
 
     protected User createTestUser2() throws UserException {
-        User user = User.createUser(TEST_NAME_2, TEST_USER_NAME_2,
-                TEST_ID_2, TEST_ADDRESS_2, User.BERKELEY, TEST_PHONE_2, TEST_NEIGHBORHOOD_2);
-        TEST_USER_2_GROUPS.forEach(user::addGroup);
-        return user;
+        return User.createUser(TEST_NAME_2, TEST_USER_NAME_2, TEST_ID_2, TEST_ADDRESS_2,
+                User.BERKELEY, TEST_PHONE_2, TEST_NEIGHBORHOOD_2, TEST_USER_2_GROUPS);
     }
 
     protected User createTestUser3() throws UserException {
-        User user = User.createUser(TEST_NAME_3, TEST_USER_NAME_3,
-                TEST_ID_3, TEST_ADDRESS_3, User.BERKELEY, TEST_PHONE_3, TEST_NEIGHBORHOOD_3);
-        TEST_USER_3_GROUPS.forEach(user::addGroup);
-        return user;
+        return User.createUser(TEST_NAME_3, TEST_USER_NAME_3, TEST_ID_3, TEST_ADDRESS_3,
+                User.BERKELEY, TEST_PHONE_3, TEST_NEIGHBORHOOD_3, TEST_USER_3_GROUPS);
     }
-
 
     // no groups
     protected User createUser() throws UserException {
         return User.createUser(TEST_USER_NAME_1, TEST_USER_NAME_1,
                 TEST_ID_1, TEST_ADDRESS_1, User.BERKELEY, TEST_PHONE_1, TEST_NEIGHBORHOOD_1);
+    }
+
+    protected User createUserWithGroups(final String... groups) throws UserException {
+        return User.createUser(TEST_USER_NAME_1, TEST_USER_NAME_1,
+                TEST_ID_1, TEST_ADDRESS_1, User.BERKELEY, TEST_PHONE_1, TEST_NEIGHBORHOOD_1, groups);
     }
 
     protected User createUserWithName(final String name) throws UserException {
@@ -105,11 +103,8 @@ public class TestBase {
     }
 
     protected User createUserWithGroup(final String group) throws UserException {
-        User user =  User.createUser(TEST_USER_NAME_1, TEST_USER_NAME_1,
-                TEST_ID_1, TEST_ADDRESS_1, User.BERKELEY, TEST_PHONE_1, TEST_NEIGHBORHOOD_1);
-        user.addGroup(group);
-
-        return user;
+        return User.createUser(TEST_USER_NAME_1, TEST_USER_NAME_1,
+                TEST_ID_1, TEST_ADDRESS_1, User.BERKELEY, TEST_PHONE_1, TEST_NEIGHBORHOOD_1, group);
     }
 
     protected User createUserWithNeighborhood(final String neighborhood) throws UserException {
@@ -121,5 +116,14 @@ public class TestBase {
 
         return User.createUser(TEST_NAME_1, TEST_USER_NAME_1,
                 TEST_ID_1, TEST_PHONE_1, city, TEST_PHONE_1, neighborhood);
+    }
+
+    protected User createUserWithGroupAndNeighborhood(
+            final String group, final String neighborhood) throws UserException {
+
+        User user = User.createUser(TEST_NAME_1, TEST_USER_NAME_1,
+                TEST_ID_1, TEST_PHONE_1, User.BERKELEY, TEST_PHONE_1, neighborhood, group);
+
+        return user;
     }
 }
