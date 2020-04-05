@@ -74,7 +74,7 @@ public class User {
 
     private String name;
     private String userName;
-    private long id;
+    private final long id;
     private String address;
     private String city;
     private String phoneNumber;
@@ -137,22 +137,22 @@ public class User {
     private void addGroups(List<Group> groups) {
 
         for (Group group : groups) {
-            if (group.hasUserName(userName)) {
+            if (group.hasUserId(id)) {
                 groupMembership.add(group.name);
             }
         }
     }
 
     boolean isConsumer() {
-        return groupMembership.contains(Group.CONSUMER);
+        return groupMembership.contains(Constants.GROUP_CONSUMERS);
     }
 
     boolean isDispatcher() {
-        return groupMembership.contains(Group.DISPATCHER);
+        return groupMembership.contains(Constants.GROUP_DISPATCHERS);
     }
 
     boolean isDriver() {
-        return groupMembership.contains(Group.DRIVER);
+        return groupMembership.contains(Constants.GROUP_DRIVERS);
     }
 
     @Override
@@ -192,6 +192,21 @@ public class User {
         builder.append(NEIGHBORHOOD_COLUMN);
         builder.append("=");
         builder.append(neighborhood == null ? NOT_PROVIDED : neighborhood);
+        builder.append(':');
+
+        builder.append(Constants.GROUP_CONSUMERS);
+        builder.append("=");
+        builder.append(isConsumer());
+        builder.append(':');
+
+        builder.append(Constants.GROUP_DISPATCHERS);
+        builder.append("=");
+        builder.append(isDispatcher());
+        builder.append(':');
+
+        builder.append(Constants.GROUP_DRIVERS);
+        builder.append("=");
+        builder.append(isDriver());
         builder.append(':');
 
         return builder.toString();
@@ -346,7 +361,7 @@ public class User {
         }
 
         // If not a consumer, we don't need neighborhood information.
-        if (! groupMembership.contains(Group.CONSUMER)) {
+        if (! groupMembership.contains(Constants.GROUP_CONSUMERS)) {
             return;
         }
 
@@ -400,40 +415,6 @@ public class User {
         return false;
     }
 
-    static User createUser(Map<String, Object> fieldMap, List<Group> groups) throws UserException {
-
-        String name = (String) fieldMap.get(NAME_FIELD);
-        String userName = (String) fieldMap.get(USERNAME_FIELD);
-        Long id = (Long) fieldMap.get(ID_FIELD);
-
-        JsonObject obj = (JsonObject)fieldMap.get(USER_FIELDS_FIELD);
-
-        // FIX THIS, DS: refactor to remove the cast
-        LinkedHashMap<String, Object> userFieldsMap = (LinkedHashMap<String, Object>)obj;
-        String address = null;
-        String city = null;
-        String phoneNumber = null;
-        String neighborhood = null;
-
-        if (userFieldsMap != null) {
-            address = (String) userFieldsMap.get(ADDRESS_USER_FIELD);
-            city = (String) userFieldsMap.get(CITY_USER_FIELD);
-            phoneNumber = (String) userFieldsMap.get(PHONE_NUMBER_USER_FIELD);
-            neighborhood = (String) userFieldsMap.get(NEIGHBORHOOD_USER_FIELD);
-        }
-
-        User user = new User(name, userName, id, address, city, phoneNumber, neighborhood);
-        user.auditNullFields();
-        user.addGroups(groups);
-        user.normalizeData();
-
-        if (! user.dataErrors.isEmpty()) {
-            throw new UserException(user);
-        }
-
-        return user;
-    }
-
     // CTOR for test usage
     static User createUser(
             final String name,
@@ -462,7 +443,6 @@ public class User {
         return user;
     }
 
-    // CTOR for test usage
     static User createUser(
             final String name,
             final String userName,

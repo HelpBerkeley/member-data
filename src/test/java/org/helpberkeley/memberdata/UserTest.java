@@ -112,70 +112,70 @@ public class UserTest extends TestBase {
 
     @Test
     public void equalityTestConsumerRole() throws UserException {
-        User user1 = createUserWithGroup(Group.CONSUMER);
+        User user1 = createUserWithGroup(Constants.GROUP_CONSUMERS);
         User user2 = createUser();
 
         assertThat(user1).isNotEqualTo(user2);
 
-        user2 = createUserWithGroup(Group.CONSUMER);
+        user2 = createUserWithGroup(Constants.GROUP_CONSUMERS);
         assertThat(user1).isEqualTo(user2);
 
-        user1 = createUserWithGroups(Group.CONSUMER, Group.DISPATCHER);
+        user1 = createUserWithGroups(Constants.GROUP_CONSUMERS, Constants.GROUP_DISPATCHERS);
         assertThat(user1).isNotEqualTo(user2);
 
-        user2 = createUserWithGroups(Group.CONSUMER, Group.DISPATCHER);
+        user2 = createUserWithGroups(Constants.GROUP_CONSUMERS, Constants.GROUP_DISPATCHERS);
         assertThat(user1).isEqualTo(user2);
 
-        user1 = createUserWithGroups(Group.CONSUMER, Group.DISPATCHER, Group.DRIVER);
+        user1 = createUserWithGroups(Constants.GROUP_CONSUMERS, Constants.GROUP_DISPATCHERS, Constants.GROUP_DRIVERS);
         assertThat(user1).isNotEqualTo(user2);
 
-        user2 = createUserWithGroups(Group.CONSUMER, Group.DISPATCHER, Group.DRIVER);
+        user2 = createUserWithGroups(Constants.GROUP_CONSUMERS, Constants.GROUP_DISPATCHERS, Constants.GROUP_DRIVERS);
         assertThat(user1).isEqualTo(user2);
     }
 
     @Test
     public void equalityTestDriverRole() throws UserException {
-        User user1 = createUserWithGroup(Group.DRIVER);
+        User user1 = createUserWithGroup(Constants.GROUP_DRIVERS);
         User user2 = createUser();
 
         assertThat(user1).isNotEqualTo(user2);
 
-        user2 = createUserWithGroup(Group.DRIVER);
+        user2 = createUserWithGroup(Constants.GROUP_DRIVERS);
         assertThat(user1).isEqualTo(user2);
 
-        user1 = createUserWithGroups(Group.DRIVER, Group.DISPATCHER);
+        user1 = createUserWithGroups(Constants.GROUP_DRIVERS, Constants.GROUP_DISPATCHERS);
         assertThat(user1).isNotEqualTo(user2);
 
-        user2 = createUserWithGroups(Group.DRIVER, Group.DISPATCHER);
+        user2 = createUserWithGroups(Constants.GROUP_DRIVERS, Constants.GROUP_DISPATCHERS);
         assertThat(user1).isEqualTo(user2);
 
-        user1 = createUserWithGroups(Group.DRIVER, Group.DISPATCHER, Group.CONSUMER);
+        user1 = createUserWithGroups(Constants.GROUP_DRIVERS, Constants.GROUP_DISPATCHERS, Constants.GROUP_CONSUMERS);
         assertThat(user1).isNotEqualTo(user2);
 
-        user2 = createUserWithGroups(Group.DRIVER, Group.DISPATCHER, Group.CONSUMER);
+        user2 = createUserWithGroups(Constants.GROUP_DRIVERS, Constants.GROUP_DISPATCHERS, Constants.GROUP_CONSUMERS);
         assertThat(user1).isEqualTo(user2);
     }
 
     @Test
     public void equalityTestDispatcherRole() throws UserException {
-        User user1 = createUserWithGroup(Group.DISPATCHER);
+        User user1 = createUserWithGroup(Constants.GROUP_DISPATCHERS);
         User user2 = createUser();
 
         assertThat(user1).isNotEqualTo(user2);
 
-        user2 = createUserWithGroup(Group.DISPATCHER);
+        user2 = createUserWithGroup(Constants.GROUP_DISPATCHERS);
         assertThat(user1).isEqualTo(user2);
 
-        user1 = createUserWithGroups(Group.DISPATCHER, Group.DRIVER);
+        user1 = createUserWithGroups(Constants.GROUP_DISPATCHERS, Constants.GROUP_DRIVERS);
         assertThat(user1).isNotEqualTo(user2);
 
-        user2 = createUserWithGroups(Group.DISPATCHER, Group.DRIVER);
+        user2 = createUserWithGroups(Constants.GROUP_DISPATCHERS, Constants.GROUP_DRIVERS);
         assertThat(user1).isEqualTo(user2);
 
-        user1 = createUserWithGroups(Group.DISPATCHER, Group.DRIVER, Group.CONSUMER);
+        user1 = createUserWithGroups(Constants.GROUP_DISPATCHERS, Constants.GROUP_DRIVERS, Constants.GROUP_CONSUMERS);
         assertThat(user1).isNotEqualTo(user2);
 
-        user2 = createUserWithGroups(Group.DISPATCHER, Group.DRIVER, Group.CONSUMER);
+        user2 = createUserWithGroups(Constants.GROUP_DISPATCHERS, Constants.GROUP_DRIVERS, Constants.GROUP_CONSUMERS);
         assertThat(user1).isEqualTo(user2);
     }
 
@@ -315,7 +315,7 @@ public class UserTest extends TestBase {
         String[] unknowns = { "Unknown", "unknown", " unknown " };
 
         for (String neighborhood : unknowns) {
-            Throwable thrown = catchThrowable(() -> createUserWithGroupAndNeighborhood(Group.CONSUMER, neighborhood));
+            Throwable thrown = catchThrowable(() -> createUserWithGroupAndNeighborhood(Constants.GROUP_CONSUMERS, neighborhood));
             assertThat(thrown).isInstanceOf(UserException.class);
             UserException userException = (UserException) thrown;
             assertThat(userException.user).isNotNull();
@@ -332,13 +332,13 @@ public class UserTest extends TestBase {
 
     @Test
     public void unknownBerkeleyNeighborhoodDriverTest() throws UserException {
-        User user = createUserWithGroupAndNeighborhood(Group.DRIVER, "unknown");
+        User user = createUserWithGroupAndNeighborhood(Constants.GROUP_DRIVERS, "unknown");
         assertThat(user.getDataErrors()).isEmpty();
     }
 
     @Test
     public void unknownBerkeleyNeighborhoodDispatcherTest() throws UserException {
-        User user = createUserWithGroupAndNeighborhood(Group.DISPATCHER, "unknown");
+        User user = createUserWithGroupAndNeighborhood(Constants.GROUP_DISPATCHERS, "unknown");
         assertThat(user.getDataErrors()).isEmpty();
     }
 }

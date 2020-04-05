@@ -50,8 +50,11 @@ public class LoaderExporterTest extends TestBase {
 
         List<User> users = loader.load(testUsersExportedJson);
         assertThat(users).isNotEmpty();
-        assertThat(loader.getExceptions()).isEmpty();
         assertThat(users).isEqualTo(testUsers);
+
+        for (User user : users) {
+            assertThat(user.getDataErrors()).isEmpty();
+        }
     }
 
     @Test

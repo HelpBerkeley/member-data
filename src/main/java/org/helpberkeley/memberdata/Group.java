@@ -29,40 +29,23 @@ import java.util.*;
  */
 public class Group {
 
-
-    // FIX THIS, DS: Hardwired names that break if Discourse
-    //               changes any them. Unlikely though.
-    //
     static final String NAME_FIELD = "name";
-    static final String DISPLAY_NAME_FIELD = "display_name";
-    static final String MEMBERS_FIELD = "members";
-
-    // Group names - FIX THIS, DS: hardwired
-    static final String CONSUMER = "consumers";
-    static final String DRIVER = "drivers";
-    static final String DISPATCHER = "dispatchers";
+    static final String USERS_FIELD = "users";
 
     final String name;
-    private final String displayName;
-    private final Set<String> userNames = new HashSet<>();
+    private final Set<Long> userIds = new HashSet<>();
 
-    private Group(
-        final String name,
-        final String displayName) {
+    private Group(final String name) {
 
         this.name = name;
-        this.displayName = displayName;
     }
 
-    void addMembers(List<String> userNames) {
-
-        for (String userName : userNames) {
-            this.userNames.add(userName);
-        }
+    void addUserIDs(List<Long> userIDs) {
+        userIDs.forEach(this.userIds::add);
     }
 
-    boolean hasUserName(final String userName) {
-        return userNames.contains(userName);
+    boolean hasUserId(final long userId) {
+        return userIds.contains(userId);
     }
 
     @Override
@@ -74,35 +57,19 @@ public class Group {
         builder.append(name);
         builder.append(':');
 
-        builder.append(DISPLAY_NAME_FIELD);
+        builder.append(USERS_FIELD);
         builder.append("=");
-        builder.append(displayName);
-        builder.append(':');
-
-        builder.append(MEMBERS_FIELD);
-        builder.append("=");
-        for (String userName : userNames) {
-            builder.append(userName);
+        for (long userId : userIds) {
+            builder.append(userId);
             builder.append(',');
         }
 
         return builder.toString();
     }
 
-    static Group createGroup(Map<String, Object> fieldMap) {
-
-        String name = (String) fieldMap.get(NAME_FIELD);
-        String displayName = (String) fieldMap.get(DISPLAY_NAME_FIELD);
-
-        return new Group(name, displayName);
-    }
-
-    // CTOR for tests
-    //
-    static Group createGroup(final String name, List<String> members) {
-
-        Group group = new Group(name, name);
-        group.addMembers(members);
+    static Group createGroup(final String name, List<Long> userIDs) {
+        Group group = new Group(name);
+        group.addUserIDs(userIDs);
 
         return group;
     }

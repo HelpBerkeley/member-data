@@ -22,4 +22,22 @@
 package org.helpberkeley.memberdata;
 
 public class Constants {
+    public static final int QUERY_GET_USERS_ID = 1;
+    public static final int QUERY_GET_GROUPS_ID = 3;
+    public static final int QUERY_GET_GROUP_USERS_ID = 4;
+
+    public static final String COLUMN_ID = "id";
+    public static final String COLUMN_NAME = "name";
+    public static final String COLUMN_USERNAME = "username";
+    public static final String COLUMN_GROUP_ID = "group_id";
+    public static final String COLUMN_USER_ID = "user_id";
+    public static final String COLUMN_ADDRESS = "address";
+    public static final String COLUMN_PHONE = "phone";
+    public static final String COLUMN_CITY = "city";
+    public static final String COLUMN_NEIGHBORHOOD = "neighborhood";
+
+    // Group names - FIX THIS, DS: hardwired
+    public static final String GROUP_CONSUMERS = "consumers";
+    public static final String GROUP_DRIVERS = "drivers";
+    public static final String GROUP_DISPATCHERS = "dispatchers";
 }

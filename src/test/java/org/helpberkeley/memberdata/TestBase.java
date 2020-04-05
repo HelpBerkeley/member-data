@@ -47,9 +47,9 @@ public class TestBase {
     static final String TEST_PHONE_3 = "333-444-5555";
     static final String TEST_NEIGHBORHOOD_3 = "neighborhood 3";
 
-    final List<String>  TEST_USER_1_GROUPS = List.of(Group.CONSUMER);
-    final List<String>  TEST_USER_2_GROUPS = List.of(Group.CONSUMER, Group.DRIVER);
-    final List<String>  TEST_USER_3_GROUPS = List.of(Group.DRIVER, Group.DISPATCHER);
+    final List<String>  TEST_USER_1_GROUPS = List.of(Constants.GROUP_CONSUMERS);
+    final List<String>  TEST_USER_2_GROUPS = List.of(Constants.GROUP_CONSUMERS, Constants.GROUP_DRIVERS);
+    final List<String>  TEST_USER_3_GROUPS = List.of(Constants.GROUP_DRIVERS, Constants.GROUP_DISPATCHERS);
 
     protected User createTestUser1() throws UserException {
         return User.createUser(TEST_NAME_1, TEST_USER_NAME_1, TEST_ID_1, TEST_ADDRESS_1,

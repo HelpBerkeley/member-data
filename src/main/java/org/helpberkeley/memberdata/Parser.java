@@ -22,9 +22,10 @@
 
 package org.helpberkeley.memberdata;
 
-import com.cedarsoftware.util.io.JsonObject;
 import com.cedarsoftware.util.io.JsonReader;
 import com.cedarsoftware.util.io.JsonWriter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -33,100 +34,143 @@ import java.util.Map;
 
 public class Parser {
 
-    static List<Long> activeUserIds(final String activeUsers) {
+    private static final Logger LOGGER = LoggerFactory.getLogger(Parser.class);
 
-        List<Long> activeUserIds = new ArrayList<>();
+    static ApiQueryResult parseQueryResult(final String queryResultJson) throws ApiException {
         Map<String, Object> options = new HashMap<>();
         options.put(JsonReader.USE_MAPS, Boolean.TRUE);
 
-        Object obj = JsonReader.jsonToJava(activeUsers, options);
-        Object[] users = (Object[])obj;
+        Object obj = JsonReader.jsonToJava(queryResultJson, options);
+        Map<String, Object> map = (Map<String, Object>)obj;
 
-        for (Object user : users) {
-            // FIX THIS, DS: learn how to do this with this cast
-            Map<String, Object> u = (Map<String, Object>) user;
+        Object[] columns = (Object[])map.get("columns");
+        Object[] rows = (Object[])map.get("rows");
 
-            Long id = (Long)u.get("id");
-            activeUserIds.add(id);
+        return new ApiQueryResult(columns, rows);
+    }
+
+    static List<User> users(final Map<String, Group> groups, final ApiQueryResult queryResult) {
+        LOGGER.debug("users");
+
+        List<User> users = new ArrayList<>();
+
+        assert queryResult.headers.length == 7 :
+                "Unexpected number of columns for users query result: " + queryResult;
+        assert queryResult.headers[0].equals(Constants.COLUMN_USER_ID) : queryResult.headers[0];
+        assert queryResult.headers[1].equals(Constants.COLUMN_USERNAME) : queryResult.headers[1];
+        assert queryResult.headers[2].equals(Constants.COLUMN_NAME) : queryResult.headers[2];
+        assert queryResult.headers[3].equals(Constants.COLUMN_ADDRESS) : queryResult.headers[3];
+        assert queryResult.headers[4].equals(Constants.COLUMN_PHONE) : queryResult.headers[4];
+        assert queryResult.headers[5].equals(Constants.COLUMN_NEIGHBORHOOD) : queryResult.headers[5];
+        assert queryResult.headers[6].equals(Constants.COLUMN_CITY) : queryResult.headers[6];
+
+        Group consumers = groups.get(Constants.GROUP_CONSUMERS);
+        Group drivers = groups.get(Constants.GROUP_DRIVERS);
+        Group dispatchers = groups.get(Constants.GROUP_DISPATCHERS);
+        List<String> groupMemberships = new ArrayList<>();
+
+        for (Object rowObj : queryResult.rows) {
+
+            Object[] columns = (Object[])rowObj;
+
+            long userId = (Long)columns[0];
+
+            if (skipUserId(userId)) {
+                continue;
+            }
+
+            String userName = (String)columns[1];
+            String name = (String)columns[2];
+            String address = (String)columns[3];
+            String phone = (String)columns[4];
+            String neighborhood = (String)columns[5];
+            String city = (String)columns[6];
+
+            groupMemberships.clear();
+            if (consumers.hasUserId(userId)) {
+                groupMemberships.add(consumers.name);
+            }
+            if (drivers.hasUserId(userId)) {
+                groupMemberships.add(drivers.name);
+            }
+            if (dispatchers.hasUserId(userId)) {
+                groupMemberships.add(dispatchers.name);
+            }
+
+            try {
+                users.add(User.createUser(name, userName, userId, address, city, phone, neighborhood, groupMemberships));
+            } catch (UserException ex) {
+                // FIX THIS, DS: get rid of UserException?
+                users.add(ex.user);
+            }
         }
 
-        return activeUserIds;
+        return users;
     }
 
-    static User user(final String userJson, final List<Group> groups) throws UserException {
-        Map<String, Object> options = new HashMap<>();
-        options.put(JsonReader.USE_MAPS, Boolean.TRUE);
+    static Map<Long, String> groupNames(ApiQueryResult queryResult) {
+        LOGGER.debug("groupNames");
 
-        Object obj = JsonReader.jsonToJava(userJson, options);
-        // FIX THIS, DS: learn how to do this with this cast
-        return User.createUser((Map<String, Object>)obj, groups);
-    }
+        Map<Long, String> results = new HashMap<>();
 
-    static Group group(final String userJson) {
-        Map<String, Object> options = new HashMap<>();
-        options.put(JsonReader.USE_MAPS, Boolean.TRUE);
+        assert queryResult.headers.length == 2 :
+                "Unexpected number of columns for groupNames query result: " + queryResult;
+        assert queryResult.headers[0].equals(Constants.COLUMN_ID) : queryResult.headers[0];
+        assert queryResult.headers[1].equals(Constants.COLUMN_NAME) : queryResult.headers[1];
 
-        Object obj = JsonReader.jsonToJava(userJson, options);
-        Object groupObj = ((Map<String, Object>)obj).get("group");
+        for (Object rowObj :  queryResult.rows) {
+            Object[] columns = (Object[])rowObj;
 
-        // FIX THIS, DS: learn how to do this with this cast
-        return Group.createGroup((Map<String, Object>)groupObj);
-    }
+            Long groupId = (Long)columns[0];
+            String groupName = (String)columns[1];
 
-    static List<String> groupNames(final String groupsJson) {
-
-        List<String> groupNames = new ArrayList<>();
-        Map<String, Object> options = new HashMap<>();
-        options.put(JsonReader.USE_MAPS, Boolean.TRUE);
-
-        Object obj = JsonReader.jsonToJava(groupsJson, options);
-        Object groupsObj = ((Map<String, Object>)obj).get("groups");
-
-        for (Object groupObj : (Object[])groupsObj) {
-
-            Map<String, Object> g = (Map<String, Object>) groupObj;
-            groupNames.add((String)g.get("name"));
+            if ((groupId == null) || (groupName == null)) {
+                LOGGER.debug("getGroupNames skipping id: {}, groupName: {}", groupId, groupName);
+                continue;
+            }
+            results.put((Long)columns[0], (String)columns[1]);
         }
 
-        return groupNames;
+        return results;
     }
-    static List<String> groupMembers(final String groupMembersJson) {
 
-        List<String> groupMembers = new ArrayList<>();
-        Map<String, Object> options = new HashMap<>();
-        options.put(JsonReader.USE_MAPS, Boolean.TRUE);
+    static Map<String, List<Long>> groupUsers(final Map<Long, String> groupNames, final ApiQueryResult queryResult) {
+        LOGGER.debug("groupUsers");
+        Map<String, List<Long>> results = new HashMap<>();
 
+        assert queryResult.headers.length == 2 :
+                "Unexpected number of columns for groupUsers query result: " + queryResult;
+        assert queryResult.headers[0].equals(Constants.COLUMN_GROUP_ID) : queryResult.headers[0];
+        assert queryResult.headers[1].equals(Constants.COLUMN_USER_ID) : queryResult.headers[1];
 
-        Object obj = JsonReader.jsonToJava(groupMembersJson, options);
-        Object membersObj = ((Map<String, Object>)obj).get("members");
+        for (Object rowObj : queryResult.rows) {
+            Object[] columns = (Object[]) rowObj;
+            assert columns.length == 2 : columns.length;
 
-        for (Object memberObj : (Object[])membersObj) {
+            Long groupId = (Long)columns[0];
+            Long userId = (Long)columns[1];
 
-            Map<String, Object> u = (Map<String, Object>) memberObj;
-            groupMembers.add((String)u.get("username"));
+            if ((groupId == null) || (userId == null)){
+                LOGGER.debug("groupUsers: skipping null data: {}:{}", groupId, userId);
+                continue;
+            }
+
+            String groupName = groupNames.get(groupId);
+            assert groupName != null : "No group name found for group id " + groupId;
+
+            List<Long> userIds = results.computeIfAbsent(groupName, v -> new ArrayList<>());
+            userIds.add(userId);
         }
 
-        return groupMembers;
+        return results;
+    }
+
+    // Skip Discourse system users. Not fully formed.
+    private static boolean skipUserId(long userId) {
+        return (userId == -1) || (userId == -2);
     }
 
     static void prettyPrint(final String pageJson) {
-
         System.out.println(JsonWriter.formatJson(pageJson));
-
-    }
-
-    static List<Group> groups(final String groupsJson) {
-        List<Group> groups = new ArrayList<>();
-        Map<String, Object> options = new HashMap<>();
-        options.put(JsonReader.USE_MAPS, Boolean.TRUE);
-
-        Object obj = JsonReader.jsonToJava(groupsJson, options);
-        Object groupsObj = ((Map<String, Object>)obj).get("groups");
-
-        for (Object groupObj : (Object[])groupsObj) {
-            groups.add(Group.createGroup((JsonObject)groupObj));
-        }
-
-        return groups;
     }
 }

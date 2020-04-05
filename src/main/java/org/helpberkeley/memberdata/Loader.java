@@ -23,21 +23,23 @@
 package org.helpberkeley.memberdata;
 
 import com.cedarsoftware.util.io.JsonReader;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.net.http.HttpResponse;
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Load User and group data from the site.
  */
 public class Loader {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(Loader.class);
+
     private final ApiClient apiClient;
-    private final List<Group> groups = new ArrayList<>();
-    private final List<User> users = new ArrayList<>();
-    private final List<UserException> userExceptions = new ArrayList<>();
+    private final Map<String, Group> groups = new HashMap<>();
 
     // FIX THIS, DS: refactor these two ctors and the load methods
     public Loader(final ApiClient apiClient) {
@@ -47,15 +49,6 @@ public class Loader {
     public Loader() {
         this.apiClient = null;
     }
-
-    public List<UserException> getExceptions() {
-        return userExceptions;
-    }
-
-    public void clearExceptions() {
-        userExceptions.clear();
-    }
-
 
     public List<User> load(final String json) {
         Object obj = JsonReader.jsonToJava(json);
@@ -69,69 +62,36 @@ public class Loader {
      * @throws IOException          Website interaction exception.
      * @throws InterruptedException Website interaction exception.
      */
-    public List<User> load() throws IOException, InterruptedException {
+    public List<User> load() throws IOException, InterruptedException, ApiException {
+        LOGGER.debug("load");
         loadGroups();
-        loadUsers(groups);
-
-        return users;
+        return loadUsers();
     }
 
-    private void loadGroups() throws IOException, InterruptedException {
+    private void loadGroups() throws IOException, InterruptedException, ApiException {
+        LOGGER.debug("loadGroups");
 
-        // Get a list of group names
-        HttpResponse<String> response = apiClient.getGroups();
-        List<String> groupNames = Parser.groupNames(response.body());
+        ApiQueryResult apiQueryResult = apiClient.runQuery(Constants.QUERY_GET_GROUPS_ID);
+        Map<Long, String> groupNames = Parser.groupNames(apiQueryResult);
 
-        for (String groupName : groupNames) {
+        apiQueryResult = apiClient.runQuery(Constants.QUERY_GET_GROUP_USERS_ID);
+        Map<String, List<Long>> groupUsers = Parser.groupUsers(groupNames, apiQueryResult);
 
-            // Get and create a group
-            response = apiClient.getGroup(groupName);
+        for (Map.Entry<String, List<Long>> entry : groupUsers.entrySet()) {
 
-            if (response.statusCode() != 200) {
-                System.out.println("Error on getGroup " + groupName);
-                continue;
-            }
-            Group group = Parser.group(response.body());
-
-            // Get group members for that group
-            response = apiClient.getGroupMembers(groupName);
-            List<String> userNames = Parser.groupMembers(response.body());
-            group.addMembers(userNames);
-
-            groups.add(group);
-        }
-    }
-
-    private void loadUsers(final List<Group> groups) throws IOException, InterruptedException {
-        // There isn't an endpoint that gives us a list of active users with their profile data.
-        // So, first fetch the active users page
-        HttpResponse<String> response = apiClient.getActiveUsers();
-
-        // Get the user IDs from it.
-        List<Long> activeUserIds = Parser.activeUserIds(response.body());
-
-        // Then fetch and build an object for each user
-        for (long userId : activeUserIds) {
-
-            if (skipUserId(userId)) {
-                continue;
-            }
-            response = apiClient.getUser(userId);
-            try {
-                users.add(Parser.user(response.body(), groups));
-            } catch (UserException ex) {
-                userExceptions.add(ex);
-
-                // FIX THIS, DS: rationilze when auditing is done
-                if (ex.user != null) {
-                    users.add(ex.user);
-                }
+            switch (entry.getKey()) {
+                case Constants.GROUP_DRIVERS:
+                case Constants.GROUP_DISPATCHERS:
+                case Constants.GROUP_CONSUMERS:
+                    groups.put(entry.getKey(), Group.createGroup(entry.getKey(), entry.getValue()));
             }
         }
     }
 
-    // Skip Discourse system users. Not fully formed.
-    private boolean skipUserId(long userId) {
-        return (userId == -1) || (userId == -2);
+    private List<User> loadUsers() throws IOException, InterruptedException, ApiException {
+        LOGGER.debug("loadUsers");
+
+        ApiQueryResult queryResult = apiClient.runQuery(Constants.QUERY_GET_USERS_ID);
+        return Parser.users(groups, queryResult);
     }
 }

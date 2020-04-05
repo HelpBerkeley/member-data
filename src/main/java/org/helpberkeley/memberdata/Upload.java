@@ -22,25 +22,27 @@
 
 package org.helpberkeley.memberdata;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URI;
+import java.io.IOException;
 import java.net.URLEncoder;
 import java.net.http.HttpRequest;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
 public class Upload {
 
-    private String fileName;
-    private String fileData;
+    private final String fileName;
+    private final String fileData;
 
     Upload(final String fileName, final String fileData) {
         this.fileName = fileName;
         this.fileData = fileData;
     }
 
-    static String getDataString(Map<String, String> params) throws UnsupportedEncodingException {
+    static String getDataString(Map<String, String> params) {
         StringBuilder result = new StringBuilder();
         boolean first = true;
         for (Map.Entry<String, String> entry : params.entrySet()) {
@@ -96,6 +98,48 @@ public class Upload {
     }
 
 
+    public static HttpRequest.BodyPublisher ofMimeMultipartData(Map<Object, Object> data,
+                                                                String boundary) throws IOException {
+        var byteArrays = new ArrayList<byte[]>();
+        byte[] separator = ("--" + boundary + "\r\nContent-Disposition: form-data; name=")
+                .getBytes(StandardCharsets.UTF_8);
+        for (Map.Entry<Object, Object> entry : data.entrySet()) {
+            byteArrays.add(separator);
+
+            if (entry.getValue() instanceof Path) {
+                var path = (Path) entry.getValue();
+                String mimeType = Files.probeContentType(path);
+                byteArrays.add(("\"" + entry.getKey() + "\"; filename=\"" + path.getFileName()
+                        + "\"\r\nContent-Type: " + mimeType + "\r\n\r\n").getBytes(StandardCharsets.UTF_8));
+                byteArrays.add(Files.readAllBytes(path));
+                byteArrays.add("\r\n".getBytes(StandardCharsets.UTF_8));
+            }
+            else {
+                byteArrays.add(("\"" + entry.getKey() + "\"\r\n\r\n" + entry.getValue() + "\r\n")
+                        .getBytes(StandardCharsets.UTF_8));
+            }
+        }
+        byteArrays.add(("--" + boundary + "--").getBytes(StandardCharsets.UTF_8));
+        return HttpRequest.BodyPublishers.ofByteArrays(byteArrays);
+    }
+
+    public static HttpRequest.BodyPublisher uploadBody(String boundary) {
+
+        var byteArrays = new ArrayList<byte[]>();
+        byte[] separator = ("--" + boundary + "\r\nContent-Disposition: form-data; name=")
+                .getBytes(StandardCharsets.UTF_8);
+        byteArrays.add(separator);
+
+        String mimeType = "test/csv";
+        byteArrays.add(("\"files[]\"; filename=\"" + "test.csv"
+                + "\"\r\nContent-Type: " + mimeType + "\r\n\r\n").getBytes(StandardCharsets.UTF_8));
+        byteArrays.add(new String("a,b,c\n1,2,3\n").getBytes());
+        byteArrays.add("\r\n".getBytes(StandardCharsets.UTF_8));
+
+        byteArrays.add(("--" + boundary + "--").getBytes(StandardCharsets.UTF_8));
+        return HttpRequest.BodyPublishers.ofByteArrays(byteArrays);
+    }
+
 //        -----------------------------377379154022942282103505584138
 //        Content-Disposition: form-data; name="type"
 //
@@ -115,22 +159,23 @@ public class Upload {
 //
 //                -----------------------------377379154022942282103505584138--
 
-    public static void main(String[] args) throws UnsupportedEncodingException {
+    public static void main(String[] args) {
 
         Map<String, String> params = new HashMap<>();
         params.put("files[]", "this is my file data");
 
-        Upload upload = new Upload("x.cvs", "aaa\nbbb\naaa\nbbb\n");
+//        HttpRequest.BodyPublisher bodyPublisher = uploadBody();
 
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create("https://helpberkeley.org/uploads.json"))
-                .header("Api-Username", "fred")
-                .header("Api-Key", "berfle")
-                .header("Content-Type", "application/x-www-form-urlencoded")
-                .POST(HttpRequest.BodyPublishers.ofString(upload.generateBody()))
-                .build();
+//        Upload upload = new Upload("x.cvs", "aaa\nbbb\naaa\nbbb\n");
+//
+//        HttpRequest request = HttpRequest.newBuilder()
+//                .uri(URI.create("https://helpberkeley.org/uploads.json"))
+//                .header("Api-Username", "fred")
+//                .header("Api-Key", "berfle")
+//                .header("Content-Type", "application/x-www-form-urlencoded")
+//                .POST(HttpRequest.BodyPublishers.ofString(upload.generateBody()))
+//                .build();
 
-        System.out.println(getDataString(params));
 
 
     }

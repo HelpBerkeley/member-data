@@ -46,7 +46,7 @@ public class Main {
     static final long MEMBER_DATA_FOR_DISPATCHES_TOPID_ID = 86;
     static final long MEMBER_DATA_REQUIRING_ATTENTION_TOPIC_ID = 129;
 
-    public static void main(String[] args) throws IOException, InterruptedException {
+    public static void main(String[] args) throws IOException, InterruptedException, ApiException {
 
         // Load member data properties
         Properties memberDataProperties = loadProperties(MEMBERDATA_PROPERTIES);
@@ -60,25 +60,19 @@ public class Main {
         // Create a User loader
         Loader loader = new Loader(apiClient);
 
+
         // Load the member data from the website
         List<User> users = loader.load();
 
+//        users.forEach(System.out::println);
+
         // If there are any problems with the user data,
         // post them to the problems topic
-        if (! loader.getExceptions().isEmpty()) {
-            // FIX THIS, DS: reenable this automated posting when there is
-            //               support for checking the previous post
-            //               for differences.
-            postUserExceptions(apiClient, loader.getExceptions());
-
-            for (UserException userException : loader.getExceptions()) {
-                User user = userException.user;
-                for (String dataError : user.getDataErrors()) {
-                    System.out.println(user.getUserName() + ": " + dataError);
-                }
-            }
-        }
-        
+        //
+        // FIX THIS, DS: reenable this automated posting when there is
+        //               support for checking the previous post
+        //               for differences.
+        postUserExceptions(apiClient, users);
 
         // Post the member data to the member data for drivers topic
         postMemberData(apiClient, users);
@@ -165,11 +159,10 @@ public class Main {
         System.out.println(response);
     }
 
-    static void postUserExceptions(ApiClient apiClient, List<UserException> exceptions)
-            throws IOException, InterruptedException {
+    static void postUserExceptions(ApiClient apiClient, List<User> users) {
+
 
         StringBuilder postRaw = new StringBuilder();
-
 
         postRaw.append("** ");
         postRaw.append(ZonedDateTime.now(
@@ -182,9 +175,7 @@ public class Main {
         post.createdAt = ZonedDateTime.now(ZoneId.systemDefault())
                 .format(DateTimeFormatter.ofPattern("uuuu.MM.dd.HH.mm.ss"));
 
-        for (UserException ex : exceptions) {
-            User user = ex.user;
-
+        for (User user : users) {
             for (String error : user.getDataErrors()) {
                 postRaw.append("User: ");
                 postRaw.append(user.getUserName());
@@ -195,13 +186,16 @@ public class Main {
                 postRaw.append('\n');
             }
         }
-        post.raw = postRaw.toString();
 
-        HttpResponse<?> response = apiClient.post(post.toJson());
-        System.out.println(response);
+        System.out.println(postRaw.toString());
+
+        // FIX THIS, DS: reenable
+//        post.raw = postRaw.toString();
+//        HttpResponse<?> response = apiClient.post(post.toJson());
+//        System.out.println(response);
     }
 
-    static void printCSVSortedByUser(ApiClient apiClient) throws IOException, InterruptedException {
+    static void printCSVSortedByUser(ApiClient apiClient) throws IOException, InterruptedException, ApiException {
         Loader loader = new Loader(apiClient);
         List<User> users = loader.load();
         Tables tables = new Tables(users);
@@ -209,13 +203,13 @@ public class Main {
         System.out.println(csv);
     }
 
-    static void usersToJson(ApiClient apiClient) throws IOException, InterruptedException {
+    static void usersToJson(ApiClient apiClient) throws IOException, InterruptedException, ApiException {
         Loader loader = new Loader(apiClient);
         Exporter exporter = new Exporter(loader.load());
         System.out.println(exporter.jsonString());
     }
 
-    static void usersToFile(ApiClient apiClient) throws IOException, InterruptedException {
+    static void usersToFile(ApiClient apiClient) throws IOException, InterruptedException, ApiException {
         Loader loader = new Loader(apiClient);
         Exporter exporter = new Exporter(loader.load());
         exporter.jsonToFile("users.json");
@@ -268,6 +262,13 @@ public class Main {
 //        postCSV(apiClient, "Sorted by Phone", tables.sortByPhoneNumber());
 //        postCSV(apiClient, "Sorted by Neighborhood/Name", tables.sortByNeighborHoodThenName());
 //    }
+
+
+    static void uploadTest(ApiClient apiClient) throws IOException, InterruptedException {
+
+        apiClient.uploadFile();
+
+    }
 
     static String generateCSV(List<User> users) {
 

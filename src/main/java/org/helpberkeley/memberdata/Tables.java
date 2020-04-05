@@ -23,7 +23,6 @@
 package org.helpberkeley.memberdata;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
@@ -38,13 +37,13 @@ public class Tables {
     List<User> sortByName() {
         List<User> sorted = new ArrayList<>(users);
 
-        sorted.sort(Comparator.comparing(User::getName));
+        sorted.sort(Comparator.comparing(User::getName, String.CASE_INSENSITIVE_ORDER));
         return sorted;
     }
 
     List<User> sortByUserName() {
         List<User> sorted = new ArrayList<>(users);
-        sorted.sort(Comparator.comparing(User::getUserName));
+        sorted.sort(Comparator.comparing(User::getUserName, String.CASE_INSENSITIVE_ORDER));
         return sorted;
     }
 
@@ -58,8 +57,8 @@ public class Tables {
         List<User> sorted = new ArrayList<>(users);
 
         Comparator<User> comparator = Comparator
-                .comparing(User::getNeighborhood)
-                .thenComparing(User::getName);
+                .comparing(User::getNeighborhood, String.CASE_INSENSITIVE_ORDER)
+                .thenComparing(User::getName, String.CASE_INSENSITIVE_ORDER);
 
         sorted.sort(comparator);
         return sorted;
@@ -69,7 +68,7 @@ public class Tables {
         List<User> sorted = new ArrayList<>(users);
 
         Comparator<User> comparator = Comparator
-                .comparing(User::getNeighborhood)
+                .comparing(User::getNeighborhood, String.CASE_INSENSITIVE_ORDER)
                 .thenComparing(User::getAddress);
 
         sorted.sort(comparator);

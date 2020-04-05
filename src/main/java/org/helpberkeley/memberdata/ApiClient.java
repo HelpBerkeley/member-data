@@ -23,6 +23,7 @@
 package org.helpberkeley.memberdata;
 
 import java.io.IOException;
+import java.math.BigInteger;
 import java.net.Authenticator;
 import java.net.PasswordAuthentication;
 import java.net.URI;
@@ -30,6 +31,7 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.Properties;
+import java.util.Random;
 
 import static java.net.HttpURLConnection.HTTP_OK;
 
@@ -37,7 +39,6 @@ public class ApiClient {
 
     private static final String BASE_URL = "https://www.helpberkeley.org/";
     private static final String ADMIN_BASE = BASE_URL +  "admin/";
-    private static final String ACTIVE_USERS_ENDPOINT = ADMIN_BASE + "/users/list/active.json";
     private static final String USER_ENDPOINT_BASE = ADMIN_BASE + "users/";
     private static final String LATEST_POSTS_ENDPOINT = BASE_URL + "posts.json";
     private static final String POSTS_ENDPOINT = BASE_URL + "posts.json";
@@ -48,6 +49,7 @@ public class ApiClient {
     private static final String GROUP_ENDPOINT_BASE = BASE_URL + "groups/";
     private static final String LATEST_TOPICS_ENDPOINT = BASE_URL + "latest.json";
     private static final String UPLOADS_ENDPOINT = BASE_URL + "uploads.json";
+    private static final String QUERY_BASE = BASE_URL + "admin/plugins/explorer/queries/";
 
     private final String apiUser;
     private final String apiKey;
@@ -80,7 +82,7 @@ public class ApiClient {
     private HttpResponse<String> get(final String endpoint) throws IOException, InterruptedException {
 
         // FIX THIS, DS: hack to avoid getting rate limited.
-        nap(500);
+        nap(1000);
 
         System.out.println("GET " + endpoint);
 
@@ -121,8 +123,27 @@ public class ApiClient {
         return response;
     }
 
-    HttpResponse<String> getActiveUsers() throws IOException, InterruptedException {
-        return get(ACTIVE_USERS_ENDPOINT);
+    ApiQueryResult runQuery(int queryId) throws IOException, InterruptedException, ApiException {
+
+        String endpoint = QUERY_BASE + queryId + "/run";
+
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(endpoint))
+                .header("Api-Username", apiUser)
+                .header("Api-Key", apiKey)
+                .header("Accept", "application/json")
+                .header("Content-Type", "multipart/form-data")
+                .POST(HttpRequest.BodyPublishers.ofString(""))
+                .build();
+
+        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+        if (response.statusCode() != HTTP_OK) {
+            // FIX THIS, DS: create a dedicated unchecked for this?
+            throw new Error("runQuery(" + endpoint + " failed: " + response.statusCode() + ": " + response.body());
+        }
+
+        return Parser.parseQueryResult(response.body());
     }
 
     HttpResponse<String> getUser(long userId) throws IOException, InterruptedException {
@@ -165,14 +186,16 @@ public class ApiClient {
         return get(endpoint);
     }
 
-    HttpResponse<String> uploadFile(Upload upload) throws IOException, InterruptedException {
+    HttpResponse<String> uploadFile() throws IOException, InterruptedException {
+
+        String boundary = new BigInteger(256, new Random()).toString();
 
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create("https://helpberkeley.org/uploads.json"))
                 .header("Api-Username", apiUser)
                 .header("Api-Key", apiKey)
-                .header("Content-Type", "application/x-www-form-urlencoded")
-                .POST(HttpRequest.BodyPublishers.ofString(upload.generateBody()))
+                .header("Content-Type", "multipart/form-data;boundary=" + boundary)
+                .POST(Upload.uploadBody(boundary))
                 .build();
 
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());

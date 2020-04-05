@@ -12,10 +12,6 @@ post needs to be made.
 
 ------------------------
 
-Add audit/validation phase for user_fields.
-
-------------------------
-
 Audit/validate that the topic ids for posting are valid.
 
 ------------------------
@@ -26,18 +22,11 @@ Reverse engineer recipes for:
 	- Create a post with the uploaded file.
 	- Deleting a post.
 
-	Documention at https://docs.discourse.org/
+	Documentation at https://docs.discourse.org/
 
 ------------------------
 
 Automate deleting of replaced posts, or update them in place.
 
-------------------------
-
-If/when we have a secure web server that we control,
-implement a Discourse WebHook instead of polling periodically.
-Not clear yet, but it may give us all the information we
-need directly. If not, it will at least replace the polling
-with demand driven fetches.
 ------------------------
 
