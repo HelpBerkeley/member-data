@@ -24,6 +24,7 @@ package org.helpberkeley.memberdata;
 
 import com.cedarsoftware.util.io.JsonObject;
 
+import javax.print.attribute.standard.MediaSize;
 import java.util.*;
 
 /**
@@ -57,6 +58,9 @@ public class User {
     static final String CITY_COLUMN = "City";
     static final String PHONE_NUMBER_COLUMN = "Phone #";
     static final String NEIGHBORHOOD_COLUMN = "Neighborhood";
+    static final String CONSUMER_COLUMN = "Consumer";
+    static final String DRIVER_COLUMN = "Driver";
+    static final String DISPATCHER_COLUMN = "Dispatcher";
 
     static final String BERKELEY = "Berkeley";
 
@@ -468,6 +472,20 @@ public class User {
         }
 
         return user;
+    }
+
+    static String csvHeaders(final String separator) {
+
+        return NAME_COLUMN + separator
+                + USERNAME_COLUMN + separator
+                + PHONE_NUMBER_COLUMN + separator
+                + NEIGHBORHOOD_COLUMN + separator
+                + CITY_COLUMN + separator
+                + ADDRESS_COLUMN + separator
+                + CONSUMER_COLUMN + separator
+                + DISPATCHER_COLUMN + separator
+                + DRIVER_COLUMN + separator
+                + "\n";
     }
 
     @Override

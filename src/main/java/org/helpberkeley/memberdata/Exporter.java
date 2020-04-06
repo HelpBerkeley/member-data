@@ -28,6 +28,9 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 
@@ -50,5 +53,55 @@ public class Exporter {
         String json = jsonString();
         Path filePath = Files.createFile(Paths.get(fileName));
         Files.writeString(filePath, json);
+    }
+
+    String generateFileName(String fileName) {
+        int suffixIndex = fileName.lastIndexOf('.');
+        assert suffixIndex != -1 : fileName;
+
+        String suffix = fileName.substring(suffixIndex);
+        String base = fileName.substring(0, suffixIndex);
+
+        String timestamp =
+                ZonedDateTime.now(ZoneId.systemDefault()).format(DateTimeFormatter.ofPattern("uuMMdd-HHmm"));
+
+        return base + '-' + timestamp + suffix;
+    }
+
+    void csvToFile(final String fileName) throws IOException {
+
+        // FIX THIS, DS: define constant for separator
+        final String separator = ",";
+
+        StringBuilder output = new StringBuilder();
+        // FIX THIS, DS: define constant for separator
+        output.append(User.csvHeaders(separator));
+
+        for (User user : users) {
+            output.append(user.getName());
+            output.append(separator);
+            output.append(user.getUserName());
+            output.append(separator);
+            output.append(user.getPhoneNumber());
+            output.append(separator);
+            output.append(user.getNeighborhood());
+            output.append(separator);
+            output.append(user.getCity());
+            output.append(separator);
+            output.append(user.getAddress());
+            output.append(separator);
+            output.append(user.isConsumer());
+            output.append(separator);
+            output.append(user.isDispatcher());
+            output.append(separator);
+            output.append(user.isDriver());
+            output.append(separator);
+            output.append('\n');
+        }
+
+        Path filePath = Paths.get(fileName);
+        Files.deleteIfExists(filePath);
+        Files.createFile(Paths.get(fileName));
+        Files.writeString(filePath, output.toString());
     }
 }

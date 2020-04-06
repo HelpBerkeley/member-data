@@ -194,6 +194,7 @@ public class ApiClient {
                 .uri(URI.create("https://helpberkeley.org/uploads.json"))
                 .header("Api-Username", apiUser)
                 .header("Api-Key", apiKey)
+                .header("Synchronous", "1")
                 .header("Content-Type", "multipart/form-data;boundary=" + boundary)
                 .POST(Upload.uploadBody(boundary))
                 .build();

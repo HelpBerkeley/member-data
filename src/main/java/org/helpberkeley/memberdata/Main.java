@@ -57,14 +57,19 @@ public class Main {
         // Set up an HTTP client
         ApiClient apiClient = new ApiClient(memberDataProperties);
 
+//        postWithLinkTest(apiClient);
+//        System.exit(0);
+//        uploadTest(apiClient);
+
         // Create a User loader
         Loader loader = new Loader(apiClient);
-
 
         // Load the member data from the website
         List<User> users = loader.load();
 
-//        users.forEach(System.out::println);
+        // Export the data to a CVS file
+        Exporter exporter = new Exporter(new Tables(users).sortByUserName());
+        exporter.csvToFile(exporter.generateFileName("member-data.csv"));
 
         // If there are any problems with the user data,
         // post them to the problems topic
@@ -73,6 +78,10 @@ public class Main {
         //               support for checking the previous post
         //               for differences.
         postUserExceptions(apiClient, users);
+
+        // Post subset of data needed by dispatchers
+        // to make decison for promote-ability of someone to consumer.
+//        postNonConsumersTable(apiClient, users);
 
         // Post the member data to the member data for drivers topic
         postMemberData(apiClient, users);
@@ -195,14 +204,6 @@ public class Main {
 //        System.out.println(response);
     }
 
-    static void printCSVSortedByUser(ApiClient apiClient) throws IOException, InterruptedException, ApiException {
-        Loader loader = new Loader(apiClient);
-        List<User> users = loader.load();
-        Tables tables = new Tables(users);
-        String csv = generateCSV(tables.sortByUserName());
-        System.out.println(csv);
-    }
-
     static void usersToJson(ApiClient apiClient) throws IOException, InterruptedException, ApiException {
         Loader loader = new Loader(apiClient);
         Exporter exporter = new Exporter(loader.load());
@@ -270,56 +271,24 @@ public class Main {
 
     }
 
-    static String generateCSV(List<User> users) {
-
-        String separator = ",";
+    static void postWithLinkTest(ApiClient apiClient) throws IOException, InterruptedException {
 
         StringBuilder postRaw = new StringBuilder();
 
-        postRaw.append("Name");
-        postRaw.append(separator);
-        postRaw.append("User Name");
-        postRaw.append(separator);
-        postRaw.append("Phone #");
-        postRaw.append(separator);
-        postRaw.append("Neighborhood");
-        postRaw.append(separator);
-        postRaw.append("Address");
-        postRaw.append(separator);
-        postRaw.append("City");
-        postRaw.append(separator);
-        postRaw.append("Consumer");
-        postRaw.append(separator);
-        postRaw.append("Dispatcher");
-        postRaw.append(separator);
-        postRaw.append("Driver");
-        postRaw.append(separator);
-        postRaw.append('\n');
+        postRaw.append("**Testing Post via API with embedded link**");
+        postRaw.append(" -- ");
 
+        postRaw.append("[member-data-200405-1850.csv|attachment](upload://5F02xqSRuzJfqKTCFkSTdZLEiUD.csv) (5.49 KB)");
 
-        for (User user : users) {
-            postRaw.append(user.getName());
-            postRaw.append(separator);
-            postRaw.append(user.getUserName());
-            postRaw.append(separator);
-            postRaw.append(user.getPhoneNumber());
-            postRaw.append(separator);
-            postRaw.append(user.getNeighborhood());
-            postRaw.append(separator);
-            postRaw.append(user.getAddress());
-            postRaw.append(separator);
-            postRaw.append(user.getCity());
-            postRaw.append(separator);
-            postRaw.append(user.isConsumer());
-            postRaw.append(separator);
-            postRaw.append(user.isDispatcher());
-            postRaw.append(separator);
-            postRaw.append(user.isDriver());
-            postRaw.append(separator);
-            postRaw.append('\n');
-        }
+        Post post = new Post();
+        post.title = "test upload";
+        post.topic_id = 322;
+        post.raw = postRaw.toString();
+        post.createdAt = ZonedDateTime.now(ZoneId.systemDefault())
+                .format(DateTimeFormatter.ofPattern("uuuu.MM.dd.HH.mm.ss"));
 
-        return postRaw.toString();
+        HttpResponse<?> response = apiClient.post(post.toJson());
+        System.out.println(response);
     }
 }
 
