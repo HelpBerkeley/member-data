@@ -165,6 +165,61 @@ public class Parser {
         return results;
     }
 
+    static List<User> users(final String csvData, final String separator) {
+
+        String[] lines = csvData.split("\n");
+        assert lines.length > 0 : csvData;
+
+        String[] headers = lines[0].split(separator);
+        assert headers.length == 10 : lines[0];
+
+        assert headers[0].equals(User.ID_COLUMN) : headers[0];
+        assert headers[1].equals(User.NAME_COLUMN) : headers[1];
+        assert headers[2].equals(User.USERNAME_COLUMN) : headers[2];
+        assert headers[3].equals(User.PHONE_NUMBER_COLUMN) : headers[3];
+        assert headers[4].equals(User.NEIGHBORHOOD_COLUMN) : headers[4];
+        assert headers[5].equals(User.CITY_COLUMN) : headers[5];
+        assert headers[6].equals(User.ADDRESS_COLUMN) : headers[6];
+        assert headers[7].equals(User.CONSUMER_COLUMN) : headers[7];
+        assert headers[8].equals(User.DISPATCHER_COLUMN) : headers[8];
+        assert headers[9].equals(User.DRIVER_COLUMN) : headers[9];
+
+        List<User> users = new ArrayList<>();
+        List<String> groups = new ArrayList<>();
+
+        for (int index = 1; index < lines.length; index++) {
+            String[] columns = lines[index].split(separator);
+            assert columns.length == headers.length : columns.length + " != " + headers.length;
+
+            long id = Long.parseLong(columns[0]);
+            String name = columns[1];
+            String userName = columns[2];
+            String phone = columns[3];
+            String neighborhood = columns[4];
+            String city = columns[5];
+            String address = columns[6];
+
+            groups.clear();
+            if (Boolean.parseBoolean(columns[7])) {
+                groups.add(Constants.GROUP_CONSUMERS);
+            }
+            if (Boolean.parseBoolean(columns[8])) {
+                groups.add(Constants.GROUP_DISPATCHERS);
+            }
+            if (Boolean.parseBoolean(columns[9])) {
+                groups.add(Constants.GROUP_DRIVERS);
+            }
+
+            try {
+                users.add(User.createUser(name, userName, id, address, city, phone, neighborhood, groups));
+            } catch (UserException ex) {
+                users.add(ex.user);
+            }
+        }
+
+        return users;
+    }
+
     // Skip Discourse system users. Not fully formed.
     private static boolean skipUserId(long userId) {
         return (userId == -1) || (userId == -2);

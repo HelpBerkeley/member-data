@@ -74,4 +74,16 @@ public class Tables {
         sorted.sort(comparator);
         return sorted;
     }
+
+    List<User> nonConsumers() {
+        List<User> nonConsumers = new ArrayList<>();
+
+        for (User user : sortByUserName()) {
+            if (! user.isConsumer()) {
+                nonConsumers.add(user);
+            }
+        }
+
+        return nonConsumers;
+    }
 }

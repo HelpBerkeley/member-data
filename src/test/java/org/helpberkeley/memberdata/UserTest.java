@@ -14,8 +14,8 @@ import static org.assertj.core.api.Assertions.catchThrowable;
 public class UserTest extends TestBase {
 
     private static class TestField {
-        String original;
-        String expected;
+        final String original;
+        final String expected;
 
         TestField(final String original, final String expected) {
             this.original = original;
@@ -320,7 +320,9 @@ public class UserTest extends TestBase {
             UserException userException = (UserException) thrown;
             assertThat(userException.user).isNotNull();
             assertThat(userException.user.getDataErrors()).contains(
-                    User.AUDIT_ERROR_NEIGHBORHOOD_UNKNOWN + neighborhood);
+                    User.AUDIT_ERROR_NEIGHBORHOOD_UNKNOWN + neighborhood + ", "
+                            + User.ADDRESS_COLUMN + " : " + userException.user.getAddress() + ", : "
+                            + User.CITY_COLUMN + " : " + createUser().getCity());
         }
     }
 
@@ -332,13 +334,25 @@ public class UserTest extends TestBase {
 
     @Test
     public void unknownBerkeleyNeighborhoodDriverTest() throws UserException {
-        User user = createUserWithGroupAndNeighborhood(Constants.GROUP_DRIVERS, "unknown");
-        assertThat(user.getDataErrors()).isEmpty();
+        Throwable thrown = catchThrowable(() -> createUserWithGroupAndNeighborhood(Constants.GROUP_DRIVERS, "unknown"));
+        assertThat(thrown).isInstanceOf(UserException.class);
+        UserException userException = (UserException) thrown;
+        assertThat(userException.user).isNotNull();
+        assertThat(userException.user.getDataErrors()).contains(
+                User.AUDIT_ERROR_NEIGHBORHOOD_UNKNOWN + "unknown, "
+                        + User.ADDRESS_COLUMN + " : " + userException.user.getAddress() + ", : "
+                        + User.CITY_COLUMN + " : " + createUser().getCity());
     }
 
     @Test
     public void unknownBerkeleyNeighborhoodDispatcherTest() throws UserException {
-        User user = createUserWithGroupAndNeighborhood(Constants.GROUP_DISPATCHERS, "unknown");
-        assertThat(user.getDataErrors()).isEmpty();
+        Throwable thrown = catchThrowable(() -> createUserWithGroupAndNeighborhood(Constants.GROUP_CONSUMERS, "unknown"));
+        assertThat(thrown).isInstanceOf(UserException.class);
+        UserException userException = (UserException) thrown;
+        assertThat(userException.user).isNotNull();
+        assertThat(userException.user.getDataErrors()).contains(
+                User.AUDIT_ERROR_NEIGHBORHOOD_UNKNOWN + "unknown, "
+                        + User.ADDRESS_COLUMN + " : " + userException.user.getAddress() + ", : "
+                        + User.CITY_COLUMN + " : " + createUser().getCity());
     }
 }

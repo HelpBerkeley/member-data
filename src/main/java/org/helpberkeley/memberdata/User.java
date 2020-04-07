@@ -22,9 +22,6 @@
 
 package org.helpberkeley.memberdata;
 
-import com.cedarsoftware.util.io.JsonObject;
-
-import javax.print.attribute.standard.MediaSize;
 import java.util.*;
 
 /**
@@ -52,6 +49,7 @@ public class User {
 
     // Column names for report generation
     //
+    static final String ID_COLUMN = "ID";
     static final String NAME_COLUMN = "Name";
     static final String USERNAME_COLUMN = "User Name";
     static final String ADDRESS_COLUMN = "Address";
@@ -246,6 +244,7 @@ public class User {
     // Must be insensitive to null data
     private void normalizeData() {
         removeCommas();
+        removeNewlines();
         auditAndNormalizePhoneNumber();
         auditAndNormalizeCity();
         auditNeighborhood();
@@ -274,6 +273,54 @@ public class User {
         }
         if (neighborhood != null) {
             neighborhood = neighborhood.replace(oldChar, newChar);
+        }
+    }
+
+    // Must be insensitive to null data
+    private void removeNewlines() {
+        char oldChar = '\n';
+        char newChar = ' ';
+
+        if (name != null) {
+            name = name.replace(oldChar, newChar);
+        }
+        if (userName != null) {
+            userName = userName.replace(oldChar, newChar);
+        }
+        if (address != null) {
+            address = address.replace(oldChar, newChar);
+        }
+        if (city != null) {
+            city = city.replace(oldChar, newChar);
+        }
+        if (phoneNumber != null) {
+            phoneNumber = phoneNumber.replace(oldChar, newChar);
+        }
+        if (neighborhood != null) {
+            neighborhood = neighborhood.replace(oldChar, newChar);
+        }
+    }
+
+    // Must be insensitive to null data
+    private void strip() {
+
+        if (name != null) {
+            name = name.strip();
+        }
+        if (userName != null) {
+            userName = userName.strip();
+        }
+        if (address != null) {
+            address = address.strip();
+        }
+        if (city != null) {
+            city = city.strip();
+        }
+        if (phoneNumber != null) {
+            phoneNumber = phoneNumber.strip();
+        }
+        if (neighborhood != null) {
+            neighborhood = neighborhood.strip();
         }
     }
 
@@ -365,12 +412,13 @@ public class User {
         }
 
         // If not a consumer, we don't need neighborhood information.
-        if (! groupMembership.contains(Constants.GROUP_CONSUMERS)) {
-            return;
-        }
+//        if (! groupMembership.contains(Constants.GROUP_CONSUMERS)) {
+//            return;
+//        }
 
         if (neighborhood.toLowerCase().trim().contains("unknown")) {
-            dataErrors.add(AUDIT_ERROR_NEIGHBORHOOD_UNKNOWN + neighborhood);
+            dataErrors.add(AUDIT_ERROR_NEIGHBORHOOD_UNKNOWN + neighborhood
+                + ", Address : " +  address + ", : City : " + city);
         }
     }
 
@@ -476,7 +524,8 @@ public class User {
 
     static String csvHeaders(final String separator) {
 
-        return NAME_COLUMN + separator
+        return ID_COLUMN + separator
+                + NAME_COLUMN + separator
                 + USERNAME_COLUMN + separator
                 + PHONE_NUMBER_COLUMN + separator
                 + NEIGHBORHOOD_COLUMN + separator

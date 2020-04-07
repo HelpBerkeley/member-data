@@ -28,6 +28,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.net.http.HttpResponse;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
@@ -37,54 +39,68 @@ import java.util.Properties;
 public class Main {
 
     static final String MEMBERDATA_PROPERTIES = "memberdata.properties";
-    static final String HISTORY_PROPERTIES = "history.properties";
     static final String API_USER_PROPERTY = "Api-Username";
     static final String API_KEY_PROPERTY = "Api-Key";
-    static final String MEMBER_DATA_HASHCODE_PROPERTY = "MemberData-HashCode";
+
+    static final String MEMBERDATA_ERRORS_FILE = "memberdata-errors";
+    static final String MEMBERDATA_FILE = "member-data";
+    static final String NON_CONSUMERS_FILE = "member-non-consumers";
 
     // FIX THIS, DS: make this less fragile
     static final long MEMBER_DATA_FOR_DISPATCHES_TOPID_ID = 86;
     static final long MEMBER_DATA_REQUIRING_ATTENTION_TOPIC_ID = 129;
+    static final long NON_CONSUMERS_TOPIC_ID = 336;
 
-    public static void main(String[] args) throws IOException, InterruptedException, ApiException {
+    public static void main(String[] args) throws IOException, InterruptedException, ApiException, UserException {
+
+        Options options = new Options(args);
+        options.parse();
 
         // Load member data properties
         Properties memberDataProperties = loadProperties(MEMBERDATA_PROPERTIES);
 
-        // Load history
-//        Properties history = loadProperties(HISTORY_PROPERTIES);
-
         // Set up an HTTP client
         ApiClient apiClient = new ApiClient(memberDataProperties);
+
+        if (options.getCommand().equals(Options.COMMAND_FETCH)) {
+            // Create a User loader
+            Loader loader = new Loader(apiClient);
+
+            // Load the member data from the website
+            List<User> users = loader.load();
+
+            // Create an exporter
+            Exporter exporter = new Exporter(users);
+
+            // Export any user errors
+            exporter.errorsToFile(MEMBERDATA_ERRORS_FILE);
+
+            // Export all users
+            exporter.allMembersToFile(MEMBERDATA_FILE);
+
+            // Export non-consumer users
+            exporter.nonConsumersToFile(NON_CONSUMERS_FILE);
+        } else if (options.getCommand().equals(Options.COMMAND_POST_ERRORS)) {
+            postUserErrors(apiClient, options.getFileName());
+        } else {
+            assert options.getCommand().equals(Options.COMMAND_POST_NON_CONSUMERS) : options.getCommand();
+            postNonConsumersTable(apiClient, options.getFileName());
+        }
 
 //        postWithLinkTest(apiClient);
 //        System.exit(0);
 //        uploadTest(apiClient);
 
-        // Create a User loader
-        Loader loader = new Loader(apiClient);
 
-        // Load the member data from the website
-        List<User> users = loader.load();
 
-        // Export the data to a CVS file
-        Exporter exporter = new Exporter(new Tables(users).sortByUserName());
-        exporter.csvToFile(exporter.generateFileName("member-data.csv"));
 
-        // If there are any problems with the user data,
-        // post them to the problems topic
-        //
-        // FIX THIS, DS: reenable this automated posting when there is
-        //               support for checking the previous post
-        //               for differences.
-        postUserExceptions(apiClient, users);
+        // Post the member data to the member data for drivers topic
+//        postMemberData(apiClient, users);
 
         // Post subset of data needed by dispatchers
         // to make decison for promote-ability of someone to consumer.
-//        postNonConsumersTable(apiClient, users);
+//        postConsumerPromotionData(apiClient, nonConsumers);
 
-        // Post the member data to the member data for drivers topic
-        postMemberData(apiClient, users);
 
 //        usersToJson(apiClient);
 //        usersToFile(apiClient);
@@ -118,10 +134,10 @@ public class Main {
 
     static void postMemberData(ApiClient apiClient, List<User> users) throws IOException, InterruptedException {
         Tables tables = new Tables(users);
-        postTable(apiClient, "Sorted by user name", tables.sortByUserName());
+        postFullMemberTable(apiClient, "Sorted by user name", tables.sortByUserName());
     }
 
-    static void postTable(ApiClient apiClient, String label, List<User> users) throws IOException, InterruptedException {
+    static void postFullMemberTable(ApiClient apiClient, String label, List<User> users) throws IOException, InterruptedException {
 
         StringBuilder postRaw = new StringBuilder();
 
@@ -168,8 +184,51 @@ public class Main {
         System.out.println(response);
     }
 
-    static void postUserExceptions(ApiClient apiClient, List<User> users) {
+    static void postNonConsumersTable(ApiClient apiClient, final String fileName)
+            throws IOException, InterruptedException {
 
+        String csvData = Files.readString(Paths.get(fileName));
+        // FIX THIS, DS: constant for spearator
+        List<User> users = Parser.users(csvData, ",");
+
+        StringBuilder postRaw = new StringBuilder();
+        String label =  "Non-consumer members -- " + ZonedDateTime.now(
+                ZoneId.systemDefault()).format(DateTimeFormatter.ofPattern("uuuu.MM.dd HH:mm:ss"));
+
+        postRaw.append("**");
+        postRaw.append(label);
+        postRaw.append("**\n\n");
+
+        postRaw.append("| User Name | Address | Neighborhood | City |\n");
+        postRaw.append("|---|---|---|---|\n");
+
+        for (User user : users) {
+            if (user.isConsumer()) {
+                continue;
+            }
+            postRaw.append('|');
+            postRaw.append(user.getUserName());
+            postRaw.append('|');
+            postRaw.append(user.getAddress());
+            postRaw.append('|');
+            postRaw.append(user.getNeighborhood());
+            postRaw.append('|');
+            postRaw.append(user.getCity());
+            postRaw.append("|\n");
+        }
+
+        Post post = new Post();
+        post.title = label;
+        post.topic_id = NON_CONSUMERS_TOPIC_ID;
+        post.raw = postRaw.toString();
+        post.createdAt = ZonedDateTime.now(ZoneId.systemDefault())
+                .format(DateTimeFormatter.ofPattern("uuuu.MM.dd.HH.mm.ss"));
+
+        HttpResponse<?> response = apiClient.post(post.toJson());
+        System.out.println(response);
+    }
+
+    static void postUserErrors(ApiClient apiClient, final String fileName) throws IOException, InterruptedException {
 
         StringBuilder postRaw = new StringBuilder();
 
@@ -183,25 +242,11 @@ public class Main {
         post.topic_id = MEMBER_DATA_REQUIRING_ATTENTION_TOPIC_ID;
         post.createdAt = ZonedDateTime.now(ZoneId.systemDefault())
                 .format(DateTimeFormatter.ofPattern("uuuu.MM.dd.HH.mm.ss"));
+        postRaw.append(Files.readString(Paths.get(fileName)));
 
-        for (User user : users) {
-            for (String error : user.getDataErrors()) {
-                postRaw.append("User: ");
-                postRaw.append(user.getUserName());
-                postRaw.append(", Name: ");
-                postRaw.append(user.getName());
-                postRaw.append(": ");
-                postRaw.append(error);
-                postRaw.append('\n');
-            }
-        }
-
-        System.out.println(postRaw.toString());
-
-        // FIX THIS, DS: reenable
-//        post.raw = postRaw.toString();
-//        HttpResponse<?> response = apiClient.post(post.toJson());
-//        System.out.println(response);
+        post.raw = postRaw.toString();
+        HttpResponse<?> response = apiClient.post(post.toJson());
+        System.out.println(response);
     }
 
     static void usersToJson(ApiClient apiClient) throws IOException, InterruptedException, ApiException {

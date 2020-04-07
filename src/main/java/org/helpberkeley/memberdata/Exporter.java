@@ -35,17 +35,15 @@ import java.util.List;
 import java.util.Map;
 
 public class Exporter {
-    private final List<User> users;
+    private final Tables tables;
 
     public Exporter(List<User> users) {
-        this.users = users;
+        tables = new Tables(users);
     }
 
     String jsonString() {
         Map<String, Object> options = Map.of(JsonWriter.PRETTY_PRINT, Boolean.TRUE);
-        String json = JsonWriter.objectToJson(users);
-
-        return json;
+        return JsonWriter.objectToJson(tables.sortByUserName());
     }
 
     void jsonToFile(final String fileName) throws IOException {
@@ -55,53 +53,114 @@ public class Exporter {
         Files.writeString(filePath, json);
     }
 
-    String generateFileName(String fileName) {
-        int suffixIndex = fileName.lastIndexOf('.');
-        assert suffixIndex != -1 : fileName;
-
-        String suffix = fileName.substring(suffixIndex);
-        String base = fileName.substring(0, suffixIndex);
+    private String generateFileName(String fileName, String suffix) {
 
         String timestamp =
                 ZonedDateTime.now(ZoneId.systemDefault()).format(DateTimeFormatter.ofPattern("uuMMdd-HHmm"));
-
-        return base + '-' + timestamp + suffix;
+        return fileName + '-' + timestamp + '.' + suffix;
     }
 
-    void csvToFile(final String fileName) throws IOException {
+    void errorsToFile(final String fileName) throws IOException {
+
+        StringBuilder fileData = new StringBuilder();
+
+        for (User user : tables.sortByUserName()) {
+            for (String error : user.getDataErrors()) {
+                fileData.append("User: ");
+                fileData.append(user.getUserName());
+                fileData.append(": ");
+                fileData.append(error);
+                fileData.append('\n');
+            }
+        }
+
+        String outputFileName = generateFileName(fileName, "txt");
+        writeFile(outputFileName, fileData.toString());
+    }
+
+    void nonConsumersToFile(final String fileName) throws IOException {
 
         // FIX THIS, DS: define constant for separator
         final String separator = ",";
 
-        StringBuilder output = new StringBuilder();
+        StringBuilder fileData = new StringBuilder();
         // FIX THIS, DS: define constant for separator
-        output.append(User.csvHeaders(separator));
+        fileData.append(User.csvHeaders(separator));
 
-        for (User user : users) {
-            output.append(user.getName());
-            output.append(separator);
-            output.append(user.getUserName());
-            output.append(separator);
-            output.append(user.getPhoneNumber());
-            output.append(separator);
-            output.append(user.getNeighborhood());
-            output.append(separator);
-            output.append(user.getCity());
-            output.append(separator);
-            output.append(user.getAddress());
-            output.append(separator);
-            output.append(user.isConsumer());
-            output.append(separator);
-            output.append(user.isDispatcher());
-            output.append(separator);
-            output.append(user.isDriver());
-            output.append(separator);
-            output.append('\n');
+        for (User user : tables.nonConsumers()) {
+            fileData.append(user.getId());
+            fileData.append(separator);
+            fileData.append(user.getName());
+            fileData.append(separator);
+            fileData.append(user.getUserName());
+            fileData.append(separator);
+            fileData.append(user.getPhoneNumber());
+            fileData.append(separator);
+            fileData.append(user.getNeighborhood());
+            fileData.append(separator);
+            fileData.append(user.getCity());
+            fileData.append(separator);
+            fileData.append(user.getAddress());
+            fileData.append(separator);
+            fileData.append(user.isConsumer());
+            fileData.append(separator);
+            fileData.append(user.isDispatcher());
+            fileData.append(separator);
+            fileData.append(user.isDriver());
+            fileData.append(separator);
+            fileData.append('\n');
         }
 
+        String outputFileName = generateFileName(fileName, "csv");
+        writeFile(outputFileName, fileData.toString());
+    }
+
+    void allMembersToFile(final String fileName) throws IOException {
+
+        // FIX THIS, DS: define constant for separator
+        final String separator = ",";
+
+        String outputFileName = generateFileName(fileName, "csv");
+        writeFile(outputFileName, allMembersToCSV(separator));
+    }
+
+    String allMembersToCSV(final String separator) {
+
+        StringBuilder csvData = new StringBuilder();
+        csvData.append(User.csvHeaders(separator));
+
+        for (User user : tables.sortByUserName()) {
+            csvData.append(user.getId());
+            csvData.append(separator);
+            csvData.append(user.getName());
+            csvData.append(separator);
+            csvData.append(user.getUserName());
+            csvData.append(separator);
+            csvData.append(user.getPhoneNumber());
+            csvData.append(separator);
+            csvData.append(user.getNeighborhood());
+            csvData.append(separator);
+            csvData.append(user.getCity());
+            csvData.append(separator);
+            csvData.append(user.getAddress());
+            csvData.append(separator);
+            csvData.append(user.isConsumer());
+            csvData.append(separator);
+            csvData.append(user.isDispatcher());
+            csvData.append(separator);
+            csvData.append(user.isDriver());
+            csvData.append(separator);
+            csvData.append('\n');
+        }
+
+        return csvData.toString();
+    }
+
+    private void writeFile(final String fileName, final String fileData) throws IOException {
         Path filePath = Paths.get(fileName);
         Files.deleteIfExists(filePath);
         Files.createFile(Paths.get(fileName));
-        Files.writeString(filePath, output.toString());
+        Files.writeString(filePath, fileData);
+
     }
 }
