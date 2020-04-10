@@ -41,7 +41,7 @@ public class Group {
     }
 
     void addUserIDs(List<Long> userIDs) {
-        userIDs.forEach(this.userIds::add);
+        this.userIds.addAll(userIDs);
     }
 
     boolean hasUserId(final long userId) {

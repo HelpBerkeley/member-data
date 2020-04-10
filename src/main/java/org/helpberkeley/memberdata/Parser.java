@@ -54,7 +54,7 @@ public class Parser {
 
         List<User> users = new ArrayList<>();
 
-        assert queryResult.headers.length == 7 :
+        assert queryResult.headers.length == 9 :
                 "Unexpected number of columns for users query result: " + queryResult;
         assert queryResult.headers[0].equals(Constants.COLUMN_USER_ID) : queryResult.headers[0];
         assert queryResult.headers[1].equals(Constants.COLUMN_USERNAME) : queryResult.headers[1];
@@ -63,6 +63,8 @@ public class Parser {
         assert queryResult.headers[4].equals(Constants.COLUMN_PHONE) : queryResult.headers[4];
         assert queryResult.headers[5].equals(Constants.COLUMN_NEIGHBORHOOD) : queryResult.headers[5];
         assert queryResult.headers[6].equals(Constants.COLUMN_CITY) : queryResult.headers[6];
+        assert queryResult.headers[7].equals(Constants.COLUMN_APARTMENT) : queryResult.headers[7];
+        assert queryResult.headers[8].equals(Constants.COLUMN_CREATE_TIME) : queryResult.headers[8];
 
         Group consumers = groups.get(Constants.GROUP_CONSUMERS);
         Group drivers = groups.get(Constants.GROUP_DRIVERS);
@@ -85,6 +87,8 @@ public class Parser {
             String phone = (String)columns[4];
             String neighborhood = (String)columns[5];
             String city = (String)columns[6];
+            Boolean isApartment = Boolean.valueOf((String)columns[7]);
+            String createdAt = (String)columns[8];
 
             groupMemberships.clear();
             if (consumers.hasUserId(userId)) {
@@ -98,7 +102,8 @@ public class Parser {
             }
 
             try {
-                users.add(User.createUser(name, userName, userId, address, city, phone, neighborhood, groupMemberships));
+                users.add(User.createUser(name, userName, userId, address, city,
+                        phone, neighborhood, createdAt, isApartment, groupMemberships));
             } catch (UserException ex) {
                 // FIX THIS, DS: get rid of UserException?
                 users.add(ex.user);
@@ -171,7 +176,7 @@ public class Parser {
         assert lines.length > 0 : csvData;
 
         String[] headers = lines[0].split(separator);
-        assert headers.length == 10 : lines[0];
+        assert headers.length == 12 : headers.length + ": " + lines[0];
 
         assert headers[0].equals(User.ID_COLUMN) : headers[0];
         assert headers[1].equals(User.NAME_COLUMN) : headers[1];
@@ -183,6 +188,8 @@ public class Parser {
         assert headers[7].equals(User.CONSUMER_COLUMN) : headers[7];
         assert headers[8].equals(User.DISPATCHER_COLUMN) : headers[8];
         assert headers[9].equals(User.DRIVER_COLUMN) : headers[9];
+        assert headers[10].equals(User.CREATED_AT_COLUMN) : headers[10];
+        assert headers[11].equals(User.APARTMENT_COLUMN) : headers[11];
 
         List<User> users = new ArrayList<>();
         List<String> groups = new ArrayList<>();
@@ -210,8 +217,12 @@ public class Parser {
                 groups.add(Constants.GROUP_DRIVERS);
             }
 
+            String createdAt = columns[10];
+            Boolean isApartment = Boolean.valueOf(columns[11]);
+
             try {
-                users.add(User.createUser(name, userName, id, address, city, phone, neighborhood, groups));
+                users.add(User.createUser(name, userName, id, address, city, phone,
+                        neighborhood, createdAt, isApartment, groups));
             } catch (UserException ex) {
                 users.add(ex.user);
             }

@@ -51,7 +51,7 @@ public class Main {
     static final long MEMBER_DATA_REQUIRING_ATTENTION_TOPIC_ID = 129;
     static final long NON_CONSUMERS_TOPIC_ID = 336;
 
-    public static void main(String[] args) throws IOException, InterruptedException, ApiException, UserException {
+    public static void main(String[] args) throws IOException, InterruptedException, ApiException {
 
         Options options = new Options(args);
         options.parse();
@@ -98,7 +98,7 @@ public class Main {
 //        postMemberData(apiClient, users);
 
         // Post subset of data needed by dispatchers
-        // to make decison for promote-ability of someone to consumer.
+        // to make decision for promote-ability of someone to consumer.
 //        postConsumerPromotionData(apiClient, nonConsumers);
 
 
@@ -118,7 +118,7 @@ public class Main {
         URL propertiesFile = classLoader.getResource(fileName);
 
         if (propertiesFile == null) {
-            System.out.println("Required propeteries file " + fileName + " cannot be found");
+            System.out.println("Required properties file " + fileName + " cannot be found");
             System.exit(1);
         }
 
@@ -188,7 +188,7 @@ public class Main {
             throws IOException, InterruptedException {
 
         String csvData = Files.readString(Paths.get(fileName));
-        // FIX THIS, DS: constant for spearator
+        // FIX THIS, DS: constant for separator
         List<User> users = Parser.users(csvData, ",");
 
         StringBuilder postRaw = new StringBuilder();
@@ -199,8 +199,8 @@ public class Main {
         postRaw.append(label);
         postRaw.append("**\n\n");
 
-        postRaw.append("| User Name | Address | Neighborhood | City |\n");
-        postRaw.append("|---|---|---|---|\n");
+        postRaw.append("| User Name | Address | Apartment | Neighborhood | City |\n");
+        postRaw.append("|----|---|---|---|---|\n");
 
         for (User user : users) {
             if (user.isConsumer()) {
@@ -210,6 +210,8 @@ public class Main {
             postRaw.append(user.getUserName());
             postRaw.append('|');
             postRaw.append(user.getAddress());
+            postRaw.append('|');
+            postRaw.append(user.isApartment());
             postRaw.append('|');
             postRaw.append(user.getNeighborhood());
             postRaw.append('|');

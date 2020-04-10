@@ -31,7 +31,7 @@ public class Post {
     String title;
     long topic_id;
     String raw;
-//    long catetory;
+//    long category;
 //    String target_usernames;
 //    String archetype;
     String createdAt;

@@ -3,8 +3,10 @@ package org.helpberkeley.memberdata;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import java.time.ZonedDateTime;
 import java.util.*;
 
+import static java.time.temporal.ChronoUnit.DAYS;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
 
@@ -94,8 +96,7 @@ public class UserTest extends TestBase {
     @Test
     public void phoneNumberNormalizationTest() throws UserException {
         for (PhoneNumber phoneNumber : testPhoneNumbers) {
-            User user = User.createUser(
-                    "u", "u", 1, "a", User.BERKELEY, phoneNumber.original, "g");
+            User user = createUserWithPhone(phoneNumber.original);
             assertThat(user.getPhoneNumber()).isEqualTo(phoneNumber.expected);
         }
     }
@@ -182,9 +183,10 @@ public class UserTest extends TestBase {
     @Test
     public void nameInequalityTest() throws UserException {
 
-        User user1 = createUserWithPhone(TEST_ADDRESS_1);
+        User user1 = createUser();
         User user2 = User.createUser(TEST_NAME_2, TEST_USER_NAME_1,
-                TEST_ID_1, TEST_ADDRESS_1, User.BERKELEY, TEST_PHONE_1, TEST_NEIGHBORHOOD_1);
+                TEST_ID_1, TEST_ADDRESS_1, User.BERKELEY, TEST_PHONE_1,
+                TEST_NEIGHBORHOOD_1, TEST_CREATED_1, TEST_APARTMENT_1);
 
         assertThat(user1).isNotEqualTo(user2);
     }
@@ -192,9 +194,10 @@ public class UserTest extends TestBase {
     @Test
     public void userNameInequalityTest() throws UserException {
 
-        User user1 = createUserWithPhone(TEST_ADDRESS_1);
+        User user1 = createUser();
         User user2 = User.createUser(TEST_NAME_1, TEST_USER_NAME_2,
-                TEST_ID_1, TEST_ADDRESS_1, User.BERKELEY, TEST_PHONE_1, TEST_NEIGHBORHOOD_1);
+                TEST_ID_1, TEST_ADDRESS_1, User.BERKELEY, TEST_PHONE_1,
+                TEST_NEIGHBORHOOD_1, TEST_CREATED_1, TEST_APARTMENT_1);
 
         assertThat(user1).isNotEqualTo(user2);
     }
@@ -202,9 +205,10 @@ public class UserTest extends TestBase {
     @Test
     public void idInequalityTest() throws UserException {
 
-        User user1 = createUserWithPhone(TEST_ADDRESS_1);
+        User user1 = createUser();
         User user2 = User.createUser(TEST_NAME_1, TEST_USER_NAME_1,
-                TEST_ID_2, TEST_ADDRESS_1, User.BERKELEY, TEST_PHONE_1, TEST_NEIGHBORHOOD_1);
+                TEST_ID_2, TEST_ADDRESS_1, User.BERKELEY, TEST_PHONE_1,
+                TEST_NEIGHBORHOOD_1, TEST_CREATED_1, TEST_APARTMENT_1);
 
         assertThat(user1).isNotEqualTo(user2);
     }
@@ -212,9 +216,10 @@ public class UserTest extends TestBase {
     @Test
     public void addressInequalityTest() throws UserException {
 
-        User user1 = createUserWithPhone(TEST_ADDRESS_1);
+        User user1 = createUser();
         User user2 = User.createUser(TEST_NAME_1, TEST_USER_NAME_1,
-                TEST_ID_2, TEST_ADDRESS_1, User.BERKELEY, TEST_PHONE_1, TEST_NEIGHBORHOOD_1);
+                TEST_ID_2, TEST_ADDRESS_1, User.BERKELEY, TEST_PHONE_1,
+                TEST_NEIGHBORHOOD_1, TEST_CREATED_1, TEST_APARTMENT_1);
 
         assertThat(user1).isNotEqualTo(user2);
     }
@@ -222,9 +227,10 @@ public class UserTest extends TestBase {
     @Test
     public void phoneInequalityTest() throws UserException {
 
-        User user1 = createUserWithPhone(TEST_ADDRESS_1);
+        User user1 = createUser();
         User user2 = User.createUser(TEST_NAME_1, TEST_USER_NAME_1,
-                TEST_ID_1, TEST_ADDRESS_1, User.BERKELEY, TEST_PHONE_2, TEST_NEIGHBORHOOD_1);
+                TEST_ID_1, TEST_ADDRESS_1, User.BERKELEY, TEST_PHONE_2,
+                TEST_NEIGHBORHOOD_1, TEST_CREATED_1, TEST_APARTMENT_1);
 
         assertThat(user1).isNotEqualTo(user2);
     }
@@ -232,9 +238,10 @@ public class UserTest extends TestBase {
     @Test
     public void neighborhoodInequalityTest() throws UserException {
 
-        User user1 = createUserWithPhone(TEST_ADDRESS_1);
+        User user1 = createUser();
         User user2 = User.createUser(TEST_NAME_1, TEST_USER_NAME_1,
-                TEST_ID_1, TEST_ADDRESS_1, User.BERKELEY, TEST_PHONE_1, TEST_NEIGHBORHOOD_2);
+                TEST_ID_1, TEST_ADDRESS_1, User.BERKELEY, TEST_PHONE_1,
+                TEST_NEIGHBORHOOD_2, TEST_CREATED_1, TEST_APARTMENT_1);
 
         assertThat(user1).isNotEqualTo(user2);
     }
@@ -354,5 +361,22 @@ public class UserTest extends TestBase {
                 User.AUDIT_ERROR_NEIGHBORHOOD_UNKNOWN + "unknown, "
                         + User.ADDRESS_COLUMN + " : " + userException.user.getAddress() + ", : "
                         + User.CITY_COLUMN + " : " + createUser().getCity());
+    }
+
+    @Test
+    public void createdAtTest() {
+        // 2020-04-06T17:20:19.315Z
+
+        ZonedDateTime createdAt = ZonedDateTime.parse("2020-04-06T17:20:19.315Z");
+        System.out.println(createdAt);
+
+        ZonedDateTime now = ZonedDateTime.now();
+        System.out.println("now: " + now);
+        ZonedDateTime threeDaysAgo = now.minus(3, DAYS);
+        System.out.println("threeDaysAgo: " + threeDaysAgo);
+
+        System.out.println("Now compared to threeDaysAgo: " + now.compareTo(threeDaysAgo));
+        System.out.println("threeDaysAgo compared to now: " + threeDaysAgo.compareTo(now));
+        System.out.println("now compared to now: " + now.compareTo(now));
     }
 }

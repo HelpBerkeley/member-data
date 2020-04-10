@@ -108,6 +108,10 @@ public class Exporter {
             fileData.append(separator);
             fileData.append(user.isDriver());
             fileData.append(separator);
+            fileData.append(user.getCreateTime());
+            fileData.append(separator);
+            fileData.append(user.isApartment());
+            fileData.append(separator);
             fileData.append('\n');
         }
 
@@ -149,6 +153,10 @@ public class Exporter {
             csvData.append(user.isDispatcher());
             csvData.append(separator);
             csvData.append(user.isDriver());
+            csvData.append(separator);
+            csvData.append(user.getCreateTime());
+            csvData.append(separator);
+            csvData.append(user.isApartment());
             csvData.append(separator);
             csvData.append('\n');
         }

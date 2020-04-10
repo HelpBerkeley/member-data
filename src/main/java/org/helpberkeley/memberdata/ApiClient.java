@@ -199,9 +199,7 @@ public class ApiClient {
                 .POST(Upload.uploadBody(boundary))
                 .build();
 
-        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-
-        return response;
+        return client.send(request, HttpResponse.BodyHandlers.ofString());
 
     }
 
@@ -221,9 +219,7 @@ public class ApiClient {
                 .POST(HttpRequest.BodyPublishers.ofString(postUpdate.toJson()))
                 .build();
 
-        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-
-        return response;
+        return client.send(request, HttpResponse.BodyHandlers.ofString());
     }
 
     private void nap(long milliseconds) {

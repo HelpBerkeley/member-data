@@ -32,6 +32,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+// FIX THIS, DS: WIP try to reverse-engineer upload
+
 public class Upload {
 
     private final String fileName;
@@ -138,45 +140,5 @@ public class Upload {
 
         byteArrays.add(("--" + boundary + "--").getBytes(StandardCharsets.UTF_8));
         return HttpRequest.BodyPublishers.ofByteArrays(byteArrays);
-    }
-
-//        -----------------------------377379154022942282103505584138
-//        Content-Disposition: form-data; name="type"
-//
-//        composer
-//                -----------------------------377379154022942282103505584138
-//        Content-Disposition: form-data; name="files[]"; filename="members.csv"
-//        Content-Type: text/csv
-//
-//        Name,User Name,Phone #,Neighborhood,Address,Consumer,Dispatcher,Driver,
-//                stone,stone,510 526-6895,Grizzly Peak,1020 Creston Road,false,false,false,
-//                Michel Thouati,MichelThouati,262.434.0554,Grizzly Peak,1030 Creston Rd Berkeley CA 94708,false,false,false,
-//                Mary Pat Farrell,MPFarrell,2623036233,Grizzly Peak,1030 Creston Road,false,true,false,
-//                Ariel Shemtov,ArielS,6282247997,Grizzly Peak,1030 Creston rd Berkeley CA 94708,false,false,false,
-//                Kaelan Thouati de Tazoult,KaelanTdT,510.650.2299,Grizzly Peak,1030 Creston Rd Berkeley CA 94708,false,true,false,
-//                Test User 2,test-user-2,510 555-1213,Glendale - La Loma Park,12345 La Loma ,false,false,false,
-//                Test User 1,test-user-1,510 555-1212,Keeler Ave,722 3/4 #6 Keeler Ave,false,false,false,
-//
-//                -----------------------------377379154022942282103505584138--
-
-    public static void main(String[] args) {
-
-        Map<String, String> params = new HashMap<>();
-        params.put("files[]", "this is my file data");
-
-//        HttpRequest.BodyPublisher bodyPublisher = uploadBody();
-
-//        Upload upload = new Upload("x.cvs", "aaa\nbbb\naaa\nbbb\n");
-//
-//        HttpRequest request = HttpRequest.newBuilder()
-//                .uri(URI.create("https://helpberkeley.org/uploads.json"))
-//                .header("Api-Username", "fred")
-//                .header("Api-Key", "berfle")
-//                .header("Content-Type", "application/x-www-form-urlencoded")
-//                .POST(HttpRequest.BodyPublishers.ofString(upload.generateBody()))
-//                .build();
-
-
-
     }
 }

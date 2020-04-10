@@ -29,23 +29,7 @@ import java.util.*;
  */
 public class User {
 
-    // FIX THIS, DS: Hardwired names that break if Discourse
-    //               changes any them. Unlikely though.
-    //
-    static final String NAME_FIELD = "name";
-    static final String USERNAME_FIELD = "username";
     static final String ID_FIELD = "id";
-
-    // FIX THIS, DS: Hardwired indexes that break if we
-    //               change the meaning of any of these
-    //               user fields. No sensitivty here to
-    //               the field labels shown to the users
-    //               of the site.
-    static final String USER_FIELDS_FIELD = "user_fields";
-    static final String ADDRESS_USER_FIELD = "1";
-    static final String PHONE_NUMBER_USER_FIELD = "2";
-    static final String NEIGHBORHOOD_USER_FIELD = "3";
-    static final String CITY_USER_FIELD = "6";
 
     // Column names for report generation
     //
@@ -59,6 +43,8 @@ public class User {
     static final String CONSUMER_COLUMN = "Consumer";
     static final String DRIVER_COLUMN = "Driver";
     static final String DISPATCHER_COLUMN = "Dispatcher";
+    static final String CREATED_AT_COLUMN = "Created";
+    static final String APARTMENT_COLUMN = "Apartment";
 
     static final String BERKELEY = "Berkeley";
 
@@ -81,6 +67,8 @@ public class User {
     private String city;
     private String phoneNumber;
     private String neighborhood;
+    private String createTime;
+    private Boolean apartment;
     private final Set<String> groupMembership = new HashSet<>();
     private final List<String> dataErrors = new ArrayList<>();
 
@@ -114,6 +102,14 @@ public class User {
         return neighborhood == null ? NOT_PROVIDED : neighborhood;
     }
 
+    public boolean isApartment() {
+        return apartment;
+    }
+
+    public String getCreateTime() {
+        return createTime;
+    }
+
     public List<String> getDataErrors() {
         return dataErrors;
     }
@@ -125,7 +121,9 @@ public class User {
         final String address,
         final String city,
         final String phoneNumber,
-        final String neighborhood) {
+        final String neighborhood,
+        final String createTime,
+        final Boolean apartment) {
 
         this.name = name;
         this.userName = userName;
@@ -134,15 +132,8 @@ public class User {
         this.city = city;
         this.phoneNumber = phoneNumber;
         this.neighborhood = neighborhood;
-    }
-
-    private void addGroups(List<Group> groups) {
-
-        for (Group group : groups) {
-            if (group.hasUserId(id)) {
-                groupMembership.add(group.name);
-            }
-        }
+        this.createTime = createTime;
+        this.apartment = apartment;
     }
 
     boolean isConsumer() {
@@ -392,12 +383,10 @@ public class User {
             return;
         }
 
-        String newAddress = address.substring(0, index);
-
         // FIX THIS, DS: what kind of validation can be done here
         //               to prevent chopping off street address info?
 
-        address = newAddress;
+        address = address.substring(0, index);
     }
 
     // must be insensitive to null data
@@ -476,10 +465,12 @@ public class User {
             final String city,
             final String phoneNumber,
             final String neighborhood,
+            final String createdAt,
+            final Boolean apartment,
             final String... groups) throws UserException {
 
 
-        User user = new User(name, userName, id, address, city, phoneNumber, neighborhood);
+        User user = new User(name, userName, id, address, city, phoneNumber, neighborhood, createdAt, apartment);
         for (String group : groups) {
             assert ! user.groupMembership.contains(group) : group;
             user.groupMembership.add(group);
@@ -503,10 +494,12 @@ public class User {
             final String city,
             final String phoneNumber,
             final String neighborhood,
+            final String createdAt,
+            final Boolean apartment,
             final List<String> groups) throws UserException {
 
 
-        User user = new User(name, userName, id, address, city, phoneNumber, neighborhood);
+        User user = new User(name, userName, id, address, city, phoneNumber, neighborhood, createdAt, apartment);
         for (String group : groups) {
             assert ! user.groupMembership.contains(group) : group;
             user.groupMembership.add(group);
@@ -534,6 +527,8 @@ public class User {
                 + CONSUMER_COLUMN + separator
                 + DISPATCHER_COLUMN + separator
                 + DRIVER_COLUMN + separator
+                + CREATED_AT_COLUMN + separator
+                + APARTMENT_COLUMN + separator
                 + "\n";
     }
 
@@ -548,6 +543,8 @@ public class User {
                 && city.equals(((User)obj).city)
                 && phoneNumber.equals(((User)obj).phoneNumber)
                 && neighborhood.equals(((User)obj).neighborhood)
-                && groupMembership.equals(((User)obj).groupMembership);
+                && groupMembership.equals(((User)obj).groupMembership)
+                && createTime.equals(((User)obj).createTime)
+                && apartment.equals(((User)obj).apartment);
     }
 }
