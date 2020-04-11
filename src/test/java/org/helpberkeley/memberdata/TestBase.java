@@ -56,6 +56,15 @@ public class TestBase {
     static final Boolean TEST_APARTMENT_3 = Boolean.FALSE;
     static final String TEST_CREATED_3 = ZonedDateTime.now().minus(1, DAYS).toString();
 
+    static final String TEST_NAME_4 = "name 4";
+    static final long TEST_ID_4 = 4;
+    static final String TEST_USER_NAME_4 = "user name 4";
+    static final String TEST_ADDRESS_4 = "address 4";
+    static final String TEST_PHONE_4 = "444-444-5555";
+    static final String TEST_NEIGHBORHOOD_4 = "neighborhood 4";
+    static final Boolean TEST_APARTMENT_4 = Boolean.FALSE;
+    static final String TEST_CREATED_4 = ZonedDateTime.now().minus(3, DAYS).toString();
+
     final List<String>  TEST_USER_1_GROUPS = List.of(Constants.GROUP_CONSUMERS);
     final List<String>  TEST_USER_2_GROUPS = List.of(Constants.GROUP_CONSUMERS, Constants.GROUP_DRIVERS);
     final List<String>  TEST_USER_3_GROUPS = List.of(Constants.GROUP_DRIVERS, Constants.GROUP_DISPATCHERS);
@@ -146,5 +155,12 @@ public class TestBase {
         return User.createUser(TEST_NAME_1, TEST_USER_NAME_1,
                 TEST_ID_1, TEST_PHONE_1, User.BERKELEY, TEST_PHONE_1,
                 neighborhood, TEST_CREATED_1, TEST_APARTMENT_1, group);
+    }
+
+    protected User createUserWithCreateTime(final String createTime) throws UserException {
+
+        return User.createUser(TEST_NAME_1, TEST_USER_NAME_1,
+                TEST_ID_1, TEST_ADDRESS_1, User.BERKELEY, TEST_PHONE_1,
+                TEST_NEIGHBORHOOD_1, createTime, TEST_APARTMENT_1);
     }
 }

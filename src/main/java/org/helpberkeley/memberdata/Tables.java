@@ -22,9 +22,12 @@
 
 package org.helpberkeley.memberdata;
 
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+
+import static java.time.temporal.ChronoUnit.DAYS;
 
 public class Tables {
 
@@ -75,11 +78,23 @@ public class Tables {
         return sorted;
     }
 
+    /**
+     * Get a list of non-consumer members created in the last three days
+     * @return List of recent non-consumer members.
+     */
     List<User> nonConsumers() {
         List<User> nonConsumers = new ArrayList<>();
 
+        ZonedDateTime threeDaysAgo = ZonedDateTime.now().minus(3, DAYS);
+
         for (User user : sortByUserName()) {
-            if (! user.isConsumer()) {
+            if (user.isConsumer()) {
+                continue;
+            }
+
+            ZonedDateTime createdAt = ZonedDateTime.parse(user.getCreateTime());
+
+            if (createdAt.compareTo(threeDaysAgo) >= 0) {
                 nonConsumers.add(user);
             }
         }
