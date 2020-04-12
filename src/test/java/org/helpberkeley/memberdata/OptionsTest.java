@@ -95,4 +95,32 @@ public class OptionsTest extends  TestBase {
         assertThat(thrown).hasMessageContaining(Options.COMMAND_REQUIRES_FILE_NAME);
         assertThat(thrown).hasMessageContaining(Options.USAGE);
     }
+
+    @Test
+    public void updateErrorsMissingFileTest() {
+
+        Options options = new Options(new String[] { Options.COMMAND_UPDATE_ERRORS });
+        options.setExceptions(true);
+
+        Throwable thrown = catchThrowable(options::parse);
+        assertThat(thrown).isInstanceOf(MemberDataException.class);
+        assertThat(thrown).hasMessageContaining(Options.USAGE_ERROR);
+        assertThat(thrown).hasMessageContaining(Options.COMMAND_UPDATE_ERRORS);
+        assertThat(thrown).hasMessageContaining(Options.COMMAND_REQUIRES_FILE_NAME);
+        assertThat(thrown).hasMessageContaining(Options.USAGE);
+    }
+
+    @Test
+    public void updateNonConsumersMissingFileTest() {
+
+        Options options = new Options(new String[] { Options.COMMAND_UPDATE_NON_CONSUMERS });
+        options.setExceptions(true);
+
+        Throwable thrown = catchThrowable(options::parse);
+        assertThat(thrown).isInstanceOf(MemberDataException.class);
+        assertThat(thrown).hasMessageContaining(Options.USAGE_ERROR);
+        assertThat(thrown).hasMessageContaining(Options.COMMAND_POST_NON_CONSUMERS);
+        assertThat(thrown).hasMessageContaining(Options.COMMAND_REQUIRES_FILE_NAME);
+        assertThat(thrown).hasMessageContaining(Options.USAGE);
+    }
 }

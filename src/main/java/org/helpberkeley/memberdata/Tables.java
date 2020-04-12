@@ -101,4 +101,28 @@ public class Tables {
 
         return nonConsumers;
     }
+
+    /**
+     * Get a list of members, not in groups, created in the last three days
+     * @return List of recent non-group members.
+     */
+    List<User> noGroups() {
+        List<User> nonConsumers = new ArrayList<>();
+
+        ZonedDateTime threeDaysAgo = ZonedDateTime.now().minus(3, DAYS);
+
+        for (User user : sortByUserName()) {
+            if (user.isConsumer() || user.isDispatcher() || user.isDriver()) {
+                continue;
+            }
+
+            ZonedDateTime createdAt = ZonedDateTime.parse(user.getCreateTime());
+
+            if (createdAt.compareTo(threeDaysAgo) >= 0) {
+                nonConsumers.add(user);
+            }
+        }
+
+        return nonConsumers;
+    }
 }

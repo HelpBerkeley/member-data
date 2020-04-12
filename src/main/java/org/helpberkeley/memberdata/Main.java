@@ -49,7 +49,9 @@ public class Main {
     // FIX THIS, DS: make this less fragile
     static final long MEMBER_DATA_FOR_DISPATCHES_TOPID_ID = 86;
     static final long MEMBER_DATA_REQUIRING_ATTENTION_TOPIC_ID = 129;
+    static final long MEMBER_DATA_REQUIRING_ATTENTION_POST_ID = 1706;
     static final long NON_CONSUMERS_TOPIC_ID = 336;
+    static final long NON_CONSUMERS_POST_ID = 1219;
 
     public static void main(String[] args) throws IOException, InterruptedException, ApiException {
 
@@ -82,6 +84,10 @@ public class Main {
             exporter.nonConsumersToFile(NON_CONSUMERS_FILE);
         } else if (options.getCommand().equals(Options.COMMAND_POST_ERRORS)) {
             postUserErrors(apiClient, options.getFileName());
+        } else if (options.getCommand().equals(Options.COMMAND_UPDATE_NON_CONSUMERS)) {
+            updateNonConsumersTable(apiClient, options.getFileName());
+        } else if (options.getCommand().equals(Options.COMMAND_UPDATE_ERRORS)) {
+            updateUserErrors(apiClient, options.getFileName());
         } else {
             assert options.getCommand().equals(Options.COMMAND_POST_NON_CONSUMERS) : options.getCommand();
             postNonConsumersTable(apiClient, options.getFileName());
@@ -230,6 +236,43 @@ public class Main {
         System.out.println(response);
     }
 
+    static void updateNonConsumersTable(ApiClient apiClient, final String fileName)
+            throws IOException, InterruptedException {
+
+        String csvData = Files.readString(Paths.get(fileName));
+        // FIX THIS, DS: constant for separator
+        List<User> users = Parser.users(csvData, ",");
+
+        StringBuilder postRaw = new StringBuilder();
+        String label =  "Recently created members not in any groups  -- " + ZonedDateTime.now(
+                ZoneId.systemDefault()).format(DateTimeFormatter.ofPattern("uuuu.MM.dd HH:mm:ss"));
+
+        postRaw.append("**");
+        postRaw.append(label);
+        postRaw.append("**\n\n");
+
+        postRaw.append("| User Name | Address | Apartment | Neighborhood | City |\n");
+        postRaw.append("|----|---|---|---|---|\n");
+
+        Tables tables = new Tables(users);
+        for (User user : tables.noGroups()) {
+            postRaw.append('|');
+            postRaw.append(user.getUserName());
+            postRaw.append('|');
+            postRaw.append(user.getAddress());
+            postRaw.append('|');
+            postRaw.append(user.isApartment());
+            postRaw.append('|');
+            postRaw.append(user.getNeighborhood());
+            postRaw.append('|');
+            postRaw.append(user.getCity());
+            postRaw.append("|\n");
+        }
+
+        HttpResponse<?> response = apiClient.updatePost(NON_CONSUMERS_POST_ID, postRaw.toString());
+        System.out.println(response);
+    }
+
     static void postUserErrors(ApiClient apiClient, final String fileName) throws IOException, InterruptedException {
 
         StringBuilder postRaw = new StringBuilder();
@@ -248,6 +291,21 @@ public class Main {
 
         post.raw = postRaw.toString();
         HttpResponse<?> response = apiClient.post(post.toJson());
+        System.out.println(response);
+    }
+
+    static void updateUserErrors(ApiClient apiClient, final String fileName) throws IOException, InterruptedException {
+
+        StringBuilder postRaw = new StringBuilder();
+
+        postRaw.append("**");
+        postRaw.append("Member data requiring attention -- ");
+        postRaw.append(ZonedDateTime.now(
+                ZoneId.systemDefault()).format(DateTimeFormatter.ofPattern("uuuu.MM.dd HH:mm:ss")));
+        postRaw.append("**\n\n");
+        postRaw.append(Files.readString(Paths.get(fileName)));
+
+        HttpResponse<?> response = apiClient.updatePost(MEMBER_DATA_REQUIRING_ATTENTION_POST_ID, postRaw.toString());
         System.out.println(response);
     }
 

@@ -25,7 +25,6 @@ package org.helpberkeley.memberdata;
 import org.junit.Test;
 
 import java.time.ZonedDateTime;
-import java.time.temporal.TemporalUnit;
 import java.util.List;
 
 import static java.time.temporal.ChronoUnit.DAYS;
@@ -49,5 +48,25 @@ public class TablesTest extends TestBase {
 
         List<User> nonConsumers = tables.nonConsumers();
         assertThat(nonConsumers).containsExactlyInAnyOrder(userNow, userFourHoursAgo, userAlmostThreeDaysAgo);
+    }
+
+    @Test
+    public void noGroupsTest() throws UserException {
+
+        User userNow = createUserWithCreateTime(ZonedDateTime.now().toString());
+        User userFourDaysAgo = createUserWithCreateTime(ZonedDateTime.now().minus(4, DAYS).toString());
+        User userFourHoursAgo = createUserWithCreateTime(ZonedDateTime.now().minus(4, HOURS).toString());
+        User userAlmostThreeDaysAgo = createUserWithCreateTime(
+                ZonedDateTime.now().minus(3, DAYS).plus(1, MINUTES).toString());
+        User userDriver = createUserWithCreateTimeAndGroup(
+                ZonedDateTime.now().minus(3, DAYS).plus(1, MINUTES).toString(),
+                Constants.GROUP_DISPATCHERS);
+
+        List<User> users = List.of(
+                userNow, userFourDaysAgo, userFourHoursAgo, userAlmostThreeDaysAgo, userDriver);
+        Tables tables = new Tables(users);
+
+        List<User> noGroups = tables.noGroups();
+        assertThat(noGroups).containsExactlyInAnyOrder(userNow, userFourHoursAgo, userAlmostThreeDaysAgo);
     }
 }

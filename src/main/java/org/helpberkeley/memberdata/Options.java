@@ -29,6 +29,8 @@ public class Options {
     static final String COMMAND_FETCH = "fetch";
     static final String COMMAND_POST_ERRORS = "post-errors";
     static final String COMMAND_POST_NON_CONSUMERS = "post-non-consumers";
+    static final String COMMAND_UPDATE_ERRORS = "update-errors";
+    static final String COMMAND_UPDATE_NON_CONSUMERS = "update-non-consumers";
 
     static final String USAGE_ERROR = "Usage error: ";
     static final String UNKNOWN_COMMAND = USAGE_ERROR + "unknown command: ";
@@ -39,7 +41,9 @@ public class Options {
     static final String USAGE =
             "Usage: " + COMMAND_FETCH + "\n"
                     + "    | " + COMMAND_POST_ERRORS + " errors-file-name\n"
-                    + "    | " + COMMAND_POST_NON_CONSUMERS + " non-consumers-file-name";
+                    + "    | " + COMMAND_POST_NON_CONSUMERS + " non-consumers-file-name"
+                    + "    | " + COMMAND_UPDATE_ERRORS + " errors-file-name\n"
+                    + "    | " + COMMAND_UPDATE_NON_CONSUMERS + " non-consumers-file-name";
 
     private final String[] args;
     private String command;
@@ -62,6 +66,8 @@ public class Options {
                     break;
                 case COMMAND_POST_ERRORS:
                 case COMMAND_POST_NON_CONSUMERS:
+                case COMMAND_UPDATE_ERRORS:
+                case COMMAND_UPDATE_NON_CONSUMERS:
                     setCommand(arg);
                     index++;
                     if (index == args.length) {

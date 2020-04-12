@@ -23,6 +23,8 @@
 package org.helpberkeley.memberdata;
 
 import com.cedarsoftware.util.io.JsonWriter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -35,6 +37,8 @@ import java.util.List;
 import java.util.Map;
 
 public class Exporter {
+    private static final Logger LOGGER = LoggerFactory.getLogger(Exporter.class);
+
     private final Tables tables;
 
     public Exporter(List<User> users) {
@@ -56,7 +60,7 @@ public class Exporter {
     private String generateFileName(String fileName, String suffix) {
 
         String timestamp =
-                ZonedDateTime.now(ZoneId.systemDefault()).format(DateTimeFormatter.ofPattern("uuMMdd-HHmm"));
+                ZonedDateTime.now(ZoneId.systemDefault()).format(DateTimeFormatter.ofPattern("uuMMdd-HHmm-ss"));
         return fileName + '-' + timestamp + '.' + suffix;
     }
 
@@ -76,6 +80,7 @@ public class Exporter {
 
         String outputFileName = generateFileName(fileName, "txt");
         writeFile(outputFileName, fileData.toString());
+        LOGGER.debug("Fetched: " + outputFileName);
     }
 
     void nonConsumersToFile(final String fileName) throws IOException {
@@ -87,7 +92,7 @@ public class Exporter {
         // FIX THIS, DS: define constant for separator
         fileData.append(User.csvHeaders(separator));
 
-        for (User user : tables.nonConsumers()) {
+        for (User user : tables.noGroups()) {
             fileData.append(user.getId());
             fileData.append(separator);
             fileData.append(user.getName());
@@ -117,6 +122,7 @@ public class Exporter {
 
         String outputFileName = generateFileName(fileName, "csv");
         writeFile(outputFileName, fileData.toString());
+        LOGGER.debug("Fetched: " + outputFileName);
     }
 
     void allMembersToFile(final String fileName) throws IOException {
@@ -126,6 +132,7 @@ public class Exporter {
 
         String outputFileName = generateFileName(fileName, "csv");
         writeFile(outputFileName, allMembersToCSV(separator));
+        LOGGER.debug("Fetched: " + outputFileName);
     }
 
     String allMembersToCSV(final String separator) {

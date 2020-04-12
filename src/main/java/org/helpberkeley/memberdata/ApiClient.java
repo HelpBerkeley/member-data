@@ -203,20 +203,17 @@ public class ApiClient {
 
     }
 
-    HttpResponse<String> updatePost(long topicId, long postId, final String oldBody, final String body) throws IOException, InterruptedException {
+    HttpResponse<String> updatePost(long postId, final String body) throws IOException, InterruptedException {
 
-//        String endpoint =  POSTS_BASE + postId + ".json";
         String endpoint =  POSTS_BASE + postId;
-
-        PostUpdate postUpdate = new PostUpdate(topicId, body, oldBody, "", body);
-//        PostUpdate postUpdate = new PostUpdate(body, oldBody);
+        String postBody = "{ \"post\" : { \"raw\" : \"" + body + "\" } }";
 
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(endpoint))
                 .header("Api-Username", apiUser)
                 .header("Api-Key", apiKey)
                 .header("Content-Type", "application/json")
-                .POST(HttpRequest.BodyPublishers.ofString(postUpdate.toJson()))
+                .PUT(HttpRequest.BodyPublishers.ofString(postBody))
                 .build();
 
         return client.send(request, HttpResponse.BodyHandlers.ofString());

@@ -63,13 +63,13 @@ public class Loader {
      * @throws InterruptedException Website interaction exception.
      */
     public List<User> load() throws IOException, InterruptedException, ApiException {
-        LOGGER.debug("load");
+        LOGGER.trace("load");
         loadGroups();
         return loadUsers();
     }
 
     private void loadGroups() throws IOException, InterruptedException, ApiException {
-        LOGGER.debug("loadGroups");
+        LOGGER.trace("loadGroups");
 
         ApiQueryResult apiQueryResult = apiClient.runQuery(Constants.QUERY_GET_GROUPS_ID);
         Map<Long, String> groupNames = Parser.groupNames(apiQueryResult);
@@ -89,7 +89,7 @@ public class Loader {
     }
 
     private List<User> loadUsers() throws IOException, InterruptedException, ApiException {
-        LOGGER.debug("loadUsers");
+        LOGGER.trace("loadUsers");
 
         ApiQueryResult queryResult = apiClient.runQuery(Constants.QUERY_GET_USERS_V11_ID);
         return Parser.users(groups, queryResult);

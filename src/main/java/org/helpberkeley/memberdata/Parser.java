@@ -50,7 +50,7 @@ public class Parser {
     }
 
     static List<User> users(final Map<String, Group> groups, final ApiQueryResult queryResult) {
-        LOGGER.debug("users");
+        LOGGER.trace("users");
 
         List<User> users = new ArrayList<>();
 
@@ -114,7 +114,7 @@ public class Parser {
     }
 
     static Map<Long, String> groupNames(ApiQueryResult queryResult) {
-        LOGGER.debug("groupNames");
+        LOGGER.trace("groupNames");
 
         Map<Long, String> results = new HashMap<>();
 
@@ -130,7 +130,7 @@ public class Parser {
             String groupName = (String)columns[1];
 
             if ((groupId == null) || (groupName == null)) {
-                LOGGER.debug("getGroupNames skipping id: {}, groupName: {}", groupId, groupName);
+                LOGGER.trace("getGroupNames skipping id: {}, groupName: {}", groupId, groupName);
                 continue;
             }
             results.put((Long)columns[0], (String)columns[1]);
@@ -140,7 +140,7 @@ public class Parser {
     }
 
     static Map<String, List<Long>> groupUsers(final Map<Long, String> groupNames, final ApiQueryResult queryResult) {
-        LOGGER.debug("groupUsers");
+        LOGGER.trace("groupUsers");
         Map<String, List<Long>> results = new HashMap<>();
 
         assert queryResult.headers.length == 2 :
@@ -156,7 +156,7 @@ public class Parser {
             Long userId = (Long)columns[1];
 
             if ((groupId == null) || (userId == null)){
-                LOGGER.debug("groupUsers: skipping null data: {}:{}", groupId, userId);
+                LOGGER.trace("groupUsers: skipping null data: {}:{}", groupId, userId);
                 continue;
             }
 

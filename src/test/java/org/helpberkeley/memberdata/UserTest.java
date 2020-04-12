@@ -362,21 +362,4 @@ public class UserTest extends TestBase {
                         + User.ADDRESS_COLUMN + " : " + userException.user.getAddress() + ", : "
                         + User.CITY_COLUMN + " : " + createUser().getCity());
     }
-
-    @Test
-    public void createdAtTest() {
-        // 2020-04-06T17:20:19.315Z
-
-        ZonedDateTime createdAt = ZonedDateTime.parse("2020-04-06T17:20:19.315Z");
-        System.out.println(createdAt);
-
-        ZonedDateTime now = ZonedDateTime.now();
-        System.out.println("now: " + now);
-        ZonedDateTime threeDaysAgo = now.minus(3, DAYS);
-        System.out.println("threeDaysAgo: " + threeDaysAgo);
-
-        System.out.println("Now compared to threeDaysAgo: " + now.compareTo(threeDaysAgo));
-        System.out.println("threeDaysAgo compared to now: " + threeDaysAgo.compareTo(now));
-        System.out.println("now compared to now: " + now.compareTo(now));
-    }
 }

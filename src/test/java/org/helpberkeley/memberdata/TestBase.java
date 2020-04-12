@@ -163,4 +163,11 @@ public class TestBase {
                 TEST_ID_1, TEST_ADDRESS_1, User.BERKELEY, TEST_PHONE_1,
                 TEST_NEIGHBORHOOD_1, createTime, TEST_APARTMENT_1);
     }
+
+    protected User createUserWithCreateTimeAndGroup(final String createTime, final String group) throws UserException {
+
+        return User.createUser(TEST_NAME_1, TEST_USER_NAME_1,
+                TEST_ID_1, TEST_ADDRESS_1, User.BERKELEY, TEST_PHONE_1,
+                TEST_NEIGHBORHOOD_1, createTime, TEST_APARTMENT_1, group);
+    }
 }
