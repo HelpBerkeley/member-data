@@ -83,7 +83,7 @@ public class Exporter {
         LOGGER.debug("Fetched: " + outputFileName);
     }
 
-    void nonConsumersToFile(final String fileName) throws IOException {
+    void recentlyCreatedNoGroupsToFile(final String fileName) throws IOException {
 
         // FIX THIS, DS: define constant for separator
         final String separator = ",";
@@ -92,7 +92,9 @@ public class Exporter {
         // FIX THIS, DS: define constant for separator
         fileData.append(User.csvHeaders(separator));
 
-        for (User user : tables.noGroups()) {
+        Tables recent = new Tables(tables.recentlyCreated(3));
+
+        for (User user : recent.memberOfNoGroups()) {
             fileData.append(user.getId());
             fileData.append(separator);
             fileData.append(user.getName());

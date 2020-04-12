@@ -80,8 +80,8 @@ public class Main {
             // Export all users
             exporter.allMembersToFile(MEMBERDATA_FILE);
 
-            // Export non-consumer users
-            exporter.nonConsumersToFile(NON_CONSUMERS_FILE);
+            // Export recent, no-group members
+            exporter.recentlyCreatedNoGroupsToFile(NON_CONSUMERS_FILE);
         } else if (options.getCommand().equals(Options.COMMAND_POST_ERRORS)) {
             postUserErrors(apiClient, options.getFileName());
         } else if (options.getCommand().equals(Options.COMMAND_UPDATE_NON_CONSUMERS)) {
@@ -255,7 +255,7 @@ public class Main {
         postRaw.append("|----|---|---|---|---|\n");
 
         Tables tables = new Tables(users);
-        for (User user : tables.noGroups()) {
+        for (User user : tables.memberOfNoGroups()) {
             postRaw.append('|');
             postRaw.append(user.getUserName());
             postRaw.append('|');

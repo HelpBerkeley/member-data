@@ -43,4 +43,8 @@ public class Constants {
     public static final String GROUP_CONSUMERS = "consumers";
     public static final String GROUP_DRIVERS = "drivers";
     public static final String GROUP_DISPATCHERS = "dispatchers";
+
+    static final String BERKELEY = "Berkeley";
+    static final String ALBANY = "Albany";
+    static final String KENSINGTON = "Kensignton";
 }

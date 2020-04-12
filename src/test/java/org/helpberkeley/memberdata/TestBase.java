@@ -71,50 +71,50 @@ public class TestBase {
 
     protected User createTestUser1() throws UserException {
         return User.createUser(TEST_NAME_1, TEST_USER_NAME_1, TEST_ID_1, TEST_ADDRESS_1,
-                User.BERKELEY, TEST_PHONE_1, TEST_NEIGHBORHOOD_1,
+                Constants.BERKELEY, TEST_PHONE_1, TEST_NEIGHBORHOOD_1,
                 TEST_CREATED_1, TEST_APARTMENT_1, TEST_USER_1_GROUPS);
     }
 
     protected User createTestUser2() throws UserException {
         return User.createUser(TEST_NAME_2, TEST_USER_NAME_2, TEST_ID_2, TEST_ADDRESS_2,
-                User.BERKELEY, TEST_PHONE_2, TEST_NEIGHBORHOOD_2,
+                Constants.BERKELEY, TEST_PHONE_2, TEST_NEIGHBORHOOD_2,
                 TEST_CREATED_2, TEST_APARTMENT_2, TEST_USER_2_GROUPS);
     }
 
     protected User createTestUser3() throws UserException {
         return User.createUser(TEST_NAME_3, TEST_USER_NAME_3, TEST_ID_3, TEST_ADDRESS_3,
-                User.BERKELEY, TEST_PHONE_3, TEST_NEIGHBORHOOD_3,
+                Constants.BERKELEY, TEST_PHONE_3, TEST_NEIGHBORHOOD_3,
                 TEST_CREATED_3, TEST_APARTMENT_3, TEST_USER_3_GROUPS);
     }
 
     // no groups
     protected User createUser() throws UserException {
         return User.createUser(TEST_USER_NAME_1, TEST_USER_NAME_1,
-                TEST_ID_1, TEST_ADDRESS_1, User.BERKELEY, TEST_PHONE_1,
+                TEST_ID_1, TEST_ADDRESS_1, Constants.BERKELEY, TEST_PHONE_1,
                 TEST_NEIGHBORHOOD_1, TEST_CREATED_1, TEST_APARTMENT_1);
     }
 
     protected User createUserWithGroups(final String... groups) throws UserException {
         return User.createUser(TEST_USER_NAME_1, TEST_USER_NAME_1,
-                TEST_ID_1, TEST_ADDRESS_1, User.BERKELEY, TEST_PHONE_1,
+                TEST_ID_1, TEST_ADDRESS_1, Constants.BERKELEY, TEST_PHONE_1,
                 TEST_NEIGHBORHOOD_1, TEST_CREATED_1, TEST_APARTMENT_1, groups);
     }
 
     protected User createUserWithName(final String name) throws UserException {
         return User.createUser(name, TEST_USER_NAME_1,
-                TEST_ID_1, TEST_ADDRESS_1, User.BERKELEY, TEST_PHONE_1,
+                TEST_ID_1, TEST_ADDRESS_1, Constants.BERKELEY, TEST_PHONE_1,
                 TEST_NEIGHBORHOOD_1, TEST_CREATED_1, TEST_APARTMENT_1);
     }
 
     protected User createUserWithUserName(final String userName) throws UserException {
         return User.createUser(TEST_NAME_1, userName,
-                TEST_ID_1, TEST_ADDRESS_1, User.BERKELEY, TEST_PHONE_1,
+                TEST_ID_1, TEST_ADDRESS_1, Constants.BERKELEY, TEST_PHONE_1,
                 TEST_NEIGHBORHOOD_1, TEST_CREATED_1, TEST_APARTMENT_1);
     }
 
     protected User createUserWithAddress(final String address) throws UserException {
         return User.createUser(TEST_NAME_1, TEST_USER_NAME_1,
-                TEST_ID_1, address, User.BERKELEY, TEST_PHONE_1,
+                TEST_ID_1, address, Constants.BERKELEY, TEST_PHONE_1,
                 TEST_NEIGHBORHOOD_1, TEST_CREATED_1, TEST_APARTMENT_1);
     }
 
@@ -126,19 +126,19 @@ public class TestBase {
 
     User createUserWithPhone(final String phone) throws UserException {
         return User.createUser(TEST_NAME_1, TEST_USER_NAME_1,
-                TEST_ID_1, TEST_ADDRESS_1, User.BERKELEY, phone,
+                TEST_ID_1, TEST_ADDRESS_1, Constants.BERKELEY, phone,
                 TEST_NEIGHBORHOOD_1, TEST_CREATED_1, TEST_APARTMENT_1);
     }
 
     protected User createUserWithGroup(final String group) throws UserException {
         return User.createUser(TEST_USER_NAME_1, TEST_USER_NAME_1,
-                TEST_ID_1, TEST_ADDRESS_1, User.BERKELEY, TEST_PHONE_1,
+                TEST_ID_1, TEST_ADDRESS_1, Constants.BERKELEY, TEST_PHONE_1,
                 TEST_NEIGHBORHOOD_1, TEST_CREATED_1, TEST_APARTMENT_1, group);
     }
 
     protected User createUserWithNeighborhood(final String neighborhood) throws UserException {
         return User.createUser(TEST_NAME_1, TEST_USER_NAME_1,
-                TEST_ID_1, TEST_PHONE_1, User.BERKELEY, TEST_PHONE_1,
+                TEST_ID_1, TEST_PHONE_1, Constants.BERKELEY, TEST_PHONE_1,
                 neighborhood, TEST_CREATED_1, TEST_APARTMENT_1);
     }
     protected User createUserWithCityAndNeighborhood(
@@ -153,21 +153,28 @@ public class TestBase {
             final String group, final String neighborhood) throws UserException {
 
         return User.createUser(TEST_NAME_1, TEST_USER_NAME_1,
-                TEST_ID_1, TEST_PHONE_1, User.BERKELEY, TEST_PHONE_1,
+                TEST_ID_1, TEST_PHONE_1, Constants.BERKELEY, TEST_PHONE_1,
                 neighborhood, TEST_CREATED_1, TEST_APARTMENT_1, group);
     }
 
     protected User createUserWithCreateTime(final String createTime) throws UserException {
 
         return User.createUser(TEST_NAME_1, TEST_USER_NAME_1,
-                TEST_ID_1, TEST_ADDRESS_1, User.BERKELEY, TEST_PHONE_1,
+                TEST_ID_1, TEST_ADDRESS_1, Constants.BERKELEY, TEST_PHONE_1,
                 TEST_NEIGHBORHOOD_1, createTime, TEST_APARTMENT_1);
     }
 
     protected User createUserWithCreateTimeAndGroup(final String createTime, final String group) throws UserException {
 
         return User.createUser(TEST_NAME_1, TEST_USER_NAME_1,
-                TEST_ID_1, TEST_ADDRESS_1, User.BERKELEY, TEST_PHONE_1,
+                TEST_ID_1, TEST_ADDRESS_1, Constants.BERKELEY, TEST_PHONE_1,
                 TEST_NEIGHBORHOOD_1, createTime, TEST_APARTMENT_1, group);
+    }
+
+    protected User createUserWithCreateTimeAndCity(final String createTime, final String city) throws UserException {
+
+        return User.createUser(TEST_NAME_1, TEST_USER_NAME_1,
+                TEST_ID_1, TEST_ADDRESS_1, city, TEST_PHONE_1,
+                TEST_NEIGHBORHOOD_1, createTime, TEST_APARTMENT_1);
     }
 }

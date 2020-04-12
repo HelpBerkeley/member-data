@@ -79,50 +79,58 @@ public class Tables {
     }
 
     /**
-     * Get a list of non-consumer members created in the last three days
-     * @return List of recent non-consumer members.
-     */
-    List<User> nonConsumers() {
-        List<User> nonConsumers = new ArrayList<>();
-
-        ZonedDateTime threeDaysAgo = ZonedDateTime.now().minus(3, DAYS);
-
-        for (User user : sortByUserName()) {
-            if (user.isConsumer()) {
-                continue;
-            }
-
-            ZonedDateTime createdAt = ZonedDateTime.parse(user.getCreateTime());
-
-            if (createdAt.compareTo(threeDaysAgo) >= 0) {
-                nonConsumers.add(user);
-            }
-        }
-
-        return nonConsumers;
-    }
-
-    /**
-     * Get a list of members, not in groups, created in the last three days
+     * Get a list of members not in groups (consumer, dispatcher, driver)
      * @return List of recent non-group members.
      */
-    List<User> noGroups() {
-        List<User> nonConsumers = new ArrayList<>();
-
-        ZonedDateTime threeDaysAgo = ZonedDateTime.now().minus(3, DAYS);
+    List<User> memberOfNoGroups() {
+        List<User> noGroups = new ArrayList<>();
 
         for (User user : sortByUserName()) {
             if (user.isConsumer() || user.isDispatcher() || user.isDriver()) {
                 continue;
             }
 
+            noGroups.add(user);
+        }
+
+        return noGroups;
+    }
+
+    /**
+     * Get a list of members created in the last N days
+     * @return List of recently created members.
+     */
+    List<User> recentlyCreated(int days) {
+        List<User> recentMembers = new ArrayList<>();
+
+        ZonedDateTime threeDaysAgo = ZonedDateTime.now().minus(days, DAYS);
+
+        for (User user : sortByUserName()) {
+
             ZonedDateTime createdAt = ZonedDateTime.parse(user.getCreateTime());
 
             if (createdAt.compareTo(threeDaysAgo) >= 0) {
-                nonConsumers.add(user);
+                recentMembers.add(user);
             }
         }
 
-        return nonConsumers;
+        return recentMembers;
+    }
+    /**
+     * Get a list of members, not in groups, created in the last three days
+     * @return List of recent non-group members.
+     */
+    List<User> supportedDeliveryCity() {
+        List<User> supportedCityList = new ArrayList<>();
+
+        ZonedDateTime threeDaysAgo = ZonedDateTime.now().minus(3, DAYS);
+
+        for (User user : sortByUserName()) {
+            if (user.isSupportedCity()) {
+                supportedCityList.add(user);
+            }
+        }
+
+        return supportedCityList;
     }
 }

@@ -3,10 +3,8 @@ package org.helpberkeley.memberdata;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import java.time.ZonedDateTime;
 import java.util.*;
 
-import static java.time.temporal.ChronoUnit.DAYS;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
 
@@ -84,13 +82,31 @@ public class UserTest extends TestBase {
      */
     @BeforeClass
     public static void createTestCities() {
-        testCities.add(new City("Berkeley", "Berkeley"));
-        testCities.add(new City("Berkeley ", "Berkeley"));
-        testCities.add(new City(" Berkeley ", "Berkeley"));
-        testCities.add(new City("berkeley", "Berkeley"));
-        testCities.add(new City("berkly", "Berkeley"));
-        testCities.add(new City("berekly", "Berkeley"));
-        testCities.add(new City("berkley", "Berkeley"));
+        testCities.add(new City(Constants.BERKELEY, Constants.BERKELEY));
+        testCities.add(new City("Berkeley ", Constants.BERKELEY));
+        testCities.add(new City(" Berkeley ", Constants.BERKELEY));
+        testCities.add(new City("berkeley", Constants.BERKELEY));
+        testCities.add(new City("berkly", Constants.BERKELEY));
+        testCities.add(new City("berekly", Constants.BERKELEY));
+        testCities.add(new City("berkley", Constants.BERKELEY));
+
+        testCities.add(new City(Constants.ALBANY, Constants.ALBANY));
+        testCities.add(new City("albany", Constants.ALBANY));
+        testCities.add(new City(" albany ", Constants.ALBANY));
+        testCities.add(new City("ablany", Constants.ALBANY));
+        testCities.add(new City("albanny", Constants.ALBANY));
+        testCities.add(new City("albny", Constants.ALBANY));
+        testCities.add(new City("albney", Constants.ALBANY));
+        testCities.add(new City("albnay", Constants.ALBANY));
+
+        testCities.add(new City(Constants.KENSINGTON, Constants.KENSINGTON));
+        testCities.add(new City(" kensignton ", Constants.KENSINGTON));
+        testCities.add(new City(" kensington ", Constants.KENSINGTON));
+        testCities.add(new City("kensigton ", Constants.KENSINGTON));
+        testCities.add(new City("kensinton ", Constants.KENSINGTON));
+        testCities.add(new City("kennsignton ", Constants.KENSINGTON));
+        testCities.add(new City("kensegntin ", Constants.KENSINGTON));
+        testCities.add(new City("kensegntin ", Constants.KENSINGTON));
     }
 
     @Test
@@ -185,7 +201,7 @@ public class UserTest extends TestBase {
 
         User user1 = createUser();
         User user2 = User.createUser(TEST_NAME_2, TEST_USER_NAME_1,
-                TEST_ID_1, TEST_ADDRESS_1, User.BERKELEY, TEST_PHONE_1,
+                TEST_ID_1, TEST_ADDRESS_1, Constants.BERKELEY, TEST_PHONE_1,
                 TEST_NEIGHBORHOOD_1, TEST_CREATED_1, TEST_APARTMENT_1);
 
         assertThat(user1).isNotEqualTo(user2);
@@ -196,7 +212,7 @@ public class UserTest extends TestBase {
 
         User user1 = createUser();
         User user2 = User.createUser(TEST_NAME_1, TEST_USER_NAME_2,
-                TEST_ID_1, TEST_ADDRESS_1, User.BERKELEY, TEST_PHONE_1,
+                TEST_ID_1, TEST_ADDRESS_1, Constants.BERKELEY, TEST_PHONE_1,
                 TEST_NEIGHBORHOOD_1, TEST_CREATED_1, TEST_APARTMENT_1);
 
         assertThat(user1).isNotEqualTo(user2);
@@ -207,7 +223,7 @@ public class UserTest extends TestBase {
 
         User user1 = createUser();
         User user2 = User.createUser(TEST_NAME_1, TEST_USER_NAME_1,
-                TEST_ID_2, TEST_ADDRESS_1, User.BERKELEY, TEST_PHONE_1,
+                TEST_ID_2, TEST_ADDRESS_1, Constants.BERKELEY, TEST_PHONE_1,
                 TEST_NEIGHBORHOOD_1, TEST_CREATED_1, TEST_APARTMENT_1);
 
         assertThat(user1).isNotEqualTo(user2);
@@ -218,7 +234,7 @@ public class UserTest extends TestBase {
 
         User user1 = createUser();
         User user2 = User.createUser(TEST_NAME_1, TEST_USER_NAME_1,
-                TEST_ID_2, TEST_ADDRESS_1, User.BERKELEY, TEST_PHONE_1,
+                TEST_ID_2, TEST_ADDRESS_1, Constants.BERKELEY, TEST_PHONE_1,
                 TEST_NEIGHBORHOOD_1, TEST_CREATED_1, TEST_APARTMENT_1);
 
         assertThat(user1).isNotEqualTo(user2);
@@ -229,7 +245,7 @@ public class UserTest extends TestBase {
 
         User user1 = createUser();
         User user2 = User.createUser(TEST_NAME_1, TEST_USER_NAME_1,
-                TEST_ID_1, TEST_ADDRESS_1, User.BERKELEY, TEST_PHONE_2,
+                TEST_ID_1, TEST_ADDRESS_1, Constants.BERKELEY, TEST_PHONE_2,
                 TEST_NEIGHBORHOOD_1, TEST_CREATED_1, TEST_APARTMENT_1);
 
         assertThat(user1).isNotEqualTo(user2);
@@ -240,7 +256,7 @@ public class UserTest extends TestBase {
 
         User user1 = createUser();
         User user2 = User.createUser(TEST_NAME_1, TEST_USER_NAME_1,
-                TEST_ID_1, TEST_ADDRESS_1, User.BERKELEY, TEST_PHONE_1,
+                TEST_ID_1, TEST_ADDRESS_1, Constants.BERKELEY, TEST_PHONE_1,
                 TEST_NEIGHBORHOOD_2, TEST_CREATED_1, TEST_APARTMENT_1);
 
         assertThat(user1).isNotEqualTo(user2);
@@ -249,7 +265,7 @@ public class UserTest extends TestBase {
     @Test
     public void cityInequalityTest() throws UserException {
 
-        User user1 = createUserWithCity(User.BERKELEY);
+        User user1 = createUserWithCity(Constants.BERKELEY);
         User user2 = createUserWithCity("Some other city");
         assertThat(user1).isNotEqualTo(user2);
     }
@@ -308,7 +324,7 @@ public class UserTest extends TestBase {
     }
 
     @Test
-    public void isBerkeleyTest() throws UserException {
+    public void isSupportedCityTest() throws UserException {
 
         for (City city : testCities) {
             User user = createUserWithCity(city.original);

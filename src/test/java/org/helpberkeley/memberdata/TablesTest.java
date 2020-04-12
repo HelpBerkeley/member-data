@@ -35,38 +35,52 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class TablesTest extends TestBase {
 
     @Test
-    public void nonConsumersTest() throws UserException {
+    public void noGroupsTest() throws UserException {
 
-        User userNow = createUserWithCreateTime(ZonedDateTime.now().toString());
-        User userFourDaysAgo = createUserWithCreateTime(ZonedDateTime.now().minus(4, DAYS).toString());
-        User userFourHoursAgo = createUserWithCreateTime(ZonedDateTime.now().minus(4, HOURS).toString());
-        User userAlmostThreeDaysAgo = createUserWithCreateTime(
-                ZonedDateTime.now().minus(3, DAYS).plus(1, MINUTES).toString());
+        User userOne = createUser();
+        User userTwo = createUserWithGroup(Constants.GROUP_DISPATCHERS);
+        User userThree = createUserWithCity(Constants.ALBANY);
+        User userFour = createUserWithGroup(Constants.GROUP_CONSUMERS);
+        User userFive = createUserWithGroup(Constants.GROUP_DRIVERS);
 
-        List<User> users = List.of(userNow, userFourDaysAgo, userFourHoursAgo, userAlmostThreeDaysAgo);
+        List<User> users = List.of(userOne, userTwo, userThree, userFour, userFive);
         Tables tables = new Tables(users);
 
-        List<User> nonConsumers = tables.nonConsumers();
-        assertThat(nonConsumers).containsExactlyInAnyOrder(userNow, userFourHoursAgo, userAlmostThreeDaysAgo);
+        List<User> noGroups = tables.memberOfNoGroups();
+        assertThat(noGroups).containsExactlyInAnyOrder(userOne, userThree);
     }
 
     @Test
-    public void noGroupsTest() throws UserException {
+    public void supportedCityTest() throws UserException {
 
-        User userNow = createUserWithCreateTime(ZonedDateTime.now().toString());
-        User userFourDaysAgo = createUserWithCreateTime(ZonedDateTime.now().minus(4, DAYS).toString());
-        User userFourHoursAgo = createUserWithCreateTime(ZonedDateTime.now().minus(4, HOURS).toString());
-        User userAlmostThreeDaysAgo = createUserWithCreateTime(
-                ZonedDateTime.now().minus(3, DAYS).plus(1, MINUTES).toString());
-        User userDriver = createUserWithCreateTimeAndGroup(
-                ZonedDateTime.now().minus(3, DAYS).plus(1, MINUTES).toString(),
-                Constants.GROUP_DISPATCHERS);
+        User berkeley = createUserWithCity(Constants.BERKELEY);
+        User albany = createUserWithCity(Constants.ALBANY);
+        User kensington = createUserWithCity(Constants.KENSINGTON);
+        User poughkeepise = createUserWithCity("Poughkeepise");
 
-        List<User> users = List.of(
-                userNow, userFourDaysAgo, userFourHoursAgo, userAlmostThreeDaysAgo, userDriver);
+        List<User> users = List.of(berkeley, albany, kensington, poughkeepise);
         Tables tables = new Tables(users);
 
-        List<User> noGroups = tables.noGroups();
-        assertThat(noGroups).containsExactlyInAnyOrder(userNow, userFourHoursAgo, userAlmostThreeDaysAgo);
+        List<User> noGroups = tables.supportedDeliveryCity();
+        assertThat(noGroups).containsExactlyInAnyOrder(berkeley, albany, kensington);
+    }
+
+    @Test
+    public void recentlyCreatedTest() throws UserException {
+
+        ZonedDateTime now = ZonedDateTime.now();
+
+        User userNow = createUserWithCreateTime(now.toString());
+        User userFourDaysAgo = createUserWithCreateTime(now.minus(4, DAYS).toString());
+        User userFourHoursAgo = createUserWithCreateTime(now.minus(4, HOURS).toString());
+        // Add a minute of slop because the table is going to recalculate "now"
+        User userThreeDaysAgo = createUserWithCreateTime(
+                now.minus(3, DAYS).plus(1, MINUTES).toString());
+
+        List<User> users = List.of(userNow, userFourDaysAgo, userFourHoursAgo, userThreeDaysAgo);
+        Tables tables = new Tables(users);
+
+        List<User> recent = tables.recentlyCreated(3);
+        assertThat(recent).containsExactlyInAnyOrder(userNow, userFourHoursAgo, userThreeDaysAgo);
     }
 }

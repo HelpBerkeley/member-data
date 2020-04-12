@@ -46,8 +46,6 @@ public class User {
     static final String CREATED_AT_COLUMN = "Created";
     static final String APARTMENT_COLUMN = "Apartment";
 
-    static final String BERKELEY = "Berkeley";
-
     // Audit error strings
     static final String AUDIT_ERROR_MISSING_NAME = "missing name";
     static final String AUDIT_ERROR_MISSING_USERNAME = "missing user name";
@@ -55,7 +53,7 @@ public class User {
     static final String AUDIT_ERROR_MISSING_CITY = "missing city";
     static final String AUDIT_ERROR_MISSING_PHONE = "missing phone";
     static final String AUDIT_ERROR_MISSING_NEIGHBORHOOD = "missing neighborhood";
-    static final String AUDIT_ERROR_CITY_IS_NOT_BERKELEY = "City is not " + BERKELEY + ": ";
+    static final String AUDIT_ERROR_CITY_IS_NOT_BERKELEY = "City is not " + Constants.BERKELEY + ": ";
     static final String AUDIT_ERROR_NEIGHBORHOOD_UNKNOWN = "Neighborhood : ";
 
     static final String NOT_PROVIDED = "none";
@@ -360,7 +358,11 @@ public class User {
         }
 
         if (cityIsBerkeley()) {
-            city = BERKELEY;
+            city = Constants.BERKELEY;
+        } else if (cityIsAlbany()) {
+            city = Constants.ALBANY;
+        } else if (cityIsKensington()) {
+            city = Constants.KENSINGTON;
         }
     }
 
@@ -395,20 +397,18 @@ public class User {
             return;
         }
 
-        // Doesn't matter unless we start delivering outside of Berkeley.
-        if (! cityIsBerkeley()) {
+        if (! isSupportedCity()) {
             return;
         }
-
-        // If not a consumer, we don't need neighborhood information.
-//        if (! groupMembership.contains(Constants.GROUP_CONSUMERS)) {
-//            return;
-//        }
 
         if (neighborhood.toLowerCase().trim().contains("unknown")) {
             dataErrors.add(AUDIT_ERROR_NEIGHBORHOOD_UNKNOWN + neighborhood
                 + ", Address : " +  address + ", : City : " + city);
         }
+    }
+
+    boolean isSupportedCity() {
+        return cityIsBerkeley() || cityIsKensington() || cityIsAlbany();
     }
 
     private boolean cityIsBerkeley() {
@@ -450,6 +450,83 @@ public class User {
 
             case "blk":
             case "bly":
+                return true;
+        }
+
+        return false;
+    }
+
+    private boolean cityIsAlbany() {
+
+        if (city == null) {
+            return false;
+        }
+
+        // Convert to lower case
+        String cityName = city.toLowerCase();
+
+        // Remove leading trailing whitespace
+        cityName = cityName.trim();
+
+        // Has to at least start with an 'a'
+        if (! cityName.startsWith("a")) {
+            return false;
+        }
+
+        // Remove all vowels by y
+        cityName = cityName.replaceAll("[aeiou]", "");
+
+        // Replace all repeating characters with single characters - e.g. bkkllyy -> bkly
+        cityName = cityName.replaceAll("(.)\\1+","$1");
+
+        // Look for the expected spelling and some possible misspellings:
+
+        switch (cityName) {
+            case "blny":
+            case "lbny":
+            case "lbn":
+            case "bny":
+            case "bnny":
+                return true;
+        }
+
+        return false;
+    }
+
+    private boolean cityIsKensington() {
+
+        if (city == null) {
+            return false;
+        }
+
+        // Convert to lower case
+        String cityName = city.toLowerCase();
+
+        // Remove leading trailing whitespace
+        cityName = cityName.trim();
+
+        // Has to at least start with an 'k'
+        if (! cityName.startsWith("k")) {
+            return false;
+        }
+
+        // Remove all vowels by y
+        cityName = cityName.replaceAll("[aeiouy]", "");
+
+        // Replace all repeating characters with single characters - e.g. bkkllxx -> bklx
+        cityName = cityName.replaceAll("(.)\\1+","$1");
+
+        // Look for the expected spelling and some possible misspellings:
+
+        switch (cityName) {
+            case "knsngtn":
+            case "knsgntn":
+            case "knstgn":
+            case "knsgtn":
+            case "knstn":
+            case "knsntn":
+            case "ksntn":
+            case "ksgtn":
                 return true;
         }
 
