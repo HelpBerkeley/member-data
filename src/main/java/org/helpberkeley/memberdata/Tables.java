@@ -133,4 +133,20 @@ public class Tables {
 
         return supportedCityList;
     }
+
+    /**
+     * Get a list of members, who have the consumer request field set
+     * @return List of recent non-group members.
+     */
+    List<User> consumerRequests() {
+        List<User> consumerRequests = new ArrayList<>();
+
+        for (User user : sortByUserName()) {
+            if (user.hasConsumerRequest() && (! user.isConsumer())) {
+                consumerRequests.add(user);
+            }
+        }
+
+        return consumerRequests;
+    }
 }

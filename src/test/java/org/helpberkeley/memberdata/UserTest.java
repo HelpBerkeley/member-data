@@ -200,9 +200,7 @@ public class UserTest extends TestBase {
     public void nameInequalityTest() throws UserException {
 
         User user1 = createUser();
-        User user2 = User.createUser(TEST_NAME_2, TEST_USER_NAME_1,
-                TEST_ID_1, TEST_ADDRESS_1, Constants.BERKELEY, TEST_PHONE_1,
-                TEST_NEIGHBORHOOD_1, TEST_CREATED_1, TEST_APARTMENT_1);
+        User user2 = createUserWithName(TEST_NAME_2);
 
         assertThat(user1).isNotEqualTo(user2);
     }
@@ -211,9 +209,7 @@ public class UserTest extends TestBase {
     public void userNameInequalityTest() throws UserException {
 
         User user1 = createUser();
-        User user2 = User.createUser(TEST_NAME_1, TEST_USER_NAME_2,
-                TEST_ID_1, TEST_ADDRESS_1, Constants.BERKELEY, TEST_PHONE_1,
-                TEST_NEIGHBORHOOD_1, TEST_CREATED_1, TEST_APARTMENT_1);
+        User user2 = createUserWithUserName(TEST_USER_NAME_2);
 
         assertThat(user1).isNotEqualTo(user2);
     }
@@ -222,9 +218,7 @@ public class UserTest extends TestBase {
     public void idInequalityTest() throws UserException {
 
         User user1 = createUser();
-        User user2 = User.createUser(TEST_NAME_1, TEST_USER_NAME_1,
-                TEST_ID_2, TEST_ADDRESS_1, Constants.BERKELEY, TEST_PHONE_1,
-                TEST_NEIGHBORHOOD_1, TEST_CREATED_1, TEST_APARTMENT_1);
+        User user2 = createUserWithID(TEST_ID_2);
 
         assertThat(user1).isNotEqualTo(user2);
     }
@@ -233,9 +227,7 @@ public class UserTest extends TestBase {
     public void addressInequalityTest() throws UserException {
 
         User user1 = createUser();
-        User user2 = User.createUser(TEST_NAME_1, TEST_USER_NAME_1,
-                TEST_ID_2, TEST_ADDRESS_1, Constants.BERKELEY, TEST_PHONE_1,
-                TEST_NEIGHBORHOOD_1, TEST_CREATED_1, TEST_APARTMENT_1);
+        User user2 = createUserWithAddress(TEST_ADDRESS_2);
 
         assertThat(user1).isNotEqualTo(user2);
     }
@@ -244,9 +236,7 @@ public class UserTest extends TestBase {
     public void phoneInequalityTest() throws UserException {
 
         User user1 = createUser();
-        User user2 = User.createUser(TEST_NAME_1, TEST_USER_NAME_1,
-                TEST_ID_1, TEST_ADDRESS_1, Constants.BERKELEY, TEST_PHONE_2,
-                TEST_NEIGHBORHOOD_1, TEST_CREATED_1, TEST_APARTMENT_1);
+        User user2 = createUserWithPhone(TEST_PHONE_2);
 
         assertThat(user1).isNotEqualTo(user2);
     }
@@ -255,9 +245,7 @@ public class UserTest extends TestBase {
     public void neighborhoodInequalityTest() throws UserException {
 
         User user1 = createUser();
-        User user2 = User.createUser(TEST_NAME_1, TEST_USER_NAME_1,
-                TEST_ID_1, TEST_ADDRESS_1, Constants.BERKELEY, TEST_PHONE_1,
-                TEST_NEIGHBORHOOD_2, TEST_CREATED_1, TEST_APARTMENT_1);
+        User user2 = createUserWithNeighborhood(TEST_NEIGHBORHOOD_2);
 
         assertThat(user1).isNotEqualTo(user2);
     }

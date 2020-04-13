@@ -45,6 +45,8 @@ public class User {
     static final String DISPATCHER_COLUMN = "Dispatcher";
     static final String CREATED_AT_COLUMN = "Created";
     static final String APARTMENT_COLUMN = "Apartment";
+    static final String CONSUMER_REQUEST_COLUMN = "Consumer Request";
+    static final String VOLUNTEER_REQUEST_COLUMN = "Volunteer Request";
 
     // Audit error strings
     static final String AUDIT_ERROR_MISSING_NAME = "missing name";
@@ -53,7 +55,6 @@ public class User {
     static final String AUDIT_ERROR_MISSING_CITY = "missing city";
     static final String AUDIT_ERROR_MISSING_PHONE = "missing phone";
     static final String AUDIT_ERROR_MISSING_NEIGHBORHOOD = "missing neighborhood";
-    static final String AUDIT_ERROR_CITY_IS_NOT_BERKELEY = "City is not " + Constants.BERKELEY + ": ";
     static final String AUDIT_ERROR_NEIGHBORHOOD_UNKNOWN = "Neighborhood : ";
 
     static final String NOT_PROVIDED = "none";
@@ -67,6 +68,8 @@ public class User {
     private String neighborhood;
     private String createTime;
     private Boolean apartment;
+    private Boolean consumerRequest;
+    private Boolean volunteerRequest;
     private final Set<String> groupMembership = new HashSet<>();
     private final List<String> dataErrors = new ArrayList<>();
 
@@ -121,7 +124,8 @@ public class User {
         final String phoneNumber,
         final String neighborhood,
         final String createTime,
-        final Boolean apartment) {
+        final Boolean apartment,
+        final Boolean consumerRequest) {
 
         this.name = name;
         this.userName = userName;
@@ -132,6 +136,11 @@ public class User {
         this.neighborhood = neighborhood;
         this.createTime = createTime;
         this.apartment = apartment;
+        this.consumerRequest = consumerRequest;
+    }
+
+    boolean hasConsumerRequest() {
+        return consumerRequest;
     }
 
     boolean isConsumer() {
@@ -198,6 +207,16 @@ public class User {
         builder.append(Constants.GROUP_DRIVERS);
         builder.append("=");
         builder.append(isDriver());
+        builder.append(':');
+
+        builder.append(APARTMENT_COLUMN);
+        builder.append("=");
+        builder.append(isApartment());
+        builder.append(':');
+
+        builder.append(CONSUMER_REQUEST_COLUMN);
+        builder.append("=");
+        builder.append(hasConsumerRequest());
         builder.append(':');
 
         return builder.toString();
@@ -544,10 +563,12 @@ public class User {
             final String neighborhood,
             final String createdAt,
             final Boolean apartment,
+            final Boolean consumerRequest,
             final String... groups) throws UserException {
 
 
-        User user = new User(name, userName, id, address, city, phoneNumber, neighborhood, createdAt, apartment);
+        User user = new User(name, userName, id, address, city,
+                phoneNumber, neighborhood, createdAt, apartment, consumerRequest);
         for (String group : groups) {
             assert ! user.groupMembership.contains(group) : group;
             user.groupMembership.add(group);
@@ -573,10 +594,12 @@ public class User {
             final String neighborhood,
             final String createdAt,
             final Boolean apartment,
+            final Boolean consumerRequest,
             final List<String> groups) throws UserException {
 
 
-        User user = new User(name, userName, id, address, city, phoneNumber, neighborhood, createdAt, apartment);
+        User user = new User(name, userName, id, address, city,
+                phoneNumber, neighborhood, createdAt, apartment, consumerRequest);
         for (String group : groups) {
             assert ! user.groupMembership.contains(group) : group;
             user.groupMembership.add(group);
@@ -606,6 +629,7 @@ public class User {
                 + DRIVER_COLUMN + separator
                 + CREATED_AT_COLUMN + separator
                 + APARTMENT_COLUMN + separator
+                + CONSUMER_REQUEST_COLUMN + separator
                 + "\n";
     }
 
@@ -622,6 +646,7 @@ public class User {
                 && neighborhood.equals(((User)obj).neighborhood)
                 && groupMembership.equals(((User)obj).groupMembership)
                 && createTime.equals(((User)obj).createTime)
-                && apartment.equals(((User)obj).apartment);
+                && apartment.equals(((User)obj).apartment)
+                && consumerRequest.equals(((User)obj).consumerRequest);
     }
 }

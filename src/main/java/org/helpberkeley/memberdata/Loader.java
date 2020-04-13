@@ -91,7 +91,7 @@ public class Loader {
     private List<User> loadUsers() throws IOException, InterruptedException, ApiException {
         LOGGER.trace("loadUsers");
 
-        ApiQueryResult queryResult = apiClient.runQuery(Constants.QUERY_GET_USERS_V11_ID);
+        ApiQueryResult queryResult = apiClient.runQuery(Constants.QUERY_GET_USERS_V12_ID);
         return Parser.users(groups, queryResult);
     }
 }

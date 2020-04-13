@@ -29,7 +29,6 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Map;
 
 // FIX THIS, DS: WIP try to reverse-engineer upload
@@ -79,24 +78,20 @@ public class Upload {
 
 
     String generateBody() {
-        StringBuilder body = new StringBuilder();
 
         String guid = "123456789837261";
         String border = "--------" + guid + '\n';
 
-        body.append(border);
-
-        body.append("Content-Disposition: form-data; name=\"files[]\"; filename=\"");
-        body.append(fileName);
-        body.append('\n');
-
-        body.append("Content-Type: text/csv\n");
-        body.append('\n');
-        body.append(fileData);
-        body.append('\n');
-        body.append(border);
-
-        return body.toString();
+        String body = border +
+                "Content-Disposition: form-data; name=\"files[]\"; filename=\"" +
+                fileName +
+                '\n' +
+                "Content-Type: text/csv\n" +
+                '\n' +
+                fileData +
+                '\n' +
+                border;
+        return body;
     }
 
 

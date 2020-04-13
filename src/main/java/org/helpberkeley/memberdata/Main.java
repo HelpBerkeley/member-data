@@ -45,6 +45,7 @@ public class Main {
     static final String MEMBERDATA_ERRORS_FILE = "memberdata-errors";
     static final String MEMBERDATA_FILE = "member-data";
     static final String NON_CONSUMERS_FILE = "member-non-consumers";
+    static final String CONSUMER_REQUESTS_FILE = "consumer-requests";
 
     // FIX THIS, DS: make this less fragile
     static final long MEMBER_DATA_FOR_DISPATCHES_TOPID_ID = 86;
@@ -52,6 +53,8 @@ public class Main {
     static final long MEMBER_DATA_REQUIRING_ATTENTION_POST_ID = 1706;
     static final long NON_CONSUMERS_TOPIC_ID = 336;
     static final long NON_CONSUMERS_POST_ID = 1219;
+    static final long CONSUMER_REQUESTS_POST_ID = 1776;
+    static final long VOLUNTEER_REQUESTS_POST_ID = 1782;
 
     public static void main(String[] args) throws IOException, InterruptedException, ApiException {
 
@@ -64,33 +67,48 @@ public class Main {
         // Set up an HTTP client
         ApiClient apiClient = new ApiClient(memberDataProperties);
 
-        if (options.getCommand().equals(Options.COMMAND_FETCH)) {
-            // Create a User loader
-            Loader loader = new Loader(apiClient);
+        switch (options.getCommand()) {
+            case Options.COMMAND_FETCH:
+                // Create a User loader
+                Loader loader = new Loader(apiClient);
 
-            // Load the member data from the website
-            List<User> users = loader.load();
+                // Load the member data from the website
+                List<User> users = loader.load();
 
-            // Create an exporter
-            Exporter exporter = new Exporter(users);
+                // Create an exporter
+                Exporter exporter = new Exporter(users);
 
-            // Export any user errors
-            exporter.errorsToFile(MEMBERDATA_ERRORS_FILE);
+                // Export any user errors
+                exporter.errorsToFile(MEMBERDATA_ERRORS_FILE);
 
-            // Export all users
-            exporter.allMembersToFile(MEMBERDATA_FILE);
+                // Export all users
+                exporter.allMembersToFile(MEMBERDATA_FILE);
 
-            // Export recent, no-group members
-            exporter.recentlyCreatedNoGroupsToFile(NON_CONSUMERS_FILE);
-        } else if (options.getCommand().equals(Options.COMMAND_POST_ERRORS)) {
-            postUserErrors(apiClient, options.getFileName());
-        } else if (options.getCommand().equals(Options.COMMAND_UPDATE_NON_CONSUMERS)) {
-            updateNonConsumersTable(apiClient, options.getFileName());
-        } else if (options.getCommand().equals(Options.COMMAND_UPDATE_ERRORS)) {
-            updateUserErrors(apiClient, options.getFileName());
-        } else {
-            assert options.getCommand().equals(Options.COMMAND_POST_NON_CONSUMERS) : options.getCommand();
-            postNonConsumersTable(apiClient, options.getFileName());
+                // Export recent, no-group members
+//                exporter.recentlyCreatedNoGroupsToFile(NON_CONSUMERS_FILE);
+
+                // Export non-consumer group members, with a consumer request
+                exporter.consumerRequests(CONSUMER_REQUESTS_FILE);
+                break;
+            case Options.COMMAND_POST_ERRORS:
+                postUserErrors(apiClient, options.getFileName());
+                break;
+            case Options.COMMAND_UPDATE_NON_CONSUMERS:
+                updateNonConsumersTable(apiClient, options.getFileName());
+                break;
+            case Options.COMMAND_UPDATE_ERRORS:
+                updateUserErrors(apiClient, options.getFileName());
+                break;
+            case Options.COMMAND_UPDATE_CONSUMER_REQUESTS:
+                updateConsumerRequests(apiClient, options.getFileName());
+                break;
+            case Options.COMMAND_UPDATE_VOLUNTEER_REQUESTS:
+                updateVolunteerRequests(apiClient, options.getFileName());
+                break;
+            default:
+                assert options.getCommand().equals(Options.COMMAND_POST_NON_CONSUMERS) : options.getCommand();
+                postNonConsumersTable(apiClient, options.getFileName());
+                break;
         }
 
 //        postWithLinkTest(apiClient);
@@ -206,7 +224,7 @@ public class Main {
         postRaw.append("**\n\n");
 
         postRaw.append("| User Name | Address | Apartment | Neighborhood | City |\n");
-        postRaw.append("|----|---|---|---|---|\n");
+        postRaw.append("|---|---|---|---|---|\n");
 
         for (User user : users) {
             if (user.isConsumer()) {
@@ -252,7 +270,7 @@ public class Main {
         postRaw.append("**\n\n");
 
         postRaw.append("| User Name | Address | Apartment | Neighborhood | City |\n");
-        postRaw.append("|----|---|---|---|---|\n");
+        postRaw.append("|---|---|---|---|---|\n");
 
         Tables tables = new Tables(users);
         for (User user : tables.memberOfNoGroups()) {
@@ -270,6 +288,82 @@ public class Main {
         }
 
         HttpResponse<?> response = apiClient.updatePost(NON_CONSUMERS_POST_ID, postRaw.toString());
+        System.out.println(response);
+    }
+
+    static void updateConsumerRequests(ApiClient apiClient, final String fileName)
+            throws IOException, InterruptedException {
+
+        String csvData = Files.readString(Paths.get(fileName));
+        // FIX THIS, DS: constant for separator
+        List<User> users = Parser.users(csvData, ",");
+
+        StringBuilder postRaw = new StringBuilder();
+        String label =  "Newly created members requesting meals -- " + ZonedDateTime.now(
+                ZoneId.systemDefault()).format(DateTimeFormatter.ofPattern("uuuu.MM.dd HH:mm:ss"));
+
+        postRaw.append("**");
+        postRaw.append(label);
+        postRaw.append("**\n\n");
+
+        postRaw.append("| User Name | City | Address | Apartment | Phone |\n");
+        postRaw.append("|---|---|---|---|---|\n");
+
+        Tables tables = new Tables(users);
+        for (User user : tables.sortByUserName()) {
+            postRaw.append('|');
+            postRaw.append(user.getUserName());
+            postRaw.append('|');
+            postRaw.append(user.getCity());
+            postRaw.append('|');
+            postRaw.append(user.getAddress());
+            postRaw.append('|');
+            postRaw.append(user.isApartment());
+            postRaw.append('|');
+            postRaw.append(user.getPhoneNumber());
+            postRaw.append("|\n");
+        }
+
+        HttpResponse<?> response = apiClient.updatePost(CONSUMER_REQUESTS_POST_ID, postRaw.toString());
+        System.out.println(response);
+    }
+
+    static void updateVolunteerRequests(ApiClient apiClient, final String fileName)
+            throws IOException, InterruptedException {
+
+        String csvData = Files.readString(Paths.get(fileName));
+        // FIX THIS, DS: constant for separator
+        List<User> users = Parser.users(csvData, ",");
+
+        StringBuilder postRaw = new StringBuilder();
+        String label =  "New members requesting to volunteer -- " + ZonedDateTime.now(
+                ZoneId.systemDefault()).format(DateTimeFormatter.ofPattern("uuuu.MM.dd HH:mm:ss"));
+
+        postRaw.append("Placeholder to be updated by the back-end software\n\n");
+
+        postRaw.append("**");
+        postRaw.append(label);
+        postRaw.append("**\n\n");
+
+        postRaw.append("| User Name | Full Name | Phone | City |\n");
+        postRaw.append("|---|---|---|---|---|\n");
+
+//        Tables tables = new Tables(users);
+//        for (User user : tables.memberOfNoGroups()) {
+//            postRaw.append('|');
+//            postRaw.append(user.getUserName());
+//            postRaw.append('|');
+//            postRaw.append(user.getAddress());
+//            postRaw.append('|');
+//            postRaw.append(user.isApartment());
+//            postRaw.append('|');
+//            postRaw.append(user.getNeighborhood());
+//            postRaw.append('|');
+//            postRaw.append(user.getCity());
+//            postRaw.append("|\n");
+//        }
+
+        HttpResponse<?> response = apiClient.updatePost(VOLUNTEER_REQUESTS_POST_ID, postRaw.toString());
         System.out.println(response);
     }
 
@@ -296,16 +390,13 @@ public class Main {
 
     static void updateUserErrors(ApiClient apiClient, final String fileName) throws IOException, InterruptedException {
 
-        StringBuilder postRaw = new StringBuilder();
-
-        postRaw.append("**");
-        postRaw.append("Member data requiring attention -- ");
-        postRaw.append(ZonedDateTime.now(
-                ZoneId.systemDefault()).format(DateTimeFormatter.ofPattern("uuuu.MM.dd HH:mm:ss")));
-        postRaw.append("**\n\n");
-        postRaw.append(Files.readString(Paths.get(fileName)));
-
-        HttpResponse<?> response = apiClient.updatePost(MEMBER_DATA_REQUIRING_ATTENTION_POST_ID, postRaw.toString());
+        String postRaw = "**" +
+                "Member data requiring attention -- " +
+                ZonedDateTime.now(
+                        ZoneId.systemDefault()).format(DateTimeFormatter.ofPattern("uuuu.MM.dd HH:mm:ss")) +
+                "**\n\n" +
+                Files.readString(Paths.get(fileName));
+        HttpResponse<?> response = apiClient.updatePost(MEMBER_DATA_REQUIRING_ATTENTION_POST_ID, postRaw);
         System.out.println(response);
     }
 

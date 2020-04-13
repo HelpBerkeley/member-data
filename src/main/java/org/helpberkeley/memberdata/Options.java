@@ -31,6 +31,8 @@ public class Options {
     static final String COMMAND_POST_NON_CONSUMERS = "post-non-consumers";
     static final String COMMAND_UPDATE_ERRORS = "update-errors";
     static final String COMMAND_UPDATE_NON_CONSUMERS = "update-non-consumers";
+    static final String COMMAND_UPDATE_CONSUMER_REQUESTS = "update-consumer-requests";
+    static final String COMMAND_UPDATE_VOLUNTEER_REQUESTS = "update-volunteer-requests";
 
     static final String USAGE_ERROR = "Usage error: ";
     static final String UNKNOWN_COMMAND = USAGE_ERROR + "unknown command: ";
@@ -41,9 +43,10 @@ public class Options {
     static final String USAGE =
             "Usage: " + COMMAND_FETCH + "\n"
                     + "    | " + COMMAND_POST_ERRORS + " errors-file-name\n"
-                    + "    | " + COMMAND_POST_NON_CONSUMERS + " non-consumers-file-name"
+                    + "    | " + COMMAND_POST_NON_CONSUMERS + " non-consumers-file-name\n"
                     + "    | " + COMMAND_UPDATE_ERRORS + " errors-file-name\n"
-                    + "    | " + COMMAND_UPDATE_NON_CONSUMERS + " non-consumers-file-name";
+                    + "    | " + COMMAND_UPDATE_NON_CONSUMERS + " non-consumers-file-name\n"
+                    + "    | " + COMMAND_UPDATE_CONSUMER_REQUESTS + " consumer-requests-file-name\n";
 
     private final String[] args;
     private String command;
@@ -68,6 +71,8 @@ public class Options {
                 case COMMAND_POST_NON_CONSUMERS:
                 case COMMAND_UPDATE_ERRORS:
                 case COMMAND_UPDATE_NON_CONSUMERS:
+                case COMMAND_UPDATE_CONSUMER_REQUESTS:
+                case COMMAND_UPDATE_VOLUNTEER_REQUESTS:
                     setCommand(arg);
                     index++;
                     if (index == args.length) {

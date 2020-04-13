@@ -23,9 +23,10 @@ package org.helpberkeley.memberdata;
 
 public class Constants {
     public static final int QUERY_GET_USERS_ID = 1;
-    public static final int QUERY_GET_USERS_V11_ID = 8;
     public static final int QUERY_GET_GROUPS_ID = 3;
     public static final int QUERY_GET_GROUP_USERS_ID = 4;
+    public static final int QUERY_GET_USERS_V11_ID = 8;
+    public static final int QUERY_GET_USERS_V12_ID = 9;
 
     public static final String COLUMN_ID = "id";
     public static final String COLUMN_NAME = "name";
@@ -38,6 +39,7 @@ public class Constants {
     public static final String COLUMN_NEIGHBORHOOD = "neighborhood";
     public static final String COLUMN_APARTMENT = "apartment";
     public static final String COLUMN_CREATE_TIME = "created_at";
+    public static final String COLUMN_CONSUMER_REQUEST = "consumer_request";
 
     // Group names - FIX THIS, DS: hardwired
     public static final String GROUP_CONSUMERS = "consumers";
@@ -46,5 +48,5 @@ public class Constants {
 
     static final String BERKELEY = "Berkeley";
     static final String ALBANY = "Albany";
-    static final String KENSINGTON = "Kensignton";
+    static final String KENSINGTON = "Kensington";
 }
