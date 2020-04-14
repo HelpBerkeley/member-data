@@ -54,6 +54,7 @@ public class Main {
     static final long MEMBER_DATA_REQUIRING_ATTENTION_POST_ID = 1706;
     static final long NON_CONSUMERS_TOPIC_ID = 336;
     static final long NON_CONSUMERS_POST_ID = 1219;
+    static final long CONSUMER_REQUESTS_TOPIC_ID = 444;
     static final long CONSUMER_REQUESTS_POST_ID = 1776;
     static final long VOLUNTEER_REQUESTS_POST_ID = 1782;
     static final long VOLUNTEER_REQUESTS_TOPIC_ID = 445;
@@ -112,6 +113,9 @@ public class Main {
                 break;
             case Options.COMMAND_POST_VOLUNTEER_REQUESTS:
                 postVolunteerRequests(apiClient, options.getFileName());
+                break;
+            case Options.COMMAND_POST_CONSUMER_REQUESTS:
+                postConsumerRequests(apiClient, options.getFileName());
                 break;
             default:
                 assert options.getCommand().equals(Options.COMMAND_POST_NON_CONSUMERS) : options.getCommand();
@@ -336,7 +340,7 @@ public class Main {
         System.out.println(response);
     }
 
-    static void posstConsumerRequests(ApiClient apiClient, final String fileName)
+    static void postConsumerRequests(ApiClient apiClient, final String fileName)
             throws IOException, InterruptedException {
 
         String csvData = Files.readString(Paths.get(fileName));
@@ -369,7 +373,14 @@ public class Main {
             postRaw.append("|\n");
         }
 
-        HttpResponse<?> response = apiClient.updatePost(CONSUMER_REQUESTS_POST_ID, postRaw.toString());
+        Post post = new Post();
+        post.title = label;
+        post.topic_id = CONSUMER_REQUESTS_TOPIC_ID;
+        post.raw = postRaw.toString();
+        post.createdAt = ZonedDateTime.now(ZoneId.systemDefault())
+                .format(DateTimeFormatter.ofPattern("uuuu.MM.dd.HH.mm.ss"));
+
+        HttpResponse<?> response = apiClient.post(post.toJson());
         System.out.println(response);
     }
 
