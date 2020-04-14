@@ -86,7 +86,7 @@ public class Tables {
         List<User> noGroups = new ArrayList<>();
 
         for (User user : sortByUserName()) {
-            if (user.isConsumer() || user.isDispatcher() || user.isDriver()) {
+            if (user.isConsumer() || user.isDispatcher() || user.isDriver() || user.isSpecialist()) {
                 continue;
             }
 
@@ -136,7 +136,7 @@ public class Tables {
 
     /**
      * Get a list of members, who have the consumer request field set
-     * @return List of recent non-group members.
+     * @return List of recent members who want meals
      */
     List<User> consumerRequests() {
         List<User> consumerRequests = new ArrayList<>();
@@ -148,5 +148,27 @@ public class Tables {
         }
 
         return consumerRequests;
+    }
+
+    /**
+     * Get a list of members, who have the volunteer request field set
+     * but are not dispatchers or drivers
+     * @return List of recent members who want to volunteer
+     */
+    List<User> volunteerRequests() {
+        List<User> volunteerRequests = new ArrayList<>();
+
+        for (User user : sortByUserName()) {
+            if (user.getVolunteerRequest().equals(User.NOT_PROVIDED)
+                    || user.getVolunteerRequest().isEmpty()) {
+                continue;
+            }
+
+            if ((! user.isDriver()) && (!user.isDispatcher()) && (! user.isSpecialist())) {
+                volunteerRequests.add(user);
+            }
+        }
+
+        return volunteerRequests;
     }
 }

@@ -83,6 +83,7 @@ public class Loader {
                 case Constants.GROUP_DRIVERS:
                 case Constants.GROUP_DISPATCHERS:
                 case Constants.GROUP_CONSUMERS:
+                case Constants.GROUP_SPECIALISTS:
                     groups.put(entry.getKey(), Group.createGroup(entry.getKey(), entry.getValue()));
             }
         }
@@ -91,7 +92,7 @@ public class Loader {
     private List<User> loadUsers() throws IOException, InterruptedException, ApiException {
         LOGGER.trace("loadUsers");
 
-        ApiQueryResult queryResult = apiClient.runQuery(Constants.QUERY_GET_USERS_V12_ID);
+        ApiQueryResult queryResult = apiClient.runQuery(Constants.CURRENT_USERS_QUERY);
         return Parser.users(groups, queryResult);
     }
 }

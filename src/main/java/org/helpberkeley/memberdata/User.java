@@ -42,6 +42,7 @@ public class User {
     static final String NEIGHBORHOOD_COLUMN = "Neighborhood";
     static final String CONSUMER_COLUMN = "Consumer";
     static final String DRIVER_COLUMN = "Driver";
+    static final String SPECIALIST_COLUMN = "Specialist";
     static final String DISPATCHER_COLUMN = "Dispatcher";
     static final String CREATED_AT_COLUMN = "Created";
     static final String APARTMENT_COLUMN = "Apartment";
@@ -69,7 +70,7 @@ public class User {
     private String createTime;
     private Boolean apartment;
     private Boolean consumerRequest;
-    private Boolean volunteerRequest;
+    private String volunteerRequest;
     private final Set<String> groupMembership = new HashSet<>();
     private final List<String> dataErrors = new ArrayList<>();
 
@@ -103,6 +104,10 @@ public class User {
         return neighborhood == null ? NOT_PROVIDED : neighborhood;
     }
 
+    public  String getVolunteerRequest() {
+        return volunteerRequest == null ? NOT_PROVIDED : volunteerRequest;
+    }
+
     public boolean isApartment() {
         return apartment;
     }
@@ -125,7 +130,8 @@ public class User {
         final String neighborhood,
         final String createTime,
         final Boolean apartment,
-        final Boolean consumerRequest) {
+        final Boolean consumerRequest,
+        final String volunteerRequest) {
 
         this.name = name;
         this.userName = userName;
@@ -137,6 +143,7 @@ public class User {
         this.createTime = createTime;
         this.apartment = apartment;
         this.consumerRequest = consumerRequest;
+        this.volunteerRequest = volunteerRequest;
     }
 
     boolean hasConsumerRequest() {
@@ -153,6 +160,9 @@ public class User {
 
     boolean isDriver() {
         return groupMembership.contains(Constants.GROUP_DRIVERS);
+    }
+    boolean isSpecialist() {
+        return groupMembership.contains(Constants.GROUP_SPECIALISTS);
     }
 
     @Override
@@ -217,6 +227,16 @@ public class User {
         builder.append(CONSUMER_REQUEST_COLUMN);
         builder.append("=");
         builder.append(hasConsumerRequest());
+        builder.append(':');
+
+        builder.append(VOLUNTEER_REQUEST_COLUMN);
+        builder.append("=");
+        builder.append(volunteerRequest == null ? NOT_PROVIDED : volunteerRequest);
+        builder.append(':');
+
+        builder.append(Constants.GROUP_SPECIALISTS);
+        builder.append("=");
+        builder.append(isSpecialist());
         builder.append(':');
 
         return builder.toString();
@@ -564,11 +584,12 @@ public class User {
             final String createdAt,
             final Boolean apartment,
             final Boolean consumerRequest,
+            final String volunteerRequest,
             final String... groups) throws UserException {
 
 
-        User user = new User(name, userName, id, address, city,
-                phoneNumber, neighborhood, createdAt, apartment, consumerRequest);
+        User user = new User(name, userName, id, address, city, phoneNumber,
+                neighborhood, createdAt, apartment, consumerRequest, volunteerRequest);
         for (String group : groups) {
             assert ! user.groupMembership.contains(group) : group;
             user.groupMembership.add(group);
@@ -595,11 +616,12 @@ public class User {
             final String createdAt,
             final Boolean apartment,
             final Boolean consumerRequest,
+            final String volunteerRequest,
             final List<String> groups) throws UserException {
 
 
-        User user = new User(name, userName, id, address, city,
-                phoneNumber, neighborhood, createdAt, apartment, consumerRequest);
+        User user = new User(name, userName, id, address, city, phoneNumber,
+                neighborhood, createdAt, apartment, consumerRequest, volunteerRequest);
         for (String group : groups) {
             assert ! user.groupMembership.contains(group) : group;
             user.groupMembership.add(group);
@@ -630,6 +652,8 @@ public class User {
                 + CREATED_AT_COLUMN + separator
                 + APARTMENT_COLUMN + separator
                 + CONSUMER_REQUEST_COLUMN + separator
+                + VOLUNTEER_REQUEST_COLUMN + separator
+                + SPECIALIST_COLUMN + separator
                 + "\n";
     }
 
@@ -647,6 +671,7 @@ public class User {
                 && groupMembership.equals(((User)obj).groupMembership)
                 && createTime.equals(((User)obj).createTime)
                 && apartment.equals(((User)obj).apartment)
-                && consumerRequest.equals(((User)obj).consumerRequest);
+                && consumerRequest.equals(((User)obj).consumerRequest)
+                && volunteerRequest.equals(((User)obj).volunteerRequest);
     }
 }

@@ -121,6 +121,8 @@ public class Exporter {
             fileData.append(separator);
             fileData.append(user.hasConsumerRequest());
             fileData.append(separator);
+            fileData.append(user.getVolunteerRequest());
+            fileData.append(separator);
             fileData.append('\n');
         }
 
@@ -165,6 +167,59 @@ public class Exporter {
             fileData.append(user.isApartment());
             fileData.append(separator);
             fileData.append(user.hasConsumerRequest());
+            fileData.append(separator);
+            fileData.append(user.getVolunteerRequest());
+            fileData.append(separator);
+            fileData.append(user.isSpecialist());
+            fileData.append(separator);
+            fileData.append('\n');
+        }
+
+        String outputFileName = generateFileName(fileName, "csv");
+        writeFile(outputFileName, fileData.toString());
+        LOGGER.debug("Fetched: " + outputFileName);
+    }
+
+    void volunteerRequests(final String fileName) throws IOException {
+
+        // FIX THIS, DS: define constant for separator
+        final String separator = ",";
+
+        StringBuilder fileData = new StringBuilder();
+        // FIX THIS, DS: define constant for separator
+        fileData.append(User.csvHeaders(separator));
+
+        for (User user : tables.volunteerRequests()) {
+
+            fileData.append(user.getId());
+            fileData.append(separator);
+            fileData.append(user.getName());
+            fileData.append(separator);
+            fileData.append(user.getUserName());
+            fileData.append(separator);
+            fileData.append(user.getPhoneNumber());
+            fileData.append(separator);
+            fileData.append(user.getNeighborhood());
+            fileData.append(separator);
+            fileData.append(user.getCity());
+            fileData.append(separator);
+            fileData.append(user.getAddress());
+            fileData.append(separator);
+            fileData.append(user.isConsumer());
+            fileData.append(separator);
+            fileData.append(user.isDispatcher());
+            fileData.append(separator);
+            fileData.append(user.isDriver());
+            fileData.append(separator);
+            fileData.append(user.getCreateTime());
+            fileData.append(separator);
+            fileData.append(user.isApartment());
+            fileData.append(separator);
+            fileData.append(user.hasConsumerRequest());
+            fileData.append(separator);
+            fileData.append(user.getVolunteerRequest());
+            fileData.append(separator);
+            fileData.append(user.isSpecialist());
             fileData.append(separator);
             fileData.append('\n');
         }
@@ -215,6 +270,10 @@ public class Exporter {
             csvData.append(user.isApartment());
             csvData.append(separator);
             csvData.append(user.hasConsumerRequest());
+            csvData.append(separator);
+            csvData.append(user.getVolunteerRequest());
+            csvData.append(separator);
+            csvData.append(user.isSpecialist());
             csvData.append(separator);
             csvData.append('\n');
         }

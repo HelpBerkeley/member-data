@@ -46,6 +46,7 @@ public class Main {
     static final String MEMBERDATA_FILE = "member-data";
     static final String NON_CONSUMERS_FILE = "member-non-consumers";
     static final String CONSUMER_REQUESTS_FILE = "consumer-requests";
+    static final String VOLUNTEER_REQUESTS_FILE = "volunteer-requests";
 
     // FIX THIS, DS: make this less fragile
     static final long MEMBER_DATA_FOR_DISPATCHES_TOPID_ID = 86;
@@ -55,6 +56,7 @@ public class Main {
     static final long NON_CONSUMERS_POST_ID = 1219;
     static final long CONSUMER_REQUESTS_POST_ID = 1776;
     static final long VOLUNTEER_REQUESTS_POST_ID = 1782;
+    static final long VOLUNTEER_REQUESTS_TOPIC_ID = 445;
 
     public static void main(String[] args) throws IOException, InterruptedException, ApiException {
 
@@ -89,6 +91,9 @@ public class Main {
 
                 // Export non-consumer group members, with a consumer request
                 exporter.consumerRequests(CONSUMER_REQUESTS_FILE);
+
+                // Export new volunteers-consumer group members, with a consumer request
+                exporter.volunteerRequests(VOLUNTEER_REQUESTS_FILE);
                 break;
             case Options.COMMAND_POST_ERRORS:
                 postUserErrors(apiClient, options.getFileName());
@@ -104,6 +109,9 @@ public class Main {
                 break;
             case Options.COMMAND_UPDATE_VOLUNTEER_REQUESTS:
                 updateVolunteerRequests(apiClient, options.getFileName());
+                break;
+            case Options.COMMAND_POST_VOLUNTEER_REQUESTS:
+                postVolunteerRequests(apiClient, options.getFileName());
                 break;
             default:
                 assert options.getCommand().equals(Options.COMMAND_POST_NON_CONSUMERS) : options.getCommand();
@@ -156,57 +164,57 @@ public class Main {
         return properties;
     }
 
-    static void postMemberData(ApiClient apiClient, List<User> users) throws IOException, InterruptedException {
-        Tables tables = new Tables(users);
-        postFullMemberTable(apiClient, "Sorted by user name", tables.sortByUserName());
-    }
-
-    static void postFullMemberTable(ApiClient apiClient, String label, List<User> users) throws IOException, InterruptedException {
-
-        StringBuilder postRaw = new StringBuilder();
-
-        postRaw.append("**");
-        postRaw.append(label);
-        postRaw.append(" -- ");
-        postRaw.append(ZonedDateTime.now(
-                ZoneId.systemDefault()).format(DateTimeFormatter.ofPattern("uuuu.MM.dd HH:mm:ss")));
-        postRaw.append("**\n\n");
-
-        postRaw.append("| Name | User Name | Phone # | Neighborhood | City | Address | Consumer | Dispatcher | Driver |\n");
-        postRaw.append("|---|---|---|---|---|---|---|---|---|\n");
-
-        for (User user : users) {
-            postRaw.append('|');
-            postRaw.append(user.getName());
-            postRaw.append('|');
-            postRaw.append(user.getUserName());
-            postRaw.append('|');
-            postRaw.append(user.getPhoneNumber());
-            postRaw.append('|');
-            postRaw.append(user.getNeighborhood());
-            postRaw.append('|');
-            postRaw.append(user.getCity());
-            postRaw.append('|');
-            postRaw.append(user.getAddress());
-            postRaw.append('|');
-            postRaw.append(user.isConsumer());
-            postRaw.append('|');
-            postRaw.append(user.isDispatcher());
-            postRaw.append('|');
-            postRaw.append(user.isDriver());
-            postRaw.append("|\n");
-        }
-
-        Post post = new Post();
-        post.title = label;
-        post.topic_id = MEMBER_DATA_FOR_DISPATCHES_TOPID_ID;
-        post.raw = postRaw.toString();
-        post.createdAt = ZonedDateTime.now(ZoneId.systemDefault())
-                .format(DateTimeFormatter.ofPattern("uuuu.MM.dd.HH.mm.ss"));
-
-        HttpResponse<?> response = apiClient.post(post.toJson());
-        System.out.println(response);
-    }
+//    static void postMemberData(ApiClient apiClient, List<User> users) throws IOException, InterruptedException {
+//        Tables tables = new Tables(users);
+//        postFullMemberTable(apiClient, "Sorted by user name", tables.sortByUserName());
+//    }
+//
+//    static void postFullMemberTable(ApiClient apiClient, String label, List<User> users) throws IOException, InterruptedException {
+//
+//        StringBuilder postRaw = new StringBuilder();
+//
+//        postRaw.append("**");
+//        postRaw.append(label);
+//        postRaw.append(" -- ");
+//        postRaw.append(ZonedDateTime.now(
+//                ZoneId.systemDefault()).format(DateTimeFormatter.ofPattern("uuuu.MM.dd HH:mm:ss")));
+//        postRaw.append("**\n\n");
+//
+//        postRaw.append("| Name | User Name | Phone # | Neighborhood | City | Address | Consumer | Dispatcher | Driver |\n");
+//        postRaw.append("|---|---|---|---|---|---|---|---|---|\n");
+//
+//        for (User user : users) {
+//            postRaw.append('|');
+//            postRaw.append(user.getName());
+//            postRaw.append('|');
+//            postRaw.append(user.getUserName());
+//            postRaw.append('|');
+//            postRaw.append(user.getPhoneNumber());
+//            postRaw.append('|');
+//            postRaw.append(user.getNeighborhood());
+//            postRaw.append('|');
+//            postRaw.append(user.getCity());
+//            postRaw.append('|');
+//            postRaw.append(user.getAddress());
+//            postRaw.append('|');
+//            postRaw.append(user.isConsumer());
+//            postRaw.append('|');
+//            postRaw.append(user.isDispatcher());
+//            postRaw.append('|');
+//            postRaw.append(user.isDriver());
+//            postRaw.append("|\n");
+//        }
+//
+//        Post post = new Post();
+//        post.title = label;
+//        post.topic_id = MEMBER_DATA_FOR_DISPATCHES_TOPID_ID;
+//        post.raw = postRaw.toString();
+//        post.createdAt = ZonedDateTime.now(ZoneId.systemDefault())
+//                .format(DateTimeFormatter.ofPattern("uuuu.MM.dd.HH.mm.ss"));
+//
+//        HttpResponse<?> response = apiClient.post(post.toJson());
+//        System.out.println(response);
+//    }
 
     static void postNonConsumersTable(ApiClient apiClient, final String fileName)
             throws IOException, InterruptedException {
@@ -328,6 +336,43 @@ public class Main {
         System.out.println(response);
     }
 
+    static void posstConsumerRequests(ApiClient apiClient, final String fileName)
+            throws IOException, InterruptedException {
+
+        String csvData = Files.readString(Paths.get(fileName));
+        // FIX THIS, DS: constant for separator
+        List<User> users = Parser.users(csvData, ",");
+
+        StringBuilder postRaw = new StringBuilder();
+        String label =  "Newly created members requesting meals -- " + ZonedDateTime.now(
+                ZoneId.systemDefault()).format(DateTimeFormatter.ofPattern("uuuu.MM.dd HH:mm:ss"));
+
+        postRaw.append("**");
+        postRaw.append(label);
+        postRaw.append("**\n\n");
+
+        postRaw.append("| User Name | City | Address | Apartment | Phone |\n");
+        postRaw.append("|---|---|---|---|---|\n");
+
+        Tables tables = new Tables(users);
+        for (User user : tables.sortByUserName()) {
+            postRaw.append('|');
+            postRaw.append(user.getUserName());
+            postRaw.append('|');
+            postRaw.append(user.getCity());
+            postRaw.append('|');
+            postRaw.append(user.getAddress());
+            postRaw.append('|');
+            postRaw.append(user.isApartment());
+            postRaw.append('|');
+            postRaw.append(user.getPhoneNumber());
+            postRaw.append("|\n");
+        }
+
+        HttpResponse<?> response = apiClient.updatePost(CONSUMER_REQUESTS_POST_ID, postRaw.toString());
+        System.out.println(response);
+    }
+
     static void updateVolunteerRequests(ApiClient apiClient, final String fileName)
             throws IOException, InterruptedException {
 
@@ -364,6 +409,49 @@ public class Main {
 //        }
 
         HttpResponse<?> response = apiClient.updatePost(VOLUNTEER_REQUESTS_POST_ID, postRaw.toString());
+        System.out.println(response);
+    }
+    static void postVolunteerRequests(ApiClient apiClient, final String fileName)
+            throws IOException, InterruptedException {
+
+        String csvData = Files.readString(Paths.get(fileName));
+        // FIX THIS, DS: constant for separator
+        List<User> users = Parser.users(csvData, ",");
+
+        StringBuilder postRaw = new StringBuilder();
+        String label =  "New members requesting to volunteer -- " + ZonedDateTime.now(
+                ZoneId.systemDefault()).format(DateTimeFormatter.ofPattern("uuuu.MM.dd HH:mm:ss"));
+
+        postRaw.append("**");
+        postRaw.append(label);
+        postRaw.append("**\n\n");
+
+        postRaw.append("| User Name | Full Name | Phone | City | Volunteer Request |\n");
+        postRaw.append("|---|---|---|---|---|---|\n");
+
+        Tables tables = new Tables(users);
+        for (User user : tables.volunteerRequests()) {
+            postRaw.append('|');
+            postRaw.append(user.getUserName());
+            postRaw.append('|');
+            postRaw.append(user.getName());
+            postRaw.append('|');
+            postRaw.append(user.getPhoneNumber());
+            postRaw.append('|');
+            postRaw.append(user.getCity());
+            postRaw.append('|');
+            postRaw.append(user.getVolunteerRequest());
+            postRaw.append("|\n");
+        }
+
+        Post post = new Post();
+        post.title = label;
+        post.topic_id = VOLUNTEER_REQUESTS_TOPIC_ID;
+        post.raw = postRaw.toString();
+        post.createdAt = ZonedDateTime.now(ZoneId.systemDefault())
+                .format(DateTimeFormatter.ofPattern("uuuu.MM.dd.HH.mm.ss"));
+
+        HttpResponse<?> response = apiClient.post(post.toJson());
         System.out.println(response);
     }
 
