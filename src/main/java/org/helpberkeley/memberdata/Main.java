@@ -243,6 +243,7 @@ public class Main {
                 continue;
             }
             postRaw.append('|');
+            postRaw.append('@');
             postRaw.append(user.getUserName());
             postRaw.append('|');
             postRaw.append(user.getAddress());
@@ -287,6 +288,7 @@ public class Main {
         Tables tables = new Tables(users);
         for (User user : tables.memberOfNoGroups()) {
             postRaw.append('|');
+            postRaw.append('@');
             postRaw.append(user.getUserName());
             postRaw.append('|');
             postRaw.append(user.getAddress());
@@ -324,6 +326,7 @@ public class Main {
         Tables tables = new Tables(users);
         for (User user : tables.sortByUserName()) {
             postRaw.append('|');
+            postRaw.append('@');
             postRaw.append(user.getUserName());
             postRaw.append('|');
             postRaw.append(user.getCity());
@@ -361,6 +364,7 @@ public class Main {
         Tables tables = new Tables(users);
         for (User user : tables.sortByUserName()) {
             postRaw.append('|');
+            postRaw.append('@');
             postRaw.append(user.getUserName());
             postRaw.append('|');
             postRaw.append(user.getCity());
@@ -443,6 +447,7 @@ public class Main {
         Tables tables = new Tables(users);
         for (User user : tables.volunteerRequests()) {
             postRaw.append('|');
+            postRaw.append('@');
             postRaw.append(user.getUserName());
             postRaw.append('|');
             postRaw.append(user.getName());
@@ -578,6 +583,25 @@ public class Main {
         Post post = new Post();
         post.title = "test upload";
         post.topic_id = 322;
+        post.raw = postRaw.toString();
+        post.createdAt = ZonedDateTime.now(ZoneId.systemDefault())
+                .format(DateTimeFormatter.ofPattern("uuuu.MM.dd.HH.mm.ss"));
+
+        HttpResponse<?> response = apiClient.post(post.toJson());
+        System.out.println(response);
+    }
+
+    static void postWithMemberLinkTest(ApiClient apiClient) throws IOException, InterruptedException {
+
+        StringBuilder postRaw = new StringBuilder();
+
+        postRaw.append("**Testing Post via API with member link**\n");
+        postRaw.append("@stone");
+
+
+        Post post = new Post();
+        post.title = "test post";
+        post.topic_id = 422;
         post.raw = postRaw.toString();
         post.createdAt = ZonedDateTime.now(ZoneId.systemDefault())
                 .format(DateTimeFormatter.ofPattern("uuuu.MM.dd.HH.mm.ss"));

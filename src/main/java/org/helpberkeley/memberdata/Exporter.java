@@ -70,7 +70,7 @@ public class Exporter {
 
         for (User user : tables.sortByUserName()) {
             for (String error : user.getDataErrors()) {
-                fileData.append("User: ");
+                fileData.append("User: @");
                 fileData.append(user.getUserName());
                 fileData.append(": ");
                 fileData.append(error);
