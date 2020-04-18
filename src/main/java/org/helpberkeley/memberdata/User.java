@@ -56,7 +56,7 @@ public class User {
     static final String AUDIT_ERROR_MISSING_CITY = "missing city";
     static final String AUDIT_ERROR_MISSING_PHONE = "missing phone";
     static final String AUDIT_ERROR_MISSING_NEIGHBORHOOD = "missing neighborhood";
-    static final String AUDIT_ERROR_NEIGHBORHOOD_UNKNOWN = "Neighborhood : ";
+    static final String AUDIT_ERROR_NEIGHBORHOOD_UNKNOWN = "Neighborhood unknown";
 
     static final String NOT_PROVIDED = "none";
 
@@ -362,20 +362,20 @@ public class User {
 
         switch (digits.length()) {
             case 7:
-                dataErrors.add("Assuming 510. Missing area code");
+                dataErrors.add("Phone missing area code, assuming 510");
                 digits = "510" + digits;
                 break;
             case 10:
                 break;
             case 11:
                 if (! digits.startsWith("1")) {
-                    dataErrors.add("Cannot parse phone number: " + phoneNumber);
+                    dataErrors.add("Cannot parse phone number");
                 } else {
                     digits = digits.substring(1);
                 }
                 break;
             default:
-                dataErrors.add("Cannot parse phone number: " + phoneNumber);
+                dataErrors.add("Cannot parse phone number");
                 return;
         }
 
@@ -441,8 +441,7 @@ public class User {
         }
 
         if (neighborhood.toLowerCase().trim().contains("unknown")) {
-            dataErrors.add(AUDIT_ERROR_NEIGHBORHOOD_UNKNOWN + neighborhood
-                + ", Address : " +  address + ", : City : " + city);
+            dataErrors.add(AUDIT_ERROR_NEIGHBORHOOD_UNKNOWN);
         }
     }
 

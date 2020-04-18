@@ -330,10 +330,7 @@ public class UserTest extends TestBase {
             assertThat(thrown).isInstanceOf(UserException.class);
             UserException userException = (UserException) thrown;
             assertThat(userException.user).isNotNull();
-            assertThat(userException.user.getDataErrors()).contains(
-                    User.AUDIT_ERROR_NEIGHBORHOOD_UNKNOWN + neighborhood + ", "
-                            + User.ADDRESS_COLUMN + " : " + userException.user.getAddress() + ", : "
-                            + User.CITY_COLUMN + " : " + createUser().getCity());
+            assertThat(userException.user.getDataErrors()).contains(User.AUDIT_ERROR_NEIGHBORHOOD_UNKNOWN);
         }
     }
 
@@ -349,10 +346,7 @@ public class UserTest extends TestBase {
         assertThat(thrown).isInstanceOf(UserException.class);
         UserException userException = (UserException) thrown;
         assertThat(userException.user).isNotNull();
-        assertThat(userException.user.getDataErrors()).contains(
-                User.AUDIT_ERROR_NEIGHBORHOOD_UNKNOWN + "unknown, "
-                        + User.ADDRESS_COLUMN + " : " + userException.user.getAddress() + ", : "
-                        + User.CITY_COLUMN + " : " + createUser().getCity());
+        assertThat(userException.user.getDataErrors()).contains(User.AUDIT_ERROR_NEIGHBORHOOD_UNKNOWN);
     }
 
     @Test
@@ -361,9 +355,6 @@ public class UserTest extends TestBase {
         assertThat(thrown).isInstanceOf(UserException.class);
         UserException userException = (UserException) thrown;
         assertThat(userException.user).isNotNull();
-        assertThat(userException.user.getDataErrors()).contains(
-                User.AUDIT_ERROR_NEIGHBORHOOD_UNKNOWN + "unknown, "
-                        + User.ADDRESS_COLUMN + " : " + userException.user.getAddress() + ", : "
-                        + User.CITY_COLUMN + " : " + createUser().getCity());
+        assertThat(userException.user.getDataErrors()).contains(User.AUDIT_ERROR_NEIGHBORHOOD_UNKNOWN);
     }
 }
