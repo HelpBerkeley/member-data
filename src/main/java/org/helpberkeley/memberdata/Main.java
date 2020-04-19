@@ -47,6 +47,7 @@ public class Main {
     static final String NON_CONSUMERS_FILE = "member-non-consumers";
     static final String CONSUMER_REQUESTS_FILE = "consumer-requests";
     static final String VOLUNTEER_REQUESTS_FILE = "volunteer-requests";
+    static final String DRIVERS_FILE = "drivers";
 
     // FIX THIS, DS: make this less fragile
     static final long MEMBER_DATA_FOR_DISPATCHES_TOPID_ID = 86;
@@ -58,6 +59,7 @@ public class Main {
     static final long CONSUMER_REQUESTS_POST_ID = 1776;
     static final long VOLUNTEER_REQUESTS_POST_ID = 1782;
     static final long VOLUNTEER_REQUESTS_TOPIC_ID = 445;
+    static final long DRIVERS_POST_ID = 2757;
 
     public static void main(String[] args) throws IOException, InterruptedException, ApiException {
 
@@ -93,8 +95,11 @@ public class Main {
                 // Export non-consumer group members, with a consumer request
                 exporter.consumerRequests(CONSUMER_REQUESTS_FILE);
 
-                // Export new volunteers-consumer group members, with a consumer request
+                // Export new volunteers-consumer group members, with a volunteer request
                 exporter.volunteerRequests(VOLUNTEER_REQUESTS_FILE);
+
+                // Export drivers
+                exporter.drivers(DRIVERS_FILE);
                 break;
             case Options.COMMAND_POST_ERRORS:
                 postUserErrors(apiClient, options.getFileName());
@@ -110,6 +115,9 @@ public class Main {
                 break;
             case Options.COMMAND_UPDATE_VOLUNTEER_REQUESTS:
                 updateVolunteerRequests(apiClient, options.getFileName());
+                break;
+            case Options.COMMAND_UPDATE_DRIVERS:
+                updateDrivers(apiClient, options.getFileName());
                 break;
             case Options.COMMAND_POST_VOLUNTEER_REQUESTS:
                 postVolunteerRequests(apiClient, options.getFileName());
@@ -426,6 +434,7 @@ public class Main {
         HttpResponse<?> response = apiClient.updatePost(VOLUNTEER_REQUESTS_POST_ID, postRaw.toString());
         System.out.println(response);
     }
+
     static void postVolunteerRequests(ApiClient apiClient, final String fileName)
             throws IOException, InterruptedException {
 
@@ -501,6 +510,44 @@ public class Main {
                 "**\n\n" +
                 Files.readString(Paths.get(fileName));
         HttpResponse<?> response = apiClient.updatePost(MEMBER_DATA_REQUIRING_ATTENTION_POST_ID, postRaw);
+        System.out.println(response);
+    }
+
+    static void updateDrivers(ApiClient apiClient, final String fileName)
+            throws IOException, InterruptedException {
+
+        String csvData = Files.readString(Paths.get(fileName));
+        // FIX THIS, DS: constant for separator
+        List<User> users = Parser.users(csvData, ",");
+
+        StringBuilder postRaw = new StringBuilder();
+        String label =  "Volunteer Drivers -- " + ZonedDateTime.now(
+                ZoneId.systemDefault()).format(DateTimeFormatter.ofPattern("uuuu.MM.dd HH:mm:ss"));
+
+        postRaw.append("**");
+        postRaw.append(label);
+        postRaw.append("**\n\n");
+
+        postRaw.append("| User Name | Full Name | Phone | City | Email |\n");
+        postRaw.append("|---|---|---|---|---|---|\n");
+
+        Tables tables = new Tables(users);
+        for (User user : tables.drivers()) {
+            postRaw.append('|');
+            postRaw.append('@');
+            postRaw.append(user.getUserName());
+            postRaw.append('|');
+            postRaw.append(user.getName());
+            postRaw.append('|');
+            postRaw.append(user.getPhoneNumber());
+            postRaw.append('|');
+            postRaw.append(user.getCity());
+            postRaw.append('|');
+            postRaw.append(user.getEmail());
+            postRaw.append("|\n");
+        }
+
+        HttpResponse<?> response = apiClient.updatePost(DRIVERS_POST_ID, postRaw.toString());
         System.out.println(response);
     }
 

@@ -171,4 +171,20 @@ public class Tables {
 
         return volunteerRequests;
     }
+
+    /**
+     * Get a list of drivers
+     * @return List of drivers.
+     */
+    List<User> drivers() {
+        List<User> drivers = new ArrayList<>();
+
+        for (User user : sortByUserName()) {
+            if (user.isDriver()) {
+                drivers.add(user);
+            }
+        }
+
+        return drivers;
+    }
 }
