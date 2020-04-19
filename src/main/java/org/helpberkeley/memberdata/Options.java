@@ -36,25 +36,33 @@ public class Options {
     static final String COMMAND_UPDATE_DRIVERS = "update-drivers";
     static final String COMMAND_POST_VOLUNTEER_REQUESTS = "post-volunteer-requests";
     static final String COMMAND_POST_CONSUMER_REQUESTS = "post-consumer-requests";
+    static final String COMMAND_POST_DRIVERS = "post-drivers";
 
     static final String USAGE_ERROR = "Usage error: ";
     static final String UNKNOWN_COMMAND = USAGE_ERROR + "unknown command: ";
     static final String TOO_MANY_COMMANDS = USAGE_ERROR + "too many commands";
     static final String MISSING_COMMAND = USAGE_ERROR + "no command specified";
     static final String COMMAND_REQUIRES_FILE_NAME = " command requires a file name parameter";
+    static final String COMMAND_REQUIRES_SHORT_URL = " command requires a short URL";
+    static final String BAD_SHORT_URL = USAGE_ERROR + " short url syntax error";
 
     static final String USAGE =
             "Usage: " + COMMAND_FETCH + "\n"
                     + "    | " + COMMAND_POST_ERRORS + " errors-file-name\n"
                     + "    | " + COMMAND_POST_NON_CONSUMERS + " non-consumers-file-name\n"
+                    + "    | " + COMMAND_POST_CONSUMER_REQUESTS + " consumer-requests-file-name\n"
                     + "    | " + COMMAND_POST_VOLUNTEER_REQUESTS + " volunteer-requests-file-name\n"
+                    + "    | " + COMMAND_POST_DRIVERS + " drivers-file upload://short-url-file-name\n"
                     + "    | " + COMMAND_UPDATE_ERRORS + " errors-file-name\n"
                     + "    | " + COMMAND_UPDATE_NON_CONSUMERS + " non-consumers-file-name\n"
-                    + "    | " + COMMAND_UPDATE_CONSUMER_REQUESTS + " consumer-requests-file-name\n";
+                    + "    | " + COMMAND_UPDATE_CONSUMER_REQUESTS + " consumer-requests-file-name\n"
+                    + "    | " + COMMAND_UPDATE_VOLUNTEER_REQUESTS + " volunteer-requests-file-name\n"
+                    + "    | " + COMMAND_UPDATE_DRIVERS + " drivers-file upload://short-url-file-name\n";
 
     private final String[] args;
     private String command;
     private String fileName;
+    private String shortURL;
     private boolean exceptionsEnabled = false;
 
 
@@ -79,6 +87,14 @@ public class Options {
                 case COMMAND_UPDATE_NON_CONSUMERS:
                 case COMMAND_UPDATE_CONSUMER_REQUESTS:
                 case COMMAND_UPDATE_VOLUNTEER_REQUESTS:
+                    setCommand(arg);
+                    index++;
+                    if (index == args.length) {
+                        dieUsage(USAGE_ERROR + arg + COMMAND_REQUIRES_FILE_NAME);
+                    }
+                    fileName = args[index];
+                    break;
+                case COMMAND_POST_DRIVERS:
                 case COMMAND_UPDATE_DRIVERS:
                     setCommand(arg);
                     index++;
@@ -86,6 +102,12 @@ public class Options {
                         dieUsage(USAGE_ERROR + arg + COMMAND_REQUIRES_FILE_NAME);
                     }
                     fileName = args[index];
+
+                    index++;
+                    if (index == args.length) {
+                        dieUsage(USAGE_ERROR + arg + COMMAND_REQUIRES_SHORT_URL);
+                    }
+                    shortURL = args[index];
                     break;
                 default:
                     dieUsage(UNKNOWN_COMMAND + arg);
@@ -94,6 +116,15 @@ public class Options {
 
         if (command == null) {
             dieUsage(MISSING_COMMAND);
+        }
+
+        if ((command.equals(COMMAND_POST_DRIVERS) || command.equals(COMMAND_UPDATE_DRIVERS))) {
+            if (shortURL == null) {
+                dieUsage(COMMAND_REQUIRES_SHORT_URL);
+            }
+            if (! shortURL.startsWith("upload://")) {
+                dieUsage(BAD_SHORT_URL);
+            }
         }
     }
 
@@ -107,6 +138,10 @@ public class Options {
 
     String getFileName() {
         return fileName;
+    }
+
+    String getShortURL() {
+        return shortURL;
     }
 
     private void setCommand(final String command) {

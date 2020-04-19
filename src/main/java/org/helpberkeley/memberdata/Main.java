@@ -59,7 +59,9 @@ public class Main {
     static final long CONSUMER_REQUESTS_POST_ID = 1776;
     static final long VOLUNTEER_REQUESTS_POST_ID = 1782;
     static final long VOLUNTEER_REQUESTS_TOPIC_ID = 445;
-    static final long DRIVERS_POST_ID = 2757;
+    static final long DRIVERS_POST_ID = 2808;
+    static final long DRIVERS_POST_TOPIC = 638;
+    static final long STONE_TEST_TOPIC = 422;
 
     public static void main(String[] args) throws IOException, InterruptedException, ApiException {
 
@@ -117,13 +119,16 @@ public class Main {
                 updateVolunteerRequests(apiClient, options.getFileName());
                 break;
             case Options.COMMAND_UPDATE_DRIVERS:
-                updateDrivers(apiClient, options.getFileName());
+                updateDrivers(apiClient, options.getFileName(), options.getShortURL());
                 break;
             case Options.COMMAND_POST_VOLUNTEER_REQUESTS:
                 postVolunteerRequests(apiClient, options.getFileName());
                 break;
             case Options.COMMAND_POST_CONSUMER_REQUESTS:
                 postConsumerRequests(apiClient, options.getFileName());
+                break;
+            case Options.COMMAND_POST_DRIVERS:
+                postDrivers(apiClient, options.getFileName(), options.getShortURL());
                 break;
             default:
                 assert options.getCommand().equals(Options.COMMAND_POST_NON_CONSUMERS) : options.getCommand();
@@ -513,7 +518,32 @@ public class Main {
         System.out.println(response);
     }
 
-    static void updateDrivers(ApiClient apiClient, final String fileName)
+    static void postDrivers(ApiClient apiClient, final String fileName, final String shortUrl)
+            throws IOException, InterruptedException {
+
+        StringBuilder postRaw = new StringBuilder();
+
+        postRaw.append("** ");
+        postRaw.append("Volunteer Drivers -- ");
+        postRaw.append(ZonedDateTime.now(
+                ZoneId.systemDefault()).format(DateTimeFormatter.ofPattern("uuuu.MM.dd HH:mm:ss")));
+        postRaw.append(" **\n\n");
+
+        // postRaw.append("[" + fileName + "|attachment](upload://" + fileName + ") (5.49 KB)");
+        postRaw.append("[" + fileName + "|attachment](" + shortUrl + ")");
+
+        Post post = new Post();
+        post.title = "Volunteer Drivers";
+        post.topic_id = DRIVERS_POST_TOPIC;
+        post.createdAt = ZonedDateTime.now(ZoneId.systemDefault())
+                .format(DateTimeFormatter.ofPattern("uuuu.MM.dd.HH.mm.ss"));
+
+        post.raw = postRaw.toString();
+        HttpResponse<?> response = apiClient.post(post.toJson());
+        System.out.println(response);
+    }
+
+    static void updateDrivers(ApiClient apiClient, final String fileName, final String shortUrl)
             throws IOException, InterruptedException {
 
         String csvData = Files.readString(Paths.get(fileName));
@@ -528,24 +558,8 @@ public class Main {
         postRaw.append(label);
         postRaw.append("**\n\n");
 
-        postRaw.append("| User Name | Full Name | Phone | City | Email |\n");
-        postRaw.append("|---|---|---|---|---|---|\n");
-
-        Tables tables = new Tables(users);
-        for (User user : tables.drivers()) {
-            postRaw.append('|');
-            postRaw.append('@');
-            postRaw.append(user.getUserName());
-            postRaw.append('|');
-            postRaw.append(user.getName());
-            postRaw.append('|');
-            postRaw.append(user.getPhoneNumber());
-            postRaw.append('|');
-            postRaw.append(user.getCity());
-            postRaw.append('|');
-            postRaw.append(user.getEmail());
-            postRaw.append("|\n");
-        }
+        // postRaw.append("[" + fileName + "|attachment](upload://" + fileName + ") (5.49 KB)");
+        postRaw.append("[" + fileName + "|attachment](" + shortUrl + ")");
 
         HttpResponse<?> response = apiClient.updatePost(DRIVERS_POST_ID, postRaw.toString());
         System.out.println(response);

@@ -191,7 +191,7 @@ public class ApiClient {
         String boundary = new BigInteger(256, new Random()).toString();
 
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create("https://helpberkeley.org/uploads.json"))
+                .uri(URI.create(UPLOADS_ENDPOINT))
                 .header("Api-Username", apiUser)
                 .header("Api-Key", apiKey)
                 .header("Synchronous", "1")
