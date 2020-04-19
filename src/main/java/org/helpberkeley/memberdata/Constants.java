@@ -29,6 +29,7 @@ public class Constants {
     public static final int QUERY_GET_USERS_V12_ID = 9;
     public static final int QUERY_GET_USERS_V13_ID = 10;
     public static final int CURRENT_USERS_QUERY = QUERY_GET_USERS_V13_ID;
+    public static final int QUERY_GET_EMAIL_ADDRESSES = 11;
 
     public static final String COLUMN_ID = "id";
     public static final String COLUMN_NAME = "name";
@@ -43,6 +44,7 @@ public class Constants {
     public static final String COLUMN_CREATE_TIME = "created_at";
     public static final String COLUMN_CONSUMER_REQUEST = "consumer_request";
     public static final String COLUMN_VOLUNTEER_REQUEST = "volunteer_request";
+    public static final String COLUMN_EMAIL = "email";
 
     // Group names - FIX THIS, DS: hardwired
     public static final String GROUP_CONSUMERS = "consumers";

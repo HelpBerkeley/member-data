@@ -123,6 +123,8 @@ public class Exporter {
             fileData.append(separator);
             fileData.append(user.getVolunteerRequest());
             fileData.append(separator);
+            fileData.append(user.getEmail());
+            fileData.append(separator);
             fileData.append('\n');
         }
 
@@ -172,6 +174,8 @@ public class Exporter {
             fileData.append(separator);
             fileData.append(user.isSpecialist());
             fileData.append(separator);
+            fileData.append(user.getEmail());
+            fileData.append(separator);
             fileData.append('\n');
         }
 
@@ -220,6 +224,8 @@ public class Exporter {
             fileData.append(user.getVolunteerRequest());
             fileData.append(separator);
             fileData.append(user.isSpecialist());
+            fileData.append(separator);
+            fileData.append(user.getEmail());
             fileData.append(separator);
             fileData.append('\n');
         }
@@ -274,6 +280,8 @@ public class Exporter {
             csvData.append(user.getVolunteerRequest());
             csvData.append(separator);
             csvData.append(user.isSpecialist());
+            csvData.append(separator);
+            csvData.append(user.getEmail());
             csvData.append(separator);
             csvData.append('\n');
         }

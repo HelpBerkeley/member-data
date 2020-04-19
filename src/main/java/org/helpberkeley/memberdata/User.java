@@ -48,6 +48,7 @@ public class User {
     static final String APARTMENT_COLUMN = "Apartment";
     static final String CONSUMER_REQUEST_COLUMN = "Consumer Request";
     static final String VOLUNTEER_REQUEST_COLUMN = "Volunteer Request";
+    static final String EMAIL_COLUMN = "Email";
 
     // Audit error strings
     static final String AUDIT_ERROR_MISSING_NAME = "missing name";
@@ -71,6 +72,7 @@ public class User {
     private Boolean apartment;
     private Boolean consumerRequest;
     private String volunteerRequest;
+    private String email;
     private final Set<String> groupMembership = new HashSet<>();
     private final List<String> dataErrors = new ArrayList<>();
 
@@ -116,6 +118,11 @@ public class User {
         return createTime;
     }
 
+    public String getEmail()
+    {
+       return email;
+    }
+
     public List<String> getDataErrors() {
         return dataErrors;
     }
@@ -131,7 +138,8 @@ public class User {
         final String createTime,
         final Boolean apartment,
         final Boolean consumerRequest,
-        final String volunteerRequest) {
+        final String volunteerRequest,
+        final String email) {
 
         this.name = name;
         this.userName = userName;
@@ -144,6 +152,7 @@ public class User {
         this.apartment = apartment;
         this.consumerRequest = consumerRequest;
         this.volunteerRequest = volunteerRequest;
+        this.email = email;
     }
 
     boolean hasConsumerRequest() {
@@ -237,6 +246,11 @@ public class User {
         builder.append(Constants.GROUP_SPECIALISTS);
         builder.append("=");
         builder.append(isSpecialist());
+        builder.append(':');
+
+        builder.append(Constants.COLUMN_EMAIL);
+        builder.append("=");
+        builder.append(getEmail());
         builder.append(':');
 
         return builder.toString();
@@ -584,11 +598,12 @@ public class User {
             final Boolean apartment,
             final Boolean consumerRequest,
             final String volunteerRequest,
+            final String email,
             final String... groups) throws UserException {
 
 
         User user = new User(name, userName, id, address, city, phoneNumber,
-                neighborhood, createdAt, apartment, consumerRequest, volunteerRequest);
+                neighborhood, createdAt, apartment, consumerRequest, volunteerRequest, email);
         for (String group : groups) {
             assert ! user.groupMembership.contains(group) : group;
             user.groupMembership.add(group);
@@ -616,11 +631,12 @@ public class User {
             final Boolean apartment,
             final Boolean consumerRequest,
             final String volunteerRequest,
+            final String email,
             final List<String> groups) throws UserException {
 
 
         User user = new User(name, userName, id, address, city, phoneNumber,
-                neighborhood, createdAt, apartment, consumerRequest, volunteerRequest);
+                neighborhood, createdAt, apartment, consumerRequest, volunteerRequest, email);
         for (String group : groups) {
             assert ! user.groupMembership.contains(group) : group;
             user.groupMembership.add(group);
@@ -653,6 +669,7 @@ public class User {
                 + CONSUMER_REQUEST_COLUMN + separator
                 + VOLUNTEER_REQUEST_COLUMN + separator
                 + SPECIALIST_COLUMN + separator
+                + EMAIL_COLUMN + separator
                 + "\n";
     }
 
@@ -671,6 +688,7 @@ public class User {
                 && createTime.equals(((User)obj).createTime)
                 && apartment.equals(((User)obj).apartment)
                 && consumerRequest.equals(((User)obj).consumerRequest)
-                && volunteerRequest.equals(((User)obj).volunteerRequest);
+                && volunteerRequest.equals(((User)obj).volunteerRequest)
+                && email.equals(((User)obj).email);
     }
 }

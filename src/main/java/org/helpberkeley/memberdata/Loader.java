@@ -40,6 +40,7 @@ public class Loader {
 
     private final ApiClient apiClient;
     private final Map<String, Group> groups = new HashMap<>();
+    private final Map<String, String> emailAddresses = new HashMap<>();
 
     // FIX THIS, DS: refactor these two ctors and the load methods
     public Loader(final ApiClient apiClient) {
@@ -65,6 +66,7 @@ public class Loader {
     public List<User> load() throws IOException, InterruptedException, ApiException {
         LOGGER.trace("load");
         loadGroups();
+        loadEmailAddresses();
         return loadUsers();
     }
 
@@ -89,10 +91,18 @@ public class Loader {
         }
     }
 
+    private void loadEmailAddresses() throws IOException, InterruptedException, ApiException {
+        LOGGER.trace("loadEmailAddresses");
+
+        ApiQueryResult apiQueryResult = apiClient.runQuery(Constants.QUERY_GET_EMAIL_ADDRESSES);
+        emailAddresses.putAll(Parser.emailAddresses(apiQueryResult));
+
+    }
+
     private List<User> loadUsers() throws IOException, InterruptedException, ApiException {
         LOGGER.trace("loadUsers");
 
         ApiQueryResult queryResult = apiClient.runQuery(Constants.CURRENT_USERS_QUERY);
-        return Parser.users(groups, queryResult);
+        return Parser.users(groups, emailAddresses, queryResult);
     }
 }

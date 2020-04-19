@@ -37,7 +37,7 @@ import static java.net.HttpURLConnection.HTTP_OK;
 
 public class ApiClient {
 
-    private static final String BASE_URL = "https://www.helpberkeley.org/";
+    private static final String BASE_URL = "https://go.helpberkeley.org/";
     private static final String ADMIN_BASE = BASE_URL +  "admin/";
     private static final String USER_ENDPOINT_BASE = ADMIN_BASE + "users/";
     private static final String LATEST_POSTS_ENDPOINT = BASE_URL + "posts.json";

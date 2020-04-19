@@ -49,7 +49,9 @@ public class Parser {
         return new ApiQueryResult(columns, rows);
     }
 
-    static List<User> users(final Map<String, Group> groups, final ApiQueryResult queryResult) {
+    static List<User> users(final Map<String, Group> groups,
+        final Map<String, String> emailAddresses, final ApiQueryResult queryResult) {
+
         LOGGER.trace("users");
 
         List<User> users = new ArrayList<>();
@@ -94,6 +96,7 @@ public class Parser {
             Boolean hasConsumerRequest = Boolean.valueOf((String)columns[8]);
             String volunteerRequest = (String)columns[9];
             String createdAt = (String)columns[10];
+            String email = emailAddresses.getOrDefault(userName, User.NOT_PROVIDED);
 
             groupMemberships.clear();
             if (consumers.hasUserId(userId)) {
@@ -111,7 +114,7 @@ public class Parser {
 
             try {
                 users.add(User.createUser(name, userName, userId, address, city, phone, neighborhood,
-                        createdAt, isApartment, hasConsumerRequest, volunteerRequest, groupMemberships));
+                        createdAt, isApartment, hasConsumerRequest, volunteerRequest, email, groupMemberships));
             } catch (UserException ex) {
                 // FIX THIS, DS: get rid of UserException?
                 users.add(ex.user);
@@ -141,7 +144,30 @@ public class Parser {
                 LOGGER.trace("getGroupNames skipping id: {}, groupName: {}", groupId, groupName);
                 continue;
             }
-            results.put((Long)columns[0], (String)columns[1]);
+            results.put(groupId, groupName);
+        }
+
+        return results;
+    }
+
+    static Map<String, String> emailAddresses(ApiQueryResult queryResult) {
+        LOGGER.trace("emailAddresses");
+
+        Map<String, String> results = new HashMap<>();
+
+        assert queryResult.headers.length == 3 :
+                "Unexpected number of columns for email query result: " + queryResult;
+        assert queryResult.headers[0].equals(Constants.COLUMN_USER_ID) : queryResult.headers[0];
+        assert queryResult.headers[1].equals(Constants.COLUMN_USERNAME) : queryResult.headers[1];
+        assert queryResult.headers[2].equals(Constants.COLUMN_EMAIL) : queryResult.headers[2];
+
+        for (Object rowObj :  queryResult.rows) {
+            Object[] columns = (Object[])rowObj;
+
+            String userName = (String)columns[1];
+            String email = (String)columns[2];
+
+            results.put(userName, email);
         }
 
         return results;
@@ -184,7 +210,7 @@ public class Parser {
         assert lines.length > 0 : csvData;
 
         String[] headers = lines[0].split(separator);
-        assert headers.length == 15 : headers.length + ": " + lines[0];
+        assert headers.length == 16 : headers.length + ": " + lines[0];
 
         assert headers[0].equals(User.ID_COLUMN) : headers[0];
         assert headers[1].equals(User.NAME_COLUMN) : headers[1];
@@ -201,6 +227,7 @@ public class Parser {
         assert headers[12].equals(User.CONSUMER_REQUEST_COLUMN) : headers[12];
         assert headers[13].equals(User.VOLUNTEER_REQUEST_COLUMN) : headers[13];
         assert headers[14].equals(User.SPECIALIST_COLUMN) : headers[14];
+        assert headers[15].equals(User.EMAIL_COLUMN) : headers[15];
 
         List<User> users = new ArrayList<>();
         List<String> groups = new ArrayList<>();
@@ -237,9 +264,11 @@ public class Parser {
                 groups.add(Constants.GROUP_SPECIALISTS);
             }
 
+            String email = columns[15];
+
             try {
                 users.add(User.createUser(name, userName, id, address, city, phone, neighborhood,
-                        createdAt, isApartment, hasConsumerRequest, volunteerRequest, groups));
+                        createdAt, isApartment, hasConsumerRequest, volunteerRequest, email, groups));
             } catch (UserException ex) {
                 users.add(ex.user);
             }
