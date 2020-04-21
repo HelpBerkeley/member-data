@@ -73,6 +73,7 @@ public class Loader {
     private void loadGroups() throws IOException, InterruptedException, ApiException {
         LOGGER.trace("loadGroups");
 
+        assert apiClient != null;
         ApiQueryResult apiQueryResult = apiClient.runQuery(Constants.QUERY_GET_GROUPS_ID);
         Map<Long, String> groupNames = Parser.groupNames(apiQueryResult);
 
@@ -94,6 +95,7 @@ public class Loader {
     private void loadEmailAddresses() throws IOException, InterruptedException, ApiException {
         LOGGER.trace("loadEmailAddresses");
 
+        assert apiClient != null;
         ApiQueryResult apiQueryResult = apiClient.runQuery(Constants.QUERY_GET_EMAIL_ADDRESSES);
         emailAddresses.putAll(Parser.emailAddresses(apiQueryResult));
 
@@ -102,6 +104,7 @@ public class Loader {
     private List<User> loadUsers() throws IOException, InterruptedException, ApiException {
         LOGGER.trace("loadUsers");
 
+        assert apiClient != null;
         ApiQueryResult queryResult = apiClient.runQuery(Constants.CURRENT_USERS_QUERY);
         return Parser.users(groups, emailAddresses, queryResult);
     }

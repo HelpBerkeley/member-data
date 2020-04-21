@@ -106,9 +106,6 @@ public class Main {
             case Options.COMMAND_POST_ERRORS:
                 postUserErrors(apiClient, options.getFileName());
                 break;
-            case Options.COMMAND_UPDATE_NON_CONSUMERS:
-                updateNonConsumersTable(apiClient, options.getFileName());
-                break;
             case Options.COMMAND_UPDATE_ERRORS:
                 updateUserErrors(apiClient, options.getFileName());
                 break;
@@ -127,38 +124,12 @@ public class Main {
             case Options.COMMAND_POST_CONSUMER_REQUESTS:
                 postConsumerRequests(apiClient, options.getFileName());
                 break;
+            default:
+                assert options.getCommand().equals(Options.COMMAND_POST_DRIVERS) : options.getCommand();
             case Options.COMMAND_POST_DRIVERS:
                 postDrivers(apiClient, options.getFileName(), options.getShortURL());
                 break;
-            default:
-                assert options.getCommand().equals(Options.COMMAND_POST_NON_CONSUMERS) : options.getCommand();
-                postNonConsumersTable(apiClient, options.getFileName());
-                break;
         }
-
-//        postWithLinkTest(apiClient);
-//        System.exit(0);
-//        uploadTest(apiClient);
-
-
-
-
-        // Post the member data to the member data for drivers topic
-//        postMemberData(apiClient, users);
-
-        // Post subset of data needed by dispatchers
-        // to make decision for promote-ability of someone to consumer.
-//        postConsumerPromotionData(apiClient, nonConsumers);
-
-
-//        usersToJson(apiClient);
-//        usersToFile(apiClient);
-//        postTableSortedByUserName(apiClient);
-//        printCSVSortedByUser(apiClient);
-//        getPostTest(apiClient);
-//        latestPosts(apiClient);
-//        postCSVTable(apiClient);
-
     }
 
     static Properties loadProperties(final String fileName) throws IOException {
@@ -233,91 +204,6 @@ public class Main {
 //        System.out.println(response);
 //    }
 
-    static void postNonConsumersTable(ApiClient apiClient, final String fileName)
-            throws IOException, InterruptedException {
-
-        String csvData = Files.readString(Paths.get(fileName));
-        // FIX THIS, DS: constant for separator
-        List<User> users = Parser.users(csvData, ",");
-
-        StringBuilder postRaw = new StringBuilder();
-        String label =  "Non-consumer members -- " + ZonedDateTime.now(
-                ZoneId.systemDefault()).format(DateTimeFormatter.ofPattern("uuuu.MM.dd HH:mm:ss"));
-
-        postRaw.append("**");
-        postRaw.append(label);
-        postRaw.append("**\n\n");
-
-        postRaw.append("| User Name | Address | Apartment | Neighborhood | City |\n");
-        postRaw.append("|---|---|---|---|---|\n");
-
-        for (User user : users) {
-            if (user.isConsumer()) {
-                continue;
-            }
-            postRaw.append('|');
-            postRaw.append('@');
-            postRaw.append(user.getUserName());
-            postRaw.append('|');
-            postRaw.append(user.getAddress());
-            postRaw.append('|');
-            postRaw.append(user.isApartment());
-            postRaw.append('|');
-            postRaw.append(user.getNeighborhood());
-            postRaw.append('|');
-            postRaw.append(user.getCity());
-            postRaw.append("|\n");
-        }
-
-        Post post = new Post();
-        post.title = label;
-        post.topic_id = NON_CONSUMERS_TOPIC_ID;
-        post.raw = postRaw.toString();
-        post.createdAt = ZonedDateTime.now(ZoneId.systemDefault())
-                .format(DateTimeFormatter.ofPattern("uuuu.MM.dd.HH.mm.ss"));
-
-        HttpResponse<?> response = apiClient.post(post.toJson());
-        System.out.println(response);
-    }
-
-    static void updateNonConsumersTable(ApiClient apiClient, final String fileName)
-            throws IOException, InterruptedException {
-
-        String csvData = Files.readString(Paths.get(fileName));
-        // FIX THIS, DS: constant for separator
-        List<User> users = Parser.users(csvData, ",");
-
-        StringBuilder postRaw = new StringBuilder();
-        String label =  "Recently created members not in any groups  -- " + ZonedDateTime.now(
-                ZoneId.systemDefault()).format(DateTimeFormatter.ofPattern("uuuu.MM.dd HH:mm:ss"));
-
-        postRaw.append("**");
-        postRaw.append(label);
-        postRaw.append("**\n\n");
-
-        postRaw.append("| User Name | Address | Apartment | Neighborhood | City |\n");
-        postRaw.append("|---|---|---|---|---|\n");
-
-        Tables tables = new Tables(users);
-        for (User user : tables.memberOfNoGroups()) {
-            postRaw.append('|');
-            postRaw.append('@');
-            postRaw.append(user.getUserName());
-            postRaw.append('|');
-            postRaw.append(user.getAddress());
-            postRaw.append('|');
-            postRaw.append(user.isApartment());
-            postRaw.append('|');
-            postRaw.append(user.getNeighborhood());
-            postRaw.append('|');
-            postRaw.append(user.getCity());
-            postRaw.append("|\n");
-        }
-
-        HttpResponse<?> response = apiClient.updatePost(NON_CONSUMERS_POST_ID, postRaw.toString());
-        System.out.println(response);
-    }
-
     static void updateConsumerRequests(ApiClient apiClient, final String fileName)
             throws IOException, InterruptedException {
 
@@ -375,7 +261,7 @@ public class Main {
         postRaw.append("|---|---|---|---|---|\n");
 
         Tables tables = new Tables(users);
-        for (User user : tables.sortByUserName()) {
+        for (User user : tables.sortByCreateTime()) {
             postRaw.append('|');
             postRaw.append('@');
             postRaw.append(user.getUserName());
@@ -459,7 +345,7 @@ public class Main {
         postRaw.append("|---|---|---|---|---|---|\n");
 
         Tables tables = new Tables(users);
-        for (User user : tables.volunteerRequests()) {
+        for (User user : new Tables(tables.volunteerRequests()).sortByCreateTime()) {
             postRaw.append('|');
             postRaw.append('@');
             postRaw.append(user.getUserName());

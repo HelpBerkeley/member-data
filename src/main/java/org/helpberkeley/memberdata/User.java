@@ -68,11 +68,11 @@ public class User {
     private String city;
     private String phoneNumber;
     private String neighborhood;
-    private String createTime;
-    private Boolean apartment;
-    private Boolean consumerRequest;
-    private String volunteerRequest;
-    private String email;
+    private final String createTime;
+    private final Boolean apartment;
+    private final Boolean consumerRequest;
+    private final String volunteerRequest;
+    private final String email;
     private final Set<String> groupMembership = new HashSet<>();
     private final List<String> dataErrors = new ArrayList<>();
 

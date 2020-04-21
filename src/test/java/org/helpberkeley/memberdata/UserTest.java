@@ -321,7 +321,7 @@ public class UserTest extends TestBase {
     }
 
     @Test
-    public void unknownBerkeleyNeighborhoodTest() throws UserException {
+    public void unknownBerkeleyNeighborhoodTest() {
 
         String[] unknowns = { "Unknown", "unknown", " unknown " };
 
@@ -341,7 +341,7 @@ public class UserTest extends TestBase {
     }
 
     @Test
-    public void unknownBerkeleyNeighborhoodDriverTest() throws UserException {
+    public void unknownBerkeleyNeighborhoodDriverTest() {
         Throwable thrown = catchThrowable(() -> createUserWithGroupAndNeighborhood(Constants.GROUP_DRIVERS, "unknown"));
         assertThat(thrown).isInstanceOf(UserException.class);
         UserException userException = (UserException) thrown;
@@ -350,7 +350,7 @@ public class UserTest extends TestBase {
     }
 
     @Test
-    public void unknownBerkeleyNeighborhoodDispatcherTest() throws UserException {
+    public void unknownBerkeleyNeighborhoodDispatcherTest() {
         Throwable thrown = catchThrowable(() -> createUserWithGroupAndNeighborhood(Constants.GROUP_CONSUMERS, "unknown"));
         assertThat(thrown).isInstanceOf(UserException.class);
         UserException userException = (UserException) thrown;

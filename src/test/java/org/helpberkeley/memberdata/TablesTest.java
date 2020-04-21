@@ -27,9 +27,7 @@ import org.junit.Test;
 import java.time.ZonedDateTime;
 import java.util.List;
 
-import static java.time.temporal.ChronoUnit.DAYS;
-import static java.time.temporal.ChronoUnit.HOURS;
-import static java.time.temporal.ChronoUnit.MINUTES;
+import static java.time.temporal.ChronoUnit.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class TablesTest extends TestBase {
@@ -82,5 +80,23 @@ public class TablesTest extends TestBase {
 
         List<User> recent = tables.recentlyCreated(3);
         assertThat(recent).containsExactlyInAnyOrder(userNow, userFourHoursAgo, userThreeDaysAgo);
+    }
+
+    @Test
+    public void sortByCreateTimeTest() throws UserException {
+
+        ZonedDateTime now = ZonedDateTime.now();
+
+        User userNow = createUserWithCreateTime(now.toString());
+        User userEightSecondsAgo = createUserWithCreateTime(now.minus(8, SECONDS).toString());
+        User userNineSecondsAgo = createUserWithCreateTime(now.minus(9, SECONDS).toString());
+        User userTomorrow = createUserWithCreateTime(now.plus(1, DAYS).toString());
+
+        List<User> users = List.of(userNow, userNineSecondsAgo, userTomorrow, userEightSecondsAgo);
+        Tables tables = new Tables(users);
+
+        assertThat(tables.sortByCreateTime()).containsExactly(
+                userNineSecondsAgo, userEightSecondsAgo, userNow, userTomorrow);
+
     }
 }

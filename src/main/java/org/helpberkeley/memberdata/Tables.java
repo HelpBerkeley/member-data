@@ -50,6 +50,13 @@ public class Tables {
         return sorted;
     }
 
+    List<User> sortByCreateTime() {
+        List<User> sorted = new ArrayList<>(users);
+        sorted.sort(Comparator.comparing(User::getCreateTime));
+
+        return sorted;
+    }
+
     List<User> sortByPhoneNumber() {
         List<User> sorted = new ArrayList<>(users);
         sorted.sort(Comparator.comparing(User::getPhoneNumber));
@@ -77,6 +84,7 @@ public class Tables {
         sorted.sort(comparator);
         return sorted;
     }
+
 
     /**
      * Get a list of members not in groups (consumer, dispatcher, driver)
