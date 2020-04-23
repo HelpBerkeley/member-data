@@ -33,6 +33,7 @@ public class TestBase {
     static final long TEST_ID_1 = 1;
     static final String TEST_USER_NAME_1 = "user name 1";
     static final String TEST_ADDRESS_1 = "address 1";
+    static final String TEST_CITY_1 = Constants.BERKELEY;
     static final String TEST_PHONE_1 = "111-222-3333";
     static final String TEST_NEIGHBORHOOD_1 = "neighborhood 1";
     static final Boolean TEST_APARTMENT_1 = Boolean.FALSE;
@@ -45,6 +46,7 @@ public class TestBase {
     static final long TEST_ID_2 = 2;
     static final String TEST_USER_NAME_2 = "user name 2";
     static final String TEST_ADDRESS_2 = "address 2";
+    static final String TEST_CITY_2 = Constants.ALBANY;
     static final String TEST_PHONE_2 = "222-333-4444";
     static final String TEST_NEIGHBORHOOD_2 = "neighborhood 2";
     static final Boolean TEST_APARTMENT_2 = Boolean.TRUE;
@@ -57,6 +59,7 @@ public class TestBase {
     static final long TEST_ID_3 = 3;
     static final String TEST_USER_NAME_3 = "user name 3";
     static final String TEST_ADDRESS_3 = "address 3";
+    static final String TEST_CITY_3 = Constants.KENSINGTON;
     static final String TEST_PHONE_3 = "333-444-5555";
     static final String TEST_NEIGHBORHOOD_3 = "neighborhood 3";
     static final Boolean TEST_APARTMENT_3 = Boolean.FALSE;
@@ -198,6 +201,29 @@ public class TestBase {
         return User.createUser(TEST_NAME_1, TEST_USER_NAME_1,
                 TEST_ID_1, TEST_ADDRESS_1, city, TEST_PHONE_1, TEST_NEIGHBORHOOD_1,
                 createTime, TEST_APARTMENT_1, TEST_CONSUMER_REQUEST_1, TEST_VOLUNTEER_REQUEST_1,
+                TEST_EMAIL_1);
+    }
+
+    protected User createUserWithUserNameAndConsumerRequest(final String userName) throws UserException {
+
+        return User.createUser(TEST_NAME_1, userName, TEST_ID_1, TEST_ADDRESS_1,
+                TEST_CITY_1, TEST_PHONE_1, TEST_NEIGHBORHOOD_1, TEST_CREATED_1,
+                TEST_APARTMENT_1, true, TEST_VOLUNTEER_REQUEST_1, TEST_EMAIL_1);
+    }
+    protected User createUserWithUserNameAndConsumerRequestAndConsumerGroup(
+            final String userName) throws UserException {
+
+        return User.createUser(TEST_NAME_1, userName, TEST_ID_1, TEST_ADDRESS_1,
+                TEST_CITY_1, TEST_PHONE_1, TEST_NEIGHBORHOOD_1, TEST_CREATED_1,
+                TEST_APARTMENT_1, true, TEST_VOLUNTEER_REQUEST_1,
+                TEST_EMAIL_1, Constants.GROUP_CONSUMERS);
+    }
+
+    protected User createUserWithUserNameAndVolunteerRequest(final String userName) throws UserException {
+
+        return User.createUser(TEST_NAME_1, userName, TEST_ID_1, TEST_ADDRESS_1,
+                TEST_CITY_1, TEST_PHONE_1, TEST_NEIGHBORHOOD_1, TEST_CREATED_1,
+                TEST_APARTMENT_1, TEST_CONSUMER_REQUEST_1, "Drive, Drive, Drive",
                 TEST_EMAIL_1);
     }
 }

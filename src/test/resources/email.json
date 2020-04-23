@@ -1,0 +1,25 @@
+{
+  "success": true,
+  "errors": [],
+  "duration": 1.5,
+  "result_count": 176,
+  "params": {},
+  "columns": [
+    "user_id",
+    "username",
+    "email"
+  ],
+  "default_limit": 1000,
+  "rows": [
+    [
+      1,
+      "xyzzy",
+      "xyzzy@me.com"
+    ],
+    [
+      2,
+      "ZZZ",
+      "zyxxy@adventuretime.com"
+    ]
+  ]
+}

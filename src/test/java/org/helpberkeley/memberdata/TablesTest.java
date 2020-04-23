@@ -97,6 +97,39 @@ public class TablesTest extends TestBase {
 
         assertThat(tables.sortByCreateTime()).containsExactly(
                 userNineSecondsAgo, userEightSecondsAgo, userNow, userTomorrow);
+    }
 
+    public void consumerRequestsTest() throws UserException {
+
+        User user1 = createUserWithUserNameAndConsumerRequest("u1");
+        User user2 = createUserWithUserName("u3");
+        User user3 = createUserWithUserNameAndConsumerRequest("u3");
+        User user4 = createUserWithUserName("u4");
+
+        Tables tables = new Tables(List.of(user1, user2, user3, user4));
+        assertThat(tables.consumerRequests()).containsExactlyInAnyOrder(user1, user3);
+    }
+
+    @Test
+    public void consumerRequestsInConsumerGroupTest() throws UserException {
+
+        User user1 = createUserWithUserNameAndConsumerRequestAndConsumerGroup("u1");
+        User user2 = createUserWithUserNameAndConsumerRequest("u2");
+        User user3 = createUserWithUserNameAndConsumerRequestAndConsumerGroup("u3");
+        User user4 = createUserWithUserNameAndConsumerRequest("u4");
+
+        Tables tables = new Tables(List.of(user1, user2, user3, user4));
+        assertThat(tables.consumerRequests()).containsExactlyInAnyOrder(user2, user4);
+    }
+
+    @Test
+    public void volunteerRequestTest() throws UserException {
+
+        User user1 = createTestUser1();
+        User user2 = createTestUser2();
+        User user3 = createTestUser3();
+
+        Tables tables = new Tables(List.of(user1, user2, user3));
+        assertThat(tables.volunteerRequests()).containsExactly(user1);
     }
 }

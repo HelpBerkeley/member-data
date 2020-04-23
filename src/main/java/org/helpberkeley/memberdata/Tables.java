@@ -37,12 +37,12 @@ public class Tables {
         this.users = users;
     }
 
-    List<User> sortByName() {
-        List<User> sorted = new ArrayList<>(users);
-
-        sorted.sort(Comparator.comparing(User::getName, String.CASE_INSENSITIVE_ORDER));
-        return sorted;
-    }
+//    List<User> sortByName() {
+//        List<User> sorted = new ArrayList<>(users);
+//
+//        sorted.sort(Comparator.comparing(User::getName, String.CASE_INSENSITIVE_ORDER));
+//        return sorted;
+//    }
 
     List<User> sortByUserName() {
         List<User> sorted = new ArrayList<>(users);
@@ -57,33 +57,33 @@ public class Tables {
         return sorted;
     }
 
-    List<User> sortByPhoneNumber() {
-        List<User> sorted = new ArrayList<>(users);
-        sorted.sort(Comparator.comparing(User::getPhoneNumber));
-        return sorted;
-    }
-
-    List<User> sortByNeighborHoodThenName() {
-        List<User> sorted = new ArrayList<>(users);
-
-        Comparator<User> comparator = Comparator
-                .comparing(User::getNeighborhood, String.CASE_INSENSITIVE_ORDER)
-                .thenComparing(User::getName, String.CASE_INSENSITIVE_ORDER);
-
-        sorted.sort(comparator);
-        return sorted;
-    }
-
-    List<User> sortByNeighborThenByAddress() {
-        List<User> sorted = new ArrayList<>(users);
-
-        Comparator<User> comparator = Comparator
-                .comparing(User::getNeighborhood, String.CASE_INSENSITIVE_ORDER)
-                .thenComparing(User::getAddress);
-
-        sorted.sort(comparator);
-        return sorted;
-    }
+//    List<User> sortByPhoneNumber() {
+//        List<User> sorted = new ArrayList<>(users);
+//        sorted.sort(Comparator.comparing(User::getPhoneNumber));
+//        return sorted;
+//    }
+//
+//    List<User> sortByNeighborHoodThenName() {
+//        List<User> sorted = new ArrayList<>(users);
+//
+//        Comparator<User> comparator = Comparator
+//                .comparing(User::getNeighborhood, String.CASE_INSENSITIVE_ORDER)
+//                .thenComparing(User::getName, String.CASE_INSENSITIVE_ORDER);
+//
+//        sorted.sort(comparator);
+//        return sorted;
+//    }
+//
+//    List<User> sortByNeighborThenByAddress() {
+//        List<User> sorted = new ArrayList<>(users);
+//
+//        Comparator<User> comparator = Comparator
+//                .comparing(User::getNeighborhood, String.CASE_INSENSITIVE_ORDER)
+//                .thenComparing(User::getAddress);
+//
+//        sorted.sort(comparator);
+//        return sorted;
+//    }
 
 
     /**

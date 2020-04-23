@@ -1,0 +1,46 @@
+{
+  "success": true,
+  "errors": [],
+  "columns": [
+    "user_id",
+    "username",
+    "name",
+    "address",
+    "phone",
+    "neighborhood",
+    "city",
+    "apartment",
+    "consumer_request",
+    "volunteer_request",
+    "created_at"
+  ],
+  "default_limit": 1000,
+  "rows": [
+    [
+      33,
+      "Xyzzy",
+      "X Y ZZY",
+      "1223 Main St.",
+      "555-555-5555",
+      "N.BerkHills/Tilden",
+      "Berkeley",
+      null,
+      null,
+      null,
+      "2020-03-31T21:42:10.415Z"
+    ],
+    [
+      104,
+      "ZZZ",
+      "Zees McZeesy",
+      "3 Place Place Square",
+      "123-456-7890",
+      "unknown",
+      "Berkeley",
+      "true",
+      null,
+      null,
+      "2020-04-14T00:56:07.989Z"
+    ]
+  ]
+}

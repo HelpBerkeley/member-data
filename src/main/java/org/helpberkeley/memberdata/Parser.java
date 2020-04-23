@@ -99,13 +99,13 @@ public class Parser {
             String email = emailAddresses.getOrDefault(userName, User.NOT_PROVIDED);
 
             groupMemberships.clear();
-            if (consumers.hasUserId(userId)) {
+            if ((consumers != null) && consumers.hasUserId(userId)) {
                 groupMemberships.add(consumers.name);
             }
-            if (drivers.hasUserId(userId)) {
+            if ((drivers != null) && drivers.hasUserId(userId)) {
                 groupMemberships.add(drivers.name);
             }
-            if (dispatchers.hasUserId(userId)) {
+            if ((dispatchers != null) && dispatchers.hasUserId(userId)) {
                 groupMemberships.add(dispatchers.name);
             }
             if ((specialists != null) && specialists.hasUserId(userId)) {

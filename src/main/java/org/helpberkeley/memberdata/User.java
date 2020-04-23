@@ -50,13 +50,10 @@ public class User {
     static final String VOLUNTEER_REQUEST_COLUMN = "Volunteer Request";
     static final String EMAIL_COLUMN = "Email";
 
+    static final String ERROR_MISSING_AREA_CODE = "Phone missing area code, assuming 510";
+    static final String ERROR_CANNOT_PARSE_PHONE = "Cannot parse phone number";
+
     // Audit error strings
-    static final String AUDIT_ERROR_MISSING_NAME = "missing name";
-    static final String AUDIT_ERROR_MISSING_USERNAME = "missing user name";
-    static final String AUDIT_ERROR_MISSING_ADDRESS = "missing address";
-    static final String AUDIT_ERROR_MISSING_CITY = "missing city";
-    static final String AUDIT_ERROR_MISSING_PHONE = "missing phone";
-    static final String AUDIT_ERROR_MISSING_NEIGHBORHOOD = "missing neighborhood";
     static final String AUDIT_ERROR_NEIGHBORHOOD_UNKNOWN = "Neighborhood unknown";
 
     static final String NOT_PROVIDED = "none";
@@ -71,7 +68,7 @@ public class User {
     private final String createTime;
     private final Boolean apartment;
     private final Boolean consumerRequest;
-    private final String volunteerRequest;
+    private String volunteerRequest;
     private final String email;
     private final Set<String> groupMembership = new HashSet<>();
     private final List<String> dataErrors = new ArrayList<>();
@@ -258,39 +255,24 @@ public class User {
 
     private void auditNullFields() {
 
-        if (name == null) {
-            dataErrors.add(AUDIT_ERROR_MISSING_NAME);
-        }
-
-        if (userName == null) {
-            dataErrors.add(AUDIT_ERROR_MISSING_USERNAME);
-        }
-
-        if (address == null) {
-            dataErrors.add(AUDIT_ERROR_MISSING_ADDRESS);
-        }
-
-        if (city == null) {
-            dataErrors.add(AUDIT_ERROR_MISSING_CITY);
-        }
-
-        if (phoneNumber == null) {
-            dataErrors.add(AUDIT_ERROR_MISSING_PHONE);
-        }
-
-        if (neighborhood == null) {
-            dataErrors.add(AUDIT_ERROR_MISSING_NEIGHBORHOOD);
-        }
+        assert name != null;
+        assert userName != null;
+        assert address != null;
+        assert city != null;
+        assert phoneNumber != null;
+        assert neighborhood != null;
     }
 
     // Must be insensitive to null data
     private void normalizeData() {
         removeCommas();
         removeNewlines();
+        removeLeadingTrailingWhitespace();
         auditAndNormalizePhoneNumber();
         auditAndNormalizeCity();
         auditNeighborhood();
         minimizeAddress();
+        normalizeVolunteerRequest();
     }
 
     // Must be insensitive to null data
@@ -344,7 +326,7 @@ public class User {
     }
 
     // Must be insensitive to null data
-    private void strip() {
+    private void removeLeadingTrailingWhitespace() {
 
         if (name != null) {
             name = name.strip();
@@ -368,28 +350,27 @@ public class User {
 
     // Must be insensitive to null data
     private void auditAndNormalizePhoneNumber() {
-        if (phoneNumber == null) {
-            return;
-        }
+        assert phoneNumber != null;
 
         String digits = phoneNumber.replaceAll("[^\\d]", "");
 
         switch (digits.length()) {
             case 7:
-                dataErrors.add("Phone missing area code, assuming 510");
+                dataErrors.add(ERROR_MISSING_AREA_CODE);
                 digits = "510" + digits;
                 break;
             case 10:
                 break;
             case 11:
                 if (! digits.startsWith("1")) {
-                    dataErrors.add("Cannot parse phone number");
+                    dataErrors.add(ERROR_CANNOT_PARSE_PHONE);
+                    return;
                 } else {
                     digits = digits.substring(1);
                 }
                 break;
             default:
-                dataErrors.add("Cannot parse phone number");
+                dataErrors.add(ERROR_CANNOT_PARSE_PHONE);
                 return;
         }
 
@@ -406,9 +387,7 @@ public class User {
 
     // must be insensitive to null data
     private void auditAndNormalizeCity() {
-        if (city == null) {
-            return;
-        }
+        assert city != null;
 
         if (cityIsBerkeley()) {
             city = Constants.BERKELEY;
@@ -422,9 +401,7 @@ public class User {
     // Try to remove the city portion of the address, if it is Berkeley.
     private void minimizeAddress() {
 
-        if (address == null) {
-            return;
-        }
+        assert address != null;
 
         String lowerCase = address.toLowerCase();
 
@@ -456,6 +433,14 @@ public class User {
 
         if (neighborhood.toLowerCase().trim().contains("unknown")) {
             dataErrors.add(AUDIT_ERROR_NEIGHBORHOOD_UNKNOWN);
+        }
+    }
+
+    // can arrive either as null, "", or a value
+    private void normalizeVolunteerRequest() {
+
+        if ((volunteerRequest == null) || (volunteerRequest.isEmpty())) {
+            volunteerRequest = NOT_PROVIDED;
         }
     }
 
@@ -673,22 +658,71 @@ public class User {
                 + "\n";
     }
 
+//    /** This may look nice to the eye, but when it is failing it is a PITA to debug */
+//    @Override
+//    public boolean equals(Object obj) {
+//
+//        return (obj instanceof  User)
+//                && name.equals(((User)obj).name)
+//                && userName.equals(((User)obj).userName)
+//                && (id == ((User)obj).id)
+//                && address.equals(((User)obj).address)
+//                && city.equals(((User)obj).city)
+//                && phoneNumber.equals(((User)obj).phoneNumber)
+//                && neighborhood.equals(((User)obj).neighborhood)
+//                && groupMembership.equals(((User)obj).groupMembership)
+//                && createTime.equals(((User)obj).createTime)
+//                && apartment.equals(((User)obj).apartment)
+//                && consumerRequest.equals(((User)obj).consumerRequest)
+//                && volunteerRequest.equals(((User)obj).volunteerRequest);
+//    }
+
     @Override
     public boolean equals(Object obj) {
 
-        return (obj instanceof  User)
-                && name.equals(((User)obj).name)
-                && userName.equals(((User)obj).userName)
-                && (id == ((User)obj).id)
-                && address.equals(((User)obj).address)
-                && city.equals(((User)obj).city)
-                && phoneNumber.equals(((User)obj).phoneNumber)
-                && neighborhood.equals(((User)obj).neighborhood)
-                && groupMembership.equals(((User)obj).groupMembership)
-                && createTime.equals(((User)obj).createTime)
-                && apartment.equals(((User)obj).apartment)
-                && consumerRequest.equals(((User)obj).consumerRequest)
-                && volunteerRequest.equals(((User)obj).volunteerRequest)
-                && email.equals(((User)obj).email);
+        if (!(obj instanceof User)) {
+            return false;
+        }
+
+        User otherObj = (User)obj;
+
+        if (! name.equals(otherObj.name)) {
+            return false;
+        }
+        if (! userName.equals(otherObj.userName)) {
+            return false;
+        }
+        if (! (id == otherObj.id)) {
+            return false;
+        }
+        if (! address.equals(otherObj.address)) {
+            return false;
+        }
+        if (! city.equals(otherObj.city)) {
+            return false;
+        }
+        if (! phoneNumber.equals(otherObj.phoneNumber)) {
+            return false;
+        }
+        if (! neighborhood.equals(otherObj.neighborhood)) {
+            return false;
+        }
+        if (! groupMembership.equals(otherObj.groupMembership)) {
+            return false;
+        }
+        if (! createTime.equals(otherObj.createTime)) {
+            return false;
+        }
+        if (! apartment.equals(otherObj.apartment)) {
+            return false;
+        }
+        if (! consumerRequest.equals(otherObj.consumerRequest)) {
+            return false;
+        }
+        if (! volunteerRequest.equals(otherObj.volunteerRequest)) {
+            return false;
+        }
+
+        return true;
     }
 }

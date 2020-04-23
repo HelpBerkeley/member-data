@@ -36,9 +36,7 @@ public class ApiQueryResult {
 
     private String[] validateColumns(final Object[] columns) {
 
-        if (columns == null) {
-            return new String[0];
-        }
+        assert columns != null;
 
         String[] columnNames = new String[columns.length];
 
@@ -49,46 +47,13 @@ public class ApiQueryResult {
         return columnNames;
     }
 
-    private void validate() throws ApiException {
-        if ((headers == null) || (rows == null)) {
-            throw new ApiException("Null data: " + toString());
-        }
+    private void validate() {
+        assert headers != null;
+        assert rows != null;
 
         for (Object rowObject : rows) {
-            if (!(rowObject instanceof Object[])) {
-                throw new ApiException("Data row is not an array: " + rowObject);
-            }
-
-            if (((Object[]) rowObject).length != headers.length) {
-                throw new ApiException("Columns/row data: mismatch" + toString());
-            }
+            assert rowObject instanceof Object[] : rowObject;
+            assert ((Object[]) rowObject).length == headers.length;
         }
-    }
-
-    @Override
-    public String toString() {
-
-        StringBuilder builder = new StringBuilder();
-
-        if (headers == null) {
-            builder.append("No columns");
-        } else {
-            builder.append("Columns: ");
-
-            for (String column : headers) {
-                builder.append(column);
-                builder.append(',');
-            }
-        }
-        builder.append('\n');
-        if (rows == null) {
-            builder.append("No columns");
-        } else {
-            builder.append(rows.length);
-            builder.append(" rows");
-        }
-        builder.append('\n');
-
-        return builder.toString();
     }
 }

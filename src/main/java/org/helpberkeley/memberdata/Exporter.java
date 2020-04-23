@@ -22,7 +22,6 @@
  */
 package org.helpberkeley.memberdata;
 
-import com.cedarsoftware.util.io.JsonWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,27 +33,15 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.Map;
 
 public class Exporter {
     private static final Logger LOGGER = LoggerFactory.getLogger(Exporter.class);
 
     private final Tables tables;
+    private final String separator = Constants.CSV_SEPARATOR;
 
     public Exporter(List<User> users) {
         tables = new Tables(users);
-    }
-
-    String jsonString() {
-        Map<String, Object> options = Map.of(JsonWriter.PRETTY_PRINT, Boolean.TRUE);
-        return JsonWriter.objectToJson(tables.sortByUserName());
-    }
-
-    void jsonToFile(final String fileName) throws IOException {
-
-        String json = jsonString();
-        Path filePath = Files.createFile(Paths.get(fileName));
-        Files.writeString(filePath, json);
     }
 
     private String generateFileName(String fileName, String suffix) {
@@ -62,6 +49,10 @@ public class Exporter {
         String timestamp =
                 ZonedDateTime.now(ZoneId.systemDefault()).format(DateTimeFormatter.ofPattern("uuMMdd-HHmm-ss"));
         return fileName + '-' + timestamp + '.' + suffix;
+    }
+
+    String getCSVSeparator() {
+        return separator;
     }
 
     void errorsToFile(final String fileName) throws IOException {
@@ -85,11 +76,7 @@ public class Exporter {
 
     void recentlyCreatedNoGroupsToFile(final String fileName) throws IOException {
 
-        // FIX THIS, DS: define constant for separator
-        final String separator = ",";
-
         StringBuilder fileData = new StringBuilder();
-        // FIX THIS, DS: define constant for separator
         fileData.append(User.csvHeaders(separator));
 
         Tables recent = new Tables(tables.recentlyCreated(3));
@@ -135,11 +122,7 @@ public class Exporter {
 
     void consumerRequests(final String fileName) throws IOException {
 
-        // FIX THIS, DS: define constant for separator
-        final String separator = ",";
-
         StringBuilder fileData = new StringBuilder();
-        // FIX THIS, DS: define constant for separator
         fileData.append(User.csvHeaders(separator));
 
         for (User user : tables.consumerRequests()) {
@@ -186,11 +169,7 @@ public class Exporter {
 
     void volunteerRequests(final String fileName) throws IOException {
 
-        // FIX THIS, DS: define constant for separator
-        final String separator = ",";
-
         StringBuilder fileData = new StringBuilder();
-        // FIX THIS, DS: define constant for separator
         fileData.append(User.csvHeaders(separator));
 
         for (User user : tables.volunteerRequests()) {
@@ -237,15 +216,12 @@ public class Exporter {
 
     void allMembersToFile(final String fileName) throws IOException {
 
-        // FIX THIS, DS: define constant for separator
-        final String separator = ",";
-
         String outputFileName = generateFileName(fileName, "csv");
-        writeFile(outputFileName, allMembersToCSV(separator));
+        writeFile(outputFileName, allMembersToCSV());
         LOGGER.debug("Fetched: " + outputFileName);
     }
 
-    String allMembersToCSV(final String separator) {
+    String allMembersToCSV() {
 
         StringBuilder csvData = new StringBuilder();
         csvData.append(User.csvHeaders(separator));

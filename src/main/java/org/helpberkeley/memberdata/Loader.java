@@ -22,7 +22,6 @@
 
 package org.helpberkeley.memberdata;
 
-import com.cedarsoftware.util.io.JsonReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,15 +46,6 @@ public class Loader {
         this.apiClient = apiClient;
     }
 
-    public Loader() {
-        this.apiClient = null;
-    }
-
-    public List<User> load(final String json) {
-        Object obj = JsonReader.jsonToJava(json);
-        return (List<User>)obj;
-    }
-
     /**
      * Return a list of Users fetched from the website.
      *
@@ -74,10 +64,12 @@ public class Loader {
         LOGGER.trace("loadGroups");
 
         assert apiClient != null;
-        ApiQueryResult apiQueryResult = apiClient.runQuery(Constants.QUERY_GET_GROUPS_ID);
+        String json = apiClient.runQuery(Constants.QUERY_GET_GROUPS_ID);
+        ApiQueryResult apiQueryResult = Parser.parseQueryResult(json);
         Map<Long, String> groupNames = Parser.groupNames(apiQueryResult);
 
-        apiQueryResult = apiClient.runQuery(Constants.QUERY_GET_GROUP_USERS_ID);
+        json = apiClient.runQuery(Constants.QUERY_GET_GROUP_USERS_ID);
+        apiQueryResult = Parser.parseQueryResult(json);
         Map<String, List<Long>> groupUsers = Parser.groupUsers(groupNames, apiQueryResult);
 
         for (Map.Entry<String, List<Long>> entry : groupUsers.entrySet()) {
@@ -96,7 +88,8 @@ public class Loader {
         LOGGER.trace("loadEmailAddresses");
 
         assert apiClient != null;
-        ApiQueryResult apiQueryResult = apiClient.runQuery(Constants.QUERY_GET_EMAIL_ADDRESSES);
+        String json = apiClient.runQuery(Constants.QUERY_GET_EMAIL_ADDRESSES);
+        ApiQueryResult apiQueryResult = Parser.parseQueryResult(json);
         emailAddresses.putAll(Parser.emailAddresses(apiQueryResult));
 
     }
@@ -105,7 +98,8 @@ public class Loader {
         LOGGER.trace("loadUsers");
 
         assert apiClient != null;
-        ApiQueryResult queryResult = apiClient.runQuery(Constants.CURRENT_USERS_QUERY);
-        return Parser.users(groups, emailAddresses, queryResult);
+        String json = apiClient.runQuery(Constants.CURRENT_USERS_QUERY);
+        ApiQueryResult apiQueryResult = Parser.parseQueryResult(json);
+        return Parser.users(groups, emailAddresses, apiQueryResult);
     }
 }

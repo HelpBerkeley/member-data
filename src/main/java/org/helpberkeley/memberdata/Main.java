@@ -209,7 +209,7 @@ public class Main {
 
         String csvData = Files.readString(Paths.get(fileName));
         // FIX THIS, DS: constant for separator
-        List<User> users = Parser.users(csvData, ",");
+        List<User> users = Parser.users(csvData, Constants.CSV_SEPARATOR);
 
         StringBuilder postRaw = new StringBuilder();
         String label =  "Newly created members requesting meals -- " + ZonedDateTime.now(
@@ -247,7 +247,7 @@ public class Main {
 
         String csvData = Files.readString(Paths.get(fileName));
         // FIX THIS, DS: constant for separator
-        List<User> users = Parser.users(csvData, ",");
+        List<User> users = Parser.users(csvData, Constants.CSV_SEPARATOR);
 
         StringBuilder postRaw = new StringBuilder();
         String label =  "Newly created members requesting meals -- " + ZonedDateTime.now(
@@ -291,8 +291,7 @@ public class Main {
             throws IOException, InterruptedException {
 
         String csvData = Files.readString(Paths.get(fileName));
-        // FIX THIS, DS: constant for separator
-        List<User> users = Parser.users(csvData, ",");
+        List<User> users = Parser.users(csvData, Constants.CSV_SEPARATOR);
 
         StringBuilder postRaw = new StringBuilder();
         String label =  "New members requesting to volunteer -- " + ZonedDateTime.now(
@@ -330,8 +329,7 @@ public class Main {
             throws IOException, InterruptedException {
 
         String csvData = Files.readString(Paths.get(fileName));
-        // FIX THIS, DS: constant for separator
-        List<User> users = Parser.users(csvData, ",");
+        List<User> users = Parser.users(csvData, Constants.CSV_SEPARATOR);
 
         StringBuilder postRaw = new StringBuilder();
         String label =  "New members requesting to volunteer -- " + ZonedDateTime.now(
@@ -449,18 +447,6 @@ public class Main {
 
         HttpResponse<?> response = apiClient.updatePost(DRIVERS_POST_ID, postRaw.toString());
         System.out.println(response);
-    }
-
-    static void usersToJson(ApiClient apiClient) throws IOException, InterruptedException, ApiException {
-        Loader loader = new Loader(apiClient);
-        Exporter exporter = new Exporter(loader.load());
-        System.out.println(exporter.jsonString());
-    }
-
-    static void usersToFile(ApiClient apiClient) throws IOException, InterruptedException, ApiException {
-        Loader loader = new Loader(apiClient);
-        Exporter exporter = new Exporter(loader.load());
-        exporter.jsonToFile("users.json");
     }
 
     static void getPostTest(ApiClient apiClient) throws IOException, InterruptedException {

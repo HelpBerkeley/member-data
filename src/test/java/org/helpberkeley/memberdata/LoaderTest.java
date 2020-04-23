@@ -24,20 +24,34 @@ package org.helpberkeley.memberdata;
 
 import org.junit.Test;
 
+import java.io.IOException;
 import java.util.List;
+import java.util.Properties;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class RoundTripTest extends TestBase {
+public class LoaderTest {
 
     @Test
-    public void roundTripTest() throws UserException {
+    public void loadTest() throws IOException, ApiException, InterruptedException {
+        ApiClientSimulator apiClient = createSimulator();
 
-        List<User> users = List.of(createTestUser1(), createTestUser2(), createTestUser3());
+        Loader loader = new Loader(apiClient);
+
+        List<User> users = loader.load();
+
         Exporter exporter = new Exporter(users);
+        String csv = exporter.allMembersToCSV();
+        List<User> roundtripUsers = Parser.users(csv, exporter.getCSVSeparator());
 
-        String csvData = exporter.allMembersToCSV();
-        List<User> usersFromCSV = Parser.users(csvData, Constants.CSV_SEPARATOR);
-        assertThat(usersFromCSV).isEqualTo(users);
+        assertThat(roundtripUsers).containsExactlyInAnyOrderElementsOf(users);
+    }
+
+    ApiClientSimulator createSimulator() throws IOException {
+
+        Properties properties = Main.loadProperties(Main.MEMBERDATA_PROPERTIES);
+        ApiClientSimulator apiClient = new ApiClientSimulator(properties);
+
+        return apiClient;
     }
 }

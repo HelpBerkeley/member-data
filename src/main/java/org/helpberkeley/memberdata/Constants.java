@@ -52,7 +52,9 @@ public class Constants {
     public static final String GROUP_DISPATCHERS = "dispatchers";
     public static final String GROUP_SPECIALISTS = "specialists";
 
-    static final String BERKELEY = "Berkeley";
-    static final String ALBANY = "Albany";
-    static final String KENSINGTON = "Kensington";
+    public static final String BERKELEY = "Berkeley";
+    public static final String ALBANY = "Albany";
+    public static final String KENSINGTON = "Kensington";
+
+    public static final String CSV_SEPARATOR = ",";
 }

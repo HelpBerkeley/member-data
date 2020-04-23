@@ -1,0 +1,24 @@
+{
+  "success": true,
+  "errors": [],
+  "params": {},
+  "columns": [
+    "group_id",
+    "user_id"
+  ],
+  "default_limit": 1000,
+  "rows": [
+    [
+      1,
+      5
+    ],
+    [
+      null,
+      null
+    ],
+    [
+      null,
+      null
+    ]
+  ]
+}

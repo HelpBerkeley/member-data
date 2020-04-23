@@ -123,7 +123,7 @@ public class ApiClient {
         return response;
     }
 
-    ApiQueryResult runQuery(int queryId) throws IOException, InterruptedException, ApiException {
+    String runQuery(int queryId) throws IOException, InterruptedException, ApiException {
 
         String endpoint = QUERY_BASE + queryId + "/run";
 
@@ -143,7 +143,7 @@ public class ApiClient {
             throw new Error("runQuery(" + endpoint + " failed: " + response.statusCode() + ": " + response.body());
         }
 
-        return Parser.parseQueryResult(response.body());
+        return response.body();
     }
 
     HttpResponse<String> getUser(long userId) throws IOException, InterruptedException {

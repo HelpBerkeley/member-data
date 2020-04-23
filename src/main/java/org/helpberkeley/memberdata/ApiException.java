@@ -23,6 +23,9 @@
 package org.helpberkeley.memberdata;
 
 public class ApiException extends  Exception {
+    ApiException(String reason, Exception cause) {
+        super(reason, cause);
+    }
     ApiException(String reason) {
         super(reason);
     }

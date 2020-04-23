@@ -40,6 +40,7 @@ public class UserTest extends TestBase {
     }
 
     private static final List<PhoneNumber> testPhoneNumbers = new ArrayList<>();
+    private static final List<PhoneNumber> badPhoneNumbers = new ArrayList<>();
     private static final List<Address> testAddresses = new ArrayList<>();
     private static final List<City> testCities = new ArrayList<>();
 
@@ -59,7 +60,15 @@ public class UserTest extends TestBase {
         testPhoneNumbers.add(new PhoneNumber("510.555.1212", "510-555-1212"));
         testPhoneNumbers.add(new PhoneNumber("510 555  1212", "510-555-1212"));
         testPhoneNumbers.add(new PhoneNumber("510-555-1212", "510-555-1212"));
+        testPhoneNumbers.add(new PhoneNumber("1-510-555-1212", "510-555-1212"));
+    }
 
+    @BeforeClass
+    public static void createBadPhoneNumbers() {
+
+        badPhoneNumbers.add(new PhoneNumber("745-1211", User.ERROR_MISSING_AREA_CODE));
+        badPhoneNumbers.add(new PhoneNumber("9.510.777.8888", User.ERROR_CANNOT_PARSE_PHONE));
+        badPhoneNumbers.add(new PhoneNumber("51-777-8888", User.ERROR_CANNOT_PARSE_PHONE));
     }
 
     /**
@@ -114,6 +123,17 @@ public class UserTest extends TestBase {
         for (PhoneNumber phoneNumber : testPhoneNumbers) {
             User user = createUserWithPhone(phoneNumber.original);
             assertThat(user.getPhoneNumber()).isEqualTo(phoneNumber.expected);
+        }
+    }
+
+    @Test
+    public void phoneNumberErrorsTest() {
+        for (PhoneNumber phoneNumber : badPhoneNumbers) {
+            Throwable thrown = catchThrowable(() -> createUserWithPhone(phoneNumber.original));
+            assertThat(thrown).isInstanceOf(UserException.class);
+            UserException userException = (UserException) thrown;
+            assertThat(userException.user).isNotNull();
+            assertThat(userException.user.getDataErrors()).contains(phoneNumber.expected);
         }
     }
 
@@ -258,52 +278,6 @@ public class UserTest extends TestBase {
         assertThat(user1).isNotEqualTo(user2);
     }
 
-    @Test
-    public void nullNameTest() {
-        Throwable thrown = catchThrowable(() -> createUserWithName(null));
-        assertThat(thrown).isInstanceOf(UserException.class);
-        UserException userException = (UserException)thrown;
-        assertThat(userException.user).isNotNull();
-        assertThat(userException.user.getDataErrors()).contains(User.AUDIT_ERROR_MISSING_NAME);
-    }
-
-    @Test
-    public void nullUserNameTest() {
-        Throwable thrown = catchThrowable(() -> createUserWithUserName(null));
-        assertThat(thrown).isInstanceOf(UserException.class);
-        UserException userException = (UserException)thrown;
-        assertThat(userException.user).isNotNull();
-        assertThat(userException.user.getDataErrors()).contains(User.AUDIT_ERROR_MISSING_USERNAME);
-    }
-
-    @Test
-    public void nullAddressTest() {
-        Throwable thrown = catchThrowable(() -> createUserWithAddress(null));
-        assertThat(thrown).isInstanceOf(UserException.class);
-        UserException userException = (UserException)thrown;
-        assertThat(userException.user).isNotNull();
-        assertThat(userException.user.getDataErrors()).contains(User.AUDIT_ERROR_MISSING_ADDRESS);
-    }
-
-    @Test
-    public void nullCityTest() {
-        Throwable thrown = catchThrowable(() -> createUserWithCity(null));
-        assertThat(thrown).isInstanceOf(UserException.class);
-        UserException userException = (UserException)thrown;
-        assertThat(userException.user).isNotNull();
-        assertThat(userException.user.getDataErrors()).contains(User.AUDIT_ERROR_MISSING_CITY);
-    }
-
-    @Test
-    public void nullNeighborhoodTest() {
-        Throwable thrown = catchThrowable(() -> createUserWithNeighborhood(null));
-        assertThat(thrown).isInstanceOf(UserException.class);
-        UserException userException = (UserException)thrown;
-        assertThat(userException.user).isNotNull();
-        assertThat(userException.user.getDataErrors()).contains(User.AUDIT_ERROR_MISSING_NEIGHBORHOOD);
-    }
-
-    @Test
     public void minimizeAddressTest() throws UserException {
         for (Address address : testAddresses) {
             User user = createUserWithAddress(address.original);
@@ -356,5 +330,22 @@ public class UserTest extends TestBase {
         UserException userException = (UserException) thrown;
         assertThat(userException.user).isNotNull();
         assertThat(userException.user.getDataErrors()).contains(User.AUDIT_ERROR_NEIGHBORHOOD_UNKNOWN);
+    }
+
+    @Test
+    public void toStringTest() throws UserException {
+        User user = createTestUser1();
+
+        assertThat(user.toString()).contains(TEST_NAME_1);
+        assertThat(user.toString()).contains(TEST_USER_NAME_1);
+        assertThat(user.toString()).contains(TEST_ADDRESS_1);
+        assertThat(user.toString()).contains(TEST_PHONE_1);
+        assertThat(user.toString()).contains(TEST_CITY_1);
+        assertThat(user.toString()).contains(TEST_NEIGHBORHOOD_1);
+        assertThat(user.toString()).contains(TEST_VOLUNTEER_REQUEST_1);
+
+        for (String group : TEST_USER_1_GROUPS) {
+            assertThat(user.toString()).contains(group);
+        }
     }
 }

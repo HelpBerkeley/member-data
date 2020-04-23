@@ -1,0 +1,74 @@
+{
+  "success": true,
+  "errors": [],
+  "duration": 0.4,
+  "result_count": 15,
+  "params": {},
+  "columns": [
+    "id",
+    "name"
+  ],
+  "default_limit": 1000,
+  "rows": [
+    [
+      45,
+      "marketing"
+    ],
+    [
+      46,
+      "advisors"
+    ],
+    [
+      11,
+      "trust_level_1"
+    ],
+    [
+      0,
+      "everyone"
+    ],
+    [
+      12,
+      "trust_level_2"
+    ],
+    [
+      13,
+      "trust_level_3"
+    ],
+    [
+      14,
+      "trust_level_4"
+    ],
+    [
+      42,
+      "consumers"
+    ],
+    [
+      44,
+      "BHS"
+    ],
+    [
+      41,
+      "drivers"
+    ],
+    [
+      1,
+      "admins"
+    ],
+    [
+      2,
+      "moderators"
+    ],
+    [
+      43,
+      "dispatchers"
+    ],
+    [
+      3,
+      "staff"
+    ],
+    [
+      10,
+      "trust_level_0"
+    ]
+  ]
+}
