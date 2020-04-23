@@ -1,32 +1,13 @@
 ------------------------
 
-Save checksum (String.hashcode() on json export) for member-data
-to external file. Load and check against new member-data to
-decide if an updated member-data reply needs to be generated.
-
-------------------------
-
-Save checksum (of the raw post data?) for member data requiring 
-attention.  Load and check against new decide if an updated
-post needs to be made.
-
-------------------------
-
 Audit/validate that the topic ids for posting are valid.
 
 ------------------------
 
 Reverse engineer recipes for:
-	- Updating a post.
-	- Uploading a file.
-	- Create a post with the uploaded file.
 	- Deleting a post.
 
 	Documentation at https://docs.discourse.org/
-
-------------------------
-
-Automate deleting of replaced posts, or update them in place.
 
 ------------------------
 

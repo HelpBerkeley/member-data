@@ -423,9 +423,7 @@ public class User {
 
     // must be insensitive to null data
     private void auditNeighborhood() {
-        if (neighborhood == null) {
-            return;
-        }
+        assert neighborhood != null;
 
         if (! isSupportedCity()) {
             return;
@@ -450,9 +448,7 @@ public class User {
 
     private boolean cityIsBerkeley() {
 
-        if (city == null) {
-            return false;
-        }
+        assert city != null;
 
         // Convert to lower case
         String cityName = city.toLowerCase();
@@ -495,9 +491,7 @@ public class User {
 
     private boolean cityIsAlbany() {
 
-        if (city == null) {
-            return false;
-        }
+        assert city != null;
 
         // Convert to lower case
         String cityName = city.toLowerCase();
@@ -532,9 +526,7 @@ public class User {
 
     private boolean cityIsKensington() {
 
-        if (city == null) {
-            return false;
-        }
+        assert city != null;
 
         // Convert to lower case
         String cityName = city.toLowerCase();
