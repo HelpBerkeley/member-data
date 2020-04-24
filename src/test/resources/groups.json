@@ -59,6 +59,10 @@
       "moderators"
     ],
     [
+      47,
+      "specialists"
+    ],
+    [
       43,
       "dispatchers"
     ],
@@ -69,6 +73,10 @@
     [
       10,
       "trust_level_0"
+    ],
+    [
+      105,
+      null
     ]
   ]
 }

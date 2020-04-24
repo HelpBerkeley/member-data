@@ -140,6 +140,7 @@ public class Parser {
             Long groupId = (Long)columns[0];
             String groupName = (String)columns[1];
 
+            // FIX THIS, DS: was this just a hack for 429 errors?
             if ((groupId == null) || (groupName == null)) {
                 LOGGER.trace("getGroupNames skipping id: {}, groupName: {}", groupId, groupName);
                 continue;
@@ -189,6 +190,7 @@ public class Parser {
             Long groupId = (Long)columns[0];
             Long userId = (Long)columns[1];
 
+            // FIX THIS, DS: was this just a hack for 429 errors?
             if ((groupId == null) || (userId == null)){
                 LOGGER.trace("groupUsers: skipping null data: {}:{}", groupId, userId);
                 continue;
@@ -282,7 +284,7 @@ public class Parser {
         return (userId == -1) || (userId == -2);
     }
 
-    static void prettyPrint(final String pageJson) {
-        System.out.println(JsonWriter.formatJson(pageJson));
-    }
+//    static void prettyPrint(final String pageJson) {
+//        System.out.println(JsonWriter.formatJson(pageJson));
+//    }
 }

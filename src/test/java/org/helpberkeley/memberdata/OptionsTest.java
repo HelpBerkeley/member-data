@@ -225,4 +225,17 @@ public class OptionsTest extends  TestBase {
         assertThat(thrown).hasMessageContaining(Options.BAD_SHORT_URL);
         assertThat(thrown).hasMessageContaining(Options.USAGE);
     }
+
+    @Test
+    public void shortURLTest() {
+
+        String fileName = "someFile.csv";
+        String shortURL = "upload://asfasdfasdf.csv";
+
+        Options options = new Options(new String[] { Options.COMMAND_POST_DRIVERS, fileName, shortURL });
+
+        options.parse();
+        assertThat(options.getFileName()).isEqualTo(fileName);
+        assertThat(options.getShortURL()).isEqualTo(shortURL);
+    }
 }

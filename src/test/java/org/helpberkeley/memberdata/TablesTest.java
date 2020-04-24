@@ -35,17 +35,18 @@ public class TablesTest extends TestBase {
     @Test
     public void noGroupsTest() throws UserException {
 
-        User userOne = createUser();
-        User userTwo = createUserWithGroup(Constants.GROUP_DISPATCHERS);
-        User userThree = createUserWithCity(Constants.ALBANY);
-        User userFour = createUserWithGroup(Constants.GROUP_CONSUMERS);
-        User userFive = createUserWithGroup(Constants.GROUP_DRIVERS);
+        User u1 = createUser();
+        User u2 = createUserWithGroup(Constants.GROUP_DISPATCHERS);
+        User u3 = createUserWithGroup(Constants.GROUP_CONSUMERS);
+        User u4 = createUserWithGroup(Constants.GROUP_DRIVERS);
+        User u5 = createUserWithGroup(Constants.GROUP_SPECIALISTS);
+        User u6 = createUserWithCity(Constants.ALBANY);
 
-        List<User> users = List.of(userOne, userTwo, userThree, userFour, userFive);
+        List<User> users = List.of(u1, u2, u3, u4, u5, u6);
         Tables tables = new Tables(users);
 
         List<User> noGroups = tables.memberOfNoGroups();
-        assertThat(noGroups).containsExactlyInAnyOrder(userOne, userThree);
+        assertThat(noGroups).containsExactlyInAnyOrder(u1, u6);
     }
 
     @Test
@@ -99,6 +100,7 @@ public class TablesTest extends TestBase {
                 userNineSecondsAgo, userEightSecondsAgo, userNow, userTomorrow);
     }
 
+    @Test
     public void consumerRequestsTest() throws UserException {
 
         User user1 = createUserWithUserNameAndConsumerRequest("u1");
@@ -125,11 +127,24 @@ public class TablesTest extends TestBase {
     @Test
     public void volunteerRequestTest() throws UserException {
 
-        User user1 = createTestUser1();
-        User user2 = createTestUser2();
-        User user3 = createTestUser3();
+        User u1 = createTestUser1();
+        User u2 = createTestUser2();
+        User u3 = createTestUser3();
+        // Simulates someone un-setting their initial volunteer request after signing up.
+        User u4 = createUserWithVolunteerRequest("");
 
-        Tables tables = new Tables(List.of(user1, user2, user3));
-        assertThat(tables.volunteerRequests()).containsExactly(user1);
+        Tables tables = new Tables(List.of(u1, u2, u3));
+        assertThat(tables.volunteerRequests()).containsExactlyInAnyOrder(u1);
+    }
+
+    @Test
+    public void driversTest() throws UserException {
+        User u1 = createUser();
+        User u2 = createUserWithGroup(Constants.GROUP_DRIVERS);
+        User u3 = createUserWithGroup(Constants.GROUP_DRIVERS);
+        User u4 = createUserWithName("fred");
+
+        Tables tables = new Tables(List.of(u1, u2, u3, u4));
+        assertThat(tables.drivers()).containsExactlyInAnyOrder(u2, u3);
     }
 }
