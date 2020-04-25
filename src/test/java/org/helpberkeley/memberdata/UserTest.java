@@ -153,12 +153,12 @@ public class UserTest extends TestBase {
 
     @Test
     public void equalityTestConsumerRole() throws UserException {
-        User user1 = createUserWithGroup(Constants.GROUP_CONSUMERS);
+        User user1 = createUserWithGroup("u1", Constants.GROUP_CONSUMERS);
         User user2 = createUser();
 
         assertThat(user1).isNotEqualTo(user2);
 
-        user2 = createUserWithGroup(Constants.GROUP_CONSUMERS);
+        user2 = createUserWithGroup("u1", Constants.GROUP_CONSUMERS);
         assertThat(user1).isEqualTo(user2);
 
         user1 = createUserWithGroups(Constants.GROUP_CONSUMERS, Constants.GROUP_DISPATCHERS);
@@ -176,12 +176,12 @@ public class UserTest extends TestBase {
 
     @Test
     public void equalityTestDriverRole() throws UserException {
-        User user1 = createUserWithGroup(Constants.GROUP_DRIVERS);
+        User user1 = createUserWithGroup("u1", Constants.GROUP_DRIVERS);
         User user2 = createUser();
 
         assertThat(user1).isNotEqualTo(user2);
 
-        user2 = createUserWithGroup(Constants.GROUP_DRIVERS);
+        user2 = createUserWithGroup("u1", Constants.GROUP_DRIVERS);
         assertThat(user1).isEqualTo(user2);
 
         user1 = createUserWithGroups(Constants.GROUP_DRIVERS, Constants.GROUP_DISPATCHERS);
@@ -199,12 +199,12 @@ public class UserTest extends TestBase {
 
     @Test
     public void equalityTestDispatcherRole() throws UserException {
-        User user1 = createUserWithGroup(Constants.GROUP_DISPATCHERS);
+        User user1 = createUserWithGroup("u1", Constants.GROUP_DISPATCHERS);
         User user2 = createUser();
 
         assertThat(user1).isNotEqualTo(user2);
 
-        user2 = createUserWithGroup(Constants.GROUP_DISPATCHERS);
+        user2 = createUserWithGroup("u1", Constants.GROUP_DISPATCHERS);
         assertThat(user1).isEqualTo(user2);
 
         user1 = createUserWithGroups(Constants.GROUP_DISPATCHERS, Constants.GROUP_DRIVERS);
@@ -308,8 +308,8 @@ public class UserTest extends TestBase {
 
     @Test
     public void volunteerRequestInequaityTest() throws UserException {
-        User user1 = createUserWithVolunteerRequest(TEST_VOLUNTEER_REQUEST_1);
-        User user2 = createUserWithVolunteerRequest(TEST_VOLUNTEER_REQUEST_2);
+        User user1 = createUserWithVolunteerRequest(TEST_USER_NAME_1, TEST_VOLUNTEER_REQUEST_1);
+        User user2 = createUserWithVolunteerRequest(TEST_USER_NAME_1, TEST_VOLUNTEER_REQUEST_2);
         assertThat(user1).isNotEqualTo(user2);
     }
 

@@ -36,10 +36,10 @@ public class TablesTest extends TestBase {
     public void noGroupsTest() throws UserException {
 
         User u1 = createUser();
-        User u2 = createUserWithGroup(Constants.GROUP_DISPATCHERS);
-        User u3 = createUserWithGroup(Constants.GROUP_CONSUMERS);
-        User u4 = createUserWithGroup(Constants.GROUP_DRIVERS);
-        User u5 = createUserWithGroup(Constants.GROUP_SPECIALISTS);
+        User u2 = createUserWithGroup("u1", Constants.GROUP_DISPATCHERS);
+        User u3 = createUserWithGroup("u2", Constants.GROUP_CONSUMERS);
+        User u4 = createUserWithGroup("u3", Constants.GROUP_DRIVERS);
+        User u5 = createUserWithGroup("u4", Constants.GROUP_SPECIALISTS);
         User u6 = createUserWithCity(Constants.ALBANY);
 
         List<User> users = List.of(u1, u2, u3, u4, u5, u6);
@@ -131,7 +131,7 @@ public class TablesTest extends TestBase {
         User u2 = createTestUser2();
         User u3 = createTestUser3();
         // Simulates someone un-setting their initial volunteer request after signing up.
-        User u4 = createUserWithVolunteerRequest("");
+        User u4 = createUserWithVolunteerRequest("u4", "");
 
         Tables tables = new Tables(List.of(u1, u2, u3));
         assertThat(tables.volunteerRequests()).containsExactlyInAnyOrder(u1);
@@ -140,8 +140,8 @@ public class TablesTest extends TestBase {
     @Test
     public void driversTest() throws UserException {
         User u1 = createUser();
-        User u2 = createUserWithGroup(Constants.GROUP_DRIVERS);
-        User u3 = createUserWithGroup(Constants.GROUP_DRIVERS);
+        User u2 = createUserWithGroup("u2", Constants.GROUP_DRIVERS);
+        User u3 = createUserWithGroup("u3", Constants.GROUP_DRIVERS);
         User u4 = createUserWithName("fred");
 
         Tables tables = new Tables(List.of(u1, u2, u3, u4));

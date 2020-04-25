@@ -164,15 +164,8 @@ public class TestBase {
                 TEST_EMAIL_1);
     }
 
-    User createUserWithVolunteerRequest(String volunteerRequest) throws UserException {
-        return User.createUser(TEST_NAME_1, TEST_USER_NAME_1,
-                TEST_ID_1, TEST_ADDRESS_1, Constants.BERKELEY, TEST_PHONE_1, TEST_NEIGHBORHOOD_1,
-                TEST_CREATED_1, TEST_APARTMENT_1, TEST_CONSUMER_REQUEST_1, volunteerRequest,
-                TEST_EMAIL_1);
-    }
-
-    protected User createUserWithGroup(final String group) throws UserException {
-        return User.createUser(TEST_USER_NAME_1, TEST_USER_NAME_1,
+    protected User createUserWithGroup(final String userName, final String group) throws UserException {
+        return User.createUser(TEST_NAME_1, userName,
                 TEST_ID_1, TEST_ADDRESS_1, Constants.BERKELEY, TEST_PHONE_1, TEST_NEIGHBORHOOD_1,
                 TEST_CREATED_1, TEST_APARTMENT_1, TEST_CONSUMER_REQUEST_1, TEST_VOLUNTEER_REQUEST_1,
                 TEST_EMAIL_1, group);
@@ -249,11 +242,12 @@ public class TestBase {
                 TEST_EMAIL_1, Constants.GROUP_CONSUMERS);
     }
 
-    protected User createUserWithUserNameAndVolunteerRequest(final String userName) throws UserException {
+    protected User createUserWithVolunteerRequest(
+            final String userName, final String request) throws UserException {
 
         return User.createUser(TEST_NAME_1, userName, TEST_ID_1, TEST_ADDRESS_1,
                 TEST_CITY_1, TEST_PHONE_1, TEST_NEIGHBORHOOD_1, TEST_CREATED_1,
-                TEST_APARTMENT_1, TEST_CONSUMER_REQUEST_1, "Drive, Drive, Drive",
+                TEST_APARTMENT_1, TEST_CONSUMER_REQUEST_1, request,
                 TEST_EMAIL_1);
     }
 

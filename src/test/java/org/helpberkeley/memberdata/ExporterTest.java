@@ -86,4 +86,66 @@ public class ExporterTest extends TestBase {
 
         Files.delete(Paths.get(fileName));
     }
+
+    @Test
+    public void volunteerRequestsTest() throws UserException, IOException {
+
+        User u1 = createUserWithNoRequestsNoGroups(TEST_USER_NAME_1);
+        User u2 = createUserWithVolunteerRequest(TEST_USER_NAME_2, "Drive");
+        User u3 = createUserWithNoRequestsNoGroups(TEST_USER_NAME_3);
+        User u4 = createUserWithVolunteerRequest("u4", "Dispatch");
+
+        Exporter exporter = new Exporter(List.of(u1, u2, u3, u4));
+        String fileName = exporter.volunteerRequests("volunteerRequests.csv");
+        Path filePath = Paths.get(fileName);
+        assertThat(filePath).exists();
+
+        String errorFileData = Files.readString(filePath);
+        assertThat(errorFileData).doesNotContain(TEST_USER_NAME_1);
+        assertThat(errorFileData).contains(TEST_USER_NAME_2);
+        assertThat(errorFileData).doesNotContain(TEST_USER_NAME_3);
+        assertThat(errorFileData).contains("u4");
+
+        Files.delete(Paths.get(fileName));
+    }
+
+    @Test
+    public void driversTest() throws UserException, IOException {
+
+        User u1 = createUserWithGroup(TEST_USER_NAME_1, Constants.GROUP_CONSUMERS);
+        User u2 = createUserWithGroup(TEST_USER_NAME_2, Constants.GROUP_DRIVERS);
+        User u3 = createUserWithGroup(TEST_USER_NAME_3, Constants.GROUP_DRIVERS);
+
+        Exporter exporter = new Exporter(List.of(u1, u2, u3));
+        String fileName = exporter.drivers("driverRequests.csv");
+        Path filePath = Paths.get(fileName);
+        assertThat(filePath).exists();
+
+        String errorFileData = Files.readString(filePath);
+        assertThat(errorFileData).doesNotContain(TEST_USER_NAME_1);
+        assertThat(errorFileData).contains(TEST_USER_NAME_2);
+        assertThat(errorFileData).contains(TEST_USER_NAME_3);
+
+        Files.delete(Paths.get(fileName));
+    }
+
+    @Test
+    public void allMembersTest() throws UserException, IOException {
+
+        User u1 = createUserWithGroup(TEST_USER_NAME_1, Constants.GROUP_CONSUMERS);
+        User u2 = createUserWithGroup(TEST_USER_NAME_2, Constants.GROUP_DRIVERS);
+        User u3 = createUserWithGroup(TEST_USER_NAME_3, Constants.GROUP_DRIVERS);
+
+        Exporter exporter = new Exporter(List.of(u1, u2, u3));
+        String fileName = exporter.allMembersToFile("allMembers.csv");
+        Path filePath = Paths.get(fileName);
+        assertThat(filePath).exists();
+
+        String errorFileData = Files.readString(filePath);
+        assertThat(errorFileData).contains(TEST_USER_NAME_1);
+        assertThat(errorFileData).contains(TEST_USER_NAME_2);
+        assertThat(errorFileData).contains(TEST_USER_NAME_3);
+
+        Files.delete(Paths.get(fileName));
+    }
 }

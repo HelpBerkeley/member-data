@@ -125,7 +125,7 @@ public class Exporter {
         return outputFileName;
     }
 
-    void volunteerRequests(final String fileName) throws IOException {
+    String volunteerRequests(final String fileName) throws IOException {
 
         StringBuilder fileData = new StringBuilder();
         fileData.append(User.csvHeaders(separator));
@@ -170,13 +170,16 @@ public class Exporter {
         String outputFileName = generateFileName(fileName, "csv");
         writeFile(outputFileName, fileData.toString());
         LOGGER.debug("Fetched: " + outputFileName);
+
+        return outputFileName;
     }
 
-    void allMembersToFile(final String fileName) throws IOException {
+    String allMembersToFile(final String fileName) throws IOException {
 
         String outputFileName = generateFileName(fileName, "csv");
         writeFile(outputFileName, allMembersToCSV());
         LOGGER.debug("Fetched: " + outputFileName);
+        return outputFileName;
     }
 
     String allMembersToCSV() {
@@ -223,7 +226,7 @@ public class Exporter {
         return csvData.toString();
     }
 
-    void drivers(final String fileName) throws IOException {
+    String drivers(final String fileName) throws IOException {
 
         // FIX THIS, DS: define constant for separator
         final String separator = ",";
@@ -272,6 +275,8 @@ public class Exporter {
         String outputFileName = generateFileName(fileName, "csv");
         writeFile(outputFileName, fileData.toString());
         LOGGER.debug("Fetched: " + outputFileName);
+
+        return outputFileName;
     }
 
     private void writeFile(final String fileName, final String fileData) throws IOException {
