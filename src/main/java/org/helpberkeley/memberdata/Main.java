@@ -95,13 +95,13 @@ public class Main {
 //                exporter.recentlyCreatedNoGroupsToFile(NON_CONSUMERS_FILE);
 
                 // Export non-consumer group members, with a consumer request
-                exporter.consumerRequests(CONSUMER_REQUESTS_FILE);
+                exporter.consumerRequestsToFile(CONSUMER_REQUESTS_FILE);
 
                 // Export new volunteers-consumer group members, with a volunteer request
-                exporter.volunteerRequests(VOLUNTEER_REQUESTS_FILE);
+                exporter.volunteerRequestsToFile(VOLUNTEER_REQUESTS_FILE);
 
                 // Export drivers
-                exporter.drivers(DRIVERS_FILE);
+                exporter.driversToFile(DRIVERS_FILE);
                 break;
             case Options.COMMAND_POST_ERRORS:
                 postUserErrors(apiClient, options.getFileName());

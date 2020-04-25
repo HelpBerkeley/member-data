@@ -76,100 +76,110 @@ public class Exporter {
         return outputFileName;
     }
 
-    String consumerRequests(final String fileName) throws IOException {
+    String consumerRequests() {
 
-        StringBuilder fileData = new StringBuilder();
-        fileData.append(User.csvHeaders(separator));
+        StringBuilder rows = new StringBuilder();
+        rows.append(User.csvHeaders(separator));
 
         for (User user : tables.consumerRequests()) {
 
-            fileData.append(user.getId());
-            fileData.append(separator);
-            fileData.append(user.getName());
-            fileData.append(separator);
-            fileData.append(user.getUserName());
-            fileData.append(separator);
-            fileData.append(user.getPhoneNumber());
-            fileData.append(separator);
-            fileData.append(user.getNeighborhood());
-            fileData.append(separator);
-            fileData.append(user.getCity());
-            fileData.append(separator);
-            fileData.append(user.getAddress());
-            fileData.append(separator);
-            fileData.append(user.isConsumer());
-            fileData.append(separator);
-            fileData.append(user.isDispatcher());
-            fileData.append(separator);
-            fileData.append(user.isDriver());
-            fileData.append(separator);
-            fileData.append(user.getCreateTime());
-            fileData.append(separator);
-            fileData.append(user.isApartment());
-            fileData.append(separator);
-            fileData.append(user.hasConsumerRequest());
-            fileData.append(separator);
-            fileData.append(user.getVolunteerRequest());
-            fileData.append(separator);
-            fileData.append(user.isSpecialist());
-            fileData.append(separator);
-            fileData.append(user.getEmail());
-            fileData.append(separator);
-            fileData.append('\n');
+            rows.append(user.getId());
+            rows.append(separator);
+            rows.append(user.getName());
+            rows.append(separator);
+            rows.append(user.getUserName());
+            rows.append(separator);
+            rows.append(user.getPhoneNumber());
+            rows.append(separator);
+            rows.append(user.getNeighborhood());
+            rows.append(separator);
+            rows.append(user.getCity());
+            rows.append(separator);
+            rows.append(user.getAddress());
+            rows.append(separator);
+            rows.append(user.isConsumer());
+            rows.append(separator);
+            rows.append(user.isDispatcher());
+            rows.append(separator);
+            rows.append(user.isDriver());
+            rows.append(separator);
+            rows.append(user.getCreateTime());
+            rows.append(separator);
+            rows.append(user.isApartment());
+            rows.append(separator);
+            rows.append(user.hasConsumerRequest());
+            rows.append(separator);
+            rows.append(user.getVolunteerRequest());
+            rows.append(separator);
+            rows.append(user.isSpecialist());
+            rows.append(separator);
+            rows.append(user.getEmail());
+            rows.append(separator);
+            rows.append('\n');
         }
 
+        return rows.toString();
+    }
+
+    String consumerRequestsToFile(final String fileName) throws IOException {
+
         String outputFileName = generateFileName(fileName, "csv");
-        writeFile(outputFileName, fileData.toString());
-        LOGGER.debug("Fetched: " + outputFileName);
+        writeFile(outputFileName, consumerRequests());
+        LOGGER.debug("Wrote: " + outputFileName);
 
         return outputFileName;
     }
 
-    String volunteerRequests(final String fileName) throws IOException {
+    String volunteerRequests() {
 
-        StringBuilder fileData = new StringBuilder();
-        fileData.append(User.csvHeaders(separator));
+        StringBuilder rows = new StringBuilder();
+        rows.append(User.csvHeaders(separator));
 
         for (User user : tables.volunteerRequests()) {
 
-            fileData.append(user.getId());
-            fileData.append(separator);
-            fileData.append(user.getName());
-            fileData.append(separator);
-            fileData.append(user.getUserName());
-            fileData.append(separator);
-            fileData.append(user.getPhoneNumber());
-            fileData.append(separator);
-            fileData.append(user.getNeighborhood());
-            fileData.append(separator);
-            fileData.append(user.getCity());
-            fileData.append(separator);
-            fileData.append(user.getAddress());
-            fileData.append(separator);
-            fileData.append(user.isConsumer());
-            fileData.append(separator);
-            fileData.append(user.isDispatcher());
-            fileData.append(separator);
-            fileData.append(user.isDriver());
-            fileData.append(separator);
-            fileData.append(user.getCreateTime());
-            fileData.append(separator);
-            fileData.append(user.isApartment());
-            fileData.append(separator);
-            fileData.append(user.hasConsumerRequest());
-            fileData.append(separator);
-            fileData.append(user.getVolunteerRequest());
-            fileData.append(separator);
-            fileData.append(user.isSpecialist());
-            fileData.append(separator);
-            fileData.append(user.getEmail());
-            fileData.append(separator);
-            fileData.append('\n');
+            rows.append(user.getId());
+            rows.append(separator);
+            rows.append(user.getName());
+            rows.append(separator);
+            rows.append(user.getUserName());
+            rows.append(separator);
+            rows.append(user.getPhoneNumber());
+            rows.append(separator);
+            rows.append(user.getNeighborhood());
+            rows.append(separator);
+            rows.append(user.getCity());
+            rows.append(separator);
+            rows.append(user.getAddress());
+            rows.append(separator);
+            rows.append(user.isConsumer());
+            rows.append(separator);
+            rows.append(user.isDispatcher());
+            rows.append(separator);
+            rows.append(user.isDriver());
+            rows.append(separator);
+            rows.append(user.getCreateTime());
+            rows.append(separator);
+            rows.append(user.isApartment());
+            rows.append(separator);
+            rows.append(user.hasConsumerRequest());
+            rows.append(separator);
+            rows.append(user.getVolunteerRequest());
+            rows.append(separator);
+            rows.append(user.isSpecialist());
+            rows.append(separator);
+            rows.append(user.getEmail());
+            rows.append(separator);
+            rows.append('\n');
         }
 
+        return rows.toString();
+    }
+
+    String volunteerRequestsToFile(final String fileName) throws IOException {
+
         String outputFileName = generateFileName(fileName, "csv");
-        writeFile(outputFileName, fileData.toString());
-        LOGGER.debug("Fetched: " + outputFileName);
+        writeFile(outputFileName, volunteerRequests());
+        LOGGER.debug("Wrote: " + outputFileName);
 
         return outputFileName;
     }
@@ -177,12 +187,12 @@ public class Exporter {
     String allMembersToFile(final String fileName) throws IOException {
 
         String outputFileName = generateFileName(fileName, "csv");
-        writeFile(outputFileName, allMembersToCSV());
+        writeFile(outputFileName, allMembers());
         LOGGER.debug("Fetched: " + outputFileName);
         return outputFileName;
     }
 
-    String allMembersToCSV() {
+    String allMembers() {
 
         StringBuilder csvData = new StringBuilder();
         csvData.append(User.csvHeaders(separator));
@@ -226,54 +236,59 @@ public class Exporter {
         return csvData.toString();
     }
 
-    String drivers(final String fileName) throws IOException {
+    String drivers() {
 
         // FIX THIS, DS: define constant for separator
         final String separator = ",";
 
-        StringBuilder fileData = new StringBuilder();
+        StringBuilder rows = new StringBuilder();
         // FIX THIS, DS: define constant for separator
-        fileData.append(User.csvHeaders(separator));
+        rows.append(User.csvHeaders(separator));
 
         for (User user : tables.drivers()) {
 
-            fileData.append(user.getId());
-            fileData.append(separator);
-            fileData.append(user.getName());
-            fileData.append(separator);
-            fileData.append(user.getUserName());
-            fileData.append(separator);
-            fileData.append(user.getPhoneNumber());
-            fileData.append(separator);
-            fileData.append(user.getNeighborhood());
-            fileData.append(separator);
-            fileData.append(user.getCity());
-            fileData.append(separator);
-            fileData.append(user.getAddress());
-            fileData.append(separator);
-            fileData.append(user.isConsumer());
-            fileData.append(separator);
-            fileData.append(user.isDispatcher());
-            fileData.append(separator);
-            fileData.append(user.isDriver());
-            fileData.append(separator);
-            fileData.append(user.getCreateTime());
-            fileData.append(separator);
-            fileData.append(user.isApartment());
-            fileData.append(separator);
-            fileData.append(user.hasConsumerRequest());
-            fileData.append(separator);
-            fileData.append(user.getVolunteerRequest());
-            fileData.append(separator);
-            fileData.append(user.isSpecialist());
-            fileData.append(separator);
-            fileData.append(user.getEmail());
-            fileData.append(separator);
-            fileData.append('\n');
+            rows.append(user.getId());
+            rows.append(separator);
+            rows.append(user.getName());
+            rows.append(separator);
+            rows.append(user.getUserName());
+            rows.append(separator);
+            rows.append(user.getPhoneNumber());
+            rows.append(separator);
+            rows.append(user.getNeighborhood());
+            rows.append(separator);
+            rows.append(user.getCity());
+            rows.append(separator);
+            rows.append(user.getAddress());
+            rows.append(separator);
+            rows.append(user.isConsumer());
+            rows.append(separator);
+            rows.append(user.isDispatcher());
+            rows.append(separator);
+            rows.append(user.isDriver());
+            rows.append(separator);
+            rows.append(user.getCreateTime());
+            rows.append(separator);
+            rows.append(user.isApartment());
+            rows.append(separator);
+            rows.append(user.hasConsumerRequest());
+            rows.append(separator);
+            rows.append(user.getVolunteerRequest());
+            rows.append(separator);
+            rows.append(user.isSpecialist());
+            rows.append(separator);
+            rows.append(user.getEmail());
+            rows.append(separator);
+            rows.append('\n');
         }
 
+        return rows.toString();
+    }
+
+    String driversToFile(final String fileName) throws IOException {
+
         String outputFileName = generateFileName(fileName, "csv");
-        writeFile(outputFileName, fileData.toString());
+        writeFile(outputFileName, drivers());
         LOGGER.debug("Fetched: " + outputFileName);
 
         return outputFileName;
