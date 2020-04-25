@@ -301,8 +301,8 @@ public class UserTest extends TestBase {
 
     @Test
     public void consumerRequestInequaityTest() throws UserException {
-        User user1 = createUserWithConsumerRequest(true);
-        User user2 = createUserWithConsumerRequest(false);
+        User user1 = createUserWithConsumerRequest(TEST_USER_NAME_1, true);
+        User user2 = createUserWithConsumerRequest(TEST_USER_NAME_1, false);
         assertThat(user1).isNotEqualTo(user2);
     }
 

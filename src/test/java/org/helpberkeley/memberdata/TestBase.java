@@ -157,8 +157,8 @@ public class TestBase {
                 TEST_EMAIL_1);
     }
 
-    User createUserWithConsumerRequest(boolean consumerRequest) throws UserException {
-        return User.createUser(TEST_NAME_1, TEST_USER_NAME_1,
+    User createUserWithConsumerRequest(String userName, boolean consumerRequest) throws UserException {
+        return User.createUser(TEST_NAME_1, userName,
                 TEST_ID_1, TEST_ADDRESS_1, Constants.BERKELEY, TEST_PHONE_1, TEST_NEIGHBORHOOD_1,
                 TEST_CREATED_1, TEST_APARTMENT_1, consumerRequest, TEST_VOLUNTEER_REQUEST_1,
                 TEST_EMAIL_1);
@@ -184,9 +184,18 @@ public class TestBase {
                 TEST_CREATED_1, TEST_APARTMENT_1, TEST_CONSUMER_REQUEST_1, TEST_VOLUNTEER_REQUEST_1,
                 TEST_EMAIL_1);
     }
+
     protected User createUserWithCityAndNeighborhood(
             final String city, final String neighborhood) throws UserException {
         return User.createUser(TEST_NAME_1, TEST_USER_NAME_1,
+                TEST_ID_1, TEST_ADDRESS_1, city, TEST_PHONE_1, neighborhood,
+                TEST_CREATED_1, TEST_APARTMENT_1, TEST_CONSUMER_REQUEST_1, TEST_VOLUNTEER_REQUEST_1,
+                TEST_EMAIL_1);
+    }
+
+    protected User createUserWithUserNameCityAndNeighborhood(final String userName,
+            final String city, final String neighborhood) throws UserException {
+        return User.createUser(TEST_NAME_1, userName,
                 TEST_ID_1, TEST_ADDRESS_1, city, TEST_PHONE_1, neighborhood,
                 TEST_CREATED_1, TEST_APARTMENT_1, TEST_CONSUMER_REQUEST_1, TEST_VOLUNTEER_REQUEST_1,
                 TEST_EMAIL_1);
@@ -245,6 +254,14 @@ public class TestBase {
         return User.createUser(TEST_NAME_1, userName, TEST_ID_1, TEST_ADDRESS_1,
                 TEST_CITY_1, TEST_PHONE_1, TEST_NEIGHBORHOOD_1, TEST_CREATED_1,
                 TEST_APARTMENT_1, TEST_CONSUMER_REQUEST_1, "Drive, Drive, Drive",
+                TEST_EMAIL_1);
+    }
+
+    protected User createUserWithNoRequestsNoGroups(final String userName) throws UserException {
+
+        return User.createUser(TEST_NAME_1, userName, TEST_ID_1, TEST_ADDRESS_1,
+                TEST_CITY_1, TEST_PHONE_1, TEST_NEIGHBORHOOD_1, TEST_CREATED_1,
+                TEST_APARTMENT_1, TEST_CONSUMER_REQUEST_1, "none",
                 TEST_EMAIL_1);
     }
 }

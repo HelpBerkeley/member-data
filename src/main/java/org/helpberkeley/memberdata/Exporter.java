@@ -55,7 +55,7 @@ public class Exporter {
         return separator;
     }
 
-    void errorsToFile(final String fileName) throws IOException {
+    String errorsToFile(final String fileName) throws IOException {
 
         StringBuilder fileData = new StringBuilder();
 
@@ -72,55 +72,11 @@ public class Exporter {
         String outputFileName = generateFileName(fileName, "txt");
         writeFile(outputFileName, fileData.toString());
         LOGGER.debug("Fetched: " + outputFileName);
+
+        return outputFileName;
     }
 
-    void recentlyCreatedNoGroupsToFile(final String fileName) throws IOException {
-
-        StringBuilder fileData = new StringBuilder();
-        fileData.append(User.csvHeaders(separator));
-
-        Tables recent = new Tables(tables.recentlyCreated(3));
-
-        for (User user : recent.memberOfNoGroups()) {
-            fileData.append(user.getId());
-            fileData.append(separator);
-            fileData.append(user.getName());
-            fileData.append(separator);
-            fileData.append(user.getUserName());
-            fileData.append(separator);
-            fileData.append(user.getPhoneNumber());
-            fileData.append(separator);
-            fileData.append(user.getNeighborhood());
-            fileData.append(separator);
-            fileData.append(user.getCity());
-            fileData.append(separator);
-            fileData.append(user.getAddress());
-            fileData.append(separator);
-            fileData.append(user.isConsumer());
-            fileData.append(separator);
-            fileData.append(user.isDispatcher());
-            fileData.append(separator);
-            fileData.append(user.isDriver());
-            fileData.append(separator);
-            fileData.append(user.getCreateTime());
-            fileData.append(separator);
-            fileData.append(user.isApartment());
-            fileData.append(separator);
-            fileData.append(user.hasConsumerRequest());
-            fileData.append(separator);
-            fileData.append(user.getVolunteerRequest());
-            fileData.append(separator);
-            fileData.append(user.getEmail());
-            fileData.append(separator);
-            fileData.append('\n');
-        }
-
-        String outputFileName = generateFileName(fileName, "csv");
-        writeFile(outputFileName, fileData.toString());
-        LOGGER.debug("Fetched: " + outputFileName);
-    }
-
-    void consumerRequests(final String fileName) throws IOException {
+    String consumerRequests(final String fileName) throws IOException {
 
         StringBuilder fileData = new StringBuilder();
         fileData.append(User.csvHeaders(separator));
@@ -165,6 +121,8 @@ public class Exporter {
         String outputFileName = generateFileName(fileName, "csv");
         writeFile(outputFileName, fileData.toString());
         LOGGER.debug("Fetched: " + outputFileName);
+
+        return outputFileName;
     }
 
     void volunteerRequests(final String fileName) throws IOException {
