@@ -650,27 +650,12 @@ public class User {
                 + "\n";
     }
 
-//    /** This may look nice to the eye, but when it is failing it is a PITA to debug */
-//    @Override
-//    public boolean equals(Object obj) {
-//
-//        return (obj instanceof  User)
-//                && name.equals(((User)obj).name)
-//                && userName.equals(((User)obj).userName)
-//                && (id == ((User)obj).id)
-//                && address.equals(((User)obj).address)
-//                && city.equals(((User)obj).city)
-//                && phoneNumber.equals(((User)obj).phoneNumber)
-//                && neighborhood.equals(((User)obj).neighborhood)
-//                && groupMembership.equals(((User)obj).groupMembership)
-//                && createTime.equals(((User)obj).createTime)
-//                && apartment.equals(((User)obj).apartment)
-//                && consumerRequest.equals(((User)obj).consumerRequest)
-//                && volunteerRequest.equals(((User)obj).volunteerRequest);
-//    }
-
     @Override
     public boolean equals(Object obj) {
+
+        // It would look nicer to the eye to group all of this as a single return statement
+        // with a bunch of && clauses. But debugging why a match is failing becomes
+        // a PITA with that structure.
 
         if (!(obj instanceof User)) {
             return false;

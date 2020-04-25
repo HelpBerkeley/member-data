@@ -44,7 +44,6 @@ public class Main {
 
     static final String MEMBERDATA_ERRORS_FILE = "memberdata-errors";
     static final String MEMBERDATA_FILE = "member-data";
-    static final String NON_CONSUMERS_FILE = "member-non-consumers";
     static final String CONSUMER_REQUESTS_FILE = "consumer-requests";
     static final String VOLUNTEER_REQUESTS_FILE = "volunteer-requests";
     static final String DRIVERS_FILE = "drivers";
@@ -53,14 +52,13 @@ public class Main {
     static final long MEMBER_DATA_FOR_DISPATCHES_TOPID_ID = 86;
     static final long MEMBER_DATA_REQUIRING_ATTENTION_TOPIC_ID = 129;
     static final long MEMBER_DATA_REQUIRING_ATTENTION_POST_ID = 1706;
-    static final long NON_CONSUMERS_TOPIC_ID = 336;
-    static final long NON_CONSUMERS_POST_ID = 1219;
     static final long CONSUMER_REQUESTS_TOPIC_ID = 444;
     static final long CONSUMER_REQUESTS_POST_ID = 1776;
     static final long VOLUNTEER_REQUESTS_POST_ID = 1782;
     static final long VOLUNTEER_REQUESTS_TOPIC_ID = 445;
     static final long DRIVERS_POST_ID = 2808;
     static final long DRIVERS_POST_TOPIC = 638;
+    static final long ALL_MEMBERS_POST_TOPIC = 837;
     static final long STONE_TEST_TOPIC = 422;
 
     public static void main(String[] args) throws IOException, InterruptedException, ApiException {
@@ -124,6 +122,9 @@ public class Main {
             case Options.COMMAND_POST_CONSUMER_REQUESTS:
                 postConsumerRequests(apiClient, options.getFileName());
                 break;
+            case Options.COMMAND_POST_ALL_MEMBERS:
+                postAllMembers(apiClient, options.getFileName(), options.getShortURL());
+                break;
             default:
                 assert options.getCommand().equals(Options.COMMAND_POST_DRIVERS) : options.getCommand();
             case Options.COMMAND_POST_DRIVERS:
@@ -151,58 +152,6 @@ public class Main {
 
         return properties;
     }
-
-//    static void postMemberData(ApiClient apiClient, List<User> users) throws IOException, InterruptedException {
-//        Tables tables = new Tables(users);
-//        postFullMemberTable(apiClient, "Sorted by user name", tables.sortByUserName());
-//    }
-//
-//    static void postFullMemberTable(ApiClient apiClient, String label, List<User> users) throws IOException, InterruptedException {
-//
-//        StringBuilder postRaw = new StringBuilder();
-//
-//        postRaw.append("**");
-//        postRaw.append(label);
-//        postRaw.append(" -- ");
-//        postRaw.append(ZonedDateTime.now(
-//                ZoneId.systemDefault()).format(DateTimeFormatter.ofPattern("uuuu.MM.dd HH:mm:ss")));
-//        postRaw.append("**\n\n");
-//
-//        postRaw.append("| Name | User Name | Phone # | Neighborhood | City | Address | Consumer | Dispatcher | Driver |\n");
-//        postRaw.append("|---|---|---|---|---|---|---|---|---|\n");
-//
-//        for (User user : users) {
-//            postRaw.append('|');
-//            postRaw.append(user.getName());
-//            postRaw.append('|');
-//            postRaw.append(user.getUserName());
-//            postRaw.append('|');
-//            postRaw.append(user.getPhoneNumber());
-//            postRaw.append('|');
-//            postRaw.append(user.getNeighborhood());
-//            postRaw.append('|');
-//            postRaw.append(user.getCity());
-//            postRaw.append('|');
-//            postRaw.append(user.getAddress());
-//            postRaw.append('|');
-//            postRaw.append(user.isConsumer());
-//            postRaw.append('|');
-//            postRaw.append(user.isDispatcher());
-//            postRaw.append('|');
-//            postRaw.append(user.isDriver());
-//            postRaw.append("|\n");
-//        }
-//
-//        Post post = new Post();
-//        post.title = label;
-//        post.topic_id = MEMBER_DATA_FOR_DISPATCHES_TOPID_ID;
-//        post.raw = postRaw.toString();
-//        post.createdAt = ZonedDateTime.now(ZoneId.systemDefault())
-//                .format(DateTimeFormatter.ofPattern("uuuu.MM.dd.HH.mm.ss"));
-//
-//        HttpResponse<?> response = apiClient.post(post.toJson());
-//        System.out.println(response);
-//    }
 
     static void updateConsumerRequests(ApiClient apiClient, final String fileName)
             throws IOException, InterruptedException {
@@ -449,35 +398,60 @@ public class Main {
         System.out.println(response);
     }
 
-    static void getPostTest(ApiClient apiClient) throws IOException, InterruptedException {
+    static void postAllMembers(ApiClient apiClient, final String fileName, final String shortUrl)
+            throws IOException, InterruptedException {
 
-        HttpResponse<String> response = apiClient.getPost(239);
-        System.out.println(response.body());
+        StringBuilder postRaw = new StringBuilder();
+
+        postRaw.append("** ");
+        postRaw.append("All Members -- ");
+        postRaw.append(ZonedDateTime.now(
+                ZoneId.systemDefault()).format(DateTimeFormatter.ofPattern("uuuu.MM.dd HH:mm:ss")));
+        postRaw.append(" **\n\n");
+
+        // postRaw.append("[" + fileName + "|attachment](upload://" + fileName + ") (5.49 KB)");
+        postRaw.append("[" + fileName + "|attachment](" + shortUrl + ")");
+
+        Post post = new Post();
+        post.title = "All Members";
+        post.topic_id = ALL_MEMBERS_POST_TOPIC;
+        post.createdAt = ZonedDateTime.now(ZoneId.systemDefault())
+                .format(DateTimeFormatter.ofPattern("uuuu.MM.dd.HH.mm.ss"));
+
+        post.raw = postRaw.toString();
+        HttpResponse<?> response = apiClient.post(post.toJson());
+        System.out.println(response);
     }
 
-    static void getCategories(ApiClient apiClient) throws IOException, InterruptedException {
-        HttpResponse<String> response = apiClient.getCategories();
-        System.out.println(JsonWriter.formatJson(response.body()));
-    }
-
-
-    static void getUserFields(ApiClient apiClient) throws IOException, InterruptedException {
-        HttpResponse<String> response = apiClient.getUserFields();
-        System.out.println(JsonWriter.formatJson(response.body()));
-    }
-
-    static void latestPosts(ApiClient apiClient) throws IOException, InterruptedException {
-        HttpResponse<String> response = apiClient.getLatestPosts();
-
-        System.out.println(JsonWriter.formatJson(response.body()));
-    }
-
-    static void latestTopics(ApiClient apiClient) throws IOException, InterruptedException {
-        HttpResponse<String> response = apiClient.getLatestTopics();
-
-        System.out.println(JsonWriter.formatJson(response.body()));
-    }
-
+//    static void getPostTest(ApiClient apiClient) throws IOException, InterruptedException {
+//
+//        HttpResponse<String> response = apiClient.getPost(239);
+//        System.out.println(response.body());
+//    }
+//
+//    static void getCategories(ApiClient apiClient) throws IOException, InterruptedException {
+//        HttpResponse<String> response = apiClient.getCategories();
+//        System.out.println(JsonWriter.formatJson(response.body()));
+//    }
+//
+//
+//    static void getUserFields(ApiClient apiClient) throws IOException, InterruptedException {
+//        HttpResponse<String> response = apiClient.getUserFields();
+//        System.out.println(JsonWriter.formatJson(response.body()));
+//    }
+//
+//    static void latestPosts(ApiClient apiClient) throws IOException, InterruptedException {
+//        HttpResponse<String> response = apiClient.getLatestPosts();
+//
+//        System.out.println(JsonWriter.formatJson(response.body()));
+//    }
+//
+//    static void latestTopics(ApiClient apiClient) throws IOException, InterruptedException {
+//        HttpResponse<String> response = apiClient.getLatestTopics();
+//
+//        System.out.println(JsonWriter.formatJson(response.body()));
+//    }
+//
 //
 //    static void postTables(ApiClient apiClient) throws IOException, InterruptedException {
 //        List<User> users = getUsers(apiClient);
@@ -496,51 +470,12 @@ public class Main {
 //        postCSV(apiClient, "Sorted by Phone", tables.sortByPhoneNumber());
 //        postCSV(apiClient, "Sorted by Neighborhood/Name", tables.sortByNeighborHoodThenName());
 //    }
-
-
-    static void uploadTest(ApiClient apiClient) throws IOException, InterruptedException {
-
-        apiClient.uploadFile();
-
-    }
-
-    static void postWithLinkTest(ApiClient apiClient) throws IOException, InterruptedException {
-
-        StringBuilder postRaw = new StringBuilder();
-
-        postRaw.append("**Testing Post via API with embedded link**");
-        postRaw.append(" -- ");
-
-        postRaw.append("[member-data-200405-1850.csv|attachment](upload://5F02xqSRuzJfqKTCFkSTdZLEiUD.csv) (5.49 KB)");
-
-        Post post = new Post();
-        post.title = "test upload";
-        post.topic_id = 322;
-        post.raw = postRaw.toString();
-        post.createdAt = ZonedDateTime.now(ZoneId.systemDefault())
-                .format(DateTimeFormatter.ofPattern("uuuu.MM.dd.HH.mm.ss"));
-
-        HttpResponse<?> response = apiClient.post(post.toJson());
-        System.out.println(response);
-    }
-
-    static void postWithMemberLinkTest(ApiClient apiClient) throws IOException, InterruptedException {
-
-        StringBuilder postRaw = new StringBuilder();
-
-        postRaw.append("**Testing Post via API with member link**\n");
-        postRaw.append("@stone");
-
-
-        Post post = new Post();
-        post.title = "test post";
-        post.topic_id = 422;
-        post.raw = postRaw.toString();
-        post.createdAt = ZonedDateTime.now(ZoneId.systemDefault())
-                .format(DateTimeFormatter.ofPattern("uuuu.MM.dd.HH.mm.ss"));
-
-        HttpResponse<?> response = apiClient.post(post.toJson());
-        System.out.println(response);
-    }
+//
+//
+//    static void uploadTest(ApiClient apiClient) throws IOException, InterruptedException {
+//
+//        apiClient.uploadFile();
+//
+//    }
 }
 

@@ -71,7 +71,7 @@ public class Exporter {
 
         String outputFileName = generateFileName(fileName, "txt");
         writeFile(outputFileName, fileData.toString());
-        LOGGER.debug("Fetched: " + outputFileName);
+        LOGGER.debug("Wrote: " + outputFileName);
 
         return outputFileName;
     }
@@ -188,7 +188,7 @@ public class Exporter {
 
         String outputFileName = generateFileName(fileName, "csv");
         writeFile(outputFileName, allMembers());
-        LOGGER.debug("Fetched: " + outputFileName);
+        LOGGER.debug("Wrote: " + outputFileName);
         return outputFileName;
     }
 
@@ -289,7 +289,7 @@ public class Exporter {
 
         String outputFileName = generateFileName(fileName, "csv");
         writeFile(outputFileName, drivers());
-        LOGGER.debug("Fetched: " + outputFileName);
+        LOGGER.debug("Wrote: " + outputFileName);
 
         return outputFileName;
     }

@@ -227,6 +227,32 @@ public class OptionsTest extends  TestBase {
     }
 
     @Test
+    public void postAllMembersMissingURLTest() {
+
+        Options options = new Options(new String[] { Options.COMMAND_POST_ALL_MEMBERS, "someFile.csv" });
+        options.setExceptions(true);
+
+        Throwable thrown = catchThrowable(options::parse);
+        assertThat(thrown).isInstanceOf(MemberDataException.class);
+        assertThat(thrown).hasMessageContaining(Options.USAGE_ERROR);
+        assertThat(thrown).hasMessageContaining(Options.COMMAND_REQUIRES_SHORT_URL);
+        assertThat(thrown).hasMessageContaining(Options.USAGE);
+    }
+
+    @Test
+    public void postAllMembersPoorlyFormedURLTest() {
+
+        Options options = new Options(new String[] { Options.COMMAND_POST_ALL_MEMBERS, "someFile.csv", "someFile.csv" });
+        options.setExceptions(true);
+
+        Throwable thrown = catchThrowable(options::parse);
+        assertThat(thrown).isInstanceOf(MemberDataException.class);
+        assertThat(thrown).hasMessageContaining(Options.USAGE_ERROR);
+        assertThat(thrown).hasMessageContaining(Options.BAD_SHORT_URL);
+        assertThat(thrown).hasMessageContaining(Options.USAGE);
+    }
+
+    @Test
     public void shortURLTest() {
 
         String fileName = "someFile.csv";
