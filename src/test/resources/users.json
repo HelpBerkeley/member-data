@@ -12,6 +12,7 @@
     "apartment",
     "consumer_request",
     "volunteer_request",
+    "alt_phone",
     "created_at"
   ],
   "default_limit": 1000,
@@ -27,6 +28,7 @@
       null,
       null,
       null,
+      "123-456-0000",
       "2020-03-31T21:42:10.415Z"
     ],
     [
@@ -40,12 +42,14 @@
       "true",
       null,
       null,
+      null,
       "2020-04-14T00:56:07.989Z"
     ],
     [
       -2,
       "discobot",
       "discobot",
+      null,
       null,
       null,
       null,

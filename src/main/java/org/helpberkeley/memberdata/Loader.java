@@ -53,14 +53,14 @@ public class Loader {
      * @throws IOException          Website interaction exception.
      * @throws InterruptedException Website interaction exception.
      */
-    public List<User> load() throws IOException, InterruptedException, ApiException {
+    public List<User> load() throws IOException, InterruptedException {
         LOGGER.trace("load");
         loadGroups();
         loadEmailAddresses();
         return loadUsers();
     }
 
-    private void loadGroups() throws IOException, InterruptedException, ApiException {
+    private void loadGroups() throws IOException, InterruptedException {
         LOGGER.trace("loadGroups");
 
         assert apiClient != null;
@@ -84,7 +84,7 @@ public class Loader {
         }
     }
 
-    private void loadEmailAddresses() throws IOException, InterruptedException, ApiException {
+    private void loadEmailAddresses() throws IOException, InterruptedException {
         LOGGER.trace("loadEmailAddresses");
 
         assert apiClient != null;
@@ -94,7 +94,7 @@ public class Loader {
 
     }
 
-    private List<User> loadUsers() throws IOException, InterruptedException, ApiException {
+    private List<User> loadUsers() throws IOException, InterruptedException {
         LOGGER.trace("loadUsers");
 
         assert apiClient != null;

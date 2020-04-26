@@ -132,8 +132,9 @@ public class TablesTest extends TestBase {
         User u3 = createTestUser3();
         // Simulates someone un-setting their initial volunteer request after signing up.
         User u4 = createUserWithVolunteerRequest("u4", "");
+        User u5 = createUserWithNoRequestsNoGroups("u5");
 
-        Tables tables = new Tables(List.of(u1, u2, u3));
+        Tables tables = new Tables(List.of(u1, u2, u3, u4, u5));
         assertThat(tables.volunteerRequests()).containsExactlyInAnyOrder(u1);
     }
 

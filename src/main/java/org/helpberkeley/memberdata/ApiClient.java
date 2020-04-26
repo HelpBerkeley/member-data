@@ -123,7 +123,7 @@ public class ApiClient {
         return response;
     }
 
-    String runQuery(int queryId) throws IOException, InterruptedException, ApiException {
+    String runQuery(int queryId) throws IOException, InterruptedException {
 
         String endpoint = QUERY_BASE + queryId + "/run";
 

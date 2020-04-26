@@ -41,6 +41,7 @@ public class User {
     static final String ADDRESS_COLUMN = "Address";
     static final String CITY_COLUMN = "City";
     static final String PHONE_NUMBER_COLUMN = "Phone #";
+    static final String ALT_PHONE_NUMBER_COLUMN = "Second Phone #";
     static final String NEIGHBORHOOD_COLUMN = "Neighborhood";
     static final String CONSUMER_COLUMN = "Consumer";
     static final String DRIVER_COLUMN = "Driver";
@@ -68,6 +69,7 @@ public class User {
     private String address;
     private String city;
     private String phoneNumber;
+    private String altPhoneNumber;
     private String neighborhood;
     private final String createTime;
     private final Boolean apartment;
@@ -101,6 +103,10 @@ public class User {
 
     public String getPhoneNumber() {
         return phoneNumber == null ? NOT_PROVIDED : phoneNumber;
+    }
+
+    public String getAltPhoneNumber() {
+        return altPhoneNumber == null ? NOT_PROVIDED : altPhoneNumber;
     }
 
     public String getNeighborhood() {
@@ -139,6 +145,7 @@ public class User {
         final String address,
         final String city,
         final String phoneNumber,
+        final String altPhoneNumber,
         final String neighborhood,
         final String createTime,
         final Boolean apartment,
@@ -152,6 +159,7 @@ public class User {
         this.address = address;
         this.city = city;
         this.phoneNumber = phoneNumber;
+        this.altPhoneNumber = altPhoneNumber;
         this.neighborhood = neighborhood;
         this.createTime = createTime;
         this.apartment = apartment;
@@ -213,6 +221,11 @@ public class User {
         builder.append(phoneNumber == null ? NOT_PROVIDED :phoneNumber);
         builder.append(':');
 
+        builder.append(ALT_PHONE_NUMBER_COLUMN);
+        builder.append("=");
+        builder.append(altPhoneNumber == null ? NOT_PROVIDED :altPhoneNumber);
+        builder.append(':');
+
         builder.append(NEIGHBORHOOD_COLUMN);
         builder.append("=");
         builder.append(neighborhood == null ? NOT_PROVIDED : neighborhood);
@@ -258,6 +271,11 @@ public class User {
         builder.append(getEmail());
         builder.append(':');
 
+        builder.append(Constants.COLUMN_CREATE_TIME);
+        builder.append("=");
+        builder.append(getSimpleCreateTime());
+        builder.append(':');
+
         return builder.toString();
     }
 
@@ -277,6 +295,7 @@ public class User {
         removeNewlines();
         removeLeadingTrailingWhitespace();
         auditAndNormalizePhoneNumber();
+        auditAndNormalizeAltPhoneNumber();
         auditAndNormalizeCity();
         auditNeighborhood();
         minimizeAddress();
@@ -303,6 +322,9 @@ public class User {
         if (phoneNumber != null) {
             phoneNumber = phoneNumber.replace(oldChar, newChar);
         }
+        if (altPhoneNumber != null) {
+            altPhoneNumber = altPhoneNumber.replace(oldChar, newChar);
+        }
         if (neighborhood != null) {
             neighborhood = neighborhood.replace(oldChar, newChar);
         }
@@ -328,6 +350,9 @@ public class User {
         if (phoneNumber != null) {
             phoneNumber = phoneNumber.replace(oldChar, newChar);
         }
+        if (altPhoneNumber != null) {
+            altPhoneNumber = altPhoneNumber.replace(oldChar, newChar);
+        }
         if (neighborhood != null) {
             neighborhood = neighborhood.replace(oldChar, newChar);
         }
@@ -350,6 +375,9 @@ public class User {
         }
         if (phoneNumber != null) {
             phoneNumber = phoneNumber.strip();
+        }
+        if (altPhoneNumber != null) {
+            altPhoneNumber = altPhoneNumber.strip();
         }
         if (neighborhood != null) {
             neighborhood = neighborhood.strip();
@@ -390,6 +418,45 @@ public class User {
         newPhoneNumber += digits.substring(6, 10);
 
         phoneNumber = newPhoneNumber;
+    }
+
+    // Must be insensitive to null data
+    private void auditAndNormalizeAltPhoneNumber() {
+        if (altPhoneNumber == null) {
+            altPhoneNumber = NOT_PROVIDED;
+            return;
+        }
+
+        String digits = altPhoneNumber.replaceAll("[^\\d]", "");
+
+        switch (digits.length()) {
+            case 7:
+                dataErrors.add(ERROR_MISSING_AREA_CODE);
+                digits = "510" + digits;
+                break;
+            case 10:
+                break;
+            case 11:
+                if (! digits.startsWith("1")) {
+                    dataErrors.add(ERROR_CANNOT_PARSE_PHONE);
+                    return;
+                } else {
+                    digits = digits.substring(1);
+                }
+                break;
+            default:
+                dataErrors.add(ERROR_CANNOT_PARSE_PHONE);
+                return;
+        }
+
+        assert digits.length() == 10 : this;
+        String newPhoneNumber = digits.substring(0, 3);
+        newPhoneNumber += "-";
+        newPhoneNumber += digits.substring(3, 6);
+        newPhoneNumber += "-";
+        newPhoneNumber += digits.substring(6, 10);
+
+        altPhoneNumber = newPhoneNumber;
 
     }
 
@@ -578,6 +645,7 @@ public class User {
             final String address,
             final String city,
             final String phoneNumber,
+            final String altPhoneNumber,
             final String neighborhood,
             final String createdAt,
             final Boolean apartment,
@@ -587,7 +655,7 @@ public class User {
             final String... groups) throws UserException {
 
 
-        User user = new User(name, userName, id, address, city, phoneNumber,
+        User user = new User(name, userName, id, address, city, phoneNumber, altPhoneNumber,
                 neighborhood, createdAt, apartment, consumerRequest, volunteerRequest, email);
         for (String group : groups) {
             assert ! user.groupMembership.contains(group) : group;
@@ -611,6 +679,7 @@ public class User {
             final String address,
             final String city,
             final String phoneNumber,
+            final String altPhoneNumber,
             final String neighborhood,
             final String createdAt,
             final Boolean apartment,
@@ -620,7 +689,7 @@ public class User {
             final List<String> groups) throws UserException {
 
 
-        User user = new User(name, userName, id, address, city, phoneNumber,
+        User user = new User(name, userName, id, address, city, phoneNumber, altPhoneNumber,
                 neighborhood, createdAt, apartment, consumerRequest, volunteerRequest, email);
         for (String group : groups) {
             assert ! user.groupMembership.contains(group) : group;
@@ -643,6 +712,7 @@ public class User {
                 + NAME_COLUMN + separator
                 + USERNAME_COLUMN + separator
                 + PHONE_NUMBER_COLUMN + separator
+                + ALT_PHONE_NUMBER_COLUMN + separator
                 + NEIGHBORHOOD_COLUMN + separator
                 + CITY_COLUMN + separator
                 + ADDRESS_COLUMN + separator
@@ -687,6 +757,9 @@ public class User {
             return false;
         }
         if (! phoneNumber.equals(otherObj.phoneNumber)) {
+            return false;
+        }
+        if (! altPhoneNumber.equals(otherObj.altPhoneNumber)) {
             return false;
         }
         if (! neighborhood.equals(otherObj.neighborhood)) {

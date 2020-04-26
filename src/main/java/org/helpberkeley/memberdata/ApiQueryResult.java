@@ -27,7 +27,7 @@ public class ApiQueryResult {
     final String[] headers;
     final Object[] rows;
 
-    ApiQueryResult(final Object[] headers, final Object[] rows) throws ApiException {
+    ApiQueryResult(final Object[] headers, final Object[] rows) {
         this.headers = validateColumns(headers);
         this.rows = rows;
 

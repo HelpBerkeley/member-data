@@ -27,8 +27,4 @@ public class MemberDataException extends RuntimeException {
     MemberDataException(final String message) {
         super(message);
     }
-
-    MemberDataException(final String message, Throwable exception) {
-        super(message, exception);
-    }
 }

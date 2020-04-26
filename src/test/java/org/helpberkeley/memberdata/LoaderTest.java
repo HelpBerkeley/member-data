@@ -33,7 +33,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class LoaderTest {
 
     @Test
-    public void loadTest() throws IOException, ApiException, InterruptedException {
+    public void loadTest() throws IOException, InterruptedException {
         ApiClientSimulator apiClient = createSimulator();
 
         Loader loader = new Loader(apiClient);

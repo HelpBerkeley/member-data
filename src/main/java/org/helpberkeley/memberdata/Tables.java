@@ -186,8 +186,7 @@ public class Tables {
         List<User> volunteerRequests = new ArrayList<>();
 
         for (User user : sortByUserName()) {
-            if (user.getVolunteerRequest().equals(User.NOT_PROVIDED)
-                    || user.getVolunteerRequest().isEmpty()) {
+            if (user.getVolunteerRequest().equals(User.NOT_PROVIDED)) {
                 continue;
             }
 

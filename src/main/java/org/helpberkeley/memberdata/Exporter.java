@@ -209,6 +209,8 @@ public class Exporter {
             csvData.append(separator);
             csvData.append(user.getPhoneNumber());
             csvData.append(separator);
+            csvData.append(user.getAltPhoneNumber());
+            csvData.append(separator);
             csvData.append(user.getNeighborhood());
             csvData.append(separator);
             csvData.append(user.getCity());

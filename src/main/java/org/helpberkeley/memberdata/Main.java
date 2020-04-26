@@ -61,7 +61,7 @@ public class Main {
     static final long WORKFLOW_DATA_TOPIC = 824;
     static final long STONE_TEST_TOPIC = 422;
 
-    public static void main(String[] args) throws IOException, InterruptedException, ApiException {
+    public static void main(String[] args) throws IOException, InterruptedException {
 
         Options options = new Options(args);
         options.parse();
@@ -131,7 +131,7 @@ public class Main {
         return properties;
     }
 
-    static void fetch(ApiClient apiClient) throws InterruptedException, ApiException, IOException {
+    static void fetch(ApiClient apiClient) throws InterruptedException, IOException {
         // Create a User loader
         Loader loader = new Loader(apiClient);
 

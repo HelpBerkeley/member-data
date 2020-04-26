@@ -148,18 +148,19 @@ public class ExporterTest extends TestBase {
         assertThat(headerColumns[1]).isEqualTo(User.NAME_COLUMN);
         assertThat(headerColumns[2]).isEqualTo(User.USERNAME_COLUMN);
         assertThat(headerColumns[3]).isEqualTo(User.PHONE_NUMBER_COLUMN);
-        assertThat(headerColumns[4]).isEqualTo(User.NEIGHBORHOOD_COLUMN);
-        assertThat(headerColumns[5]).isEqualTo(User.CITY_COLUMN);
-        assertThat(headerColumns[6]).isEqualTo(User.ADDRESS_COLUMN);
-        assertThat(headerColumns[7]).isEqualTo(User.CONSUMER_COLUMN);
-        assertThat(headerColumns[8]).isEqualTo(User.DISPATCHER_COLUMN);
-        assertThat(headerColumns[9]).isEqualTo(User.DRIVER_COLUMN);
-        assertThat(headerColumns[10]).isEqualTo(User.CREATED_AT_COLUMN);
-        assertThat(headerColumns[11]).isEqualTo(User.APARTMENT_COLUMN);
-        assertThat(headerColumns[12]).isEqualTo(User.CONSUMER_REQUEST_COLUMN);
-        assertThat(headerColumns[13]).isEqualTo(User.VOLUNTEER_REQUEST_COLUMN);
-        assertThat(headerColumns[14]).isEqualTo(User.SPECIALIST_COLUMN);
-        assertThat(headerColumns[15]).isEqualTo(User.EMAIL_COLUMN);
+        assertThat(headerColumns[4]).isEqualTo(User.ALT_PHONE_NUMBER_COLUMN);
+        assertThat(headerColumns[5]).isEqualTo(User.NEIGHBORHOOD_COLUMN);
+        assertThat(headerColumns[6]).isEqualTo(User.CITY_COLUMN);
+        assertThat(headerColumns[7]).isEqualTo(User.ADDRESS_COLUMN);
+        assertThat(headerColumns[8]).isEqualTo(User.CONSUMER_COLUMN);
+        assertThat(headerColumns[9]).isEqualTo(User.DISPATCHER_COLUMN);
+        assertThat(headerColumns[10]).isEqualTo(User.DRIVER_COLUMN);
+        assertThat(headerColumns[11]).isEqualTo(User.CREATED_AT_COLUMN);
+        assertThat(headerColumns[12]).isEqualTo(User.APARTMENT_COLUMN);
+        assertThat(headerColumns[13]).isEqualTo(User.CONSUMER_REQUEST_COLUMN);
+        assertThat(headerColumns[14]).isEqualTo(User.VOLUNTEER_REQUEST_COLUMN);
+        assertThat(headerColumns[15]).isEqualTo(User.SPECIALIST_COLUMN);
+        assertThat(headerColumns[16]).isEqualTo(User.EMAIL_COLUMN);
 
         String[] columns = rows[1].split(Constants.CSV_SEPARATOR);
         assertThat(headerColumns).hasSameSizeAs(columns);
@@ -168,18 +169,19 @@ public class ExporterTest extends TestBase {
         assertThat(columns[1]).isEqualTo(u1.getName());
         assertThat(columns[2]).isEqualTo(u1.getUserName());
         assertThat(columns[3]).isEqualTo(u1.getPhoneNumber());
-        assertThat(columns[4]).isEqualTo(u1.getNeighborhood());
-        assertThat(columns[5]).isEqualTo(u1.getCity());
-        assertThat(columns[6]).isEqualTo(u1.getAddress());
-        assertThat(columns[7]).isEqualTo(String.valueOf(u1.isConsumer()));
-        assertThat(columns[8]).isEqualTo(String.valueOf(u1.isDispatcher()));
-        assertThat(columns[9]).isEqualTo(String.valueOf(u1.isDriver()));
-        assertThat(columns[10]).isEqualTo(u1.getCreateTime());
-        assertThat(columns[11]).isEqualTo(String.valueOf(u1.isApartment()));
-        assertThat(columns[12]).isEqualTo(String.valueOf(u1.hasConsumerRequest()));
-        assertThat(columns[13]).isEqualTo(u1.getVolunteerRequest());
-        assertThat(columns[14]).isEqualTo(String.valueOf(u1.isSpecialist()));
-        assertThat(columns[15]).isEqualTo(u1.getEmail());
+        assertThat(columns[4]).isEqualTo(u1.getAltPhoneNumber());
+        assertThat(columns[5]).isEqualTo(u1.getNeighborhood());
+        assertThat(columns[6]).isEqualTo(u1.getCity());
+        assertThat(columns[7]).isEqualTo(u1.getAddress());
+        assertThat(columns[8]).isEqualTo(String.valueOf(u1.isConsumer()));
+        assertThat(columns[9]).isEqualTo(String.valueOf(u1.isDispatcher()));
+        assertThat(columns[10]).isEqualTo(String.valueOf(u1.isDriver()));
+        assertThat(columns[11]).isEqualTo(u1.getCreateTime());
+        assertThat(columns[12]).isEqualTo(String.valueOf(u1.isApartment()));
+        assertThat(columns[13]).isEqualTo(String.valueOf(u1.hasConsumerRequest()));
+        assertThat(columns[14]).isEqualTo(u1.getVolunteerRequest());
+        assertThat(columns[15]).isEqualTo(String.valueOf(u1.isSpecialist()));
+        assertThat(columns[16]).isEqualTo(u1.getEmail());
     }
 
     @Test

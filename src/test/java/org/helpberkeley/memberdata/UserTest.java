@@ -142,6 +142,17 @@ public class UserTest extends TestBase {
     }
 
     @Test
+    public void altPhoneNumberErrorsTest() {
+        for (PhoneNumber phoneNumber : badPhoneNumbers) {
+            Throwable thrown = catchThrowable(() -> createUserWithAltPhone(phoneNumber.original));
+            assertThat(thrown).isInstanceOf(UserException.class);
+            UserException userException = (UserException) thrown;
+            assertThat(userException.user).isNotNull();
+            assertThat(userException.user.getDataErrors()).contains(phoneNumber.expected);
+        }
+    }
+
+    @Test
     public void equalityTestNoRoles() throws UserException {
         assertThat(createTestUser1()).isEqualTo(createTestUser1());
     }
@@ -252,6 +263,15 @@ public class UserTest extends TestBase {
 
         User user1 = createUserWithAddress(TEST_ADDRESS_1);
         User user2 = createUserWithAddress(TEST_ADDRESS_2);
+
+        assertThat(user1).isNotEqualTo(user2);
+    }
+
+    @Test
+    public void altPhoneInequalityTest() throws UserException {
+
+        User user1 = createUserWithAltPhone(TEST_PHONE_1);
+        User user2 = createUserWithAltPhone(TEST_PHONE_2);
 
         assertThat(user1).isNotEqualTo(user2);
     }

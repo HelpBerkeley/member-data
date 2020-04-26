@@ -42,7 +42,7 @@ public class ApiClientSimulator extends ApiClient {
     }
 
     @Override
-    String runQuery(int queryId) throws ApiException {
+    String runQuery(int queryId) {
         try {
             if (queryId == Constants.QUERY_GET_GROUPS_ID) {
                 return getGroupsResult();
@@ -54,10 +54,10 @@ public class ApiClientSimulator extends ApiClient {
                 return getEmailAddressesResult();
             }
         } catch (IOException|URISyntaxException ex) {
-            throw new ApiException("Exception running query " + queryId, ex);
+            throw new RuntimeException("Exception running query " + queryId, ex);
         }
 
-        throw new ApiException("Query " + queryId + " not supported by the simulator");
+        throw new RuntimeException("Query " + queryId + " not supported by the simulator");
     }
 
     @Override
