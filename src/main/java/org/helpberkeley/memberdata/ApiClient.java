@@ -1,25 +1,24 @@
-/******************************************************************************
- * Copyright (c) 2020 helpberkeley.org
- * 
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- * 
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
- * 
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- ******************************************************************************/
-
+//
+// Copyright (c) 2020 helpberkeley.org
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
+//
 package org.helpberkeley.memberdata;
 
 import java.io.IOException;
@@ -49,7 +48,7 @@ public class ApiClient {
     private static final String GROUP_ENDPOINT_BASE = BASE_URL + "groups/";
     private static final String LATEST_TOPICS_ENDPOINT = BASE_URL + "latest.json";
     private static final String UPLOADS_ENDPOINT = BASE_URL + "uploads.json";
-    private static final String QUERY_BASE = BASE_URL + "admin/plugins/explorer/queries/";
+    static final String QUERY_BASE = BASE_URL + "admin/plugins/explorer/queries/";
 
     private final String apiUser;
     private final String apiKey;
@@ -79,10 +78,24 @@ public class ApiClient {
                 .build();
     }
 
+    ApiClient(final Properties properties, HttpClient httpClient) {
+
+        apiUser = properties.getProperty(Main.API_USER_PROPERTY);
+        apiKey = properties.getProperty(Main.API_KEY_PROPERTY);
+
+        if ((apiUser == null) || (apiKey == null)) {
+            System.out.println("Missing " + Main.API_USER_PROPERTY + " property or "
+                    + Main.API_KEY_PROPERTY + " property, or both");
+            System.exit(1);
+        }
+
+        this.client = httpClient;
+    }
+
     private HttpResponse<String> get(final String endpoint) throws IOException, InterruptedException {
 
         // FIX THIS, DS: hack to avoid getting rate limited.
-        nap(1000);
+//        nap(1000);
 
         System.out.println("GET " + endpoint);
 

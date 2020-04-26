@@ -21,55 +21,34 @@
 //
 package org.helpberkeley.memberdata;
 
-import java.util.*;
+import org.junit.Test;
 
-/**
- * Group
- */
-public class Group {
+import java.io.IOException;
+import java.util.Properties;
 
-    static final String NAME_FIELD = "name";
-    static final String USERS_FIELD = "users";
+public class ApiClientTest extends TestBase {
 
-    final String name;
-    private final Set<Long> userIds = new HashSet<>();
-
-    private Group(final String name) {
-
-        this.name = name;
+    @Test
+    public void getGroupsQueryTest() throws IOException, InterruptedException {
+        ApiClient apiClient = createApiSimulator();
+        apiClient.runQuery(Constants.QUERY_GET_GROUPS_ID);
     }
 
-    void addUserIDs(List<Long> userIDs) {
-        this.userIds.addAll(userIDs);
+    @Test
+    public void groupsQueryTest() throws IOException, InterruptedException {
+        ApiClient apiClient = createApiSimulator();
+        apiClient.runQuery(Constants.QUERY_GET_GROUPS_ID);
     }
 
-    boolean hasUserId(final long userId) {
-        return userIds.contains(userId);
+    @Test
+    public void usersQueryTest() throws IOException, InterruptedException {
+        ApiClient apiClient = createApiSimulator();
+        apiClient.runQuery(Constants.CURRENT_USERS_QUERY);
     }
 
-    @Override
-    public String toString() {
-        StringBuilder builder = new StringBuilder();
-
-        builder.append(NAME_FIELD);
-        builder.append("=");
-        builder.append(name);
-        builder.append(':');
-
-        builder.append(USERS_FIELD);
-        builder.append("=");
-        for (long userId : userIds) {
-            builder.append(userId);
-            builder.append(',');
-        }
-
-        return builder.toString();
-    }
-
-    static Group createGroup(final String name, List<Long> userIDs) {
-        Group group = new Group(name);
-        group.addUserIDs(userIDs);
-
-        return group;
+    @Test
+    public void emailQueryTest() throws IOException, InterruptedException {
+        ApiClient apiClient = createApiSimulator();
+        apiClient.runQuery(Constants.QUERY_GET_EMAIL_ADDRESSES);
     }
 }
