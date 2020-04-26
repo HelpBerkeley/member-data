@@ -34,6 +34,9 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
+/**
+ * Exports various groups of full user records
+ */
 public class Exporter {
     private static final Logger LOGGER = LoggerFactory.getLogger(Exporter.class);
 
@@ -237,12 +240,7 @@ public class Exporter {
     }
 
     String drivers() {
-
-        // FIX THIS, DS: define constant for separator
-        final String separator = ",";
-
         StringBuilder rows = new StringBuilder();
-        // FIX THIS, DS: define constant for separator
         rows.append(User.csvHeaders(separator));
 
         for (User user : tables.drivers()) {
@@ -292,6 +290,68 @@ public class Exporter {
         LOGGER.debug("Wrote: " + outputFileName);
 
         return outputFileName;
+    }
+
+    String workflow() {
+
+        StringBuilder rows = new StringBuilder();
+
+        rows.append(workflowHeaders());
+
+        for (User user : tables.sortByConsumerThenDriverThenName()) {
+            rows.append(user.isConsumer());
+            rows.append(separator);
+            rows.append(user.isDriver());
+            rows.append(separator);
+            rows.append(user.getName());
+            rows.append(separator);
+            rows.append(user.getUserName());
+            rows.append(separator);
+            rows.append(user.getPhoneNumber());
+            rows.append(separator);
+            rows.append(user.getNeighborhood());
+            rows.append(separator);
+            rows.append(user.getCity());
+            rows.append(separator);
+            rows.append(user.getAddress());
+            rows.append(separator);
+            rows.append(user.isApartment());
+            rows.append('\n');
+        }
+
+        return rows.toString();
+    }
+
+    String workflowToFile(final String fileName) throws IOException {
+
+        String outputFileName = generateFileName(fileName, "csv");
+        writeFile(outputFileName, workflow());
+        LOGGER.debug("Wrote: " + outputFileName);
+
+        return outputFileName;
+    }
+
+    String workflowHeaders() {
+
+        return User.CONSUMER_COLUMN
+            + separator
+            + User.DRIVER_COLUMN
+            + separator
+            + User.NAME_COLUMN
+            + separator
+            + User.USERNAME_COLUMN
+            + separator
+            + User.PHONE_NUMBER_COLUMN
+            + separator
+            + User.NEIGHBORHOOD_COLUMN
+            + separator
+            + User.CITY_COLUMN
+            + separator
+            + User.ADDRESS_COLUMN
+            + separator
+            + User.APARTMENT_COLUMN
+            + separator
+            + '\n';
     }
 
     private void writeFile(final String fileName, final String fileData) throws IOException {

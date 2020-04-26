@@ -23,6 +23,7 @@
 package org.helpberkeley.memberdata;
 
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 import static java.time.temporal.ChronoUnit.*;
@@ -257,5 +258,22 @@ public class TestBase {
                 TEST_CITY_1, TEST_PHONE_1, TEST_NEIGHBORHOOD_1, TEST_CREATED_1,
                 TEST_APARTMENT_1, TEST_CONSUMER_REQUEST_1, "none",
                 TEST_EMAIL_1);
+    }
+
+    protected User createUserWithNameConsumerAndDriver(final String name,
+        boolean consumer, boolean driver) throws UserException {
+
+        List<String> groups = new ArrayList<>();
+        if (consumer) {
+            groups.add(Constants.GROUP_CONSUMERS);
+        }
+        if (driver) {
+            groups.add(Constants.GROUP_DRIVERS);
+        }
+
+        return User.createUser(name, name, TEST_ID_1, TEST_ADDRESS_1,
+                TEST_CITY_1, TEST_PHONE_1, TEST_NEIGHBORHOOD_1, TEST_CREATED_1,
+                TEST_APARTMENT_1, TEST_CONSUMER_REQUEST_1, TEST_VOLUNTEER_REQUEST_1,
+                TEST_EMAIL_1, groups);
     }
 }

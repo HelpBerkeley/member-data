@@ -22,6 +22,8 @@
 
 package org.helpberkeley.memberdata;
 
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 /**
@@ -57,6 +59,8 @@ public class User {
     static final String AUDIT_ERROR_NEIGHBORHOOD_UNKNOWN = "Neighborhood unknown";
 
     static final String NOT_PROVIDED = "none";
+
+    static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
 
     private String name;
     private String userName;
@@ -107,12 +111,16 @@ public class User {
         return volunteerRequest == null ? NOT_PROVIDED : volunteerRequest;
     }
 
-    public boolean isApartment() {
+    public Boolean isApartment() {
         return apartment;
     }
 
     public String getCreateTime() {
         return createTime;
+    }
+
+    public String getSimpleCreateTime() {
+        return ZonedDateTime.parse(createTime).format(TIME_FORMATTER);
     }
 
     public String getEmail()
@@ -152,22 +160,22 @@ public class User {
         this.email = email;
     }
 
-    boolean hasConsumerRequest() {
+    Boolean hasConsumerRequest() {
         return consumerRequest;
     }
 
-    boolean isConsumer() {
+    Boolean isConsumer() {
         return groupMembership.contains(Constants.GROUP_CONSUMERS);
     }
 
-    boolean isDispatcher() {
+    Boolean isDispatcher() {
         return groupMembership.contains(Constants.GROUP_DISPATCHERS);
     }
 
-    boolean isDriver() {
+    Boolean isDriver() {
         return groupMembership.contains(Constants.GROUP_DRIVERS);
     }
-    boolean isSpecialist() {
+    Boolean isSpecialist() {
         return groupMembership.contains(Constants.GROUP_SPECIALISTS);
     }
 

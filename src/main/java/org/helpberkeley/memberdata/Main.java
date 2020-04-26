@@ -22,8 +22,6 @@
 
 package org.helpberkeley.memberdata;
 
-import com.cedarsoftware.util.io.JsonWriter;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -47,6 +45,7 @@ public class Main {
     static final String CONSUMER_REQUESTS_FILE = "consumer-requests";
     static final String VOLUNTEER_REQUESTS_FILE = "volunteer-requests";
     static final String DRIVERS_FILE = "drivers";
+    static final String WORKFLOW_FILE = "workflow";
 
     // FIX THIS, DS: make this less fragile
     static final long MEMBER_DATA_FOR_DISPATCHES_TOPID_ID = 86;
@@ -59,6 +58,7 @@ public class Main {
     static final long DRIVERS_POST_ID = 2808;
     static final long DRIVERS_POST_TOPIC = 638;
     static final long ALL_MEMBERS_POST_TOPIC = 837;
+    static final long WORKFLOW_DATA_TOPIC = 824;
     static final long STONE_TEST_TOPIC = 422;
 
     public static void main(String[] args) throws IOException, InterruptedException, ApiException {
@@ -74,32 +74,7 @@ public class Main {
 
         switch (options.getCommand()) {
             case Options.COMMAND_FETCH:
-                // Create a User loader
-                Loader loader = new Loader(apiClient);
-
-                // Load the member data from the website
-                List<User> users = loader.load();
-
-                // Create an exporter
-                Exporter exporter = new Exporter(users);
-
-                // Export any user errors
-                exporter.errorsToFile(MEMBERDATA_ERRORS_FILE);
-
-                // Export all users
-                exporter.allMembersToFile(MEMBERDATA_FILE);
-
-                // Export recent, no-group members
-//                exporter.recentlyCreatedNoGroupsToFile(NON_CONSUMERS_FILE);
-
-                // Export non-consumer group members, with a consumer request
-                exporter.consumerRequestsToFile(CONSUMER_REQUESTS_FILE);
-
-                // Export new volunteers-consumer group members, with a volunteer request
-                exporter.volunteerRequestsToFile(VOLUNTEER_REQUESTS_FILE);
-
-                // Export drivers
-                exporter.driversToFile(DRIVERS_FILE);
+                fetch(apiClient);
                 break;
             case Options.COMMAND_POST_ERRORS:
                 postUserErrors(apiClient, options.getFileName());
@@ -124,6 +99,9 @@ public class Main {
                 break;
             case Options.COMMAND_POST_ALL_MEMBERS:
                 postAllMembers(apiClient, options.getFileName(), options.getShortURL());
+                break;
+            case Options.COMMAND_POST_WORKFLOW:
+                postWorkflow(apiClient, options.getFileName(), options.getShortURL());
                 break;
             default:
                 assert options.getCommand().equals(Options.COMMAND_POST_DRIVERS) : options.getCommand();
@@ -151,6 +129,35 @@ public class Main {
         } finally {}
 
         return properties;
+    }
+
+    static void fetch(ApiClient apiClient) throws InterruptedException, ApiException, IOException {
+        // Create a User loader
+        Loader loader = new Loader(apiClient);
+
+        // Load the member data from the website
+        List<User> users = loader.load();
+
+        // Create an exporter
+        Exporter exporter = new Exporter(users);
+
+        // Export all users
+        exporter.allMembersToFile(MEMBERDATA_FILE);
+
+        // Export any user errors
+        exporter.errorsToFile(MEMBERDATA_ERRORS_FILE);
+
+        // Export non-consumer group members, with a consumer request
+        exporter.consumerRequestsToFile(CONSUMER_REQUESTS_FILE);
+
+        // Export new volunteers-consumer group members, with a volunteer request
+        exporter.volunteerRequestsToFile(VOLUNTEER_REQUESTS_FILE);
+
+        // Export drivers
+        exporter.driversToFile(DRIVERS_FILE);
+
+        // Export workflow
+        exporter.workflowToFile(WORKFLOW_FILE);
     }
 
     static void updateConsumerRequests(ApiClient apiClient, final String fileName)
@@ -415,6 +422,31 @@ public class Main {
         Post post = new Post();
         post.title = "All Members";
         post.topic_id = ALL_MEMBERS_POST_TOPIC;
+        post.createdAt = ZonedDateTime.now(ZoneId.systemDefault())
+                .format(DateTimeFormatter.ofPattern("uuuu.MM.dd.HH.mm.ss"));
+
+        post.raw = postRaw.toString();
+        HttpResponse<?> response = apiClient.post(post.toJson());
+        System.out.println(response);
+    }
+
+    static void postWorkflow(ApiClient apiClient, final String fileName, final String shortUrl)
+            throws IOException, InterruptedException {
+
+        StringBuilder postRaw = new StringBuilder();
+
+        postRaw.append("** ");
+        postRaw.append("Workflow Data -- ");
+        postRaw.append(ZonedDateTime.now(
+                ZoneId.systemDefault()).format(DateTimeFormatter.ofPattern("uuuu.MM.dd HH:mm:ss")));
+        postRaw.append(" **\n\n");
+
+        // postRaw.append("[" + fileName + "|attachment](upload://" + fileName + ") (5.49 KB)");
+        postRaw.append("[" + fileName + "|attachment](" + shortUrl + ")");
+
+        Post post = new Post();
+        post.title = "Workflow Data";
+        post.topic_id = WORKFLOW_DATA_TOPIC;
         post.createdAt = ZonedDateTime.now(ZoneId.systemDefault())
                 .format(DateTimeFormatter.ofPattern("uuuu.MM.dd.HH.mm.ss"));
 

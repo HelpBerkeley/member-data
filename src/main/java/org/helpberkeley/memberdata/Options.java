@@ -36,6 +36,7 @@ public class Options {
     static final String COMMAND_POST_CONSUMER_REQUESTS = "post-consumer-requests";
     static final String COMMAND_POST_DRIVERS = "post-drivers";
     static final String COMMAND_POST_ALL_MEMBERS = "post-all-members";
+    static final String COMMAND_POST_WORKFLOW = "post-workflow";
 
     static final String USAGE_ERROR = "Usage error: ";
     static final String UNKNOWN_COMMAND = USAGE_ERROR + "unknown command: ";
@@ -52,6 +53,7 @@ public class Options {
                     + "    | " + COMMAND_POST_VOLUNTEER_REQUESTS + " volunteer-requests-file-name\n"
                     + "    | " + COMMAND_POST_DRIVERS + " drivers-file upload://short-url-file-name\n"
                     + "    | " + COMMAND_POST_ALL_MEMBERS + " all-members-file upload://short-url-file-name\n"
+                    + "    | " + COMMAND_POST_WORKFLOW + " workflow-file upload://short-url-file-name\n"
                     + "    | " + COMMAND_UPDATE_ERRORS + " errors-file-name\n"
                     + "    | " + COMMAND_UPDATE_CONSUMER_REQUESTS + " consumer-requests-file-name\n"
                     + "    | " + COMMAND_UPDATE_VOLUNTEER_REQUESTS + " volunteer-requests-file-name\n"
@@ -91,6 +93,7 @@ public class Options {
                     fileName = args[index];
                     break;
                 case COMMAND_POST_ALL_MEMBERS:
+                case COMMAND_POST_WORKFLOW:
                 case COMMAND_POST_DRIVERS:
                 case COMMAND_UPDATE_DRIVERS:
                     setCommand(arg);
@@ -117,10 +120,10 @@ public class Options {
 
         if ((command.equals(COMMAND_POST_DRIVERS)
                 || command.equals(COMMAND_UPDATE_DRIVERS)
-                || command.equals(COMMAND_POST_ALL_MEMBERS))) {
-            if (shortURL == null) {
-                dieUsage(COMMAND_REQUIRES_SHORT_URL);
-            }
+                || command.equals(COMMAND_POST_ALL_MEMBERS)
+                || command.equals(COMMAND_POST_WORKFLOW))) {
+
+            assert shortURL != null;
             if (! shortURL.startsWith("upload://")) {
                 dieUsage(BAD_SHORT_URL);
             }

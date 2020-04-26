@@ -24,6 +24,7 @@ package org.helpberkeley.memberdata;
 
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
@@ -53,6 +54,24 @@ public class Tables {
     List<User> sortByCreateTime() {
         List<User> sorted = new ArrayList<>(users);
         sorted.sort(Comparator.comparing(User::getCreateTime));
+
+        return sorted;
+    }
+
+    List<User> sortByConsumerThenDriverThenName() {
+        List<User> sorted = new ArrayList<>(users);
+
+
+//        Comparator<User> comparator = Comparator
+//                .comparing(User::isConsumer)
+//                .thenComparing(User::isDriver)
+//                .thenComparing(User::getName, String.CASE_INSENSITIVE_ORDER);
+//
+//        sorted.sort(comparator);
+
+        Collections.sort(sorted, new IsConsumerComparator()
+            .thenComparing(new IsDriverComparator()
+            .thenComparing(new NameComparator())));
 
         return sorted;
     }
@@ -194,5 +213,32 @@ public class Tables {
         }
 
         return drivers;
+    }
+
+    static class IsConsumerComparator implements Comparator<User> {
+
+        @Override
+        public int compare(User u1, User u2) {
+
+            return u2.isConsumer().compareTo(u1.isConsumer());
+        }
+    }
+
+    static class IsDriverComparator implements Comparator<User> {
+
+        @Override
+        public int compare(User u1, User u2) {
+
+            return u2.isDriver().compareTo(u1.isDriver());
+        }
+    }
+
+    static class NameComparator implements Comparator<User> {
+
+        @Override
+        public int compare(User u1, User u2) {
+
+            return u1.getName().compareToIgnoreCase(u2.getName());
+        }
     }
 }

@@ -27,7 +27,10 @@ import org.junit.Test;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.ThrowableAssert.catchThrowable;
 
-public class OptionsTest extends  TestBase {
+public class OptionsTest extends TestBase {
+
+    private static final String TEST_FILE_NAME = "something.csv";
+
     @Test
     public void noCommandTest() {
 
@@ -69,6 +72,17 @@ public class OptionsTest extends  TestBase {
     }
 
     @Test
+    public void postErrorsTest() {
+        Options options = new Options(new String[] { Options.COMMAND_POST_ERRORS, TEST_FILE_NAME });
+        options.setExceptions(true);
+
+        options.parse();
+        assertThat(options.getCommand()).isEqualTo(Options.COMMAND_POST_ERRORS);
+        assertThat(options.getFileName()).isEqualTo(TEST_FILE_NAME);
+        assertThat(options.getShortURL()).isNull();
+    }
+
+    @Test
     public void postErrorsMissingFileTest() {
 
         Options options = new Options(new String[] { Options.COMMAND_POST_ERRORS });
@@ -78,19 +92,6 @@ public class OptionsTest extends  TestBase {
         assertThat(thrown).isInstanceOf(MemberDataException.class);
         assertThat(thrown).hasMessageContaining(Options.USAGE_ERROR);
         assertThat(thrown).hasMessageContaining(Options.COMMAND_POST_ERRORS);
-        assertThat(thrown).hasMessageContaining(Options.COMMAND_REQUIRES_FILE_NAME);
-        assertThat(thrown).hasMessageContaining(Options.USAGE);
-    }
-
-    @Test
-    public void postNonConsumersMissingFileTest() {
-
-        Options options = new Options(new String[] { Options.COMMAND_POST_ERRORS });
-        options.setExceptions(true);
-
-        Throwable thrown = catchThrowable(options::parse);
-        assertThat(thrown).isInstanceOf(MemberDataException.class);
-        assertThat(thrown).hasMessageContaining(Options.USAGE_ERROR);
         assertThat(thrown).hasMessageContaining(Options.COMMAND_REQUIRES_FILE_NAME);
         assertThat(thrown).hasMessageContaining(Options.USAGE);
     }
@@ -243,6 +244,32 @@ public class OptionsTest extends  TestBase {
     public void postAllMembersPoorlyFormedURLTest() {
 
         Options options = new Options(new String[] { Options.COMMAND_POST_ALL_MEMBERS, "someFile.csv", "someFile.csv" });
+        options.setExceptions(true);
+
+        Throwable thrown = catchThrowable(options::parse);
+        assertThat(thrown).isInstanceOf(MemberDataException.class);
+        assertThat(thrown).hasMessageContaining(Options.USAGE_ERROR);
+        assertThat(thrown).hasMessageContaining(Options.BAD_SHORT_URL);
+        assertThat(thrown).hasMessageContaining(Options.USAGE);
+    }
+
+    @Test
+    public void postWorkflowMissingURLTest() {
+
+        Options options = new Options(new String[] { Options.COMMAND_POST_WORKFLOW, TEST_FILE_NAME });
+        options.setExceptions(true);
+
+        Throwable thrown = catchThrowable(options::parse);
+        assertThat(thrown).isInstanceOf(MemberDataException.class);
+        assertThat(thrown).hasMessageContaining(Options.USAGE_ERROR);
+        assertThat(thrown).hasMessageContaining(Options.COMMAND_REQUIRES_SHORT_URL);
+        assertThat(thrown).hasMessageContaining(Options.USAGE);
+    }
+
+    @Test
+    public void postWorkflowPoorlyFormedURLTest() {
+
+        Options options = new Options(new String[] { Options.COMMAND_POST_WORKFLOW, "someFile.csv", "someFile.csv" });
         options.setExceptions(true);
 
         Throwable thrown = catchThrowable(options::parse);

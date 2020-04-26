@@ -147,4 +147,37 @@ public class TablesTest extends TestBase {
         Tables tables = new Tables(List.of(u1, u2, u3, u4));
         assertThat(tables.drivers()).containsExactlyInAnyOrder(u2, u3);
     }
+
+    @Test
+    public void consumerDriverNameTest() throws UserException {
+
+        // create non consumer, non driver 1
+        User u1 = createUserWithNameConsumerAndDriver("User 1", false, false);
+        // create non consumer, non driver 2
+        User u2 = createUserWithNameConsumerAndDriver("User 2", false, false);
+        // create non consumer, driver 1
+        User u3 = createUserWithNameConsumerAndDriver("User 3", false, true);
+        // create non consumer, driver 2
+        User u4 = createUserWithNameConsumerAndDriver("User 4", false, true);
+        // create consumer, non driver 1
+        User u5 = createUserWithNameConsumerAndDriver("User 5", true, false);
+        // create consumer, non driver 2
+        User u6 = createUserWithNameConsumerAndDriver("User 6", true, false);
+        // create consumer, driver 1
+        User u7 = createUserWithNameConsumerAndDriver("User 7", true, true);
+        // create consumer, driver 2
+        User u8 = createUserWithNameConsumerAndDriver("User 8", true, true);
+
+        List<User> users = List.of(u1, u2, u3, u4, u5, u6, u7, u8);
+
+        Tables tables = new Tables(users);
+
+        List<User> sorted = tables.sortByConsumerThenDriverThenName();
+        assertThat(sorted).hasSameSizeAs(users);
+
+        // Expected order
+        List<User> expected = List.of(u7, u8, u5, u6, u3, u4, u1, u2);
+
+        assertThat(sorted).containsExactlyElementsOf(expected);
+    }
 }
