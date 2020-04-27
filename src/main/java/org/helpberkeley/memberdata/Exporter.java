@@ -93,6 +93,8 @@ public class Exporter {
             rows.append(separator);
             rows.append(user.getPhoneNumber());
             rows.append(separator);
+            rows.append(user.getAltPhoneNumber());
+            rows.append(separator);
             rows.append(user.getNeighborhood());
             rows.append(separator);
             rows.append(user.getCity());
@@ -146,6 +148,8 @@ public class Exporter {
             rows.append(user.getUserName());
             rows.append(separator);
             rows.append(user.getPhoneNumber());
+            rows.append(separator);
+            rows.append(user.getAltPhoneNumber());
             rows.append(separator);
             rows.append(user.getNeighborhood());
             rows.append(separator);
@@ -254,6 +258,8 @@ public class Exporter {
             rows.append(separator);
             rows.append(user.getPhoneNumber());
             rows.append(separator);
+            rows.append(user.getAltPhoneNumber());
+            rows.append(separator);
             rows.append(user.getNeighborhood());
             rows.append(separator);
             rows.append(user.getCity());
@@ -310,6 +316,8 @@ public class Exporter {
             rows.append(separator);
             rows.append(user.getPhoneNumber());
             rows.append(separator);
+            rows.append(user.getAltPhoneNumber());
+            rows.append(separator);
             rows.append(user.getNeighborhood());
             rows.append(separator);
             rows.append(user.getCity());
@@ -343,6 +351,8 @@ public class Exporter {
             + User.USERNAME_COLUMN
             + separator
             + User.PHONE_NUMBER_COLUMN
+            + separator
+            + User.ALT_PHONE_NUMBER_COLUMN
             + separator
             + User.NEIGHBORHOOD_COLUMN
             + separator

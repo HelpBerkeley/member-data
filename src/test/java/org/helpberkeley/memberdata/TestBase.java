@@ -41,7 +41,7 @@ public class TestBase {
     static final String TEST_ADDRESS_1 = "address 1";
     static final String TEST_CITY_1 = Constants.BERKELEY;
     static final String TEST_PHONE_1 = "111-222-3333";
-    static final String TEST_ALT_PHONE_1 = "1-111-222-3333";
+    static final String TEST_ALT_PHONE_1 = "1-777-888-9999";
     static final String TEST_NEIGHBORHOOD_1 = "neighborhood 1";
     static final Boolean TEST_APARTMENT_1 = Boolean.FALSE;
     static final String TEST_CREATED_1 = ZonedDateTime.now().minus(6, WEEKS).toString();

@@ -40,7 +40,7 @@ public class User {
     static final String ADDRESS_COLUMN = "Address";
     static final String CITY_COLUMN = "City";
     static final String PHONE_NUMBER_COLUMN = "Phone #";
-    static final String ALT_PHONE_NUMBER_COLUMN = "Second Phone #";
+    static final String ALT_PHONE_NUMBER_COLUMN = "Phone2 #";
     static final String NEIGHBORHOOD_COLUMN = "Neighborhood";
     static final String CONSUMER_COLUMN = "Consumer";
     static final String DRIVER_COLUMN = "Driver";

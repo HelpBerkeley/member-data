@@ -223,10 +223,11 @@ public class ExporterTest extends TestBase {
         assertThat(headerColumns[2]).isEqualTo(User.NAME_COLUMN);
         assertThat(headerColumns[3]).isEqualTo(User.USERNAME_COLUMN);
         assertThat(headerColumns[4]).isEqualTo(User.PHONE_NUMBER_COLUMN);
-        assertThat(headerColumns[5]).isEqualTo(User.NEIGHBORHOOD_COLUMN);
-        assertThat(headerColumns[6]).isEqualTo(User.CITY_COLUMN);
-        assertThat(headerColumns[7]).isEqualTo(User.ADDRESS_COLUMN);
-        assertThat(headerColumns[8]).isEqualTo(User.APARTMENT_COLUMN);
+        assertThat(headerColumns[5]).isEqualTo(User.ALT_PHONE_NUMBER_COLUMN);
+        assertThat(headerColumns[6]).isEqualTo(User.NEIGHBORHOOD_COLUMN);
+        assertThat(headerColumns[7]).isEqualTo(User.CITY_COLUMN);
+        assertThat(headerColumns[8]).isEqualTo(User.ADDRESS_COLUMN);
+        assertThat(headerColumns[9]).isEqualTo(User.APARTMENT_COLUMN);
 
 
         String[] columns = rows[1].split(Constants.CSV_SEPARATOR);
@@ -237,10 +238,11 @@ public class ExporterTest extends TestBase {
         assertThat(columns[2]).isEqualTo(u1.getName());
         assertThat(columns[3]).isEqualTo(u1.getUserName());
         assertThat(columns[4]).isEqualTo(u1.getPhoneNumber());
-        assertThat(columns[5]).isEqualTo(u1.getNeighborhood());
-        assertThat(columns[6]).isEqualTo(u1.getCity());
-        assertThat(columns[7]).isEqualTo(u1.getAddress());
-        assertThat(columns[8]).isEqualTo(String.valueOf(u1.isApartment()));
+        assertThat(columns[5]).isEqualTo(u1.getAltPhoneNumber());
+        assertThat(columns[6]).isEqualTo(u1.getNeighborhood());
+        assertThat(columns[7]).isEqualTo(u1.getCity());
+        assertThat(columns[8]).isEqualTo(u1.getAddress());
+        assertThat(columns[9]).isEqualTo(String.valueOf(u1.isApartment()));
     }
 
     @Test
