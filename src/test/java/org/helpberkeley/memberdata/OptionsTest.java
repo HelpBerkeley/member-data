@@ -30,6 +30,23 @@ public class OptionsTest extends TestBase {
 
     private static final String TEST_FILE_NAME = "something.csv";
 
+    private static final String[] COMMANDS_WITH_URL = {
+            Options.COMMAND_POST_ALL_MEMBERS,
+            Options.COMMAND_POST_WORKFLOW,
+            Options.COMMAND_POST_DRIVERS,
+            Options.COMMAND_POST_INREACH,
+            Options.COMMAND_UPDATE_DRIVERS,
+    };
+
+    private static final String[] COMMANDS_WITH_FILE = {
+            Options.COMMAND_POST_ERRORS,
+            Options.COMMAND_POST_CONSUMER_REQUESTS,
+            Options.COMMAND_POST_VOLUNTEER_REQUESTS,
+            Options.COMMAND_UPDATE_ERRORS,
+            Options.COMMAND_UPDATE_CONSUMER_REQUESTS,
+            Options.COMMAND_UPDATE_VOLUNTEER_REQUESTS,
+    };
+
     @Test
     public void noCommandTest() {
 
@@ -82,200 +99,71 @@ public class OptionsTest extends TestBase {
     }
 
     @Test
-    public void postErrorsMissingFileTest() {
+    public void missingFileTest() {
+        for (String command : COMMANDS_WITH_FILE) {
 
-        Options options = new Options(new String[] { Options.COMMAND_POST_ERRORS });
-        options.setExceptions(true);
+            Options options = new Options(new String[]{command});
+            options.setExceptions(true);
 
-        Throwable thrown = catchThrowable(options::parse);
-        assertThat(thrown).isInstanceOf(MemberDataException.class);
-        assertThat(thrown).hasMessageContaining(Options.USAGE_ERROR);
-        assertThat(thrown).hasMessageContaining(Options.COMMAND_POST_ERRORS);
-        assertThat(thrown).hasMessageContaining(Options.COMMAND_REQUIRES_FILE_NAME);
-        assertThat(thrown).hasMessageContaining(Options.USAGE);
+            Throwable thrown = catchThrowable(options::parse);
+            assertThat(thrown).isInstanceOf(MemberDataException.class);
+            assertThat(thrown).hasMessageContaining(command);
+            assertThat(thrown).hasMessageContaining(Options.USAGE_ERROR);
+            assertThat(thrown).hasMessageContaining(Options.COMMAND_REQUIRES_FILE_NAME);
+            assertThat(thrown).hasMessageContaining(Options.USAGE);
+        }
+
     }
 
     @Test
-    public void updateErrorsMissingFileTest() {
+    public void urlCommandMissingFileTest() {
 
-        Options options = new Options(new String[] { Options.COMMAND_UPDATE_ERRORS });
-        options.setExceptions(true);
+        for (String command : COMMANDS_WITH_URL) {
 
-        Throwable thrown = catchThrowable(options::parse);
-        assertThat(thrown).isInstanceOf(MemberDataException.class);
-        assertThat(thrown).hasMessageContaining(Options.USAGE_ERROR);
-        assertThat(thrown).hasMessageContaining(Options.COMMAND_UPDATE_ERRORS);
-        assertThat(thrown).hasMessageContaining(Options.COMMAND_REQUIRES_FILE_NAME);
-        assertThat(thrown).hasMessageContaining(Options.USAGE);
+            Options options = new Options(new String[]{command});
+            options.setExceptions(true);
+
+            Throwable thrown = catchThrowable(options::parse);
+            assertThat(thrown).isInstanceOf(MemberDataException.class);
+            assertThat(thrown).hasMessageContaining(command);
+            assertThat(thrown).hasMessageContaining(Options.USAGE_ERROR);
+            assertThat(thrown).hasMessageContaining(Options.COMMAND_REQUIRES_FILE_NAME);
+            assertThat(thrown).hasMessageContaining(Options.USAGE);
+        }
     }
 
     @Test
-    public void updateConsumerRequestsMissingFileTest() {
+    public void missingURLTest() {
 
-        Options options = new Options(new String[] { Options.COMMAND_UPDATE_CONSUMER_REQUESTS });
-        options.setExceptions(true);
+        for (String command : COMMANDS_WITH_URL) {
 
-        Throwable thrown = catchThrowable(options::parse);
-        assertThat(thrown).isInstanceOf(MemberDataException.class);
-        assertThat(thrown).hasMessageContaining(Options.USAGE_ERROR);
-        assertThat(thrown).hasMessageContaining(Options.COMMAND_REQUIRES_FILE_NAME);
-        assertThat(thrown).hasMessageContaining(Options.USAGE);
+            Options options = new Options(new String[]{command, "someFile.csv"});
+            options.setExceptions(true);
+
+            Throwable thrown = catchThrowable(options::parse);
+            assertThat(thrown).isInstanceOf(MemberDataException.class);
+            assertThat(thrown).hasMessageContaining(command);
+            assertThat(thrown).hasMessageContaining(Options.USAGE_ERROR);
+            assertThat(thrown).hasMessageContaining(Options.COMMAND_REQUIRES_SHORT_URL);
+            assertThat(thrown).hasMessageContaining(Options.USAGE);
+        }
     }
 
     @Test
-    public void updateVolunteerRequestsMissingFileTest() {
+    public void poorlyFormedURLTest() {
 
-        Options options = new Options(new String[] { Options.COMMAND_UPDATE_CONSUMER_REQUESTS });
-        options.setExceptions(true);
+        for (String command : COMMANDS_WITH_URL) {
 
-        Throwable thrown = catchThrowable(options::parse);
-        assertThat(thrown).isInstanceOf(MemberDataException.class);
-        assertThat(thrown).hasMessageContaining(Options.USAGE_ERROR);
-        assertThat(thrown).hasMessageContaining(Options.COMMAND_REQUIRES_FILE_NAME);
-        assertThat(thrown).hasMessageContaining(Options.USAGE);
-    }
+            Options options = new Options(new String[]{command, "someFile.csv", "someFile.csv"});
+            options.setExceptions(true);
 
-    @Test
-    public void postConsumerRequestsMissingFileTest() {
-
-        Options options = new Options(new String[] { Options.COMMAND_POST_CONSUMER_REQUESTS });
-        options.setExceptions(true);
-
-        Throwable thrown = catchThrowable(options::parse);
-        assertThat(thrown).isInstanceOf(MemberDataException.class);
-        assertThat(thrown).hasMessageContaining(Options.USAGE_ERROR);
-        assertThat(thrown).hasMessageContaining(Options.COMMAND_REQUIRES_FILE_NAME);
-        assertThat(thrown).hasMessageContaining(Options.USAGE);
-    }
-
-    @Test
-    public void updateDriversMissingFileTest() {
-
-        Options options = new Options(new String[] { Options.COMMAND_UPDATE_DRIVERS });
-        options.setExceptions(true);
-
-        Throwable thrown = catchThrowable(options::parse);
-        assertThat(thrown).isInstanceOf(MemberDataException.class);
-        assertThat(thrown).hasMessageContaining(Options.USAGE_ERROR);
-        assertThat(thrown).hasMessageContaining(Options.COMMAND_REQUIRES_FILE_NAME);
-        assertThat(thrown).hasMessageContaining(Options.USAGE);
-    }
-
-    @Test
-    public void updateDriversMissingURLTest() {
-
-        Options options = new Options(new String[] { Options.COMMAND_UPDATE_DRIVERS, "someFile.csv" });
-        options.setExceptions(true);
-
-        Throwable thrown = catchThrowable(options::parse);
-        assertThat(thrown).isInstanceOf(MemberDataException.class);
-        assertThat(thrown).hasMessageContaining(Options.USAGE_ERROR);
-        assertThat(thrown).hasMessageContaining(Options.COMMAND_REQUIRES_SHORT_URL);
-        assertThat(thrown).hasMessageContaining(Options.USAGE);
-    }
-
-    @Test
-    public void updateDriversPoorlyFormedURLTest() {
-
-        Options options = new Options(new String[] { Options.COMMAND_UPDATE_DRIVERS, "someFile.csv", "someFile.csv" });
-        options.setExceptions(true);
-
-        Throwable thrown = catchThrowable(options::parse);
-        assertThat(thrown).isInstanceOf(MemberDataException.class);
-        assertThat(thrown).hasMessageContaining(Options.USAGE_ERROR);
-        assertThat(thrown).hasMessageContaining(Options.BAD_SHORT_URL);
-        assertThat(thrown).hasMessageContaining(Options.USAGE);
-    }
-
-    @Test
-    public void postDriversMissingFileTest() {
-
-        Options options = new Options(new String[] { Options.COMMAND_POST_DRIVERS });
-        options.setExceptions(true);
-
-        Throwable thrown = catchThrowable(options::parse);
-        assertThat(thrown).isInstanceOf(MemberDataException.class);
-        assertThat(thrown).hasMessageContaining(Options.USAGE_ERROR);
-        assertThat(thrown).hasMessageContaining(Options.COMMAND_REQUIRES_FILE_NAME);
-        assertThat(thrown).hasMessageContaining(Options.USAGE);
-    }
-
-    @Test
-    public void postDriversMissingURLTest() {
-
-        Options options = new Options(new String[] { Options.COMMAND_POST_DRIVERS, "someFile.csv" });
-        options.setExceptions(true);
-
-        Throwable thrown = catchThrowable(options::parse);
-        assertThat(thrown).isInstanceOf(MemberDataException.class);
-        assertThat(thrown).hasMessageContaining(Options.USAGE_ERROR);
-        assertThat(thrown).hasMessageContaining(Options.COMMAND_REQUIRES_SHORT_URL);
-        assertThat(thrown).hasMessageContaining(Options.USAGE);
-    }
-
-    @Test
-    public void postDriversPoorlyFormedURLTest() {
-
-        Options options = new Options(new String[] { Options.COMMAND_POST_DRIVERS, "someFile.csv", "someFile.csv" });
-        options.setExceptions(true);
-
-        Throwable thrown = catchThrowable(options::parse);
-        assertThat(thrown).isInstanceOf(MemberDataException.class);
-        assertThat(thrown).hasMessageContaining(Options.USAGE_ERROR);
-        assertThat(thrown).hasMessageContaining(Options.BAD_SHORT_URL);
-        assertThat(thrown).hasMessageContaining(Options.USAGE);
-    }
-
-    @Test
-    public void postAllMembersMissingURLTest() {
-
-        Options options = new Options(new String[] { Options.COMMAND_POST_ALL_MEMBERS, "someFile.csv" });
-        options.setExceptions(true);
-
-        Throwable thrown = catchThrowable(options::parse);
-        assertThat(thrown).isInstanceOf(MemberDataException.class);
-        assertThat(thrown).hasMessageContaining(Options.USAGE_ERROR);
-        assertThat(thrown).hasMessageContaining(Options.COMMAND_REQUIRES_SHORT_URL);
-        assertThat(thrown).hasMessageContaining(Options.USAGE);
-    }
-
-    @Test
-    public void postAllMembersPoorlyFormedURLTest() {
-
-        Options options = new Options(new String[] { Options.COMMAND_POST_ALL_MEMBERS, "someFile.csv", "someFile.csv" });
-        options.setExceptions(true);
-
-        Throwable thrown = catchThrowable(options::parse);
-        assertThat(thrown).isInstanceOf(MemberDataException.class);
-        assertThat(thrown).hasMessageContaining(Options.USAGE_ERROR);
-        assertThat(thrown).hasMessageContaining(Options.BAD_SHORT_URL);
-        assertThat(thrown).hasMessageContaining(Options.USAGE);
-    }
-
-    @Test
-    public void postWorkflowMissingURLTest() {
-
-        Options options = new Options(new String[] { Options.COMMAND_POST_WORKFLOW, TEST_FILE_NAME });
-        options.setExceptions(true);
-
-        Throwable thrown = catchThrowable(options::parse);
-        assertThat(thrown).isInstanceOf(MemberDataException.class);
-        assertThat(thrown).hasMessageContaining(Options.USAGE_ERROR);
-        assertThat(thrown).hasMessageContaining(Options.COMMAND_REQUIRES_SHORT_URL);
-        assertThat(thrown).hasMessageContaining(Options.USAGE);
-    }
-
-    @Test
-    public void postWorkflowPoorlyFormedURLTest() {
-
-        Options options = new Options(new String[] { Options.COMMAND_POST_WORKFLOW, "someFile.csv", "someFile.csv" });
-        options.setExceptions(true);
-
-        Throwable thrown = catchThrowable(options::parse);
-        assertThat(thrown).isInstanceOf(MemberDataException.class);
-        assertThat(thrown).hasMessageContaining(Options.USAGE_ERROR);
-        assertThat(thrown).hasMessageContaining(Options.BAD_SHORT_URL);
-        assertThat(thrown).hasMessageContaining(Options.USAGE);
+            Throwable thrown = catchThrowable(options::parse);
+            assertThat(thrown).isInstanceOf(MemberDataException.class);
+            assertThat(thrown).hasMessageContaining(command);
+            assertThat(thrown).hasMessageContaining(Options.USAGE_ERROR);
+            assertThat(thrown).hasMessageContaining(Options.BAD_SHORT_URL);
+            assertThat(thrown).hasMessageContaining(Options.USAGE);
+        }
     }
 
     @Test
@@ -284,10 +172,23 @@ public class OptionsTest extends TestBase {
         String fileName = "someFile.csv";
         String shortURL = "upload://asfasdfasdf.csv";
 
-        Options options = new Options(new String[] { Options.COMMAND_POST_DRIVERS, fileName, shortURL });
+        for (String command : COMMANDS_WITH_URL) {
+            Options options = new Options(new String[] { command, fileName, shortURL });
+            options.parse();
+            assertThat(options.getFileName()).isEqualTo(fileName);
+            assertThat(options.getShortURL()).isEqualTo(shortURL);
+        }
+    }
 
-        options.parse();
-        assertThat(options.getFileName()).isEqualTo(fileName);
-        assertThat(options.getShortURL()).isEqualTo(shortURL);
+    @Test
+    public void fileTest() {
+
+        String fileName = "someFile.csv";
+
+        for (String command : COMMANDS_WITH_FILE) {
+            Options options = new Options(new String[] { command, fileName });
+            options.parse();
+            assertThat(options.getFileName()).isEqualTo(fileName);
+        }
     }
 }

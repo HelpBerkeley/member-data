@@ -59,6 +59,7 @@ public class Main {
     static final long DRIVERS_POST_TOPIC = 638;
     static final long ALL_MEMBERS_POST_TOPIC = 837;
     static final long WORKFLOW_DATA_TOPIC = 824;
+    static final long INREACH_POST_TOPIC = 820;
     static final long STONE_TEST_TOPIC = 422;
 
     public static void main(String[] args) throws IOException, InterruptedException {
@@ -103,9 +104,11 @@ public class Main {
             case Options.COMMAND_POST_WORKFLOW:
                 postWorkflow(apiClient, options.getFileName(), options.getShortURL());
                 break;
+            case Options.COMMAND_POST_INREACH:
+                postInreach(apiClient, options.getFileName(), options.getShortURL());
+                break;
             default:
                 assert options.getCommand().equals(Options.COMMAND_POST_DRIVERS) : options.getCommand();
-            case Options.COMMAND_POST_DRIVERS:
                 postDrivers(apiClient, options.getFileName(), options.getShortURL());
                 break;
         }
@@ -378,6 +381,31 @@ public class Main {
         Post post = new Post();
         post.title = "Volunteer Drivers";
         post.topic_id = DRIVERS_POST_TOPIC;
+        post.createdAt = ZonedDateTime.now(ZoneId.systemDefault())
+                .format(DateTimeFormatter.ofPattern("uuuu.MM.dd.HH.mm.ss"));
+
+        post.raw = postRaw.toString();
+        HttpResponse<?> response = apiClient.post(post.toJson());
+        System.out.println(response);
+    }
+
+    static void postInreach(ApiClient apiClient, final String fileName, final String shortUrl)
+            throws IOException, InterruptedException {
+
+        StringBuilder postRaw = new StringBuilder();
+
+        postRaw.append("** ");
+        postRaw.append("Customer Info -- ");
+        postRaw.append(ZonedDateTime.now(
+                ZoneId.systemDefault()).format(DateTimeFormatter.ofPattern("uuuu.MM.dd HH:mm:ss")));
+        postRaw.append(" **\n\n");
+
+        // postRaw.append("[" + fileName + "|attachment](upload://" + fileName + ") (5.49 KB)");
+        postRaw.append("[" + fileName + "|attachment](" + shortUrl + ")");
+
+        Post post = new Post();
+        post.title = "Customer Info ";
+        post.topic_id = INREACH_POST_TOPIC;
         post.createdAt = ZonedDateTime.now(ZoneId.systemDefault())
                 .format(DateTimeFormatter.ofPattern("uuuu.MM.dd.HH.mm.ss"));
 

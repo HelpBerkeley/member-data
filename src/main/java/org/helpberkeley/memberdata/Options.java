@@ -36,6 +36,7 @@ public class Options {
     static final String COMMAND_POST_DRIVERS = "post-drivers";
     static final String COMMAND_POST_ALL_MEMBERS = "post-all-members";
     static final String COMMAND_POST_WORKFLOW = "post-workflow";
+    static final String COMMAND_POST_INREACH = "post-inreach";
 
     static final String USAGE_ERROR = "Usage error: ";
     static final String UNKNOWN_COMMAND = USAGE_ERROR + "unknown command: ";
@@ -53,6 +54,7 @@ public class Options {
                     + "    | " + COMMAND_POST_DRIVERS + " drivers-file upload://short-url-file-name\n"
                     + "    | " + COMMAND_POST_ALL_MEMBERS + " all-members-file upload://short-url-file-name\n"
                     + "    | " + COMMAND_POST_WORKFLOW + " workflow-file upload://short-url-file-name\n"
+                    + "    | " + COMMAND_POST_INREACH + " inreach-file upload://short-url-file-name\n"
                     + "    | " + COMMAND_UPDATE_ERRORS + " errors-file-name\n"
                     + "    | " + COMMAND_UPDATE_CONSUMER_REQUESTS + " consumer-requests-file-name\n"
                     + "    | " + COMMAND_UPDATE_VOLUNTEER_REQUESTS + " volunteer-requests-file-name\n"
@@ -94,6 +96,7 @@ public class Options {
                 case COMMAND_POST_ALL_MEMBERS:
                 case COMMAND_POST_WORKFLOW:
                 case COMMAND_POST_DRIVERS:
+                case COMMAND_POST_INREACH:
                 case COMMAND_UPDATE_DRIVERS:
                     setCommand(arg);
                     index++;
@@ -117,15 +120,8 @@ public class Options {
             dieUsage(MISSING_COMMAND);
         }
 
-        if ((command.equals(COMMAND_POST_DRIVERS)
-                || command.equals(COMMAND_UPDATE_DRIVERS)
-                || command.equals(COMMAND_POST_ALL_MEMBERS)
-                || command.equals(COMMAND_POST_WORKFLOW))) {
-
-            assert shortURL != null;
-            if (! shortURL.startsWith("upload://")) {
+        if ((shortURL != null) && (! shortURL.startsWith("upload://"))) {
                 dieUsage(BAD_SHORT_URL);
-            }
         }
     }
 
