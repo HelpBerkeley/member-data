@@ -45,6 +45,7 @@ public class Main {
     static final String VOLUNTEER_REQUESTS_FILE = "volunteer-requests";
     static final String DRIVERS_FILE = "drivers";
     static final String WORKFLOW_FILE = "workflow";
+    static final String INREACH_FILE = "inreach";
 
     // FIX THIS, DS: make this less fragile
     static final long MEMBER_DATA_FOR_DISPATCHES_TOPID_ID = 86;
@@ -157,6 +158,9 @@ public class Main {
 
         // Export workflow
         exporter.workflowToFile(WORKFLOW_FILE);
+
+        // Export inreach
+        exporter.inreachToFile(INREACH_FILE);
     }
 
     static void updateConsumerRequests(ApiClient apiClient, final String fileName)

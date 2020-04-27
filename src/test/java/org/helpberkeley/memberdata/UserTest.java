@@ -62,6 +62,7 @@ public class UserTest extends TestBase {
 
     private static final List<PhoneNumber> testPhoneNumbers = new ArrayList<>();
     private static final List<PhoneNumber> badPhoneNumbers = new ArrayList<>();
+    private static final List<PhoneNumber> badAltPhoneNumbers = new ArrayList<>();
     private static final List<Address> testAddresses = new ArrayList<>();
     private static final List<City> testCities = new ArrayList<>();
 
@@ -87,9 +88,17 @@ public class UserTest extends TestBase {
     @BeforeClass
     public static void createBadPhoneNumbers() {
 
-        badPhoneNumbers.add(new PhoneNumber("745-1211", User.ERROR_MISSING_AREA_CODE));
-        badPhoneNumbers.add(new PhoneNumber("9.510.777.8888", User.ERROR_CANNOT_PARSE_PHONE));
-        badPhoneNumbers.add(new PhoneNumber("51-777-8888", User.ERROR_CANNOT_PARSE_PHONE));
+        badPhoneNumbers.add(new PhoneNumber("745-1211", User.ERROR_PRIMARY_PHONE_MISSING_AREA_CODE));
+        badPhoneNumbers.add(new PhoneNumber("9.510.777.8888", User.ERROR_PRIMARY_PHONE_CANNOT_PARSE_PHONE));
+        badPhoneNumbers.add(new PhoneNumber("51-777-8888", User.ERROR_PRIMARY_PHONE_CANNOT_PARSE_PHONE));
+    }
+
+    @BeforeClass
+    public static void createBadAltPhoneNumbers() {
+
+        badAltPhoneNumbers.add(new PhoneNumber("745-1211", User.ERROR_SECOND_PHONE_MISSING_AREA_CODE));
+        badAltPhoneNumbers.add(new PhoneNumber("9.510.777.8888", User.ERROR_SECOND_PHONE_CANNOT_PARSE_PHONE));
+        badAltPhoneNumbers.add(new PhoneNumber("51-777-8888", User.ERROR_SECOND_PHONE_CANNOT_PARSE_PHONE));
     }
 
     /**
@@ -164,13 +173,19 @@ public class UserTest extends TestBase {
 
     @Test
     public void altPhoneNumberErrorsTest() {
-        for (PhoneNumber phoneNumber : badPhoneNumbers) {
+        for (PhoneNumber phoneNumber : badAltPhoneNumbers) {
             Throwable thrown = catchThrowable(() -> createUserWithAltPhone(phoneNumber.original));
             assertThat(thrown).isInstanceOf(UserException.class);
             UserException userException = (UserException) thrown;
             assertThat(userException.user).isNotNull();
             assertThat(userException.user.getDataErrors()).contains(phoneNumber.expected);
         }
+    }
+
+    @Test
+    public void emptyAltPhoneNumberTest() throws UserException {
+        User u1 = createUserWithAltPhone("");
+        assertThat(u1.getAltPhoneNumber()).isEqualTo(User.NOT_PROVIDED);
     }
 
     @Test
@@ -318,8 +333,8 @@ public class UserTest extends TestBase {
     @Test
     public void createTimeInequalityTest() throws UserException {
 
-        User user1 = createUserWithCreateTime(TEST_CREATED_1);
-        User user2 = createUserWithCreateTime(TEST_CREATED_2);
+        User user1 = createUserWithCreateTime("u1", TEST_CREATED_1);
+        User user2 = createUserWithCreateTime("u1", TEST_CREATED_2);
 
         assertThat(user1).isNotEqualTo(user2);
     }

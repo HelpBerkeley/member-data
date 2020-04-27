@@ -272,7 +272,7 @@ public class Exporter {
             rows.append(separator);
             rows.append(user.isDriver());
             rows.append(separator);
-            rows.append(user.getCreateTime());
+            rows.append(user.getSimpleCreateTime());
             rows.append(separator);
             rows.append(user.isApartment());
             rows.append(separator);
@@ -361,6 +361,77 @@ public class Exporter {
             + User.ADDRESS_COLUMN
             + separator
             + User.APARTMENT_COLUMN
+            + separator
+            + '\n';
+    }
+
+    String inreach() {
+
+        StringBuilder rows = new StringBuilder();
+
+        rows.append(inreachHeaders());
+
+        for (User user : tables.inreach()) {
+            rows.append(user.getSimpleCreateTime());
+            rows.append(separator);
+            rows.append(user.getName());
+            rows.append(separator);
+            rows.append(user.getUserName());
+            rows.append(separator);
+            rows.append(user.getPhoneNumber());
+            rows.append(separator);
+            rows.append(user.getAltPhoneNumber());
+            rows.append(separator);
+            rows.append(user.getCity());
+            rows.append(separator);
+            rows.append(user.getAddress());
+            rows.append(separator);
+            rows.append(user.isApartment());
+            rows.append(separator);
+            rows.append(user.isConsumer());
+            rows.append(separator);
+            rows.append(user.isDispatcher());
+            rows.append(separator);
+            rows.append(user.isDriver());
+            rows.append(separator);
+            rows.append('\n');
+        }
+
+        return rows.toString();
+
+    }
+
+    String inreachToFile(final String fileName) throws IOException {
+
+        String outputFileName = generateFileName(fileName, "csv");
+        writeFile(outputFileName, inreach());
+        LOGGER.debug("Wrote: " + outputFileName);
+
+        return outputFileName;
+    }
+
+    String inreachHeaders() {
+        return User.CREATED_AT_COLUMN
+            + separator
+            + User.NAME_COLUMN
+            + separator
+            + User.USERNAME_COLUMN
+            + separator
+            + User.PHONE_NUMBER_COLUMN
+            + separator
+            + User.ALT_PHONE_NUMBER_COLUMN
+            + separator
+            + User.CITY_COLUMN
+            + separator
+            + User.ADDRESS_COLUMN
+            + separator
+            + User.APARTMENT_COLUMN
+            + separator
+            + User.CONSUMER_COLUMN
+            + separator
+            + User.DISPATCHER_COLUMN
+            + separator
+            + User.DRIVER_COLUMN
             + separator
             + '\n';
     }

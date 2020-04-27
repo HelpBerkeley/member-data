@@ -52,8 +52,10 @@ public class User {
     static final String VOLUNTEER_REQUEST_COLUMN = "Volunteer Request";
     static final String EMAIL_COLUMN = "Email";
 
-    static final String ERROR_MISSING_AREA_CODE = "Phone missing area code, assuming 510";
-    static final String ERROR_CANNOT_PARSE_PHONE = "Cannot parse phone number";
+    static final String ERROR_PRIMARY_PHONE_MISSING_AREA_CODE = "Primary phone missing area code, assuming 510";
+    static final String ERROR_PRIMARY_PHONE_CANNOT_PARSE_PHONE = "Cannot parse primary phone number";
+    static final String ERROR_SECOND_PHONE_MISSING_AREA_CODE = "Second phone missing area code, assuming 510";
+    static final String ERROR_SECOND_PHONE_CANNOT_PARSE_PHONE = "Cannot parse second phone number";
 
     // Audit error strings
     static final String AUDIT_ERROR_NEIGHBORHOOD_UNKNOWN = "Neighborhood unknown";
@@ -391,21 +393,21 @@ public class User {
 
         switch (digits.length()) {
             case 7:
-                dataErrors.add(ERROR_MISSING_AREA_CODE);
+                dataErrors.add(ERROR_PRIMARY_PHONE_MISSING_AREA_CODE);
                 digits = "510" + digits;
                 break;
             case 10:
                 break;
             case 11:
                 if (! digits.startsWith("1")) {
-                    dataErrors.add(ERROR_CANNOT_PARSE_PHONE);
+                    dataErrors.add(ERROR_PRIMARY_PHONE_CANNOT_PARSE_PHONE);
                     return;
                 } else {
                     digits = digits.substring(1);
                 }
                 break;
             default:
-                dataErrors.add(ERROR_CANNOT_PARSE_PHONE);
+                dataErrors.add(ERROR_PRIMARY_PHONE_CANNOT_PARSE_PHONE);
                 return;
         }
 
@@ -421,7 +423,7 @@ public class User {
 
     // Must be insensitive to null data
     private void auditAndNormalizeAltPhoneNumber() {
-        if (altPhoneNumber == null) {
+        if ((altPhoneNumber == null) || altPhoneNumber.trim().isEmpty()){
             altPhoneNumber = NOT_PROVIDED;
             return;
         }
@@ -430,21 +432,21 @@ public class User {
 
         switch (digits.length()) {
             case 7:
-                dataErrors.add(ERROR_MISSING_AREA_CODE);
+                dataErrors.add(ERROR_SECOND_PHONE_MISSING_AREA_CODE);
                 digits = "510" + digits;
                 break;
             case 10:
                 break;
             case 11:
                 if (! digits.startsWith("1")) {
-                    dataErrors.add(ERROR_CANNOT_PARSE_PHONE);
+                    dataErrors.add(ERROR_SECOND_PHONE_CANNOT_PARSE_PHONE);
                     return;
                 } else {
                     digits = digits.substring(1);
                 }
                 break;
             default:
-                dataErrors.add(ERROR_CANNOT_PARSE_PHONE);
+                dataErrors.add(ERROR_SECOND_PHONE_CANNOT_PARSE_PHONE);
                 return;
         }
 

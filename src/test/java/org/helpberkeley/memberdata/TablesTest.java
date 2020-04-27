@@ -68,11 +68,11 @@ public class TablesTest extends TestBase {
 
         ZonedDateTime now = ZonedDateTime.now();
 
-        User userNow = createUserWithCreateTime(now.toString());
-        User userFourDaysAgo = createUserWithCreateTime(now.minus(4, DAYS).toString());
-        User userFourHoursAgo = createUserWithCreateTime(now.minus(4, HOURS).toString());
+        User userNow = createUserWithCreateTime("now", now.toString());
+        User userFourDaysAgo = createUserWithCreateTime("4DaysAgo", now.minus(4, DAYS).toString());
+        User userFourHoursAgo = createUserWithCreateTime("4HoursAgo", now.minus(4, HOURS).toString());
         // Add a minute of slop because the table is going to recalculate "now"
-        User userThreeDaysAgo = createUserWithCreateTime(
+        User userThreeDaysAgo = createUserWithCreateTime("3DaysAgo",
                 now.minus(3, DAYS).plus(1, MINUTES).toString());
 
         List<User> users = List.of(userNow, userFourDaysAgo, userFourHoursAgo, userThreeDaysAgo);
@@ -87,10 +87,10 @@ public class TablesTest extends TestBase {
 
         ZonedDateTime now = ZonedDateTime.now();
 
-        User userNow = createUserWithCreateTime(now.toString());
-        User userEightSecondsAgo = createUserWithCreateTime(now.minus(8, SECONDS).toString());
-        User userNineSecondsAgo = createUserWithCreateTime(now.minus(9, SECONDS).toString());
-        User userTomorrow = createUserWithCreateTime(now.plus(1, DAYS).toString());
+        User userNow = createUserWithCreateTime("now", now.toString());
+        User userEightSecondsAgo = createUserWithCreateTime("8secsAgo", now.minus(8, SECONDS).toString());
+        User userNineSecondsAgo = createUserWithCreateTime("9secsAgo", now.minus(9, SECONDS).toString());
+        User userTomorrow = createUserWithCreateTime("tomorrow", now.plus(1, DAYS).toString());
 
         List<User> users = List.of(userNow, userNineSecondsAgo, userTomorrow, userEightSecondsAgo);
         Tables tables = new Tables(users);
@@ -102,9 +102,9 @@ public class TablesTest extends TestBase {
     @Test
     public void consumerRequestsTest() throws UserException {
 
-        User user1 = createUserWithUserNameAndConsumerRequest("u1");
+        User user1 = createUserWithConsumerRequest("u1");
         User user2 = createUserWithUserName("u3");
-        User user3 = createUserWithUserNameAndConsumerRequest("u3");
+        User user3 = createUserWithConsumerRequest("u3");
         User user4 = createUserWithUserName("u4");
 
         Tables tables = new Tables(List.of(user1, user2, user3, user4));
@@ -114,10 +114,10 @@ public class TablesTest extends TestBase {
     @Test
     public void consumerRequestsInConsumerGroupTest() throws UserException {
 
-        User user1 = createUserWithUserNameAndConsumerRequestAndConsumerGroup("u1");
-        User user2 = createUserWithUserNameAndConsumerRequest("u2");
-        User user3 = createUserWithUserNameAndConsumerRequestAndConsumerGroup("u3");
-        User user4 = createUserWithUserNameAndConsumerRequest("u4");
+        User user1 = createUserWithConsumerRequestAndConsumerGroup("u1");
+        User user2 = createUserWithConsumerRequest("u2");
+        User user3 = createUserWithConsumerRequestAndConsumerGroup("u3");
+        User user4 = createUserWithConsumerRequest("u4");
 
         Tables tables = new Tables(List.of(user1, user2, user3, user4));
         assertThat(tables.consumerRequests()).containsExactlyInAnyOrder(user2, user4);
@@ -179,5 +179,24 @@ public class TablesTest extends TestBase {
         List<User> expected = List.of(u7, u8, u5, u6, u3, u4, u1, u2);
 
         assertThat(sorted).containsExactlyElementsOf(expected);
+    }
+
+    @Test
+    public void increachTest() throws UserException {
+        ZonedDateTime now = ZonedDateTime.now();
+        User u1 = createUserWithCreateTime("u1", now.toString());
+        User u2 = createUserWithCreateTime("u2", now.minus(1, DAYS).toString());
+        User u3 = createUserWithCreateTime("u3", now.plus(1, DAYS).toString());
+        User u4 = createUserWithGroup("u4", Constants.GROUP_DRIVERS);
+        User u5 = createUserWithGroup("u5", Constants.GROUP_DISPATCHERS);
+        User u6 = createUserWithCreateTimeAndGroup("u6", now.toString(), Constants.GROUP_CONSUMERS);
+        User u7 = createUserWithCreateTimeAndGroup(
+                "u7", now.minus(10, SECONDS).toString(), Constants.GROUP_CONSUMERS);
+        User u8 = createUserWithCreateTimeAndGroup(
+                "u8", now.plus(10, SECONDS).toString(), Constants.GROUP_CONSUMERS);
+
+        Tables tables = new Tables(List.of(u1, u2, u3, u4, u5, u6, u7, u8));
+        List<User> inreach = tables.inreach();
+        assertThat(inreach).containsExactly(u7, u6, u8, u2, u1, u3);
     }
 }

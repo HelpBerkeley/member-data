@@ -213,6 +213,31 @@ public class Tables {
         return drivers;
     }
 
+    /**
+     * Return a combined list of:
+     *   - consumers
+     *   - members that are not consumers, drivers, or dispachers
+     * Primary sort first by consumer or not, secondary sort by create date
+     * @return
+     */
+    List<User> inreach() {
+
+        List<User> inreach = new ArrayList<>();
+
+        for (User user : users) {
+            if (user.isConsumer()) {
+                inreach.add(user);
+            } else if (! (user.isDriver() || user.isDispatcher())) {
+                inreach.add(user);
+            }
+        }
+
+        Collections.sort(inreach, new IsConsumerComparator()
+                .thenComparing(Comparator.comparing(User::getCreateTime)));
+
+        return inreach;
+    }
+
     static class IsConsumerComparator implements Comparator<User> {
 
         @Override

@@ -39,7 +39,7 @@ public class ExporterTest extends TestBase {
         List<User> users = new ArrayList<>();
 
         try {
-            User u1 = createUserWithUserNameCityAndNeighborhood(
+            User u1 = createUserWithCityAndNeighborhood(
                     TEST_USER_NAME_1, Constants.BERKELEY, "unknown");
         } catch (UserException ex) {
             assertThat(ex.user).isNotNull();
@@ -47,11 +47,11 @@ public class ExporterTest extends TestBase {
             users.add(ex.user);
         }
 
-        User u2 = createUserWithUserNameCityAndNeighborhood(
+        User u2 = createUserWithCityAndNeighborhood(
                 TEST_USER_NAME_2, Constants.ALBANY, "Solano");
         users.add(u2);
 
-        User u3 = createUserWithUserNameCityAndNeighborhood(
+        User u3 = createUserWithCityAndNeighborhood(
                 TEST_USER_NAME_3, "Altoona", "unknown");
         users.add(u3);
 
@@ -261,6 +261,69 @@ public class ExporterTest extends TestBase {
         assertThat(errorFileData).contains(TEST_USER_NAME_1);
         assertThat(errorFileData).contains(TEST_USER_NAME_2);
         assertThat(errorFileData).contains(TEST_USER_NAME_3);
+
+        Files.delete(Paths.get(fileName));
+    }
+
+    @Test
+    public void inreachColumnsTest() throws UserException {
+        User u1 = createTestUser1();
+        Exporter exporter = new Exporter(List.of(u1));
+
+        String inreachRows = exporter.inreach();
+        String[] rows = inreachRows.split("\n");
+        assertThat(rows).hasSize(2);
+
+        String header = rows[0];
+        assertThat(header).isEqualTo(exporter.inreachHeaders().trim());
+
+        String[] headerColumns = header.split(Constants.CSV_SEPARATOR);
+
+        // FIX THIS, DS: add a constant for number of columns expected
+        assertThat(headerColumns[0]).isEqualTo(User.CREATED_AT_COLUMN);
+        assertThat(headerColumns[1]).isEqualTo(User.NAME_COLUMN);
+        assertThat(headerColumns[2]).isEqualTo(User.USERNAME_COLUMN);
+        assertThat(headerColumns[3]).isEqualTo(User.PHONE_NUMBER_COLUMN);
+        assertThat(headerColumns[4]).isEqualTo(User.ALT_PHONE_NUMBER_COLUMN);
+        assertThat(headerColumns[5]).isEqualTo(User.CITY_COLUMN);
+        assertThat(headerColumns[6]).isEqualTo(User.ADDRESS_COLUMN);
+        assertThat(headerColumns[7]).isEqualTo(User.APARTMENT_COLUMN);
+        assertThat(headerColumns[8]).isEqualTo(User.CONSUMER_COLUMN);
+        assertThat(headerColumns[9]).isEqualTo(User.DISPATCHER_COLUMN);
+        assertThat(headerColumns[10]).isEqualTo(User.DRIVER_COLUMN);
+
+        String[] columns = rows[1].split(Constants.CSV_SEPARATOR);
+        assertThat(headerColumns).hasSameSizeAs(columns);
+
+        assertThat(columns[0]).isEqualTo(u1.getSimpleCreateTime());
+        assertThat(columns[1]).isEqualTo(u1.getName());
+        assertThat(columns[2]).isEqualTo(u1.getUserName());
+        assertThat(columns[3]).isEqualTo(u1.getPhoneNumber());
+        assertThat(columns[4]).isEqualTo(u1.getAltPhoneNumber());
+        assertThat(columns[5]).isEqualTo(u1.getCity());
+        assertThat(columns[6]).isEqualTo(u1.getAddress());
+        assertThat(columns[7]).isEqualTo(String.valueOf(u1.isApartment()));
+        assertThat(columns[8]).isEqualTo(String.valueOf(u1.isConsumer()));
+        assertThat(columns[9]).isEqualTo(String.valueOf(u1.isDispatcher()));
+        assertThat(columns[10]).isEqualTo(String.valueOf(u1.isDriver()));
+    }
+
+    @Test
+    public void increachToFileTest() throws UserException, IOException {
+
+        User u1 = createUserWithGroup(TEST_USER_NAME_1, Constants.GROUP_CONSUMERS);
+        User u2 = createUserWithGroup(TEST_USER_NAME_2, Constants.GROUP_DRIVERS);
+        User u3 = createUserWithGroup(TEST_USER_NAME_3, Constants.GROUP_DRIVERS);
+
+        Exporter exporter = new Exporter(List.of(u1, u2, u3));
+        String fileName = exporter.workflowToFile("inreach.csv");
+        Path filePath = Paths.get(fileName);
+        assertThat(filePath).exists();
+
+        String fileData = Files.readString(filePath);
+        assertThat(fileData).contains(TEST_USER_NAME_1);
+        assertThat(fileData).contains(TEST_USER_NAME_2);
+        assertThat(fileData).contains(TEST_USER_NAME_3);
 
         Files.delete(Paths.get(fileName));
     }
