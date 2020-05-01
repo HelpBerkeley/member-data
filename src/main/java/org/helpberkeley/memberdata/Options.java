@@ -26,6 +26,7 @@ import java.util.Arrays;
 public class Options {
 
     static final String COMMAND_FETCH = "fetch";
+    static final String COMMAND_GET_DAILY_DELIVERIES = "get-daily-deliveries";
     static final String COMMAND_POST_ERRORS = "post-errors";
     static final String COMMAND_UPDATE_ERRORS = "update-errors";
     static final String COMMAND_UPDATE_CONSUMER_REQUESTS = "update-consumer-requests";
@@ -48,6 +49,7 @@ public class Options {
 
     static final String USAGE =
             "Usage: " + COMMAND_FETCH + "\n"
+                    + "    | " + COMMAND_GET_DAILY_DELIVERIES + "\n"
                     + "    | " + COMMAND_POST_ERRORS + " errors-file-name\n"
                     + "    | " + COMMAND_POST_CONSUMER_REQUESTS + " consumer-requests-file-name\n"
                     + "    | " + COMMAND_POST_VOLUNTEER_REQUESTS + " volunteer-requests-file-name\n"
@@ -78,6 +80,7 @@ public class Options {
 
             switch (arg) {
                 case COMMAND_FETCH:
+                case COMMAND_GET_DAILY_DELIVERIES:
                     setCommand(arg);
                     break;
                 case COMMAND_POST_ERRORS:

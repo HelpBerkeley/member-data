@@ -31,6 +31,7 @@ public class Constants {
     public static final int QUERY_GET_USERS_V14_ID = 12;
     public static final int CURRENT_USERS_QUERY = QUERY_GET_USERS_V14_ID;
     public static final int QUERY_GET_EMAIL_ADDRESSES = 11;
+    public static final int QUERY_GET_DAILY_DELIVERIES = 13;
 
     public static final String COLUMN_ID = "id";
     public static final String COLUMN_NAME = "name";

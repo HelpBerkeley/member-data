@@ -48,6 +48,7 @@ public class ApiClient {
     private static final String GROUP_ENDPOINT_BASE = BASE_URL + "groups/";
     private static final String LATEST_TOPICS_ENDPOINT = BASE_URL + "latest.json";
     private static final String UPLOADS_ENDPOINT = BASE_URL + "uploads.json";
+    private static final String DOWNLOAD_ENDPOINT = BASE_URL + "uploads/short-url/";
     static final String QUERY_BASE = BASE_URL + "admin/plugins/explorer/queries/";
 
     private final String apiUser;
@@ -231,6 +232,22 @@ public class ApiClient {
 
         return client.send(request, HttpResponse.BodyHandlers.ofString());
     }
+
+    HttpResponse<String> downloadFile(final String shortURLFileName) throws IOException, InterruptedException {
+
+        String endpoint = DOWNLOAD_ENDPOINT + shortURLFileName;
+
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(endpoint))
+                .header("Content-Type", "application/json")
+                .header("Api-Username", apiUser)
+                .header("Api-Key", apiKey)
+                .build();
+
+        HttpResponse<String> response =  client.send(request, HttpResponse.BodyHandlers.ofString());
+        return response;
+    }
+
 
     private void nap(long milliseconds) {
         try {

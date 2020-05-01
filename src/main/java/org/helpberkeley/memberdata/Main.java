@@ -33,6 +33,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Properties;
 
+import static java.net.HttpURLConnection.HTTP_OK;
+
 public class Main {
 
     static final String MEMBERDATA_PROPERTIES = "memberdata.properties";
@@ -60,6 +62,7 @@ public class Main {
     static final long ALL_MEMBERS_POST_TOPIC = 837;
     static final long WORKFLOW_DATA_TOPIC = 824;
     static final long INREACH_POST_TOPIC = 820;
+    static final long COMPLETED_DAILY_DELIVERIES_TOPIC = 859;
     static final long STONE_TEST_TOPIC = 422;
 
     public static void main(String[] args) throws IOException, InterruptedException {
@@ -76,6 +79,9 @@ public class Main {
         switch (options.getCommand()) {
             case Options.COMMAND_FETCH:
                 fetch(apiClient);
+                break;
+            case Options.COMMAND_GET_DAILY_DELIVERIES:
+                getDailyDeliveries(apiClient);
                 break;
             case Options.COMMAND_POST_ERRORS:
                 postUserErrors(apiClient, options.getFileName());
@@ -484,6 +490,21 @@ public class Main {
         post.raw = postRaw.toString();
         HttpResponse<?> response = apiClient.post(post.toJson());
         System.out.println(response);
+    }
+
+    static void getDailyDeliveries(ApiClient apiClient) throws IOException, InterruptedException {
+        String json = apiClient.runQuery(Constants.QUERY_GET_DAILY_DELIVERIES);
+        ApiQueryResult apiQueryResult = Parser.parseQueryResult(json);
+        List<DeliveryData> deliveries = Parser.dailyDeliveries(apiQueryResult);
+        for (DeliveryData deliveryData : deliveries) {
+            HttpResponse<String> response = apiClient.downloadFile(deliveryData.fileName);
+            if (response.statusCode() == HTTP_OK) {
+                System.out.println("downloaded " + deliveryData);
+                deliveryData.setDeliveryData(response.body());
+            } else {
+                System.out.println("Failed downloading " + deliveryData + ": " + response.body());
+            }
+        }
     }
 
 //    static void getPostTest(ApiClient apiClient) throws IOException, InterruptedException {

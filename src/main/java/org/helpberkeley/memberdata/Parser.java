@@ -29,6 +29,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Parser {
 
@@ -279,6 +281,41 @@ public class Parser {
         }
 
         return users;
+    }
+
+    static List<DeliveryData> dailyDeliveries(ApiQueryResult apiQueryResult) {
+        assert apiQueryResult.headers.length == 1 : apiQueryResult.headers.length;
+        assert ((String)apiQueryResult.headers[0]).equals("raw");
+
+        List<DeliveryData> dailyDeliveries = new ArrayList<>();
+
+        for (Object rowObj : apiQueryResult.rows) {
+            Object[] columns = (Object[]) rowObj;
+            assert columns.length == 1 : columns.length;
+
+            //
+            String raw = ((String)columns[0]).trim();
+
+            if (raw.startsWith("Here we post the completed daily spreadsheets")) {
+                continue;
+            }
+
+            // 2020/03/28
+            //
+            //[HelpBerkeleyDeliveries - 3_28.csv|attachment](upload://xyzzy.csv) (828 Bytes)
+
+            int index = raw.indexOf('\n');
+            String date = raw.substring(0, index);
+            index = raw.indexOf("upload://");
+            assert index != -1 : raw;
+            String shortURL = raw.substring(index);
+            index = shortURL.indexOf(')');
+            shortURL = shortURL.substring(0, index);
+
+            dailyDeliveries.add(new DeliveryData(date, shortURL, raw));
+        }
+
+        return dailyDeliveries;
     }
 
     // Skip Discourse system users. Not fully formed.

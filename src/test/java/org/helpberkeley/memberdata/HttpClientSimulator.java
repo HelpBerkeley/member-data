@@ -84,6 +84,9 @@ public class HttpClientSimulator extends HttpClient {
             case Constants.QUERY_GET_EMAIL_ADDRESSES:
                 dataFile = "email.json";
                 break;
+            case Constants.QUERY_GET_DAILY_DELIVERIES:
+                dataFile = "daily-deliveries.json";
+                break;
             default:
                 throw new RuntimeException("FIX THIS: query " + queryId + " not supported by the simulator");
         }
