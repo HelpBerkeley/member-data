@@ -28,31 +28,10 @@ import static org.assertj.core.api.ThrowableAssert.catchThrowable;
 
 public class OptionsTest extends TestBase {
 
-    private static final String TEST_FILE_NAME = "something.csv";
-
-    private static final String[] COMMANDS_WITH_URL = {
-            Options.COMMAND_POST_ALL_MEMBERS,
-            Options.COMMAND_POST_WORKFLOW,
-            Options.COMMAND_POST_DRIVERS,
-            Options.COMMAND_POST_INREACH,
-            Options.COMMAND_UPDATE_DRIVERS,
-    };
-
-    private static final String[] COMMANDS_WITH_FILE = {
-            Options.COMMAND_POST_ERRORS,
-            Options.COMMAND_POST_CONSUMER_REQUESTS,
-            Options.COMMAND_POST_VOLUNTEER_REQUESTS,
-            Options.COMMAND_UPDATE_ERRORS,
-            Options.COMMAND_UPDATE_CONSUMER_REQUESTS,
-            Options.COMMAND_UPDATE_VOLUNTEER_REQUESTS,
-    };
-
     @Test
     public void noCommandTest() {
 
         Options options = new Options(new String[0]);
-        options.setExceptions(true);
-
         Throwable thrown = catchThrowable(options::parse);
         assertThat(thrown).isInstanceOf(MemberDataException.class);
         assertThat(thrown).hasMessageContaining(Options.MISSING_COMMAND);
@@ -65,8 +44,6 @@ public class OptionsTest extends TestBase {
         String command = "exacerbate";
 
         Options options = new Options(new String[] { command });
-        options.setExceptions(true);
-
         Throwable thrown = catchThrowable(options::parse);
         assertThat(thrown).isInstanceOf(MemberDataException.class);
         assertThat(thrown).hasMessageContaining(Options.UNKNOWN_COMMAND + command);
@@ -78,8 +55,6 @@ public class OptionsTest extends TestBase {
     public void tooManyCommandsTest() {
 
         Options options = new Options(new String[] { Options.COMMAND_FETCH, Options.COMMAND_POST_ERRORS });
-        options.setExceptions(true);
-
         Throwable thrown = catchThrowable(options::parse);
         assertThat(thrown).isInstanceOf(MemberDataException.class);
         assertThat(thrown).hasMessageContaining(Options.TOO_MANY_COMMANDS);
@@ -88,23 +63,10 @@ public class OptionsTest extends TestBase {
     }
 
     @Test
-    public void postErrorsTest() {
-        Options options = new Options(new String[] { Options.COMMAND_POST_ERRORS, TEST_FILE_NAME });
-        options.setExceptions(true);
-
-        options.parse();
-        assertThat(options.getCommand()).isEqualTo(Options.COMMAND_POST_ERRORS);
-        assertThat(options.getFileName()).isEqualTo(TEST_FILE_NAME);
-        assertThat(options.getShortURL()).isNull();
-    }
-
-    @Test
     public void missingFileTest() {
         for (String command : COMMANDS_WITH_FILE) {
 
             Options options = new Options(new String[]{command});
-            options.setExceptions(true);
-
             Throwable thrown = catchThrowable(options::parse);
             assertThat(thrown).isInstanceOf(MemberDataException.class);
             assertThat(thrown).hasMessageContaining(command);
@@ -121,8 +83,6 @@ public class OptionsTest extends TestBase {
         for (String command : COMMANDS_WITH_URL) {
 
             Options options = new Options(new String[]{command});
-            options.setExceptions(true);
-
             Throwable thrown = catchThrowable(options::parse);
             assertThat(thrown).isInstanceOf(MemberDataException.class);
             assertThat(thrown).hasMessageContaining(command);
@@ -133,13 +93,41 @@ public class OptionsTest extends TestBase {
     }
 
     @Test
+    public void badFileTest() {
+        for (String command : COMMANDS_WITH_FILE) {
+            String badFileName = "cannot-find-me";
+            Options options = new Options(new String[]{command, badFileName});
+            Throwable thrown = catchThrowable(options::parse);
+            assertThat(thrown).isInstanceOf(MemberDataException.class);
+            assertThat(thrown).hasMessageContaining(command);
+            assertThat(thrown).hasMessageContaining(badFileName);
+            assertThat(thrown).hasMessageContaining(Options.USAGE_ERROR);
+            assertThat(thrown).hasMessageContaining(Options.FILE_DOES_NOT_EXIST);
+            assertThat(thrown).hasMessageContaining(Options.USAGE);
+        }
+    }
+
+    @Test
+    public void urlBadFileTest() {
+        for (String command : COMMANDS_WITH_URL) {
+            String badFileName = "cannot-find-me";
+            Options options = new Options(new String[]{command, badFileName, TEST_SHORT_URL});
+            Throwable thrown = catchThrowable(options::parse);
+            assertThat(thrown).isInstanceOf(MemberDataException.class);
+            assertThat(thrown).hasMessageContaining(command);
+            assertThat(thrown).hasMessageContaining(badFileName);
+            assertThat(thrown).hasMessageContaining(Options.USAGE_ERROR);
+            assertThat(thrown).hasMessageContaining(Options.FILE_DOES_NOT_EXIST);
+            assertThat(thrown).hasMessageContaining(Options.USAGE);
+        }
+    }
+
+    @Test
     public void missingURLTest() {
 
         for (String command : COMMANDS_WITH_URL) {
 
-            Options options = new Options(new String[]{command, "someFile.csv"});
-            options.setExceptions(true);
-
+            Options options = new Options(new String[]{command, TEST_FILE_NAME});
             Throwable thrown = catchThrowable(options::parse);
             assertThat(thrown).isInstanceOf(MemberDataException.class);
             assertThat(thrown).hasMessageContaining(command);
@@ -154,9 +142,7 @@ public class OptionsTest extends TestBase {
 
         for (String command : COMMANDS_WITH_URL) {
 
-            Options options = new Options(new String[]{command, "someFile.csv", "someFile.csv"});
-            options.setExceptions(true);
-
+            Options options = new Options(new String[]{command, TEST_FILE_NAME, TEST_FILE_NAME});
             Throwable thrown = catchThrowable(options::parse);
             assertThat(thrown).isInstanceOf(MemberDataException.class);
             assertThat(thrown).hasMessageContaining(command);
@@ -169,26 +155,23 @@ public class OptionsTest extends TestBase {
     @Test
     public void shortURLTest() {
 
-        String fileName = "someFile.csv";
-        String shortURL = "upload://asfasdfasdf.csv";
-
         for (String command : COMMANDS_WITH_URL) {
-            Options options = new Options(new String[] { command, fileName, shortURL });
+            Options options = new Options(new String[] { command, TEST_FILE_NAME, TEST_SHORT_URL});
             options.parse();
-            assertThat(options.getFileName()).isEqualTo(fileName);
-            assertThat(options.getShortURL()).isEqualTo(shortURL);
+            assertThat(options.getCommand()).isEqualTo(command);
+            assertThat(options.getFileName()).isEqualTo(TEST_FILE_NAME);
+            assertThat(options.getShortURL()).isEqualTo(TEST_SHORT_URL);
         }
     }
 
     @Test
     public void fileTest() {
 
-        String fileName = "someFile.csv";
-
         for (String command : COMMANDS_WITH_FILE) {
-            Options options = new Options(new String[] { command, fileName });
+            Options options = new Options(new String[] { command, TEST_FILE_NAME });
             options.parse();
-            assertThat(options.getFileName()).isEqualTo(fileName);
+            assertThat(options.getCommand()).isEqualTo(command);
+            assertThat(options.getFileName()).isEqualTo(TEST_FILE_NAME);
         }
     }
 }

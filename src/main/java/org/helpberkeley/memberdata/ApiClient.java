@@ -55,6 +55,8 @@ public class ApiClient {
     private final String apiKey;
     private final HttpClient client;
 
+    static HttpClientFactory httpClientFactory = null;
+
     ApiClient(final Properties properties) {
 
         apiUser = properties.getProperty(Main.API_USER_PROPERTY);
@@ -73,10 +75,15 @@ public class ApiClient {
             }
         };
 
-        this.client = HttpClient.newBuilder()
-                .followRedirects(HttpClient.Redirect.ALWAYS)
-                .authenticator(authenticator)
-                .build();
+        if (httpClientFactory != null) {
+            this.client = httpClientFactory.createClient();
+
+        } else {
+            this.client = HttpClient.newBuilder()
+                    .followRedirects(HttpClient.Redirect.ALWAYS)
+                    .authenticator(authenticator)
+                    .build();
+        }
     }
 
     ApiClient(final Properties properties, HttpClient httpClient) {

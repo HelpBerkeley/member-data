@@ -22,17 +22,51 @@
  */
 package org.helpberkeley.memberdata;
 
+import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
+@Ignore
 public class MainTest extends TestBase {
+
+    @BeforeClass
+    public static void cleanupGeneratedFiles() throws IOException {
+        Files.list(Paths.get("."))
+                .filter(Files::isRegularFile)
+                .forEach(System.out::println);
+    }
+
     @Test
-    public void postInreachTest() throws IOException, InterruptedException {
+    public void fetchTest() throws IOException, InterruptedException {
+        String[] args = { Options.COMMAND_FETCH };
+        new Main().main(args);
+    }
 
-        ApiClient apiClient = createApiSimulator();
+    @Test
+    public void postConsumerRequestsTest() throws IOException, InterruptedException {
+        String[] args = { Options.COMMAND_POST_CONSUMER_REQUESTS, TEST_FILE_NAME };
+        new Main().main(args);
+    }
+    @Test
+    public void commandsWithFileTest() throws IOException, InterruptedException {
 
-        Main.postInreach(apiClient, "foo", "foo");
+        for (String command : COMMANDS_WITH_FILE) {
+            String[] args = {command, TEST_FILE_NAME};
+            new Main().main(args);
+        }
+    }
 
+    @Test
+    public void commandsWithURLTest() throws IOException, InterruptedException {
+
+        for (String command : COMMANDS_WITH_URL) {
+            String[] args = {command, TEST_FILE_NAME, TEST_SHORT_URL};
+            new Main().main(args);
+        }
     }
 }

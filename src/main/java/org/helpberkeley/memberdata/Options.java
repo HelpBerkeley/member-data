@@ -21,6 +21,7 @@
 //
 package org.helpberkeley.memberdata;
 
+import java.io.File;
 import java.util.Arrays;
 
 public class Options {
@@ -30,7 +31,6 @@ public class Options {
     static final String COMMAND_POST_ERRORS = "post-errors";
     static final String COMMAND_UPDATE_ERRORS = "update-errors";
     static final String COMMAND_UPDATE_CONSUMER_REQUESTS = "update-consumer-requests";
-    static final String COMMAND_UPDATE_VOLUNTEER_REQUESTS = "update-volunteer-requests";
     static final String COMMAND_UPDATE_DRIVERS = "update-drivers";
     static final String COMMAND_POST_VOLUNTEER_REQUESTS = "post-volunteer-requests";
     static final String COMMAND_POST_CONSUMER_REQUESTS = "post-consumer-requests";
@@ -39,13 +39,14 @@ public class Options {
     static final String COMMAND_POST_WORKFLOW = "post-workflow";
     static final String COMMAND_POST_INREACH = "post-inreach";
 
-    static final String USAGE_ERROR = "Usage error: ";
-    static final String UNKNOWN_COMMAND = USAGE_ERROR + "unknown command: ";
-    static final String TOO_MANY_COMMANDS = USAGE_ERROR + "too many commands";
-    static final String MISSING_COMMAND = USAGE_ERROR + "no command specified";
-    static final String COMMAND_REQUIRES_FILE_NAME = " command requires a file name parameter";
-    static final String COMMAND_REQUIRES_SHORT_URL = " command requires a short URL";
-    static final String BAD_SHORT_URL = USAGE_ERROR + " short url syntax error";
+    static final String USAGE_ERROR = "Usage error for command ";
+    static final String UNKNOWN_COMMAND = USAGE_ERROR + ": unknown command: ";
+    static final String TOO_MANY_COMMANDS = USAGE_ERROR + ": too many commands";
+    static final String MISSING_COMMAND = USAGE_ERROR + ": no command specified";
+    static final String COMMAND_REQUIRES_FILE_NAME = ": command requires a file name parameter";
+    static final String COMMAND_REQUIRES_SHORT_URL = ": command requires a short URL";
+    static final String BAD_SHORT_URL = USAGE_ERROR + ": short url syntax error";
+    static final String FILE_DOES_NOT_EXIST = USAGE_ERROR + ": file does not exist: ";
 
     static final String USAGE =
             "Usage: " + COMMAND_FETCH + "\n"
@@ -59,14 +60,12 @@ public class Options {
                     + "    | " + COMMAND_POST_INREACH + " inreach-file upload://short-url-file-name\n"
                     + "    | " + COMMAND_UPDATE_ERRORS + " errors-file-name\n"
                     + "    | " + COMMAND_UPDATE_CONSUMER_REQUESTS + " consumer-requests-file-name\n"
-                    + "    | " + COMMAND_UPDATE_VOLUNTEER_REQUESTS + " volunteer-requests-file-name\n"
                     + "    | " + COMMAND_UPDATE_DRIVERS + " drivers-file upload://short-url-file-name\n";
 
     private final String[] args;
     private String command;
     private String fileName;
     private String shortURL;
-    private boolean exceptionsEnabled = false;
 
 
     Options(final String[] args) {
@@ -88,7 +87,6 @@ public class Options {
                 case COMMAND_POST_VOLUNTEER_REQUESTS:
                 case COMMAND_UPDATE_ERRORS:
                 case COMMAND_UPDATE_CONSUMER_REQUESTS:
-                case COMMAND_UPDATE_VOLUNTEER_REQUESTS:
                     setCommand(arg);
                     index++;
                     if (index == args.length) {
@@ -123,13 +121,15 @@ public class Options {
             dieUsage(MISSING_COMMAND);
         }
 
+        if (fileName != null) {
+            if (! new File(fileName).exists()) {
+                dieUsage(FILE_DOES_NOT_EXIST + fileName);
+            }
+        }
+
         if ((shortURL != null) && (! shortURL.startsWith("upload://"))) {
                 dieUsage(BAD_SHORT_URL);
         }
-    }
-
-    void setExceptions(boolean doExceptions) {
-        this.exceptionsEnabled = doExceptions;
     }
 
     String getCommand() {
@@ -153,14 +153,7 @@ public class Options {
     }
 
     private void dieUsage(final String message) {
-
-        if (exceptionsEnabled) {
-            throw new OptionsException(message + "\n" + USAGE + "\n");
-        }
-
-        System.out.println(message);
-        System.out.println(USAGE);
-        System.exit(1);
+        throw new OptionsException(message + "\n" + USAGE + "\n");
     }
 
     static class OptionsException extends MemberDataException {

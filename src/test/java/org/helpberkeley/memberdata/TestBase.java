@@ -21,6 +21,8 @@
 //
 package org.helpberkeley.memberdata;
 
+import org.junit.BeforeClass;
+
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -80,6 +82,30 @@ public class TestBase {
     final List<String>  TEST_USER_1_GROUPS = List.of(Constants.GROUP_CONSUMERS);
     final List<String>  TEST_USER_2_GROUPS = List.of(Constants.GROUP_CONSUMERS, Constants.GROUP_DRIVERS);
     final List<String>  TEST_USER_3_GROUPS = List.of(Constants.GROUP_DRIVERS, Constants.GROUP_DISPATCHERS);
+
+    static final String[] COMMANDS_WITH_URL = {
+            Options.COMMAND_POST_ALL_MEMBERS,
+            Options.COMMAND_POST_WORKFLOW,
+            Options.COMMAND_POST_DRIVERS,
+            Options.COMMAND_POST_INREACH,
+            Options.COMMAND_UPDATE_DRIVERS,
+    };
+
+    static final String[] COMMANDS_WITH_FILE = {
+            Options.COMMAND_POST_ERRORS,
+            Options.COMMAND_POST_CONSUMER_REQUESTS,
+            Options.COMMAND_POST_VOLUNTEER_REQUESTS,
+            Options.COMMAND_UPDATE_ERRORS,
+            Options.COMMAND_UPDATE_CONSUMER_REQUESTS,
+    };
+
+    static final String TEST_FILE_NAME = "pom.xml";
+    static final String TEST_SHORT_URL = "upload://ab34dezzAndSomethingY.csv";
+
+    @BeforeClass
+    public static void installHttpClientSimulatorFactory() {
+        ApiClient.httpClientFactory = new HttpClientSimulatorFactory();
+    }
 
     ApiClient createApiSimulator() throws IOException {
         Properties properties = Main.loadProperties(Main.MEMBERDATA_PROPERTIES);
