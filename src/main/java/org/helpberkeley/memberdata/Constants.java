@@ -54,6 +54,14 @@ public class Constants {
     public static final String GROUP_DRIVERS = "drivers";
     public static final String GROUP_DISPATCHERS = "dispatchers";
     public static final String GROUP_SPECIALISTS = "specialists";
+    public static final String GROUP_BHS = "BHS";
+    public static final String GROUP_HELPLINE = "helpline";
+    public static final String GROUP_SITELINE = "siteline";
+    public static final String GROUP_INREACH = "inreach";
+    public static final String GROUP_OUTREACH = "outreach";
+    public static final String GROUP_MARKETING = "marketing";
+    public static final String GROUP_MODERATORS = "moderators";
+    public static final String GROUP_WORKFLOW = "workflow";
 
     public static final String BERKELEY = "Berkeley";
     public static final String ALBANY = "Albany";

@@ -48,6 +48,7 @@ public class Main {
     static final String DRIVERS_FILE = "drivers";
     static final String WORKFLOW_FILE = "workflow";
     static final String INREACH_FILE = "inreach";
+    static final String DISPATCHERS_FILE = "dispatchers";
 
     // FIX THIS, DS: make this less fragile
     static final long MEMBER_DATA_REQUIRING_ATTENTION_TOPIC_ID = 129;
@@ -61,7 +62,9 @@ public class Main {
     static final long WORKFLOW_DATA_TOPIC = 824;
     static final long INREACH_POST_TOPIC = 820;
     static final long COMPLETED_DAILY_DELIVERIES_TOPIC = 859;
+    static final long DISPATCHERS_POST_TOPIC = 938;
     static final long STONE_TEST_TOPIC = 422;
+    static final long DISPATCHERS_POST_ID = 5041;
 
     public static void main(String[] args) throws IOException, InterruptedException {
 
@@ -107,6 +110,12 @@ public class Main {
                 break;
             case Options.COMMAND_POST_INREACH:
                 postInreach(apiClient, options.getFileName(), options.getShortURL());
+                break;
+            case Options.COMMAND_POST_DISPATCHERS:
+                postDispatchers(apiClient, options.getFileName(), options.getShortURL());
+                break;
+            case Options.COMMAND_UPDATE_DISPATCHERS:
+                updateDispatchers(apiClient, options.getFileName(), options.getShortURL());
                 break;
             default:
                 assert options.getCommand().equals(Options.COMMAND_POST_DRIVERS) : options.getCommand();
@@ -165,6 +174,9 @@ public class Main {
 
         // Export inreach
         exporter.inreachToFile(INREACH_FILE);
+
+        // Export dispatchers
+        exporter.dispatchersToFile(DISPATCHERS_FILE);
     }
 
     static void updateConsumerRequests(ApiClient apiClient, final String fileName)
@@ -377,12 +389,51 @@ public class Main {
         System.out.println(response);
     }
 
-    static void updateDrivers(ApiClient apiClient, final String fileName, final String shortUrl)
+    static void postDispatchers(ApiClient apiClient, final String fileName, final String shortUrl)
             throws IOException, InterruptedException {
 
-        String csvData = Files.readString(Paths.get(fileName));
-        // FIX THIS, DS: constant for separator
-        List<User> users = Parser.users(csvData, ",");
+        StringBuilder postRaw = new StringBuilder();
+
+        postRaw.append("** ");
+        postRaw.append("Dispatchers Info -- ");
+        postRaw.append(ZonedDateTime.now(
+                ZoneId.systemDefault()).format(DateTimeFormatter.ofPattern("uuuu.MM.dd HH:mm:ss")));
+        postRaw.append(" **\n\n");
+
+        // postRaw.append("[" + fileName + "|attachment](upload://" + fileName + ") (5.49 KB)");
+        postRaw.append("[" + fileName + "|attachment](" + shortUrl + ")");
+
+        Post post = new Post();
+        post.title = "Dispatchers Info ";
+        post.topic_id = DISPATCHERS_POST_TOPIC;
+        post.createdAt = ZonedDateTime.now(ZoneId.systemDefault())
+                .format(DateTimeFormatter.ofPattern("uuuu.MM.dd.HH.mm.ss"));
+
+        post.raw = postRaw.toString();
+        HttpResponse<?> response = apiClient.post(post.toJson());
+        System.out.println(response);
+    }
+
+    static void updateDispatchers(ApiClient apiClient, final String fileName, final String shortUrl)
+            throws IOException, InterruptedException {
+
+        StringBuilder postRaw = new StringBuilder();
+        String label =  "Dispatchers Info -- " + ZonedDateTime.now(
+                ZoneId.systemDefault()).format(DateTimeFormatter.ofPattern("uuuu.MM.dd HH:mm:ss"));
+
+        postRaw.append("**");
+        postRaw.append(label);
+        postRaw.append("**\n\n");
+
+        // postRaw.append("[" + fileName + "|attachment](upload://" + fileName + ") (5.49 KB)");
+        postRaw.append("[" + fileName + "|attachment](" + shortUrl + ")");
+
+        HttpResponse<?> response = apiClient.updatePost(DISPATCHERS_POST_ID, postRaw.toString());
+        System.out.println(response);
+    }
+
+    static void updateDrivers(ApiClient apiClient, final String fileName, final String shortUrl)
+            throws IOException, InterruptedException {
 
         StringBuilder postRaw = new StringBuilder();
         String label =  "Volunteer Drivers -- " + ZonedDateTime.now(

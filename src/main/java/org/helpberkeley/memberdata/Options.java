@@ -32,12 +32,14 @@ public class Options {
     static final String COMMAND_UPDATE_ERRORS = "update-errors";
     static final String COMMAND_UPDATE_CONSUMER_REQUESTS = "update-consumer-requests";
     static final String COMMAND_UPDATE_DRIVERS = "update-drivers";
+    static final String COMMAND_UPDATE_DISPATCHERS = "update-dispatchers";
     static final String COMMAND_POST_VOLUNTEER_REQUESTS = "post-volunteer-requests";
     static final String COMMAND_POST_CONSUMER_REQUESTS = "post-consumer-requests";
     static final String COMMAND_POST_DRIVERS = "post-drivers";
     static final String COMMAND_POST_ALL_MEMBERS = "post-all-members";
     static final String COMMAND_POST_WORKFLOW = "post-workflow";
     static final String COMMAND_POST_INREACH = "post-inreach";
+    static final String COMMAND_POST_DISPATCHERS = "post-dispatchers";
 
     static final String USAGE_ERROR = "Usage error for command ";
     static final String UNKNOWN_COMMAND = USAGE_ERROR + ": unknown command: ";
@@ -58,8 +60,10 @@ public class Options {
                     + "    | " + COMMAND_POST_ALL_MEMBERS + " all-members-file upload://short-url-file-name\n"
                     + "    | " + COMMAND_POST_WORKFLOW + " workflow-file upload://short-url-file-name\n"
                     + "    | " + COMMAND_POST_INREACH + " inreach-file upload://short-url-file-name\n"
+                    + "    | " + COMMAND_POST_DISPATCHERS + " dispatchers-file upload://short-url-file-name\n"
                     + "    | " + COMMAND_UPDATE_ERRORS + " errors-file-name\n"
                     + "    | " + COMMAND_UPDATE_CONSUMER_REQUESTS + " consumer-requests-file-name\n"
+                    + "    | " + COMMAND_UPDATE_DISPATCHERS + " dispatchers-file-name\n"
                     + "    | " + COMMAND_UPDATE_DRIVERS + " drivers-file upload://short-url-file-name\n";
 
     private final String[] args;
@@ -98,6 +102,8 @@ public class Options {
                 case COMMAND_POST_WORKFLOW:
                 case COMMAND_POST_DRIVERS:
                 case COMMAND_POST_INREACH:
+                case COMMAND_POST_DISPATCHERS:
+                case COMMAND_UPDATE_DISPATCHERS:
                 case COMMAND_UPDATE_DRIVERS:
                     setCommand(arg);
                     index++;

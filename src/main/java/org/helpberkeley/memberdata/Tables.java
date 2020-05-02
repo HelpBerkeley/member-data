@@ -204,13 +204,31 @@ public class Tables {
     List<User> drivers() {
         List<User> drivers = new ArrayList<>();
 
-        for (User user : sortByUserName()) {
+        for (User user : users) {
             if (user.isDriver()) {
                 drivers.add(user);
             }
         }
 
+        drivers.sort(Comparator.comparing(User::getCreateTime));
         return drivers;
+    }
+
+    /**
+     * Get a list of dispatchers, sorted by create time
+     * @return List of dispatchers
+     */
+    List<User> dispatchers() {
+        List<User> dispatchers = new ArrayList<>();
+
+        for (User user : users) {
+            if (user.isDispatcher()) {
+                dispatchers.add(user);
+            }
+        }
+
+        dispatchers.sort(Comparator.comparing(User::getCreateTime));
+        return dispatchers;
     }
 
     /**
@@ -233,7 +251,7 @@ public class Tables {
         }
 
         Collections.sort(inreach, new IsConsumerComparator()
-                .thenComparing(Comparator.comparing(User::getCreateTime)));
+                .thenComparing(User::getCreateTime));
 
         return inreach;
     }

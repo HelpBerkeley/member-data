@@ -74,10 +74,18 @@ public class Loader {
         for (Map.Entry<String, List<Long>> entry : groupUsers.entrySet()) {
 
             switch (entry.getKey()) {
+                case Constants.GROUP_CONSUMERS:
                 case Constants.GROUP_DRIVERS:
                 case Constants.GROUP_DISPATCHERS:
-                case Constants.GROUP_CONSUMERS:
                 case Constants.GROUP_SPECIALISTS:
+                case Constants.GROUP_BHS:
+                case Constants.GROUP_HELPLINE:
+                case Constants.GROUP_SITELINE:
+                case Constants.GROUP_INREACH:
+                case Constants.GROUP_OUTREACH:
+                case Constants.GROUP_MARKETING:
+                case Constants.GROUP_MODERATORS:
+                case Constants.GROUP_WORKFLOW:
                     groups.put(entry.getKey(), Group.createGroup(entry.getKey(), entry.getValue()));
             }
         }

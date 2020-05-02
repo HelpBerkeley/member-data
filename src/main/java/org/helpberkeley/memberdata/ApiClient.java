@@ -154,7 +154,7 @@ public class ApiClient {
                 .header("Api-Key", apiKey)
                 .header("Accept", "application/json")
                 .header("Content-Type", "multipart/form-data")
-                .POST(HttpRequest.BodyPublishers.ofString(""))
+                .POST(HttpRequest.BodyPublishers.ofString("limit=ALL"))
                 .build();
 
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());

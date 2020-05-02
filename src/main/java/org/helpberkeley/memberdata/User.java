@@ -51,6 +51,14 @@ public class User {
     static final String CONSUMER_REQUEST_COLUMN = "Consumer Request";
     static final String VOLUNTEER_REQUEST_COLUMN = "Volunteer Request";
     static final String EMAIL_COLUMN = "Email";
+    static final String BHS_COLUMN = "BHS";
+    static final String HELPLINE_COLUMN = "HelpLine";
+    static final String SITELINE_COLUMN = "SiteLine";
+    static final String INREACH_COLUMN = "InReach";
+    static final String OUTREACH_COLUMN = "OutReach";
+    static final String MARKETING_COLUMN = "Marketing";
+    static final String MODERATORS_COLUMN = "Moderator";
+    static final String WORKFLOW_COLUMN = "Workflow";
 
     static final String ERROR_PRIMARY_PHONE_MISSING_AREA_CODE = "Primary phone missing area code, assuming 510";
     static final String ERROR_PRIMARY_PHONE_CANNOT_PARSE_PHONE = "Cannot parse primary phone number";
@@ -184,8 +192,41 @@ public class User {
     Boolean isDriver() {
         return groupMembership.contains(Constants.GROUP_DRIVERS);
     }
+
     Boolean isSpecialist() {
         return groupMembership.contains(Constants.GROUP_SPECIALISTS);
+    }
+
+    Boolean isBHS() {
+        return groupMembership.contains(Constants.GROUP_BHS);
+    }
+
+    Boolean isHelpLine() {
+        return groupMembership.contains(Constants.GROUP_HELPLINE);
+    }
+
+    Boolean isSiteLine() {
+        return groupMembership.contains(Constants.GROUP_SITELINE);
+    }
+
+    Boolean isInReach() {
+        return groupMembership.contains(Constants.GROUP_INREACH);
+    }
+
+    Boolean isOutReach() {
+        return groupMembership.contains(Constants.GROUP_OUTREACH);
+    }
+
+    Boolean isMarketing() {
+        return groupMembership.contains(Constants.GROUP_MARKETING);
+    }
+
+    Boolean isModerator() {
+        return groupMembership.contains(Constants.GROUP_MODERATORS);
+    }
+
+    Boolean isWorkflow() {
+        return groupMembership.contains(Constants.GROUP_WORKFLOW);
     }
 
     @Override
@@ -726,7 +767,75 @@ public class User {
                 + VOLUNTEER_REQUEST_COLUMN + separator
                 + SPECIALIST_COLUMN + separator
                 + EMAIL_COLUMN + separator
+                + BHS_COLUMN + separator
+                + HELPLINE_COLUMN + separator
+                + SITELINE_COLUMN + separator
+                + INREACH_COLUMN + separator
+                + OUTREACH_COLUMN + separator
+                + MARKETING_COLUMN + separator
+                + MODERATORS_COLUMN + separator
+                + WORKFLOW_COLUMN + separator
                 + "\n";
+    }
+
+    String exportToCSV(final String separator) {
+        StringBuilder csvData = new StringBuilder();
+
+        csvData.append(getId());
+        csvData.append(separator);
+        csvData.append(getName());
+        csvData.append(separator);
+        csvData.append(getUserName());
+        csvData.append(separator);
+        csvData.append(getPhoneNumber());
+        csvData.append(separator);
+        csvData.append(getAltPhoneNumber());
+        csvData.append(separator);
+        csvData.append(getNeighborhood());
+        csvData.append(separator);
+        csvData.append(getCity());
+        csvData.append(separator);
+        csvData.append(getAddress());
+        csvData.append(separator);
+        csvData.append(isConsumer());
+        csvData.append(separator);
+        csvData.append(isDispatcher());
+        csvData.append(separator);
+        csvData.append(isDriver());
+        csvData.append(separator);
+        csvData.append(getCreateTime());
+        csvData.append(separator);
+        csvData.append(isApartment());
+        csvData.append(separator);
+        csvData.append(hasConsumerRequest());
+        csvData.append(separator);
+        csvData.append(getVolunteerRequest());
+        csvData.append(separator);
+        csvData.append(isSpecialist());
+        csvData.append(separator);
+        csvData.append(getEmail());
+        csvData.append(separator);
+        csvData.append(isBHS());
+        csvData.append(separator);
+        csvData.append(isHelpLine());
+        csvData.append(separator);
+        csvData.append(isSiteLine());
+        csvData.append(separator);
+        csvData.append(isInReach());
+        csvData.append(separator);
+        csvData.append(isOutReach());
+        csvData.append(separator);
+        csvData.append(isMarketing());
+        csvData.append(separator);
+        csvData.append(isModerator());
+        csvData.append(separator);
+        csvData.append(isWorkflow());
+        csvData.append(separator);
+
+        csvData.append('\n');
+
+        return csvData.toString();
+
     }
 
     @Override

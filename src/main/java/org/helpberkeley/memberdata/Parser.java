@@ -29,8 +29,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class Parser {
 
@@ -71,10 +69,6 @@ public class Parser {
         assert queryResult.headers[10].equals(Constants.COLUMN_ALT_PHONE) : queryResult.headers[10];
         assert queryResult.headers[11].equals(Constants.COLUMN_CREATE_TIME) : queryResult.headers[11];
 
-        Group consumers = groups.get(Constants.GROUP_CONSUMERS);
-        Group drivers = groups.get(Constants.GROUP_DRIVERS);
-        Group dispatchers = groups.get(Constants.GROUP_DISPATCHERS);
-        Group specialists = groups.get(Constants.GROUP_SPECIALISTS);
         List<String> groupMemberships = new ArrayList<>();
 
         for (Object rowObj : queryResult.rows) {
@@ -101,17 +95,11 @@ public class Parser {
             String email = emailAddresses.getOrDefault(userName, User.NOT_PROVIDED);
 
             groupMemberships.clear();
-            if ((consumers != null) && consumers.hasUserId(userId)) {
-                groupMemberships.add(consumers.name);
-            }
-            if ((drivers != null) && drivers.hasUserId(userId)) {
-                groupMemberships.add(drivers.name);
-            }
-            if ((dispatchers != null) && dispatchers.hasUserId(userId)) {
-                groupMemberships.add(dispatchers.name);
-            }
-            if ((specialists != null) && specialists.hasUserId(userId)) {
-                groupMemberships.add(specialists.name);
+
+            for (Group group : groups.values()) {
+                if (group.hasUserId(userId)) {
+                    groupMemberships.add(group.name);
+                }
             }
 
             try {
@@ -214,7 +202,7 @@ public class Parser {
         assert lines.length > 0 : csvData;
 
         String[] headers = lines[0].split(separator);
-        assert headers.length == 17 : headers.length + ": " + lines[0];
+        assert headers.length == 25 : headers.length + ": " + lines[0];
 
         assert headers[0].equals(User.ID_COLUMN) : headers[0];
         assert headers[1].equals(User.NAME_COLUMN) : headers[1];
@@ -233,6 +221,14 @@ public class Parser {
         assert headers[14].equals(User.VOLUNTEER_REQUEST_COLUMN) : headers[14];
         assert headers[15].equals(User.SPECIALIST_COLUMN) : headers[15];
         assert headers[16].equals(User.EMAIL_COLUMN) : headers[16];
+        assert headers[17].equals(User.BHS_COLUMN) : headers[17];
+        assert headers[18].equals(User.HELPLINE_COLUMN) : headers[18];
+        assert headers[19].equals(User.SITELINE_COLUMN) : headers[19];
+        assert headers[20].equals(User.INREACH_COLUMN) : headers[20];
+        assert headers[21].equals(User.OUTREACH_COLUMN) : headers[21];
+        assert headers[22].equals(User.MARKETING_COLUMN) : headers[22];
+        assert headers[23].equals(User.MODERATORS_COLUMN) : headers[23];
+        assert headers[24].equals(User.WORKFLOW_COLUMN) : headers[24];
 
         List<User> users = new ArrayList<>();
         List<String> groups = new ArrayList<>();
@@ -272,6 +268,38 @@ public class Parser {
 
             String email = columns[16];
 
+            if (Boolean.parseBoolean(columns[17])) {
+                groups.add(Constants.GROUP_BHS);
+            }
+
+            if (Boolean.parseBoolean(columns[18])) {
+                groups.add(Constants.GROUP_HELPLINE);
+            }
+
+            if (Boolean.parseBoolean(columns[19])) {
+                groups.add(Constants.GROUP_SITELINE);
+            }
+
+            if (Boolean.parseBoolean(columns[20])) {
+                groups.add(Constants.GROUP_INREACH);
+            }
+
+            if (Boolean.parseBoolean(columns[21])) {
+                groups.add(Constants.GROUP_OUTREACH);
+            }
+
+            if (Boolean.parseBoolean(columns[22])) {
+                groups.add(Constants.GROUP_MARKETING);
+            }
+
+            if (Boolean.parseBoolean(columns[23])) {
+                groups.add(Constants.GROUP_MODERATORS);
+            }
+
+            if (Boolean.parseBoolean(columns[24])) {
+                groups.add(Constants.GROUP_WORKFLOW);
+            }
+
             try {
                 users.add(User.createUser(name, userName, id, address, city, phone, altPhone, neighborhood,
                         createdAt, isApartment, hasConsumerRequest, volunteerRequest, email, groups));
@@ -285,7 +313,7 @@ public class Parser {
 
     static List<DeliveryData> dailyDeliveries(ApiQueryResult apiQueryResult) {
         assert apiQueryResult.headers.length == 1 : apiQueryResult.headers.length;
-        assert ((String)apiQueryResult.headers[0]).equals("raw");
+        assert apiQueryResult.headers[0].equals("raw");
 
         List<DeliveryData> dailyDeliveries = new ArrayList<>();
 

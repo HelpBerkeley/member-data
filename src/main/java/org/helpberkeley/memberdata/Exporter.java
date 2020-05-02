@@ -84,42 +84,7 @@ public class Exporter {
         rows.append(User.csvHeaders(separator));
 
         for (User user : tables.consumerRequests()) {
-
-            rows.append(user.getId());
-            rows.append(separator);
-            rows.append(user.getName());
-            rows.append(separator);
-            rows.append(user.getUserName());
-            rows.append(separator);
-            rows.append(user.getPhoneNumber());
-            rows.append(separator);
-            rows.append(user.getAltPhoneNumber());
-            rows.append(separator);
-            rows.append(user.getNeighborhood());
-            rows.append(separator);
-            rows.append(user.getCity());
-            rows.append(separator);
-            rows.append(user.getAddress());
-            rows.append(separator);
-            rows.append(user.isConsumer());
-            rows.append(separator);
-            rows.append(user.isDispatcher());
-            rows.append(separator);
-            rows.append(user.isDriver());
-            rows.append(separator);
-            rows.append(user.getCreateTime());
-            rows.append(separator);
-            rows.append(user.isApartment());
-            rows.append(separator);
-            rows.append(user.hasConsumerRequest());
-            rows.append(separator);
-            rows.append(user.getVolunteerRequest());
-            rows.append(separator);
-            rows.append(user.isSpecialist());
-            rows.append(separator);
-            rows.append(user.getEmail());
-            rows.append(separator);
-            rows.append('\n');
+            rows.append(user.exportToCSV(separator));
         }
 
         return rows.toString();
@@ -140,42 +105,7 @@ public class Exporter {
         rows.append(User.csvHeaders(separator));
 
         for (User user : tables.volunteerRequests()) {
-
-            rows.append(user.getId());
-            rows.append(separator);
-            rows.append(user.getName());
-            rows.append(separator);
-            rows.append(user.getUserName());
-            rows.append(separator);
-            rows.append(user.getPhoneNumber());
-            rows.append(separator);
-            rows.append(user.getAltPhoneNumber());
-            rows.append(separator);
-            rows.append(user.getNeighborhood());
-            rows.append(separator);
-            rows.append(user.getCity());
-            rows.append(separator);
-            rows.append(user.getAddress());
-            rows.append(separator);
-            rows.append(user.isConsumer());
-            rows.append(separator);
-            rows.append(user.isDispatcher());
-            rows.append(separator);
-            rows.append(user.isDriver());
-            rows.append(separator);
-            rows.append(user.getCreateTime());
-            rows.append(separator);
-            rows.append(user.isApartment());
-            rows.append(separator);
-            rows.append(user.hasConsumerRequest());
-            rows.append(separator);
-            rows.append(user.getVolunteerRequest());
-            rows.append(separator);
-            rows.append(user.isSpecialist());
-            rows.append(separator);
-            rows.append(user.getEmail());
-            rows.append(separator);
-            rows.append('\n');
+            rows.append(user.exportToCSV(separator));
         }
 
         return rows.toString();
@@ -204,41 +134,7 @@ public class Exporter {
         csvData.append(User.csvHeaders(separator));
 
         for (User user : tables.sortByUserName()) {
-            csvData.append(user.getId());
-            csvData.append(separator);
-            csvData.append(user.getName());
-            csvData.append(separator);
-            csvData.append(user.getUserName());
-            csvData.append(separator);
-            csvData.append(user.getPhoneNumber());
-            csvData.append(separator);
-            csvData.append(user.getAltPhoneNumber());
-            csvData.append(separator);
-            csvData.append(user.getNeighborhood());
-            csvData.append(separator);
-            csvData.append(user.getCity());
-            csvData.append(separator);
-            csvData.append(user.getAddress());
-            csvData.append(separator);
-            csvData.append(user.isConsumer());
-            csvData.append(separator);
-            csvData.append(user.isDispatcher());
-            csvData.append(separator);
-            csvData.append(user.isDriver());
-            csvData.append(separator);
-            csvData.append(user.getCreateTime());
-            csvData.append(separator);
-            csvData.append(user.isApartment());
-            csvData.append(separator);
-            csvData.append(user.hasConsumerRequest());
-            csvData.append(separator);
-            csvData.append(user.getVolunteerRequest());
-            csvData.append(separator);
-            csvData.append(user.isSpecialist());
-            csvData.append(separator);
-            csvData.append(user.getEmail());
-            csvData.append(separator);
-            csvData.append('\n');
+            csvData.append(user.exportToCSV(separator));
         }
 
         return csvData.toString();
@@ -246,11 +142,10 @@ public class Exporter {
 
     String drivers() {
         StringBuilder rows = new StringBuilder();
-        rows.append(User.csvHeaders(separator));
+        rows.append(driverHeaders());
 
         for (User user : tables.drivers()) {
-
-            rows.append(user.getId());
+            rows.append(user.getSimpleCreateTime());
             rows.append(separator);
             rows.append(user.getName());
             rows.append(separator);
@@ -258,7 +153,7 @@ public class Exporter {
             rows.append(separator);
             rows.append(user.getPhoneNumber());
             rows.append(separator);
-            rows.append(user.getAltPhoneNumber());
+            rows.append(user.getEmail());
             rows.append(separator);
             rows.append(user.getNeighborhood());
             rows.append(separator);
@@ -266,28 +161,46 @@ public class Exporter {
             rows.append(separator);
             rows.append(user.getAddress());
             rows.append(separator);
-            rows.append(user.isConsumer());
-            rows.append(separator);
-            rows.append(user.isDispatcher());
+            rows.append(user.isApartment());
             rows.append(separator);
             rows.append(user.isDriver());
             rows.append(separator);
-            rows.append(user.getSimpleCreateTime());
+            rows.append(user.isConsumer());
             rows.append(separator);
-            rows.append(user.isApartment());
-            rows.append(separator);
-            rows.append(user.hasConsumerRequest());
-            rows.append(separator);
-            rows.append(user.getVolunteerRequest());
-            rows.append(separator);
-            rows.append(user.isSpecialist());
-            rows.append(separator);
-            rows.append(user.getEmail());
+            rows.append(user.isDispatcher());
             rows.append(separator);
             rows.append('\n');
         }
 
         return rows.toString();
+    }
+
+    String driverHeaders() {
+        return User.CREATED_AT_COLUMN
+                + separator
+                + User.NAME_COLUMN
+                + separator
+                + User.USERNAME_COLUMN
+                + separator
+                + User.PHONE_NUMBER_COLUMN
+                + separator
+                + User.EMAIL_COLUMN
+                + separator
+                + User.NEIGHBORHOOD_COLUMN
+                + separator
+                + User.CITY_COLUMN
+                + separator
+                + User.ADDRESS_COLUMN
+                + separator
+                + User.APARTMENT_COLUMN
+                + separator
+                + User.DRIVER_COLUMN
+                + separator
+                + User.CONSUMER_COLUMN
+                + separator
+                + User.DISPATCHER_COLUMN
+                + separator
+                + '\n';
     }
 
     String driversToFile(final String fileName) throws IOException {
@@ -434,6 +347,117 @@ public class Exporter {
             + User.DRIVER_COLUMN
             + separator
             + '\n';
+    }
+
+    String dispatchers() {
+
+        StringBuilder rows = new StringBuilder();
+
+        rows.append(dispatchersHeaders());
+
+        for (User user : tables.dispatchers()) {
+            rows.append(user.getSimpleCreateTime());
+            rows.append(separator);
+            rows.append(user.getName());
+            rows.append(separator);
+            rows.append(user.getUserName());
+            rows.append(separator);
+            rows.append(user.getPhoneNumber());
+            rows.append(separator);
+            rows.append(user.getEmail());
+            rows.append(separator);
+            rows.append(user.getNeighborhood());
+            rows.append(separator);
+            rows.append(user.getCity());
+            rows.append(separator);
+            rows.append(user.getAddress());
+            rows.append(separator);
+            rows.append(user.isApartment());
+            rows.append(separator);
+            rows.append(user.isDriver());
+            rows.append(separator);
+            rows.append(user.isConsumer());
+            rows.append(separator);
+            rows.append(user.isDispatcher());
+            rows.append(separator);
+            rows.append(user.isBHS());
+            rows.append(separator);
+            rows.append(user.isHelpLine());
+            rows.append(separator);
+            rows.append(user.isSiteLine());
+            rows.append(separator);
+            rows.append(user.isInReach());
+            rows.append(separator);
+            rows.append(user.isOutReach());
+            rows.append(separator);
+            rows.append(user.isMarketing());
+            rows.append(separator);
+            rows.append(user.isModerator());
+            rows.append(separator);
+            rows.append(user.isSpecialist());
+            rows.append(separator);
+            rows.append(user.isWorkflow());
+            rows.append(separator);
+            rows.append('\n');
+        }
+
+        return rows.toString();
+
+    }
+
+    String dispatchersToFile(final String fileName) throws IOException {
+
+        String outputFileName = generateFileName(fileName, "csv");
+        writeFile(outputFileName, dispatchers());
+        LOGGER.debug("Wrote: " + outputFileName);
+
+        return outputFileName;
+    }
+
+    String dispatchersHeaders() {
+        return User.CREATED_AT_COLUMN
+                + separator
+                + User.NAME_COLUMN
+                + separator
+                + User.USERNAME_COLUMN
+                + separator
+                + User.PHONE_NUMBER_COLUMN
+                + separator
+                + User.EMAIL_COLUMN
+                + separator
+                + User.NEIGHBORHOOD_COLUMN
+                + separator
+                + User.CITY_COLUMN
+                + separator
+                + User.ADDRESS_COLUMN
+                + separator
+                + User.APARTMENT_COLUMN
+                + separator
+                + User.DRIVER_COLUMN
+                + separator
+                + User.CONSUMER_COLUMN
+                + separator
+                + User.DISPATCHER_COLUMN
+                + separator
+                + User.BHS_COLUMN
+                + separator
+                + User.HELPLINE_COLUMN
+                + separator
+                + User.SITELINE_COLUMN
+                + separator
+                + User.INREACH_COLUMN
+                + separator
+                + User.OUTREACH_COLUMN
+                + separator
+                + User.MARKETING_COLUMN
+                + separator
+                + User.MODERATORS_COLUMN
+                + separator
+                + User.SPECIALIST_COLUMN
+                + separator
+                + User.WORKFLOW_COLUMN
+                + separator
+                + '\n';
     }
 
     private void writeFile(final String fileName, final String fileData) throws IOException {
