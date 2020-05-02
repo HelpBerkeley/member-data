@@ -159,15 +159,14 @@ public class ExporterTest extends TestBase {
         assertThat(headerColumns[13]).isEqualTo(User.CONSUMER_REQUEST_COLUMN);
         assertThat(headerColumns[14]).isEqualTo(User.VOLUNTEER_REQUEST_COLUMN);
         assertThat(headerColumns[15]).isEqualTo(User.SPECIALIST_COLUMN);
-        assertThat(headerColumns[16]).isEqualTo(User.EMAIL_COLUMN);
-        assertThat(headerColumns[17]).isEqualTo(User.BHS_COLUMN);
-        assertThat(headerColumns[18]).isEqualTo(User.HELPLINE_COLUMN);
-        assertThat(headerColumns[19]).isEqualTo(User.SITELINE_COLUMN);
-        assertThat(headerColumns[20]).isEqualTo(User.INREACH_COLUMN);
-        assertThat(headerColumns[21]).isEqualTo(User.OUTREACH_COLUMN);
-        assertThat(headerColumns[22]).isEqualTo(User.MARKETING_COLUMN);
-        assertThat(headerColumns[23]).isEqualTo(User.MODERATORS_COLUMN);
-        assertThat(headerColumns[24]).isEqualTo(User.WORKFLOW_COLUMN);
+        assertThat(headerColumns[16]).isEqualTo(User.BHS_COLUMN);
+        assertThat(headerColumns[17]).isEqualTo(User.HELPLINE_COLUMN);
+        assertThat(headerColumns[18]).isEqualTo(User.SITELINE_COLUMN);
+        assertThat(headerColumns[19]).isEqualTo(User.INREACH_COLUMN);
+        assertThat(headerColumns[20]).isEqualTo(User.OUTREACH_COLUMN);
+        assertThat(headerColumns[21]).isEqualTo(User.MARKETING_COLUMN);
+        assertThat(headerColumns[22]).isEqualTo(User.MODERATORS_COLUMN);
+        assertThat(headerColumns[23]).isEqualTo(User.WORKFLOW_COLUMN);
 
         String[] columns = rows[1].split(Constants.CSV_SEPARATOR);
         assertThat(headerColumns).hasSameSizeAs(columns);
@@ -188,15 +187,14 @@ public class ExporterTest extends TestBase {
         assertThat(columns[13]).isEqualTo(String.valueOf(u1.hasConsumerRequest()));
         assertThat(columns[14]).isEqualTo(u1.getVolunteerRequest());
         assertThat(columns[15]).isEqualTo(String.valueOf(u1.isSpecialist()));
-        assertThat(columns[16]).isEqualTo(u1.getEmail());
-        assertThat(columns[17]).isEqualTo(String.valueOf(u1.isBHS()));
-        assertThat(columns[18]).isEqualTo(String.valueOf(u1.isHelpLine()));
-        assertThat(columns[19]).isEqualTo(String.valueOf(u1.isSiteLine()));
-        assertThat(columns[20]).isEqualTo(String.valueOf(u1.isInReach()));
-        assertThat(columns[21]).isEqualTo(String.valueOf(u1.isOutReach()));
-        assertThat(columns[22]).isEqualTo(String.valueOf(u1.isMarketing()));
-        assertThat(columns[23]).isEqualTo(String.valueOf(u1.isModerator()));
-        assertThat(columns[24]).isEqualTo(String.valueOf(u1.isWorkflow()));
+        assertThat(columns[16]).isEqualTo(String.valueOf(u1.isBHS()));
+        assertThat(columns[17]).isEqualTo(String.valueOf(u1.isHelpLine()));
+        assertThat(columns[18]).isEqualTo(String.valueOf(u1.isSiteLine()));
+        assertThat(columns[19]).isEqualTo(String.valueOf(u1.isInReach()));
+        assertThat(columns[20]).isEqualTo(String.valueOf(u1.isOutReach()));
+        assertThat(columns[21]).isEqualTo(String.valueOf(u1.isMarketing()));
+        assertThat(columns[22]).isEqualTo(String.valueOf(u1.isModerator()));
+        assertThat(columns[23]).isEqualTo(String.valueOf(u1.isWorkflow()));
     }
 
     @Test

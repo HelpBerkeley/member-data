@@ -47,8 +47,7 @@ public class Parser {
         return new ApiQueryResult(columns, rows);
     }
 
-    static List<User> users(final Map<String, Group> groups,
-        final Map<String, String> emailAddresses, final ApiQueryResult queryResult) {
+    static List<User> users(final Map<String, Group> groups, final ApiQueryResult queryResult) {
 
         LOGGER.trace("users");
 
@@ -92,7 +91,6 @@ public class Parser {
             String volunteerRequest = (String)columns[9];
             String altPhone = (String)columns[10];
             String createdAt = (String)columns[11];
-            String email = emailAddresses.getOrDefault(userName, User.NOT_PROVIDED);
 
             groupMemberships.clear();
 
@@ -104,7 +102,7 @@ public class Parser {
 
             try {
                 users.add(User.createUser(name, userName, userId, address, city, phone, altPhone, neighborhood,
-                        createdAt, isApartment, hasConsumerRequest, volunteerRequest, email, groupMemberships));
+                        createdAt, isApartment, hasConsumerRequest, volunteerRequest, groupMemberships));
             } catch (UserException ex) {
                 // FIX THIS, DS: get rid of UserException?
                 users.add(ex.user);
@@ -136,29 +134,6 @@ public class Parser {
                 continue;
             }
             results.put(groupId, groupName);
-        }
-
-        return results;
-    }
-
-    static Map<String, String> emailAddresses(ApiQueryResult queryResult) {
-        LOGGER.trace("emailAddresses");
-
-        Map<String, String> results = new HashMap<>();
-
-        assert queryResult.headers.length == 3 :
-                "Unexpected number of columns for email query result: " + queryResult;
-        assert queryResult.headers[0].equals(Constants.COLUMN_USER_ID) : queryResult.headers[0];
-        assert queryResult.headers[1].equals(Constants.COLUMN_USERNAME) : queryResult.headers[1];
-        assert queryResult.headers[2].equals(Constants.COLUMN_EMAIL) : queryResult.headers[2];
-
-        for (Object rowObj :  queryResult.rows) {
-            Object[] columns = (Object[])rowObj;
-
-            String userName = (String)columns[1];
-            String email = (String)columns[2];
-
-            results.put(userName, email);
         }
 
         return results;
@@ -202,7 +177,7 @@ public class Parser {
         assert lines.length > 0 : csvData;
 
         String[] headers = lines[0].split(separator);
-        assert headers.length == 25 : headers.length + ": " + lines[0];
+        assert headers.length == 24 : headers.length + ": " + lines[0];
 
         assert headers[0].equals(User.ID_COLUMN) : headers[0];
         assert headers[1].equals(User.NAME_COLUMN) : headers[1];
@@ -220,15 +195,14 @@ public class Parser {
         assert headers[13].equals(User.CONSUMER_REQUEST_COLUMN) : headers[13];
         assert headers[14].equals(User.VOLUNTEER_REQUEST_COLUMN) : headers[14];
         assert headers[15].equals(User.SPECIALIST_COLUMN) : headers[15];
-        assert headers[16].equals(User.EMAIL_COLUMN) : headers[16];
-        assert headers[17].equals(User.BHS_COLUMN) : headers[17];
-        assert headers[18].equals(User.HELPLINE_COLUMN) : headers[18];
-        assert headers[19].equals(User.SITELINE_COLUMN) : headers[19];
-        assert headers[20].equals(User.INREACH_COLUMN) : headers[20];
-        assert headers[21].equals(User.OUTREACH_COLUMN) : headers[21];
-        assert headers[22].equals(User.MARKETING_COLUMN) : headers[22];
-        assert headers[23].equals(User.MODERATORS_COLUMN) : headers[23];
-        assert headers[24].equals(User.WORKFLOW_COLUMN) : headers[24];
+        assert headers[16].equals(User.BHS_COLUMN) : headers[16];
+        assert headers[17].equals(User.HELPLINE_COLUMN) : headers[17];
+        assert headers[18].equals(User.SITELINE_COLUMN) : headers[18];
+        assert headers[19].equals(User.INREACH_COLUMN) : headers[19];
+        assert headers[20].equals(User.OUTREACH_COLUMN) : headers[20];
+        assert headers[21].equals(User.MARKETING_COLUMN) : headers[21];
+        assert headers[22].equals(User.MODERATORS_COLUMN) : headers[22];
+        assert headers[23].equals(User.WORKFLOW_COLUMN) : headers[23];
 
         List<User> users = new ArrayList<>();
         List<String> groups = new ArrayList<>();
@@ -266,43 +240,41 @@ public class Parser {
                 groups.add(Constants.GROUP_SPECIALISTS);
             }
 
-            String email = columns[16];
-
-            if (Boolean.parseBoolean(columns[17])) {
+            if (Boolean.parseBoolean(columns[16])) {
                 groups.add(Constants.GROUP_BHS);
             }
 
-            if (Boolean.parseBoolean(columns[18])) {
+            if (Boolean.parseBoolean(columns[17])) {
                 groups.add(Constants.GROUP_HELPLINE);
             }
 
-            if (Boolean.parseBoolean(columns[19])) {
+            if (Boolean.parseBoolean(columns[18])) {
                 groups.add(Constants.GROUP_SITELINE);
             }
 
-            if (Boolean.parseBoolean(columns[20])) {
+            if (Boolean.parseBoolean(columns[19])) {
                 groups.add(Constants.GROUP_INREACH);
             }
 
-            if (Boolean.parseBoolean(columns[21])) {
+            if (Boolean.parseBoolean(columns[20])) {
                 groups.add(Constants.GROUP_OUTREACH);
             }
 
-            if (Boolean.parseBoolean(columns[22])) {
+            if (Boolean.parseBoolean(columns[21])) {
                 groups.add(Constants.GROUP_MARKETING);
             }
 
-            if (Boolean.parseBoolean(columns[23])) {
+            if (Boolean.parseBoolean(columns[22])) {
                 groups.add(Constants.GROUP_MODERATORS);
             }
 
-            if (Boolean.parseBoolean(columns[24])) {
+            if (Boolean.parseBoolean(columns[23])) {
                 groups.add(Constants.GROUP_WORKFLOW);
             }
 
             try {
                 users.add(User.createUser(name, userName, id, address, city, phone, altPhone, neighborhood,
-                        createdAt, isApartment, hasConsumerRequest, volunteerRequest, email, groups));
+                        createdAt, isApartment, hasConsumerRequest, volunteerRequest, groups));
             } catch (UserException ex) {
                 users.add(ex.user);
             }

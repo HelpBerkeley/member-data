@@ -50,7 +50,6 @@ public class User {
     static final String APARTMENT_COLUMN = "Apartment";
     static final String CONSUMER_REQUEST_COLUMN = "Consumer Request";
     static final String VOLUNTEER_REQUEST_COLUMN = "Volunteer Request";
-    static final String EMAIL_COLUMN = "Email";
     static final String BHS_COLUMN = "BHS";
     static final String HELPLINE_COLUMN = "HelpLine";
     static final String SITELINE_COLUMN = "SiteLine";
@@ -84,7 +83,6 @@ public class User {
     private final Boolean apartment;
     private final Boolean consumerRequest;
     private String volunteerRequest;
-    private final String email;
     private final Set<String> groupMembership = new HashSet<>();
     private final List<String> dataErrors = new ArrayList<>();
 
@@ -138,11 +136,6 @@ public class User {
         return ZonedDateTime.parse(createTime).format(TIME_FORMATTER);
     }
 
-    public String getEmail()
-    {
-       return email;
-    }
-
     public List<String> getDataErrors() {
         return dataErrors;
     }
@@ -159,8 +152,7 @@ public class User {
         final String createTime,
         final Boolean apartment,
         final Boolean consumerRequest,
-        final String volunteerRequest,
-        final String email) {
+        final String volunteerRequest)  {
 
         this.name = name;
         this.userName = userName;
@@ -174,7 +166,6 @@ public class User {
         this.apartment = apartment;
         this.consumerRequest = consumerRequest;
         this.volunteerRequest = volunteerRequest;
-        this.email = email;
     }
 
     Boolean hasConsumerRequest() {
@@ -306,11 +297,6 @@ public class User {
         builder.append(Constants.GROUP_SPECIALISTS);
         builder.append("=");
         builder.append(isSpecialist());
-        builder.append(':');
-
-        builder.append(Constants.COLUMN_EMAIL);
-        builder.append("=");
-        builder.append(getEmail());
         builder.append(':');
 
         builder.append(Constants.COLUMN_CREATE_TIME);
@@ -693,12 +679,11 @@ public class User {
             final Boolean apartment,
             final Boolean consumerRequest,
             final String volunteerRequest,
-            final String email,
             final String... groups) throws UserException {
 
 
         User user = new User(name, userName, id, address, city, phoneNumber, altPhoneNumber,
-                neighborhood, createdAt, apartment, consumerRequest, volunteerRequest, email);
+                neighborhood, createdAt, apartment, consumerRequest, volunteerRequest);
         for (String group : groups) {
             assert ! user.groupMembership.contains(group) : group;
             user.groupMembership.add(group);
@@ -727,12 +712,11 @@ public class User {
             final Boolean apartment,
             final Boolean consumerRequest,
             final String volunteerRequest,
-            final String email,
             final List<String> groups) throws UserException {
 
 
         User user = new User(name, userName, id, address, city, phoneNumber, altPhoneNumber,
-                neighborhood, createdAt, apartment, consumerRequest, volunteerRequest, email);
+                neighborhood, createdAt, apartment, consumerRequest, volunteerRequest);
         for (String group : groups) {
             assert ! user.groupMembership.contains(group) : group;
             user.groupMembership.add(group);
@@ -766,7 +750,6 @@ public class User {
                 + CONSUMER_REQUEST_COLUMN + separator
                 + VOLUNTEER_REQUEST_COLUMN + separator
                 + SPECIALIST_COLUMN + separator
-                + EMAIL_COLUMN + separator
                 + BHS_COLUMN + separator
                 + HELPLINE_COLUMN + separator
                 + SITELINE_COLUMN + separator
@@ -812,8 +795,6 @@ public class User {
         csvData.append(getVolunteerRequest());
         csvData.append(separator);
         csvData.append(isSpecialist());
-        csvData.append(separator);
-        csvData.append(getEmail());
         csvData.append(separator);
         csvData.append(isBHS());
         csvData.append(separator);

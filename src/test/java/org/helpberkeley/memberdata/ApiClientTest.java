@@ -45,10 +45,4 @@ public class ApiClientTest extends TestBase {
         ApiClient apiClient = createApiSimulator();
         apiClient.runQuery(Constants.CURRENT_USERS_QUERY);
     }
-
-    @Test
-    public void emailQueryTest() throws IOException, InterruptedException {
-        ApiClient apiClient = createApiSimulator();
-        apiClient.runQuery(Constants.QUERY_GET_EMAIL_ADDRESSES);
-    }
 }

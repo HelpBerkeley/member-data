@@ -81,9 +81,6 @@ public class HttpClientSimulator extends HttpClient {
             case Constants.CURRENT_USERS_QUERY:
                 dataFile = "users.json";
                 break;
-            case Constants.QUERY_GET_EMAIL_ADDRESSES:
-                dataFile = "email.json";
-                break;
             case Constants.QUERY_GET_DAILY_DELIVERIES:
                 dataFile = "daily-deliveries.json";
                 break;
