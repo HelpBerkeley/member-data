@@ -452,4 +452,100 @@ public class UserTest extends TestBase {
             assertThat(user.toString()).contains(group);
         }
     }
+
+    @Test
+    public void groupBHSTest() throws UserException {
+        User u1 = createUserWithGroup("u1", Constants.GROUP_BHS);
+        User u2 = createUserWithGroup("u1", Constants.GROUP_BHS);
+        User u3 = createUser();
+
+        assertThat(u1.isBHS()).isTrue();
+        assertThat(u1).isEqualTo(u2);
+        assertThat(u1).isNotEqualTo(u3);
+        assertThat(u3.isBHS()).isFalse();
+    }
+
+    @Test
+    public void groupHelpLine() throws UserException {
+        User u1 = createUserWithGroup("u1", Constants.GROUP_HELPLINE);
+        User u2 = createUserWithGroup("u1", Constants.GROUP_HELPLINE);
+        User u3 = createUser();
+
+        assertThat(u1.isHelpLine()).isTrue();
+        assertThat(u1).isEqualTo(u2);
+        assertThat(u1).isNotEqualTo(u3);
+        assertThat(u3.isHelpLine()).isFalse();
+    }
+
+    @Test
+    public void groupSiteLine() throws UserException {
+        User u1 = createUserWithGroup("u1", Constants.GROUP_SITELINE);
+        User u2 = createUserWithGroup("u1", Constants.GROUP_SITELINE);
+        User u3 = createUser();
+
+        assertThat(u1.isSiteLine()).isTrue();
+        assertThat(u1).isEqualTo(u2);
+        assertThat(u1).isNotEqualTo(u3);
+        assertThat(u3.isSiteLine()).isFalse();
+    }
+
+    @Test
+    public void groupInReach() throws UserException {
+        User u1 = createUserWithGroup("u1", Constants.GROUP_INREACH);
+        User u2 = createUserWithGroup("u1", Constants.GROUP_INREACH);
+        User u3 = createUser();
+
+        assertThat(u1.isInReach()).isTrue();
+        assertThat(u1).isEqualTo(u2);
+        assertThat(u1).isNotEqualTo(u3);
+        assertThat(u3.isInReach()).isFalse();
+    }
+
+    @Test
+    public void groupOutReach() throws UserException {
+        User u1 = createUserWithGroup("u1", Constants.GROUP_OUTREACH);
+        User u2 = createUserWithGroup("u1", Constants.GROUP_OUTREACH);
+        User u3 = createUser();
+
+        assertThat(u1.isOutReach()).isTrue();
+        assertThat(u1).isEqualTo(u2);
+        assertThat(u1).isNotEqualTo(u3);
+        assertThat(u3.isOutReach()).isFalse();
+    }
+
+    @Test
+    public void groupMarketeting() throws UserException {
+        User u1 = createUserWithGroup("u1", Constants.GROUP_MARKETING);
+        User u2 = createUserWithGroup("u1", Constants.GROUP_MARKETING);
+        User u3 = createUser();
+
+        assertThat(u1.isMarketing()).isTrue();
+        assertThat(u1).isEqualTo(u2);
+        assertThat(u1).isNotEqualTo(u3);
+        assertThat(u3.isMarketing()).isFalse();
+    }
+
+    @Test
+    public void groupModerators() throws UserException {
+        User u1 = createUserWithGroup("u1", Constants.GROUP_MODERATORS);
+        User u2 = createUserWithGroup("u1", Constants.GROUP_MODERATORS);
+        User u3 = createUser();
+
+        assertThat(u1.isModerator()).isTrue();
+        assertThat(u1).isEqualTo(u2);
+        assertThat(u1).isNotEqualTo(u3);
+        assertThat(u3.isModerator()).isFalse();
+    }
+
+    @Test
+    public void groupWorkflow() throws UserException {
+        User u1 = createUserWithGroup("u1", Constants.GROUP_WORKFLOW);
+        User u2 = createUserWithGroup("u1", Constants.GROUP_WORKFLOW);
+        User u3 = createUser();
+
+        assertThat(u1.isWorkflow()).isTrue();
+        assertThat(u1).isEqualTo(u2);
+        assertThat(u1).isNotEqualTo(u3);
+        assertThat(u3.isWorkflow()).isFalse();
+    }
 }

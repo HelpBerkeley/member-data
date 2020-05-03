@@ -22,12 +22,12 @@
 package org.helpberkeley.memberdata;
 
 public class Constants {
-    public static final int QUERY_GET_USERS_ID = 1;
+//    public static final int QUERY_GET_USERS_ID = 1;
     public static final int QUERY_GET_GROUPS_ID = 3;
     public static final int QUERY_GET_GROUP_USERS_ID = 4;
-    public static final int QUERY_GET_USERS_V11_ID = 8;
-    public static final int QUERY_GET_USERS_V12_ID = 9;
-    public static final int QUERY_GET_USERS_V13_ID = 10;
+//    public static final int QUERY_GET_USERS_V11_ID = 8;
+//    public static final int QUERY_GET_USERS_V12_ID = 9;
+//    public static final int QUERY_GET_USERS_V13_ID = 10;
     public static final int QUERY_GET_USERS_V14_ID = 12;
     public static final int CURRENT_USERS_QUERY = QUERY_GET_USERS_V14_ID;
     public static final int QUERY_GET_DAILY_DELIVERIES = 13;

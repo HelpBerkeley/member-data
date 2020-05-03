@@ -32,7 +32,21 @@ public class RoundTripTest extends TestBase {
     @Test
     public void roundTripTest() throws UserException {
 
-        List<User> users = List.of(createTestUser1(), createTestUser2(), createTestUser3());
+        User u1 = createUserWithGroups(
+                Constants.GROUP_CONSUMERS,
+                Constants.GROUP_DRIVERS,
+                Constants.GROUP_DISPATCHERS,
+                Constants.GROUP_SPECIALISTS,
+                Constants.GROUP_BHS,
+                Constants.GROUP_HELPLINE,
+                Constants.GROUP_SITELINE,
+                Constants.GROUP_INREACH,
+                Constants.GROUP_OUTREACH,
+                Constants.GROUP_MARKETING,
+                Constants.GROUP_MODERATORS,
+                Constants.GROUP_WORKFLOW);
+
+        List<User> users = List.of(u1, createTestUser2(), createTestUser3());
         Exporter exporter = new Exporter(users);
 
         String csvData = exporter.allMembers();

@@ -60,14 +60,6 @@ public class Tables {
     List<User> sortByConsumerThenDriverThenName() {
         List<User> sorted = new ArrayList<>(users);
 
-
-//        Comparator<User> comparator = Comparator
-//                .comparing(User::isConsumer)
-//                .thenComparing(User::isDriver)
-//                .thenComparing(User::getName, String.CASE_INSENSITIVE_ORDER);
-//
-//        sorted.sort(comparator);
-
         Collections.sort(sorted, new IsConsumerComparator()
             .thenComparing(new IsDriverComparator()
             .thenComparing(new NameComparator())));
@@ -148,8 +140,6 @@ public class Tables {
      */
     List<User> supportedDeliveryCity() {
         List<User> supportedCityList = new ArrayList<>();
-
-        ZonedDateTime threeDaysAgo = ZonedDateTime.now().minus(3, DAYS);
 
         for (User user : sortByUserName()) {
             if (user.isSupportedCity()) {
@@ -234,9 +224,9 @@ public class Tables {
     /**
      * Return a combined list of:
      *   - consumers
-     *   - members that are not consumers, drivers, or dispachers
+     *   - members that are not consumers, drivers, or dispatchers
      * Primary sort first by consumer or not, secondary sort by create date
-     * @return
+     * @return List of increach users
      */
     List<User> inreach() {
 

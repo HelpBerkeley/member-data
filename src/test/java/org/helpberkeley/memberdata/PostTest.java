@@ -43,8 +43,6 @@ public class PostTest extends TestBase {
         assertThat(json).contains("\"createdAt\":\"" + createdAt + "\"");
         assertThat(json).contains("\"title\":\"" + title + "\"");
         assertThat(json).contains("\"raw\":\"" + raw + "\"");
-        assertThat(json).contains("\"topic_id\":" + String.valueOf(topicId));
-//        assertThat(json).contains(topicId);
-
+        assertThat(json).contains("\"topic_id\":" + topicId);
     }
 }

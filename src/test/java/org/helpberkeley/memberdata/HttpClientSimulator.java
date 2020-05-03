@@ -43,7 +43,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class HttpClientSimulator extends HttpClient {
 
     @Override
-    public <T> HttpResponse<T> send(HttpRequest request, HttpResponse.BodyHandler<T> responseBodyHandler) throws IOException, InterruptedException {
+    public <T> HttpResponse<T> send(HttpRequest request, HttpResponse.BodyHandler<T> responseBodyHandler) {
 
         if (isQuery(request)) {
             return doQuery(request);
@@ -91,10 +91,8 @@ public class HttpClientSimulator extends HttpClient {
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
         URL url = classLoader.getResource(dataFile);
         try {
-            return (HttpResponse<T>) new HttpResponseSimulator<String>(Files.readString(Paths.get(url.toURI())));
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (URISyntaxException e) {
+            return (HttpResponse<T>) new HttpResponseSimulator<>(Files.readString(Paths.get(url.toURI())));
+        } catch (IOException | URISyntaxException e) {
             e.printStackTrace();
         }
 
@@ -102,7 +100,7 @@ public class HttpClientSimulator extends HttpClient {
     }
 
     private <T> HttpResponse<T> doPost(HttpRequest request) {
-        return (HttpResponse<T>) new HttpResponseSimulator<String>("");
+        return (HttpResponse<T>) new HttpResponseSimulator<>("");
     }
 
     private int getQueryId(HttpRequest request) {

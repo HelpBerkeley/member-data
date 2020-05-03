@@ -50,13 +50,18 @@ public class Main {
     static final String INREACH_FILE = "inreach";
     static final String DISPATCHERS_FILE = "dispatchers";
 
+    static final String ALL_MEMBERS_TITLE = "All Members";
+    static final String WORKFLOW_TITLE = "Workflow Data";
+    static final String DISPATCHERS_TITLE = "Dispatchers Info";
+    static final String INREACH_TITLE = "Customer Info";
+    static final String DRIVERS_TITLE = "Volunteer Drivers";
+
     // FIX THIS, DS: make this less fragile
     static final long MEMBER_DATA_REQUIRING_ATTENTION_TOPIC_ID = 129;
     static final long MEMBER_DATA_REQUIRING_ATTENTION_POST_ID = 1706;
     static final long CONSUMER_REQUESTS_TOPIC_ID = 444;
     static final long CONSUMER_REQUESTS_POST_ID = 1776;
     static final long VOLUNTEER_REQUESTS_TOPIC_ID = 445;
-    static final long DRIVERS_POST_ID = 2808;
     static final long DRIVERS_POST_TOPIC = 638;
     static final long ALL_MEMBERS_POST_TOPIC = 837;
     static final long WORKFLOW_DATA_TOPIC = 824;
@@ -64,7 +69,7 @@ public class Main {
     static final long COMPLETED_DAILY_DELIVERIES_TOPIC = 859;
     static final long DISPATCHERS_POST_TOPIC = 938;
     static final long STONE_TEST_TOPIC = 422;
-    static final long DISPATCHERS_POST_ID = 5041;
+    static final long DISPATCHERS_POST_ID = 5324;
 
     public static void main(String[] args) throws IOException, InterruptedException {
 
@@ -90,12 +95,6 @@ public class Main {
             case Options.COMMAND_UPDATE_ERRORS:
                 updateUserErrors(apiClient, options.getFileName());
                 break;
-            case Options.COMMAND_UPDATE_CONSUMER_REQUESTS:
-                updateConsumerRequests(apiClient, options.getFileName());
-                break;
-            case Options.COMMAND_UPDATE_DRIVERS:
-                updateDrivers(apiClient, options.getFileName(), options.getShortURL());
-                break;
             case Options.COMMAND_POST_VOLUNTEER_REQUESTS:
                 postVolunteerRequests(apiClient, options.getFileName());
                 break;
@@ -103,23 +102,29 @@ public class Main {
                 postConsumerRequests(apiClient, options.getFileName());
                 break;
             case Options.COMMAND_POST_ALL_MEMBERS:
-                postAllMembers(apiClient, options.getFileName(), options.getShortURL());
+                postFile(apiClient, options.getFileName(),
+                        options.getShortURL(), ALL_MEMBERS_TITLE, ALL_MEMBERS_POST_TOPIC);
                 break;
             case Options.COMMAND_POST_WORKFLOW:
-                postWorkflow(apiClient, options.getFileName(), options.getShortURL());
+                postFile(apiClient, options.getFileName(),
+                        options.getShortURL(), WORKFLOW_TITLE, WORKFLOW_DATA_TOPIC);
                 break;
             case Options.COMMAND_POST_INREACH:
-                postInreach(apiClient, options.getFileName(), options.getShortURL());
+                postFile(apiClient, options.getFileName(),
+                        options.getShortURL(), INREACH_TITLE, INREACH_POST_TOPIC);
                 break;
             case Options.COMMAND_POST_DISPATCHERS:
-                postDispatchers(apiClient, options.getFileName(), options.getShortURL());
+                postFile(apiClient, options.getFileName(),
+                        options.getShortURL(), DISPATCHERS_TITLE, DISPATCHERS_POST_TOPIC);
                 break;
             case Options.COMMAND_UPDATE_DISPATCHERS:
-                updateDispatchers(apiClient, options.getFileName(), options.getShortURL());
+                updateFile(apiClient, options.getFileName(),
+                        options.getShortURL(), DISPATCHERS_TITLE, DISPATCHERS_POST_ID);
                 break;
             default:
                 assert options.getCommand().equals(Options.COMMAND_POST_DRIVERS) : options.getCommand();
-                postDrivers(apiClient, options.getFileName(), options.getShortURL());
+                postFile(apiClient, options.getFileName(),
+                        options.getShortURL(), DRIVERS_TITLE, DRIVERS_POST_TOPIC);
                 break;
         }
     }
@@ -177,44 +182,6 @@ public class Main {
 
         // Export dispatchers
         exporter.dispatchersToFile(DISPATCHERS_FILE);
-    }
-
-    static void updateConsumerRequests(ApiClient apiClient, final String fileName)
-            throws IOException, InterruptedException {
-
-        String csvData = Files.readString(Paths.get(fileName));
-        // FIX THIS, DS: constant for separator
-        List<User> users = Parser.users(csvData, Constants.CSV_SEPARATOR);
-
-        StringBuilder postRaw = new StringBuilder();
-        String label =  "Newly created members requesting meals -- " + ZonedDateTime.now(
-                ZoneId.systemDefault()).format(DateTimeFormatter.ofPattern("uuuu.MM.dd HH:mm:ss"));
-
-        postRaw.append("**");
-        postRaw.append(label);
-        postRaw.append("**\n\n");
-
-        postRaw.append("| User Name | City | Address | Apartment | Phone |\n");
-        postRaw.append("|---|---|---|---|---|\n");
-
-        Tables tables = new Tables(users);
-        for (User user : tables.sortByUserName()) {
-            postRaw.append('|');
-            postRaw.append('@');
-            postRaw.append(user.getUserName());
-            postRaw.append('|');
-            postRaw.append(user.getCity());
-            postRaw.append('|');
-            postRaw.append(user.getAddress());
-            postRaw.append('|');
-            postRaw.append(user.isApartment());
-            postRaw.append('|');
-            postRaw.append(user.getPhoneNumber());
-            postRaw.append("|\n");
-        }
-
-        HttpResponse<?> response = apiClient.updatePost(CONSUMER_REQUESTS_POST_ID, postRaw.toString());
-        System.out.println(response);
     }
 
     static void postConsumerRequests(ApiClient apiClient, final String fileName)
@@ -339,164 +306,43 @@ public class Main {
         System.out.println(response);
     }
 
-    static void postDrivers(ApiClient apiClient, final String fileName, final String shortUrl)
-            throws IOException, InterruptedException {
+    static void postFile(ApiClient apiClient, final String fileName, final String shortUrl,
+                 final String title, long topicId) throws IOException, InterruptedException {
 
-        StringBuilder postRaw = new StringBuilder();
-
-        postRaw.append("** ");
-        postRaw.append("Volunteer Drivers -- ");
-        postRaw.append(ZonedDateTime.now(
-                ZoneId.systemDefault()).format(DateTimeFormatter.ofPattern("uuuu.MM.dd HH:mm:ss")));
-        postRaw.append(" **\n\n");
-
-        // postRaw.append("[" + fileName + "|attachment](upload://" + fileName + ") (5.49 KB)");
-        postRaw.append("[" + fileName + "|attachment](" + shortUrl + ")");
+        String now = ZonedDateTime.now(ZoneId.systemDefault()).format(
+                DateTimeFormatter.ofPattern("uuuu.MM.dd HH:mm:ss"));
 
         Post post = new Post();
-        post.title = "Volunteer Drivers";
-        post.topic_id = DRIVERS_POST_TOPIC;
-        post.createdAt = ZonedDateTime.now(ZoneId.systemDefault())
-                .format(DateTimeFormatter.ofPattern("uuuu.MM.dd.HH.mm.ss"));
+        post.title = title;
+        post.topic_id = topicId;
+        post.createdAt = now;
+        String postRaw = "**" +
+                title +
+                " -- " +
+                now +
+                "**\n\n" +
+                // postRaw.append("[" + fileName + "|attachment](upload://" + fileName + ") (5.49 KB)");
+                "[" + fileName + "|attachment](" + shortUrl + ")";
+        post.raw = postRaw;
 
-        post.raw = postRaw.toString();
         HttpResponse<?> response = apiClient.post(post.toJson());
         System.out.println(response);
     }
 
-    static void postInreach(ApiClient apiClient, final String fileName, final String shortUrl)
-            throws IOException, InterruptedException {
+    static void updateFile(ApiClient apiClient, final String fileName,
+                final String shortUrl, String title, long postId) throws IOException, InterruptedException {
 
-        StringBuilder postRaw = new StringBuilder();
+        String now = ZonedDateTime.now(ZoneId.systemDefault()).format(
+                DateTimeFormatter.ofPattern("uuuu.MM.dd HH:mm:ss"));
 
-        postRaw.append("** ");
-        postRaw.append("Customer Info -- ");
-        postRaw.append(ZonedDateTime.now(
-                ZoneId.systemDefault()).format(DateTimeFormatter.ofPattern("uuuu.MM.dd HH:mm:ss")));
-        postRaw.append(" **\n\n");
-
-        // postRaw.append("[" + fileName + "|attachment](upload://" + fileName + ") (5.49 KB)");
-        postRaw.append("[" + fileName + "|attachment](" + shortUrl + ")");
-
-        Post post = new Post();
-        post.title = "Customer Info ";
-        post.topic_id = INREACH_POST_TOPIC;
-        post.createdAt = ZonedDateTime.now(ZoneId.systemDefault())
-                .format(DateTimeFormatter.ofPattern("uuuu.MM.dd.HH.mm.ss"));
-
-        post.raw = postRaw.toString();
-        HttpResponse<?> response = apiClient.post(post.toJson());
-        System.out.println(response);
-    }
-
-    static void postDispatchers(ApiClient apiClient, final String fileName, final String shortUrl)
-            throws IOException, InterruptedException {
-
-        StringBuilder postRaw = new StringBuilder();
-
-        postRaw.append("** ");
-        postRaw.append("Dispatchers Info -- ");
-        postRaw.append(ZonedDateTime.now(
-                ZoneId.systemDefault()).format(DateTimeFormatter.ofPattern("uuuu.MM.dd HH:mm:ss")));
-        postRaw.append(" **\n\n");
-
-        // postRaw.append("[" + fileName + "|attachment](upload://" + fileName + ") (5.49 KB)");
-        postRaw.append("[" + fileName + "|attachment](" + shortUrl + ")");
-
-        Post post = new Post();
-        post.title = "Dispatchers Info ";
-        post.topic_id = DISPATCHERS_POST_TOPIC;
-        post.createdAt = ZonedDateTime.now(ZoneId.systemDefault())
-                .format(DateTimeFormatter.ofPattern("uuuu.MM.dd.HH.mm.ss"));
-
-        post.raw = postRaw.toString();
-        HttpResponse<?> response = apiClient.post(post.toJson());
-        System.out.println(response);
-    }
-
-    static void updateDispatchers(ApiClient apiClient, final String fileName, final String shortUrl)
-            throws IOException, InterruptedException {
-
-        StringBuilder postRaw = new StringBuilder();
-        String label =  "Dispatchers Info -- " + ZonedDateTime.now(
-                ZoneId.systemDefault()).format(DateTimeFormatter.ofPattern("uuuu.MM.dd HH:mm:ss"));
-
-        postRaw.append("**");
-        postRaw.append(label);
-        postRaw.append("**\n\n");
-
-        // postRaw.append("[" + fileName + "|attachment](upload://" + fileName + ") (5.49 KB)");
-        postRaw.append("[" + fileName + "|attachment](" + shortUrl + ")");
-
-        HttpResponse<?> response = apiClient.updatePost(DISPATCHERS_POST_ID, postRaw.toString());
-        System.out.println(response);
-    }
-
-    static void updateDrivers(ApiClient apiClient, final String fileName, final String shortUrl)
-            throws IOException, InterruptedException {
-
-        StringBuilder postRaw = new StringBuilder();
-        String label =  "Volunteer Drivers -- " + ZonedDateTime.now(
-                ZoneId.systemDefault()).format(DateTimeFormatter.ofPattern("uuuu.MM.dd HH:mm:ss"));
-
-        postRaw.append("**");
-        postRaw.append(label);
-        postRaw.append("**\n\n");
-
-        // postRaw.append("[" + fileName + "|attachment](upload://" + fileName + ") (5.49 KB)");
-        postRaw.append("[" + fileName + "|attachment](" + shortUrl + ")");
-
-        HttpResponse<?> response = apiClient.updatePost(DRIVERS_POST_ID, postRaw.toString());
-        System.out.println(response);
-    }
-
-    static void postAllMembers(ApiClient apiClient, final String fileName, final String shortUrl)
-            throws IOException, InterruptedException {
-
-        StringBuilder postRaw = new StringBuilder();
-
-        postRaw.append("** ");
-        postRaw.append("All Members -- ");
-        postRaw.append(ZonedDateTime.now(
-                ZoneId.systemDefault()).format(DateTimeFormatter.ofPattern("uuuu.MM.dd HH:mm:ss")));
-        postRaw.append(" **\n\n");
-
-        // postRaw.append("[" + fileName + "|attachment](upload://" + fileName + ") (5.49 KB)");
-        postRaw.append("[" + fileName + "|attachment](" + shortUrl + ")");
-
-        Post post = new Post();
-        post.title = "All Members";
-        post.topic_id = ALL_MEMBERS_POST_TOPIC;
-        post.createdAt = ZonedDateTime.now(ZoneId.systemDefault())
-                .format(DateTimeFormatter.ofPattern("uuuu.MM.dd.HH.mm.ss"));
-
-        post.raw = postRaw.toString();
-        HttpResponse<?> response = apiClient.post(post.toJson());
-        System.out.println(response);
-    }
-
-    static void postWorkflow(ApiClient apiClient, final String fileName, final String shortUrl)
-            throws IOException, InterruptedException {
-
-        StringBuilder postRaw = new StringBuilder();
-
-        postRaw.append("** ");
-        postRaw.append("Workflow Data -- ");
-        postRaw.append(ZonedDateTime.now(
-                ZoneId.systemDefault()).format(DateTimeFormatter.ofPattern("uuuu.MM.dd HH:mm:ss")));
-        postRaw.append(" **\n\n");
-
-        // postRaw.append("[" + fileName + "|attachment](upload://" + fileName + ") (5.49 KB)");
-        postRaw.append("[" + fileName + "|attachment](" + shortUrl + ")");
-
-        Post post = new Post();
-        post.title = "Workflow Data";
-        post.topic_id = WORKFLOW_DATA_TOPIC;
-        post.createdAt = ZonedDateTime.now(ZoneId.systemDefault())
-                .format(DateTimeFormatter.ofPattern("uuuu.MM.dd.HH.mm.ss"));
-
-        post.raw = postRaw.toString();
-        HttpResponse<?> response = apiClient.post(post.toJson());
+        String postRaw = "**" +
+                title +
+                " -- " +
+                now +
+                "**\n\n" +
+                // postRaw.append("[" + fileName + "|attachment](upload://" + fileName + ") (5.49 KB)");
+                "[" + fileName + "|attachment](" + shortUrl + ")";
+        HttpResponse<?> response = apiClient.updatePost(postId, postRaw);
         System.out.println(response);
     }
 

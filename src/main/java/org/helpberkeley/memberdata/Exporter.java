@@ -81,10 +81,10 @@ public class Exporter {
     String consumerRequests() {
 
         StringBuilder rows = new StringBuilder();
-        rows.append(User.csvHeaders(separator));
+        rows.append(User.csvHeaders());
 
         for (User user : tables.consumerRequests()) {
-            rows.append(user.exportToCSV(separator));
+            rows.append(user.exportToCSV());
         }
 
         return rows.toString();
@@ -102,10 +102,10 @@ public class Exporter {
     String volunteerRequests() {
 
         StringBuilder rows = new StringBuilder();
-        rows.append(User.csvHeaders(separator));
+        rows.append(User.csvHeaders());
 
         for (User user : tables.volunteerRequests()) {
-            rows.append(user.exportToCSV(separator));
+            rows.append(user.exportToCSV());
         }
 
         return rows.toString();
@@ -131,10 +131,10 @@ public class Exporter {
     String allMembers() {
 
         StringBuilder csvData = new StringBuilder();
-        csvData.append(User.csvHeaders(separator));
+        csvData.append(User.csvHeaders());
 
         for (User user : tables.sortByUserName()) {
-            csvData.append(user.exportToCSV(separator));
+            csvData.append(user.exportToCSV());
         }
 
         return csvData.toString();

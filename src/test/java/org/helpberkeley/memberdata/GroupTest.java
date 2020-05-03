@@ -32,7 +32,7 @@ public class GroupTest extends TestBase {
     public void createGroupTest() {
 
         String groupName = "collectors of porcelain frogs";
-        List<Long> userIDs = List.of(Long.valueOf(3), Long.valueOf(1), Long.valueOf(4));
+        List<Long> userIDs = List.of(3L, 1L, 4L);
         Group group = Group.createGroup(groupName, userIDs);
         assertThat(group.toString()).contains(groupName);
 

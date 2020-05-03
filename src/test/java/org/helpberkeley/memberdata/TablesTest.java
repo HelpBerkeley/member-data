@@ -199,4 +199,23 @@ public class TablesTest extends TestBase {
         List<User> inreach = tables.inreach();
         assertThat(inreach).containsExactly(u7, u6, u8, u2, u1, u3);
     }
+
+    @Test
+    public void dispatchersTest() throws UserException {
+        ZonedDateTime now = ZonedDateTime.now();
+
+        User u1 = createUserWithCreateTimeAndGroup("u1", now.toString(), Constants.GROUP_DISPATCHERS);
+        User u2 = createUserWithGroup("u2", Constants.GROUP_DRIVERS);
+        User u3 = createUserWithCreateTimeAndGroup("u3", now.minus(
+                1, DAYS).toString(), Constants.GROUP_DISPATCHERS);
+        User u4 = createUserWithCreateTimeAndGroup("u4", now.minus(
+                1, MINUTES).toString(), Constants.GROUP_DISPATCHERS);
+        User u5 = createUserWithGroup("u5", Constants.GROUP_CONSUMERS);
+        User u6 = createUserWithCreateTimeAndGroup("u6", now.plus(
+                1, MINUTES).toString(), Constants.GROUP_DISPATCHERS);
+
+        Tables tables = new Tables(List.of(u1, u2, u3, u4, u5, u6));
+        List<User> dispatchers = tables.dispatchers();
+        assertThat(dispatchers).containsExactly(u3, u4, u1, u6);
+    }
 }

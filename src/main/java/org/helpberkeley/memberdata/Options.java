@@ -30,8 +30,6 @@ public class Options {
     static final String COMMAND_GET_DAILY_DELIVERIES = "get-daily-deliveries";
     static final String COMMAND_POST_ERRORS = "post-errors";
     static final String COMMAND_UPDATE_ERRORS = "update-errors";
-    static final String COMMAND_UPDATE_CONSUMER_REQUESTS = "update-consumer-requests";
-    static final String COMMAND_UPDATE_DRIVERS = "update-drivers";
     static final String COMMAND_UPDATE_DISPATCHERS = "update-dispatchers";
     static final String COMMAND_POST_VOLUNTEER_REQUESTS = "post-volunteer-requests";
     static final String COMMAND_POST_CONSUMER_REQUESTS = "post-consumer-requests";
@@ -62,9 +60,7 @@ public class Options {
                     + "    | " + COMMAND_POST_INREACH + " inreach-file upload://short-url-file-name\n"
                     + "    | " + COMMAND_POST_DISPATCHERS + " dispatchers-file upload://short-url-file-name\n"
                     + "    | " + COMMAND_UPDATE_ERRORS + " errors-file-name\n"
-                    + "    | " + COMMAND_UPDATE_CONSUMER_REQUESTS + " consumer-requests-file-name\n"
-                    + "    | " + COMMAND_UPDATE_DISPATCHERS + " dispatchers-file-name\n"
-                    + "    | " + COMMAND_UPDATE_DRIVERS + " drivers-file upload://short-url-file-name\n";
+                    + "    | " + COMMAND_UPDATE_DISPATCHERS + " dispatchers-file-name\n";
 
     private final String[] args;
     private String command;
@@ -90,7 +86,6 @@ public class Options {
                 case COMMAND_POST_CONSUMER_REQUESTS:
                 case COMMAND_POST_VOLUNTEER_REQUESTS:
                 case COMMAND_UPDATE_ERRORS:
-                case COMMAND_UPDATE_CONSUMER_REQUESTS:
                     setCommand(arg);
                     index++;
                     if (index == args.length) {
@@ -104,7 +99,6 @@ public class Options {
                 case COMMAND_POST_INREACH:
                 case COMMAND_POST_DISPATCHERS:
                 case COMMAND_UPDATE_DISPATCHERS:
-                case COMMAND_UPDATE_DRIVERS:
                     setCommand(arg);
                     index++;
                     if (index == args.length) {

@@ -138,7 +138,7 @@ public class ExporterTest extends TestBase {
         assertThat(rows).hasSize(2);
 
         String header = rows[0];
-        assertThat(header).isEqualTo(User.csvHeaders(Constants.CSV_SEPARATOR).trim());
+        assertThat(header).isEqualTo(User.csvHeaders().trim());
 
         String[] headerColumns = header.split(Constants.CSV_SEPARATOR);
 
@@ -327,17 +327,96 @@ public class ExporterTest extends TestBase {
 
         User u1 = createUserWithGroup(TEST_USER_NAME_1, Constants.GROUP_CONSUMERS);
         User u2 = createUserWithGroup(TEST_USER_NAME_2, Constants.GROUP_DRIVERS);
+
+        Exporter exporter = new Exporter(List.of(u1, u2));
+        String fileName = exporter.inreachToFile("inreach.csv");
+        Path filePath = Paths.get(fileName);
+        assertThat(filePath).exists();
+
+        String fileData = Files.readString(filePath);
+        assertThat(fileData).contains(TEST_USER_NAME_1);
+        assertThat(fileData).doesNotContain(TEST_USER_NAME_2);
+
+        Files.delete(Paths.get(fileName));
+    }
+
+    @Test
+    public void dispatchersColumnsTest() throws UserException {
+        User u1 = createUserWithGroup("u1", Constants.GROUP_DISPATCHERS);
+        Exporter exporter = new Exporter(List.of(u1));
+
+        String dispatcherRows = exporter.dispatchers();
+        String[] rows = dispatcherRows.split("\n");
+        assertThat(rows).hasSize(2);
+
+        String header = rows[0];
+        assertThat(header).isEqualTo(exporter.dispatchersHeaders().trim());
+
+        String[] headerColumns = header.split(Constants.CSV_SEPARATOR);
+
+        // FIX THIS, DS: add a constant for number of columns expected
+        assertThat(headerColumns[0]).isEqualTo(User.CREATED_AT_COLUMN);
+        assertThat(headerColumns[1]).isEqualTo(User.NAME_COLUMN);
+        assertThat(headerColumns[2]).isEqualTo(User.USERNAME_COLUMN);
+        assertThat(headerColumns[3]).isEqualTo(User.PHONE_NUMBER_COLUMN);
+        assertThat(headerColumns[4]).isEqualTo(User.NEIGHBORHOOD_COLUMN);
+        assertThat(headerColumns[5]).isEqualTo(User.CITY_COLUMN);
+        assertThat(headerColumns[6]).isEqualTo(User.ADDRESS_COLUMN);
+        assertThat(headerColumns[7]).isEqualTo(User.APARTMENT_COLUMN);
+        assertThat(headerColumns[8]).isEqualTo(User.DRIVER_COLUMN);
+        assertThat(headerColumns[9]).isEqualTo(User.CONSUMER_COLUMN);
+        assertThat(headerColumns[10]).isEqualTo(User.DISPATCHER_COLUMN);
+        assertThat(headerColumns[11]).isEqualTo(User.BHS_COLUMN);
+        assertThat(headerColumns[12]).isEqualTo(User.HELPLINE_COLUMN);
+        assertThat(headerColumns[13]).isEqualTo(User.SITELINE_COLUMN);
+        assertThat(headerColumns[14]).isEqualTo(User.INREACH_COLUMN);
+        assertThat(headerColumns[15]).isEqualTo(User.OUTREACH_COLUMN);
+        assertThat(headerColumns[16]).isEqualTo(User.MARKETING_COLUMN);
+        assertThat(headerColumns[17]).isEqualTo(User.MODERATORS_COLUMN);
+        assertThat(headerColumns[18]).isEqualTo(User.SPECIALIST_COLUMN);
+        assertThat(headerColumns[19]).isEqualTo(User.WORKFLOW_COLUMN);
+
+        String[] columns = rows[1].split(Constants.CSV_SEPARATOR);
+        assertThat(headerColumns).hasSameSizeAs(columns);
+
+        assertThat(columns[0]).isEqualTo(u1.getSimpleCreateTime());
+        assertThat(columns[1]).isEqualTo(u1.getName());
+        assertThat(columns[2]).isEqualTo(u1.getUserName());
+        assertThat(columns[3]).isEqualTo(u1.getPhoneNumber());
+        assertThat(columns[4]).isEqualTo(u1.getNeighborhood());
+        assertThat(columns[5]).isEqualTo(u1.getCity());
+        assertThat(columns[6]).isEqualTo(u1.getAddress());
+        assertThat(columns[7]).isEqualTo(String.valueOf(u1.isApartment()));
+        assertThat(columns[8]).isEqualTo(String.valueOf(u1.isDriver()));
+        assertThat(columns[9]).isEqualTo(String.valueOf(u1.isConsumer()));
+        assertThat(columns[10]).isEqualTo(String.valueOf(u1.isDispatcher()));
+        assertThat(columns[11]).isEqualTo(String.valueOf(u1.isBHS()));
+        assertThat(columns[12]).isEqualTo(String.valueOf(u1.isHelpLine()));
+        assertThat(columns[13]).isEqualTo(String.valueOf(u1.isSiteLine()));
+        assertThat(columns[14]).isEqualTo(String.valueOf(u1.isInReach()));
+        assertThat(columns[15]).isEqualTo(String.valueOf(u1.isOutReach()));
+        assertThat(columns[16]).isEqualTo(String.valueOf(u1.isMarketing()));
+        assertThat(columns[17]).isEqualTo(String.valueOf(u1.isModerator()));
+        assertThat(columns[18]).isEqualTo(String.valueOf(u1.isSpecialist()));
+        assertThat(columns[19]).isEqualTo(String.valueOf(u1.isWorkflow()));
+    }
+
+    @Test
+    public void dispatchersToFileTest() throws UserException, IOException {
+
+        User u1 = createUserWithGroup(TEST_USER_NAME_1, Constants.GROUP_DISPATCHERS);
+        User u2 = createUserWithGroup(TEST_USER_NAME_2, Constants.GROUP_DISPATCHERS);
         User u3 = createUserWithGroup(TEST_USER_NAME_3, Constants.GROUP_DRIVERS);
 
         Exporter exporter = new Exporter(List.of(u1, u2, u3));
-        String fileName = exporter.workflowToFile("inreach.csv");
+        String fileName = exporter.dispatchersToFile("dispatchers.csv");
         Path filePath = Paths.get(fileName);
         assertThat(filePath).exists();
 
         String fileData = Files.readString(filePath);
         assertThat(fileData).contains(TEST_USER_NAME_1);
         assertThat(fileData).contains(TEST_USER_NAME_2);
-        assertThat(fileData).contains(TEST_USER_NAME_3);
+        assertThat(fileData).doesNotContain(TEST_USER_NAME_3);
 
         Files.delete(Paths.get(fileName));
     }

@@ -24,10 +24,6 @@ package org.helpberkeley.memberdata;
 import org.junit.BeforeClass;
 
 import java.io.IOException;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -87,7 +83,6 @@ public class TestBase {
             Options.COMMAND_POST_INREACH,
             Options.COMMAND_POST_DISPATCHERS,
             Options.COMMAND_UPDATE_DISPATCHERS,
-            Options.COMMAND_UPDATE_DRIVERS,
     };
 
     static final String[] COMMANDS_WITH_FILE = {
@@ -95,7 +90,6 @@ public class TestBase {
             Options.COMMAND_POST_CONSUMER_REQUESTS,
             Options.COMMAND_POST_VOLUNTEER_REQUESTS,
             Options.COMMAND_UPDATE_ERRORS,
-            Options.COMMAND_UPDATE_CONSUMER_REQUESTS,
     };
 
     static final String TEST_FILE_NAME = "pom.xml";

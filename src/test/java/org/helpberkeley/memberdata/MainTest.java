@@ -28,7 +28,6 @@ import org.junit.Test;
 
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 
 @Ignore
@@ -44,20 +43,20 @@ public class MainTest extends TestBase {
     @Test
     public void fetchTest() throws IOException, InterruptedException {
         String[] args = { Options.COMMAND_FETCH };
-        new Main().main(args);
+        Main.main(args);
     }
 
     @Test
     public void postConsumerRequestsTest() throws IOException, InterruptedException {
         String[] args = { Options.COMMAND_POST_CONSUMER_REQUESTS, TEST_FILE_NAME };
-        new Main().main(args);
+        Main.main(args);
     }
     @Test
     public void commandsWithFileTest() throws IOException, InterruptedException {
 
         for (String command : COMMANDS_WITH_FILE) {
             String[] args = {command, TEST_FILE_NAME};
-            new Main().main(args);
+            Main.main(args);
         }
     }
 
@@ -66,7 +65,7 @@ public class MainTest extends TestBase {
 
         for (String command : COMMANDS_WITH_URL) {
             String[] args = {command, TEST_FILE_NAME, TEST_SHORT_URL};
-            new Main().main(args);
+            Main.main(args);
         }
     }
 }

@@ -222,89 +222,104 @@ public class User {
 
     @Override
     public String toString() {
-        StringBuilder builder = new StringBuilder();
 
-        builder.append(NAME_COLUMN);
-        builder.append("=");
-        builder.append(name == null ? NOT_PROVIDED : name);
-        builder.append(':');
-
-        builder.append(USERNAME_COLUMN);
-        builder.append("=");
-        builder.append(userName == null ? NOT_PROVIDED : userName);
-        builder.append(':');
-
-        builder.append(ID_FIELD);
-        builder.append("=");
-        builder.append(id);
-        builder.append(':');
-
-        builder.append(ADDRESS_COLUMN);
-        builder.append("=");
-        builder.append(address == null ? NOT_PROVIDED : address);
-        builder.append(':');
-
-        builder.append(CITY_COLUMN);
-        builder.append("=");
-        builder.append(city == null ? NOT_PROVIDED : city);
-        builder.append(':');
-
-        builder.append(PHONE_NUMBER_COLUMN);
-        builder.append("=");
-        builder.append(phoneNumber == null ? NOT_PROVIDED :phoneNumber);
-        builder.append(':');
-
-        builder.append(ALT_PHONE_NUMBER_COLUMN);
-        builder.append("=");
-        builder.append(altPhoneNumber == null ? NOT_PROVIDED :altPhoneNumber);
-        builder.append(':');
-
-        builder.append(NEIGHBORHOOD_COLUMN);
-        builder.append("=");
-        builder.append(neighborhood == null ? NOT_PROVIDED : neighborhood);
-        builder.append(':');
-
-        builder.append(Constants.GROUP_CONSUMERS);
-        builder.append("=");
-        builder.append(isConsumer());
-        builder.append(':');
-
-        builder.append(Constants.GROUP_DISPATCHERS);
-        builder.append("=");
-        builder.append(isDispatcher());
-        builder.append(':');
-
-        builder.append(Constants.GROUP_DRIVERS);
-        builder.append("=");
-        builder.append(isDriver());
-        builder.append(':');
-
-        builder.append(APARTMENT_COLUMN);
-        builder.append("=");
-        builder.append(isApartment());
-        builder.append(':');
-
-        builder.append(CONSUMER_REQUEST_COLUMN);
-        builder.append("=");
-        builder.append(hasConsumerRequest());
-        builder.append(':');
-
-        builder.append(VOLUNTEER_REQUEST_COLUMN);
-        builder.append("=");
-        builder.append(volunteerRequest == null ? NOT_PROVIDED : volunteerRequest);
-        builder.append(':');
-
-        builder.append(Constants.GROUP_SPECIALISTS);
-        builder.append("=");
-        builder.append(isSpecialist());
-        builder.append(':');
-
-        builder.append(Constants.COLUMN_CREATE_TIME);
-        builder.append("=");
-        builder.append(getSimpleCreateTime());
-        builder.append(':');
-
-        return builder.toString();
+        String builder = NAME_COLUMN +
+                "=" +
+                (name == null ? NOT_PROVIDED : name) +
+                ':' +
+                USERNAME_COLUMN +
+                "=" +
+                (userName == null ? NOT_PROVIDED : userName) +
+                ':' +
+                ID_FIELD +
+                "=" +
+                id +
+                ':' +
+                ADDRESS_COLUMN +
+                "=" +
+                (address == null ? NOT_PROVIDED : address) +
+                ':' +
+                CITY_COLUMN +
+                "=" +
+                (city == null ? NOT_PROVIDED : city) +
+                ':' +
+                PHONE_NUMBER_COLUMN +
+                "=" +
+                (phoneNumber == null ? NOT_PROVIDED : phoneNumber) +
+                ':' +
+                ALT_PHONE_NUMBER_COLUMN +
+                "=" +
+                (altPhoneNumber == null ? NOT_PROVIDED : altPhoneNumber) +
+                ':' +
+                NEIGHBORHOOD_COLUMN +
+                "=" +
+                (neighborhood == null ? NOT_PROVIDED : neighborhood) +
+                ':' +
+                Constants.GROUP_CONSUMERS +
+                "=" +
+                isConsumer() +
+                ':' +
+                Constants.GROUP_DISPATCHERS +
+                "=" +
+                isDispatcher() +
+                ':' +
+                Constants.GROUP_DRIVERS +
+                "=" +
+                isDriver() +
+                ':' +
+                APARTMENT_COLUMN +
+                "=" +
+                isApartment() +
+                ':' +
+                CONSUMER_REQUEST_COLUMN +
+                "=" +
+                hasConsumerRequest() +
+                ':' +
+                VOLUNTEER_REQUEST_COLUMN +
+                "=" +
+                (volunteerRequest == null ? NOT_PROVIDED : volunteerRequest) +
+                ':' +
+                Constants.GROUP_SPECIALISTS +
+                "=" +
+                isSpecialist() +
+                ':' +
+                Constants.GROUP_BHS +
+                "=" +
+                isBHS() +
+                ':' +
+                Constants.GROUP_HELPLINE +
+                "=" +
+                isHelpLine() +
+                ':' +
+                Constants.GROUP_SITELINE +
+                "=" +
+                isSiteLine() +
+                ':' +
+                Constants.GROUP_INREACH +
+                "=" +
+                isInReach() +
+                ':' +
+                Constants.GROUP_OUTREACH +
+                "=" +
+                isOutReach() +
+                ':' +
+                Constants.GROUP_MARKETING +
+                "=" +
+                isMarketing() +
+                ':' +
+                Constants.GROUP_MODERATORS +
+                "=" +
+                isModerator() +
+                ':' +
+                Constants.GROUP_WORKFLOW +
+                "=" +
+                isWorkflow() +
+                ':' +
+                Constants.COLUMN_CREATE_TIME +
+                "=" +
+                getSimpleCreateTime() +
+                ':';
+        return builder;
     }
 
     private void auditNullFields() {
@@ -732,90 +747,87 @@ public class User {
         return user;
     }
 
-    static String csvHeaders(final String separator) {
+    static String csvHeaders() {
 
-        return ID_COLUMN + separator
-                + NAME_COLUMN + separator
-                + USERNAME_COLUMN + separator
-                + PHONE_NUMBER_COLUMN + separator
-                + ALT_PHONE_NUMBER_COLUMN + separator
-                + NEIGHBORHOOD_COLUMN + separator
-                + CITY_COLUMN + separator
-                + ADDRESS_COLUMN + separator
-                + CONSUMER_COLUMN + separator
-                + DISPATCHER_COLUMN + separator
-                + DRIVER_COLUMN + separator
-                + CREATED_AT_COLUMN + separator
-                + APARTMENT_COLUMN + separator
-                + CONSUMER_REQUEST_COLUMN + separator
-                + VOLUNTEER_REQUEST_COLUMN + separator
-                + SPECIALIST_COLUMN + separator
-                + BHS_COLUMN + separator
-                + HELPLINE_COLUMN + separator
-                + SITELINE_COLUMN + separator
-                + INREACH_COLUMN + separator
-                + OUTREACH_COLUMN + separator
-                + MARKETING_COLUMN + separator
-                + MODERATORS_COLUMN + separator
-                + WORKFLOW_COLUMN + separator
+        return ID_COLUMN + Constants.CSV_SEPARATOR
+                + NAME_COLUMN + Constants.CSV_SEPARATOR
+                + USERNAME_COLUMN + Constants.CSV_SEPARATOR
+                + PHONE_NUMBER_COLUMN + Constants.CSV_SEPARATOR
+                + ALT_PHONE_NUMBER_COLUMN + Constants.CSV_SEPARATOR
+                + NEIGHBORHOOD_COLUMN + Constants.CSV_SEPARATOR
+                + CITY_COLUMN + Constants.CSV_SEPARATOR
+                + ADDRESS_COLUMN + Constants.CSV_SEPARATOR
+                + CONSUMER_COLUMN + Constants.CSV_SEPARATOR
+                + DISPATCHER_COLUMN + Constants.CSV_SEPARATOR
+                + DRIVER_COLUMN + Constants.CSV_SEPARATOR
+                + CREATED_AT_COLUMN + Constants.CSV_SEPARATOR
+                + APARTMENT_COLUMN + Constants.CSV_SEPARATOR
+                + CONSUMER_REQUEST_COLUMN + Constants.CSV_SEPARATOR
+                + VOLUNTEER_REQUEST_COLUMN + Constants.CSV_SEPARATOR
+                + SPECIALIST_COLUMN + Constants.CSV_SEPARATOR
+                + BHS_COLUMN + Constants.CSV_SEPARATOR
+                + HELPLINE_COLUMN + Constants.CSV_SEPARATOR
+                + SITELINE_COLUMN + Constants.CSV_SEPARATOR
+                + INREACH_COLUMN + Constants.CSV_SEPARATOR
+                + OUTREACH_COLUMN + Constants.CSV_SEPARATOR
+                + MARKETING_COLUMN + Constants.CSV_SEPARATOR
+                + MODERATORS_COLUMN + Constants.CSV_SEPARATOR
+                + WORKFLOW_COLUMN + Constants.CSV_SEPARATOR
                 + "\n";
     }
 
-    String exportToCSV(final String separator) {
-        StringBuilder csvData = new StringBuilder();
+    String exportToCSV() {
 
-        csvData.append(getId());
-        csvData.append(separator);
-        csvData.append(getName());
-        csvData.append(separator);
-        csvData.append(getUserName());
-        csvData.append(separator);
-        csvData.append(getPhoneNumber());
-        csvData.append(separator);
-        csvData.append(getAltPhoneNumber());
-        csvData.append(separator);
-        csvData.append(getNeighborhood());
-        csvData.append(separator);
-        csvData.append(getCity());
-        csvData.append(separator);
-        csvData.append(getAddress());
-        csvData.append(separator);
-        csvData.append(isConsumer());
-        csvData.append(separator);
-        csvData.append(isDispatcher());
-        csvData.append(separator);
-        csvData.append(isDriver());
-        csvData.append(separator);
-        csvData.append(getCreateTime());
-        csvData.append(separator);
-        csvData.append(isApartment());
-        csvData.append(separator);
-        csvData.append(hasConsumerRequest());
-        csvData.append(separator);
-        csvData.append(getVolunteerRequest());
-        csvData.append(separator);
-        csvData.append(isSpecialist());
-        csvData.append(separator);
-        csvData.append(isBHS());
-        csvData.append(separator);
-        csvData.append(isHelpLine());
-        csvData.append(separator);
-        csvData.append(isSiteLine());
-        csvData.append(separator);
-        csvData.append(isInReach());
-        csvData.append(separator);
-        csvData.append(isOutReach());
-        csvData.append(separator);
-        csvData.append(isMarketing());
-        csvData.append(separator);
-        csvData.append(isModerator());
-        csvData.append(separator);
-        csvData.append(isWorkflow());
-        csvData.append(separator);
-
-        csvData.append('\n');
-
-        return csvData.toString();
+        String csvData = getId() +
+                Constants.CSV_SEPARATOR +
+                getName() +
+                Constants.CSV_SEPARATOR +
+                getUserName() +
+                Constants.CSV_SEPARATOR +
+                getPhoneNumber() +
+                Constants.CSV_SEPARATOR +
+                getAltPhoneNumber() +
+                Constants.CSV_SEPARATOR +
+                getNeighborhood() +
+                Constants.CSV_SEPARATOR +
+                getCity() +
+                Constants.CSV_SEPARATOR +
+                getAddress() +
+                Constants.CSV_SEPARATOR +
+                isConsumer() +
+                Constants.CSV_SEPARATOR +
+                isDispatcher() +
+                Constants.CSV_SEPARATOR +
+                isDriver() +
+                Constants.CSV_SEPARATOR +
+                getCreateTime() +
+                Constants.CSV_SEPARATOR +
+                isApartment() +
+                Constants.CSV_SEPARATOR +
+                hasConsumerRequest() +
+                Constants.CSV_SEPARATOR +
+                getVolunteerRequest() +
+                Constants.CSV_SEPARATOR +
+                isSpecialist() +
+                Constants.CSV_SEPARATOR +
+                isBHS() +
+                Constants.CSV_SEPARATOR +
+                isHelpLine() +
+                Constants.CSV_SEPARATOR +
+                isSiteLine() +
+                Constants.CSV_SEPARATOR +
+                isInReach() +
+                Constants.CSV_SEPARATOR +
+                isOutReach() +
+                Constants.CSV_SEPARATOR +
+                isMarketing() +
+                Constants.CSV_SEPARATOR +
+                isModerator() +
+                Constants.CSV_SEPARATOR +
+                isWorkflow() +
+                Constants.CSV_SEPARATOR +
+                '\n';
+        return csvData;
 
     }
 

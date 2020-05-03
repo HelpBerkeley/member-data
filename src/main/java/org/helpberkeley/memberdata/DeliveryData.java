@@ -53,11 +53,6 @@ public class DeliveryData {
             LOGGER.warn("Empty file received for " + toString());
             return;
         }
-
-        
-
-
-        
     }
 
     @Override
