@@ -28,8 +28,9 @@ public class Constants {
 //    public static final int QUERY_GET_USERS_V11_ID = 8;
 //    public static final int QUERY_GET_USERS_V12_ID = 9;
 //    public static final int QUERY_GET_USERS_V13_ID = 10;
-    public static final int QUERY_GET_USERS_V14_ID = 12;
-    public static final int CURRENT_USERS_QUERY = QUERY_GET_USERS_V14_ID;
+//    public static final int QUERY_GET_USERS_V14_ID = 12;
+    public static final int QUERY_GET_USERS_V15_ID = 14;
+    public static final int CURRENT_USERS_QUERY = QUERY_GET_USERS_V15_ID;
     public static final int QUERY_GET_DAILY_DELIVERIES = 13;
 
     public static final String COLUMN_ID = "id";
@@ -46,6 +47,7 @@ public class Constants {
     public static final String COLUMN_CONSUMER_REQUEST = "consumer_request";
     public static final String COLUMN_VOLUNTEER_REQUEST = "volunteer_request";
     public static final String COLUMN_ALT_PHONE = "alt_phone";
+    public static final String COLUMN_REFERRAL = "referral";
 
     // Group names - FIX THIS, DS: hardwired
     public static final String GROUP_CONSUMERS = "consumers";

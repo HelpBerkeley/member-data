@@ -58,6 +58,7 @@ public class User {
     static final String MARKETING_COLUMN = "Marketing";
     static final String MODERATORS_COLUMN = "Moderator";
     static final String WORKFLOW_COLUMN = "Workflow";
+    static final String REFERRAL_COLUMN = "Referral";
 
     static final String ERROR_PRIMARY_PHONE_MISSING_AREA_CODE = "Primary phone missing area code, assuming 510";
     static final String ERROR_PRIMARY_PHONE_CANNOT_PARSE_PHONE = "Cannot parse primary phone number";
@@ -83,6 +84,7 @@ public class User {
     private final Boolean apartment;
     private final Boolean consumerRequest;
     private String volunteerRequest;
+    private String referral;
     private final Set<String> groupMembership = new HashSet<>();
     private final List<String> dataErrors = new ArrayList<>();
 
@@ -128,6 +130,10 @@ public class User {
         return apartment;
     }
 
+    public String getReferral() {
+        return referral == null ? NOT_PROVIDED : referral;
+    }
+
     public String getCreateTime() {
         return createTime;
     }
@@ -152,7 +158,8 @@ public class User {
         final String createTime,
         final Boolean apartment,
         final Boolean consumerRequest,
-        final String volunteerRequest)  {
+        final String volunteerRequest,
+        final String referral)  {
 
         this.name = name;
         this.userName = userName;
@@ -166,6 +173,7 @@ public class User {
         this.apartment = apartment;
         this.consumerRequest = consumerRequest;
         this.volunteerRequest = volunteerRequest;
+        this.referral = referral;
     }
 
     Boolean hasConsumerRequest() {
@@ -271,6 +279,10 @@ public class User {
                 "=" +
                 isApartment() +
                 ':' +
+                REFERRAL_COLUMN +
+                "=" +
+                (referral == null ? NOT_PROVIDED : referral) +
+                ':' +
                 CONSUMER_REQUEST_COLUMN +
                 "=" +
                 hasConsumerRequest() +
@@ -315,6 +327,10 @@ public class User {
                 "=" +
                 isWorkflow() +
                 ':' +
+                REFERRAL_COLUMN +
+                '=' +
+                referral
+                + ':' +
                 Constants.COLUMN_CREATE_TIME +
                 "=" +
                 getSimpleCreateTime() +
@@ -343,6 +359,7 @@ public class User {
         auditNeighborhood();
         minimizeAddress();
         normalizeVolunteerRequest();
+        normalizeReferral();
     }
 
     // Must be insensitive to null data
@@ -370,6 +387,9 @@ public class User {
         }
         if (neighborhood != null) {
             neighborhood = neighborhood.replace(oldChar, newChar);
+        }
+        if (referral != null) {
+            referral = referral.replace(oldChar, newChar);
         }
     }
 
@@ -399,6 +419,9 @@ public class User {
         if (neighborhood != null) {
             neighborhood = neighborhood.replace(oldChar, newChar);
         }
+        if (referral != null) {
+            referral = referral.replace(oldChar, newChar);
+        }
     }
 
     // Must be insensitive to null data
@@ -424,6 +447,9 @@ public class User {
         }
         if (neighborhood != null) {
             neighborhood = neighborhood.strip();
+        }
+        if (referral != null) {
+            referral = referral.strip();
         }
     }
 
@@ -557,6 +583,14 @@ public class User {
 
         if ((volunteerRequest == null) || (volunteerRequest.isEmpty())) {
             volunteerRequest = NOT_PROVIDED;
+        }
+    }
+
+    // can arrive either as null, "", or a value
+    private void normalizeReferral() {
+
+        if ((referral == null) || (referral.isEmpty())) {
+            referral = NOT_PROVIDED;
         }
     }
 
@@ -694,11 +728,12 @@ public class User {
             final Boolean apartment,
             final Boolean consumerRequest,
             final String volunteerRequest,
+            final String referral,
             final String... groups) throws UserException {
 
 
         User user = new User(name, userName, id, address, city, phoneNumber, altPhoneNumber,
-                neighborhood, createdAt, apartment, consumerRequest, volunteerRequest);
+                neighborhood, createdAt, apartment, consumerRequest, volunteerRequest, referral);
         for (String group : groups) {
             assert ! user.groupMembership.contains(group) : group;
             user.groupMembership.add(group);
@@ -727,11 +762,12 @@ public class User {
             final Boolean apartment,
             final Boolean consumerRequest,
             final String volunteerRequest,
+            final String referral,
             final List<String> groups) throws UserException {
 
 
         User user = new User(name, userName, id, address, city, phoneNumber, altPhoneNumber,
-                neighborhood, createdAt, apartment, consumerRequest, volunteerRequest);
+                neighborhood, createdAt, apartment, consumerRequest, volunteerRequest, referral);
         for (String group : groups) {
             assert ! user.groupMembership.contains(group) : group;
             user.groupMembership.add(group);
@@ -759,7 +795,7 @@ public class User {
                 + CITY_COLUMN + Constants.CSV_SEPARATOR
                 + ADDRESS_COLUMN + Constants.CSV_SEPARATOR
                 + APARTMENT_COLUMN + Constants.CSV_SEPARATOR
-//                + REFERAL_COLUMN + Constants.CSV_SEPARATOR
+                + REFERRAL_COLUMN + Constants.CSV_SEPARATOR
                 + CONSUMER_COLUMN + Constants.CSV_SEPARATOR
 //                + VOICEONLY_COLUMN + Constants.CSV_SEPARATOR
                 + DRIVER_COLUMN + Constants.CSV_SEPARATOR
@@ -798,6 +834,7 @@ public class User {
                 + DRIVER_COLUMN + Constants.CSV_SEPARATOR
                 + CREATED_AT_COLUMN + Constants.CSV_SEPARATOR
                 + APARTMENT_COLUMN + Constants.CSV_SEPARATOR
+                + REFERRAL_COLUMN + Constants.CSV_SEPARATOR
                 + CONSUMER_REQUEST_COLUMN + Constants.CSV_SEPARATOR
                 + VOLUNTEER_REQUEST_COLUMN + Constants.CSV_SEPARATOR
                 + SPECIALIST_COLUMN + Constants.CSV_SEPARATOR
@@ -814,54 +851,31 @@ public class User {
 
     String rawToCSV() {
 
-        String csvData = getId() +
-                Constants.CSV_SEPARATOR +
-                getName() +
-                Constants.CSV_SEPARATOR +
-                getUserName() +
-                Constants.CSV_SEPARATOR +
-                getPhoneNumber() +
-                Constants.CSV_SEPARATOR +
-                getAltPhoneNumber() +
-                Constants.CSV_SEPARATOR +
-                getNeighborhood() +
-                Constants.CSV_SEPARATOR +
-                getCity() +
-                Constants.CSV_SEPARATOR +
-                getAddress() +
-                Constants.CSV_SEPARATOR +
-                isConsumer() +
-                Constants.CSV_SEPARATOR +
-                isDispatcher() +
-                Constants.CSV_SEPARATOR +
-                isDriver() +
-                Constants.CSV_SEPARATOR +
-                getCreateTime() +
-                Constants.CSV_SEPARATOR +
-                isApartment() +
-                Constants.CSV_SEPARATOR +
-                hasConsumerRequest() +
-                Constants.CSV_SEPARATOR +
-                getVolunteerRequest() +
-                Constants.CSV_SEPARATOR +
-                isSpecialist() +
-                Constants.CSV_SEPARATOR +
-                isBHS() +
-                Constants.CSV_SEPARATOR +
-                isHelpLine() +
-                Constants.CSV_SEPARATOR +
-                isSiteLine() +
-                Constants.CSV_SEPARATOR +
-                isInReach() +
-                Constants.CSV_SEPARATOR +
-                isOutReach() +
-                Constants.CSV_SEPARATOR +
-                isMarketing() +
-                Constants.CSV_SEPARATOR +
-                isModerator() +
-                Constants.CSV_SEPARATOR +
-                isWorkflow() +
-                Constants.CSV_SEPARATOR +
+        String csvData = getId() + Constants.CSV_SEPARATOR +
+                getName() + Constants.CSV_SEPARATOR +
+                getUserName() + Constants.CSV_SEPARATOR +
+                getPhoneNumber() + Constants.CSV_SEPARATOR +
+                getAltPhoneNumber() + Constants.CSV_SEPARATOR +
+                getNeighborhood() + Constants.CSV_SEPARATOR +
+                getCity() + Constants.CSV_SEPARATOR +
+                getAddress() + Constants.CSV_SEPARATOR +
+                isConsumer() + Constants.CSV_SEPARATOR +
+                isDispatcher() + Constants.CSV_SEPARATOR +
+                isDriver() + Constants.CSV_SEPARATOR +
+                getCreateTime() + Constants.CSV_SEPARATOR +
+                isApartment() + Constants.CSV_SEPARATOR +
+                getReferral() + Constants.CSV_SEPARATOR +
+                hasConsumerRequest() + Constants.CSV_SEPARATOR +
+                getVolunteerRequest() + Constants.CSV_SEPARATOR +
+                isSpecialist() + Constants.CSV_SEPARATOR +
+                isBHS() + Constants.CSV_SEPARATOR +
+                isHelpLine() + Constants.CSV_SEPARATOR +
+                isSiteLine() + Constants.CSV_SEPARATOR +
+                isInReach() + Constants.CSV_SEPARATOR +
+                isOutReach() + Constants.CSV_SEPARATOR +
+                isMarketing() + Constants.CSV_SEPARATOR +
+                isModerator() + Constants.CSV_SEPARATOR +
+                isWorkflow() + Constants.CSV_SEPARATOR +
                 '\n';
         return csvData;
     }
@@ -878,6 +892,7 @@ public class User {
                 getCity() + Constants.CSV_SEPARATOR +
                 getAddress() + Constants.CSV_SEPARATOR +
                 isApartment() + Constants.CSV_SEPARATOR +
+                getReferral() + Constants.CSV_SEPARATOR +
                 isConsumer() + Constants.CSV_SEPARATOR +
                 isDriver() + Constants.CSV_SEPARATOR +
                 isDispatcher() + Constants.CSV_SEPARATOR +
@@ -946,6 +961,9 @@ public class User {
             return false;
         }
         if (! volunteerRequest.equals(otherObj.volunteerRequest)) {
+            return false;
+        }
+        if (! referral.equals(otherObj.referral)) {
             return false;
         }
 

@@ -53,8 +53,9 @@ public class Parser {
 
         List<User> users = new ArrayList<>();
 
-        assert queryResult.headers.length == 12 :
+        assert queryResult.headers.length == 13 :
                 "Unexpected number of columns for users query result: " + queryResult;
+
         assert queryResult.headers[0].equals(Constants.COLUMN_USER_ID) : queryResult.headers[0];
         assert queryResult.headers[1].equals(Constants.COLUMN_USERNAME) : queryResult.headers[1];
         assert queryResult.headers[2].equals(Constants.COLUMN_NAME) : queryResult.headers[2];
@@ -66,7 +67,8 @@ public class Parser {
         assert queryResult.headers[8].equals(Constants.COLUMN_CONSUMER_REQUEST) : queryResult.headers[8];
         assert queryResult.headers[9].equals(Constants.COLUMN_VOLUNTEER_REQUEST) : queryResult.headers[9];
         assert queryResult.headers[10].equals(Constants.COLUMN_ALT_PHONE) : queryResult.headers[10];
-        assert queryResult.headers[11].equals(Constants.COLUMN_CREATE_TIME) : queryResult.headers[11];
+        assert queryResult.headers[11].equals(Constants.COLUMN_REFERRAL) : queryResult.headers[11];
+        assert queryResult.headers[12].equals(Constants.COLUMN_CREATE_TIME) : queryResult.headers[12];
 
         List<String> groupMemberships = new ArrayList<>();
 
@@ -90,7 +92,8 @@ public class Parser {
             Boolean hasConsumerRequest = Boolean.valueOf((String)columns[8]);
             String volunteerRequest = (String)columns[9];
             String altPhone = (String)columns[10];
-            String createdAt = (String)columns[11];
+            String referral = (String)columns[11];
+            String createdAt = (String)columns[12];
 
             groupMemberships.clear();
 
@@ -102,7 +105,7 @@ public class Parser {
 
             try {
                 users.add(User.createUser(name, userName, userId, address, city, phone, altPhone, neighborhood,
-                        createdAt, isApartment, hasConsumerRequest, volunteerRequest, groupMemberships));
+                        createdAt, isApartment, hasConsumerRequest, volunteerRequest, referral, groupMemberships));
             } catch (UserException ex) {
                 // FIX THIS, DS: get rid of UserException?
                 users.add(ex.user);
@@ -171,13 +174,14 @@ public class Parser {
         return results;
     }
 
+    // From raw form
     static List<User> users(final String csvData, final String separator) {
 
         String[] lines = csvData.split("\n");
         assert lines.length > 0 : csvData;
 
         String[] headers = lines[0].split(separator);
-        assert headers.length == 24 : headers.length + ": " + lines[0];
+        assert headers.length == 25 : headers.length + ": " + lines[0];
 
         assert headers[0].equals(User.ID_COLUMN) : headers[0];
         assert headers[1].equals(User.NAME_COLUMN) : headers[1];
@@ -192,17 +196,18 @@ public class Parser {
         assert headers[10].equals(User.DRIVER_COLUMN) : headers[10];
         assert headers[11].equals(User.CREATED_AT_COLUMN) : headers[11];
         assert headers[12].equals(User.APARTMENT_COLUMN) : headers[12];
-        assert headers[13].equals(User.CONSUMER_REQUEST_COLUMN) : headers[13];
-        assert headers[14].equals(User.VOLUNTEER_REQUEST_COLUMN) : headers[14];
-        assert headers[15].equals(User.SPECIALIST_COLUMN) : headers[15];
-        assert headers[16].equals(User.BHS_COLUMN) : headers[16];
-        assert headers[17].equals(User.HELPLINE_COLUMN) : headers[17];
-        assert headers[18].equals(User.SITELINE_COLUMN) : headers[18];
-        assert headers[19].equals(User.INREACH_COLUMN) : headers[19];
-        assert headers[20].equals(User.OUTREACH_COLUMN) : headers[20];
-        assert headers[21].equals(User.MARKETING_COLUMN) : headers[21];
-        assert headers[22].equals(User.MODERATORS_COLUMN) : headers[22];
-        assert headers[23].equals(User.WORKFLOW_COLUMN) : headers[23];
+        assert headers[13].equals(User.REFERRAL_COLUMN) : headers[13];
+        assert headers[14].equals(User.CONSUMER_REQUEST_COLUMN) : headers[14];
+        assert headers[15].equals(User.VOLUNTEER_REQUEST_COLUMN) : headers[15];
+        assert headers[16].equals(User.SPECIALIST_COLUMN) : headers[16];
+        assert headers[17].equals(User.BHS_COLUMN) : headers[17];
+        assert headers[18].equals(User.HELPLINE_COLUMN) : headers[18];
+        assert headers[19].equals(User.SITELINE_COLUMN) : headers[19];
+        assert headers[20].equals(User.INREACH_COLUMN) : headers[20];
+        assert headers[21].equals(User.OUTREACH_COLUMN) : headers[21];
+        assert headers[22].equals(User.MARKETING_COLUMN) : headers[22];
+        assert headers[23].equals(User.MODERATORS_COLUMN) : headers[23];
+        assert headers[24].equals(User.WORKFLOW_COLUMN) : headers[24];
 
         List<User> users = new ArrayList<>();
         List<String> groups = new ArrayList<>();
@@ -233,48 +238,49 @@ public class Parser {
 
             String createdAt = columns[11];
             Boolean isApartment = Boolean.valueOf(columns[12]);
-            Boolean hasConsumerRequest = Boolean.valueOf(columns[13]);
-            String volunteerRequest = columns[14];
+            String referral = columns[13];
+            Boolean hasConsumerRequest = Boolean.valueOf(columns[14]);
+            String volunteerRequest = columns[15];
 
-            if (Boolean.parseBoolean(columns[15])) {
+            if (Boolean.parseBoolean(columns[16])) {
                 groups.add(Constants.GROUP_SPECIALISTS);
             }
 
-            if (Boolean.parseBoolean(columns[16])) {
+            if (Boolean.parseBoolean(columns[17])) {
                 groups.add(Constants.GROUP_BHS);
             }
 
-            if (Boolean.parseBoolean(columns[17])) {
+            if (Boolean.parseBoolean(columns[18])) {
                 groups.add(Constants.GROUP_HELPLINE);
             }
 
-            if (Boolean.parseBoolean(columns[18])) {
+            if (Boolean.parseBoolean(columns[19])) {
                 groups.add(Constants.GROUP_SITELINE);
             }
 
-            if (Boolean.parseBoolean(columns[19])) {
+            if (Boolean.parseBoolean(columns[20])) {
                 groups.add(Constants.GROUP_INREACH);
             }
 
-            if (Boolean.parseBoolean(columns[20])) {
+            if (Boolean.parseBoolean(columns[21])) {
                 groups.add(Constants.GROUP_OUTREACH);
             }
 
-            if (Boolean.parseBoolean(columns[21])) {
+            if (Boolean.parseBoolean(columns[22])) {
                 groups.add(Constants.GROUP_MARKETING);
             }
 
-            if (Boolean.parseBoolean(columns[22])) {
+            if (Boolean.parseBoolean(columns[23])) {
                 groups.add(Constants.GROUP_MODERATORS);
             }
 
-            if (Boolean.parseBoolean(columns[23])) {
+            if (Boolean.parseBoolean(columns[24])) {
                 groups.add(Constants.GROUP_WORKFLOW);
             }
 
             try {
                 users.add(User.createUser(name, userName, id, address, city, phone, altPhone, neighborhood,
-                        createdAt, isApartment, hasConsumerRequest, volunteerRequest, groups));
+                        createdAt, isApartment, hasConsumerRequest, volunteerRequest, referral, groups));
             } catch (UserException ex) {
                 users.add(ex.user);
             }

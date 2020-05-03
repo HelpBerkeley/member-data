@@ -370,6 +370,13 @@ public class UserTest extends TestBase {
     }
 
     @Test
+    public void referralRequestInequaityTest() throws UserException {
+        User user1 = createUserWithReferral(TEST_USER_NAME_1, TEST_REFERRAL_1);
+        User user2 = createUserWithReferral(TEST_USER_NAME_1, TEST_REFERRAL_2);
+        assertThat(user1).isNotEqualTo(user2);
+    }
+
+    @Test
     public void mismatchObjectInequalityTest() throws UserException {
         User user1 = createUser();
         assertThat(user1).isNotEqualTo(this);
