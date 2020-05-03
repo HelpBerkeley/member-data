@@ -46,7 +46,11 @@ public class RoundTripTest extends TestBase {
                 Constants.GROUP_MODERATORS,
                 Constants.GROUP_WORKFLOW,
                 Constants.GROUP_VOICEONLY,
-                Constants.GROUP_TRUST_LEVEL_4);
+                Constants.GROUP_TRUST_LEVEL_4,
+                Constants.GROUP_CUSTOMER_INFO,
+                Constants.GROUP_ADVISOR,
+                Constants.GROUP_COORDINATOR,
+                Constants.GROUP_ADMIN);
 
         List<User> users = List.of(u1, createTestUser2(), createTestUser3());
         Exporter exporter = new Exporter(users);

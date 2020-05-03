@@ -37,16 +37,15 @@ public class Tables {
         this.users = users;
     }
 
-//    List<User> sortByName() {
-//        List<User> sorted = new ArrayList<>(users);
-//
-//        sorted.sort(Comparator.comparing(User::getName, String.CASE_INSENSITIVE_ORDER));
-//        return sorted;
-//    }
-
     List<User> sortByUserName() {
         List<User> sorted = new ArrayList<>(users);
         sorted.sort(Comparator.comparing(User::getUserName, String.CASE_INSENSITIVE_ORDER));
+        return sorted;
+    }
+
+    List<User> sortByUserId() {
+        List<User> sorted = new ArrayList<>(users);
+        sorted.sort(Comparator.comparing(User::getId));
         return sorted;
     }
 

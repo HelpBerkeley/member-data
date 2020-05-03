@@ -86,6 +86,10 @@ public class Loader {
                 case Constants.GROUP_WORKFLOW:
                 case Constants.GROUP_VOICEONLY:
                 case Constants.GROUP_TRUST_LEVEL_4:
+                case Constants.GROUP_CUSTOMER_INFO:
+                case Constants.GROUP_ADVISOR:
+                case Constants.GROUP_COORDINATOR:
+                case Constants.GROUP_ADMIN:
                     groups.put(entry.getKey(), Group.createGroup(entry.getKey(), entry.getValue()));
             }
         }

@@ -181,7 +181,7 @@ public class Parser {
         assert lines.length > 0 : csvData;
 
         String[] headers = lines[0].split(separator);
-        assert headers.length == 27 : headers.length + ": " + lines[0];
+        assert headers.length == 31 : headers.length + ": " + lines[0];
 
         int index = 0;
         assert headers[index].equals(User.ID_COLUMN) : headers[index];
@@ -211,6 +211,10 @@ public class Parser {
         assert headers[++index].equals(User.MODERATORS_COLUMN) : headers[index];
         assert headers[++index].equals(User.TRUST_LEVEL_4_COLUMN) : headers[index];
         assert headers[++index].equals(User.WORKFLOW_COLUMN) : headers[index];
+        assert headers[++index].equals(User.CUSTOMER_INFO_COLUMN) : headers[index];
+        assert headers[++index].equals(User.ADVISOR_COLUMN) : headers[index];
+        assert headers[++index].equals(User.COORDINATOR_COLUMN) : headers[index];
+        assert headers[++index].equals(User.ADMIN_COLUMN) : headers[index];
 
         List<User> users = new ArrayList<>();
         List<String> groups = new ArrayList<>();
@@ -288,6 +292,22 @@ public class Parser {
 
             if (Boolean.parseBoolean(columns[index++])) {
                 groups.add(Constants.GROUP_WORKFLOW);
+            }
+
+            if (Boolean.parseBoolean(columns[index++])) {
+                groups.add(Constants.GROUP_CUSTOMER_INFO);
+            }
+
+            if (Boolean.parseBoolean(columns[index++])) {
+                groups.add(Constants.GROUP_ADVISOR);
+            }
+
+            if (Boolean.parseBoolean(columns[index++])) {
+                groups.add(Constants.GROUP_COORDINATOR);
+            }
+
+            if (Boolean.parseBoolean(columns[index++])) {
+                groups.add(Constants.GROUP_ADMIN);
             }
 
             try {

@@ -265,6 +265,10 @@ public class ExporterTest extends TestBase {
         assertThat(headerColumns[index++]).isEqualTo(User.TRUST_LEVEL_4_COLUMN);
         assertThat(headerColumns[index++]).isEqualTo(User.SPECIALIST_COLUMN);
         assertThat(headerColumns[index++]).isEqualTo(User.BHS_COLUMN);
+        assertThat(headerColumns[index++]).isEqualTo(User.CUSTOMER_INFO_COLUMN);
+        assertThat(headerColumns[index++]).isEqualTo(User.ADVISOR_COLUMN);
+        assertThat(headerColumns[index++]).isEqualTo(User.COORDINATOR_COLUMN);
+        assertThat(headerColumns[index++]).isEqualTo(User.ADMIN_COLUMN);
         assertThat(headerColumns[index++]).isEqualTo(User.CONSUMER_REQUEST_COLUMN);
         assertThat(headerColumns[index++]).isEqualTo(User.VOLUNTEER_REQUEST_COLUMN);
 
@@ -297,6 +301,10 @@ public class ExporterTest extends TestBase {
         assertThat(columns[index++]).isEqualTo(String.valueOf(u1.isTrustLevel4()));
         assertThat(columns[index++]).isEqualTo(String.valueOf(u1.isSpecialist()));
         assertThat(columns[index++]).isEqualTo(String.valueOf(u1.isBHS()));
+        assertThat(columns[index++]).isEqualTo(String.valueOf(u1.isCustomerInfo()));
+        assertThat(columns[index++]).isEqualTo(String.valueOf(u1.isAdvisor()));
+        assertThat(columns[index++]).isEqualTo(String.valueOf(u1.isCoordinator()));
+        assertThat(columns[index++]).isEqualTo(String.valueOf(u1.isAdmin()));
         assertThat(columns[index++]).isEqualTo(String.valueOf(u1.hasConsumerRequest()));
         assertThat(columns[index++]).isEqualTo(u1.getVolunteerRequest());
     }

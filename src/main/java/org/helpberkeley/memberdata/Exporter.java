@@ -145,7 +145,7 @@ public class Exporter {
         StringBuilder csvData = new StringBuilder();
         csvData.append(User.reportCSVHeaders());
 
-        for (User user : tables.sortByUserName()) {
+        for (User user : tables.sortByUserId()) {
             csvData.append(user.reportToCSV());
         }
 

@@ -61,6 +61,10 @@ public class User {
     static final String REFERRAL_COLUMN = "Referral";
     static final String VOICEONLY_COLUMN = "VoiceOnly";
     static final String TRUST_LEVEL_4_COLUMN = "TrustLevel4";
+    static final String CUSTOMER_INFO_COLUMN = "CustomerInfo";
+    static final String ADVISOR_COLUMN = "Advisor";
+    static final String COORDINATOR_COLUMN = "Coordinator";
+    static final String ADMIN_COLUMN = "Admin";
 
     static final String ERROR_PRIMARY_PHONE_MISSING_AREA_CODE = "Primary phone missing area code, assuming 510";
     static final String ERROR_PRIMARY_PHONE_CANNOT_PARSE_PHONE = "Cannot parse primary phone number";
@@ -238,6 +242,22 @@ public class User {
         return groupMembership.contains(Constants.GROUP_TRUST_LEVEL_4);
     }
 
+    Boolean isCustomerInfo() {
+        return groupMembership.contains(Constants.GROUP_CUSTOMER_INFO);
+    }
+
+    Boolean isAdvisor() {
+        return groupMembership.contains(Constants.GROUP_ADVISOR);
+    }
+
+    Boolean isCoordinator() {
+        return groupMembership.contains(Constants.GROUP_COORDINATOR);
+    }
+
+    Boolean isAdmin() {
+        return groupMembership.contains(Constants.GROUP_ADMIN);
+    }
+
     @Override
     public String toString() {
 
@@ -340,6 +360,22 @@ public class User {
                 Constants.GROUP_WORKFLOW +
                 "=" +
                 isWorkflow() +
+                ':' +
+                Constants.GROUP_CUSTOMER_INFO +
+                "=" +
+                isCustomerInfo() +
+                ':' +
+                Constants.GROUP_ADVISOR +
+                "=" +
+                isAdvisor() +
+                ':' +
+                Constants.GROUP_COORDINATOR +
+                "=" +
+                isCoordinator() +
+                ':' +
+                Constants.GROUP_ADMIN +
+                "=" +
+                isAdmin() +
                 ':' +
                 REFERRAL_COLUMN +
                 '=' +
@@ -824,10 +860,10 @@ public class User {
                 + TRUST_LEVEL_4_COLUMN + Constants.CSV_SEPARATOR
                 + SPECIALIST_COLUMN + Constants.CSV_SEPARATOR
                 + BHS_COLUMN + Constants.CSV_SEPARATOR
-//                + CUSTOMER_INFO_COLUMN + Constants.CSV_SEPARATOR
-//                + ADVISOR_COLUMN + Constants.CSV_SEPARATOR
-//                + COORDINATOR_COLUMN + Constants.CSV_SEPARATOR
-//                + ADMIN_COLUMN + Constants.CSV_SEPARATOR
+                + CUSTOMER_INFO_COLUMN + Constants.CSV_SEPARATOR
+                + ADVISOR_COLUMN + Constants.CSV_SEPARATOR
+                + COORDINATOR_COLUMN + Constants.CSV_SEPARATOR
+                + ADMIN_COLUMN + Constants.CSV_SEPARATOR
                 + CONSUMER_REQUEST_COLUMN + Constants.CSV_SEPARATOR
                 + VOLUNTEER_REQUEST_COLUMN + Constants.CSV_SEPARATOR
                 + "\n";
@@ -862,6 +898,10 @@ public class User {
                 + MODERATORS_COLUMN + Constants.CSV_SEPARATOR
                 + TRUST_LEVEL_4_COLUMN + Constants.CSV_SEPARATOR
                 + WORKFLOW_COLUMN + Constants.CSV_SEPARATOR
+                + CUSTOMER_INFO_COLUMN + Constants.CSV_SEPARATOR
+                + ADVISOR_COLUMN + Constants.CSV_SEPARATOR
+                + COORDINATOR_COLUMN + Constants.CSV_SEPARATOR
+                + ADMIN_COLUMN + Constants.CSV_SEPARATOR
                 + "\n";
     }
 
@@ -894,6 +934,10 @@ public class User {
                 isModerator() + Constants.CSV_SEPARATOR +
                 isTrustLevel4() + Constants.CSV_SEPARATOR +
                 isWorkflow() + Constants.CSV_SEPARATOR +
+                isCustomerInfo() + Constants.CSV_SEPARATOR +
+                isAdvisor() + Constants.CSV_SEPARATOR +
+                isCoordinator() + Constants.CSV_SEPARATOR +
+                isAdmin() + Constants.CSV_SEPARATOR +
                 '\n';
         return csvData;
     }
@@ -925,6 +969,10 @@ public class User {
                 isTrustLevel4() + Constants.CSV_SEPARATOR +
                 isSpecialist() + Constants.CSV_SEPARATOR +
                 isBHS() + Constants.CSV_SEPARATOR +
+                isCustomerInfo() + Constants.CSV_SEPARATOR +
+                isAdvisor() + Constants.CSV_SEPARATOR +
+                isCoordinator() + Constants.CSV_SEPARATOR +
+                isAdmin() + Constants.CSV_SEPARATOR +
                 hasConsumerRequest() + Constants.CSV_SEPARATOR +
                 getVolunteerRequest() + Constants.CSV_SEPARATOR +
                 '\n';

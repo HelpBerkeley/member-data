@@ -577,6 +577,54 @@ public class UserTest extends TestBase {
         assertThat(u1.isTrustLevel4()).isTrue();
         assertThat(u1).isEqualTo(u2);
         assertThat(u1).isNotEqualTo(u3);
-        assertThat(u3.isVoiceOnly()).isFalse();
+        assertThat(u3.isTrustLevel4()).isFalse();
+    }
+
+    @Test
+    public void groupAdvisor() throws UserException {
+        User u1 = createUserWithGroup("u1", Constants.GROUP_ADVISOR);
+        User u2 = createUserWithGroup("u1", Constants.GROUP_ADVISOR);
+        User u3 = createUser();
+
+        assertThat(u1.isAdvisor()).isTrue();
+        assertThat(u1).isEqualTo(u2);
+        assertThat(u1).isNotEqualTo(u3);
+        assertThat(u3.isAdvisor()).isFalse();
+    }
+
+    @Test
+    public void groupCoordinator() throws UserException {
+        User u1 = createUserWithGroup("u1", Constants.GROUP_COORDINATOR);
+        User u2 = createUserWithGroup("u1", Constants.GROUP_COORDINATOR);
+        User u3 = createUser();
+
+        assertThat(u1.isCoordinator()).isTrue();
+        assertThat(u1).isEqualTo(u2);
+        assertThat(u1).isNotEqualTo(u3);
+        assertThat(u3.isCoordinator()).isFalse();
+    }
+
+    @Test
+    public void groupAdmin() throws UserException {
+        User u1 = createUserWithGroup("u1", Constants.GROUP_ADMIN);
+        User u2 = createUserWithGroup("u1", Constants.GROUP_ADMIN);
+        User u3 = createUser();
+
+        assertThat(u1.isAdmin()).isTrue();
+        assertThat(u1).isEqualTo(u2);
+        assertThat(u1).isNotEqualTo(u3);
+        assertThat(u3.isAdmin()).isFalse();
+    }
+
+    @Test
+    public void groupCustomerInfo() throws UserException {
+        User u1 = createUserWithGroup("u1", Constants.GROUP_CUSTOMER_INFO);
+        User u2 = createUserWithGroup("u1", Constants.GROUP_CUSTOMER_INFO);
+        User u3 = createUser();
+
+        assertThat(u1.isCustomerInfo()).isTrue();
+        assertThat(u1).isEqualTo(u2);
+        assertThat(u1).isNotEqualTo(u3);
+        assertThat(u3.isCustomerInfo()).isFalse();
     }
 }
