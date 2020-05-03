@@ -41,7 +41,7 @@ public class ApiClient {
     private static final String USER_ENDPOINT_BASE = ADMIN_BASE + "users/";
     private static final String LATEST_POSTS_ENDPOINT = BASE_URL + "posts.json";
     private static final String POSTS_ENDPOINT = BASE_URL + "posts.json";
-    private static final String POSTS_BASE = BASE_URL + "posts/";
+    static final String POSTS_BASE = BASE_URL + "posts/";
     private static final String USER_FIELDS_ENDPOINT = ADMIN_BASE + "customize/user_fields.json";
     private static final String CATEGORIES_ENDPOINT = BASE_URL + "categories.json";
     private static final String GROUPS_ENDPOINT = BASE_URL + "groups.json";

@@ -49,6 +49,8 @@ public class HttpClientSimulator extends HttpClient {
             return doQuery(request);
         } else if (isPost(request)) {
             return doPost(request);
+        } else if (isPut(request)) {
+            return doPut(request);
         }
 
         throw new RuntimeException("FIX THIS: request not support by simulator: " + request);
@@ -64,6 +66,11 @@ public class HttpClientSimulator extends HttpClient {
 
         // FIX THIS, DS: is there a constant for this?
         return request.method().equals("POST") && (! request.uri().toString().startsWith(ApiClient.QUERY_BASE));
+    }
+
+    private boolean isPut(HttpRequest request) {
+        // FIX THIS, DS: is there a constant for this?
+        return request.method().equals("PUT") && (request.uri().toString().startsWith(ApiClient.POSTS_BASE));
     }
 
     private <T> HttpResponse<T> doQuery(HttpRequest request) {
@@ -100,6 +107,10 @@ public class HttpClientSimulator extends HttpClient {
     }
 
     private <T> HttpResponse<T> doPost(HttpRequest request) {
+        return (HttpResponse<T>) new HttpResponseSimulator<>("");
+    }
+
+    private <T> HttpResponse<T> doPut(HttpRequest request) {
         return (HttpResponse<T>) new HttpResponseSimulator<>("");
     }
 
