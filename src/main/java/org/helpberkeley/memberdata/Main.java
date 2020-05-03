@@ -42,7 +42,8 @@ public class Main {
     static final String API_KEY_PROPERTY = "Api-Key";
 
     static final String MEMBERDATA_ERRORS_FILE = "memberdata-errors";
-    static final String MEMBERDATA_FILE = "member-data";
+    static final String MEMBERDATA_REPORT_FILE = "member-data-report";
+    static final String MEMBERDATA_RAW_FILE = "member-data-raw";
     static final String CONSUMER_REQUESTS_FILE = "consumer-requests";
     static final String VOLUNTEER_REQUESTS_FILE = "volunteer-requests";
     static final String DRIVERS_FILE = "drivers";
@@ -160,7 +161,10 @@ public class Main {
         Exporter exporter = new Exporter(users);
 
         // Export all users
-        exporter.allMembersToFile(MEMBERDATA_FILE);
+        exporter.allMembersRawToFile(MEMBERDATA_RAW_FILE);
+
+        // Export all users report
+        exporter.allMembersReportToFile(MEMBERDATA_REPORT_FILE);
 
         // Export any user errors
         exporter.errorsToFile(MEMBERDATA_ERRORS_FILE);

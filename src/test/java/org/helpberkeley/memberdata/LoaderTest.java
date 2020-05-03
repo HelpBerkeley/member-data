@@ -39,7 +39,7 @@ public class LoaderTest extends TestBase {
         List<User> users = loader.load();
 
         Exporter exporter = new Exporter(users);
-        String csv = exporter.allMembers();
+        String csv = exporter.allMembersRaw();
         List<User> roundtripUsers = Parser.users(csv, exporter.getCSVSeparator());
 
         assertThat(roundtripUsers).containsExactlyInAnyOrderElementsOf(users);

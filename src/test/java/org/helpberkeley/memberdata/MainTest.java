@@ -23,12 +23,10 @@
 package org.helpberkeley.memberdata;
 
 import org.junit.*;
-import org.junit.runners.MethodSorters;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -73,7 +71,7 @@ public class MainTest extends TestBase {
 
     @Test
     public void postMemberDataTest() throws IOException, InterruptedException {
-        String memberDataFile = findFile(Main.MEMBERDATA_FILE, "csv");
+        String memberDataFile = findFile(Main.MEMBERDATA_REPORT_FILE, "csv");
         assertThat(memberDataFile).isNotNull();
 
         String[] args = { Options.COMMAND_POST_ALL_MEMBERS, memberDataFile, TEST_SHORT_URL };

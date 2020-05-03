@@ -747,7 +747,43 @@ public class User {
         return user;
     }
 
-    static String csvHeaders() {
+    static String reportCSVHeaders() {
+
+        return ID_COLUMN + Constants.CSV_SEPARATOR
+                + CREATED_AT_COLUMN + Constants.CSV_SEPARATOR
+                + NAME_COLUMN + Constants.CSV_SEPARATOR
+                + USERNAME_COLUMN + Constants.CSV_SEPARATOR
+                + PHONE_NUMBER_COLUMN + Constants.CSV_SEPARATOR
+                + ALT_PHONE_NUMBER_COLUMN + Constants.CSV_SEPARATOR
+                + NEIGHBORHOOD_COLUMN + Constants.CSV_SEPARATOR
+                + CITY_COLUMN + Constants.CSV_SEPARATOR
+                + ADDRESS_COLUMN + Constants.CSV_SEPARATOR
+                + APARTMENT_COLUMN + Constants.CSV_SEPARATOR
+//                + REFERAL_COLUMN + Constants.CSV_SEPARATOR
+                + CONSUMER_COLUMN + Constants.CSV_SEPARATOR
+//                + VOICEONLY_COLUMN + Constants.CSV_SEPARATOR
+                + DRIVER_COLUMN + Constants.CSV_SEPARATOR
+                + DISPATCHER_COLUMN + Constants.CSV_SEPARATOR
+                + WORKFLOW_COLUMN + Constants.CSV_SEPARATOR
+                + INREACH_COLUMN + Constants.CSV_SEPARATOR
+                + OUTREACH_COLUMN + Constants.CSV_SEPARATOR
+                + HELPLINE_COLUMN + Constants.CSV_SEPARATOR
+                + SITELINE_COLUMN + Constants.CSV_SEPARATOR
+                + MARKETING_COLUMN + Constants.CSV_SEPARATOR
+                + MODERATORS_COLUMN + Constants.CSV_SEPARATOR
+//                + TRUST_LEVEL_4_COLUMN + Constants.CSV_SEPARATOR
+                + SPECIALIST_COLUMN + Constants.CSV_SEPARATOR
+                + BHS_COLUMN + Constants.CSV_SEPARATOR
+//                + CUSTOMER_INFO_COLUMN + Constants.CSV_SEPARATOR
+//                + ADVISOR_COLUMN + Constants.CSV_SEPARATOR
+//                + COORDINATOR_COLUMN + Constants.CSV_SEPARATOR
+//                + ADMIN_COLUMN + Constants.CSV_SEPARATOR
+                + CONSUMER_REQUEST_COLUMN + Constants.CSV_SEPARATOR
+                + VOLUNTEER_REQUEST_COLUMN + Constants.CSV_SEPARATOR
+                + "\n";
+    }
+
+    static String rawCSVHeaders() {
 
         return ID_COLUMN + Constants.CSV_SEPARATOR
                 + NAME_COLUMN + Constants.CSV_SEPARATOR
@@ -776,7 +812,7 @@ public class User {
                 + "\n";
     }
 
-    String exportToCSV() {
+    String rawToCSV() {
 
         String csvData = getId() +
                 Constants.CSV_SEPARATOR +
@@ -828,7 +864,36 @@ public class User {
                 Constants.CSV_SEPARATOR +
                 '\n';
         return csvData;
+    }
 
+    String reportToCSV() {
+
+        String csvData = getId() + Constants.CSV_SEPARATOR +
+                getSimpleCreateTime() + Constants.CSV_SEPARATOR +
+                getName() + Constants.CSV_SEPARATOR +
+                getUserName() + Constants.CSV_SEPARATOR +
+                getPhoneNumber() + Constants.CSV_SEPARATOR +
+                getAltPhoneNumber() + Constants.CSV_SEPARATOR +
+                getNeighborhood() + Constants.CSV_SEPARATOR +
+                getCity() + Constants.CSV_SEPARATOR +
+                getAddress() + Constants.CSV_SEPARATOR +
+                isApartment() + Constants.CSV_SEPARATOR +
+                isConsumer() + Constants.CSV_SEPARATOR +
+                isDriver() + Constants.CSV_SEPARATOR +
+                isDispatcher() + Constants.CSV_SEPARATOR +
+                isWorkflow() + Constants.CSV_SEPARATOR +
+                isInReach() + Constants.CSV_SEPARATOR +
+                isOutReach() + Constants.CSV_SEPARATOR +
+                isHelpLine() + Constants.CSV_SEPARATOR +
+                isSiteLine() + Constants.CSV_SEPARATOR +
+                isMarketing() + Constants.CSV_SEPARATOR +
+                isModerator() + Constants.CSV_SEPARATOR +
+                isSpecialist() + Constants.CSV_SEPARATOR +
+                isBHS() + Constants.CSV_SEPARATOR +
+                hasConsumerRequest() + Constants.CSV_SEPARATOR +
+                getVolunteerRequest() + Constants.CSV_SEPARATOR +
+                '\n';
+        return csvData;
     }
 
     @Override

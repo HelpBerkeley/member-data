@@ -81,10 +81,10 @@ public class Exporter {
     String consumerRequests() {
 
         StringBuilder rows = new StringBuilder();
-        rows.append(User.csvHeaders());
+        rows.append(User.rawCSVHeaders());
 
         for (User user : tables.consumerRequests()) {
-            rows.append(user.exportToCSV());
+            rows.append(user.rawToCSV());
         }
 
         return rows.toString();
@@ -102,10 +102,10 @@ public class Exporter {
     String volunteerRequests() {
 
         StringBuilder rows = new StringBuilder();
-        rows.append(User.csvHeaders());
+        rows.append(User.rawCSVHeaders());
 
         for (User user : tables.volunteerRequests()) {
-            rows.append(user.exportToCSV());
+            rows.append(user.rawToCSV());
         }
 
         return rows.toString();
@@ -120,24 +120,44 @@ public class Exporter {
         return outputFileName;
     }
 
-    String allMembersToFile(final String fileName) throws IOException {
+    String allMembersRawToFile(final String fileName) throws IOException {
 
         String outputFileName = generateFileName(fileName, "csv");
-        writeFile(outputFileName, allMembers());
+        writeFile(outputFileName, allMembersRaw());
         LOGGER.debug("Wrote: " + outputFileName);
         return outputFileName;
     }
 
-    String allMembers() {
+    String allMembersRaw() {
 
         StringBuilder csvData = new StringBuilder();
-        csvData.append(User.csvHeaders());
+        csvData.append(User.rawCSVHeaders());
 
         for (User user : tables.sortByUserName()) {
-            csvData.append(user.exportToCSV());
+            csvData.append(user.rawToCSV());
         }
 
         return csvData.toString();
+    }
+
+    String allMembersReport() {
+
+        StringBuilder csvData = new StringBuilder();
+        csvData.append(User.reportCSVHeaders());
+
+        for (User user : tables.sortByUserName()) {
+            csvData.append(user.reportToCSV());
+        }
+
+        return csvData.toString();
+    }
+
+    String allMembersReportToFile(final String fileName) throws IOException {
+
+        String outputFileName = generateFileName(fileName, "csv");
+        writeFile(outputFileName, allMembersReport());
+        LOGGER.debug("Wrote: " + outputFileName);
+        return outputFileName;
     }
 
     String drivers() {
