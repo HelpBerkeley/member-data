@@ -555,4 +555,28 @@ public class UserTest extends TestBase {
         assertThat(u1).isNotEqualTo(u3);
         assertThat(u3.isWorkflow()).isFalse();
     }
+
+    @Test
+    public void groupVoiceOnly() throws UserException {
+        User u1 = createUserWithGroup("u1", Constants.GROUP_VOICEONLY);
+        User u2 = createUserWithGroup("u1", Constants.GROUP_VOICEONLY);
+        User u3 = createUser();
+
+        assertThat(u1.isVoiceOnly()).isTrue();
+        assertThat(u1).isEqualTo(u2);
+        assertThat(u1).isNotEqualTo(u3);
+        assertThat(u3.isVoiceOnly()).isFalse();
+    }
+
+    @Test
+    public void groupTrustLevel4() throws UserException {
+        User u1 = createUserWithGroup("u1", Constants.GROUP_TRUST_LEVEL_4);
+        User u2 = createUserWithGroup("u1", Constants.GROUP_TRUST_LEVEL_4);
+        User u3 = createUser();
+
+        assertThat(u1.isTrustLevel4()).isTrue();
+        assertThat(u1).isEqualTo(u2);
+        assertThat(u1).isNotEqualTo(u3);
+        assertThat(u3.isVoiceOnly()).isFalse();
+    }
 }

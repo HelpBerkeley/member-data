@@ -153,6 +153,7 @@ public class ExporterTest extends TestBase {
         assertThat(headerColumns[index++]).isEqualTo(User.CITY_COLUMN);
         assertThat(headerColumns[index++]).isEqualTo(User.ADDRESS_COLUMN);
         assertThat(headerColumns[index++]).isEqualTo(User.CONSUMER_COLUMN);
+        assertThat(headerColumns[index++]).isEqualTo(User.VOICEONLY_COLUMN);
         assertThat(headerColumns[index++]).isEqualTo(User.DISPATCHER_COLUMN);
         assertThat(headerColumns[index++]).isEqualTo(User.DRIVER_COLUMN);
         assertThat(headerColumns[index++]).isEqualTo(User.CREATED_AT_COLUMN);
@@ -168,6 +169,7 @@ public class ExporterTest extends TestBase {
         assertThat(headerColumns[index++]).isEqualTo(User.OUTREACH_COLUMN);
         assertThat(headerColumns[index++]).isEqualTo(User.MARKETING_COLUMN);
         assertThat(headerColumns[index++]).isEqualTo(User.MODERATORS_COLUMN);
+        assertThat(headerColumns[index++]).isEqualTo(User.TRUST_LEVEL_4_COLUMN);
         assertThat(headerColumns[index++]).isEqualTo(User.WORKFLOW_COLUMN);
 
         String[] columns = rows[1].split(Constants.CSV_SEPARATOR);
@@ -183,6 +185,7 @@ public class ExporterTest extends TestBase {
         assertThat(columns[index++]).isEqualTo(u1.getCity());
         assertThat(columns[index++]).isEqualTo(u1.getAddress());
         assertThat(columns[index++]).isEqualTo(String.valueOf(u1.isConsumer()));
+        assertThat(columns[index++]).isEqualTo(String.valueOf(u1.isVoiceOnly()));
         assertThat(columns[index++]).isEqualTo(String.valueOf(u1.isDispatcher()));
         assertThat(columns[index++]).isEqualTo(String.valueOf(u1.isDriver()));
         assertThat(columns[index++]).isEqualTo(u1.getCreateTime());
@@ -249,6 +252,7 @@ public class ExporterTest extends TestBase {
         assertThat(headerColumns[index++]).isEqualTo(User.APARTMENT_COLUMN);
         assertThat(headerColumns[index++]).isEqualTo(User.REFERRAL_COLUMN);
         assertThat(headerColumns[index++]).isEqualTo(User.CONSUMER_COLUMN);
+        assertThat(headerColumns[index++]).isEqualTo(User.VOICEONLY_COLUMN);
         assertThat(headerColumns[index++]).isEqualTo(User.DRIVER_COLUMN);
         assertThat(headerColumns[index++]).isEqualTo(User.DISPATCHER_COLUMN);
         assertThat(headerColumns[index++]).isEqualTo(User.WORKFLOW_COLUMN);
@@ -258,6 +262,7 @@ public class ExporterTest extends TestBase {
         assertThat(headerColumns[index++]).isEqualTo(User.SITELINE_COLUMN);
         assertThat(headerColumns[index++]).isEqualTo(User.MARKETING_COLUMN);
         assertThat(headerColumns[index++]).isEqualTo(User.MODERATORS_COLUMN);
+        assertThat(headerColumns[index++]).isEqualTo(User.TRUST_LEVEL_4_COLUMN);
         assertThat(headerColumns[index++]).isEqualTo(User.SPECIALIST_COLUMN);
         assertThat(headerColumns[index++]).isEqualTo(User.BHS_COLUMN);
         assertThat(headerColumns[index++]).isEqualTo(User.CONSUMER_REQUEST_COLUMN);
@@ -279,6 +284,7 @@ public class ExporterTest extends TestBase {
         assertThat(columns[index++]).isEqualTo(String.valueOf(u1.isApartment()));
         assertThat(columns[index++]).isEqualTo(String.valueOf(u1.getReferral()));
         assertThat(columns[index++]).isEqualTo(String.valueOf(u1.isConsumer()));
+        assertThat(columns[index++]).isEqualTo(String.valueOf(u1.isVoiceOnly()));
         assertThat(columns[index++]).isEqualTo(String.valueOf(u1.isDriver()));
         assertThat(columns[index++]).isEqualTo(String.valueOf(u1.isDispatcher()));
         assertThat(columns[index++]).isEqualTo(String.valueOf(u1.isWorkflow()));
@@ -288,6 +294,7 @@ public class ExporterTest extends TestBase {
         assertThat(columns[index++]).isEqualTo(String.valueOf(u1.isSiteLine()));
         assertThat(columns[index++]).isEqualTo(String.valueOf(u1.isMarketing()));
         assertThat(columns[index++]).isEqualTo(String.valueOf(u1.isModerator()));
+        assertThat(columns[index++]).isEqualTo(String.valueOf(u1.isTrustLevel4()));
         assertThat(columns[index++]).isEqualTo(String.valueOf(u1.isSpecialist()));
         assertThat(columns[index++]).isEqualTo(String.valueOf(u1.isBHS()));
         assertThat(columns[index++]).isEqualTo(String.valueOf(u1.hasConsumerRequest()));

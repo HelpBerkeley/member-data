@@ -181,100 +181,112 @@ public class Parser {
         assert lines.length > 0 : csvData;
 
         String[] headers = lines[0].split(separator);
-        assert headers.length == 25 : headers.length + ": " + lines[0];
+        assert headers.length == 27 : headers.length + ": " + lines[0];
 
-        assert headers[0].equals(User.ID_COLUMN) : headers[0];
-        assert headers[1].equals(User.NAME_COLUMN) : headers[1];
-        assert headers[2].equals(User.USERNAME_COLUMN) : headers[2];
-        assert headers[3].equals(User.PHONE_NUMBER_COLUMN) : headers[3];
-        assert headers[4].equals(User.ALT_PHONE_NUMBER_COLUMN) : headers[4];
-        assert headers[5].equals(User.NEIGHBORHOOD_COLUMN) : headers[5];
-        assert headers[6].equals(User.CITY_COLUMN) : headers[6];
-        assert headers[7].equals(User.ADDRESS_COLUMN) : headers[7];
-        assert headers[8].equals(User.CONSUMER_COLUMN) : headers[8];
-        assert headers[9].equals(User.DISPATCHER_COLUMN) : headers[9];
-        assert headers[10].equals(User.DRIVER_COLUMN) : headers[10];
-        assert headers[11].equals(User.CREATED_AT_COLUMN) : headers[11];
-        assert headers[12].equals(User.APARTMENT_COLUMN) : headers[12];
-        assert headers[13].equals(User.REFERRAL_COLUMN) : headers[13];
-        assert headers[14].equals(User.CONSUMER_REQUEST_COLUMN) : headers[14];
-        assert headers[15].equals(User.VOLUNTEER_REQUEST_COLUMN) : headers[15];
-        assert headers[16].equals(User.SPECIALIST_COLUMN) : headers[16];
-        assert headers[17].equals(User.BHS_COLUMN) : headers[17];
-        assert headers[18].equals(User.HELPLINE_COLUMN) : headers[18];
-        assert headers[19].equals(User.SITELINE_COLUMN) : headers[19];
-        assert headers[20].equals(User.INREACH_COLUMN) : headers[20];
-        assert headers[21].equals(User.OUTREACH_COLUMN) : headers[21];
-        assert headers[22].equals(User.MARKETING_COLUMN) : headers[22];
-        assert headers[23].equals(User.MODERATORS_COLUMN) : headers[23];
-        assert headers[24].equals(User.WORKFLOW_COLUMN) : headers[24];
+        int index = 0;
+        assert headers[index].equals(User.ID_COLUMN) : headers[index];
+        assert headers[++index].equals(User.NAME_COLUMN) : headers[index];
+        assert headers[++index].equals(User.USERNAME_COLUMN) : headers[index];
+        assert headers[++index].equals(User.PHONE_NUMBER_COLUMN) : headers[index];
+        assert headers[++index].equals(User.ALT_PHONE_NUMBER_COLUMN) : headers[index];
+        assert headers[++index].equals(User.NEIGHBORHOOD_COLUMN) : headers[index];
+        assert headers[++index].equals(User.CITY_COLUMN) : headers[index];
+        assert headers[++index].equals(User.ADDRESS_COLUMN) : headers[index];
+        assert headers[++index].equals(User.CONSUMER_COLUMN) : headers[index];
+        assert headers[++index].equals(User.VOICEONLY_COLUMN) : headers[index];
+        assert headers[++index].equals(User.DISPATCHER_COLUMN) : headers[index];
+        assert headers[++index].equals(User.DRIVER_COLUMN) : headers[index];
+        assert headers[++index].equals(User.CREATED_AT_COLUMN) : headers[index];
+        assert headers[++index].equals(User.APARTMENT_COLUMN) : headers[index];
+        assert headers[++index].equals(User.REFERRAL_COLUMN) : headers[index];
+        assert headers[++index].equals(User.CONSUMER_REQUEST_COLUMN) : headers[index];
+        assert headers[++index].equals(User.VOLUNTEER_REQUEST_COLUMN) : headers[index];
+        assert headers[++index].equals(User.SPECIALIST_COLUMN) : headers[index];
+        assert headers[++index].equals(User.BHS_COLUMN) : headers[index];
+        assert headers[++index].equals(User.HELPLINE_COLUMN) : headers[index];
+        assert headers[++index].equals(User.SITELINE_COLUMN) : headers[index];
+        assert headers[++index].equals(User.INREACH_COLUMN) : headers[index];
+        assert headers[++index].equals(User.OUTREACH_COLUMN) : headers[index];
+        assert headers[++index].equals(User.MARKETING_COLUMN) : headers[index];
+        assert headers[++index].equals(User.MODERATORS_COLUMN) : headers[index];
+        assert headers[++index].equals(User.TRUST_LEVEL_4_COLUMN) : headers[index];
+        assert headers[++index].equals(User.WORKFLOW_COLUMN) : headers[index];
 
         List<User> users = new ArrayList<>();
         List<String> groups = new ArrayList<>();
 
-        for (int index = 1; index < lines.length; index++) {
-            String[] columns = lines[index].split(separator);
+        for (int colIndex = 1; colIndex < lines.length; colIndex++) {
+            String[] columns = lines[colIndex].split(separator);
             assert columns.length == headers.length : columns.length + " != " + headers.length;
 
-            long id = Long.parseLong(columns[0]);
-            String name = columns[1];
-            String userName = columns[2];
-            String phone = columns[3];
-            String altPhone = columns[4];
-            String neighborhood = columns[5];
-            String city = columns[6];
-            String address = columns[7];
+            index = 0;
+
+            long id = Long.parseLong(columns[index++]);
+            String name = columns[index++];
+            String userName = columns[index++];
+            String phone = columns[index++];
+            String altPhone = columns[index++];
+            String neighborhood = columns[index++];
+            String city = columns[index++];
+            String address = columns[index++];
 
             groups.clear();
-            if (Boolean.parseBoolean(columns[8])) {
+            if (Boolean.parseBoolean(columns[index++])) {
                 groups.add(Constants.GROUP_CONSUMERS);
             }
-            if (Boolean.parseBoolean(columns[9])) {
+            if (Boolean.parseBoolean(columns[index++])) {
+                groups.add(Constants.GROUP_VOICEONLY);
+            }
+            if (Boolean.parseBoolean(columns[index++])) {
                 groups.add(Constants.GROUP_DISPATCHERS);
             }
-            if (Boolean.parseBoolean(columns[10])) {
+            if (Boolean.parseBoolean(columns[index++])) {
                 groups.add(Constants.GROUP_DRIVERS);
             }
 
-            String createdAt = columns[11];
-            Boolean isApartment = Boolean.valueOf(columns[12]);
-            String referral = columns[13];
-            Boolean hasConsumerRequest = Boolean.valueOf(columns[14]);
-            String volunteerRequest = columns[15];
+            String createdAt = columns[index++];
+            Boolean isApartment = Boolean.valueOf(columns[index++]);
+            String referral = columns[index++];
+            Boolean hasConsumerRequest = Boolean.valueOf(columns[index++]);
+            String volunteerRequest = columns[index++];
 
-            if (Boolean.parseBoolean(columns[16])) {
+            if (Boolean.parseBoolean(columns[index++])) {
                 groups.add(Constants.GROUP_SPECIALISTS);
             }
 
-            if (Boolean.parseBoolean(columns[17])) {
+            if (Boolean.parseBoolean(columns[index++])) {
                 groups.add(Constants.GROUP_BHS);
             }
 
-            if (Boolean.parseBoolean(columns[18])) {
+            if (Boolean.parseBoolean(columns[index++])) {
                 groups.add(Constants.GROUP_HELPLINE);
             }
 
-            if (Boolean.parseBoolean(columns[19])) {
+            if (Boolean.parseBoolean(columns[index++])) {
                 groups.add(Constants.GROUP_SITELINE);
             }
 
-            if (Boolean.parseBoolean(columns[20])) {
+            if (Boolean.parseBoolean(columns[index++])) {
                 groups.add(Constants.GROUP_INREACH);
             }
 
-            if (Boolean.parseBoolean(columns[21])) {
+            if (Boolean.parseBoolean(columns[index++])) {
                 groups.add(Constants.GROUP_OUTREACH);
             }
 
-            if (Boolean.parseBoolean(columns[22])) {
+            if (Boolean.parseBoolean(columns[index++])) {
                 groups.add(Constants.GROUP_MARKETING);
             }
 
-            if (Boolean.parseBoolean(columns[23])) {
+            if (Boolean.parseBoolean(columns[index++])) {
                 groups.add(Constants.GROUP_MODERATORS);
             }
 
-            if (Boolean.parseBoolean(columns[24])) {
+            if (Boolean.parseBoolean(columns[index++])) {
+                groups.add(Constants.GROUP_TRUST_LEVEL_4);
+            }
+
+            if (Boolean.parseBoolean(columns[index++])) {
                 groups.add(Constants.GROUP_WORKFLOW);
             }
 

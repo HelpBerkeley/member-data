@@ -62,6 +62,8 @@ public class Constants {
     public static final String GROUP_MARKETING = "marketing";
     public static final String GROUP_MODERATORS = "moderators";
     public static final String GROUP_WORKFLOW = "workflow";
+    public static final String GROUP_VOICEONLY = "voiceonly";
+    public static final String GROUP_TRUST_LEVEL_4 = "trust_level_4";
 
     public static final String BERKELEY = "Berkeley";
     public static final String ALBANY = "Albany";

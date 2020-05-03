@@ -59,6 +59,8 @@ public class User {
     static final String MODERATORS_COLUMN = "Moderator";
     static final String WORKFLOW_COLUMN = "Workflow";
     static final String REFERRAL_COLUMN = "Referral";
+    static final String VOICEONLY_COLUMN = "VoiceOnly";
+    static final String TRUST_LEVEL_4_COLUMN = "TrustLevel4";
 
     static final String ERROR_PRIMARY_PHONE_MISSING_AREA_CODE = "Primary phone missing area code, assuming 510";
     static final String ERROR_PRIMARY_PHONE_CANNOT_PARSE_PHONE = "Cannot parse primary phone number";
@@ -228,6 +230,14 @@ public class User {
         return groupMembership.contains(Constants.GROUP_WORKFLOW);
     }
 
+    Boolean isVoiceOnly() {
+        return groupMembership.contains(Constants.GROUP_VOICEONLY);
+    }
+
+    Boolean isTrustLevel4() {
+        return groupMembership.contains(Constants.GROUP_TRUST_LEVEL_4);
+    }
+
     @Override
     public String toString() {
 
@@ -286,6 +296,10 @@ public class User {
                 CONSUMER_REQUEST_COLUMN +
                 "=" +
                 hasConsumerRequest() +
+                ':' +
+                VOICEONLY_COLUMN +
+                "=" +
+                isVoiceOnly() +
                 ':' +
                 VOLUNTEER_REQUEST_COLUMN +
                 "=" +
@@ -797,7 +811,7 @@ public class User {
                 + APARTMENT_COLUMN + Constants.CSV_SEPARATOR
                 + REFERRAL_COLUMN + Constants.CSV_SEPARATOR
                 + CONSUMER_COLUMN + Constants.CSV_SEPARATOR
-//                + VOICEONLY_COLUMN + Constants.CSV_SEPARATOR
+                + VOICEONLY_COLUMN + Constants.CSV_SEPARATOR
                 + DRIVER_COLUMN + Constants.CSV_SEPARATOR
                 + DISPATCHER_COLUMN + Constants.CSV_SEPARATOR
                 + WORKFLOW_COLUMN + Constants.CSV_SEPARATOR
@@ -807,7 +821,7 @@ public class User {
                 + SITELINE_COLUMN + Constants.CSV_SEPARATOR
                 + MARKETING_COLUMN + Constants.CSV_SEPARATOR
                 + MODERATORS_COLUMN + Constants.CSV_SEPARATOR
-//                + TRUST_LEVEL_4_COLUMN + Constants.CSV_SEPARATOR
+                + TRUST_LEVEL_4_COLUMN + Constants.CSV_SEPARATOR
                 + SPECIALIST_COLUMN + Constants.CSV_SEPARATOR
                 + BHS_COLUMN + Constants.CSV_SEPARATOR
 //                + CUSTOMER_INFO_COLUMN + Constants.CSV_SEPARATOR
@@ -830,6 +844,7 @@ public class User {
                 + CITY_COLUMN + Constants.CSV_SEPARATOR
                 + ADDRESS_COLUMN + Constants.CSV_SEPARATOR
                 + CONSUMER_COLUMN + Constants.CSV_SEPARATOR
+                + VOICEONLY_COLUMN + Constants.CSV_SEPARATOR
                 + DISPATCHER_COLUMN + Constants.CSV_SEPARATOR
                 + DRIVER_COLUMN + Constants.CSV_SEPARATOR
                 + CREATED_AT_COLUMN + Constants.CSV_SEPARATOR
@@ -845,6 +860,7 @@ public class User {
                 + OUTREACH_COLUMN + Constants.CSV_SEPARATOR
                 + MARKETING_COLUMN + Constants.CSV_SEPARATOR
                 + MODERATORS_COLUMN + Constants.CSV_SEPARATOR
+                + TRUST_LEVEL_4_COLUMN + Constants.CSV_SEPARATOR
                 + WORKFLOW_COLUMN + Constants.CSV_SEPARATOR
                 + "\n";
     }
@@ -860,6 +876,7 @@ public class User {
                 getCity() + Constants.CSV_SEPARATOR +
                 getAddress() + Constants.CSV_SEPARATOR +
                 isConsumer() + Constants.CSV_SEPARATOR +
+                isVoiceOnly() + Constants.CSV_SEPARATOR +
                 isDispatcher() + Constants.CSV_SEPARATOR +
                 isDriver() + Constants.CSV_SEPARATOR +
                 getCreateTime() + Constants.CSV_SEPARATOR +
@@ -875,6 +892,7 @@ public class User {
                 isOutReach() + Constants.CSV_SEPARATOR +
                 isMarketing() + Constants.CSV_SEPARATOR +
                 isModerator() + Constants.CSV_SEPARATOR +
+                isTrustLevel4() + Constants.CSV_SEPARATOR +
                 isWorkflow() + Constants.CSV_SEPARATOR +
                 '\n';
         return csvData;
@@ -894,6 +912,7 @@ public class User {
                 isApartment() + Constants.CSV_SEPARATOR +
                 getReferral() + Constants.CSV_SEPARATOR +
                 isConsumer() + Constants.CSV_SEPARATOR +
+                isVoiceOnly() + Constants.CSV_SEPARATOR +
                 isDriver() + Constants.CSV_SEPARATOR +
                 isDispatcher() + Constants.CSV_SEPARATOR +
                 isWorkflow() + Constants.CSV_SEPARATOR +
@@ -903,6 +922,7 @@ public class User {
                 isSiteLine() + Constants.CSV_SEPARATOR +
                 isMarketing() + Constants.CSV_SEPARATOR +
                 isModerator() + Constants.CSV_SEPARATOR +
+                isTrustLevel4() + Constants.CSV_SEPARATOR +
                 isSpecialist() + Constants.CSV_SEPARATOR +
                 isBHS() + Constants.CSV_SEPARATOR +
                 hasConsumerRequest() + Constants.CSV_SEPARATOR +
