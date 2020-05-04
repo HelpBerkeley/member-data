@@ -32,8 +32,6 @@ public class User {
 
     static final String ID_FIELD = "id";
 
-    // Column names for report generation
-    //
     static final String ID_COLUMN = "ID";
     static final String NAME_COLUMN = "Name";
     static final String USERNAME_COLUMN = "User Name";
@@ -65,6 +63,38 @@ public class User {
     static final String ADVISOR_COLUMN = "Advisor";
     static final String COORDINATOR_COLUMN = "Coordinator";
     static final String ADMIN_COLUMN = "Admin";
+
+    static final String SHORT_ID_COLUMN = "ID";
+    static final String SHORT_CREATED_AT_COLUMN = "Created";
+    static final String SHORT_NAME_COLUMN = "Name";
+    static final String SHORT_USERNAME_COLUMN = "UserName";
+    static final String SHORT_PHONE_NUMBER_COLUMN = "Phone #";
+    static final String SHORT_ALT_PHONE_NUMBER_COLUMN = "Phone2 #";
+    static final String SHORT_NEIGHBORHOOD_COLUMN = "Neighborhood";
+    static final String SHORT_CITY_COLUMN = "City";
+    static final String SHORT_ADDRESS_COLUMN = "Address";
+    static final String SHORT_APARTMENT_COLUMN = "Condo";
+    static final String SHORT_REFERRAL_COLUMN = "Refer";
+    static final String SHORT_CONSUMER_COLUMN = "Consumer";
+    static final String SHORT_VOICEONLY_COLUMN = "Voiceonly";
+    static final String SHORT_DRIVER_COLUMN = "Driver";
+    static final String SHORT_DISPATCHER_COLUMN = "Dispatcher";
+    static final String SHORT_WORKFLOW_COLUMN = "Workflow";
+    static final String SHORT_INREACH_COLUMN = "Inreach";
+    static final String SHORT_OUTREACH_COLUMN = "Outreach";
+    static final String SHORT_HELPLINE_COLUMN = "HelpLine";
+    static final String SHORT_SITELINE_COLUMN = "SiteLine";
+    static final String SHORT_MARKETING_COLUMN = "Marktg";
+    static final String SHORT_MODERATORS_COLUMN = "Mods";
+    static final String SHORT_TRUST_LEVEL_4_COLUMN = "Trust4";
+    static final String SHORT_SPECIALIST_COLUMN = "Specs";
+    static final String SHORT_BHS_COLUMN = "BHS";
+    static final String SHORT_CUSTOMER_INFO_COLUMN = "CustInf";
+    static final String SHORT_ADVISOR_COLUMN = "Advsr";
+    static final String SHORT_COORDINATOR_COLUMN = "Coordtr";
+    static final String SHORT_ADMIN_COLUMN = "Admin";
+    static final String SHORT_CONSUMER_REQUEST_COLUMN = "ConsReq";
+    static final String SHORT_VOLUNTEER_REQUEST_COLUMN = "Volunteer Request";
 
     static final String ERROR_PRIMARY_PHONE_MISSING_AREA_CODE = "Primary phone missing area code, assuming 510";
     static final String ERROR_PRIMARY_PHONE_CANNOT_PARSE_PHONE = "Cannot parse primary phone number";
@@ -835,37 +865,37 @@ public class User {
 
     static String reportCSVHeaders() {
 
-        return ID_COLUMN + Constants.CSV_SEPARATOR
-                + CREATED_AT_COLUMN + Constants.CSV_SEPARATOR
-                + NAME_COLUMN + Constants.CSV_SEPARATOR
-                + USERNAME_COLUMN + Constants.CSV_SEPARATOR
-                + PHONE_NUMBER_COLUMN + Constants.CSV_SEPARATOR
-                + ALT_PHONE_NUMBER_COLUMN + Constants.CSV_SEPARATOR
-                + NEIGHBORHOOD_COLUMN + Constants.CSV_SEPARATOR
-                + CITY_COLUMN + Constants.CSV_SEPARATOR
-                + ADDRESS_COLUMN + Constants.CSV_SEPARATOR
-                + APARTMENT_COLUMN + Constants.CSV_SEPARATOR
-                + REFERRAL_COLUMN + Constants.CSV_SEPARATOR
-                + CONSUMER_COLUMN + Constants.CSV_SEPARATOR
-                + VOICEONLY_COLUMN + Constants.CSV_SEPARATOR
-                + DRIVER_COLUMN + Constants.CSV_SEPARATOR
-                + DISPATCHER_COLUMN + Constants.CSV_SEPARATOR
-                + WORKFLOW_COLUMN + Constants.CSV_SEPARATOR
-                + INREACH_COLUMN + Constants.CSV_SEPARATOR
-                + OUTREACH_COLUMN + Constants.CSV_SEPARATOR
-                + HELPLINE_COLUMN + Constants.CSV_SEPARATOR
-                + SITELINE_COLUMN + Constants.CSV_SEPARATOR
-                + MARKETING_COLUMN + Constants.CSV_SEPARATOR
-                + MODERATORS_COLUMN + Constants.CSV_SEPARATOR
-                + TRUST_LEVEL_4_COLUMN + Constants.CSV_SEPARATOR
-                + SPECIALIST_COLUMN + Constants.CSV_SEPARATOR
-                + BHS_COLUMN + Constants.CSV_SEPARATOR
-                + CUSTOMER_INFO_COLUMN + Constants.CSV_SEPARATOR
-                + ADVISOR_COLUMN + Constants.CSV_SEPARATOR
-                + COORDINATOR_COLUMN + Constants.CSV_SEPARATOR
-                + ADMIN_COLUMN + Constants.CSV_SEPARATOR
-                + CONSUMER_REQUEST_COLUMN + Constants.CSV_SEPARATOR
-                + VOLUNTEER_REQUEST_COLUMN + Constants.CSV_SEPARATOR
+        return SHORT_ID_COLUMN + Constants.CSV_SEPARATOR
+                + SHORT_CREATED_AT_COLUMN + Constants.CSV_SEPARATOR
+                + SHORT_NAME_COLUMN + Constants.CSV_SEPARATOR
+                + SHORT_USERNAME_COLUMN + Constants.CSV_SEPARATOR
+                + SHORT_PHONE_NUMBER_COLUMN + Constants.CSV_SEPARATOR
+                + SHORT_ALT_PHONE_NUMBER_COLUMN + Constants.CSV_SEPARATOR
+                + SHORT_NEIGHBORHOOD_COLUMN + Constants.CSV_SEPARATOR
+                + SHORT_CITY_COLUMN + Constants.CSV_SEPARATOR
+                + SHORT_ADDRESS_COLUMN + Constants.CSV_SEPARATOR
+                + SHORT_APARTMENT_COLUMN + Constants.CSV_SEPARATOR
+                + SHORT_REFERRAL_COLUMN + Constants.CSV_SEPARATOR
+                + SHORT_CONSUMER_COLUMN + Constants.CSV_SEPARATOR
+                + SHORT_VOICEONLY_COLUMN + Constants.CSV_SEPARATOR
+                + SHORT_DRIVER_COLUMN + Constants.CSV_SEPARATOR
+                + SHORT_DISPATCHER_COLUMN + Constants.CSV_SEPARATOR
+                + SHORT_WORKFLOW_COLUMN + Constants.CSV_SEPARATOR
+                + SHORT_INREACH_COLUMN + Constants.CSV_SEPARATOR
+                + SHORT_OUTREACH_COLUMN + Constants.CSV_SEPARATOR
+                + SHORT_HELPLINE_COLUMN + Constants.CSV_SEPARATOR
+                + SHORT_SITELINE_COLUMN + Constants.CSV_SEPARATOR
+                + SHORT_MARKETING_COLUMN + Constants.CSV_SEPARATOR
+                + SHORT_MODERATORS_COLUMN + Constants.CSV_SEPARATOR
+                + SHORT_TRUST_LEVEL_4_COLUMN + Constants.CSV_SEPARATOR
+                + SHORT_SPECIALIST_COLUMN + Constants.CSV_SEPARATOR
+                + SHORT_BHS_COLUMN + Constants.CSV_SEPARATOR
+                + SHORT_CUSTOMER_INFO_COLUMN + Constants.CSV_SEPARATOR
+                + SHORT_ADVISOR_COLUMN + Constants.CSV_SEPARATOR
+                + SHORT_COORDINATOR_COLUMN + Constants.CSV_SEPARATOR
+                + SHORT_ADMIN_COLUMN + Constants.CSV_SEPARATOR
+                + SHORT_CONSUMER_REQUEST_COLUMN + Constants.CSV_SEPARATOR
+                + SHORT_VOLUNTEER_REQUEST_COLUMN + Constants.CSV_SEPARATOR
                 + "\n";
     }
 
