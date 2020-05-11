@@ -32,15 +32,14 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class ExporterTest extends TestBase {
+public class UserExporterTest extends TestBase {
     @Test
     public void errorsToFileTest() throws UserException, IOException {
 
         List<User> users = new ArrayList<>();
 
         try {
-            User u1 = createUserWithCityAndNeighborhood(
-                    TEST_USER_NAME_1, Constants.BERKELEY, "unknown");
+            createUserWithCityAndNeighborhood(TEST_USER_NAME_1, Constants.BERKELEY, "unknown");
         } catch (UserException ex) {
             assertThat(ex.user).isNotNull();
             assertThat(ex.user.getUserName()).isEqualTo(TEST_USER_NAME_1);
@@ -55,7 +54,7 @@ public class ExporterTest extends TestBase {
                 TEST_USER_NAME_3, "Altoona", "unknown");
         users.add(u3);
 
-        Exporter exporter = new Exporter(users);
+        UserExporter exporter = new UserExporter(users);
         String fileName = exporter.errorsToFile("errorsToFileTest.txt");
         Path filePath = Paths.get(fileName);
         assertThat(filePath).exists();
@@ -74,7 +73,7 @@ public class ExporterTest extends TestBase {
         User u1 = createUserWithNoRequestsNoGroups(TEST_USER_NAME_1);
         User u2 = createUserWithConsumerRequest(TEST_USER_NAME_2, true);
 
-        Exporter exporter = new Exporter(List.of(u1, u2));
+        UserExporter exporter = new UserExporter(List.of(u1, u2));
         String fileName = exporter.consumerRequestsToFile("consumerRequests.csv");
         Path filePath = Paths.get(fileName);
         assertThat(filePath).exists();
@@ -94,7 +93,7 @@ public class ExporterTest extends TestBase {
         User u3 = createUserWithNoRequestsNoGroups(TEST_USER_NAME_3);
         User u4 = createUserWithVolunteerRequest("u4", "Dispatch");
 
-        Exporter exporter = new Exporter(List.of(u1, u2, u3, u4));
+        UserExporter exporter = new UserExporter(List.of(u1, u2, u3, u4));
         String fileName = exporter.volunteerRequestsToFile("volunteerRequests.csv");
         Path filePath = Paths.get(fileName);
         assertThat(filePath).exists();
@@ -115,7 +114,7 @@ public class ExporterTest extends TestBase {
         User u2 = createUserWithGroup(TEST_USER_NAME_2, Constants.GROUP_DRIVERS);
         User u3 = createUserWithGroup(TEST_USER_NAME_3, Constants.GROUP_DRIVERS);
 
-        Exporter exporter = new Exporter(List.of(u1, u2, u3));
+        UserExporter exporter = new UserExporter(List.of(u1, u2, u3));
         String fileName = exporter.driversToFile("driverRequests.csv");
         Path filePath = Paths.get(fileName);
         assertThat(filePath).exists();
@@ -131,7 +130,7 @@ public class ExporterTest extends TestBase {
     @Test
     public void allMembersRawColumnsTest() throws UserException {
         User u1 = createTestUser1();
-        Exporter exporter = new Exporter(List.of(u1));
+        UserExporter exporter = new UserExporter(List.of(u1));
 
         String allMemberRows = exporter.allMembersRaw();
         String[] rows = allMemberRows.split("\n");
@@ -211,7 +210,7 @@ public class ExporterTest extends TestBase {
         User u2 = createUserWithGroup(TEST_USER_NAME_2, Constants.GROUP_DRIVERS);
         User u3 = createUserWithGroup(TEST_USER_NAME_3, Constants.GROUP_DRIVERS);
 
-        Exporter exporter = new Exporter(List.of(u1, u2, u3));
+        UserExporter exporter = new UserExporter(List.of(u1, u2, u3));
         String fileName = exporter.allMembersRawToFile("allMembers.csv");
         Path filePath = Paths.get(fileName);
         assertThat(filePath).exists();
@@ -227,7 +226,7 @@ public class ExporterTest extends TestBase {
     @Test
     public void allMembersReportColumnsTest() throws UserException {
         User u1 = createTestUser1();
-        Exporter exporter = new Exporter(List.of(u1));
+        UserExporter exporter = new UserExporter(List.of(u1));
 
         String allMemberRows = exporter.allMembersReport();
         String[] rows = allMemberRows.split("\n");
@@ -316,7 +315,7 @@ public class ExporterTest extends TestBase {
         User u2 = createUserWithGroup(TEST_USER_NAME_2, Constants.GROUP_DRIVERS);
         User u3 = createUserWithGroup(TEST_USER_NAME_3, Constants.GROUP_DRIVERS);
 
-        Exporter exporter = new Exporter(List.of(u1, u2, u3));
+        UserExporter exporter = new UserExporter(List.of(u1, u2, u3));
         String fileName = exporter.allMembersReportToFile("allMembers.csv");
         Path filePath = Paths.get(fileName);
         assertThat(filePath).exists();
@@ -332,7 +331,7 @@ public class ExporterTest extends TestBase {
     @Test
     public void workflowColumnsTest() throws UserException {
         User u1 = createTestUser1();
-        Exporter exporter = new Exporter(List.of(u1));
+        UserExporter exporter = new UserExporter(List.of(u1));
 
         String workflowRows = exporter.workflow();
         String[] rows = workflowRows.split("\n");
@@ -378,7 +377,7 @@ public class ExporterTest extends TestBase {
         User u2 = createUserWithGroup(TEST_USER_NAME_2, Constants.GROUP_DRIVERS);
         User u3 = createUserWithGroup(TEST_USER_NAME_3, Constants.GROUP_DRIVERS);
 
-        Exporter exporter = new Exporter(List.of(u1, u2, u3));
+        UserExporter exporter = new UserExporter(List.of(u1, u2, u3));
         String fileName = exporter.workflowToFile("workflow.csv");
         Path filePath = Paths.get(fileName);
         assertThat(filePath).exists();
@@ -394,7 +393,7 @@ public class ExporterTest extends TestBase {
     @Test
     public void inreachColumnsTest() throws UserException {
         User u1 = createTestUser1();
-        Exporter exporter = new Exporter(List.of(u1));
+        UserExporter exporter = new UserExporter(List.of(u1));
 
         String inreachRows = exporter.inreach();
         String[] rows = inreachRows.split("\n");
@@ -440,7 +439,7 @@ public class ExporterTest extends TestBase {
         User u1 = createUserWithGroup(TEST_USER_NAME_1, Constants.GROUP_CONSUMERS);
         User u2 = createUserWithGroup(TEST_USER_NAME_2, Constants.GROUP_DRIVERS);
 
-        Exporter exporter = new Exporter(List.of(u1, u2));
+        UserExporter exporter = new UserExporter(List.of(u1, u2));
         String fileName = exporter.inreachToFile("inreach.csv");
         Path filePath = Paths.get(fileName);
         assertThat(filePath).exists();
@@ -455,7 +454,7 @@ public class ExporterTest extends TestBase {
     @Test
     public void dispatchersColumnsTest() throws UserException {
         User u1 = createUserWithGroup("u1", Constants.GROUP_DISPATCHERS);
-        Exporter exporter = new Exporter(List.of(u1));
+        UserExporter exporter = new UserExporter(List.of(u1));
 
         String dispatcherRows = exporter.dispatchers();
         String[] rows = dispatcherRows.split("\n");
@@ -520,7 +519,7 @@ public class ExporterTest extends TestBase {
         User u2 = createUserWithGroup(TEST_USER_NAME_2, Constants.GROUP_DISPATCHERS);
         User u3 = createUserWithGroup(TEST_USER_NAME_3, Constants.GROUP_DRIVERS);
 
-        Exporter exporter = new Exporter(List.of(u1, u2, u3));
+        UserExporter exporter = new UserExporter(List.of(u1, u2, u3));
         String fileName = exporter.dispatchersToFile("dispatchers.csv");
         Path filePath = Paths.get(fileName);
         assertThat(filePath).exists();

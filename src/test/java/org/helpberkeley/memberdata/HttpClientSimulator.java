@@ -24,6 +24,7 @@ package org.helpberkeley.memberdata;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLParameters;
 import javax.net.ssl.SSLSession;
+import java.io.File;
 import java.io.IOException;
 import java.net.*;
 import java.net.http.HttpClient;
@@ -51,6 +52,8 @@ public class HttpClientSimulator extends HttpClient {
             return doPost(request);
         } else if (isPut(request)) {
             return doPut(request);
+        } else if (isGet(request)) {
+            return doGet(request);
         }
 
         throw new RuntimeException("FIX THIS: request not support by simulator: " + request);
@@ -71,6 +74,11 @@ public class HttpClientSimulator extends HttpClient {
     private boolean isPut(HttpRequest request) {
         // FIX THIS, DS: is there a constant for this?
         return request.method().equals("PUT") && (request.uri().toString().startsWith(ApiClient.POSTS_BASE));
+    }
+
+    private boolean isGet(HttpRequest request) {
+        // FIX THIS, DS: is there a constant for this?
+        return request.method().equals("GET");
     }
 
     private <T> HttpResponse<T> doQuery(HttpRequest request) {
@@ -95,15 +103,7 @@ public class HttpClientSimulator extends HttpClient {
                 throw new RuntimeException("FIX THIS: query " + queryId + " not supported by the simulator");
         }
 
-        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-        URL url = classLoader.getResource(dataFile);
-        try {
-            return (HttpResponse<T>) new HttpResponseSimulator<>(Files.readString(Paths.get(url.toURI())));
-        } catch (IOException | URISyntaxException e) {
-            e.printStackTrace();
-        }
-
-        return null;
+        return (HttpResponse<T>) new HttpResponseSimulator<>(readFile(dataFile));
     }
 
     private <T> HttpResponse<T> doPost(HttpRequest request) {
@@ -112,6 +112,19 @@ public class HttpClientSimulator extends HttpClient {
 
     private <T> HttpResponse<T> doPut(HttpRequest request) {
         return (HttpResponse<T>) new HttpResponseSimulator<>("");
+    }
+
+    private <T> HttpResponse<T> doGet(HttpRequest request) {
+        String fileName = request.uri().toString();
+        int index = fileName.lastIndexOf(File.separatorChar);
+        assertThat(index).isNotEqualTo(-1);
+        fileName = fileName.substring(index + 1);
+
+        if (fileName.endsWith(Main.ORDER_HISTORY_POST_ID + ".json")) {
+            fileName = "order-history.json";
+        }
+
+        return (HttpResponse<T>) new HttpResponseSimulator<>(readFile(fileName));
     }
 
     private int getQueryId(HttpRequest request) {
@@ -125,6 +138,20 @@ public class HttpClientSimulator extends HttpClient {
         queryId = queryId.substring(index + 1);
 
         return Integer.parseInt(queryId);
+    }
+
+    private String readFile(final String fileName) {
+        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+        URL url = classLoader.getResource(fileName);
+
+        if (url == null) {
+            throw new RuntimeException("file " + fileName + " not found");
+        }
+        try {
+            return (Files.readString(Paths.get(url.toURI())));
+        } catch (IOException|URISyntaxException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override

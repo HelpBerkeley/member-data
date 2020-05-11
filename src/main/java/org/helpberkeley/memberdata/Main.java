@@ -21,6 +21,9 @@
 //
 package org.helpberkeley.memberdata;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -36,6 +39,7 @@ import java.util.Properties;
 import static java.net.HttpURLConnection.HTTP_OK;
 
 public class Main {
+    private static final Logger LOGGER = LoggerFactory.getLogger(ApiClient.class);
 
     static final String MEMBERDATA_PROPERTIES = "memberdata.properties";
     static final String API_USER_PROPERTY = "Api-Username";
@@ -50,6 +54,8 @@ public class Main {
     static final String WORKFLOW_FILE = "workflow";
     static final String INREACH_FILE = "inreach";
     static final String DISPATCHERS_FILE = "dispatchers";
+    static final String ORDER_HISTORY_FILE = "order-history";
+    static final String DELIVERY_POSTS_FILE = "delivery-posts";
 
     static final String ALL_MEMBERS_TITLE = "All Members";
     static final String WORKFLOW_TITLE = "Workflow Data";
@@ -71,6 +77,8 @@ public class Main {
     static final long DISPATCHERS_POST_TOPIC = 938;
     static final long STONE_TEST_TOPIC = 422;
     static final long DISPATCHERS_POST_ID = 5324;
+    static final long ORDER_HISTORY_TOPIC = 1440;
+    static final long ORDER_HISTORY_POST_ID = 6433;
 
     public static void main(String[] args) throws IOException, InterruptedException {
 
@@ -87,8 +95,15 @@ public class Main {
             case Options.COMMAND_FETCH:
                 fetch(apiClient);
                 break;
+            case Options.COMMAND_GET_ORDER_HISTORY:
+                getOrderHistory(apiClient);
+                break;
+            case Options.COMMAND_MERGE_ORDER_HISTORY:
+                mergeOrderHistory(apiClient, options.getFileName(),
+                        options.getSecondFileName(), options.getThirdFileName());
+                break;
             case Options.COMMAND_GET_DAILY_DELIVERIES:
-                getDailyDeliveries(apiClient);
+                getDailyDeliveryPosts(apiClient);
                 break;
             case Options.COMMAND_POST_ERRORS:
                 postUserErrors(apiClient, options.getFileName());
@@ -136,7 +151,7 @@ public class Main {
         URL propertiesFile = classLoader.getResource(fileName);
 
         if (propertiesFile == null) {
-            System.out.println("Required properties file " + fileName + " cannot be found");
+            LOGGER.error("Required properties file {} cannot be found", fileName);
             System.exit(1);
         }
 
@@ -158,7 +173,7 @@ public class Main {
         List<User> users = loader.load();
 
         // Create an exporter
-        Exporter exporter = new Exporter(users);
+        UserExporter exporter = new UserExporter(users);
 
         // Export all users
         exporter.allMembersRawToFile(MEMBERDATA_RAW_FILE);
@@ -193,7 +208,7 @@ public class Main {
 
         String csvData = Files.readString(Paths.get(fileName));
         // FIX THIS, DS: constant for separator
-        List<User> users = Parser.users(csvData, Constants.CSV_SEPARATOR);
+        List<User> users = Parser.users(csvData);
 
         StringBuilder postRaw = new StringBuilder();
         String label =  "Newly created members requesting meals -- " + ZonedDateTime.now(
@@ -230,14 +245,15 @@ public class Main {
                 .format(DateTimeFormatter.ofPattern("uuuu.MM.dd.HH.mm.ss"));
 
         HttpResponse<?> response = apiClient.post(post.toJson());
-        System.out.println(response);
+        LOGGER.info("postConsumerRequests {}", response.statusCode() == HTTP_OK ?
+            "" : "failed " + response.statusCode() + ": " + response.body());
     }
 
     static void postVolunteerRequests(ApiClient apiClient, final String fileName)
             throws IOException, InterruptedException {
 
         String csvData = Files.readString(Paths.get(fileName));
-        List<User> users = Parser.users(csvData, Constants.CSV_SEPARATOR);
+        List<User> users = Parser.users(csvData);
 
         StringBuilder postRaw = new StringBuilder();
         String label =  "New members requesting to volunteer -- " + ZonedDateTime.now(
@@ -248,7 +264,7 @@ public class Main {
         postRaw.append("**\n\n");
 
         postRaw.append("| User Name | Full Name | Phone | City | Volunteer Request |\n");
-        postRaw.append("|---|---|---|---|---|---|\n");
+        postRaw.append("|---|---|---|---|---|\n");
 
         Tables tables = new Tables(users);
         for (User user : new Tables(tables.volunteerRequests()).sortByCreateTime()) {
@@ -274,7 +290,8 @@ public class Main {
                 .format(DateTimeFormatter.ofPattern("uuuu.MM.dd.HH.mm.ss"));
 
         HttpResponse<?> response = apiClient.post(post.toJson());
-        System.out.println(response);
+        LOGGER.info("postVolunteerRequests {}", response.statusCode() == HTTP_OK ?
+                "" : "failed " + response.statusCode() + ": " + response.body());
     }
 
     static void postUserErrors(ApiClient apiClient, final String fileName) throws IOException, InterruptedException {
@@ -295,7 +312,8 @@ public class Main {
 
         post.raw = postRaw.toString();
         HttpResponse<?> response = apiClient.post(post.toJson());
-        System.out.println(response);
+        LOGGER.info("postUserErrors {}", response.statusCode() == HTTP_OK ?
+                "" : "failed " + response.statusCode() + ": " + response.body());
     }
 
     static void updateUserErrors(ApiClient apiClient, final String fileName) throws IOException, InterruptedException {
@@ -307,7 +325,8 @@ public class Main {
                 "**\n\n" +
                 Files.readString(Paths.get(fileName));
         HttpResponse<?> response = apiClient.updatePost(MEMBER_DATA_REQUIRING_ATTENTION_POST_ID, postRaw);
-        System.out.println(response);
+        LOGGER.info("updateUserErrors {}", response.statusCode() == HTTP_OK ?
+                "" : "failed " + response.statusCode() + ": " + response.body());
     }
 
     static void postFile(ApiClient apiClient, final String fileName, final String shortUrl,
@@ -320,17 +339,17 @@ public class Main {
         post.title = title;
         post.topic_id = topicId;
         post.createdAt = now;
-        String postRaw = "**" +
+        post.raw = "**" +
                 title +
                 " -- " +
                 now +
                 "**\n\n" +
                 // postRaw.append("[" + fileName + "|attachment](upload://" + fileName + ") (5.49 KB)");
                 "[" + fileName + "|attachment](" + shortUrl + ")";
-        post.raw = postRaw;
 
         HttpResponse<?> response = apiClient.post(post.toJson());
-        System.out.println(response);
+        LOGGER.info("postFile {} {}", fileName, response.statusCode() == HTTP_OK ?
+                "" : "failed " + response.statusCode() + ": " + response.body());
     }
 
     static void updateFile(ApiClient apiClient, final String fileName,
@@ -347,22 +366,79 @@ public class Main {
                 // postRaw.append("[" + fileName + "|attachment](upload://" + fileName + ") (5.49 KB)");
                 "[" + fileName + "|attachment](" + shortUrl + ")";
         HttpResponse<?> response = apiClient.updatePost(postId, postRaw);
-        System.out.println(response);
+        LOGGER.info("updateFile {} {}", fileName, response.statusCode() == HTTP_OK ?
+                "" : "failed " + response.statusCode() + ": " + response.body());
     }
 
-    static void getDailyDeliveries(ApiClient apiClient) throws IOException, InterruptedException {
-        String json = apiClient.runQuery(Constants.QUERY_GET_DAILY_DELIVERIES);
-        ApiQueryResult apiQueryResult = Parser.parseQueryResult(json);
-        List<DeliveryData> deliveries = Parser.dailyDeliveries(apiQueryResult);
-        for (DeliveryData deliveryData : deliveries) {
-            HttpResponse<String> response = apiClient.downloadFile(deliveryData.fileName);
-            if (response.statusCode() == HTTP_OK) {
-                System.out.println("downloaded " + deliveryData);
-                deliveryData.setDeliveryData(response.body());
-            } else {
-                System.out.println("Failed downloading " + deliveryData + ": " + response.body());
+    static void getOrderHistory(ApiClient apiClient) throws IOException, InterruptedException {
+
+        // Fetch the order history post
+        String json = apiClient.getPost(ORDER_HISTORY_POST_ID);
+
+        // Parse the order history post
+        String rawPost = Parser.postBody(json);
+        OrderHistoryPost orderHistoryPost = Parser.orderHistoryPost(rawPost);
+
+        // Download the order history data file
+        String orderHistoryData = apiClient.downloadFile(orderHistoryPost.uploadFile.fileName);
+        // Parse and load the order history into the OrderHistory object
+        OrderHistory orderHistory = Parser.orderHistory(orderHistoryData);
+
+        // Export the order history to a file
+        new OrderHistoryExporter(orderHistory).orderHistoryToFile(ORDER_HISTORY_FILE);
+    }
+
+    static void getDailyDeliveryPosts(ApiClient apiClient) throws IOException, InterruptedException {
+
+        List<DeliveryData> deliveryPosts = DeliveryData.deliveryPosts(apiClient);
+        new DeliveryDataExporter(deliveryPosts).deliveryPostsToFile(DELIVERY_POSTS_FILE);
+    }
+
+    static void mergeOrderHistory(ApiClient apiClient, final String usersFile,
+        final String orderHistoryFile, final String deliveryPostsFile) throws IOException, InterruptedException {
+
+        // Load order history
+        String csvData = Files.readString(Paths.get(orderHistoryFile));
+        OrderHistory orderHistory = Parser.orderHistory(csvData);
+
+        // Load delivery posts
+        csvData = Files.readString(Paths.get(deliveryPostsFile));
+        List<DeliveryData> deliveryDataList = DeliveryData.deliveryPosts(csvData);
+
+        // Load users
+        csvData = Files.readString(Paths.get(usersFile));
+        List<User> users = Parser.users(csvData);
+
+        for (DeliveryData deliveryData : deliveryDataList) {
+
+            LOGGER.debug("processing " + deliveryData);
+//            Thread.sleep(100);
+
+            if (false
+//            if (deliveryData.date.equals("2020/04/14")
+//                || deliveryData.date.equals("2020/04/17")
+//                || deliveryData.date.equals("2020/04/18")
+//                || deliveryData.date.equals("2020/04/19")
+//                || deliveryData.date.equals("2020/04/21")
+//                || deliveryData.date.equals("2020/04/23")
+//                || deliveryData.date.equals("2020/04/25")
+                || deliveryData.date.equals("2020/04/29")) {
+                System.out.println("FIX THIS, DS: skipping " + deliveryData.date);
+                continue;
+            }
+            // Process those newer than order history date
+            if (deliveryData.date.compareTo(orderHistory.historyThroughDate) > 0) {
+                // Download the delivery file
+                String deliveries = apiClient.downloadFile(deliveryData.uploadFile.fileName);
+                // Parse list of user restaurant orders
+                List<UserOrder> userOrders = Parser.parseOrders(deliveryData.uploadFile.originalFileName, deliveries);
+                // Merge the data into the existing order history
+                orderHistory.merge(deliveryData.date, userOrders, users);
             }
         }
+
+        // Export updated order history
+        new OrderHistoryExporter(orderHistory).orderHistoryToFile(ORDER_HISTORY_FILE);
     }
 }
 

@@ -22,17 +22,26 @@
  */
 package org.helpberkeley.memberdata;
 
-import org.junit.Test;
-
 import java.io.IOException;
-import java.util.List;
 
-public class DailyDeliveriesTest extends TestBase {
-    @Test
-    public void parseDailyDeliveriesQueryTest() throws IOException, InterruptedException {
-        ApiClient apiClient = createApiSimulator();
-        String jsonData = apiClient.runQuery(Constants.QUERY_GET_DAILY_DELIVERIES);
-        ApiQueryResult queryResult = Parser.parseQueryResult(jsonData);
-        List<DeliveryData> deliveries = Parser.dailyDeliveryPosts(queryResult);
+public class OrderHistoryExporter extends Exporter {
+
+    private final OrderHistory orderHistory;
+
+    OrderHistoryExporter(OrderHistory orderHistory) {
+        this.orderHistory = orderHistory;
+    }
+
+    String orderHistoryToFile(final String fileName) throws IOException {
+
+        String outputFileName = generateFileName(fileName, "csv");
+        writeFile(outputFileName, orderHistory());
+        LOGGER.debug("Wrote: " + outputFileName);
+
+        return outputFileName;
+    }
+
+    String orderHistory() {
+        return orderHistory.export();
     }
 }

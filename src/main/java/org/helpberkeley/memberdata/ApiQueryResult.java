@@ -21,16 +21,25 @@
 //
 package org.helpberkeley.memberdata;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class ApiQueryResult {
 
     final String[] headers;
     final Object[] rows;
+
+    final Map<String, Integer> columnIndexes = new HashMap<>();
 
     ApiQueryResult(final Object[] headers, final Object[] rows) {
         this.headers = validateColumns(headers);
         this.rows = rows;
 
         validate();
+    }
+
+    Integer getColumnIndex(final String columnName) {
+        return columnIndexes.get(columnName);
     }
 
     private String[] validateColumns(final Object[] columns) {
@@ -40,7 +49,10 @@ public class ApiQueryResult {
         String[] columnNames = new String[columns.length];
 
         for (int index = 0; index < columns.length; index++) {
-            columnNames[index] = (String)columns[index];
+            String columnName = (String)columns[index];
+            columnNames[index] = columnName;
+            assert ! columnIndexes.containsKey(columnName) : columnName;
+            columnIndexes.put(columnName, index);
         }
 
         return columnNames;

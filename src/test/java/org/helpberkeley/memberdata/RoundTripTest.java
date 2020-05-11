@@ -53,10 +53,10 @@ public class RoundTripTest extends TestBase {
                 Constants.GROUP_ADMIN);
 
         List<User> users = List.of(u1, createTestUser2(), createTestUser3());
-        Exporter exporter = new Exporter(users);
+        UserExporter exporter = new UserExporter(users);
 
         String csvData = exporter.allMembersRaw();
-        List<User> usersFromCSV = Parser.users(csvData, Constants.CSV_SEPARATOR);
+        List<User> usersFromCSV = Parser.users(csvData);
         assertThat(usersFromCSV).isEqualTo(users);
     }
 }

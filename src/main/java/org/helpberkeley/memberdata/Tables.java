@@ -22,10 +22,7 @@
 package org.helpberkeley.memberdata;
 
 import java.time.ZonedDateTime;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 
 import static java.time.temporal.ChronoUnit.DAYS;
 
@@ -35,6 +32,17 @@ public class Tables {
 
     Tables(List<User> users) {
         this.users = users;
+    }
+
+    Map<String, User> mapByUserName() {
+
+        Map<String, User> userMap = new HashMap<>();
+        for (User user : users) {
+            assert ! userMap.containsKey(user.getUserName()) : user.getUserName();
+            userMap.put(user.getUserName(), user);
+        }
+
+        return userMap;
     }
 
     List<User> sortByUserName() {
@@ -59,9 +67,9 @@ public class Tables {
     List<User> sortByConsumerThenDriverThenName() {
         List<User> sorted = new ArrayList<>(users);
 
-        Collections.sort(sorted, new IsConsumerComparator()
-            .thenComparing(new IsDriverComparator()
-            .thenComparing(new NameComparator())));
+        sorted.sort(new IsConsumerComparator()
+                .thenComparing(new IsDriverComparator()
+                .thenComparing(new NameComparator())));
 
         return sorted;
     }
@@ -239,7 +247,7 @@ public class Tables {
             }
         }
 
-        Collections.sort(inreach, new IsConsumerComparator()
+        inreach.sort(new IsConsumerComparator()
                 .thenComparing(User::getCreateTime));
 
         return inreach;

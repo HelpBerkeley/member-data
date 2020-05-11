@@ -74,4 +74,6 @@ public class Constants {
     public static final String KENSINGTON = "Kensington";
 
     public static final String CSV_SEPARATOR = ",";
+
+    public static final String UPLOAD_URI_PREFIX = "upload://";
 }

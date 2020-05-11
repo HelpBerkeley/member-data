@@ -25,10 +25,7 @@ import com.cedarsoftware.util.io.JsonReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class Parser {
 
@@ -38,8 +35,7 @@ public class Parser {
         Map<String, Object> options = new HashMap<>();
         options.put(JsonReader.USE_MAPS, Boolean.TRUE);
 
-        Object obj = JsonReader.jsonToJava(queryResultJson, options);
-        Map<String, Object> map = (Map<String, Object>)obj;
+        Map<String, Object> map = JsonReader.jsonToMaps(queryResultJson, options);
 
         Object[] columns = (Object[])map.get("columns");
         Object[] rows = (Object[])map.get("rows");
@@ -175,12 +171,12 @@ public class Parser {
     }
 
     // From raw form
-    static List<User> users(final String csvData, final String separator) {
+    static List<User> users(final String csvData) {
 
         String[] lines = csvData.split("\n");
         assert lines.length > 0 : csvData;
 
-        String[] headers = lines[0].split(separator);
+        String[] headers = lines[0].split(Constants.CSV_SEPARATOR);
         assert headers.length == 31 : headers.length + ": " + lines[0];
 
         int index = 0;
@@ -220,7 +216,7 @@ public class Parser {
         List<String> groups = new ArrayList<>();
 
         for (int colIndex = 1; colIndex < lines.length; colIndex++) {
-            String[] columns = lines[colIndex].split(separator);
+            String[] columns = lines[colIndex].split(Constants.CSV_SEPARATOR);
             assert columns.length == headers.length : columns.length + " != " + headers.length;
 
             index = 0;
@@ -321,7 +317,7 @@ public class Parser {
         return users;
     }
 
-    static List<DeliveryData> dailyDeliveries(ApiQueryResult apiQueryResult) {
+    static List<DeliveryData> dailyDeliveryPosts(ApiQueryResult apiQueryResult) {
         assert apiQueryResult.headers.length == 1 : apiQueryResult.headers.length;
         assert apiQueryResult.headers[0].equals("raw");
 
@@ -344,16 +340,173 @@ public class Parser {
 
             int index = raw.indexOf('\n');
             String date = raw.substring(0, index);
-            index = raw.indexOf("upload://");
-            assert index != -1 : raw;
-            String shortURL = raw.substring(index);
-            index = shortURL.indexOf(')');
-            shortURL = shortURL.substring(0, index);
 
-            dailyDeliveries.add(new DeliveryData(date, shortURL, raw));
+            dailyDeliveries.add(new DeliveryData(date, downloadFileName(raw), shortURL(raw)));
         }
 
         return dailyDeliveries;
+    }
+
+    static List<DeliveryData> dailyDeliveryPosts(final String csvData) {
+
+        List<DeliveryData> dailyDeliveries = new ArrayList<>();
+
+        String[] lines = csvData.split("\n");
+        assert lines.length > 0;
+
+        String header = lines[0];
+        assert header.equals(DeliveryData.deliveryPostsHeader().trim());
+
+        for (int index = 1; index < lines.length; index++) {
+            String[] fields = lines[index].split(Constants.CSV_SEPARATOR);
+            assert fields.length == 3 : lines[index];
+            dailyDeliveries.add(new DeliveryData(fields[0], fields[1], fields[2]));
+        }
+
+        return dailyDeliveries;
+    }
+
+    static String shortURL(final String line) {
+        int index = line.indexOf("upload://");
+        assert index != -1 : line;
+        String shortURL = line.substring(index);
+        index = shortURL.indexOf(')');
+        shortURL = shortURL.substring(0, index);
+
+        return shortURL;
+    }
+
+    static String downloadFileName(final String line) {
+        int index = line.indexOf('[');
+        assert index != -1 : line;
+        int end = line.indexOf('|');
+        assert end > index : line;
+
+        return line.substring(index + 1, end);
+    }
+
+    static String postBody(final String json) {
+        Map<String, Object> options = new HashMap<>();
+        options.put(JsonReader.USE_MAPS, Boolean.TRUE);
+
+        Map<String, Object> map = JsonReader.jsonToMaps(json, options);
+
+        assert map.containsKey("raw") : json;
+        return (String)map.get("raw");
+    }
+
+    static OrderHistoryPost orderHistoryPost(final String rawOrderHistoryPost) {
+
+        // "Order History through 2020/01/01\n\n[order_history.csv|attachment](upload://order-history.csv) (37 Bytes)",
+
+        final String start = "Order History through ";
+        assert rawOrderHistoryPost.startsWith(start) : rawOrderHistoryPost;
+        String[] lines = rawOrderHistoryPost.split("\n");
+        assert lines.length == 3 : rawOrderHistoryPost;
+        String date = lines[0].substring(start.length());
+        String shortURL =  shortURL(lines[2]);
+        String fileName = downloadFileName(lines[2]);
+
+        return new OrderHistoryPost(date, fileName, shortURL);
+    }
+
+    static OrderHistory orderHistory(final String orderHistoryData) {
+
+        String orderHistoryThroughDate;
+
+        // Normalize EOL.
+        String history = orderHistoryData.replaceAll("\\r\\n?", "\n");
+        String[] lines = history.split("\n");
+        assert lines.length > 0;
+
+        String header = lines[0];
+        assert header.equals(OrderHistory.csvHeader().trim()) :
+                header + " != " + OrderHistory.csvHeader().trim();
+
+        // Special case for bootstrap when there is no previous data
+        if (lines.length == 1) {
+            // FIX THIS, DS: make a constant for the beginning of time last order date
+            orderHistoryThroughDate = "2020/01/01";
+        } else {
+            // The first row of the table encodes the orderHistoryThroughDate
+            String[] columns = lines[1].split(Constants.CSV_SEPARATOR);
+            assert columns[0].equals("0") : lines[1];
+            assert columns[1].equals("0") : lines[1];
+            assert columns[2].equals("") : lines[1];
+            assert ! columns[3].equals("") : lines[1];
+            orderHistoryThroughDate = columns[3].trim();
+        }
+
+        OrderHistory orderHistory = new OrderHistory(orderHistoryThroughDate);
+
+        // The remaining rows are user history, 0 or 1 row per user.
+        for (int index = 2; index < lines.length; index++) {
+            String[] columns = lines[index].split(Constants.CSV_SEPARATOR);
+            orderHistory.add(columns[0], Integer.parseInt(columns[1]), columns[2], columns[3]);
+        }
+
+        return orderHistory;
+    }
+
+    static String fileNameFromShortURL(final String shortURL) {
+        assert shortURL.startsWith(Constants.UPLOAD_URI_PREFIX);
+        assert shortURL.length() > Constants.UPLOAD_URI_PREFIX.length() : shortURL;
+        return shortURL.substring(Constants.UPLOAD_URI_PREFIX.length());
+    }
+
+    static List<UserOrder> parseOrders(String fileName, String deliveryData) {
+        List<UserOrder> userOrders = new ArrayList<>();
+
+        // Normalize EOL and split into lines
+        String[] lines = deliveryData.replaceAll("\\r\\n?", "\n").split("\n");
+        assert lines.length > 0;
+
+        DeliveryColumns indexes = new DeliveryColumns(fileName, lines[0]);
+
+        for (int lineIndex = 1; lineIndex < lines.length; lineIndex++) {
+
+            String[] columns = lines[lineIndex].trim().split(Constants.CSV_SEPARATOR, -1);
+
+            if (! Boolean.parseBoolean(columns[indexes.consumer])) {
+                continue;
+            }
+
+            String user = "";
+            if (indexes.userName != -1) {
+                user = columns[indexes.userName];
+            }
+            String name = columns[indexes.name];
+            String veggie = columns[indexes.veggie];
+            String normal = columns[indexes.normal];
+
+            if (((! veggie.isEmpty()) && (Integer.parseInt(veggie) != 0))
+                || ((! normal.isEmpty()) && (Integer.parseInt(normal) != 0))) {
+                userOrders.add(new UserOrder(name, user, fileName));
+            }
+        }
+
+        return userOrders;
+    }
+
+    private static int findOrderColumn(final String fileName,
+        final String columnName, final String[] columnNames, final String header) {
+
+        String desiredColumnName = columnName.trim()
+                .toLowerCase()
+                .replace(" ", "");
+
+        for (int index = 0; index < columnNames.length; index++) {
+            String targetColumnName = columnNames[index].trim()
+                    .toLowerCase()
+                    .replace(" ", "")
+                    .replaceAll("s$", "");
+
+            if (desiredColumnName.equals(targetColumnName)) {
+                return index;
+            }
+        }
+
+        throw new Error("Cannot find column " + columnName + " in " + fileName + "\n" + header);
     }
 
     // Skip Discourse system users. Not fully formed.
@@ -364,4 +517,72 @@ public class Parser {
 //    static void prettyPrint(final String pageJson) {
 //        System.out.println(JsonWriter.formatJson(pageJson));
 //    }
+
+
+    static class DeliveryColumns {
+
+        private static final String CONUMSER_COLUMN = "Consumer";
+        private static final String NAME_COLUMN = "Name";
+        private static final String USER_NAME_COLUMN = "User Name";
+        private static final String VEGGIE_COLUMN = "Veggie";
+        private static final String NORMAL_COLUMN = "Normal";
+
+        private final int consumer;
+        private final int name;
+        private final int userName;
+        private final int veggie;
+        private final int normal;
+
+        DeliveryColumns(final String fileName, final String header) {
+
+            String[] columns = header.split(Constants.CSV_SEPARATOR, -1);
+
+            consumer = findOrderColumn(CONUMSER_COLUMN, columns);
+            name = findOrderColumn(NAME_COLUMN, columns);
+            userName = findOrderColumn(USER_NAME_COLUMN, columns);
+            veggie = findOrderColumn(VEGGIE_COLUMN, columns);
+            normal = findOrderColumn(NORMAL_COLUMN, columns);
+
+            String errors = "";
+            if (consumer == -1) {
+                errors += "Cannot find column " + CONUMSER_COLUMN + "\n";
+            }
+            if (name == -1) {
+                errors += "Cannot find column " + NAME_COLUMN + "\n";
+            }
+            if ((userName == -1) && (name == -1)) {
+                errors += "Cannot find column " + USER_NAME_COLUMN + "\n";
+            }
+            if (veggie == -1) {
+                errors += "Cannot find column " + VEGGIE_COLUMN + "\n";
+            }
+            if (normal == -1) {
+                errors += "Cannot find column " + NORMAL_COLUMN + "\n";
+            }
+
+            if (! errors.isEmpty()) {
+                throw new Error("Problem(s) with deliver file: " + fileName + "\n" + errors);
+            }
+        }
+
+        private int findOrderColumn(final String columnName, final String[] columnNames) {
+
+            String desiredColumnName = columnName.trim()
+                    .toLowerCase()
+                    .replace(" ", "");
+
+            for (int index = 0; index < columnNames.length; index++) {
+                String targetColumnName = columnNames[index].trim()
+                        .toLowerCase()
+                        .replace(" ", "")
+                        .replaceAll("s$", "");
+
+                if (desiredColumnName.equals(targetColumnName)) {
+                    return index;
+                }
+            }
+
+            return -1;
+        }
+    }
 }

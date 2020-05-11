@@ -25,38 +25,60 @@ package org.helpberkeley.memberdata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
+import java.util.Comparator;
+import java.util.List;
+
 public class DeliveryData {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DeliveryData.class);
 
     final String date;
-    final String fileURL;
-    final String fileName;
-    final String raw;
-    private String deliveryData;
+    final UploadFile uploadFile;
 
-    DeliveryData(String date, String shortURL, String raw) {
-        this.date = date;
-        this.fileURL = shortURL;
-        this.raw = raw;
-
-        assert fileURL.startsWith("upload://");
-        fileName = fileURL.substring(9);
+    DeliveryData(String date, final String fileName, String shortURL) {
+        this.date = date.trim();
+        this.uploadFile = new UploadFile(fileName, shortURL);
     }
 
-    void setDeliveryData(final String data) {
-        deliveryData = data;
+    // Get daily delivery posts
+    static List<DeliveryData> deliveryPosts(ApiClient apiClient) throws IOException, InterruptedException {
+        String json = apiClient.runQuery(Constants.QUERY_GET_DAILY_DELIVERIES);
+        ApiQueryResult apiQueryResult = Parser.parseQueryResult(json);
+        List<DeliveryData> deliveryPosts = Parser.dailyDeliveryPosts(apiQueryResult);
 
-        String[] lines = deliveryData.split("\n");
+        // Sort by date ascending
+        deliveryPosts.sort(Comparator.comparing(DeliveryData::getDate));
+        return deliveryPosts;
+    }
 
-        if (lines.length == 0) {
-            LOGGER.warn("Empty file received for " + toString());
-            return;
-        }
+    // Get daily delivery posts
+    static List<DeliveryData> deliveryPosts(final String csvData) {
+        List<DeliveryData> deliveryPosts = Parser.dailyDeliveryPosts(csvData);
+
+        // Sort by date ascending
+        deliveryPosts.sort(Comparator.comparing(DeliveryData::getDate));
+        return deliveryPosts;
+    }
+
+    static String deliveryPostsHeader() {
+        // FIX THIS, DS: constants
+        return "Date" + Constants.CSV_SEPARATOR
+                + "File" + Constants.CSV_SEPARATOR
+                + "URL" + Constants.CSV_SEPARATOR
+                + '\n';
+    }
+
+    String getDate() {
+        return date;
+    }
+
+    UploadFile getUploadFile() {
+        return uploadFile;
     }
 
     @Override
     public String toString() {
-        return date + " - " + fileURL;
+        return date + " - " + uploadFile;
     }
 }

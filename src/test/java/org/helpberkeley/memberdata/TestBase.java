@@ -95,7 +95,15 @@ public class TestBase {
             Options.COMMAND_UPDATE_ERRORS,
     };
 
+    static final String[] COMMANDS_WITH_NO_PARAMETERS = {
+            Options.COMMAND_FETCH,
+            Options.COMMAND_GET_ORDER_HISTORY,
+            Options.COMMAND_GET_DAILY_DELIVERIES,
+    };
+
     static final String TEST_FILE_NAME = "pom.xml";
+    static final String TEST_SECOND_FILE_NAME = "LICENSE.txt";
+    static final String TEST_THIRD_FILE_NAME = "README.md";
     static final String TEST_SHORT_URL = "upload://ab34dezzAndSomethingY.csv";
 
     @BeforeClass

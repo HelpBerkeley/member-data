@@ -291,7 +291,7 @@ public class User {
     @Override
     public String toString() {
 
-        String builder = NAME_COLUMN +
+        return NAME_COLUMN +
                 "=" +
                 (name == null ? NOT_PROVIDED : name) +
                 ':' +
@@ -415,7 +415,6 @@ public class User {
                 "=" +
                 getSimpleCreateTime() +
                 ':';
-        return builder;
     }
 
     private void auditNullFields() {
@@ -937,7 +936,7 @@ public class User {
 
     String rawToCSV() {
 
-        String csvData = getId() + Constants.CSV_SEPARATOR +
+        return getId() + Constants.CSV_SEPARATOR +
                 getName() + Constants.CSV_SEPARATOR +
                 getUserName() + Constants.CSV_SEPARATOR +
                 getPhoneNumber() + Constants.CSV_SEPARATOR +
@@ -969,12 +968,11 @@ public class User {
                 isCoordinator() + Constants.CSV_SEPARATOR +
                 isAdmin() + Constants.CSV_SEPARATOR +
                 '\n';
-        return csvData;
     }
 
     String reportToCSV() {
 
-        String csvData = getId() + Constants.CSV_SEPARATOR +
+        return getId() + Constants.CSV_SEPARATOR +
                 getSimpleCreateTime() + Constants.CSV_SEPARATOR +
                 getName() + Constants.CSV_SEPARATOR +
                 getUserName() + Constants.CSV_SEPARATOR +
@@ -1006,7 +1004,6 @@ public class User {
                 hasConsumerRequest() + Constants.CSV_SEPARATOR +
                 getVolunteerRequest() + Constants.CSV_SEPARATOR +
                 '\n';
-        return csvData;
     }
 
     @Override
@@ -1061,6 +1058,7 @@ public class User {
         if (! volunteerRequest.equals(otherObj.volunteerRequest)) {
             return false;
         }
+        //noinspection RedundantIfStatement
         if (! referral.equals(otherObj.referral)) {
             return false;
         }

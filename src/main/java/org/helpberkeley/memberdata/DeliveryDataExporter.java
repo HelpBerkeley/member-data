@@ -22,17 +22,43 @@
  */
 package org.helpberkeley.memberdata;
 
-import org.junit.Test;
-
 import java.io.IOException;
 import java.util.List;
 
-public class DailyDeliveriesTest extends TestBase {
-    @Test
-    public void parseDailyDeliveriesQueryTest() throws IOException, InterruptedException {
-        ApiClient apiClient = createApiSimulator();
-        String jsonData = apiClient.runQuery(Constants.QUERY_GET_DAILY_DELIVERIES);
-        ApiQueryResult queryResult = Parser.parseQueryResult(jsonData);
-        List<DeliveryData> deliveries = Parser.dailyDeliveryPosts(queryResult);
+public class DeliveryDataExporter extends Exporter {
+
+    private final List<DeliveryData> deliveryData;
+
+    DeliveryDataExporter(List<DeliveryData> deliveryData) {
+        this.deliveryData = deliveryData;
+    }
+
+    String deliveryPostsToFile(final String fileName) throws IOException {
+
+        String outputFileName = generateFileName(fileName, "csv");
+        writeFile(outputFileName, deliveryPosts());
+        LOGGER.debug("Wrote: " + outputFileName);
+
+        return outputFileName;
+    }
+
+    String deliveryPosts() {
+
+        StringBuilder output = new StringBuilder();
+        output.append(DeliveryData.deliveryPostsHeader());
+
+        for (DeliveryData item : deliveryData) {
+
+            UploadFile uploadFile = item.getUploadFile();
+            output.append(item.getDate());
+            output.append(Constants.CSV_SEPARATOR);
+            output.append(uploadFile.originalFileName);
+            output.append(Constants.CSV_SEPARATOR);
+            output.append(uploadFile.shortURL);
+            output.append(Constants.CSV_SEPARATOR);
+            output.append('\n');
+        }
+
+        return output.toString();
     }
 }

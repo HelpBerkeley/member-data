@@ -21,6 +21,9 @@
 //
 package org.helpberkeley.memberdata;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.IOException;
 import java.math.BigInteger;
 import java.net.Authenticator;
@@ -35,6 +38,7 @@ import java.util.Random;
 import static java.net.HttpURLConnection.HTTP_OK;
 
 public class ApiClient {
+    private static final Logger LOGGER = LoggerFactory.getLogger(ApiClient.class);
 
     private static final String BASE_URL = "https://go.helpberkeley.org/";
     private static final String ADMIN_BASE = BASE_URL +  "admin/";
@@ -63,8 +67,7 @@ public class ApiClient {
         apiKey = properties.getProperty(Main.API_KEY_PROPERTY);
 
         if ((apiUser == null) || (apiKey == null)) {
-            System.out.println("Missing " + Main.API_USER_PROPERTY + " property or "
-                    + Main.API_KEY_PROPERTY + " property, or both");
+            LOGGER.error("Missing {} property or {} property or both", Main.API_USER_PROPERTY, Main.API_KEY_PROPERTY);
             System.exit(1);
         }
 
@@ -101,11 +104,6 @@ public class ApiClient {
     }
 
     private HttpResponse<String> get(final String endpoint) throws IOException, InterruptedException {
-
-        // FIX THIS, DS: hack to avoid getting rate limited.
-//        nap(1000);
-
-        System.out.println("GET " + endpoint);
 
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(endpoint))
@@ -154,7 +152,7 @@ public class ApiClient {
                 .header("Api-Key", apiKey)
                 .header("Accept", "application/json")
                 .header("Content-Type", "multipart/form-data")
-                .POST(HttpRequest.BodyPublishers.ofString("limit=ALL"))
+                .POST(HttpRequest.BodyPublishers.ofString("limit=1000000"))
                 .build();
 
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
@@ -202,9 +200,9 @@ public class ApiClient {
         return get(USER_FIELDS_ENDPOINT);
     }
 
-    HttpResponse<String> getPost(long postId) throws IOException, InterruptedException {
+    String getPost(long postId) throws IOException, InterruptedException {
         String endpoint = POSTS_BASE + postId + ".json";
-        return get(endpoint);
+        return get(endpoint).body();
     }
 
     HttpResponse<String> uploadFile() throws IOException, InterruptedException {
@@ -240,7 +238,7 @@ public class ApiClient {
         return client.send(request, HttpResponse.BodyHandlers.ofString());
     }
 
-    HttpResponse<String> downloadFile(final String shortURLFileName) throws IOException, InterruptedException {
+    String downloadFile(final String shortURLFileName) throws IOException, InterruptedException {
 
         String endpoint = DOWNLOAD_ENDPOINT + shortURLFileName;
 
@@ -252,13 +250,12 @@ public class ApiClient {
                 .build();
 
         HttpResponse<String> response =  client.send(request, HttpResponse.BodyHandlers.ofString());
-        return response;
-    }
 
+        if (response.statusCode() != HTTP_OK) {
+            // FIX THIS, DS: create a dedicated unchecked for this?
+            throw new Error("downloadFile(" + endpoint + " failed: " + response.statusCode() + ": " + response.body());
+        }
 
-    private void nap(long milliseconds) {
-        try {
-            Thread.sleep(milliseconds);
-        } catch (InterruptedException ignored) { }
+        return response.body();
     }
 }

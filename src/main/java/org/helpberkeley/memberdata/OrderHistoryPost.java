@@ -22,17 +22,13 @@
  */
 package org.helpberkeley.memberdata;
 
-import org.junit.Test;
+public class OrderHistoryPost {
 
-import java.io.IOException;
-import java.util.List;
+    final String historyThroughDate;
+    final UploadFile uploadFile;
 
-public class DailyDeliveriesTest extends TestBase {
-    @Test
-    public void parseDailyDeliveriesQueryTest() throws IOException, InterruptedException {
-        ApiClient apiClient = createApiSimulator();
-        String jsonData = apiClient.runQuery(Constants.QUERY_GET_DAILY_DELIVERIES);
-        ApiQueryResult queryResult = Parser.parseQueryResult(jsonData);
-        List<DeliveryData> deliveries = Parser.dailyDeliveryPosts(queryResult);
+    OrderHistoryPost(final String date, final String fileName, String shortURL) {
+        historyThroughDate = date;
+        this.uploadFile = new UploadFile(fileName, shortURL);
     }
 }

@@ -130,6 +130,47 @@ public class MainTest extends TestBase {
     }
 
     @Test
+    public void updateUserErrorsTest() throws IOException, InterruptedException {
+        String errorsFile = findFile(Main.MEMBERDATA_ERRORS_FILE, "txt");
+        String[] args = { Options.COMMAND_UPDATE_ERRORS, errorsFile };
+        Main.main(args);
+    }
+
+    @Test
+    public void getOrderHistoryTest() throws IOException, InterruptedException {
+        String[] args = { Options.COMMAND_GET_ORDER_HISTORY };
+        Main.main(args);
+    }
+
+    @Test
+    public void getDailyDeliveriesTest() throws IOException, InterruptedException {
+        String[] args = { Options.COMMAND_GET_DAILY_DELIVERIES };
+        Main.main(args);
+    }
+
+    @Test
+    public void mergeOrderHistoryTest() throws IOException, InterruptedException {
+
+        String[] args = { Options.COMMAND_GET_ORDER_HISTORY };
+        Main.main(args);
+        String orderHistoryFile = findFile(Main.ORDER_HISTORY_FILE, "csv");
+
+        args = new String[]{Options.COMMAND_GET_DAILY_DELIVERIES};
+        Main.main(args);
+        String deliveriesPostFile = findFile(Main.DELIVERY_POSTS_FILE, "csv");
+
+        String usersFile = findFile(Main.MEMBERDATA_RAW_FILE, "csv");
+
+        args = new String[] {
+                Options.COMMAND_MERGE_ORDER_HISTORY,
+                usersFile,
+                orderHistoryFile,
+                deliveriesPostFile
+        };
+        Main.main(args);
+    }
+
+    @Test
     @Ignore
     public void commandsWithFileTest() throws IOException, InterruptedException {
 
@@ -149,7 +190,7 @@ public class MainTest extends TestBase {
         }
     }
 
-    private String findFile(final String prefix, final String suffix) throws IOException {
+    private String findFile(final String prefix, final String suffix) {
 
         File dir = new File(".");
         File[] files = dir.listFiles((dir1, name) -> name.startsWith(prefix) && name.endsWith(suffix));

@@ -22,17 +22,19 @@
  */
 package org.helpberkeley.memberdata;
 
-import org.junit.Test;
+public class UploadFile {
+    final String shortURL;
+    final String fileName;
+    final String originalFileName;
 
-import java.io.IOException;
-import java.util.List;
+    UploadFile(final String fileName, final String shortURL) {
+        this.originalFileName = fileName;
+        this.shortURL = shortURL;
+        this.fileName = Parser.fileNameFromShortURL(shortURL);
+    }
 
-public class DailyDeliveriesTest extends TestBase {
-    @Test
-    public void parseDailyDeliveriesQueryTest() throws IOException, InterruptedException {
-        ApiClient apiClient = createApiSimulator();
-        String jsonData = apiClient.runQuery(Constants.QUERY_GET_DAILY_DELIVERIES);
-        ApiQueryResult queryResult = Parser.parseQueryResult(jsonData);
-        List<DeliveryData> deliveries = Parser.dailyDeliveryPosts(queryResult);
+    @Override
+    public String toString() {
+        return fileName + " -> " + shortURL;
     }
 }

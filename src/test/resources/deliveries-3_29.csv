@@ -1,0 +1,6 @@
+Consumer,Driver,Name,User name ,Phone #,Neighborhood,City,Address,condo,Restaurant,Normal,veggie,orders
+FALSE,,,d1,,,,2222 The Ave,,,,,
+FALSE,,,,,,,7430 Shattuck Ave,,Noodles fresh,,,3
+FALSE,,,,,,,1158 Solano Ave,,Cafe Raj,,,1
+TRUE,TRUE,Mr. Somebody,SomebodyElse,123-456-7890,Grizzly Peak,Berkeley,1111 11th Road,,Noodles Fresh,1,,
+TRUE,TRUE,Ms. Somebody,Somebody,123-456-7890,Grizzly Peak,Berkeley,1111 11th Road,,Noodles Fresh,1,,

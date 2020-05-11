@@ -174,4 +174,106 @@ public class OptionsTest extends TestBase {
             assertThat(options.getFileName()).isEqualTo(TEST_FILE_NAME);
         }
     }
+
+    @Test
+    public void commandsWithoutParametersTest() {
+        for (String command : COMMANDS_WITH_NO_PARAMETERS) {
+            Options options = new Options(new String[] { command });
+            options.parse();
+            assertThat(options.getCommand()).isEqualTo(command);
+        }
+    }
+
+    @Test
+    public void mergeOrderHistoryTest() {
+        String command = Options.COMMAND_MERGE_ORDER_HISTORY;
+        Options options = new Options(new String[] {
+                command, TEST_FILE_NAME, TEST_SECOND_FILE_NAME, TEST_THIRD_FILE_NAME });
+        options.parse();
+        assertThat(options.getCommand()).isEqualTo(command);
+        assertThat(options.getFileName()).isEqualTo(TEST_FILE_NAME);
+        assertThat(options.getSecondFileName()).isEqualTo(TEST_SECOND_FILE_NAME);
+        assertThat(options.getThirdFileName()).isEqualTo(TEST_THIRD_FILE_NAME);
+    }
+
+    @Test
+    public void mergeOrderHistoryMissingThreeFilesTest() {
+        String command = Options.COMMAND_MERGE_ORDER_HISTORY;
+        Options options = new Options(new String[] { command });
+        Throwable thrown = catchThrowable(options::parse);
+        assertThat(thrown).isInstanceOf(MemberDataException.class);
+        assertThat(thrown).hasMessageContaining(command);
+        assertThat(thrown).hasMessageContaining(Options.USAGE_ERROR);
+        assertThat(thrown).hasMessageContaining(Options.COMMAND_REQUIRES_THREE_FILE_NAMES);
+        assertThat(thrown).hasMessageContaining(Options.USAGE);
+    }
+
+    @Test
+    public void mergeOrderHistoryMissingTwoFilesTest() {
+        String command = Options.COMMAND_MERGE_ORDER_HISTORY;
+        Options options = new Options(new String[] { command, TEST_FILE_NAME });
+        Throwable thrown = catchThrowable(options::parse);
+        assertThat(thrown).isInstanceOf(MemberDataException.class);
+        assertThat(thrown).hasMessageContaining(command);
+        assertThat(thrown).hasMessageContaining(Options.USAGE_ERROR);
+        assertThat(thrown).hasMessageContaining(Options.COMMAND_REQUIRES_THREE_FILE_NAMES);
+        assertThat(thrown).hasMessageContaining(Options.USAGE);
+    }
+
+    @Test
+    public void mergeOrderHistoryMissingOneFilesTest() {
+        String command = Options.COMMAND_MERGE_ORDER_HISTORY;
+        Options options = new Options(new String[] { command, TEST_FILE_NAME, TEST_SECOND_FILE_NAME });
+        Throwable thrown = catchThrowable(options::parse);
+        assertThat(thrown).isInstanceOf(MemberDataException.class);
+        assertThat(thrown).hasMessageContaining(command);
+        assertThat(thrown).hasMessageContaining(Options.USAGE_ERROR);
+        assertThat(thrown).hasMessageContaining(Options.COMMAND_REQUIRES_THREE_FILE_NAMES);
+        assertThat(thrown).hasMessageContaining(Options.USAGE);
+    }
+
+    @Test
+    public void mergeOrderHistoryBadFileTest() {
+        String badFileName = "someBad.csv";
+        String command = Options.COMMAND_MERGE_ORDER_HISTORY;
+        Options options = new Options(new String[] {
+                command, badFileName, TEST_SECOND_FILE_NAME, TEST_THIRD_FILE_NAME });
+        Throwable thrown = catchThrowable(options::parse);
+        assertThat(thrown).isInstanceOf(MemberDataException.class);
+        assertThat(thrown).hasMessageContaining(command);
+        assertThat(thrown).hasMessageContaining(Options.USAGE_ERROR);
+        assertThat(thrown).hasMessageContaining(Options.FILE_DOES_NOT_EXIST);
+        assertThat(thrown).hasMessageContaining(badFileName);
+        assertThat(thrown).hasMessageContaining(Options.USAGE);
+    }
+
+    @Test
+    public void mergeOrderHistoryBadSecondFileTest() {
+        String badFileName = "someBad.csv";
+        String command = Options.COMMAND_MERGE_ORDER_HISTORY;
+        Options options = new Options(new String[] {
+        command, TEST_FILE_NAME, badFileName, TEST_THIRD_FILE_NAME });
+        Throwable thrown = catchThrowable(options::parse);
+        assertThat(thrown).isInstanceOf(MemberDataException.class);
+        assertThat(thrown).hasMessageContaining(command);
+        assertThat(thrown).hasMessageContaining(Options.USAGE_ERROR);
+        assertThat(thrown).hasMessageContaining(Options.FILE_DOES_NOT_EXIST);
+        assertThat(thrown).hasMessageContaining(badFileName);
+        assertThat(thrown).hasMessageContaining(Options.USAGE);
+    }
+
+    @Test
+    public void mergeOrderHistoryBadThirdFileTest() {
+        String badFileName = "someBad.csv";
+        String command = Options.COMMAND_MERGE_ORDER_HISTORY;
+        Options options = new Options(new String[] {
+                command, TEST_FILE_NAME, TEST_SECOND_FILE_NAME, badFileName });
+        Throwable thrown = catchThrowable(options::parse);
+        assertThat(thrown).isInstanceOf(MemberDataException.class);
+        assertThat(thrown).hasMessageContaining(command);
+        assertThat(thrown).hasMessageContaining(Options.USAGE_ERROR);
+        assertThat(thrown).hasMessageContaining(Options.FILE_DOES_NOT_EXIST);
+        assertThat(thrown).hasMessageContaining(badFileName);
+        assertThat(thrown).hasMessageContaining(Options.USAGE);
+    }
 }

@@ -27,7 +27,9 @@ import java.util.Arrays;
 public class Options {
 
     static final String COMMAND_FETCH = "fetch";
+    static final String COMMAND_GET_ORDER_HISTORY = "get-order-history";
     static final String COMMAND_GET_DAILY_DELIVERIES = "get-daily-deliveries";
+    static final String COMMAND_MERGE_ORDER_HISTORY = "merge-order-history";
     static final String COMMAND_POST_ERRORS = "post-errors";
     static final String COMMAND_UPDATE_ERRORS = "update-errors";
     static final String COMMAND_UPDATE_DISPATCHERS = "update-dispatchers";
@@ -44,6 +46,8 @@ public class Options {
     static final String TOO_MANY_COMMANDS = USAGE_ERROR + ": too many commands";
     static final String MISSING_COMMAND = USAGE_ERROR + ": no command specified";
     static final String COMMAND_REQUIRES_FILE_NAME = ": command requires a file name parameter";
+    static final String COMMAND_REQUIRES_TWO_FILE_NAMES = ": command requires two file name parameters";
+    static final String COMMAND_REQUIRES_THREE_FILE_NAMES = ": command requires three file name parameters";
     static final String COMMAND_REQUIRES_SHORT_URL = ": command requires a short URL";
     static final String BAD_SHORT_URL = USAGE_ERROR + ": short url syntax error";
     static final String FILE_DOES_NOT_EXIST = USAGE_ERROR + ": file does not exist: ";
@@ -51,6 +55,9 @@ public class Options {
     static final String USAGE =
             "Usage: " + COMMAND_FETCH + "\n"
                     + "    | " + COMMAND_GET_DAILY_DELIVERIES + "\n"
+                    + "    | " + COMMAND_GET_ORDER_HISTORY + "\n"
+                    + "    | " + COMMAND_MERGE_ORDER_HISTORY
+                                + " all-members-file order-history-file daily-deliveries-file\n"
                     + "    | " + COMMAND_POST_ERRORS + " errors-file-name\n"
                     + "    | " + COMMAND_POST_CONSUMER_REQUESTS + " consumer-requests-file-name\n"
                     + "    | " + COMMAND_POST_VOLUNTEER_REQUESTS + " volunteer-requests-file-name\n"
@@ -65,6 +72,8 @@ public class Options {
     private final String[] args;
     private String command;
     private String fileName;
+    private String secondFileName;
+    private String thirdFileName;
     private String shortURL;
 
 
@@ -79,6 +88,7 @@ public class Options {
 
             switch (arg) {
                 case COMMAND_FETCH:
+                case COMMAND_GET_ORDER_HISTORY:
                 case COMMAND_GET_DAILY_DELIVERIES:
                     setCommand(arg);
                     break;
@@ -112,6 +122,26 @@ public class Options {
                     }
                     shortURL = args[index];
                     break;
+                case COMMAND_MERGE_ORDER_HISTORY:
+                    setCommand(arg);
+                    index++;
+                    if (index == args.length) {
+                        dieUsage(USAGE_ERROR + arg + COMMAND_REQUIRES_THREE_FILE_NAMES);
+                    }
+                    fileName = args[index];
+
+                    index++;
+                    if (index == args.length) {
+                        dieUsage(USAGE_ERROR + arg + COMMAND_REQUIRES_THREE_FILE_NAMES);
+                    }
+                    secondFileName = args[index];
+
+                    index++;
+                    if (index == args.length) {
+                        dieUsage(USAGE_ERROR + arg + COMMAND_REQUIRES_THREE_FILE_NAMES);
+                    }
+                    thirdFileName = args[index];
+                    break;
                 default:
                     dieUsage(UNKNOWN_COMMAND + arg);
             }
@@ -127,6 +157,18 @@ public class Options {
             }
         }
 
+        if (secondFileName != null) {
+            if (! new File(secondFileName).exists()) {
+                dieUsage(FILE_DOES_NOT_EXIST + secondFileName);
+            }
+        }
+
+        if (thirdFileName != null) {
+            if (! new File(thirdFileName).exists()) {
+                dieUsage(FILE_DOES_NOT_EXIST + thirdFileName);
+            }
+        }
+
         if ((shortURL != null) && (! shortURL.startsWith("upload://"))) {
                 dieUsage(BAD_SHORT_URL);
         }
@@ -138,6 +180,14 @@ public class Options {
 
     String getFileName() {
         return fileName;
+    }
+
+    String getSecondFileName() {
+        return secondFileName;
+    }
+
+    String getThirdFileName() {
+        return thirdFileName;
     }
 
     String getShortURL() {

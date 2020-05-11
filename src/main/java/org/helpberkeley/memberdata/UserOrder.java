@@ -22,17 +22,22 @@
  */
 package org.helpberkeley.memberdata;
 
-import org.junit.Test;
+public class UserOrder {
+    final String name;
+    final String userName;
+    final String deliveryFile;
 
-import java.io.IOException;
-import java.util.List;
-
-public class DailyDeliveriesTest extends TestBase {
-    @Test
-    public void parseDailyDeliveriesQueryTest() throws IOException, InterruptedException {
-        ApiClient apiClient = createApiSimulator();
-        String jsonData = apiClient.runQuery(Constants.QUERY_GET_DAILY_DELIVERIES);
-        ApiQueryResult queryResult = Parser.parseQueryResult(jsonData);
-        List<DeliveryData> deliveries = Parser.dailyDeliveryPosts(queryResult);
+    UserOrder(final String name, final String userName, final String deliveryFile) {
+        this.name = name;
+        this.userName = userName;
+        this.deliveryFile = deliveryFile;
     }
+
+    @Override
+    public String toString() {
+        return "Name=" + this.name + Constants.CSV_SEPARATOR
+                + "User Name=" + this.userName + Constants.CSV_SEPARATOR
+                + "Delivery File=" + deliveryFile;
+    }
+
 }

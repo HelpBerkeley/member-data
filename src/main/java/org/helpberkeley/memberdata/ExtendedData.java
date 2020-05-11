@@ -22,17 +22,12 @@
  */
 package org.helpberkeley.memberdata;
 
-import org.junit.Test;
+public class ExtendedData {
 
-import java.io.IOException;
-import java.util.List;
+    // Delivery Data Through DATE
+    // [... uploads://xyzzy.csv]
 
-public class DailyDeliveriesTest extends TestBase {
-    @Test
-    public void parseDailyDeliveriesQueryTest() throws IOException, InterruptedException {
-        ApiClient apiClient = createApiSimulator();
-        String jsonData = apiClient.runQuery(Constants.QUERY_GET_DAILY_DELIVERIES);
-        ApiQueryResult queryResult = Parser.parseQueryResult(jsonData);
-        List<DeliveryData> deliveries = Parser.dailyDeliveryPosts(queryResult);
-    }
+    // In the csv file:
+    //
+    //    ID,First Order Date,Last Order Date,
 }

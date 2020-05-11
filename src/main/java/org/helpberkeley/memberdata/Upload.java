@@ -81,7 +81,7 @@ public class Upload {
         String guid = "123456789837261";
         String border = "--------" + guid + '\n';
 
-        String body = border +
+        return border +
                 "Content-Disposition: form-data; name=\"files[]\"; filename=\"" +
                 fileName +
                 '\n' +
@@ -90,7 +90,6 @@ public class Upload {
                 fileData +
                 '\n' +
                 border;
-        return body;
     }
 
 
@@ -129,7 +128,7 @@ public class Upload {
         String mimeType = "test/csv";
         byteArrays.add(("\"files[]\"; filename=\"" + "test.csv"
                 + "\"\r\nContent-Type: " + mimeType + "\r\n\r\n").getBytes(StandardCharsets.UTF_8));
-        byteArrays.add(new String("a,b,c\n1,2,3\n").getBytes());
+        byteArrays.add("a,b,c\n1,2,3\n".getBytes());
         byteArrays.add("\r\n".getBytes(StandardCharsets.UTF_8));
 
         byteArrays.add(("--" + boundary + "--").getBytes(StandardCharsets.UTF_8));
