@@ -86,6 +86,7 @@ public class TestBase {
             Options.COMMAND_POST_INREACH,
             Options.COMMAND_POST_DISPATCHERS,
             Options.COMMAND_UPDATE_DISPATCHERS,
+            Options.COMMAND_UPDATE_ORDER_HISTORY,
     };
 
     static final String[] COMMANDS_WITH_FILE = {

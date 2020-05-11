@@ -62,6 +62,7 @@ public class Main {
     static final String DISPATCHERS_TITLE = "Dispatchers Info";
     static final String INREACH_TITLE = "Customer Info";
     static final String DRIVERS_TITLE = "Volunteer Drivers";
+    static final String ORDER_HISTORY_TITLE = "Order History";
 
     // FIX THIS, DS: make this less fragile
     static final long MEMBER_DATA_REQUIRING_ATTENTION_TOPIC_ID = 129;
@@ -101,6 +102,10 @@ public class Main {
             case Options.COMMAND_MERGE_ORDER_HISTORY:
                 mergeOrderHistory(apiClient, options.getFileName(),
                         options.getSecondFileName(), options.getThirdFileName());
+                break;
+            case Options.COMMAND_UPDATE_ORDER_HISTORY:
+                updateFile(apiClient, options.getFileName(),
+                        options.getShortURL(), ORDER_HISTORY_TITLE, ORDER_HISTORY_POST_ID);
                 break;
             case Options.COMMAND_GET_DAILY_DELIVERIES:
                 getDailyDeliveryPosts(apiClient);
@@ -414,15 +419,7 @@ public class Main {
             LOGGER.debug("processing " + deliveryData);
 //            Thread.sleep(100);
 
-            if (false
-//            if (deliveryData.date.equals("2020/04/14")
-//                || deliveryData.date.equals("2020/04/17")
-//                || deliveryData.date.equals("2020/04/18")
-//                || deliveryData.date.equals("2020/04/19")
-//                || deliveryData.date.equals("2020/04/21")
-//                || deliveryData.date.equals("2020/04/23")
-//                || deliveryData.date.equals("2020/04/25")
-                || deliveryData.date.equals("2020/04/29")) {
+            if (deliveryData.date.equals("2020/04/29")) {
                 System.out.println("FIX THIS, DS: skipping " + deliveryData.date);
                 continue;
             }
