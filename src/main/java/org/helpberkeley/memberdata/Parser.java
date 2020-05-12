@@ -521,11 +521,11 @@ public class Parser {
 
     static class DeliveryColumns {
 
-        private static final String CONUMSER_COLUMN = "Consumer";
-        private static final String NAME_COLUMN = "Name";
-        private static final String USER_NAME_COLUMN = "User Name";
-        private static final String VEGGIE_COLUMN = "Veggie";
-        private static final String NORMAL_COLUMN = "Normal";
+        static final String CONSUMER_COLUMN = "Consumer";
+        static final String NAME_COLUMN = "Name";
+        static final String USER_NAME_COLUMN = "User Name";
+        static final String VEGGIE_COLUMN = "Veggie";
+        static final String NORMAL_COLUMN = "Normal";
 
         private final int consumer;
         private final int name;
@@ -537,7 +537,7 @@ public class Parser {
 
             String[] columns = header.split(Constants.CSV_SEPARATOR, -1);
 
-            consumer = findOrderColumn(CONUMSER_COLUMN, columns);
+            consumer = findOrderColumn(CONSUMER_COLUMN, columns);
             name = findOrderColumn(NAME_COLUMN, columns);
             userName = findOrderColumn(USER_NAME_COLUMN, columns);
             veggie = findOrderColumn(VEGGIE_COLUMN, columns);
@@ -545,10 +545,7 @@ public class Parser {
 
             String errors = "";
             if (consumer == -1) {
-                errors += "Cannot find column " + CONUMSER_COLUMN + "\n";
-            }
-            if (name == -1) {
-                errors += "Cannot find column " + NAME_COLUMN + "\n";
+                errors += "Cannot find column " + CONSUMER_COLUMN + "\n";
             }
             if ((userName == -1) && (name == -1)) {
                 errors += "Cannot find column " + USER_NAME_COLUMN + "\n";

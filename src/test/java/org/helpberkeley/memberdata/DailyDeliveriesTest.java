@@ -27,6 +27,9 @@ import org.junit.Test;
 import java.io.IOException;
 import java.util.List;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.catchThrowable;
+
 public class DailyDeliveriesTest extends TestBase {
     @Test
     public void parseDailyDeliveriesQueryTest() throws IOException, InterruptedException {
@@ -34,5 +37,137 @@ public class DailyDeliveriesTest extends TestBase {
         String jsonData = apiClient.runQuery(Constants.QUERY_GET_DAILY_DELIVERIES);
         ApiQueryResult queryResult = Parser.parseQueryResult(jsonData);
         List<DeliveryData> deliveries = Parser.dailyDeliveryPosts(queryResult);
+    }
+
+    @Test
+    public void expectedOrderColumnsTest() {
+        String header = Parser.DeliveryColumns.CONSUMER_COLUMN + Constants.CSV_SEPARATOR
+                + Parser.DeliveryColumns.NAME_COLUMN + Constants.CSV_SEPARATOR
+                + Parser.DeliveryColumns.USER_NAME_COLUMN + Constants.CSV_SEPARATOR
+                + Parser.DeliveryColumns.NORMAL_COLUMN + Constants.CSV_SEPARATOR
+                + Parser.DeliveryColumns.VEGGIE_COLUMN + Constants.CSV_SEPARATOR
+                + "\n";
+
+        Parser.parseOrders("", header);
+    }
+
+    @Test
+    public void outOfOrderColumnsTest() {
+        String header = Parser.DeliveryColumns.CONSUMER_COLUMN + Constants.CSV_SEPARATOR
+                + Parser.DeliveryColumns.NORMAL_COLUMN + Constants.CSV_SEPARATOR
+                + Parser.DeliveryColumns.USER_NAME_COLUMN + Constants.CSV_SEPARATOR
+                + Parser.DeliveryColumns.VEGGIE_COLUMN + Constants.CSV_SEPARATOR
+                + Parser.DeliveryColumns.NAME_COLUMN + Constants.CSV_SEPARATOR
+                + "\n";
+
+        Parser.parseOrders("", header);
+    }
+
+    @Test
+    public void spaceyColumnNamesTest() {
+        String header = " " + Parser.DeliveryColumns.CONSUMER_COLUMN + " " + Constants.CSV_SEPARATOR
+                + " " + Parser.DeliveryColumns.NORMAL_COLUMN + " " + Constants.CSV_SEPARATOR
+                + " " + Parser.DeliveryColumns.USER_NAME_COLUMN + " " + Constants.CSV_SEPARATOR
+                + " " + Parser.DeliveryColumns.VEGGIE_COLUMN + " " + Constants.CSV_SEPARATOR
+                + " " + Parser.DeliveryColumns.NAME_COLUMN + " " + Constants.CSV_SEPARATOR
+                + "\n";
+
+        Parser.parseOrders("", header);
+    }
+
+    @Test
+    public void missingUserNameColumnTest() {
+        String header = Parser.DeliveryColumns.CONSUMER_COLUMN + Constants.CSV_SEPARATOR
+                + Parser.DeliveryColumns.NAME_COLUMN + Constants.CSV_SEPARATOR
+                + Parser.DeliveryColumns.NORMAL_COLUMN + Constants.CSV_SEPARATOR
+                + Parser.DeliveryColumns.VEGGIE_COLUMN + Constants.CSV_SEPARATOR
+                + "\n";
+
+        Parser.parseOrders("", header);
+    }
+
+    @Test
+    public void missingNameColumnTest() {
+        String header = Parser.DeliveryColumns.CONSUMER_COLUMN + Constants.CSV_SEPARATOR
+                + Parser.DeliveryColumns.USER_NAME_COLUMN + Constants.CSV_SEPARATOR
+                + Parser.DeliveryColumns.NORMAL_COLUMN + Constants.CSV_SEPARATOR
+                + Parser.DeliveryColumns.VEGGIE_COLUMN + Constants.CSV_SEPARATOR
+                + "\n";
+
+        Parser.parseOrders("", header);
+    }
+
+    @Test
+    public void missingConsumerColumnTest() {
+        String fileName = "missing-consumer-column";
+        String header = Parser.DeliveryColumns.NAME_COLUMN + Constants.CSV_SEPARATOR
+                + Parser.DeliveryColumns.USER_NAME_COLUMN + Constants.CSV_SEPARATOR
+                + Parser.DeliveryColumns.NORMAL_COLUMN + Constants.CSV_SEPARATOR
+                + Parser.DeliveryColumns.VEGGIE_COLUMN + Constants.CSV_SEPARATOR
+                + "\n";
+
+        Throwable thrown = catchThrowable(() -> Parser.parseOrders(fileName, header));
+        assertThat(thrown).isInstanceOf(Error.class);
+        assertThat(thrown).hasMessageContaining(fileName);
+        assertThat(thrown).hasMessageContaining(Parser.DeliveryColumns.CONSUMER_COLUMN);
+    }
+
+    @Test
+    public void missingNormalColumnTest() {
+        String fileName = "missing-normal-column";
+        String header = Parser.DeliveryColumns.CONSUMER_COLUMN + Constants.CSV_SEPARATOR
+                + Parser.DeliveryColumns.NAME_COLUMN + Constants.CSV_SEPARATOR
+                + Parser.DeliveryColumns.USER_NAME_COLUMN + Constants.CSV_SEPARATOR
+                + Parser.DeliveryColumns.VEGGIE_COLUMN + Constants.CSV_SEPARATOR
+                + "\n";
+
+        Throwable thrown = catchThrowable(() -> Parser.parseOrders(fileName, header));
+        assertThat(thrown).isInstanceOf(Error.class);
+        assertThat(thrown).hasMessageContaining(fileName);
+        assertThat(thrown).hasMessageContaining(Parser.DeliveryColumns.NORMAL_COLUMN);
+    }
+
+    @Test
+    public void parseDelivers3_28Test() {
+        String fileName = "deliveries-3_28.csv";
+        String data = readFile(fileName);
+        List<UserOrder> userOrders = Parser.parseOrders(fileName, data);
+
+        List<UserOrder> expected = List.of(
+                new UserOrder("Ms. Somebody", "Somebody", fileName),
+                new UserOrder("Ms. Somebody", "Somebody", fileName),
+                new UserOrder("Ms. Somebody", "", fileName),
+                new UserOrder("Mr. Somebody", "SomebodyElse", fileName)
+        );
+
+        assertThat(userOrders).isEqualTo(expected);
+    }
+
+    @Test
+    public void parseDelivers3_29Test() {
+        String fileName = "deliveries-3_29.csv";
+        String data = readFile(fileName);
+        List<UserOrder> userOrders = Parser.parseOrders(fileName, data);
+
+        List<UserOrder> expected = List.of(
+                new UserOrder("Mr. Somebody", "SomebodyElse", fileName),
+                new UserOrder("Ms. Somebody", "Somebody", fileName)
+        );
+
+        assertThat(userOrders).isEqualTo(expected);
+    }
+
+    @Test
+    public void parseDelivers3_31Test() {
+        String fileName = "deliveries-3_31.csv";
+        String data = readFile(fileName);
+        List<UserOrder> userOrders = Parser.parseOrders(fileName, data);
+
+        List<UserOrder> expected = List.of(
+                new UserOrder("", "ThirdPerson", fileName),
+                new UserOrder("Ms. Somebody", "Somebody", fileName)
+        );
+
+        assertThat(userOrders).isEqualTo(expected);
     }
 }

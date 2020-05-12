@@ -41,6 +41,7 @@ public class Options {
     static final String COMMAND_POST_WORKFLOW = "post-workflow";
     static final String COMMAND_POST_INREACH = "post-inreach";
     static final String COMMAND_POST_DISPATCHERS = "post-dispatchers";
+    static final String COMMAND_INREACH = "inreach";
 
     static final String USAGE_ERROR = "Usage error for command ";
     static final String UNKNOWN_COMMAND = USAGE_ERROR + ": unknown command: ";
@@ -59,6 +60,7 @@ public class Options {
                     + "    | " + COMMAND_GET_ORDER_HISTORY + "\n"
                     + "    | " + COMMAND_MERGE_ORDER_HISTORY
                                 + " all-members-file order-history-file daily-deliveries-file\n"
+                    + "    | " + COMMAND_INREACH + " all-members-file order-history-file\n"
                     + "    | " + COMMAND_POST_ERRORS + " errors-file-name\n"
                     + "    | " + COMMAND_POST_CONSUMER_REQUESTS + " consumer-requests-file-name\n"
                     + "    | " + COMMAND_POST_VOLUNTEER_REQUESTS + " volunteer-requests-file-name\n"

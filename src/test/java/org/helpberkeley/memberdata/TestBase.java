@@ -24,6 +24,10 @@ package org.helpberkeley.memberdata;
 import org.junit.BeforeClass;
 
 import java.io.IOException;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -334,5 +338,19 @@ public class TestBase {
                 TEST_CITY_1, TEST_PHONE_1, TEST_ALT_PHONE_1, TEST_NEIGHBORHOOD_1, TEST_CREATED_1,
                 TEST_APARTMENT_1, TEST_CONSUMER_REQUEST_1, TEST_VOLUNTEER_REQUEST_1,
                 TEST_REFERRAL_1, groups);
+    }
+
+    String readFile(final String fileName) {
+        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+        URL url = classLoader.getResource(fileName);
+
+        if (url == null) {
+            throw new RuntimeException("file " + fileName + " not found");
+        }
+        try {
+            return (Files.readString(Paths.get(url.toURI())));
+        } catch (IOException|URISyntaxException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

@@ -40,4 +40,27 @@ public class UserOrder {
                 + "Delivery File=" + deliveryFile;
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof UserOrder)) {
+            return false;
+        }
+
+        UserOrder otherOrder = (UserOrder)obj;
+
+        if (! name.equals(otherOrder.name)) {
+            return false;
+        }
+
+        if (! userName.equals(otherOrder. userName)) {
+            return false;
+        }
+
+        if (! deliveryFile.equals(otherOrder. deliveryFile)) {
+            return false;
+        }
+
+        return true;
+    }
+
 }
