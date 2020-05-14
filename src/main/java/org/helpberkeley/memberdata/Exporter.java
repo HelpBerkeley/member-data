@@ -35,7 +35,7 @@ import java.time.format.DateTimeFormatter;
 
 public class Exporter {
 
-    protected static final Logger LOGGER = LoggerFactory.getLogger(UserExporter.class);
+    protected static final Logger LOGGER = LoggerFactory.getLogger(Exporter.class);
     protected final String separator = Constants.CSV_SEPARATOR;
 
     protected String generateFileName(String fileName, String suffix) {
@@ -49,6 +49,8 @@ public class Exporter {
         Files.deleteIfExists(filePath);
         Files.createFile(Paths.get(fileName));
         Files.writeString(filePath, fileData);
+
+        LOGGER.debug("Wrote: " + fileName);
 
     }
 }

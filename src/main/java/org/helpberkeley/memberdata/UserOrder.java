@@ -25,11 +25,16 @@ package org.helpberkeley.memberdata;
 public class UserOrder {
     final String name;
     final String userName;
+    final String phone;
+    final String altPhone;
     final String deliveryFile;
 
-    UserOrder(final String name, final String userName, final String deliveryFile) {
+    UserOrder(final String name, final String userName,
+              final String phone, final String altPhone, final String deliveryFile) {
         this.name = name;
         this.userName = userName;
+        this.phone = phone;
+        this.altPhone = altPhone;
         this.deliveryFile = deliveryFile;
     }
 
@@ -53,6 +58,14 @@ public class UserOrder {
         }
 
         if (! userName.equals(otherOrder. userName)) {
+            return false;
+        }
+
+        if (! phone.equals(otherOrder.phone)) {
+            return false;
+        }
+
+        if (! phone.equals(otherOrder.altPhone)) {
             return false;
         }
 

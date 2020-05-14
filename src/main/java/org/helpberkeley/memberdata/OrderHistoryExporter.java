@@ -36,7 +36,6 @@ public class OrderHistoryExporter extends Exporter {
 
         String outputFileName = generateFileName(fileName, "csv");
         writeFile(outputFileName, orderHistory());
-        LOGGER.debug("Wrote: " + outputFileName);
 
         return outputFileName;
     }

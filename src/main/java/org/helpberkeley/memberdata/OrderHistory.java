@@ -22,9 +22,9 @@
  */
 package org.helpberkeley.memberdata;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 public class OrderHistory {
     private static final String ID_COLUMN = "ID";
@@ -32,11 +32,15 @@ public class OrderHistory {
     private static final String FIRST_ORDER_DATE_COLUMN = "First Order Date";
     private static final String LAST_ORDER_DATE_COLUMN = "Last Order Date";
 
-    private final Map<Long, Row> history = new HashMap<>();
+    private final Map<Long, Row> history = new TreeMap<>();
     String historyThroughDate;
 
     OrderHistory(final String date) {
         historyThroughDate = date;
+    }
+
+    Row getRow(long userId) {
+        return history.get(userId);
     }
 
     void add(final String id, int numOrders, final String firstOrderDate, final String lastOrderDate) {
@@ -55,13 +59,7 @@ public class OrderHistory {
 
             User user = usersByUserName.get(userOrder.userName);
             if (user == null) {
-                for (User theHardWay : users) {
-                    String userOrderName = userOrder.name.trim().toLowerCase();
-                    if (theHardWay.getName().trim().toLowerCase().equals(userOrderName)) {
-                        user = theHardWay;
-                        break;
-                    }
-                }
+                user = findUserTheHardWay(userOrder, users);
             }
 
             if (user == null) {
@@ -77,6 +75,38 @@ public class OrderHistory {
         }
 
         historyThroughDate = date;
+    }
+
+    private User findUserTheHardWay(UserOrder userOrder, List<User> users) {
+
+        // Iterate through users, checking by name, then phone, then alt phone
+
+        String name = userOrder.name.trim().toLowerCase().replaceAll(" ", "");
+        String phone = userOrder.phone.trim().toLowerCase().replaceAll(" ", "");
+        String altPhone = userOrder.altPhone.trim().toLowerCase().replaceAll(" ", "");
+
+        for (User theHardWay : users) {
+            if ((! name.isEmpty() && name.equals(
+                    theHardWay.getName().trim().toLowerCase().replaceAll(" ", "")))) {
+                return theHardWay;
+            }
+            String theHardWayPhone =
+                    theHardWay.getPhoneNumber().trim().toLowerCase().replaceAll(" ", "");
+            String theHardWayAltPhone =
+                    theHardWay.getAltPhoneNumber().trim().toLowerCase().replaceAll(" ", "");
+
+            if ((! phone.isEmpty()) &&
+                    (phone.equals(theHardWayPhone) || phone.equals(theHardWayAltPhone))) {
+                return theHardWay;
+            }
+
+            if ((! altPhone.isEmpty()) &&
+                    (altPhone.equals(theHardWayPhone) || altPhone.equals(theHardWayAltPhone))) {
+                return theHardWay;
+            }
+        }
+
+        return null;
     }
 
     String export() {
@@ -119,7 +149,7 @@ public class OrderHistory {
                 + "\n";
     }
 
-    private static class Row {
+    static class Row {
         private final long id;
         private int numOrders;
         private final String firstOrderDate;
@@ -135,6 +165,18 @@ public class OrderHistory {
         void update(final String date) {
             lastOrderDate = date;
             numOrders++;
+        }
+
+        int getNumOrders() {
+            return numOrders;
+        }
+
+        String getFirstOrderDate() {
+            return firstOrderDate;
+        }
+
+        String getLastOrderDate() {
+            return lastOrderDate;
         }
     }
 }

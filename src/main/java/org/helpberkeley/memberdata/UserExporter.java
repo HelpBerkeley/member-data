@@ -51,7 +51,6 @@ public class UserExporter extends Exporter {
 
         String outputFileName = generateFileName(fileName, "txt");
         writeFile(outputFileName, fileData.toString());
-        LOGGER.debug("Wrote: " + outputFileName);
 
         return outputFileName;
     }
@@ -72,7 +71,6 @@ public class UserExporter extends Exporter {
 
         String outputFileName = generateFileName(fileName, "csv");
         writeFile(outputFileName, consumerRequests());
-        LOGGER.debug("Wrote: " + outputFileName);
 
         return outputFileName;
     }
@@ -93,7 +91,6 @@ public class UserExporter extends Exporter {
 
         String outputFileName = generateFileName(fileName, "csv");
         writeFile(outputFileName, volunteerRequests());
-        LOGGER.debug("Wrote: " + outputFileName);
 
         return outputFileName;
     }
@@ -102,7 +99,6 @@ public class UserExporter extends Exporter {
 
         String outputFileName = generateFileName(fileName, "csv");
         writeFile(outputFileName, allMembersRaw());
-        LOGGER.debug("Wrote: " + outputFileName);
         return outputFileName;
     }
 
@@ -134,7 +130,6 @@ public class UserExporter extends Exporter {
 
         String outputFileName = generateFileName(fileName, "csv");
         writeFile(outputFileName, allMembersReport());
-        LOGGER.debug("Wrote: " + outputFileName);
         return outputFileName;
     }
 
@@ -201,7 +196,6 @@ public class UserExporter extends Exporter {
 
         String outputFileName = generateFileName(fileName, "csv");
         writeFile(outputFileName, drivers());
-        LOGGER.debug("Wrote: " + outputFileName);
 
         return outputFileName;
     }
@@ -242,7 +236,6 @@ public class UserExporter extends Exporter {
 
         String outputFileName = generateFileName(fileName, "csv");
         writeFile(outputFileName, workflow());
-        LOGGER.debug("Wrote: " + outputFileName);
 
         return outputFileName;
     }
@@ -272,13 +265,15 @@ public class UserExporter extends Exporter {
             + '\n';
     }
 
-    String inreach() {
+    String inreach(OrderHistory orderHistory) {
 
         StringBuilder rows = new StringBuilder();
 
         rows.append(inreachHeaders());
 
         for (User user : tables.inreach()) {
+            OrderHistory.Row userOrderHistory = orderHistory.getRow(user.getId());
+
             rows.append(user.getSimpleCreateTime());
             rows.append(separator);
             rows.append(user.getName());
@@ -295,6 +290,14 @@ public class UserExporter extends Exporter {
             rows.append(separator);
             rows.append(user.isApartment());
             rows.append(separator);
+            rows.append(Boolean.valueOf(userOrderHistory != null));
+            rows.append(separator);
+            rows.append(userOrderHistory != null ? userOrderHistory.getNumOrders() : "");
+            rows.append(separator);
+            rows.append(userOrderHistory != null ? userOrderHistory.getFirstOrderDate() : "");
+            rows.append(separator);
+            rows.append(userOrderHistory != null ? userOrderHistory.getLastOrderDate() : "");
+            rows.append(separator);
             rows.append(user.isConsumer());
             rows.append(separator);
             rows.append(user.isDispatcher());
@@ -308,11 +311,10 @@ public class UserExporter extends Exporter {
 
     }
 
-    String inreachToFile(final String fileName) throws IOException {
+    String inreachToFile(final String fileName, OrderHistory orderHistory) throws IOException {
 
         String outputFileName = generateFileName(fileName, "csv");
-        writeFile(outputFileName, inreach());
-        LOGGER.debug("Wrote: " + outputFileName);
+        writeFile(outputFileName, inreach(orderHistory));
 
         return outputFileName;
     }
@@ -333,6 +335,14 @@ public class UserExporter extends Exporter {
             + User.ADDRESS_COLUMN
             + separator
             + User.APARTMENT_COLUMN
+            + separator
+            + Constants.ORDER_STATUS_COLUMN
+            + separator
+            + Constants.ORDER_NUMBER_COLUMN
+            + separator
+            + Constants.FIRST_ORDER_DATE_COLUMN
+            + separator
+            + Constants.LAST_ORDER_DATE_COLUMN
             + separator
             + User.CONSUMER_COLUMN
             + separator
@@ -401,7 +411,6 @@ public class UserExporter extends Exporter {
 
         String outputFileName = generateFileName(fileName, "csv");
         writeFile(outputFileName, dispatchers());
-        LOGGER.debug("Wrote: " + outputFileName);
 
         return outputFileName;
     }

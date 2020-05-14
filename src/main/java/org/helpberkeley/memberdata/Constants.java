@@ -49,6 +49,11 @@ public class Constants {
     public static final String COLUMN_ALT_PHONE = "alt_phone";
     public static final String COLUMN_REFERRAL = "referral";
 
+    public static final String ORDER_STATUS_COLUMN = "OrderStatus";
+    public static final String ORDER_NUMBER_COLUMN = "OrderNumber";
+    public static final String FIRST_ORDER_DATE_COLUMN = "First order date";
+    public static final String LAST_ORDER_DATE_COLUMN = "Last order date";
+
     // Group names - FIX THIS, DS: hardwired
     public static final String GROUP_CONSUMERS = "consumers";
     public static final String GROUP_DRIVERS = "drivers";

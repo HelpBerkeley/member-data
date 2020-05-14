@@ -128,46 +128,17 @@ public class DailyDeliveriesTest extends TestBase {
     }
 
     @Test
-    public void parseDelivers3_28Test() {
-        String fileName = "deliveries-3_28.csv";
-        String data = readFile(fileName);
-        List<UserOrder> userOrders = Parser.parseOrders(fileName, data);
+    public void missingNameAndUserNameColumnsTest() {
+        String fileName = "missing-name-username-columns";
+        String header = Parser.DeliveryColumns.CONSUMER_COLUMN + Constants.CSV_SEPARATOR
+                + Parser.DeliveryColumns.NORMAL_COLUMN + Constants.CSV_SEPARATOR
+                + Parser.DeliveryColumns.VEGGIE_COLUMN + Constants.CSV_SEPARATOR
+                + "\n";
 
-        List<UserOrder> expected = List.of(
-                new UserOrder("Ms. Somebody", "Somebody", fileName),
-                new UserOrder("Ms. Somebody", "Somebody", fileName),
-                new UserOrder("Ms. Somebody", "", fileName),
-                new UserOrder("Mr. Somebody", "SomebodyElse", fileName)
-        );
-
-        assertThat(userOrders).isEqualTo(expected);
-    }
-
-    @Test
-    public void parseDelivers3_29Test() {
-        String fileName = "deliveries-3_29.csv";
-        String data = readFile(fileName);
-        List<UserOrder> userOrders = Parser.parseOrders(fileName, data);
-
-        List<UserOrder> expected = List.of(
-                new UserOrder("Mr. Somebody", "SomebodyElse", fileName),
-                new UserOrder("Ms. Somebody", "Somebody", fileName)
-        );
-
-        assertThat(userOrders).isEqualTo(expected);
-    }
-
-    @Test
-    public void parseDelivers3_31Test() {
-        String fileName = "deliveries-3_31.csv";
-        String data = readFile(fileName);
-        List<UserOrder> userOrders = Parser.parseOrders(fileName, data);
-
-        List<UserOrder> expected = List.of(
-                new UserOrder("", "ThirdPerson", fileName),
-                new UserOrder("Ms. Somebody", "Somebody", fileName)
-        );
-
-        assertThat(userOrders).isEqualTo(expected);
+        Throwable thrown = catchThrowable(() -> Parser.parseOrders(fileName, header));
+        assertThat(thrown).isInstanceOf(Error.class);
+        assertThat(thrown).hasMessageContaining(fileName);
+        assertThat(thrown).hasMessageContaining(Parser.DeliveryColumns.USER_NAME_COLUMN);
+        assertThat(thrown).hasMessageContaining(Parser.DeliveryColumns.NAME_COLUMN);
     }
 }

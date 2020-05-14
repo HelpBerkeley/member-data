@@ -127,6 +127,20 @@ public class Options {
                     }
                     shortURL = args[index];
                     break;
+                case COMMAND_INREACH:
+                    setCommand(arg);
+                    index++;
+                    if (index == args.length) {
+                        dieUsage(USAGE_ERROR + arg + COMMAND_REQUIRES_TWO_FILE_NAMES);
+                    }
+                    fileName = args[index];
+
+                    index++;
+                    if (index == args.length) {
+                        dieUsage(USAGE_ERROR + arg + COMMAND_REQUIRES_TWO_FILE_NAMES);
+                    }
+                    secondFileName = args[index];
+                    break;
                 case COMMAND_MERGE_ORDER_HISTORY:
                     setCommand(arg);
                     index++;

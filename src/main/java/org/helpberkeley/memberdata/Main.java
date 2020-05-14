@@ -142,6 +142,9 @@ public class Main {
                 updateFile(apiClient, options.getFileName(),
                         options.getShortURL(), DISPATCHERS_TITLE, DISPATCHERS_POST_ID);
                 break;
+            case Options.COMMAND_INREACH:
+                generateInreach(options.getFileName(), options.getSecondFileName());
+                break;
             default:
                 assert options.getCommand().equals(Options.COMMAND_POST_DRIVERS) : options.getCommand();
                 postFile(apiClient, options.getFileName(),
@@ -201,9 +204,6 @@ public class Main {
         // Export workflow
         exporter.workflowToFile(WORKFLOW_FILE);
 
-        // Export inreach
-        exporter.inreachToFile(INREACH_FILE);
-
         // Export dispatchers
         exporter.dispatchersToFile(DISPATCHERS_FILE);
     }
@@ -212,7 +212,6 @@ public class Main {
             throws IOException, InterruptedException {
 
         String csvData = Files.readString(Paths.get(fileName));
-        // FIX THIS, DS: constant for separator
         List<User> users = Parser.users(csvData);
 
         StringBuilder postRaw = new StringBuilder();
@@ -416,7 +415,6 @@ public class Main {
 
         for (DeliveryData deliveryData : deliveryDataList) {
 
-            LOGGER.debug("processing " + deliveryData);
 //            Thread.sleep(100);
 
             if (deliveryData.date.equals("2020/04/29")) {
@@ -425,6 +423,7 @@ public class Main {
             }
             // Process those newer than order history date
             if (deliveryData.date.compareTo(orderHistory.historyThroughDate) > 0) {
+                LOGGER.debug("processing " + deliveryData);
                 // Download the delivery file
                 String deliveries = apiClient.downloadFile(deliveryData.uploadFile.fileName);
                 // Parse list of user restaurant orders
@@ -436,6 +435,16 @@ public class Main {
 
         // Export updated order history
         new OrderHistoryExporter(orderHistory).orderHistoryToFile(ORDER_HISTORY_FILE);
+    }
+
+    static void generateInreach(final String usersFile, final String orderHistoryFile) throws IOException {
+        String csvData = Files.readString(Paths.get(usersFile));
+        List<User> users = Parser.users(csvData);
+
+        csvData = Files.readString(Paths.get(orderHistoryFile));
+        OrderHistory orderHistory = Parser.orderHistory(csvData);
+
+        new UserExporter(users).inreachToFile(INREACH_FILE, orderHistory);
     }
 }
 

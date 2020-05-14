@@ -39,7 +39,7 @@ public class TestBase {
 
     static final String TEST_NAME_1 = "name 1";
     static final long TEST_ID_1 = 1;
-    static final String TEST_USER_NAME_1 = "user name 1";
+    static final String TEST_USER_NAME_1 = "userName1";
     static final String TEST_ADDRESS_1 = "address 1";
     static final String TEST_CITY_1 = Constants.BERKELEY;
     static final String TEST_PHONE_1 = "111-222-3333";
@@ -53,7 +53,7 @@ public class TestBase {
 
     static final String TEST_NAME_2 = "name 2";
     static final long TEST_ID_2 = 2;
-    static final String TEST_USER_NAME_2 = "user name 2";
+    static final String TEST_USER_NAME_2 = "userName2";
     static final String TEST_ADDRESS_2 = "address 2";
     static final String TEST_CITY_2 = Constants.ALBANY;
     static final String TEST_PHONE_2 = "222-333-4444";
@@ -67,7 +67,7 @@ public class TestBase {
 
     static final String TEST_NAME_3 = "name 3";
     static final long TEST_ID_3 = 3;
-    static final String TEST_USER_NAME_3 = "user name 3";
+    static final String TEST_USER_NAME_3 = "userName3";
     static final String TEST_ADDRESS_3 = "address 3";
     static final String TEST_CITY_3 = Constants.KENSINGTON;
     static final String TEST_PHONE_3 = "333-444-5555";

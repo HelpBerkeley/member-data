@@ -37,7 +37,6 @@ public class DeliveryDataExporter extends Exporter {
 
         String outputFileName = generateFileName(fileName, "csv");
         writeFile(outputFileName, deliveryPosts());
-        LOGGER.debug("Wrote: " + outputFileName);
 
         return outputFileName;
     }

@@ -25,6 +25,7 @@ import com.cedarsoftware.util.io.JsonReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.print.attribute.standard.MediaSize;
 import java.util.*;
 
 public class Parser {
@@ -397,13 +398,15 @@ public class Parser {
 
     static OrderHistoryPost orderHistoryPost(final String rawOrderHistoryPost) {
 
-        // "Order History through 2020/01/01\n\n[order_history.csv|attachment](upload://order-history.csv) (37 Bytes)",
+        // "**Order History -- 2020/01/01**\n\n[order_history.csv|attachment](upload://order-history.csv) (37 Bytes)",
 
-        final String start = "Order History through ";
+        final String start = "**Order History -- ";
         assert rawOrderHistoryPost.startsWith(start) : rawOrderHistoryPost;
         String[] lines = rawOrderHistoryPost.split("\n");
         assert lines.length == 3 : rawOrderHistoryPost;
         String date = lines[0].substring(start.length());
+        assert date.endsWith("**");
+        date = date.substring(0, date.length() - 2);
         String shortURL =  shortURL(lines[2]);
         String fileName = downloadFileName(lines[2]);
 
@@ -420,8 +423,7 @@ public class Parser {
         assert lines.length > 0;
 
         String header = lines[0];
-        assert header.equals(OrderHistory.csvHeader().trim()) :
-                header + " != " + OrderHistory.csvHeader().trim();
+        assert header.equals(OrderHistory.csvHeader().trim()) : header + " != " + OrderHistory.csvHeader().trim();
 
         // Special case for bootstrap when there is no previous data
         if (lines.length == 1) {
@@ -472,41 +474,31 @@ public class Parser {
             }
 
             String user = "";
+            String name = "";
+            String phone = "";
+            String altPhone = "";
             if (indexes.userName != -1) {
                 user = columns[indexes.userName];
             }
-            String name = columns[indexes.name];
+            if (indexes.name != -1) {
+                name = columns[indexes.name];
+            }
+            if (indexes.phoneNumber != -1) {
+                phone = columns[indexes.phoneNumber];
+            }
+            if (indexes.altPhoneNumber != -1) {
+                altPhone = columns[indexes.altPhoneNumber];
+            }
             String veggie = columns[indexes.veggie];
             String normal = columns[indexes.normal];
 
             if (((! veggie.isEmpty()) && (Integer.parseInt(veggie) != 0))
                 || ((! normal.isEmpty()) && (Integer.parseInt(normal) != 0))) {
-                userOrders.add(new UserOrder(name, user, fileName));
+                userOrders.add(new UserOrder(name, user, fileName, phone, altPhone));
             }
         }
 
         return userOrders;
-    }
-
-    private static int findOrderColumn(final String fileName,
-        final String columnName, final String[] columnNames, final String header) {
-
-        String desiredColumnName = columnName.trim()
-                .toLowerCase()
-                .replace(" ", "");
-
-        for (int index = 0; index < columnNames.length; index++) {
-            String targetColumnName = columnNames[index].trim()
-                    .toLowerCase()
-                    .replace(" ", "")
-                    .replaceAll("s$", "");
-
-            if (desiredColumnName.equals(targetColumnName)) {
-                return index;
-            }
-        }
-
-        throw new Error("Cannot find column " + columnName + " in " + fileName + "\n" + header);
     }
 
     // Skip Discourse system users. Not fully formed.
@@ -524,12 +516,16 @@ public class Parser {
         static final String CONSUMER_COLUMN = "Consumer";
         static final String NAME_COLUMN = "Name";
         static final String USER_NAME_COLUMN = "User Name";
+        static final String PHONE_COLUMN = "Phone #";
+        static final String ALT_PHONE_COLUMN = "Phone2 #";
         static final String VEGGIE_COLUMN = "Veggie";
         static final String NORMAL_COLUMN = "Normal";
 
         private final int consumer;
         private final int name;
         private final int userName;
+        private final int phoneNumber;
+        private final int altPhoneNumber;
         private final int veggie;
         private final int normal;
 
@@ -540,6 +536,8 @@ public class Parser {
             consumer = findOrderColumn(CONSUMER_COLUMN, columns);
             name = findOrderColumn(NAME_COLUMN, columns);
             userName = findOrderColumn(USER_NAME_COLUMN, columns);
+            phoneNumber = findOrderColumn(PHONE_COLUMN, columns);
+            altPhoneNumber = findOrderColumn(ALT_PHONE_COLUMN, columns);
             veggie = findOrderColumn(VEGGIE_COLUMN, columns);
             normal = findOrderColumn(NORMAL_COLUMN, columns);
 
@@ -548,7 +546,7 @@ public class Parser {
                 errors += "Cannot find column " + CONSUMER_COLUMN + "\n";
             }
             if ((userName == -1) && (name == -1)) {
-                errors += "Cannot find column " + USER_NAME_COLUMN + "\n";
+                errors += "Cannot find either " + NAME_COLUMN + " or " + USER_NAME_COLUMN + " column";
             }
             if (veggie == -1) {
                 errors += "Cannot find column " + VEGGIE_COLUMN + "\n";
