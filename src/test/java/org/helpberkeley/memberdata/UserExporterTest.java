@@ -57,13 +57,11 @@ public class UserExporterTest extends TestBase {
 
         UserExporter exporter = new UserExporter(users);
         String fileName = exporter.errorsToFile("errorsToFileTest.txt");
-        Path filePath = Paths.get(fileName);
-        assertThat(filePath).exists();
 
-        String errorFileData = Files.readString(filePath);
-        assertThat(errorFileData).contains(TEST_USER_NAME_1);
-        assertThat(errorFileData).doesNotContain(TEST_USER_NAME_2);
-        assertThat(errorFileData).doesNotContain(TEST_USER_NAME_3);
+        String fileData = readFile(fileName);
+        assertThat(fileData).contains(TEST_USER_NAME_1);
+        assertThat(fileData).doesNotContain(TEST_USER_NAME_2);
+        assertThat(fileData).doesNotContain(TEST_USER_NAME_3);
 
         Files.delete(Paths.get(fileName));
     }
@@ -76,12 +74,10 @@ public class UserExporterTest extends TestBase {
 
         UserExporter exporter = new UserExporter(List.of(u1, u2));
         String fileName = exporter.consumerRequestsToFile("consumerRequests.csv");
-        Path filePath = Paths.get(fileName);
-        assertThat(filePath).exists();
-        
-        String errorFileData = Files.readString(filePath);
-        assertThat(errorFileData).contains(TEST_USER_NAME_2);
-        assertThat(errorFileData).doesNotContain(TEST_USER_NAME_1);
+
+        String fileData = readFile(fileName);
+        assertThat(fileData).contains(TEST_USER_NAME_2);
+        assertThat(fileData).doesNotContain(TEST_USER_NAME_1);
 
         Files.delete(Paths.get(fileName));
     }
@@ -96,14 +92,12 @@ public class UserExporterTest extends TestBase {
 
         UserExporter exporter = new UserExporter(List.of(u1, u2, u3, u4));
         String fileName = exporter.volunteerRequestsToFile("volunteerRequests.csv");
-        Path filePath = Paths.get(fileName);
-        assertThat(filePath).exists();
 
-        String errorFileData = Files.readString(filePath);
-        assertThat(errorFileData).doesNotContain(TEST_USER_NAME_1);
-        assertThat(errorFileData).contains(TEST_USER_NAME_2);
-        assertThat(errorFileData).doesNotContain(TEST_USER_NAME_3);
-        assertThat(errorFileData).contains("u4");
+        String fileData = readFile(fileName);
+        assertThat(fileData).doesNotContain(TEST_USER_NAME_1);
+        assertThat(fileData).contains(TEST_USER_NAME_2);
+        assertThat(fileData).doesNotContain(TEST_USER_NAME_3);
+        assertThat(fileData).contains("u4");
 
         Files.delete(Paths.get(fileName));
     }
@@ -116,14 +110,12 @@ public class UserExporterTest extends TestBase {
         User u3 = createUserWithGroup(TEST_USER_NAME_3, Constants.GROUP_DRIVERS);
 
         UserExporter exporter = new UserExporter(List.of(u1, u2, u3));
-        String fileName = exporter.driversToFile("driverRequests.csv");
-        Path filePath = Paths.get(fileName);
-        assertThat(filePath).exists();
+        String fileName = exporter.driversToFile("driverRequests");
 
-        String errorFileData = Files.readString(filePath);
-        assertThat(errorFileData).doesNotContain(TEST_USER_NAME_1);
-        assertThat(errorFileData).contains(TEST_USER_NAME_2);
-        assertThat(errorFileData).contains(TEST_USER_NAME_3);
+        String fileData = readFile(fileName);
+        assertThat(fileData).doesNotContain(TEST_USER_NAME_1);
+        assertThat(fileData).contains(TEST_USER_NAME_2);
+        assertThat(fileData).contains(TEST_USER_NAME_3);
 
         Files.delete(Paths.get(fileName));
     }
@@ -159,6 +151,7 @@ public class UserExporterTest extends TestBase {
         assertThat(headerColumns[index++]).isEqualTo(User.CREATED_AT_COLUMN);
         assertThat(headerColumns[index++]).isEqualTo(User.APARTMENT_COLUMN);
         assertThat(headerColumns[index++]).isEqualTo(User.REFERRAL_COLUMN);
+        assertThat(headerColumns[index++]).isEqualTo(User.EMAIL_VERIFIED_COLUMN);
         assertThat(headerColumns[index++]).isEqualTo(User.CONSUMER_REQUEST_COLUMN);
         assertThat(headerColumns[index++]).isEqualTo(User.VOLUNTEER_REQUEST_COLUMN);
         assertThat(headerColumns[index++]).isEqualTo(User.SPECIALIST_COLUMN);
@@ -191,6 +184,7 @@ public class UserExporterTest extends TestBase {
         assertThat(columns[index++]).isEqualTo(u1.getCreateTime());
         assertThat(columns[index++]).isEqualTo(String.valueOf(u1.isApartment()));
         assertThat(columns[index++]).isEqualTo(String.valueOf(u1.getReferral()));
+        assertThat(columns[index++]).isEqualTo(String.valueOf(u1.getEmailVerified()));
         assertThat(columns[index++]).isEqualTo(String.valueOf(u1.hasConsumerRequest()));
         assertThat(columns[index++]).isEqualTo(u1.getVolunteerRequest());
         assertThat(columns[index++]).isEqualTo(String.valueOf(u1.isSpecialist()));
@@ -212,14 +206,12 @@ public class UserExporterTest extends TestBase {
         User u3 = createUserWithGroup(TEST_USER_NAME_3, Constants.GROUP_DRIVERS);
 
         UserExporter exporter = new UserExporter(List.of(u1, u2, u3));
-        String fileName = exporter.allMembersRawToFile("allMembers.csv");
-        Path filePath = Paths.get(fileName);
-        assertThat(filePath).exists();
+        String fileName = exporter.allMembersRawToFile("all-members-raw-test");
 
-        String errorFileData = Files.readString(filePath);
-        assertThat(errorFileData).contains(TEST_USER_NAME_1);
-        assertThat(errorFileData).contains(TEST_USER_NAME_2);
-        assertThat(errorFileData).contains(TEST_USER_NAME_3);
+        String fileData = readFile(fileName);
+        assertThat(fileData).contains(TEST_USER_NAME_1);
+        assertThat(fileData).contains(TEST_USER_NAME_2);
+        assertThat(fileData).contains(TEST_USER_NAME_3);
 
         Files.delete(Paths.get(fileName));
     }
@@ -318,13 +310,11 @@ public class UserExporterTest extends TestBase {
 
         UserExporter exporter = new UserExporter(List.of(u1, u2, u3));
         String fileName = exporter.allMembersReportToFile("allMembers.csv");
-        Path filePath = Paths.get(fileName);
-        assertThat(filePath).exists();
 
-        String errorFileData = Files.readString(filePath);
-        assertThat(errorFileData).contains(TEST_USER_NAME_1);
-        assertThat(errorFileData).contains(TEST_USER_NAME_2);
-        assertThat(errorFileData).contains(TEST_USER_NAME_3);
+        String fileData = readFile(fileName);
+        assertThat(fileData).contains(TEST_USER_NAME_1);
+        assertThat(fileData).contains(TEST_USER_NAME_2);
+        assertThat(fileData).contains(TEST_USER_NAME_3);
 
         Files.delete(Paths.get(fileName));
     }
@@ -380,13 +370,11 @@ public class UserExporterTest extends TestBase {
 
         UserExporter exporter = new UserExporter(List.of(u1, u2, u3));
         String fileName = exporter.workflowToFile("workflow.csv");
-        Path filePath = Paths.get(fileName);
-        assertThat(filePath).exists();
 
-        String errorFileData = Files.readString(filePath);
-        assertThat(errorFileData).contains(TEST_USER_NAME_1);
-        assertThat(errorFileData).contains(TEST_USER_NAME_2);
-        assertThat(errorFileData).contains(TEST_USER_NAME_3);
+        String fileData = readFile(fileName);
+        assertThat(fileData).contains(TEST_USER_NAME_1);
+        assertThat(fileData).contains(TEST_USER_NAME_2);
+        assertThat(fileData).contains(TEST_USER_NAME_3);
 
         Files.delete(Paths.get(fileName));
     }
@@ -526,10 +514,8 @@ public class UserExporterTest extends TestBase {
 
         UserExporter exporter = new UserExporter(List.of(u1, u2, u3));
         String fileName = exporter.dispatchersToFile("dispatchers.csv");
-        Path filePath = Paths.get(fileName);
-        assertThat(filePath).exists();
 
-        String fileData = Files.readString(filePath);
+        String fileData = readFile(fileName);
         assertThat(fileData).contains(TEST_USER_NAME_1);
         assertThat(fileData).contains(TEST_USER_NAME_2);
         assertThat(fileData).doesNotContain(TEST_USER_NAME_3);

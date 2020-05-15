@@ -222,14 +222,16 @@ public class Main {
         postRaw.append(label);
         postRaw.append("**\n\n");
 
-        postRaw.append("| User Name | City | Address | Apartment | Phone |\n");
-        postRaw.append("|---|---|---|---|---|\n");
+        postRaw.append("| User Name | Email Verified | City | Address | Apartment | Phone |\n");
+        postRaw.append("|---|---|---|---|---|---|\n");
 
         Tables tables = new Tables(users);
         for (User user : tables.sortByCreateTime()) {
             postRaw.append('|');
             postRaw.append('@');
             postRaw.append(user.getUserName());
+            postRaw.append('|');
+            postRaw.append(user.getEmailVerified());
             postRaw.append('|');
             postRaw.append(user.getCity());
             postRaw.append('|');
@@ -267,14 +269,16 @@ public class Main {
         postRaw.append(label);
         postRaw.append("**\n\n");
 
-        postRaw.append("| User Name | Full Name | Phone | City | Volunteer Request |\n");
-        postRaw.append("|---|---|---|---|---|\n");
+        postRaw.append("| User Name | Email Verified | Full Name | Phone | City | Volunteer Request |\n");
+        postRaw.append("|---|---|---|---|---|---|\n");
 
         Tables tables = new Tables(users);
         for (User user : new Tables(tables.volunteerRequests()).sortByCreateTime()) {
             postRaw.append('|');
             postRaw.append('@');
             postRaw.append(user.getUserName());
+            postRaw.append('|');
+            postRaw.append(user.getEmailVerified());
             postRaw.append('|');
             postRaw.append(user.getName());
             postRaw.append('|');
@@ -417,10 +421,6 @@ public class Main {
 
 //            Thread.sleep(100);
 
-            if (deliveryData.date.equals("2020/04/29")) {
-                System.out.println("FIX THIS, DS: skipping " + deliveryData.date);
-                continue;
-            }
             // Process those newer than order history date
             if (deliveryData.date.compareTo(orderHistory.historyThroughDate) > 0) {
                 LOGGER.debug("processing " + deliveryData);

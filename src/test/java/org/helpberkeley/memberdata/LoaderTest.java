@@ -25,6 +25,8 @@ import org.junit.Test;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -44,4 +46,16 @@ public class LoaderTest extends TestBase {
 
         assertThat(roundtripUsers).containsExactlyInAnyOrderElementsOf(users);
     }
+
+//    @Test
+//    public void emailConfirmationsTest() throws IOException, InterruptedException {
+//        ApiClient apiClient = createApiSimulator();
+//
+//        Loader loader = new Loader(apiClient);
+//        List<User> users = loader.load();
+//
+//        Set<Long> emailConfirmations = loader.getEmailConfirmations();
+//        assertThat(emailConfirmations).contains(400L);
+//        assertThat(emailConfirmations).doesNotContain(-2L);
+//    }
 }

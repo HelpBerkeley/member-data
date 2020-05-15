@@ -44,7 +44,8 @@ public class Parser {
         return new ApiQueryResult(columns, rows);
     }
 
-    static List<User> users(final Map<String, Group> groups, final ApiQueryResult queryResult) {
+    static List<User> users(final Map<String, Group> groups,
+        final Set<Long> emailVerified, final ApiQueryResult queryResult) {
 
         LOGGER.trace("users");
 
@@ -100,9 +101,12 @@ public class Parser {
                 }
             }
 
+            Boolean verified = emailVerified.contains(userId);
+
             try {
                 users.add(User.createUser(name, userName, userId, address, city, phone, altPhone, neighborhood,
-                        createdAt, isApartment, hasConsumerRequest, volunteerRequest, referral, groupMemberships));
+                        createdAt, isApartment, hasConsumerRequest, volunteerRequest, referral, verified,
+                        groupMemberships));
             } catch (UserException ex) {
                 // FIX THIS, DS: get rid of UserException?
                 users.add(ex.user);
@@ -178,7 +182,7 @@ public class Parser {
         assert lines.length > 0 : csvData;
 
         String[] headers = lines[0].split(Constants.CSV_SEPARATOR);
-        assert headers.length == 31 : headers.length + ": " + lines[0];
+        assert headers.length == 32 : headers.length + ": " + lines[0];
 
         int index = 0;
         assert headers[index].equals(User.ID_COLUMN) : headers[index];
@@ -196,6 +200,7 @@ public class Parser {
         assert headers[++index].equals(User.CREATED_AT_COLUMN) : headers[index];
         assert headers[++index].equals(User.APARTMENT_COLUMN) : headers[index];
         assert headers[++index].equals(User.REFERRAL_COLUMN) : headers[index];
+        assert headers[++index].equals(User.EMAIL_VERIFIED_COLUMN) : headers[index];
         assert headers[++index].equals(User.CONSUMER_REQUEST_COLUMN) : headers[index];
         assert headers[++index].equals(User.VOLUNTEER_REQUEST_COLUMN) : headers[index];
         assert headers[++index].equals(User.SPECIALIST_COLUMN) : headers[index];
@@ -248,6 +253,7 @@ public class Parser {
             String createdAt = columns[index++];
             Boolean isApartment = Boolean.valueOf(columns[index++]);
             String referral = columns[index++];
+            Boolean emailVerified = Boolean.valueOf(columns[index++]);
             Boolean hasConsumerRequest = Boolean.valueOf(columns[index++]);
             String volunteerRequest = columns[index++];
 
@@ -308,8 +314,9 @@ public class Parser {
             }
 
             try {
-                users.add(User.createUser(name, userName, id, address, city, phone, altPhone, neighborhood,
-                        createdAt, isApartment, hasConsumerRequest, volunteerRequest, referral, groups));
+                users.add(User.createUser(name, userName, id, address, city, phone, altPhone,
+                        neighborhood, createdAt, isApartment, hasConsumerRequest,
+                        volunteerRequest, referral, emailVerified, groups));
             } catch (UserException ex) {
                 users.add(ex.user);
             }
@@ -454,6 +461,30 @@ public class Parser {
         assert shortURL.startsWith(Constants.UPLOAD_URI_PREFIX);
         assert shortURL.length() > Constants.UPLOAD_URI_PREFIX.length() : shortURL;
         return shortURL.substring(Constants.UPLOAD_URI_PREFIX.length());
+    }
+
+    static Set<Long> emailConfirmations(final ApiQueryResult apiQueryResult) {
+        assert apiQueryResult.headers.length == 2 : apiQueryResult.headers.length;
+        assert apiQueryResult.headers[0].equals("user_id") : apiQueryResult.headers[0];
+        assert apiQueryResult.headers[1].equals("confirmed") : apiQueryResult.headers[1];
+
+        Set<Long> confirmations = new HashSet<>();
+
+        for (Object rowObj : apiQueryResult.rows) {
+            Object[] columns = (Object[]) rowObj;
+            assert columns.length == 2 : columns.length;
+
+            Long userId = (Long)columns[0];
+            assert userId != null;
+            Boolean confirmed = (Boolean)columns[1];
+            assert confirmed != null;
+
+            if (confirmed) {
+                confirmations.add(userId);
+            }
+        }
+
+        return confirmations;
     }
 
     static List<UserOrder> parseOrders(String fileName, String deliveryData) {

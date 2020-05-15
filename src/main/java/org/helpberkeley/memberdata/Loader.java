@@ -28,6 +28,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Load User and group data from the site.
@@ -38,6 +39,7 @@ public class Loader {
 
     private final ApiClient apiClient;
     private final Map<String, Group> groups = new HashMap<>();
+    private Set<Long> emailConfirmations;
 
     // FIX THIS, DS: refactor these two ctors and the load methods
     public Loader(final ApiClient apiClient) {
@@ -54,6 +56,7 @@ public class Loader {
     public List<User> load() throws IOException, InterruptedException {
         LOGGER.trace("load");
         loadGroups();
+        loadConfirmedEmails();
         return loadUsers();
     }
 
@@ -95,12 +98,20 @@ public class Loader {
         }
     }
 
+    private void loadConfirmedEmails() throws IOException, InterruptedException {
+        assert apiClient != null;
+        String json = apiClient.runQuery(Constants.QUERY_EMAIL_CONFIRMATIONS);
+        ApiQueryResult apiQueryResult = Parser.parseQueryResult(json);
+
+        emailConfirmations = Parser.emailConfirmations(apiQueryResult);
+    }
+
     private List<User> loadUsers() throws IOException, InterruptedException {
         LOGGER.trace("loadUsers");
 
         assert apiClient != null;
         String json = apiClient.runQuery(Constants.CURRENT_USERS_QUERY);
         ApiQueryResult apiQueryResult = Parser.parseQueryResult(json);
-        return Parser.users(groups, apiQueryResult);
+        return Parser.users(groups, emailConfirmations, apiQueryResult);
     }
 }

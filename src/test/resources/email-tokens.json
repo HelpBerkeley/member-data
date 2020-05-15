@@ -1,0 +1,49 @@
+{
+  "columns": [
+    "user_id",
+    "confirmed"
+  ],
+  "default_limit": 1000,
+  "rows": [
+    [
+      -2,
+      false
+    ],
+    [
+      200,
+      true
+    ],
+    [
+      201,
+      true
+    ],
+    [
+      104,
+      true
+    ],
+    [
+      346,
+      true
+    ],
+    [
+      33,
+      true
+    ],
+    [
+      400,
+      false
+    ],
+    [
+      400,
+      true
+    ],
+    [
+      400,
+      false
+    ],
+    [
+      333,
+      true
+    ]
+  ]
+}

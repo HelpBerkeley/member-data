@@ -63,6 +63,7 @@ public class User {
     static final String ADVISOR_COLUMN = "Advisor";
     static final String COORDINATOR_COLUMN = "Coordinator";
     static final String ADMIN_COLUMN = "Admin";
+    static final String EMAIL_VERIFIED_COLUMN = "Verified";
 
     static final String SHORT_ID_COLUMN = "ID";
     static final String SHORT_CREATED_AT_COLUMN = "Created";
@@ -121,6 +122,7 @@ public class User {
     private final Boolean consumerRequest;
     private String volunteerRequest;
     private String referral;
+    private final Boolean emailVerified;
     private final Set<String> groupMembership = new HashSet<>();
     private final List<String> dataErrors = new ArrayList<>();
 
@@ -170,6 +172,10 @@ public class User {
         return referral == null ? NOT_PROVIDED : referral;
     }
 
+    public Boolean getEmailVerified() {
+        return emailVerified;
+    }
+
     public String getCreateTime() {
         return createTime;
     }
@@ -195,7 +201,8 @@ public class User {
         final Boolean apartment,
         final Boolean consumerRequest,
         final String volunteerRequest,
-        final String referral)  {
+        final String referral,
+        final Boolean emailVerified)  {
 
         this.name = name;
         this.userName = userName;
@@ -210,6 +217,7 @@ public class User {
         this.consumerRequest = consumerRequest;
         this.volunteerRequest = volunteerRequest;
         this.referral = referral;
+        this.emailVerified = emailVerified;
     }
 
     Boolean hasConsumerRequest() {
@@ -343,6 +351,10 @@ public class User {
                 "=" +
                 (referral == null ? NOT_PROVIDED : referral) +
                 ':' +
+                EMAIL_VERIFIED_COLUMN +
+                "=" +
+                getEmailVerified() +
+                ":" +
                 CONSUMER_REQUEST_COLUMN +
                 "=" +
                 hasConsumerRequest() +
@@ -424,8 +436,16 @@ public class User {
         assert address != null;
         assert city != null;
         assert phoneNumber != null;
-        assert neighborhood != null;
+
+        // FIX THIS, DS: who changed this to optional?
+//        assert neighborhood != null;
+        if (neighborhood == null) {
+            neighborhood = "";
+        }
+
+        assert emailVerified != null;
     }
+
 
     // Must be insensitive to null data
     private void normalizeData() {
@@ -808,11 +828,12 @@ public class User {
             final Boolean consumerRequest,
             final String volunteerRequest,
             final String referral,
+            final Boolean emailVerified,
             final String... groups) throws UserException {
 
 
         User user = new User(name, userName, id, address, city, phoneNumber, altPhoneNumber,
-                neighborhood, createdAt, apartment, consumerRequest, volunteerRequest, referral);
+                neighborhood, createdAt, apartment, consumerRequest, volunteerRequest, referral, emailVerified);
         for (String group : groups) {
             assert ! user.groupMembership.contains(group) : group;
             user.groupMembership.add(group);
@@ -842,11 +863,12 @@ public class User {
             final Boolean consumerRequest,
             final String volunteerRequest,
             final String referral,
+            final Boolean emailVerified,
             final List<String> groups) throws UserException {
 
 
         User user = new User(name, userName, id, address, city, phoneNumber, altPhoneNumber,
-                neighborhood, createdAt, apartment, consumerRequest, volunteerRequest, referral);
+                neighborhood, createdAt, apartment, consumerRequest, volunteerRequest, referral, emailVerified);
         for (String group : groups) {
             assert ! user.groupMembership.contains(group) : group;
             user.groupMembership.add(group);
@@ -915,6 +937,7 @@ public class User {
                 + CREATED_AT_COLUMN + Constants.CSV_SEPARATOR
                 + APARTMENT_COLUMN + Constants.CSV_SEPARATOR
                 + REFERRAL_COLUMN + Constants.CSV_SEPARATOR
+                + EMAIL_VERIFIED_COLUMN + Constants.CSV_SEPARATOR
                 + CONSUMER_REQUEST_COLUMN + Constants.CSV_SEPARATOR
                 + VOLUNTEER_REQUEST_COLUMN + Constants.CSV_SEPARATOR
                 + SPECIALIST_COLUMN + Constants.CSV_SEPARATOR
@@ -951,6 +974,7 @@ public class User {
                 getCreateTime() + Constants.CSV_SEPARATOR +
                 isApartment() + Constants.CSV_SEPARATOR +
                 getReferral() + Constants.CSV_SEPARATOR +
+                getEmailVerified() + Constants.CSV_SEPARATOR +
                 hasConsumerRequest() + Constants.CSV_SEPARATOR +
                 getVolunteerRequest() + Constants.CSV_SEPARATOR +
                 isSpecialist() + Constants.CSV_SEPARATOR +
@@ -1060,6 +1084,10 @@ public class User {
         }
         //noinspection RedundantIfStatement
         if (! referral.equals(otherObj.referral)) {
+            return false;
+        }
+
+        if (! emailVerified.equals(otherObj.emailVerified)) {
             return false;
         }
 
