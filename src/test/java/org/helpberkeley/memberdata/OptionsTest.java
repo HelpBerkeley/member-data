@@ -276,4 +276,56 @@ public class OptionsTest extends TestBase {
         assertThat(thrown).hasMessageContaining(badFileName);
         assertThat(thrown).hasMessageContaining(Options.USAGE);
     }
+
+    @Test
+    public void inreachMissingTwoFilesTest() {
+        String command = Options.COMMAND_INREACH;
+        Options options = new Options(new String[] { command, TEST_FILE_NAME });
+        Throwable thrown = catchThrowable(options::parse);
+        assertThat(thrown).isInstanceOf(MemberDataException.class);
+        assertThat(thrown).hasMessageContaining(command);
+        assertThat(thrown).hasMessageContaining(Options.USAGE_ERROR);
+        assertThat(thrown).hasMessageContaining(Options.COMMAND_REQUIRES_TWO_FILE_NAMES);
+        assertThat(thrown).hasMessageContaining(Options.USAGE);
+    }
+
+    @Test
+    public void inreachMissingFilesTest() {
+        String command = Options.COMMAND_INREACH;
+        Options options = new Options(new String[] { command });
+        Throwable thrown = catchThrowable(options::parse);
+        assertThat(thrown).isInstanceOf(MemberDataException.class);
+        assertThat(thrown).hasMessageContaining(command);
+        assertThat(thrown).hasMessageContaining(Options.USAGE_ERROR);
+        assertThat(thrown).hasMessageContaining(Options.COMMAND_REQUIRES_TWO_FILE_NAMES);
+        assertThat(thrown).hasMessageContaining(Options.USAGE);
+    }
+
+    @Test
+    public void inreachBadFileTest() {
+        String badFileName = "someBad.csv";
+        String command = Options.COMMAND_INREACH;
+        Options options = new Options(new String[] { command, badFileName, TEST_SECOND_FILE_NAME });
+        Throwable thrown = catchThrowable(options::parse);
+        assertThat(thrown).isInstanceOf(MemberDataException.class);
+        assertThat(thrown).hasMessageContaining(command);
+        assertThat(thrown).hasMessageContaining(Options.USAGE_ERROR);
+        assertThat(thrown).hasMessageContaining(Options.FILE_DOES_NOT_EXIST);
+        assertThat(thrown).hasMessageContaining(badFileName);
+        assertThat(thrown).hasMessageContaining(Options.USAGE);
+    }
+
+    @Test
+    public void inreachBadSecondFileTest() {
+        String badFileName = "someBad.csv";
+        String command = Options.COMMAND_INREACH;
+        Options options = new Options(new String[] { command, TEST_FILE_NAME, badFileName });
+        Throwable thrown = catchThrowable(options::parse);
+        assertThat(thrown).isInstanceOf(MemberDataException.class);
+        assertThat(thrown).hasMessageContaining(command);
+        assertThat(thrown).hasMessageContaining(Options.USAGE_ERROR);
+        assertThat(thrown).hasMessageContaining(Options.FILE_DOES_NOT_EXIST);
+        assertThat(thrown).hasMessageContaining(badFileName);
+        assertThat(thrown).hasMessageContaining(Options.USAGE);
+    }
 }

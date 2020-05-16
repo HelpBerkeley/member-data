@@ -38,6 +38,7 @@ import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 
+import static java.net.HttpURLConnection.HTTP_NOT_FOUND;
 import static java.net.HttpURLConnection.HTTP_OK;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -102,6 +103,9 @@ public class HttpClientSimulator extends HttpClient {
             case Constants.QUERY_EMAIL_CONFIRMATIONS:
                 dataFile = "email-tokens.json";
                 break;
+            case Constants.QUERY_GET_EMAILS:
+                dataFile = "email-addresses.json";
+                break;
             default:
                 throw new RuntimeException("FIX THIS: query " + queryId + " not supported by the simulator");
         }
@@ -127,7 +131,11 @@ public class HttpClientSimulator extends HttpClient {
             fileName = "order-history.json";
         }
 
-        return (HttpResponse<T>) new HttpResponseSimulator<>(readFile(fileName));
+        try {
+            return (HttpResponse<T>) new HttpResponseSimulator<>(readFile(fileName));
+        } catch (RuntimeException ex) {
+            return (HttpResponse<T>) new HttpResponseSimulator<>(ex.getMessage(), HTTP_NOT_FOUND);
+        }
     }
 
     private int getQueryId(HttpRequest request) {
@@ -215,14 +223,21 @@ public class HttpClientSimulator extends HttpClient {
     private static class HttpResponseSimulator<String> implements HttpResponse<String> {
 
         private final String responseBody;
+        private final int statusCode;
 
         HttpResponseSimulator(final String responseBody) {
+            this.responseBody = responseBody;
+            this.statusCode = HTTP_OK;
+        }
+
+        HttpResponseSimulator(final String responseBody, int statusCode) {
+            this.statusCode = statusCode;
             this.responseBody = responseBody;
         }
 
         @Override
         public int statusCode() {
-            return HTTP_OK;
+            return statusCode;
         }
 
         @Override

@@ -119,7 +119,6 @@ public class OrderHistory {
         output.append(Constants.CSV_SEPARATOR);
         output.append(0);
         output.append(Constants.CSV_SEPARATOR);
-        output.append("");
         output.append(Constants.CSV_SEPARATOR);
         output.append(historyThroughDate);
         output.append(Constants.CSV_SEPARATOR);

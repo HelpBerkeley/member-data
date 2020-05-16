@@ -1,0 +1,52 @@
+{
+  "success": true,
+  "errors": [],
+  "columns": [
+    "user_id",
+    "username",
+    "email"
+  ],
+  "default_limit": 1000,
+  "rows": [
+    [
+      200,
+      "Somebody",
+      "somebody@me.com"
+    ],
+    [
+      201,
+      "SomebodyElse",
+      "somebodyelse@me.com"
+    ],
+    [
+      333,
+      "ThirdPerson",
+      "person3@me.com"
+    ],
+    [
+      33,
+      "Xyzzy",
+      "xyzzy@me.com"
+    ],
+    [
+      104,
+      "ZZZ",
+      "zzz@me.com"
+    ],
+    [
+      346,
+      "JVol",
+      "jvol@me.com"
+    ],
+    [
+      400,
+      "NotVerified",
+      "bogus@bogus.com"
+    ],
+    [
+      -2,
+      "discobot",
+      "discobot_email"
+    ]
+  ]
+}

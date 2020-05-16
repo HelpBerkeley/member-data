@@ -56,12 +56,18 @@ public class Loader {
     public List<User> load() throws IOException, InterruptedException {
         LOGGER.trace("load");
         loadGroups();
-        loadConfirmedEmails();
+        loadEmailConfirmations();
         return loadUsers();
     }
 
+    Map<Long, String> loadEmailAddresses() throws IOException, InterruptedException {
+        assert apiClient != null;
+        String json = apiClient.runQuery(Constants.QUERY_GET_EMAILS);
+        ApiQueryResult apiQueryResult = Parser.parseQueryResult(json);
+        return Parser.emailAddresses(apiQueryResult);
+    }
+
     private void loadGroups() throws IOException, InterruptedException {
-        LOGGER.trace("loadGroups");
 
         assert apiClient != null;
         String json = apiClient.runQuery(Constants.QUERY_GET_GROUPS_ID);
@@ -98,7 +104,7 @@ public class Loader {
         }
     }
 
-    private void loadConfirmedEmails() throws IOException, InterruptedException {
+    private void loadEmailConfirmations() throws IOException, InterruptedException {
         assert apiClient != null;
         String json = apiClient.runQuery(Constants.QUERY_EMAIL_CONFIRMATIONS);
         ApiQueryResult apiQueryResult = Parser.parseQueryResult(json);

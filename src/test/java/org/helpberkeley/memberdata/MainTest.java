@@ -151,6 +151,13 @@ public class MainTest extends TestBase {
     }
 
     @Test
+    public void emailTest() throws IOException, InterruptedException {
+        String file = findFile(Main.MEMBERDATA_RAW_FILE, "csv");
+        String[] args = { Options.COMMAND_EMAIL, file };
+        Main.main(args);
+    }
+
+    @Test
     public void mergeOrderHistoryTest() throws IOException, InterruptedException {
 
         String[] args = { Options.COMMAND_GET_ORDER_HISTORY };
@@ -173,23 +180,46 @@ public class MainTest extends TestBase {
     }
 
     @Test
-    @Ignore
-    public void commandsWithFileTest() throws IOException, InterruptedException {
+    public void inreachTest() throws IOException, InterruptedException {
 
-        for (String command : COMMANDS_WITH_FILE) {
-            String[] args = {command, TEST_FILE_NAME};
-            Main.main(args);
-        }
+        String[] args = { Options.COMMAND_GET_ORDER_HISTORY };
+        Main.main(args);
+        String orderHistoryFile = findFile(Main.ORDER_HISTORY_FILE, "csv");
+
+        String usersFile = findFile(Main.MEMBERDATA_RAW_FILE, "csv");
+
+        args = new String[] {
+                Options.COMMAND_INREACH,
+                usersFile,
+                orderHistoryFile
+        };
+        Main.main(args);
     }
 
     @Test
-    @Ignore
-    public void commandsWithURLTest() throws IOException, InterruptedException {
+    public void postIreachTest() throws IOException, InterruptedException {
 
-        for (String command : COMMANDS_WITH_URL) {
-            String[] args = {command, TEST_FILE_NAME, TEST_SHORT_URL};
-            Main.main(args);
-        }
+        String[] args = { Options.COMMAND_GET_ORDER_HISTORY };
+        Main.main(args);
+        String orderHistoryFile = findFile(Main.ORDER_HISTORY_FILE, "csv");
+
+        args = new String[] {
+                Options.COMMAND_POST_INREACH,
+                orderHistoryFile,
+                TEST_SHORT_URL
+        };
+        Main.main(args);
+    }
+
+    @Test
+    public void updateOrderHistoryTest() throws IOException, InterruptedException {
+
+        String[] args = { Options.COMMAND_GET_ORDER_HISTORY };
+        Main.main(args);
+        String orderHistoryFile = findFile(Main.ORDER_HISTORY_FILE, "csv");
+
+        args = new String[] { Options.COMMAND_UPDATE_ORDER_HISTORY, orderHistoryFile, TEST_SHORT_URL };
+        Main.main(args);
     }
 
     private String findFile(final String prefix, final String suffix) {

@@ -199,6 +199,16 @@ public class UserTest extends TestBase {
     }
 
     @Test
+    public void equalityTestEmailVerified() throws UserException {
+        User u1 = createUserWithEmailVerified("u1", false);
+        User u2 = createUserWithEmailVerified("u1", true);
+
+        assertThat(u1).isNotEqualTo(u2);
+        assertThat(u1).isEqualTo(u1);
+        assertThat(u2).isEqualTo(u2);
+    }
+
+    @Test
     public void equalityTestConsumerRole() throws UserException {
         User user1 = createUserWithGroup("u1", Constants.GROUP_CONSUMERS);
         User user2 = createUser();

@@ -25,6 +25,9 @@ import org.junit.Test;
 
 import java.io.IOException;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.ThrowableAssert.catchThrowable;
+
 public class ApiClientTest extends TestBase {
 
     @Test
@@ -43,5 +46,15 @@ public class ApiClientTest extends TestBase {
     public void usersQueryTest() throws IOException, InterruptedException {
         ApiClient apiClient = createApiSimulator();
         apiClient.runQuery(Constants.CURRENT_USERS_QUERY);
+    }
+
+    @Test
+    public void getErrorTest() throws IOException {
+        long postId = 1234567;
+        ApiClient apiClient = createApiSimulator();
+        Throwable thrown = catchThrowable(() -> apiClient.getPost(postId));
+        assertThat(thrown).isInstanceOf(Error.class);
+        assertThat(thrown).hasMessageContaining(String.valueOf(postId));
+        assertThat(thrown).hasMessageContaining("not found");
     }
 }

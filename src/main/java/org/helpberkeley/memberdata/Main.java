@@ -34,6 +34,7 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
 import static java.net.HttpURLConnection.HTTP_OK;
@@ -47,6 +48,7 @@ public class Main {
 
     static final String MEMBERDATA_ERRORS_FILE = "memberdata-errors";
     static final String MEMBERDATA_REPORT_FILE = "member-data-report";
+    static final String MEMBERDATA_WITH_EMAIL_REPORT_FILE = "member-data-with-email";
     static final String MEMBERDATA_RAW_FILE = "member-data-raw";
     static final String CONSUMER_REQUESTS_FILE = "consumer-requests";
     static final String VOLUNTEER_REQUESTS_FILE = "volunteer-requests";
@@ -144,6 +146,9 @@ public class Main {
                 break;
             case Options.COMMAND_INREACH:
                 generateInreach(options.getFileName(), options.getSecondFileName());
+                break;
+            case Options.COMMAND_EMAIL:
+                generateEmail(apiClient, options.getFileName());
                 break;
             default:
                 assert options.getCommand().equals(Options.COMMAND_POST_DRIVERS) : options.getCommand();
@@ -445,6 +450,17 @@ public class Main {
         OrderHistory orderHistory = Parser.orderHistory(csvData);
 
         new UserExporter(users).inreachToFile(INREACH_FILE, orderHistory);
+    }
+
+    static void generateEmail(ApiClient apiClient, final String usersFile)
+            throws IOException, InterruptedException {
+        String csvData = Files.readString(Paths.get(usersFile));
+        List<User> users = Parser.users(csvData);
+
+        Map<Long, String> emails = new Loader(apiClient).loadEmailAddresses();
+
+        new UserExporter(users).allMembersWithEmailReportToFile(emails, MEMBERDATA_WITH_EMAIL_REPORT_FILE);
+
     }
 }
 

@@ -26,7 +26,6 @@ import org.junit.Test;
 
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
@@ -382,7 +381,7 @@ public class UserExporterTest extends TestBase {
     // FIX THIS, DS: fix test with order history
     @Test
     @Ignore
-    public void inreachColumnsTest() throws UserException {
+    public void inreachColumnsTest() {
 //        User u1 = createTestUser1();
 //        UserExporter exporter = new UserExporter(List.of(u1));
 //
@@ -427,7 +426,7 @@ public class UserExporterTest extends TestBase {
     // FIX THIS, DS: update with order history
     @Test
     @Ignore
-    public void increachToFileTest() throws UserException, IOException {
+    public void increachToFileTest() {
 
 //        User u1 = createUserWithGroup(TEST_USER_NAME_1, Constants.GROUP_CONSUMERS);
 //        User u2 = createUserWithGroup(TEST_USER_NAME_2, Constants.GROUP_DRIVERS);

@@ -113,6 +113,21 @@ public class DailyDeliveriesTest extends TestBase {
     }
 
     @Test
+    public void missingVeggieColumnTest() {
+        String fileName = "missing-veggie-column";
+        String header = Parser.DeliveryColumns.CONSUMER_COLUMN + Constants.CSV_SEPARATOR
+                + Parser.DeliveryColumns.NAME_COLUMN + Constants.CSV_SEPARATOR
+                + Parser.DeliveryColumns.USER_NAME_COLUMN + Constants.CSV_SEPARATOR
+                + Parser.DeliveryColumns.NORMAL_COLUMN + Constants.CSV_SEPARATOR
+                + "\n";
+
+        Throwable thrown = catchThrowable(() -> Parser.parseOrders(fileName, header));
+        assertThat(thrown).isInstanceOf(Error.class);
+        assertThat(thrown).hasMessageContaining(fileName);
+        assertThat(thrown).hasMessageContaining(Parser.DeliveryColumns.VEGGIE_COLUMN);
+    }
+
+    @Test
     public void missingNormalColumnTest() {
         String fileName = "missing-normal-column";
         String header = Parser.DeliveryColumns.CONSUMER_COLUMN + Constants.CSV_SEPARATOR

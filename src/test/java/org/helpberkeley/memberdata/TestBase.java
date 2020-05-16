@@ -101,6 +101,7 @@ public class TestBase {
             Options.COMMAND_POST_CONSUMER_REQUESTS,
             Options.COMMAND_POST_VOLUNTEER_REQUESTS,
             Options.COMMAND_UPDATE_ERRORS,
+            Options.COMMAND_EMAIL,
     };
 
     static final String[] COMMANDS_WITH_NO_PARAMETERS = {
@@ -325,6 +326,14 @@ public class TestBase {
                 TEST_CITY_1, TEST_PHONE_1, TEST_ALT_PHONE_1, TEST_NEIGHBORHOOD_1, TEST_CREATED_1,
                 TEST_APARTMENT_1, TEST_CONSUMER_REQUEST_1, "none",
                 TEST_REFERRAL_1, TEST_VERIFIED_1);
+    }
+
+    protected User createUserWithEmailVerified(final String userName, boolean verified) throws UserException {
+
+        return User.createUser(TEST_NAME_1, userName, TEST_ID_1, TEST_ADDRESS_1,
+                TEST_CITY_1, TEST_PHONE_1, TEST_ALT_PHONE_1, TEST_NEIGHBORHOOD_1, TEST_CREATED_1,
+                TEST_APARTMENT_1, TEST_CONSUMER_REQUEST_1, TEST_VOLUNTEER_REQUEST_1,
+                TEST_REFERRAL_1, verified);
     }
 
     protected User createUserWithNameConsumerAndDriver(final String name,

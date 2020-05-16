@@ -25,7 +25,6 @@ import com.cedarsoftware.util.io.JsonReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.print.attribute.standard.MediaSize;
 import java.util.*;
 
 public class Parser {
@@ -401,6 +400,28 @@ public class Parser {
 
         assert map.containsKey("raw") : json;
         return (String)map.get("raw");
+    }
+
+    static Map<Long, String> emailAddresses(final ApiQueryResult queryResult) {
+        assert queryResult.headers.length == 3 : queryResult;
+        assert queryResult.headers[0].equals("user_id") : queryResult;
+        assert queryResult.headers[1].equals("username") : queryResult;
+        assert queryResult.headers[2].equals("email") : queryResult;
+
+        Map<Long, String> emailAddresses = new HashMap<>();
+
+        for (Object rowObj : queryResult.rows) {
+            Object[] columns = (Object[]) rowObj;
+            assert columns.length == 3 : columns.length;
+
+            Long userId = (Long)columns[0];
+            String email = (String)columns[2];
+
+            assert ! emailAddresses.containsKey(userId) : userId + ":" + email;
+            emailAddresses.put(userId, email);
+        }
+
+        return emailAddresses;
     }
 
     static OrderHistoryPost orderHistoryPost(final String rawOrderHistoryPost) {

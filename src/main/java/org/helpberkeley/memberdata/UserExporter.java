@@ -23,7 +23,7 @@ package org.helpberkeley.memberdata;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Set;
+import java.util.Map;
 
 /**
  * Exports various groups of full user records
@@ -131,6 +131,27 @@ public class UserExporter extends Exporter {
 
         String outputFileName = generateFileName(fileName, "csv");
         writeFile(outputFileName, allMembersReport());
+        return outputFileName;
+    }
+
+    String allMembersWithEmailReport(final Map<Long, String> emailAddresses) {
+
+        StringBuilder csvData = new StringBuilder();
+        csvData.append(User.reportWithEmailCSVHeaders());
+
+        for (User user : tables.sortByUserId()) {
+            String emailAddress = emailAddresses.getOrDefault(user.getId(), "");
+            csvData.append(user.reportWithEMailToCSV(emailAddress));
+        }
+
+        return csvData.toString();
+    }
+
+    String allMembersWithEmailReportToFile(final Map<Long, String> emailAddresses,
+        final String fileName) throws IOException {
+
+        String outputFileName = generateFileName(fileName, "csv");
+        writeFile(outputFileName, allMembersWithEmailReport(emailAddresses));
         return outputFileName;
     }
 

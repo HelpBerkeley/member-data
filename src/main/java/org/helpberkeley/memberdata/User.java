@@ -69,6 +69,7 @@ public class User {
     static final String SHORT_CREATED_AT_COLUMN = "Created";
     static final String SHORT_NAME_COLUMN = "Name";
     static final String SHORT_USERNAME_COLUMN = "UserName";
+    static final String SHORT_EMAIL_COLUMN = "EMail";
     static final String SHORT_PHONE_NUMBER_COLUMN = "Phone #";
     static final String SHORT_ALT_PHONE_NUMBER_COLUMN = "Phone2 #";
     static final String SHORT_NEIGHBORHOOD_COLUMN = "Neighborhood";
@@ -884,12 +885,21 @@ public class User {
         return user;
     }
 
+    static String reportWithEmailCSVHeaders() {
+        return reportHeaders(true);
+    }
+
     static String reportCSVHeaders() {
+        return reportHeaders(false);
+    }
+
+    private static String reportHeaders(boolean addEmail) {
 
         return SHORT_ID_COLUMN + Constants.CSV_SEPARATOR
                 + SHORT_CREATED_AT_COLUMN + Constants.CSV_SEPARATOR
                 + SHORT_NAME_COLUMN + Constants.CSV_SEPARATOR
                 + SHORT_USERNAME_COLUMN + Constants.CSV_SEPARATOR
+                + (addEmail ? SHORT_EMAIL_COLUMN + Constants.CSV_SEPARATOR : "")
                 + SHORT_PHONE_NUMBER_COLUMN + Constants.CSV_SEPARATOR
                 + SHORT_ALT_PHONE_NUMBER_COLUMN + Constants.CSV_SEPARATOR
                 + SHORT_NEIGHBORHOOD_COLUMN + Constants.CSV_SEPARATOR
@@ -994,12 +1004,20 @@ public class User {
                 '\n';
     }
 
+    String reportWithEMailToCSV(final String emailAddress) {
+        return report(true, emailAddress);
+    }
     String reportToCSV() {
+        return report(false, "");
+    }
+
+    private String report(boolean addEmail, final String emailAddress) {
 
         return getId() + Constants.CSV_SEPARATOR +
                 getSimpleCreateTime() + Constants.CSV_SEPARATOR +
                 getName() + Constants.CSV_SEPARATOR +
                 getUserName() + Constants.CSV_SEPARATOR +
+                (addEmail ? emailAddress + Constants.CSV_SEPARATOR : "") +
                 getPhoneNumber() + Constants.CSV_SEPARATOR +
                 getAltPhoneNumber() + Constants.CSV_SEPARATOR +
                 getNeighborhood() + Constants.CSV_SEPARATOR +
@@ -1082,11 +1100,11 @@ public class User {
         if (! volunteerRequest.equals(otherObj.volunteerRequest)) {
             return false;
         }
-        //noinspection RedundantIfStatement
         if (! referral.equals(otherObj.referral)) {
             return false;
         }
 
+        //noinspection RedundantIfStatement
         if (! emailVerified.equals(otherObj.emailVerified)) {
             return false;
         }
