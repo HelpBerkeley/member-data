@@ -60,7 +60,7 @@ public class Parser {
         assert queryResult.headers[4].equals(Constants.COLUMN_PHONE) : queryResult.headers[4];
         assert queryResult.headers[5].equals(Constants.COLUMN_NEIGHBORHOOD) : queryResult.headers[5];
         assert queryResult.headers[6].equals(Constants.COLUMN_CITY) : queryResult.headers[6];
-        assert queryResult.headers[7].equals(Constants.COLUMN_APARTMENT) : queryResult.headers[7];
+        assert queryResult.headers[7].equals(Constants.COLUMN_CONDO) : queryResult.headers[7];
         assert queryResult.headers[8].equals(Constants.COLUMN_CONSUMER_REQUEST) : queryResult.headers[8];
         assert queryResult.headers[9].equals(Constants.COLUMN_VOLUNTEER_REQUEST) : queryResult.headers[9];
         assert queryResult.headers[10].equals(Constants.COLUMN_ALT_PHONE) : queryResult.headers[10];
@@ -85,7 +85,7 @@ public class Parser {
             String phone = (String)columns[4];
             String neighborhood = (String)columns[5];
             String city = (String)columns[6];
-            Boolean isApartment = Boolean.valueOf((String)columns[7]);
+            Boolean isCondo = Boolean.valueOf((String)columns[7]);
             Boolean hasConsumerRequest = Boolean.valueOf((String)columns[8]);
             String volunteerRequest = (String)columns[9];
             String altPhone = (String)columns[10];
@@ -104,7 +104,7 @@ public class Parser {
 
             try {
                 users.add(User.createUser(name, userName, userId, address, city, phone, altPhone, neighborhood,
-                        createdAt, isApartment, hasConsumerRequest, volunteerRequest, referral, verified,
+                        createdAt, isCondo, hasConsumerRequest, volunteerRequest, referral, verified,
                         groupMemberships));
             } catch (UserException ex) {
                 // FIX THIS, DS: get rid of UserException?
@@ -197,7 +197,7 @@ public class Parser {
         assert headers[++index].equals(User.DISPATCHER_COLUMN) : headers[index];
         assert headers[++index].equals(User.DRIVER_COLUMN) : headers[index];
         assert headers[++index].equals(User.CREATED_AT_COLUMN) : headers[index];
-        assert headers[++index].equals(User.APARTMENT_COLUMN) : headers[index];
+        assert headers[++index].equals(User.CONDO_COLUMN) : headers[index];
         assert headers[++index].equals(User.REFERRAL_COLUMN) : headers[index];
         assert headers[++index].equals(User.EMAIL_VERIFIED_COLUMN) : headers[index];
         assert headers[++index].equals(User.CONSUMER_REQUEST_COLUMN) : headers[index];
@@ -250,7 +250,7 @@ public class Parser {
             }
 
             String createdAt = columns[index++];
-            Boolean isApartment = Boolean.valueOf(columns[index++]);
+            Boolean isCondo = Boolean.valueOf(columns[index++]);
             String referral = columns[index++];
             Boolean emailVerified = Boolean.valueOf(columns[index++]);
             Boolean hasConsumerRequest = Boolean.valueOf(columns[index++]);
@@ -314,7 +314,7 @@ public class Parser {
 
             try {
                 users.add(User.createUser(name, userName, id, address, city, phone, altPhone,
-                        neighborhood, createdAt, isApartment, hasConsumerRequest,
+                        neighborhood, createdAt, isCondo, hasConsumerRequest,
                         volunteerRequest, referral, emailVerified, groups));
             } catch (UserException ex) {
                 users.add(ex.user);

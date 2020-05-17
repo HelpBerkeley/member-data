@@ -227,7 +227,7 @@ public class Main {
         postRaw.append(label);
         postRaw.append("**\n\n");
 
-        postRaw.append("| User Name | Email Verified | City | Address | Apartment | Phone |\n");
+        postRaw.append("| User Name | Email Verified | City | Address | Condo | Phone |\n");
         postRaw.append("|---|---|---|---|---|---|\n");
 
         Tables tables = new Tables(users);
@@ -242,7 +242,7 @@ public class Main {
             postRaw.append('|');
             postRaw.append(user.getAddress());
             postRaw.append('|');
-            postRaw.append(user.isApartment());
+            postRaw.append(user.isCondo());
             postRaw.append('|');
             postRaw.append(user.getPhoneNumber());
             postRaw.append("|\n");

@@ -148,7 +148,7 @@ public class UserExporterTest extends TestBase {
         assertThat(headerColumns[index++]).isEqualTo(User.DISPATCHER_COLUMN);
         assertThat(headerColumns[index++]).isEqualTo(User.DRIVER_COLUMN);
         assertThat(headerColumns[index++]).isEqualTo(User.CREATED_AT_COLUMN);
-        assertThat(headerColumns[index++]).isEqualTo(User.APARTMENT_COLUMN);
+        assertThat(headerColumns[index++]).isEqualTo(User.CONDO_COLUMN);
         assertThat(headerColumns[index++]).isEqualTo(User.REFERRAL_COLUMN);
         assertThat(headerColumns[index++]).isEqualTo(User.EMAIL_VERIFIED_COLUMN);
         assertThat(headerColumns[index++]).isEqualTo(User.CONSUMER_REQUEST_COLUMN);
@@ -181,7 +181,7 @@ public class UserExporterTest extends TestBase {
         assertThat(columns[index++]).isEqualTo(String.valueOf(u1.isDispatcher()));
         assertThat(columns[index++]).isEqualTo(String.valueOf(u1.isDriver()));
         assertThat(columns[index++]).isEqualTo(u1.getCreateTime());
-        assertThat(columns[index++]).isEqualTo(String.valueOf(u1.isApartment()));
+        assertThat(columns[index++]).isEqualTo(String.valueOf(u1.isCondo()));
         assertThat(columns[index++]).isEqualTo(String.valueOf(u1.getReferral()));
         assertThat(columns[index++]).isEqualTo(String.valueOf(u1.getEmailVerified()));
         assertThat(columns[index++]).isEqualTo(String.valueOf(u1.hasConsumerRequest()));
@@ -240,7 +240,7 @@ public class UserExporterTest extends TestBase {
         assertThat(headerColumns[index++]).isEqualTo(User.SHORT_NEIGHBORHOOD_COLUMN);
         assertThat(headerColumns[index++]).isEqualTo(User.SHORT_CITY_COLUMN);
         assertThat(headerColumns[index++]).isEqualTo(User.SHORT_ADDRESS_COLUMN);
-        assertThat(headerColumns[index++]).isEqualTo(User.SHORT_APARTMENT_COLUMN);
+        assertThat(headerColumns[index++]).isEqualTo(User.SHORT_CONDO_COLUMN);
         assertThat(headerColumns[index++]).isEqualTo(User.SHORT_REFERRAL_COLUMN);
         assertThat(headerColumns[index++]).isEqualTo(User.SHORT_CONSUMER_COLUMN);
         assertThat(headerColumns[index++]).isEqualTo(User.SHORT_VOICEONLY_COLUMN);
@@ -276,7 +276,7 @@ public class UserExporterTest extends TestBase {
         assertThat(columns[index++]).isEqualTo(u1.getNeighborhood());
         assertThat(columns[index++]).isEqualTo(u1.getCity());
         assertThat(columns[index++]).isEqualTo(u1.getAddress());
-        assertThat(columns[index++]).isEqualTo(String.valueOf(u1.isApartment()));
+        assertThat(columns[index++]).isEqualTo(String.valueOf(u1.isCondo()));
         assertThat(columns[index++]).isEqualTo(String.valueOf(u1.getReferral()));
         assertThat(columns[index++]).isEqualTo(String.valueOf(u1.isConsumer()));
         assertThat(columns[index++]).isEqualTo(String.valueOf(u1.isVoiceOnly()));
@@ -342,7 +342,7 @@ public class UserExporterTest extends TestBase {
         assertThat(headerColumns[6]).isEqualTo(User.NEIGHBORHOOD_COLUMN);
         assertThat(headerColumns[7]).isEqualTo(User.CITY_COLUMN);
         assertThat(headerColumns[8]).isEqualTo(User.ADDRESS_COLUMN);
-        assertThat(headerColumns[9]).isEqualTo(User.APARTMENT_COLUMN);
+        assertThat(headerColumns[9]).isEqualTo(User.CONDO_COLUMN);
 
 
         String[] columns = rows[1].split(Constants.CSV_SEPARATOR);
@@ -357,7 +357,7 @@ public class UserExporterTest extends TestBase {
         assertThat(columns[6]).isEqualTo(u1.getNeighborhood());
         assertThat(columns[7]).isEqualTo(u1.getCity());
         assertThat(columns[8]).isEqualTo(u1.getAddress());
-        assertThat(columns[9]).isEqualTo(String.valueOf(u1.isApartment()));
+        assertThat(columns[9]).isEqualTo(String.valueOf(u1.isCondo()));
     }
 
     @Test
@@ -402,7 +402,7 @@ public class UserExporterTest extends TestBase {
 //        assertThat(headerColumns[4]).isEqualTo(User.ALT_PHONE_NUMBER_COLUMN);
 //        assertThat(headerColumns[5]).isEqualTo(User.CITY_COLUMN);
 //        assertThat(headerColumns[6]).isEqualTo(User.ADDRESS_COLUMN);
-//        assertThat(headerColumns[7]).isEqualTo(User.APARTMENT_COLUMN);
+//        assertThat(headerColumns[7]).isEqualTo(User.CONDO_COLUMN);
 //        assertThat(headerColumns[8]).isEqualTo(User.CONSUMER_COLUMN);
 //        assertThat(headerColumns[9]).isEqualTo(User.DISPATCHER_COLUMN);
 //        assertThat(headerColumns[10]).isEqualTo(User.DRIVER_COLUMN);
@@ -417,7 +417,7 @@ public class UserExporterTest extends TestBase {
 //        assertThat(columns[4]).isEqualTo(u1.getAltPhoneNumber());
 //        assertThat(columns[5]).isEqualTo(u1.getCity());
 //        assertThat(columns[6]).isEqualTo(u1.getAddress());
-//        assertThat(columns[7]).isEqualTo(String.valueOf(u1.isApartment()));
+//        assertThat(columns[7]).isEqualTo(String.valueOf(u1.isCondo()));
 //        assertThat(columns[8]).isEqualTo(String.valueOf(u1.isConsumer()));
 //        assertThat(columns[9]).isEqualTo(String.valueOf(u1.isDispatcher()));
 //        assertThat(columns[10]).isEqualTo(String.valueOf(u1.isDriver()));
@@ -465,7 +465,7 @@ public class UserExporterTest extends TestBase {
         assertThat(headerColumns[4]).isEqualTo(User.NEIGHBORHOOD_COLUMN);
         assertThat(headerColumns[5]).isEqualTo(User.CITY_COLUMN);
         assertThat(headerColumns[6]).isEqualTo(User.ADDRESS_COLUMN);
-        assertThat(headerColumns[7]).isEqualTo(User.APARTMENT_COLUMN);
+        assertThat(headerColumns[7]).isEqualTo(User.CONDO_COLUMN);
         assertThat(headerColumns[8]).isEqualTo(User.DRIVER_COLUMN);
         assertThat(headerColumns[9]).isEqualTo(User.CONSUMER_COLUMN);
         assertThat(headerColumns[10]).isEqualTo(User.DISPATCHER_COLUMN);
@@ -489,7 +489,7 @@ public class UserExporterTest extends TestBase {
         assertThat(columns[4]).isEqualTo(u1.getNeighborhood());
         assertThat(columns[5]).isEqualTo(u1.getCity());
         assertThat(columns[6]).isEqualTo(u1.getAddress());
-        assertThat(columns[7]).isEqualTo(String.valueOf(u1.isApartment()));
+        assertThat(columns[7]).isEqualTo(String.valueOf(u1.isCondo()));
         assertThat(columns[8]).isEqualTo(String.valueOf(u1.isDriver()));
         assertThat(columns[9]).isEqualTo(String.valueOf(u1.isConsumer()));
         assertThat(columns[10]).isEqualTo(String.valueOf(u1.isDispatcher()));

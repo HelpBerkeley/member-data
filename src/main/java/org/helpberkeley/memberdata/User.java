@@ -45,7 +45,7 @@ public class User {
     static final String SPECIALIST_COLUMN = "Specialist";
     static final String DISPATCHER_COLUMN = "Dispatcher";
     static final String CREATED_AT_COLUMN = "Created";
-    static final String APARTMENT_COLUMN = "Apartment";
+    static final String CONDO_COLUMN = "Condo";
     static final String CONSUMER_REQUEST_COLUMN = "Consumer Request";
     static final String VOLUNTEER_REQUEST_COLUMN = "Volunteer Request";
     static final String BHS_COLUMN = "BHS";
@@ -75,7 +75,7 @@ public class User {
     static final String SHORT_NEIGHBORHOOD_COLUMN = "Neighborhood";
     static final String SHORT_CITY_COLUMN = "City";
     static final String SHORT_ADDRESS_COLUMN = "Address";
-    static final String SHORT_APARTMENT_COLUMN = "Condo";
+    static final String SHORT_CONDO_COLUMN = "Condo";
     static final String SHORT_REFERRAL_COLUMN = "Refer";
     static final String SHORT_CONSUMER_COLUMN = "Consumer";
     static final String SHORT_VOICEONLY_COLUMN = "Voiceonly";
@@ -119,7 +119,7 @@ public class User {
     private String altPhoneNumber;
     private String neighborhood;
     private final String createTime;
-    private final Boolean apartment;
+    private final Boolean condo;
     private final Boolean consumerRequest;
     private String volunteerRequest;
     private String referral;
@@ -165,8 +165,8 @@ public class User {
         return volunteerRequest == null ? NOT_PROVIDED : volunteerRequest;
     }
 
-    public Boolean isApartment() {
-        return apartment;
+    public Boolean isCondo() {
+        return condo;
     }
 
     public String getReferral() {
@@ -199,7 +199,7 @@ public class User {
         final String altPhoneNumber,
         final String neighborhood,
         final String createTime,
-        final Boolean apartment,
+        final Boolean condo,
         final Boolean consumerRequest,
         final String volunteerRequest,
         final String referral,
@@ -214,7 +214,7 @@ public class User {
         this.altPhoneNumber = altPhoneNumber;
         this.neighborhood = neighborhood;
         this.createTime = createTime;
-        this.apartment = apartment;
+        this.condo = condo;
         this.consumerRequest = consumerRequest;
         this.volunteerRequest = volunteerRequest;
         this.referral = referral;
@@ -344,9 +344,9 @@ public class User {
                 "=" +
                 isDriver() +
                 ':' +
-                APARTMENT_COLUMN +
+                CONDO_COLUMN +
                 "=" +
-                isApartment() +
+                isCondo() +
                 ':' +
                 REFERRAL_COLUMN +
                 "=" +
@@ -825,7 +825,7 @@ public class User {
             final String altPhoneNumber,
             final String neighborhood,
             final String createdAt,
-            final Boolean apartment,
+            final Boolean condo,
             final Boolean consumerRequest,
             final String volunteerRequest,
             final String referral,
@@ -834,7 +834,7 @@ public class User {
 
 
         User user = new User(name, userName, id, address, city, phoneNumber, altPhoneNumber,
-                neighborhood, createdAt, apartment, consumerRequest, volunteerRequest, referral, emailVerified);
+                neighborhood, createdAt, condo, consumerRequest, volunteerRequest, referral, emailVerified);
         for (String group : groups) {
             assert ! user.groupMembership.contains(group) : group;
             user.groupMembership.add(group);
@@ -860,7 +860,7 @@ public class User {
             final String altPhoneNumber,
             final String neighborhood,
             final String createdAt,
-            final Boolean apartment,
+            final Boolean condo,
             final Boolean consumerRequest,
             final String volunteerRequest,
             final String referral,
@@ -869,7 +869,7 @@ public class User {
 
 
         User user = new User(name, userName, id, address, city, phoneNumber, altPhoneNumber,
-                neighborhood, createdAt, apartment, consumerRequest, volunteerRequest, referral, emailVerified);
+                neighborhood, createdAt, condo, consumerRequest, volunteerRequest, referral, emailVerified);
         for (String group : groups) {
             assert ! user.groupMembership.contains(group) : group;
             user.groupMembership.add(group);
@@ -905,7 +905,7 @@ public class User {
                 + SHORT_NEIGHBORHOOD_COLUMN + Constants.CSV_SEPARATOR
                 + SHORT_CITY_COLUMN + Constants.CSV_SEPARATOR
                 + SHORT_ADDRESS_COLUMN + Constants.CSV_SEPARATOR
-                + SHORT_APARTMENT_COLUMN + Constants.CSV_SEPARATOR
+                + SHORT_CONDO_COLUMN + Constants.CSV_SEPARATOR
                 + SHORT_REFERRAL_COLUMN + Constants.CSV_SEPARATOR
                 + SHORT_CONSUMER_COLUMN + Constants.CSV_SEPARATOR
                 + SHORT_VOICEONLY_COLUMN + Constants.CSV_SEPARATOR
@@ -945,7 +945,7 @@ public class User {
                 + DISPATCHER_COLUMN + Constants.CSV_SEPARATOR
                 + DRIVER_COLUMN + Constants.CSV_SEPARATOR
                 + CREATED_AT_COLUMN + Constants.CSV_SEPARATOR
-                + APARTMENT_COLUMN + Constants.CSV_SEPARATOR
+                + CONDO_COLUMN + Constants.CSV_SEPARATOR
                 + REFERRAL_COLUMN + Constants.CSV_SEPARATOR
                 + EMAIL_VERIFIED_COLUMN + Constants.CSV_SEPARATOR
                 + CONSUMER_REQUEST_COLUMN + Constants.CSV_SEPARATOR
@@ -982,7 +982,7 @@ public class User {
                 isDispatcher() + Constants.CSV_SEPARATOR +
                 isDriver() + Constants.CSV_SEPARATOR +
                 getCreateTime() + Constants.CSV_SEPARATOR +
-                isApartment() + Constants.CSV_SEPARATOR +
+                isCondo() + Constants.CSV_SEPARATOR +
                 getReferral() + Constants.CSV_SEPARATOR +
                 getEmailVerified() + Constants.CSV_SEPARATOR +
                 hasConsumerRequest() + Constants.CSV_SEPARATOR +
@@ -1023,7 +1023,7 @@ public class User {
                 getNeighborhood() + Constants.CSV_SEPARATOR +
                 getCity() + Constants.CSV_SEPARATOR +
                 getAddress() + Constants.CSV_SEPARATOR +
-                isApartment() + Constants.CSV_SEPARATOR +
+                isCondo() + Constants.CSV_SEPARATOR +
                 getReferral() + Constants.CSV_SEPARATOR +
                 isConsumer() + Constants.CSV_SEPARATOR +
                 isVoiceOnly() + Constants.CSV_SEPARATOR +
@@ -1091,7 +1091,7 @@ public class User {
         if (! createTime.equals(otherObj.createTime)) {
             return false;
         }
-        if (! apartment.equals(otherObj.apartment)) {
+        if (! condo.equals(otherObj.condo)) {
             return false;
         }
         if (! consumerRequest.equals(otherObj.consumerRequest)) {

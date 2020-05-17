@@ -174,7 +174,7 @@ public class UserExporter extends Exporter {
             rows.append(separator);
             rows.append(user.getAddress());
             rows.append(separator);
-            rows.append(user.isApartment());
+            rows.append(user.isCondo());
             rows.append(separator);
             rows.append(user.isDriver());
             rows.append(separator);
@@ -203,7 +203,7 @@ public class UserExporter extends Exporter {
                 + separator
                 + User.ADDRESS_COLUMN
                 + separator
-                + User.APARTMENT_COLUMN
+                + User.CONDO_COLUMN
                 + separator
                 + User.DRIVER_COLUMN
                 + separator
@@ -247,7 +247,7 @@ public class UserExporter extends Exporter {
             rows.append(separator);
             rows.append(user.getAddress());
             rows.append(separator);
-            rows.append(user.isApartment());
+            rows.append(user.isCondo());
             rows.append('\n');
         }
 
@@ -282,7 +282,7 @@ public class UserExporter extends Exporter {
             + separator
             + User.ADDRESS_COLUMN
             + separator
-            + User.APARTMENT_COLUMN
+            + User.CONDO_COLUMN
             + separator
             + '\n';
     }
@@ -310,7 +310,7 @@ public class UserExporter extends Exporter {
             rows.append(separator);
             rows.append(user.getAddress());
             rows.append(separator);
-            rows.append(user.isApartment());
+            rows.append(user.isCondo());
             rows.append(separator);
             rows.append(Boolean.valueOf(userOrderHistory != null));
             rows.append(separator);
@@ -356,7 +356,7 @@ public class UserExporter extends Exporter {
             + separator
             + User.ADDRESS_COLUMN
             + separator
-            + User.APARTMENT_COLUMN
+            + User.CONDO_COLUMN
             + separator
             + Constants.ORDER_STATUS_COLUMN
             + separator
@@ -396,7 +396,7 @@ public class UserExporter extends Exporter {
             rows.append(separator);
             rows.append(user.getAddress());
             rows.append(separator);
-            rows.append(user.isApartment());
+            rows.append(user.isCondo());
             rows.append(separator);
             rows.append(user.isDriver());
             rows.append(separator);
@@ -452,7 +452,7 @@ public class UserExporter extends Exporter {
                 + separator
                 + User.ADDRESS_COLUMN
                 + separator
-                + User.APARTMENT_COLUMN
+                + User.CONDO_COLUMN
                 + separator
                 + User.DRIVER_COLUMN
                 + separator

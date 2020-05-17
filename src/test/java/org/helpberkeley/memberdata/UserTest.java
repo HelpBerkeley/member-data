@@ -358,9 +358,9 @@ public class UserTest extends TestBase {
     }
 
     @Test
-    public void apartmentInequaityTest() throws UserException {
-        User user1 = createUserWithApartment(true);
-        User user2 = createUserWithApartment(false);
+    public void condoInequaityTest() throws UserException {
+        User user1 = createUserWithCondo(true);
+        User user2 = createUserWithCondo(false);
         assertThat(user1).isNotEqualTo(user2);
 
     }

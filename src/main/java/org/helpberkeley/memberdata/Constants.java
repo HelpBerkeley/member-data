@@ -29,8 +29,9 @@ public class Constants {
 //    public static final int QUERY_GET_USERS_V12_ID = 9;
 //    public static final int QUERY_GET_USERS_V13_ID = 10;
 //    public static final int QUERY_GET_USERS_V14_ID = 12;
-    public static final int QUERY_GET_USERS_V15_ID = 14;
-    public static final int CURRENT_USERS_QUERY = QUERY_GET_USERS_V15_ID;
+//    public static final int QUERY_GET_USERS_V15_ID = 14;
+    public static final int QUERY_GET_USERS_V16_ID = 16;
+    public static final int CURRENT_USERS_QUERY = QUERY_GET_USERS_V16_ID;
     public static final int QUERY_GET_DAILY_DELIVERIES = 13;
     public static final int QUERY_EMAIL_CONFIRMATIONS = 15;
     public static final int QUERY_GET_EMAILS = 11;
@@ -44,7 +45,7 @@ public class Constants {
     public static final String COLUMN_PHONE = "phone";
     public static final String COLUMN_CITY = "city";
     public static final String COLUMN_NEIGHBORHOOD = "neighborhood";
-    public static final String COLUMN_APARTMENT = "apartment";
+    public static final String COLUMN_CONDO = "condo";
     public static final String COLUMN_CREATE_TIME = "created_at";
     public static final String COLUMN_CONSUMER_REQUEST = "consumer_request";
     public static final String COLUMN_VOLUNTEER_REQUEST = "volunteer_request";
