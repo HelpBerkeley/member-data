@@ -180,7 +180,7 @@ public class Parser {
         String[] lines = csvData.split("\n");
         assert lines.length > 0 : csvData;
 
-        String[] headers = lines[0].split(Constants.CSV_SEPARATOR);
+        String[] headers = lines[0].split(Constants.CSV_SEPARATOR, -1);
         assert headers.length == 32 : headers.length + ": " + lines[0];
 
         int index = 0;
@@ -221,7 +221,7 @@ public class Parser {
         List<String> groups = new ArrayList<>();
 
         for (int colIndex = 1; colIndex < lines.length; colIndex++) {
-            String[] columns = lines[colIndex].split(Constants.CSV_SEPARATOR);
+            String[] columns = lines[colIndex].split(Constants.CSV_SEPARATOR, -1);
             assert columns.length == headers.length : columns.length + " != " + headers.length;
 
             index = 0;
@@ -365,7 +365,7 @@ public class Parser {
         assert header.equals(DeliveryData.deliveryPostsHeader().trim());
 
         for (int index = 1; index < lines.length; index++) {
-            String[] fields = lines[index].split(Constants.CSV_SEPARATOR);
+            String[] fields = lines[index].split(Constants.CSV_SEPARATOR, -1);
             assert fields.length == 3 : lines[index];
             dailyDeliveries.add(new DeliveryData(fields[0], fields[1], fields[2]));
         }
@@ -459,7 +459,7 @@ public class Parser {
             orderHistoryThroughDate = "2020/01/01";
         } else {
             // The first row of the table encodes the orderHistoryThroughDate
-            String[] columns = lines[1].split(Constants.CSV_SEPARATOR);
+            String[] columns = lines[1].split(Constants.CSV_SEPARATOR, -1);
             assert columns[0].equals("0") : lines[1];
             assert columns[1].equals("0") : lines[1];
             assert columns[2].equals("") : lines[1];
@@ -471,7 +471,7 @@ public class Parser {
 
         // The remaining rows are user history, 0 or 1 row per user.
         for (int index = 2; index < lines.length; index++) {
-            String[] columns = lines[index].split(Constants.CSV_SEPARATOR);
+            String[] columns = lines[index].split(Constants.CSV_SEPARATOR, -1);
             orderHistory.add(columns[0], Integer.parseInt(columns[1]), columns[2], columns[3]);
         }
 

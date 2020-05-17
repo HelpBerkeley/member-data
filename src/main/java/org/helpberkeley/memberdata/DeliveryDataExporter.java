@@ -54,7 +54,6 @@ public class DeliveryDataExporter extends Exporter {
             output.append(uploadFile.originalFileName);
             output.append(Constants.CSV_SEPARATOR);
             output.append(uploadFile.shortURL);
-            output.append(Constants.CSV_SEPARATOR);
             output.append('\n');
         }
 

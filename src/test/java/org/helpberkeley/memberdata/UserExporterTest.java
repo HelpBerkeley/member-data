@@ -131,7 +131,7 @@ public class UserExporterTest extends TestBase {
         String header = rows[0];
         assertThat(header).isEqualTo(User.rawCSVHeaders().trim());
 
-        String[] headerColumns = header.split(Constants.CSV_SEPARATOR);
+        String[] headerColumns = header.split(Constants.CSV_SEPARATOR, -1);
 
         // FIX THIS, DS: add a constant for number of columns expected
         int index = 0;
@@ -164,7 +164,7 @@ public class UserExporterTest extends TestBase {
         assertThat(headerColumns[index++]).isEqualTo(User.TRUST_LEVEL_4_COLUMN);
         assertThat(headerColumns[index++]).isEqualTo(User.WORKFLOW_COLUMN);
 
-        String[] columns = rows[1].split(Constants.CSV_SEPARATOR);
+        String[] columns = rows[1].split(Constants.CSV_SEPARATOR, -1);
         assertThat(headerColumns).hasSameSizeAs(columns);
 
         index = 0;
@@ -227,7 +227,7 @@ public class UserExporterTest extends TestBase {
         String header = rows[0];
         assertThat(header).isEqualTo(User.reportCSVHeaders().trim());
 
-        String[] headerColumns = header.split(Constants.CSV_SEPARATOR);
+        String[] headerColumns = header.split(Constants.CSV_SEPARATOR, -1);
 
         // FIX THIS, DS: add a constant for number of columns expected
         int index = 0;
@@ -263,7 +263,7 @@ public class UserExporterTest extends TestBase {
         assertThat(headerColumns[index++]).isEqualTo(User.SHORT_CONSUMER_REQUEST_COLUMN);
         assertThat(headerColumns[index++]).isEqualTo(User.SHORT_VOLUNTEER_REQUEST_COLUMN);
 
-        String[] columns = rows[1].split(Constants.CSV_SEPARATOR);
+        String[] columns = rows[1].split(Constants.CSV_SEPARATOR, -1);
         assertThat(headerColumns).hasSameSizeAs(columns);
 
         index = 0;
@@ -330,7 +330,7 @@ public class UserExporterTest extends TestBase {
         String header = rows[0];
         assertThat(header).isEqualTo(exporter.workflowHeaders().trim());
 
-        String[] headerColumns = header.split(Constants.CSV_SEPARATOR);
+        String[] headerColumns = header.split(Constants.CSV_SEPARATOR, -1);
 
         // FIX THIS, DS: add a constant for number of columns expected
         assertThat(headerColumns[0]).isEqualTo(User.CONSUMER_COLUMN);
@@ -345,7 +345,7 @@ public class UserExporterTest extends TestBase {
         assertThat(headerColumns[9]).isEqualTo(User.CONDO_COLUMN);
 
 
-        String[] columns = rows[1].split(Constants.CSV_SEPARATOR);
+        String[] columns = rows[1].split(Constants.CSV_SEPARATOR, -1);
         assertThat(headerColumns).hasSameSizeAs(columns);
 
         assertThat(columns[0]).isEqualTo(String.valueOf(u1.isConsumer()));
@@ -392,7 +392,7 @@ public class UserExporterTest extends TestBase {
 //        String header = rows[0];
 //        assertThat(header).isEqualTo(exporter.inreachHeaders().trim());
 //
-//        String[] headerColumns = header.split(Constants.CSV_SEPARATOR);
+//        String[] headerColumns = header.split(Constants.CSV_SEPARATOR, -1);
 //
 //        // FIX THIS, DS: add a constant for number of columns expected
 //        assertThat(headerColumns[0]).isEqualTo(User.CREATED_AT_COLUMN);
@@ -407,7 +407,7 @@ public class UserExporterTest extends TestBase {
 //        assertThat(headerColumns[9]).isEqualTo(User.DISPATCHER_COLUMN);
 //        assertThat(headerColumns[10]).isEqualTo(User.DRIVER_COLUMN);
 //
-//        String[] columns = rows[1].split(Constants.CSV_SEPARATOR);
+//        String[] columns = rows[1].split(Constants.CSV_SEPARATOR, -1);
 //        assertThat(headerColumns).hasSameSizeAs(columns);
 //
 //        assertThat(columns[0]).isEqualTo(u1.getSimpleCreateTime());
@@ -455,7 +455,7 @@ public class UserExporterTest extends TestBase {
         String header = rows[0];
         assertThat(header).isEqualTo(exporter.dispatchersHeaders().trim());
 
-        String[] headerColumns = header.split(Constants.CSV_SEPARATOR);
+        String[] headerColumns = header.split(Constants.CSV_SEPARATOR, -1);
 
         // FIX THIS, DS: add a constant for number of columns expected
         assertThat(headerColumns[0]).isEqualTo(User.CREATED_AT_COLUMN);
@@ -479,7 +479,7 @@ public class UserExporterTest extends TestBase {
         assertThat(headerColumns[18]).isEqualTo(User.SPECIALIST_COLUMN);
         assertThat(headerColumns[19]).isEqualTo(User.WORKFLOW_COLUMN);
 
-        String[] columns = rows[1].split(Constants.CSV_SEPARATOR);
+        String[] columns = rows[1].split(Constants.CSV_SEPARATOR, -1);
         assertThat(headerColumns).hasSameSizeAs(columns);
 
         assertThat(columns[0]).isEqualTo(u1.getSimpleCreateTime());

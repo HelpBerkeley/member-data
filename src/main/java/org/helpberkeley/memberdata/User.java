@@ -926,7 +926,7 @@ public class User {
                 + SHORT_COORDINATOR_COLUMN + Constants.CSV_SEPARATOR
                 + SHORT_ADMIN_COLUMN + Constants.CSV_SEPARATOR
                 + SHORT_CONSUMER_REQUEST_COLUMN + Constants.CSV_SEPARATOR
-                + SHORT_VOLUNTEER_REQUEST_COLUMN + Constants.CSV_SEPARATOR
+                + SHORT_VOLUNTEER_REQUEST_COLUMN
                 + "\n";
     }
 
@@ -963,7 +963,7 @@ public class User {
                 + CUSTOMER_INFO_COLUMN + Constants.CSV_SEPARATOR
                 + ADVISOR_COLUMN + Constants.CSV_SEPARATOR
                 + COORDINATOR_COLUMN + Constants.CSV_SEPARATOR
-                + ADMIN_COLUMN + Constants.CSV_SEPARATOR
+                + ADMIN_COLUMN
                 + "\n";
     }
 
@@ -1000,7 +1000,7 @@ public class User {
                 isCustomerInfo() + Constants.CSV_SEPARATOR +
                 isAdvisor() + Constants.CSV_SEPARATOR +
                 isCoordinator() + Constants.CSV_SEPARATOR +
-                isAdmin() + Constants.CSV_SEPARATOR +
+                isAdmin() +
                 '\n';
     }
 
@@ -1044,7 +1044,7 @@ public class User {
                 isCoordinator() + Constants.CSV_SEPARATOR +
                 isAdmin() + Constants.CSV_SEPARATOR +
                 hasConsumerRequest() + Constants.CSV_SEPARATOR +
-                getVolunteerRequest() + Constants.CSV_SEPARATOR +
+                getVolunteerRequest() +
                 '\n';
     }
 

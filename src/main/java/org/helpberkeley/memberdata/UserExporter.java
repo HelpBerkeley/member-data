@@ -181,7 +181,6 @@ public class UserExporter extends Exporter {
             rows.append(user.isConsumer());
             rows.append(separator);
             rows.append(user.isDispatcher());
-            rows.append(separator);
             rows.append('\n');
         }
 
@@ -210,7 +209,6 @@ public class UserExporter extends Exporter {
                 + User.CONSUMER_COLUMN
                 + separator
                 + User.DISPATCHER_COLUMN
-                + separator
                 + '\n';
     }
 
@@ -283,7 +281,6 @@ public class UserExporter extends Exporter {
             + User.ADDRESS_COLUMN
             + separator
             + User.CONDO_COLUMN
-            + separator
             + '\n';
     }
 
@@ -325,7 +322,6 @@ public class UserExporter extends Exporter {
             rows.append(user.isDispatcher());
             rows.append(separator);
             rows.append(user.isDriver());
-            rows.append(separator);
             rows.append('\n');
         }
 
@@ -371,7 +367,6 @@ public class UserExporter extends Exporter {
             + User.DISPATCHER_COLUMN
             + separator
             + User.DRIVER_COLUMN
-            + separator
             + '\n';
     }
 
@@ -421,7 +416,6 @@ public class UserExporter extends Exporter {
             rows.append(user.isSpecialist());
             rows.append(separator);
             rows.append(user.isWorkflow());
-            rows.append(separator);
             rows.append('\n');
         }
 
@@ -477,7 +471,6 @@ public class UserExporter extends Exporter {
                 + User.SPECIALIST_COLUMN
                 + separator
                 + User.WORKFLOW_COLUMN
-                + separator
                 + '\n';
     }
 }

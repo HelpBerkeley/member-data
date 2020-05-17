@@ -45,7 +45,7 @@ public class DailyDeliveriesTest extends TestBase {
                 + Parser.DeliveryColumns.NAME_COLUMN + Constants.CSV_SEPARATOR
                 + Parser.DeliveryColumns.USER_NAME_COLUMN + Constants.CSV_SEPARATOR
                 + Parser.DeliveryColumns.NORMAL_COLUMN + Constants.CSV_SEPARATOR
-                + Parser.DeliveryColumns.VEGGIE_COLUMN + Constants.CSV_SEPARATOR
+                + Parser.DeliveryColumns.VEGGIE_COLUMN
                 + "\n";
 
         Parser.parseOrders("", header);
@@ -57,7 +57,7 @@ public class DailyDeliveriesTest extends TestBase {
                 + Parser.DeliveryColumns.NORMAL_COLUMN + Constants.CSV_SEPARATOR
                 + Parser.DeliveryColumns.USER_NAME_COLUMN + Constants.CSV_SEPARATOR
                 + Parser.DeliveryColumns.VEGGIE_COLUMN + Constants.CSV_SEPARATOR
-                + Parser.DeliveryColumns.NAME_COLUMN + Constants.CSV_SEPARATOR
+                + Parser.DeliveryColumns.NAME_COLUMN
                 + "\n";
 
         Parser.parseOrders("", header);
@@ -69,7 +69,7 @@ public class DailyDeliveriesTest extends TestBase {
                 + " " + Parser.DeliveryColumns.NORMAL_COLUMN + " " + Constants.CSV_SEPARATOR
                 + " " + Parser.DeliveryColumns.USER_NAME_COLUMN + " " + Constants.CSV_SEPARATOR
                 + " " + Parser.DeliveryColumns.VEGGIE_COLUMN + " " + Constants.CSV_SEPARATOR
-                + " " + Parser.DeliveryColumns.NAME_COLUMN + " " + Constants.CSV_SEPARATOR
+                + " " + Parser.DeliveryColumns.NAME_COLUMN
                 + "\n";
 
         Parser.parseOrders("", header);
@@ -80,7 +80,7 @@ public class DailyDeliveriesTest extends TestBase {
         String header = Parser.DeliveryColumns.CONSUMER_COLUMN + Constants.CSV_SEPARATOR
                 + Parser.DeliveryColumns.NAME_COLUMN + Constants.CSV_SEPARATOR
                 + Parser.DeliveryColumns.NORMAL_COLUMN + Constants.CSV_SEPARATOR
-                + Parser.DeliveryColumns.VEGGIE_COLUMN + Constants.CSV_SEPARATOR
+                + Parser.DeliveryColumns.VEGGIE_COLUMN
                 + "\n";
 
         Parser.parseOrders("", header);
@@ -91,7 +91,7 @@ public class DailyDeliveriesTest extends TestBase {
         String header = Parser.DeliveryColumns.CONSUMER_COLUMN + Constants.CSV_SEPARATOR
                 + Parser.DeliveryColumns.USER_NAME_COLUMN + Constants.CSV_SEPARATOR
                 + Parser.DeliveryColumns.NORMAL_COLUMN + Constants.CSV_SEPARATOR
-                + Parser.DeliveryColumns.VEGGIE_COLUMN + Constants.CSV_SEPARATOR
+                + Parser.DeliveryColumns.VEGGIE_COLUMN
                 + "\n";
 
         Parser.parseOrders("", header);
@@ -103,7 +103,7 @@ public class DailyDeliveriesTest extends TestBase {
         String header = Parser.DeliveryColumns.NAME_COLUMN + Constants.CSV_SEPARATOR
                 + Parser.DeliveryColumns.USER_NAME_COLUMN + Constants.CSV_SEPARATOR
                 + Parser.DeliveryColumns.NORMAL_COLUMN + Constants.CSV_SEPARATOR
-                + Parser.DeliveryColumns.VEGGIE_COLUMN + Constants.CSV_SEPARATOR
+                + Parser.DeliveryColumns.VEGGIE_COLUMN
                 + "\n";
 
         Throwable thrown = catchThrowable(() -> Parser.parseOrders(fileName, header));
@@ -118,7 +118,7 @@ public class DailyDeliveriesTest extends TestBase {
         String header = Parser.DeliveryColumns.CONSUMER_COLUMN + Constants.CSV_SEPARATOR
                 + Parser.DeliveryColumns.NAME_COLUMN + Constants.CSV_SEPARATOR
                 + Parser.DeliveryColumns.USER_NAME_COLUMN + Constants.CSV_SEPARATOR
-                + Parser.DeliveryColumns.NORMAL_COLUMN + Constants.CSV_SEPARATOR
+                + Parser.DeliveryColumns.NORMAL_COLUMN
                 + "\n";
 
         Throwable thrown = catchThrowable(() -> Parser.parseOrders(fileName, header));
@@ -147,7 +147,7 @@ public class DailyDeliveriesTest extends TestBase {
         String fileName = "missing-name-username-columns";
         String header = Parser.DeliveryColumns.CONSUMER_COLUMN + Constants.CSV_SEPARATOR
                 + Parser.DeliveryColumns.NORMAL_COLUMN + Constants.CSV_SEPARATOR
-                + Parser.DeliveryColumns.VEGGIE_COLUMN + Constants.CSV_SEPARATOR
+                + Parser.DeliveryColumns.VEGGIE_COLUMN
                 + "\n";
 
         Throwable thrown = catchThrowable(() -> Parser.parseOrders(fileName, header));

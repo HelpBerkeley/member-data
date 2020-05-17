@@ -65,7 +65,7 @@ public class DeliveryData {
         // FIX THIS, DS: constants
         return "Date" + Constants.CSV_SEPARATOR
                 + "File" + Constants.CSV_SEPARATOR
-                + "URL" + Constants.CSV_SEPARATOR
+                + "URL"
                 + '\n';
     }
 

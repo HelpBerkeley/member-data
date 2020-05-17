@@ -121,7 +121,6 @@ public class OrderHistory {
         output.append(Constants.CSV_SEPARATOR);
         output.append(Constants.CSV_SEPARATOR);
         output.append(historyThroughDate);
-        output.append(Constants.CSV_SEPARATOR);
         output.append('\n');
 
 
@@ -133,7 +132,6 @@ public class OrderHistory {
             output.append(row.firstOrderDate);
             output.append(Constants.CSV_SEPARATOR);
             output.append(row.lastOrderDate);
-            output.append(Constants.CSV_SEPARATOR);
             output.append('\n');
         }
 
@@ -144,7 +142,7 @@ public class OrderHistory {
         return ID_COLUMN + Constants.CSV_SEPARATOR
                 + ORDERS_COLUMN + Constants.CSV_SEPARATOR
                 + FIRST_ORDER_DATE_COLUMN + Constants.CSV_SEPARATOR
-                + LAST_ORDER_DATE_COLUMN + Constants.CSV_SEPARATOR
+                + LAST_ORDER_DATE_COLUMN
                 + "\n";
     }
 
