@@ -129,6 +129,8 @@ public class HttpClientSimulator extends HttpClient {
 
         if (fileName.endsWith(Main.ORDER_HISTORY_POST_ID + ".json")) {
             fileName = "order-history.json";
+        } else if (fileName.equals(Main.RESTAURANT_TEMPLATE_POST_ID + ".json")) {
+            fileName = "restaurant-template-post.json";
         }
 
         try {

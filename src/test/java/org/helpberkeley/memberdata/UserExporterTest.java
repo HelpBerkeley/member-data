@@ -323,7 +323,7 @@ public class UserExporterTest extends TestBase {
         User u1 = createTestUser1();
         UserExporter exporter = new UserExporter(List.of(u1));
 
-        String workflowRows = exporter.workflow();
+        String workflowRows = exporter.workflow("");
         String[] rows = workflowRows.split("\n");
         assertThat(rows).hasSize(2);
 
@@ -368,7 +368,7 @@ public class UserExporterTest extends TestBase {
         User u3 = createUserWithGroup(TEST_USER_NAME_3, Constants.GROUP_DRIVERS);
 
         UserExporter exporter = new UserExporter(List.of(u1, u2, u3));
-        String fileName = exporter.workflowToFile("workflow.csv");
+        String fileName = exporter.workflowToFile("", "workflow.csv");
 
         String fileData = readFile(fileName);
         assertThat(fileData).contains(TEST_USER_NAME_1);

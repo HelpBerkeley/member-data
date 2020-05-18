@@ -102,6 +102,7 @@ public class TestBase {
             Options.COMMAND_POST_VOLUNTEER_REQUESTS,
             Options.COMMAND_UPDATE_ERRORS,
             Options.COMMAND_EMAIL,
+            Options.COMMAND_WORKFLOW,
     };
 
     static final String[] COMMANDS_WITH_NO_PARAMETERS = {

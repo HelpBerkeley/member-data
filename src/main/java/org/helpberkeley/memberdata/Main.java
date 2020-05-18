@@ -82,6 +82,7 @@ public class Main {
     static final long DISPATCHERS_POST_ID = 5324;
     static final long ORDER_HISTORY_TOPIC = 1440;
     static final long ORDER_HISTORY_POST_ID = 6433;
+    static final long RESTAURANT_TEMPLATE_POST_ID = 8664;
 
     public static void main(String[] args) throws IOException, InterruptedException {
 
@@ -150,6 +151,9 @@ public class Main {
             case Options.COMMAND_EMAIL:
                 generateEmail(apiClient, options.getFileName());
                 break;
+            case Options.COMMAND_WORKFLOW:
+                generateWorkflow(apiClient, options.getFileName());
+                break;
             default:
                 assert options.getCommand().equals(Options.COMMAND_POST_DRIVERS) : options.getCommand();
                 postFile(apiClient, options.getFileName(),
@@ -206,8 +210,9 @@ public class Main {
         // Export drivers
         exporter.driversToFile(DRIVERS_FILE);
 
+        // FIX THIS, DS: remove when workflow command is working
         // Export workflow
-        exporter.workflowToFile(WORKFLOW_FILE);
+        exporter.workflowToFile("", WORKFLOW_FILE);
 
         // Export dispatchers
         exporter.dispatchersToFile(DISPATCHERS_FILE);
@@ -460,7 +465,19 @@ public class Main {
         Map<Long, String> emails = new Loader(apiClient).loadEmailAddresses();
 
         new UserExporter(users).allMembersWithEmailReportToFile(emails, MEMBERDATA_WITH_EMAIL_REPORT_FILE);
+    }
 
+    static void generateWorkflow(ApiClient apiClient, final String usersFile)
+        throws IOException, InterruptedException {
+
+        String csvData = Files.readString(Paths.get(usersFile));
+        List<User> users = Parser.users(csvData);
+
+        String rawPost = Parser.postBody(apiClient.getPost(RESTAURANT_TEMPLATE_POST_ID));
+        RestaurantTemplatePost restaurantTemplatePost = Parser.restaurantTemplatePost(rawPost);
+
+        String restaurantTemplate = apiClient.downloadFile(restaurantTemplatePost.uploadFile.fileName);
+        new UserExporter(users).workflowToFile(restaurantTemplate, MEMBERDATA_WITH_EMAIL_REPORT_FILE);
     }
 }
 

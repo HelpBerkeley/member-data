@@ -220,11 +220,16 @@ public class UserExporter extends Exporter {
         return outputFileName;
     }
 
-    String workflow() {
+    String workflow(final String restaurantBlock) {
 
         StringBuilder rows = new StringBuilder();
 
-        rows.append(workflowHeaders());
+        if (restaurantBlock.isEmpty()) {
+            rows.append(workflowHeaders());
+        } else {
+            auditWorkflowData(restaurantBlock);
+            rows.append(restaurantBlock);
+        }
 
         for (User user : tables.sortByConsumerThenDriverThenName()) {
             rows.append(user.isConsumer());
@@ -246,16 +251,41 @@ public class UserExporter extends Exporter {
             rows.append(user.getAddress());
             rows.append(separator);
             rows.append(user.isCondo());
+            rows.append(separator);
+            rows.append(separator);
+            rows.append(separator);
+            rows.append(separator);
             rows.append('\n');
         }
 
         return rows.toString();
     }
 
-    String workflowToFile(final String fileName) throws IOException {
+    private void auditWorkflowData(final String workFlowData) {
+        String[] lines = workFlowData.split("\n");
+        assert lines.length > 0;
+        assert workflowHeaders().equals(lines[0] + "\n") :
+                "\n" + workflowHeaders() + " !=\n" + lines[0];
+        String[] headerColumns = lines[0].split(Constants.CSV_SEPARATOR, -1);
+
+        for (int lineNumber = 1; lineNumber < lines.length; lineNumber++) {
+            String[] columns = lines[lineNumber].split(Constants.CSV_SEPARATOR, -1);
+
+            if (columns.length != headerColumns.length) {
+                throw new Error("wrong number of columns in line "
+                        + lineNumber + " ("
+                        + columns.length
+                        + " != "
+                        + headerColumns.length
+                        + ")");
+            }
+        }
+    }
+
+    String workflowToFile(final String restaurantBlock, final String fileName) throws IOException {
 
         String outputFileName = generateFileName(fileName, "csv");
-        writeFile(outputFileName, workflow());
+        writeFile(outputFileName, workflow(restaurantBlock));
 
         return outputFileName;
     }
@@ -281,6 +311,14 @@ public class UserExporter extends Exporter {
             + User.ADDRESS_COLUMN
             + separator
             + User.CONDO_COLUMN
+            + separator
+            + "Restaurants"
+            + separator
+            + "normal"
+            + separator
+            + "veggie"
+            + separator
+            + "#orders"
             + '\n';
     }
 

@@ -441,6 +441,25 @@ public class Parser {
         return new OrderHistoryPost(date, fileName, shortURL);
     }
 
+    static RestaurantTemplatePost restaurantTemplatePost(final String rawPost) {
+
+        // "Here we put updated restaurant templates for use by our software.
+        //
+        // Do Not Modify!
+        //
+        // [HelpBerkeleyDeliveries - Template.csv|attachment](upload://89KcvxqdAnILkXELUtX939365ag.csv) (1.5 KB)"
+
+        for (String line : rawPost.split("\n")) {
+            if (line.contains(Constants.UPLOAD_URI_PREFIX)) {
+                String shortURL =  shortURL(line);
+                String fileName = downloadFileName(line);
+                return new RestaurantTemplatePost(fileName, shortURL);
+            }
+        }
+
+        throw new Error("Restaurant template upload link not found in " + rawPost);
+    }
+
     static OrderHistory orderHistory(final String orderHistoryData) {
 
         String orderHistoryThroughDate;

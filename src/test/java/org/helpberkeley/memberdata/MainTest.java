@@ -222,6 +222,15 @@ public class MainTest extends TestBase {
         Main.main(args);
     }
 
+    @Test
+    public void workflowTest() throws IOException, InterruptedException {
+
+        String usersFile = findFile(Main.MEMBERDATA_RAW_FILE, "csv");
+
+        String[] args = { Options.COMMAND_WORKFLOW, usersFile };
+        Main.main(args);
+    }
+
     private String findFile(final String prefix, final String suffix) {
 
         File dir = new File(".");

@@ -202,7 +202,8 @@ public class ApiClient {
 
     String getPost(long postId) throws IOException, InterruptedException {
         String endpoint = POSTS_BASE + postId + ".json";
-        return get(endpoint).body();
+        // Normalize EOL
+        return get(endpoint).body().replaceAll("\\r\\n?", "\n");
     }
 
     HttpResponse<String> uploadFile() throws IOException, InterruptedException {
@@ -256,6 +257,8 @@ public class ApiClient {
             throw new Error("downloadFile(" + endpoint + " failed: " + response.statusCode() + ": " + response.body());
         }
 
-        return response.body();
+        // Normalize EOL
+        return response.body().replaceAll("\\r\\n?", "\n");
+
     }
 }

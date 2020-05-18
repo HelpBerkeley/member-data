@@ -43,6 +43,7 @@ public class Options {
     static final String COMMAND_POST_DISPATCHERS = "post-dispatchers";
     static final String COMMAND_INREACH = "inreach";
     static final String COMMAND_EMAIL = "email";
+    static final String COMMAND_WORKFLOW = "workflow";
 
     static final String USAGE_ERROR = "Usage error for command ";
     static final String UNKNOWN_COMMAND = USAGE_ERROR + ": unknown command: ";
@@ -63,6 +64,7 @@ public class Options {
                                 + " all-members-file order-history-file daily-deliveries-file\n"
                     + "    | " + COMMAND_INREACH + " all-members-file order-history-file\n"
                     + "    | " + COMMAND_EMAIL + " all-members-file\n"
+                    + "    | " + COMMAND_WORKFLOW + " all-members-file\n"
                     + "    | " + COMMAND_POST_ERRORS + " errors-file-name\n"
                     + "    | " + COMMAND_POST_CONSUMER_REQUESTS + " consumer-requests-file-name\n"
                     + "    | " + COMMAND_POST_VOLUNTEER_REQUESTS + " volunteer-requests-file-name\n"
@@ -103,6 +105,7 @@ public class Options {
                 case COMMAND_POST_VOLUNTEER_REQUESTS:
                 case COMMAND_UPDATE_ERRORS:
                 case COMMAND_EMAIL:
+                case COMMAND_WORKFLOW:
                     setCommand(arg);
                     index++;
                     if (index == args.length) {
