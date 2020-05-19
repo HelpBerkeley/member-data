@@ -21,6 +21,7 @@
 //
 package org.helpberkeley.memberdata;
 
+import com.opencsv.exceptions.CsvException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -84,7 +85,7 @@ public class Main {
     static final long ORDER_HISTORY_POST_ID = 6433;
     static final long RESTAURANT_TEMPLATE_POST_ID = 8664;
 
-    public static void main(String[] args) throws IOException, InterruptedException {
+    public static void main(String[] args) throws IOException, InterruptedException, CsvException {
 
         Options options = new Options(args);
         options.parse();
@@ -182,7 +183,7 @@ public class Main {
         return properties;
     }
 
-    static void fetch(ApiClient apiClient) throws InterruptedException, IOException {
+    static void fetch(ApiClient apiClient) throws InterruptedException, IOException, CsvException {
         // Create a User loader
         Loader loader = new Loader(apiClient);
 
@@ -212,14 +213,14 @@ public class Main {
 
         // FIX THIS, DS: remove when workflow command is working
         // Export workflow
-        exporter.workflowToFile("", WORKFLOW_FILE);
+//        exporter.workflowToFile("", WORKFLOW_FILE);
 
         // Export dispatchers
         exporter.dispatchersToFile(DISPATCHERS_FILE);
     }
 
     static void postConsumerRequests(ApiClient apiClient, final String fileName)
-            throws IOException, InterruptedException {
+            throws IOException, InterruptedException, CsvException {
 
         String csvData = Files.readString(Paths.get(fileName));
         List<User> users = Parser.users(csvData);
@@ -266,7 +267,7 @@ public class Main {
     }
 
     static void postVolunteerRequests(ApiClient apiClient, final String fileName)
-            throws IOException, InterruptedException {
+            throws IOException, InterruptedException, CsvException {
 
         String csvData = Files.readString(Paths.get(fileName));
         List<User> users = Parser.users(csvData);
@@ -413,7 +414,7 @@ public class Main {
     }
 
     static void mergeOrderHistory(ApiClient apiClient, final String usersFile,
-        final String orderHistoryFile, final String deliveryPostsFile) throws IOException, InterruptedException {
+        final String orderHistoryFile, final String deliveryPostsFile) throws IOException, InterruptedException, CsvException {
 
         // Load order history
         String csvData = Files.readString(Paths.get(orderHistoryFile));
@@ -447,7 +448,7 @@ public class Main {
         new OrderHistoryExporter(orderHistory).orderHistoryToFile(ORDER_HISTORY_FILE);
     }
 
-    static void generateInreach(final String usersFile, final String orderHistoryFile) throws IOException {
+    static void generateInreach(final String usersFile, final String orderHistoryFile) throws IOException, CsvException {
         String csvData = Files.readString(Paths.get(usersFile));
         List<User> users = Parser.users(csvData);
 
@@ -458,7 +459,7 @@ public class Main {
     }
 
     static void generateEmail(ApiClient apiClient, final String usersFile)
-            throws IOException, InterruptedException {
+            throws IOException, InterruptedException, CsvException {
         String csvData = Files.readString(Paths.get(usersFile));
         List<User> users = Parser.users(csvData);
 
@@ -468,7 +469,7 @@ public class Main {
     }
 
     static void generateWorkflow(ApiClient apiClient, final String usersFile)
-        throws IOException, InterruptedException {
+            throws IOException, InterruptedException, CsvException {
 
         String csvData = Files.readString(Paths.get(usersFile));
         List<User> users = Parser.users(csvData);
@@ -477,7 +478,12 @@ public class Main {
         RestaurantTemplatePost restaurantTemplatePost = Parser.restaurantTemplatePost(rawPost);
 
         String restaurantTemplate = apiClient.downloadFile(restaurantTemplatePost.uploadFile.fileName);
-        new UserExporter(users).workflowToFile(restaurantTemplate, MEMBERDATA_WITH_EMAIL_REPORT_FILE);
+        // FIX THIS, DS: normalize this somewhere generic (but only for text files).
+        if (! restaurantTemplate.endsWith("\n")) {
+            LOGGER.info("Adding missing newline to end of restaurant template file");
+            restaurantTemplate += "\n";
+        }
+        new UserExporter(users).workflowToFile(restaurantTemplate, WORKFLOW_FILE);
     }
 }
 

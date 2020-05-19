@@ -450,7 +450,7 @@ public class User {
 
     // Must be insensitive to null data
     private void normalizeData() {
-        removeCommas();
+//        removeCommas();
         removeNewlines();
         removeLeadingTrailingWhitespace();
         auditAndNormalizePhoneNumber();
@@ -970,20 +970,20 @@ public class User {
     String rawToCSV() {
 
         return getId() + Constants.CSV_SEPARATOR +
-                getName() + Constants.CSV_SEPARATOR +
+                escapeCommas(getName()) + Constants.CSV_SEPARATOR +
                 getUserName() + Constants.CSV_SEPARATOR +
                 getPhoneNumber() + Constants.CSV_SEPARATOR +
                 getAltPhoneNumber() + Constants.CSV_SEPARATOR +
-                getNeighborhood() + Constants.CSV_SEPARATOR +
-                getCity() + Constants.CSV_SEPARATOR +
-                getAddress() + Constants.CSV_SEPARATOR +
+                escapeCommas(getNeighborhood()) + Constants.CSV_SEPARATOR +
+                escapeCommas(getCity()) + Constants.CSV_SEPARATOR +
+                escapeCommas(getAddress()) + Constants.CSV_SEPARATOR +
                 isConsumer() + Constants.CSV_SEPARATOR +
                 isVoiceOnly() + Constants.CSV_SEPARATOR +
                 isDispatcher() + Constants.CSV_SEPARATOR +
                 isDriver() + Constants.CSV_SEPARATOR +
                 getCreateTime() + Constants.CSV_SEPARATOR +
                 isCondo() + Constants.CSV_SEPARATOR +
-                getReferral() + Constants.CSV_SEPARATOR +
+                escapeCommas(getReferral()) + Constants.CSV_SEPARATOR +
                 getEmailVerified() + Constants.CSV_SEPARATOR +
                 hasConsumerRequest() + Constants.CSV_SEPARATOR +
                 getVolunteerRequest() + Constants.CSV_SEPARATOR +
@@ -1015,16 +1015,16 @@ public class User {
 
         return getId() + Constants.CSV_SEPARATOR +
                 getSimpleCreateTime() + Constants.CSV_SEPARATOR +
-                getName() + Constants.CSV_SEPARATOR +
+                escapeCommas(getName()) + Constants.CSV_SEPARATOR +
                 getUserName() + Constants.CSV_SEPARATOR +
                 (addEmail ? emailAddress + Constants.CSV_SEPARATOR : "") +
                 getPhoneNumber() + Constants.CSV_SEPARATOR +
                 getAltPhoneNumber() + Constants.CSV_SEPARATOR +
-                getNeighborhood() + Constants.CSV_SEPARATOR +
-                getCity() + Constants.CSV_SEPARATOR +
-                getAddress() + Constants.CSV_SEPARATOR +
+                escapeCommas(getNeighborhood()) + Constants.CSV_SEPARATOR +
+                escapeCommas(getCity()) + Constants.CSV_SEPARATOR +
+                escapeCommas(getAddress()) + Constants.CSV_SEPARATOR +
                 isCondo() + Constants.CSV_SEPARATOR +
-                getReferral() + Constants.CSV_SEPARATOR +
+                escapeCommas(getReferral()) + Constants.CSV_SEPARATOR +
                 isConsumer() + Constants.CSV_SEPARATOR +
                 isVoiceOnly() + Constants.CSV_SEPARATOR +
                 isDriver() + Constants.CSV_SEPARATOR +
@@ -1110,5 +1110,13 @@ public class User {
         }
 
         return true;
+    }
+
+    private String escapeCommas(final String value) {
+        if (value.indexOf(',') == -1) {
+            return value;
+        }
+
+        return "\"" + value + "\"";
     }
 }

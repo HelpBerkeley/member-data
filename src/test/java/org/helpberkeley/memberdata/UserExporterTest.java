@@ -21,6 +21,7 @@
 //
 package org.helpberkeley.memberdata;
 
+import com.opencsv.exceptions.CsvException;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -131,6 +132,7 @@ public class UserExporterTest extends TestBase {
         String header = rows[0];
         assertThat(header).isEqualTo(User.rawCSVHeaders().trim());
 
+        // FIX THIS, DS: use CSVReader
         String[] headerColumns = header.split(Constants.CSV_SEPARATOR, -1);
 
         // FIX THIS, DS: add a constant for number of columns expected
@@ -164,6 +166,7 @@ public class UserExporterTest extends TestBase {
         assertThat(headerColumns[index++]).isEqualTo(User.TRUST_LEVEL_4_COLUMN);
         assertThat(headerColumns[index++]).isEqualTo(User.WORKFLOW_COLUMN);
 
+        // FIX THIS, DS: use CSVReader
         String[] columns = rows[1].split(Constants.CSV_SEPARATOR, -1);
         assertThat(headerColumns).hasSameSizeAs(columns);
 
@@ -227,6 +230,7 @@ public class UserExporterTest extends TestBase {
         String header = rows[0];
         assertThat(header).isEqualTo(User.reportCSVHeaders().trim());
 
+        // FIX THIS, DS: use CSVReader
         String[] headerColumns = header.split(Constants.CSV_SEPARATOR, -1);
 
         // FIX THIS, DS: add a constant for number of columns expected
@@ -263,6 +267,7 @@ public class UserExporterTest extends TestBase {
         assertThat(headerColumns[index++]).isEqualTo(User.SHORT_CONSUMER_REQUEST_COLUMN);
         assertThat(headerColumns[index++]).isEqualTo(User.SHORT_VOLUNTEER_REQUEST_COLUMN);
 
+        // FIX THIS, DS: use CSVReader
         String[] columns = rows[1].split(Constants.CSV_SEPARATOR, -1);
         assertThat(headerColumns).hasSameSizeAs(columns);
 
@@ -319,7 +324,7 @@ public class UserExporterTest extends TestBase {
     }
 
     @Test
-    public void workflowColumnsTest() throws UserException {
+    public void workflowColumnsTest() throws UserException, IOException, CsvException {
         User u1 = createTestUser1();
         UserExporter exporter = new UserExporter(List.of(u1));
 
@@ -330,6 +335,7 @@ public class UserExporterTest extends TestBase {
         String header = rows[0];
         assertThat(header).isEqualTo(exporter.workflowHeaders().trim());
 
+        // FIX THIS, DS: use CSVReader
         String[] headerColumns = header.split(Constants.CSV_SEPARATOR, -1);
 
         // FIX THIS, DS: add a constant for number of columns expected
@@ -345,6 +351,7 @@ public class UserExporterTest extends TestBase {
         assertThat(headerColumns[9]).isEqualTo(User.CONDO_COLUMN);
 
 
+        // FIX THIS, DS: use CSVReader
         String[] columns = rows[1].split(Constants.CSV_SEPARATOR, -1);
         assertThat(headerColumns).hasSameSizeAs(columns);
 
@@ -361,7 +368,7 @@ public class UserExporterTest extends TestBase {
     }
 
     @Test
-    public void workflowToFileTest() throws UserException, IOException {
+    public void workflowToFileTest() throws UserException, IOException, CsvException {
 
         User u1 = createUserWithGroup(TEST_USER_NAME_1, Constants.GROUP_CONSUMERS);
         User u2 = createUserWithGroup(TEST_USER_NAME_2, Constants.GROUP_DRIVERS);
@@ -455,6 +462,7 @@ public class UserExporterTest extends TestBase {
         String header = rows[0];
         assertThat(header).isEqualTo(exporter.dispatchersHeaders().trim());
 
+        // FIX THIS, DS: use CSVReader
         String[] headerColumns = header.split(Constants.CSV_SEPARATOR, -1);
 
         // FIX THIS, DS: add a constant for number of columns expected
@@ -479,6 +487,7 @@ public class UserExporterTest extends TestBase {
         assertThat(headerColumns[18]).isEqualTo(User.SPECIALIST_COLUMN);
         assertThat(headerColumns[19]).isEqualTo(User.WORKFLOW_COLUMN);
 
+        // FIX THIS, DS: use CSVReader
         String[] columns = rows[1].split(Constants.CSV_SEPARATOR, -1);
         assertThat(headerColumns).hasSameSizeAs(columns);
 

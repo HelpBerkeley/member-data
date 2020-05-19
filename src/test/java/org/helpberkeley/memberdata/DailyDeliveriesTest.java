@@ -22,6 +22,7 @@
  */
 package org.helpberkeley.memberdata;
 
+import com.opencsv.exceptions.CsvException;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -40,7 +41,7 @@ public class DailyDeliveriesTest extends TestBase {
     }
 
     @Test
-    public void expectedOrderColumnsTest() {
+    public void expectedOrderColumnsTest() throws IOException, CsvException {
         String header = Parser.DeliveryColumns.CONSUMER_COLUMN + Constants.CSV_SEPARATOR
                 + Parser.DeliveryColumns.NAME_COLUMN + Constants.CSV_SEPARATOR
                 + Parser.DeliveryColumns.USER_NAME_COLUMN + Constants.CSV_SEPARATOR
@@ -52,7 +53,7 @@ public class DailyDeliveriesTest extends TestBase {
     }
 
     @Test
-    public void outOfOrderColumnsTest() {
+    public void outOfOrderColumnsTest() throws IOException, CsvException {
         String header = Parser.DeliveryColumns.CONSUMER_COLUMN + Constants.CSV_SEPARATOR
                 + Parser.DeliveryColumns.NORMAL_COLUMN + Constants.CSV_SEPARATOR
                 + Parser.DeliveryColumns.USER_NAME_COLUMN + Constants.CSV_SEPARATOR
@@ -64,7 +65,7 @@ public class DailyDeliveriesTest extends TestBase {
     }
 
     @Test
-    public void spaceyColumnNamesTest() {
+    public void spaceyColumnNamesTest() throws IOException, CsvException {
         String header = " " + Parser.DeliveryColumns.CONSUMER_COLUMN + " " + Constants.CSV_SEPARATOR
                 + " " + Parser.DeliveryColumns.NORMAL_COLUMN + " " + Constants.CSV_SEPARATOR
                 + " " + Parser.DeliveryColumns.USER_NAME_COLUMN + " " + Constants.CSV_SEPARATOR
@@ -76,7 +77,7 @@ public class DailyDeliveriesTest extends TestBase {
     }
 
     @Test
-    public void missingUserNameColumnTest() {
+    public void missingUserNameColumnTest() throws IOException, CsvException {
         String header = Parser.DeliveryColumns.CONSUMER_COLUMN + Constants.CSV_SEPARATOR
                 + Parser.DeliveryColumns.NAME_COLUMN + Constants.CSV_SEPARATOR
                 + Parser.DeliveryColumns.NORMAL_COLUMN + Constants.CSV_SEPARATOR
@@ -87,7 +88,7 @@ public class DailyDeliveriesTest extends TestBase {
     }
 
     @Test
-    public void missingNameColumnTest() {
+    public void missingNameColumnTest() throws IOException, CsvException {
         String header = Parser.DeliveryColumns.CONSUMER_COLUMN + Constants.CSV_SEPARATOR
                 + Parser.DeliveryColumns.USER_NAME_COLUMN + Constants.CSV_SEPARATOR
                 + Parser.DeliveryColumns.NORMAL_COLUMN + Constants.CSV_SEPARATOR

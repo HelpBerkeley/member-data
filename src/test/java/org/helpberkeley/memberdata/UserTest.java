@@ -637,4 +637,39 @@ public class UserTest extends TestBase {
         assertThat(u1).isNotEqualTo(u3);
         assertThat(u3.isCustomerInfo()).isFalse();
     }
+
+    @Test
+    public void nameWithCommaTest() throws UserException {
+        String name = "J, Alfred, Prufrock";
+        User u1 = createUserWithName(name);
+        assertThat(u1.getName()).isEqualTo(name);
+    }
+
+    @Test
+    public void neighborhoodWithCommaTest() throws UserException {
+        String neighborhood = "Somewhere, over, the rainbow";
+        User u1 = createUserWithNeighborhood(neighborhood);
+        assertThat(u1.getNeighborhood()).isEqualTo(neighborhood);
+    }
+
+    @Test
+    public void cityWithCommaTest() throws UserException {
+        String city = "Anytown, U.S.A.";
+        User u1 = createUserWithCity(city);
+        assertThat(u1.getCity()).isEqualTo(city);
+    }
+
+    @Test
+    public void addressWithCommaTest() throws UserException {
+        String address = "1,2,3 O, Larry-o";
+        User u1 = createUserWithAddress(address);
+        assertThat(u1.getAddress()).isEqualTo(address);
+    }
+
+    @Test
+    public void referralWithCommaTest() throws UserException {
+        String referral = "I heard it through the grapevine, not much longer, would you be mine";
+        User u1 = createUserWithReferral("u1", referral);
+        assertThat(u1.getReferral()).isEqualTo(referral);
+    }
 }

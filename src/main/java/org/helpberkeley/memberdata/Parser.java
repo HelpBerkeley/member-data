@@ -22,9 +22,14 @@
 package org.helpberkeley.memberdata;
 
 import com.cedarsoftware.util.io.JsonReader;
+import com.opencsv.CSVReader;
+import com.opencsv.CSVReaderHeaderAware;
+import com.opencsv.exceptions.CsvException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
+import java.io.StringReader;
 import java.util.*;
 
 public class Parser {
@@ -175,13 +180,14 @@ public class Parser {
     }
 
     // From raw form
-    static List<User> users(final String csvData) {
+    static List<User> users(final String csvData) throws IOException, CsvException {
 
-        String[] lines = csvData.split("\n");
-        assert lines.length > 0 : csvData;
+        CSVReader cvsReader = new CSVReader(new StringReader(csvData));
+        List<String[]> lines = cvsReader.readAll();
+        assert ! lines.isEmpty();
+        String[] headers = lines.get(0);
 
-        String[] headers = lines[0].split(Constants.CSV_SEPARATOR, -1);
-        assert headers.length == 32 : headers.length + ": " + lines[0];
+        assert headers.length == 32 : headers.length;
 
         int index = 0;
         assert headers[index].equals(User.ID_COLUMN) : headers[index];
@@ -220,10 +226,14 @@ public class Parser {
         List<User> users = new ArrayList<>();
         List<String> groups = new ArrayList<>();
 
-        for (int colIndex = 1; colIndex < lines.length; colIndex++) {
-            String[] columns = lines[colIndex].split(Constants.CSV_SEPARATOR, -1);
-            assert columns.length == headers.length : columns.length + " != " + headers.length;
+        Iterator<String[]> iterator = lines.iterator();
+        // Skip the header line.
+        iterator.next();
 
+        while (iterator.hasNext()) {
+            String[] columns = iterator.next();
+
+            assert columns.length == headers.length : columns.length + " != " + headers.length;
             index = 0;
 
             long id = Long.parseLong(columns[index++]);
@@ -365,6 +375,7 @@ public class Parser {
         assert header.equals(DeliveryData.deliveryPostsHeader().trim());
 
         for (int index = 1; index < lines.length; index++) {
+            // FIX THIS, DS: use CSVReader
             String[] fields = lines[index].split(Constants.CSV_SEPARATOR, -1);
             assert fields.length == 3 : lines[index];
             dailyDeliveries.add(new DeliveryData(fields[0], fields[1], fields[2]));
@@ -460,6 +471,7 @@ public class Parser {
         throw new Error("Restaurant template upload link not found in " + rawPost);
     }
 
+    // FIX THIS, DS: use CSVReader
     static OrderHistory orderHistory(final String orderHistoryData) {
 
         String orderHistoryThroughDate;
@@ -527,18 +539,21 @@ public class Parser {
         return confirmations;
     }
 
-    static List<UserOrder> parseOrders(String fileName, String deliveryData) {
+    static List<UserOrder> parseOrders(String fileName, String deliveryData) throws IOException, CsvException {
         List<UserOrder> userOrders = new ArrayList<>();
 
-        // Normalize EOL and split into lines
-        String[] lines = deliveryData.replaceAll("\\r\\n?", "\n").split("\n");
-        assert lines.length > 0;
+        // Normalize EOL
+        String csvData = deliveryData.replaceAll("\\r\\n?", "\n");
 
-        DeliveryColumns indexes = new DeliveryColumns(fileName, lines[0]);
+        CSVReader csvReader = new CSVReader(new StringReader(csvData));
+        List<String[]> rows = csvReader.readAll();
+        assert ! rows.isEmpty() : "parseOrders empty delivery data from " + fileName;
 
-        for (int lineIndex = 1; lineIndex < lines.length; lineIndex++) {
+        DeliveryColumns indexes = new DeliveryColumns(fileName, rows.get(0));
 
-            String[] columns = lines[lineIndex].trim().split(Constants.CSV_SEPARATOR, -1);
+        for (int rowIndex = 1; rowIndex < rows.size(); rowIndex++) {
+
+            String[] columns = rows.get(rowIndex);
 
             if (! Boolean.parseBoolean(columns[indexes.consumer])) {
                 continue;
@@ -563,8 +578,9 @@ public class Parser {
             String veggie = columns[indexes.veggie];
             String normal = columns[indexes.normal];
 
+            // FIX THIS, DS: test for number format violation
             if (((! veggie.isEmpty()) && (Integer.parseInt(veggie) != 0))
-                || ((! normal.isEmpty()) && (Integer.parseInt(normal) != 0))) {
+                    || ((! normal.isEmpty()) && (Integer.parseInt(normal) != 0))) {
                 userOrders.add(new UserOrder(name, user, fileName, phone, altPhone));
             }
         }
@@ -602,7 +618,37 @@ public class Parser {
 
         DeliveryColumns(final String fileName, final String header) {
 
+            // FIX THIS, DS: use CSVReader
             String[] columns = header.split(Constants.CSV_SEPARATOR, -1);
+
+            consumer = findOrderColumn(CONSUMER_COLUMN, columns);
+            name = findOrderColumn(NAME_COLUMN, columns);
+            userName = findOrderColumn(USER_NAME_COLUMN, columns);
+            phoneNumber = findOrderColumn(PHONE_COLUMN, columns);
+            altPhoneNumber = findOrderColumn(ALT_PHONE_COLUMN, columns);
+            veggie = findOrderColumn(VEGGIE_COLUMN, columns);
+            normal = findOrderColumn(NORMAL_COLUMN, columns);
+
+            String errors = "";
+            if (consumer == -1) {
+                errors += "Cannot find column " + CONSUMER_COLUMN + "\n";
+            }
+            if ((userName == -1) && (name == -1)) {
+                errors += "Cannot find either " + NAME_COLUMN + " or " + USER_NAME_COLUMN + " column";
+            }
+            if (veggie == -1) {
+                errors += "Cannot find column " + VEGGIE_COLUMN + "\n";
+            }
+            if (normal == -1) {
+                errors += "Cannot find column " + NORMAL_COLUMN + "\n";
+            }
+
+            if (! errors.isEmpty()) {
+                throw new Error("Problem(s) with deliver file: " + fileName + "\n" + errors);
+            }
+        }
+
+        DeliveryColumns(final String fileName, final String[] columns) {
 
             consumer = findOrderColumn(CONSUMER_COLUMN, columns);
             name = findOrderColumn(NAME_COLUMN, columns);

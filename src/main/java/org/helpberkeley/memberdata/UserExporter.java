@@ -21,7 +21,14 @@
 //
 package org.helpberkeley.memberdata;
 
+import com.opencsv.CSVReader;
+import com.opencsv.CSVReaderHeaderAware;
+import com.opencsv.CSVWriter;
+import com.opencsv.exceptions.CsvException;
+
 import java.io.IOException;
+import java.io.StringReader;
+import java.io.StringWriter;
 import java.util.List;
 import java.util.Map;
 
@@ -162,17 +169,17 @@ public class UserExporter extends Exporter {
         for (User user : tables.drivers()) {
             rows.append(user.getSimpleCreateTime());
             rows.append(separator);
-            rows.append(user.getName());
+            rows.append(escapeCommas(user.getName()));
             rows.append(separator);
             rows.append(user.getUserName());
             rows.append(separator);
             rows.append(user.getPhoneNumber());
             rows.append(separator);
-            rows.append(user.getNeighborhood());
+            rows.append(escapeCommas(user.getNeighborhood()));
             rows.append(separator);
-            rows.append(user.getCity());
+            rows.append(escapeCommas(user.getCity()));
             rows.append(separator);
-            rows.append(user.getAddress());
+            rows.append(escapeCommas(user.getAddress()));
             rows.append(separator);
             rows.append(user.isCondo());
             rows.append(separator);
@@ -220,7 +227,7 @@ public class UserExporter extends Exporter {
         return outputFileName;
     }
 
-    String workflow(final String restaurantBlock) {
+    String workflow(final String restaurantBlock) throws IOException, CsvException {
 
         StringBuilder rows = new StringBuilder();
 
@@ -236,7 +243,7 @@ public class UserExporter extends Exporter {
             rows.append(separator);
             rows.append(user.isDriver());
             rows.append(separator);
-            rows.append(user.getName());
+            rows.append(escapeCommas(user.getName()));
             rows.append(separator);
             rows.append(user.getUserName());
             rows.append(separator);
@@ -244,11 +251,11 @@ public class UserExporter extends Exporter {
             rows.append(separator);
             rows.append(user.getAltPhoneNumber());
             rows.append(separator);
-            rows.append(user.getNeighborhood());
+            rows.append(escapeCommas(user.getNeighborhood()));
             rows.append(separator);
-            rows.append(user.getCity());
+            rows.append(escapeCommas(user.getCity()));
             rows.append(separator);
-            rows.append(user.getAddress());
+            rows.append(escapeCommas(user.getAddress()));
             rows.append(separator);
             rows.append(user.isCondo());
             rows.append(separator);
@@ -261,19 +268,33 @@ public class UserExporter extends Exporter {
         return rows.toString();
     }
 
-    private void auditWorkflowData(final String workFlowData) {
-        String[] lines = workFlowData.split("\n");
-        assert lines.length > 0;
-        assert workflowHeaders().equals(lines[0] + "\n") :
-                "\n" + workflowHeaders() + " !=\n" + lines[0];
-        String[] headerColumns = lines[0].split(Constants.CSV_SEPARATOR, -1);
+    // Audit that all of the columns are expected column names are present, in the expected order
+    // and that all of the rows contain the same number of columns.
+    //
+    private void auditWorkflowData(final String workFlowData) throws IOException, CsvException {
 
-        for (int lineNumber = 1; lineNumber < lines.length; lineNumber++) {
-            String[] columns = lines[lineNumber].split(Constants.CSV_SEPARATOR, -1);
+        // Normalize EOL - FIX THIS, DS: doe CSVReader do this already?
+        String csvData = workFlowData.replaceAll("\\r\\n?", "\n");
+        String[] lines = csvData.split("\n");
+        assert lines.length != 0 : "missing work flow data";
+
+        CSVReader csvReader = new CSVReader(new StringReader(csvData));
+        List<String[]> rows = csvReader.readAll();
+        assert ! rows.isEmpty() : "missing work flow data";
+        String[] headerColumns = rows.get(0);
+
+        if (! workflowHeaders().equals(lines[0] + "\n")) {
+            throw new Error("Header mistmatch: " + lines[0].toString() + " != " + workflowHeaders());
+        }
+
+        for (int row = 1; row < rows.size(); row++) {
+
+            String[] columns = rows.get(row);
 
             if (columns.length != headerColumns.length) {
                 throw new Error("wrong number of columns in line "
-                        + lineNumber + " ("
+                        + row + 1
+                        + " ("
                         + columns.length
                         + " != "
                         + headerColumns.length
@@ -282,7 +303,7 @@ public class UserExporter extends Exporter {
         }
     }
 
-    String workflowToFile(final String restaurantBlock, final String fileName) throws IOException {
+    String workflowToFile(final String restaurantBlock, final String fileName) throws IOException, CsvException {
 
         String outputFileName = generateFileName(fileName, "csv");
         writeFile(outputFileName, workflow(restaurantBlock));
@@ -333,7 +354,7 @@ public class UserExporter extends Exporter {
 
             rows.append(user.getSimpleCreateTime());
             rows.append(separator);
-            rows.append(user.getName());
+            rows.append(escapeCommas(user.getName()));
             rows.append(separator);
             rows.append(user.getUserName());
             rows.append(separator);
@@ -341,9 +362,9 @@ public class UserExporter extends Exporter {
             rows.append(separator);
             rows.append(user.getAltPhoneNumber());
             rows.append(separator);
-            rows.append(user.getCity());
+            rows.append(escapeCommas(user.getCity()));
             rows.append(separator);
-            rows.append(user.getAddress());
+            rows.append(escapeCommas(user.getAddress()));
             rows.append(separator);
             rows.append(user.isCondo());
             rows.append(separator);
@@ -417,17 +438,17 @@ public class UserExporter extends Exporter {
         for (User user : tables.dispatchers()) {
             rows.append(user.getSimpleCreateTime());
             rows.append(separator);
-            rows.append(user.getName());
+            rows.append(escapeCommas(user.getName()));
             rows.append(separator);
             rows.append(user.getUserName());
             rows.append(separator);
             rows.append(user.getPhoneNumber());
             rows.append(separator);
-            rows.append(user.getNeighborhood());
+            rows.append(escapeCommas(user.getNeighborhood()));
             rows.append(separator);
-            rows.append(user.getCity());
+            rows.append(escapeCommas(user.getCity()));
             rows.append(separator);
-            rows.append(user.getAddress());
+            rows.append(escapeCommas(user.getAddress()));
             rows.append(separator);
             rows.append(user.isCondo());
             rows.append(separator);

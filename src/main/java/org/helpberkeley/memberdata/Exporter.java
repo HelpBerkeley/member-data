@@ -51,6 +51,13 @@ public class Exporter {
         Files.writeString(filePath, fileData);
 
         LOGGER.debug("Wrote: " + fileName);
+    }
 
+    protected String escapeCommas(final String value) {
+        if (value.indexOf(',') == -1) {
+            return value;
+        }
+
+        return "\"" + value + "\"";
     }
 }

@@ -19,6 +19,11 @@
             <artifactId>json-io</artifactId>
             <version>4.12.0</version>
         </dependency>
+        <dependency>
+            <groupId>com.opencsv</groupId>
+            <artifactId>opencsv</artifactId>
+            <version>5.2</version>
+        </dependency>
 
         <dependency>
             <groupId>junit</groupId>

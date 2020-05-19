@@ -22,6 +22,7 @@
  */
 package org.helpberkeley.memberdata;
 
+import com.opencsv.exceptions.CsvException;
 import org.junit.*;
 
 import java.io.File;
@@ -34,7 +35,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class MainTest extends TestBase {
 
     @BeforeClass
-    public static void initialize() throws IOException, InterruptedException {
+    public static void initialize() throws IOException, InterruptedException, CsvException {
         cleanupGeneratedFiles();
 
         // Fetches files that will be used by the tests.
@@ -64,13 +65,13 @@ public class MainTest extends TestBase {
     }
 
     @Test
-    public void postUserErrorsTest() throws IOException, InterruptedException {
+    public void postUserErrorsTest() throws IOException, InterruptedException, CsvException {
         String[] args = { Options.COMMAND_POST_ERRORS, TEST_FILE_NAME };
         Main.main(args);
     }
 
     @Test
-    public void postMemberDataTest() throws IOException, InterruptedException {
+    public void postMemberDataTest() throws IOException, InterruptedException, CsvException {
         String memberDataFile = findFile(Main.MEMBERDATA_REPORT_FILE, "csv");
         assertThat(memberDataFile).isNotNull();
 
@@ -79,7 +80,7 @@ public class MainTest extends TestBase {
     }
 
     @Test
-    public void postDriversTest() throws IOException, InterruptedException {
+    public void postDriversTest() throws IOException, InterruptedException, CsvException {
         String file = findFile(Main.DRIVERS_FILE, "csv");
         assertThat(file).isNotNull();
 
@@ -88,77 +89,70 @@ public class MainTest extends TestBase {
     }
 
     @Test
-    public void postConsumerRequestsTest() throws IOException, InterruptedException {
+    public void postConsumerRequestsTest() throws IOException, InterruptedException, CsvException {
         String consumerRequestsFile = findFile(Main.CONSUMER_REQUESTS_FILE, "csv");
         String[] args = { Options.COMMAND_POST_CONSUMER_REQUESTS, consumerRequestsFile };
         Main.main(args);
     }
 
     @Test
-    public void postVolunteerRequestsTest() throws IOException, InterruptedException {
+    public void postVolunteerRequestsTest() throws IOException, InterruptedException, CsvException {
         String consumerRequestsFile = findFile(Main.VOLUNTEER_REQUESTS_FILE, "csv");
         String[] args = { Options.COMMAND_POST_VOLUNTEER_REQUESTS, consumerRequestsFile };
-        Main.main(args);
-    }
-
-    @Test
-    public void postWorkFlowTest() throws IOException, InterruptedException {
-        String workflowFile = findFile(Main.WORKFLOW_FILE, "csv");
-        String[] args = { Options.COMMAND_POST_WORKFLOW, workflowFile, TEST_SHORT_URL };
         Main.main(args);
     }
 
     // FIX THIS, DS: update
     @Test
     @Ignore
-    public void postInreachTest() throws IOException, InterruptedException {
+    public void postInreachTest() throws IOException, InterruptedException, CsvException {
         String file = findFile(Main.INREACH_FILE, "csv");
         String[] args = { Options.COMMAND_POST_INREACH, file, TEST_SHORT_URL };
         Main.main(args);
     }
 
     @Test
-    public void postDispatchersTest() throws IOException, InterruptedException {
+    public void postDispatchersTest() throws IOException, InterruptedException, CsvException {
         String file = findFile(Main.DISPATCHERS_FILE, "csv");
         String[] args = { Options.COMMAND_POST_DISPATCHERS, file, TEST_SHORT_URL };
         Main.main(args);
     }
 
     @Test
-    public void updateDispatchersTest() throws IOException, InterruptedException {
+    public void updateDispatchersTest() throws IOException, InterruptedException, CsvException {
         String dispatchersFile = findFile(Main.DISPATCHERS_FILE, "csv");
         String[] args = { Options.COMMAND_UPDATE_DISPATCHERS, dispatchersFile, TEST_SHORT_URL};
         Main.main(args);
     }
 
     @Test
-    public void updateUserErrorsTest() throws IOException, InterruptedException {
+    public void updateUserErrorsTest() throws IOException, InterruptedException, CsvException {
         String errorsFile = findFile(Main.MEMBERDATA_ERRORS_FILE, "txt");
         String[] args = { Options.COMMAND_UPDATE_ERRORS, errorsFile };
         Main.main(args);
     }
 
     @Test
-    public void getOrderHistoryTest() throws IOException, InterruptedException {
+    public void getOrderHistoryTest() throws IOException, InterruptedException, CsvException {
         String[] args = { Options.COMMAND_GET_ORDER_HISTORY };
         Main.main(args);
     }
 
     @Test
-    public void getDailyDeliveriesTest() throws IOException, InterruptedException {
+    public void getDailyDeliveriesTest() throws IOException, InterruptedException, CsvException {
         String[] args = { Options.COMMAND_GET_DAILY_DELIVERIES };
         Main.main(args);
     }
 
     @Test
-    public void emailTest() throws IOException, InterruptedException {
+    public void emailTest() throws IOException, InterruptedException, CsvException {
         String file = findFile(Main.MEMBERDATA_RAW_FILE, "csv");
         String[] args = { Options.COMMAND_EMAIL, file };
         Main.main(args);
     }
 
     @Test
-    public void mergeOrderHistoryTest() throws IOException, InterruptedException {
+    public void mergeOrderHistoryTest() throws IOException, InterruptedException, CsvException {
 
         String[] args = { Options.COMMAND_GET_ORDER_HISTORY };
         Main.main(args);
@@ -180,7 +174,7 @@ public class MainTest extends TestBase {
     }
 
     @Test
-    public void inreachTest() throws IOException, InterruptedException {
+    public void inreachTest() throws IOException, InterruptedException, CsvException {
 
         String[] args = { Options.COMMAND_GET_ORDER_HISTORY };
         Main.main(args);
@@ -197,7 +191,7 @@ public class MainTest extends TestBase {
     }
 
     @Test
-    public void postIreachTest() throws IOException, InterruptedException {
+    public void postIreachTest() throws IOException, InterruptedException, CsvException {
 
         String[] args = { Options.COMMAND_GET_ORDER_HISTORY };
         Main.main(args);
@@ -212,7 +206,7 @@ public class MainTest extends TestBase {
     }
 
     @Test
-    public void updateOrderHistoryTest() throws IOException, InterruptedException {
+    public void updateOrderHistoryTest() throws IOException, InterruptedException, CsvException {
 
         String[] args = { Options.COMMAND_GET_ORDER_HISTORY };
         Main.main(args);
@@ -223,11 +217,19 @@ public class MainTest extends TestBase {
     }
 
     @Test
-    public void workflowTest() throws IOException, InterruptedException {
-
+    public void workflowTest() throws IOException, InterruptedException, CsvException {
         String usersFile = findFile(Main.MEMBERDATA_RAW_FILE, "csv");
-
         String[] args = { Options.COMMAND_WORKFLOW, usersFile };
+        Main.main(args);
+    }
+
+    @Test
+    public void postWorkFlowTest() throws IOException, InterruptedException, CsvException {
+        String usersFile = findFile(Main.MEMBERDATA_RAW_FILE, "csv");
+        String[] args = { Options.COMMAND_WORKFLOW, usersFile };
+        Main.main(args);
+        String workflowFile = findFile(Main.WORKFLOW_FILE, "csv");
+        args = new String[] { Options.COMMAND_POST_WORKFLOW, workflowFile, TEST_SHORT_URL };
         Main.main(args);
     }
 

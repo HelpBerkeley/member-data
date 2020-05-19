@@ -21,17 +21,22 @@
 //
 package org.helpberkeley.memberdata;
 
+import com.opencsv.CSVReaderHeaderAware;
+import com.opencsv.exceptions.CsvException;
+import com.opencsv.exceptions.CsvValidationException;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.io.StringReader;
 import java.util.List;
+import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class LoaderTest extends TestBase {
 
     @Test
-    public void loadTest() throws IOException, InterruptedException {
+    public void loadTest() throws IOException, InterruptedException, CsvException {
         ApiClient apiClient = createApiSimulator();
 
         Loader loader = new Loader(apiClient);
@@ -45,15 +50,55 @@ public class LoaderTest extends TestBase {
         assertThat(roundtripUsers).containsExactlyInAnyOrderElementsOf(users);
     }
 
-//    @Test
-//    public void emailConfirmationsTest() throws IOException, InterruptedException {
-//        ApiClient apiClient = createApiSimulator();
-//
-//        Loader loader = new Loader(apiClient);
-//        List<User> users = loader.load();
-//
-//        Set<Long> emailConfirmations = loader.getEmailConfirmations();
-//        assertThat(emailConfirmations).contains(400L);
-//        assertThat(emailConfirmations).doesNotContain(-2L);
-//    }
+    @Test
+    public void emailAddressTest() throws IOException, InterruptedException {
+        ApiClient apiClient = createApiSimulator();
+
+        Loader loader = new Loader(apiClient);
+        List<User> users = loader.load();
+
+        Map<Long, String> emailAddresses = loader.loadEmailAddresses();
+
+        Map<Long, String> expected = Map.of(
+            200L, "somebody@me.com",
+            201L, "somebodyelse@me.com",
+            333L, "person3@me.com",
+            33L, "xyzzy@me.com",
+            104L, "zzz@me.com",
+            346L, "jvol@me.com",
+            400L, "bogus@bogus.com",
+            -2L, "discobot_email");
+        assertThat(emailAddresses).containsExactlyInAnyOrderEntriesOf(expected);
+
+    }
+
+    @Test
+    public void csvReaderTest1() throws IOException, CsvValidationException {
+        String input = "A,D,C,B\na,d,c,b\nA1,D1,\"C1,c1\",B1\n";
+
+        CSVReaderHeaderAware csvReaderHeaderAware = new CSVReaderHeaderAware(new StringReader(input));
+
+        String[] columns;
+        while ((columns = csvReaderHeaderAware.readNext("A", "B", "C", "D")) != null) {
+            assertThat(columns).hasSize(4);
+        }
+    }
+
+    @Test
+    public void csvReaderTest2() throws IOException, CsvValidationException {
+        String input = "A,D,C,B\na,d,c,b\nA1,D1,\"C1,c1\",B1\n";
+
+        CSVReaderHeaderAware csvReaderHeaderAware = new CSVReaderHeaderAware(new StringReader(input));
+
+        Map<String, String> columnsMap;
+        List<String> columnNames = List.of("A", "B", "C", "D");
+
+        while ((columnsMap = csvReaderHeaderAware.readMap()) != null) {
+            assertThat(columnsMap).containsOnlyKeys(columnNames);
+//                for (String columnName : columnNames) {
+//                    System.out.println(columnName + ": " + columnsMap.get(columnName));
+//                }
+//                System.out.println();
+        }
+    }
 }
