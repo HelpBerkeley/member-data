@@ -432,11 +432,11 @@ public class User {
 
     private void auditNullFields() {
 
-        assert name != null;
-        assert userName != null;
-        assert address != null;
-        assert city != null;
-        assert phoneNumber != null;
+        assert name != null : "null name";
+        assert userName != null : "null userName";
+        assert address != null : "null address";
+        assert city != null : "null city";
+        assert phoneNumber != null : "null phoneNumber";
 
         // FIX THIS, DS: who changed this to optional?
 //        assert neighborhood != null;
@@ -444,7 +444,7 @@ public class User {
             neighborhood = "";
         }
 
-        assert emailVerified != null;
+        assert emailVerified != null : "null emailVerified";
     }
 
 

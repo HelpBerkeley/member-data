@@ -85,6 +85,11 @@ public class Parser {
             }
 
             String userName = (String)columns[1];
+
+            // FIX THIS, DS: need a reliable way to detect anonymized users
+            if (userName.startsWith("anon")) {
+                continue;
+            }
             String name = (String)columns[2];
             String address = (String)columns[3];
             String phone = (String)columns[4];
