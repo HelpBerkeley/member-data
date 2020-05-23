@@ -29,6 +29,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -164,6 +165,7 @@ public class UserExporterTest extends TestBase {
         assertThat(headerColumns[index++]).isEqualTo(User.MARKETING_COLUMN);
         assertThat(headerColumns[index++]).isEqualTo(User.MODERATORS_COLUMN);
         assertThat(headerColumns[index++]).isEqualTo(User.TRUST_LEVEL_4_COLUMN);
+        //noinspection UnusedAssignment
         assertThat(headerColumns[index++]).isEqualTo(User.WORKFLOW_COLUMN);
 
         // FIX THIS, DS: use CSVReader
@@ -328,7 +330,7 @@ public class UserExporterTest extends TestBase {
         User u1 = createTestUser1();
         UserExporter exporter = new UserExporter(List.of(u1));
 
-        String workflowRows = exporter.workflow("");
+        String workflowRows = exporter.workflow("", new HashMap<>());
         String[] rows = workflowRows.split("\n");
         assertThat(rows).hasSize(2);
 
@@ -349,6 +351,8 @@ public class UserExporterTest extends TestBase {
         assertThat(headerColumns[7]).isEqualTo(User.CITY_COLUMN);
         assertThat(headerColumns[8]).isEqualTo(User.ADDRESS_COLUMN);
         assertThat(headerColumns[9]).isEqualTo(User.CONDO_COLUMN);
+        // FIX THIS, DS: constant
+        assertThat(headerColumns[10]).isEqualTo("Details");
 
 
         // FIX THIS, DS: use CSVReader
@@ -365,24 +369,6 @@ public class UserExporterTest extends TestBase {
         assertThat(columns[7]).isEqualTo(u1.getCity());
         assertThat(columns[8]).isEqualTo(u1.getAddress());
         assertThat(columns[9]).isEqualTo(String.valueOf(u1.isCondo()));
-    }
-
-    @Test
-    public void workflowToFileTest() throws UserException, IOException, CsvException {
-
-        User u1 = createUserWithGroup(TEST_USER_NAME_1, Constants.GROUP_CONSUMERS);
-        User u2 = createUserWithGroup(TEST_USER_NAME_2, Constants.GROUP_DRIVERS);
-        User u3 = createUserWithGroup(TEST_USER_NAME_3, Constants.GROUP_DRIVERS);
-
-        UserExporter exporter = new UserExporter(List.of(u1, u2, u3));
-        String fileName = exporter.workflowToFile("", "workflow.csv");
-
-        String fileData = readFile(fileName);
-        assertThat(fileData).contains(TEST_USER_NAME_1);
-        assertThat(fileData).contains(TEST_USER_NAME_2);
-        assertThat(fileData).contains(TEST_USER_NAME_3);
-
-        Files.delete(Paths.get(fileName));
     }
 
     // FIX THIS, DS: fix test with order history

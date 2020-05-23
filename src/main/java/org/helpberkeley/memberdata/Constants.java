@@ -35,6 +35,7 @@ public class Constants {
     public static final int QUERY_GET_DAILY_DELIVERIES = 13;
     public static final int QUERY_EMAIL_CONFIRMATIONS = 15;
     public static final int QUERY_GET_EMAILS = 11;
+    public static final int QUERY_GET_DELIVERY_DETAILS = 17;
 
     public static final String COLUMN_ID = "id";
     public static final String COLUMN_NAME = "name";

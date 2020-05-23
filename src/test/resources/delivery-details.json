@@ -1,0 +1,30 @@
+{
+  "success": true,
+  "errors": [],
+  "duration": 0.5,
+  "result_count": 14,
+  "params": {},
+  "columns": [
+    "post_number",
+    "raw"
+  ],
+  "default_limit": 1000,
+  "rows": [
+    [
+      1,
+      "This must be specifically formatted. Pls tag @JoeBobBriggs) for that purpose: do not input any data directly on this thread."
+    ],
+    [
+      2,
+      "@Somebody :\n\nDeliver to condo. Enter gate w. code 3003. Ring buzzer for Apt 17: she will buzz you in. 2nd floor: leave food in front of #2 apt. door."
+    ],
+    [
+      3,
+      "@SomebodyElse :\n\nActual address = 7777B Baltic Ave and is across from 100 Boardwalk"
+    ],
+    [
+      4,
+      "@ThirdPerson :\n\nsomething, with, a, lot, of commas."
+    ]
+  ]
+}

@@ -22,13 +22,10 @@
 package org.helpberkeley.memberdata;
 
 import com.opencsv.CSVReader;
-import com.opencsv.CSVReaderHeaderAware;
-import com.opencsv.CSVWriter;
 import com.opencsv.exceptions.CsvException;
 
 import java.io.IOException;
 import java.io.StringReader;
-import java.io.StringWriter;
 import java.util.List;
 import java.util.Map;
 
@@ -227,7 +224,8 @@ public class UserExporter extends Exporter {
         return outputFileName;
     }
 
-    String workflow(final String restaurantBlock) throws IOException, CsvException {
+    String workflow(final String restaurantBlock,
+        Map<String, String> deliveryDetails) throws IOException, CsvException {
 
         StringBuilder rows = new StringBuilder();
 
@@ -239,6 +237,9 @@ public class UserExporter extends Exporter {
         }
 
         for (User user : tables.sortByConsumerThenDriverThenName()) {
+
+            String details = deliveryDetails.get(user.getUserName());
+
             rows.append(user.isConsumer());
             rows.append(separator);
             rows.append(user.isDriver());
@@ -258,6 +259,8 @@ public class UserExporter extends Exporter {
             rows.append(escapeCommas(user.getAddress()));
             rows.append(separator);
             rows.append(user.isCondo());
+            rows.append(separator);
+            rows.append(details == null ? "" : escapeCommas(details));
             rows.append(separator);
             rows.append(separator);
             rows.append(separator);
@@ -284,7 +287,7 @@ public class UserExporter extends Exporter {
         String[] headerColumns = rows.get(0);
 
         if (! workflowHeaders().equals(lines[0] + "\n")) {
-            throw new Error("Header mistmatch: " + lines[0].toString() + " != " + workflowHeaders());
+            throw new Error("Header mismatch: " + lines[0] + " != " + workflowHeaders());
         }
 
         for (int row = 1; row < rows.size(); row++) {
@@ -303,10 +306,11 @@ public class UserExporter extends Exporter {
         }
     }
 
-    String workflowToFile(final String restaurantBlock, final String fileName) throws IOException, CsvException {
+    String workflowToFile(final String restaurantBlock, Map<String, String> deliveryDetails,
+        final String fileName) throws IOException, CsvException {
 
         String outputFileName = generateFileName(fileName, "csv");
-        writeFile(outputFileName, workflow(restaurantBlock));
+        writeFile(outputFileName, workflow(restaurantBlock, deliveryDetails));
 
         return outputFileName;
     }
@@ -332,6 +336,8 @@ public class UserExporter extends Exporter {
             + User.ADDRESS_COLUMN
             + separator
             + User.CONDO_COLUMN
+            + separator
+            + "Details"
             + separator
             + "Restaurants"
             + separator

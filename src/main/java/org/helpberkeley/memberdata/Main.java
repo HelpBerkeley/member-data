@@ -83,7 +83,9 @@ public class Main {
     static final long DISPATCHERS_POST_ID = 5324;
     static final long ORDER_HISTORY_TOPIC = 1440;
     static final long ORDER_HISTORY_POST_ID = 6433;
-    static final long RESTAURANT_TEMPLATE_POST_ID = 8664;
+//    static final long RESTAURANT_TEMPLATE_POST_ID = 8664;
+    static final long DELIVERY_DETAILS_TOPIC_ID = 1818;
+    static final long RESTAURANT_TEMPLATE_POST_ID = 9739;
 
     public static void main(String[] args) throws IOException, InterruptedException, CsvException {
 
@@ -102,6 +104,9 @@ public class Main {
                 break;
             case Options.COMMAND_GET_ORDER_HISTORY:
                 getOrderHistory(apiClient);
+                break;
+            case Options.COMMAND_GET_DELIVERY_DETAILS:
+                getDeliveryDetails(apiClient);
                 break;
             case Options.COMMAND_MERGE_ORDER_HISTORY:
                 mergeOrderHistory(apiClient, options.getFileName(),
@@ -175,6 +180,7 @@ public class Main {
 
         Properties properties = new Properties();
 
+        //noinspection EmptyFinallyBlock
         try (InputStream is = propertiesFile.openStream())
         {
             properties.load(is);
@@ -183,7 +189,7 @@ public class Main {
         return properties;
     }
 
-    static void fetch(ApiClient apiClient) throws InterruptedException, IOException, CsvException {
+    static void fetch(ApiClient apiClient) throws InterruptedException, IOException {
         // Create a User loader
         Loader loader = new Loader(apiClient);
 
@@ -210,10 +216,6 @@ public class Main {
 
         // Export drivers
         exporter.driversToFile(DRIVERS_FILE);
-
-        // FIX THIS, DS: remove when workflow command is working
-        // Export workflow
-//        exporter.workflowToFile("", WORKFLOW_FILE);
 
         // Export dispatchers
         exporter.dispatchersToFile(DISPATCHERS_FILE);
@@ -408,9 +410,15 @@ public class Main {
     }
 
     static void getDailyDeliveryPosts(ApiClient apiClient) throws IOException, InterruptedException {
-
         List<DeliveryData> deliveryPosts = DeliveryData.deliveryPosts(apiClient);
         new DeliveryDataExporter(deliveryPosts).deliveryPostsToFile(DELIVERY_POSTS_FILE);
+    }
+
+    // FIX THIS, DS: remove?
+    static void getDeliveryDetails(ApiClient apiClient) throws IOException, InterruptedException {
+        String json = apiClient.runQuery(Constants.QUERY_GET_DELIVERY_DETAILS);
+        ApiQueryResult apiQueryResult = Parser.parseQueryResult(json);
+        Map<String, String> deliveryDetails = Parser.deliveryDetails(apiQueryResult);
     }
 
     static void mergeOrderHistory(ApiClient apiClient, final String usersFile,
@@ -477,13 +485,12 @@ public class Main {
         String rawPost = Parser.postBody(apiClient.getPost(RESTAURANT_TEMPLATE_POST_ID));
         RestaurantTemplatePost restaurantTemplatePost = Parser.restaurantTemplatePost(rawPost);
 
+        String json = apiClient.runQuery(Constants.QUERY_GET_DELIVERY_DETAILS);
+        ApiQueryResult apiQueryResult = Parser.parseQueryResult(json);
+        Map<String, String> deliveryDetails = Parser.deliveryDetails(apiQueryResult);
+
         String restaurantTemplate = apiClient.downloadFile(restaurantTemplatePost.uploadFile.fileName);
-        // FIX THIS, DS: normalize this somewhere generic (but only for text files).
-        if (! restaurantTemplate.endsWith("\n")) {
-            LOGGER.info("Adding missing newline to end of restaurant template file");
-            restaurantTemplate += "\n";
-        }
-        new UserExporter(users).workflowToFile(restaurantTemplate, WORKFLOW_FILE);
+        new UserExporter(users).workflowToFile(restaurantTemplate, deliveryDetails, WORKFLOW_FILE);
     }
 }
 

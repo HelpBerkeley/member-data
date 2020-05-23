@@ -26,6 +26,9 @@ import org.junit.Test;
 
 import java.util.List;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.ThrowableAssert.catchThrowable;
+
 public class OrderHistoryTest extends TestBase {
 
     @Test
@@ -46,6 +49,13 @@ public class OrderHistoryTest extends TestBase {
                 TEST_NAME_2 + "qqq", "", TEST_PHONE_2, "", "someFile");
 
         orderHistory.merge("20202/01/02", List.of(userOrder), users);
+    }
+
+    @Test
+    public void missingOrderHistoryURLTest() {
+        Throwable thrown = catchThrowable(() -> Parser.restaurantTemplatePost(""));
+        assertThat(thrown).isInstanceOf(Error.class);
+        assertThat(thrown).hasMessageContaining("Restaurant template upload link not found");
     }
 
 //    @Test

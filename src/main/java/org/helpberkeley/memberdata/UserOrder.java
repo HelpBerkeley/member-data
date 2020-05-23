@@ -69,6 +69,7 @@ public class UserOrder {
             return false;
         }
 
+        //noinspection RedundantIfStatement
         if (! deliveryFile.equals(otherOrder. deliveryFile)) {
             return false;
         }

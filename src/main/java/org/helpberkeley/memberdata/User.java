@@ -463,37 +463,6 @@ public class User {
     }
 
     // Must be insensitive to null data
-    private void removeCommas() {
-        char oldChar = ',';
-        char newChar = ' ';
-
-        if (name != null) {
-            name = name.replace(oldChar, newChar);
-        }
-        if (userName != null) {
-            userName = userName.replace(oldChar, newChar);
-        }
-        if (address != null) {
-            address = address.replace(oldChar, newChar);
-        }
-        if (city != null) {
-            city = city.replace(oldChar, newChar);
-        }
-        if (phoneNumber != null) {
-            phoneNumber = phoneNumber.replace(oldChar, newChar);
-        }
-        if (altPhoneNumber != null) {
-            altPhoneNumber = altPhoneNumber.replace(oldChar, newChar);
-        }
-        if (neighborhood != null) {
-            neighborhood = neighborhood.replace(oldChar, newChar);
-        }
-        if (referral != null) {
-            referral = referral.replace(oldChar, newChar);
-        }
-    }
-
-    // Must be insensitive to null data
     private void removeNewlines() {
         char oldChar = '\n';
         char newChar = ' ';
@@ -579,6 +548,7 @@ public class User {
                 return;
         }
 
+        //noinspection ConstantConditions
         assert digits.length() == 10 : this;
         String newPhoneNumber = digits.substring(0, 3);
         newPhoneNumber += "-";

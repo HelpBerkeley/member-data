@@ -109,6 +109,7 @@ public class TestBase {
             Options.COMMAND_FETCH,
             Options.COMMAND_GET_ORDER_HISTORY,
             Options.COMMAND_GET_DAILY_DELIVERIES,
+            Options.COMMAND_GET_DELIVERY_DETAILS,
     };
 
     static final String TEST_FILE_NAME = "pom.xml";

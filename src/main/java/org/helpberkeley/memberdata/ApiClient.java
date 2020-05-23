@@ -258,7 +258,13 @@ public class ApiClient {
         }
 
         // Normalize EOL
-        return response.body().replaceAll("\\r\\n?", "\n");
+        String fileData = response.body().replaceAll("\\r\\n?", "\n");
 
+        // Ensure that the file data ends with a newline.
+        if (! fileData.endsWith("\n")) {
+            fileData += "\n";
+        }
+
+        return fileData;
     }
 }

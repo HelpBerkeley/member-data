@@ -50,7 +50,7 @@ public class Exporter {
         Files.createFile(Paths.get(fileName));
         Files.writeString(filePath, fileData);
 
-        LOGGER.debug("Wrote: " + fileName);
+        LOGGER.trace("Wrote: " + fileName);
     }
 
     protected String escapeCommas(final String value) {

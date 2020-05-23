@@ -53,9 +53,7 @@ public class LoaderTest extends TestBase {
     @Test
     public void emailAddressTest() throws IOException, InterruptedException {
         ApiClient apiClient = createApiSimulator();
-
         Loader loader = new Loader(apiClient);
-        List<User> users = loader.load();
 
         Map<Long, String> emailAddresses = loader.loadEmailAddresses();
 

@@ -23,7 +23,6 @@ package org.helpberkeley.memberdata;
 
 import com.cedarsoftware.util.io.JsonReader;
 import com.opencsv.CSVReader;
-import com.opencsv.CSVReaderHeaderAware;
 import com.opencsv.exceptions.CsvException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -387,6 +386,73 @@ public class Parser {
         }
 
         return dailyDeliveries;
+    }
+
+    static Map<String, String> deliveryDetails(ApiQueryResult apiQueryResult) {
+        assert apiQueryResult.headers.length == 2 : apiQueryResult.headers.length;
+        assert apiQueryResult.headers[0].equals("post_number");
+        assert apiQueryResult.headers[1].equals("raw");
+
+        Map<String, String> deliveryDetails = new HashMap<>();
+
+        for (Object rowObj : apiQueryResult.rows) {
+            Object[] columns = (Object[]) rowObj;
+            assert columns.length == 2 : columns.length;
+
+            //
+            Long id = ((Long)columns[0]);
+            String raw = ((String)columns[1]).trim();
+
+            if (id == 1) {
+                assert raw.startsWith("This must be specifically formatted.") : raw;
+                continue;
+            }
+
+            // "@username :
+            //
+            // Multi-line delivery details.
+
+            // Normalize EOL
+            raw = raw.replaceAll("\\r\\n?", "\n");
+            raw.trim();
+
+            String[] lines = raw.split("\n");
+
+            if (lines.length == 0) {
+                LOGGER.warn("Skipping post {}. No data", id);
+            }
+
+            String line = lines[0].trim();
+
+
+            if (! line.startsWith("@")) {
+               LOGGER.warn("Skipping post {}. Cannot parse delivery details in {}", id, raw);
+               continue;
+            }
+
+            int index = line.indexOf(':');
+            if (index == -1) {
+                LOGGER.warn("Skipping post {}. Cannot parse user name in {}", id, raw);
+                continue;
+            }
+
+            String userName = raw.substring(1, index).trim();
+
+            StringBuilder details = new StringBuilder();
+            for (index = 1; index < lines.length; index++) {
+                line = lines[index].trim();
+                if (! line.isEmpty()) {
+                    if (details.length() > 0) {
+                        details.append(" ");
+                    }
+                    details.append(line);
+                }
+            }
+
+            deliveryDetails.put(userName, details.toString());
+        }
+
+        return deliveryDetails;
     }
 
     static String shortURL(final String line) {

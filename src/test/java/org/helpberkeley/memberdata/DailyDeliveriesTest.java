@@ -38,6 +38,7 @@ public class DailyDeliveriesTest extends TestBase {
         String jsonData = apiClient.runQuery(Constants.QUERY_GET_DAILY_DELIVERIES);
         ApiQueryResult queryResult = Parser.parseQueryResult(jsonData);
         List<DeliveryData> deliveries = Parser.dailyDeliveryPosts(queryResult);
+        // FIX THIS, DS: deliveries validation
     }
 
     @Test

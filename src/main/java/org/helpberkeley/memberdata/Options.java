@@ -44,6 +44,7 @@ public class Options {
     static final String COMMAND_INREACH = "inreach";
     static final String COMMAND_EMAIL = "email";
     static final String COMMAND_WORKFLOW = "workflow";
+    static final String COMMAND_GET_DELIVERY_DETAILS = "get-delivery-details";
 
     static final String USAGE_ERROR = "Usage error for command ";
     static final String UNKNOWN_COMMAND = USAGE_ERROR + ": unknown command: ";
@@ -60,6 +61,7 @@ public class Options {
             "Usage: " + COMMAND_FETCH + "\n"
                     + "    | " + COMMAND_GET_DAILY_DELIVERIES + "\n"
                     + "    | " + COMMAND_GET_ORDER_HISTORY + "\n"
+                    + "    | " + COMMAND_GET_DELIVERY_DETAILS + "\n"
                     + "    | " + COMMAND_MERGE_ORDER_HISTORY
                                 + " all-members-file order-history-file daily-deliveries-file\n"
                     + "    | " + COMMAND_INREACH + " all-members-file order-history-file\n"
@@ -98,6 +100,7 @@ public class Options {
                 case COMMAND_FETCH:
                 case COMMAND_GET_ORDER_HISTORY:
                 case COMMAND_GET_DAILY_DELIVERIES:
+                case COMMAND_GET_DELIVERY_DETAILS:
                     setCommand(arg);
                     break;
                 case COMMAND_POST_ERRORS:
