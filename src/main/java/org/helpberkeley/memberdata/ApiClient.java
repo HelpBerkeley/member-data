@@ -25,7 +25,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.math.BigInteger;
 import java.net.Authenticator;
 import java.net.PasswordAuthentication;
 import java.net.URI;
@@ -33,7 +32,6 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.Properties;
-import java.util.Random;
 
 import static java.net.HttpURLConnection.HTTP_OK;
 
@@ -51,7 +49,6 @@ public class ApiClient {
     private static final String GROUPS_ENDPOINT = BASE_URL + "groups.json";
     private static final String GROUP_ENDPOINT_BASE = BASE_URL + "groups/";
     private static final String LATEST_TOPICS_ENDPOINT = BASE_URL + "latest.json";
-    private static final String UPLOADS_ENDPOINT = BASE_URL + "uploads.json";
     private static final String DOWNLOAD_ENDPOINT = BASE_URL + "uploads/short-url/";
     static final String QUERY_BASE = BASE_URL + "admin/plugins/explorer/queries/";
 
@@ -204,23 +201,6 @@ public class ApiClient {
         String endpoint = POSTS_BASE + postId + ".json";
         // Normalize EOL
         return get(endpoint).body().replaceAll("\\r\\n?", "\n");
-    }
-
-    HttpResponse<String> uploadFile() throws IOException, InterruptedException {
-
-        String boundary = new BigInteger(256, new Random()).toString();
-
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(UPLOADS_ENDPOINT))
-                .header("Api-Username", apiUser)
-                .header("Api-Key", apiKey)
-                .header("Synchronous", "1")
-                .header("Content-Type", "multipart/form-data;boundary=" + boundary)
-                .POST(Upload.uploadBody(boundary))
-                .build();
-
-        return client.send(request, HttpResponse.BodyHandlers.ofString());
-
     }
 
     HttpResponse<String> updatePost(long postId, final String body) throws IOException, InterruptedException {

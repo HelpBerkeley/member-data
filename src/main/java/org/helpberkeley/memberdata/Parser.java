@@ -691,38 +691,6 @@ public class Parser {
         private final int veggie;
         private final int normal;
 
-        DeliveryColumns(final String fileName, final String header) {
-
-            // FIX THIS, DS: use CSVReader
-            String[] columns = header.split(Constants.CSV_SEPARATOR, -1);
-
-            consumer = findOrderColumn(CONSUMER_COLUMN, columns);
-            name = findOrderColumn(NAME_COLUMN, columns);
-            userName = findOrderColumn(USER_NAME_COLUMN, columns);
-            phoneNumber = findOrderColumn(PHONE_COLUMN, columns);
-            altPhoneNumber = findOrderColumn(ALT_PHONE_COLUMN, columns);
-            veggie = findOrderColumn(VEGGIE_COLUMN, columns);
-            normal = findOrderColumn(NORMAL_COLUMN, columns);
-
-            String errors = "";
-            if (consumer == -1) {
-                errors += "Cannot find column " + CONSUMER_COLUMN + "\n";
-            }
-            if ((userName == -1) && (name == -1)) {
-                errors += "Cannot find either " + NAME_COLUMN + " or " + USER_NAME_COLUMN + " column";
-            }
-            if (veggie == -1) {
-                errors += "Cannot find column " + VEGGIE_COLUMN + "\n";
-            }
-            if (normal == -1) {
-                errors += "Cannot find column " + NORMAL_COLUMN + "\n";
-            }
-
-            if (! errors.isEmpty()) {
-                throw new Error("Problem(s) with deliver file: " + fileName + "\n" + errors);
-            }
-        }
-
         DeliveryColumns(final String fileName, final String[] columns) {
 
             consumer = findOrderColumn(CONSUMER_COLUMN, columns);

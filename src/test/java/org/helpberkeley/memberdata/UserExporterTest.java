@@ -22,7 +22,6 @@
 package org.helpberkeley.memberdata;
 
 import com.opencsv.exceptions.CsvException;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -371,10 +370,9 @@ public class UserExporterTest extends TestBase {
         assertThat(columns[9]).isEqualTo(String.valueOf(u1.isCondo()));
     }
 
-    // FIX THIS, DS: fix test with order history
-    @Test
-    @Ignore
-    public void inreachColumnsTest() {
+// FIX THIS, DS: fix test with order history
+//    @Ignore
+//    public void inreachColumnsTest() {
 //        User u1 = createTestUser1();
 //        UserExporter exporter = new UserExporter(List.of(u1));
 //
@@ -414,13 +412,13 @@ public class UserExporterTest extends TestBase {
 //        assertThat(columns[8]).isEqualTo(String.valueOf(u1.isConsumer()));
 //        assertThat(columns[9]).isEqualTo(String.valueOf(u1.isDispatcher()));
 //        assertThat(columns[10]).isEqualTo(String.valueOf(u1.isDriver()));
-    }
+//    }
 
     // FIX THIS, DS: update with order history
-    @Test
-    @Ignore
-    public void increachToFileTest() {
-
+//    @Test
+//    @Ignore
+//    public void increachToFileTest() {
+//
 //        User u1 = createUserWithGroup(TEST_USER_NAME_1, Constants.GROUP_CONSUMERS);
 //        User u2 = createUserWithGroup(TEST_USER_NAME_2, Constants.GROUP_DRIVERS);
 //
@@ -434,7 +432,7 @@ public class UserExporterTest extends TestBase {
 //        assertThat(fileData).doesNotContain(TEST_USER_NAME_2);
 //
 //        Files.delete(Paths.get(fileName));
-    }
+//    }
 
     @Test
     public void dispatchersColumnsTest() throws UserException {
