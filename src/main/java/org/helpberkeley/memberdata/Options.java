@@ -49,7 +49,6 @@ public class Options {
     static final String USAGE_ERROR = "Usage error for command ";
     static final String UNKNOWN_COMMAND = USAGE_ERROR + ": unknown command: ";
     static final String TOO_MANY_COMMANDS = USAGE_ERROR + ": too many commands";
-    static final String MISSING_COMMAND = USAGE_ERROR + ": no command specified";
     static final String COMMAND_REQUIRES_FILE_NAME = ": command requires a file name parameter";
     static final String COMMAND_REQUIRES_TWO_FILE_NAMES = ": command requires two file name parameters";
     static final String COMMAND_REQUIRES_THREE_FILE_NAMES = ": command requires three file name parameters";
@@ -112,7 +111,7 @@ public class Options {
                     setCommand(arg);
                     index++;
                     if (index == args.length) {
-                        dieUsage(USAGE_ERROR + arg + COMMAND_REQUIRES_FILE_NAME);
+                        dieMessage(USAGE_ERROR + arg + COMMAND_REQUIRES_FILE_NAME);
                     }
                     fileName = args[index];
                     break;
@@ -126,13 +125,13 @@ public class Options {
                     setCommand(arg);
                     index++;
                     if (index == args.length) {
-                        dieUsage(USAGE_ERROR + arg + COMMAND_REQUIRES_FILE_NAME);
+                        dieMessage(USAGE_ERROR + arg + COMMAND_REQUIRES_FILE_NAME);
                     }
                     fileName = args[index];
 
                     index++;
                     if (index == args.length) {
-                        dieUsage(USAGE_ERROR + arg + COMMAND_REQUIRES_SHORT_URL);
+                        dieMessage(USAGE_ERROR + arg + COMMAND_REQUIRES_SHORT_URL);
                     }
                     shortURL = args[index];
                     break;
@@ -140,13 +139,13 @@ public class Options {
                     setCommand(arg);
                     index++;
                     if (index == args.length) {
-                        dieUsage(USAGE_ERROR + arg + COMMAND_REQUIRES_TWO_FILE_NAMES);
+                        dieMessage(USAGE_ERROR + arg + COMMAND_REQUIRES_TWO_FILE_NAMES);
                     }
                     fileName = args[index];
 
                     index++;
                     if (index == args.length) {
-                        dieUsage(USAGE_ERROR + arg + COMMAND_REQUIRES_TWO_FILE_NAMES);
+                        dieMessage(USAGE_ERROR + arg + COMMAND_REQUIRES_TWO_FILE_NAMES);
                     }
                     secondFileName = args[index];
                     break;
@@ -154,51 +153,51 @@ public class Options {
                     setCommand(arg);
                     index++;
                     if (index == args.length) {
-                        dieUsage(USAGE_ERROR + arg + COMMAND_REQUIRES_THREE_FILE_NAMES);
+                        dieMessage(USAGE_ERROR + arg + COMMAND_REQUIRES_THREE_FILE_NAMES);
                     }
                     fileName = args[index];
 
                     index++;
                     if (index == args.length) {
-                        dieUsage(USAGE_ERROR + arg + COMMAND_REQUIRES_THREE_FILE_NAMES);
+                        dieMessage(USAGE_ERROR + arg + COMMAND_REQUIRES_THREE_FILE_NAMES);
                     }
                     secondFileName = args[index];
 
                     index++;
                     if (index == args.length) {
-                        dieUsage(USAGE_ERROR + arg + COMMAND_REQUIRES_THREE_FILE_NAMES);
+                        dieMessage(USAGE_ERROR + arg + COMMAND_REQUIRES_THREE_FILE_NAMES);
                     }
                     thirdFileName = args[index];
                     break;
                 default:
-                    dieUsage(UNKNOWN_COMMAND + arg);
+                    dieMessage(UNKNOWN_COMMAND + arg);
             }
         }
 
         if (command == null) {
-            dieUsage(MISSING_COMMAND);
+            dieUsage();
         }
 
         if (fileName != null) {
             if (! new File(fileName).exists()) {
-                dieUsage(FILE_DOES_NOT_EXIST + fileName);
+                dieMessage(FILE_DOES_NOT_EXIST + fileName);
             }
         }
 
         if (secondFileName != null) {
             if (! new File(secondFileName).exists()) {
-                dieUsage(FILE_DOES_NOT_EXIST + secondFileName);
+                dieMessage(FILE_DOES_NOT_EXIST + secondFileName);
             }
         }
 
         if (thirdFileName != null) {
             if (! new File(thirdFileName).exists()) {
-                dieUsage(FILE_DOES_NOT_EXIST + thirdFileName);
+                dieMessage(FILE_DOES_NOT_EXIST + thirdFileName);
             }
         }
 
         if ((shortURL != null) && (! shortURL.startsWith("upload://"))) {
-                dieUsage(BAD_SHORT_URL);
+                dieMessage(BAD_SHORT_URL);
         }
     }
 
@@ -224,14 +223,18 @@ public class Options {
 
     private void setCommand(final String command) {
         if (this.command != null) {
-            dieUsage(TOO_MANY_COMMANDS);
+            dieMessage(TOO_MANY_COMMANDS);
         }
 
         this.command = command;
     }
 
-    private void dieUsage(final String message) {
+    private void dieMessage(final String message) {
         throw new OptionsException(message + "\n" + USAGE + "\n");
+    }
+
+    private void dieUsage() throws OptionsException {
+        throw new OptionsException(USAGE + "\n");
     }
 
     static class OptionsException extends MemberDataException {

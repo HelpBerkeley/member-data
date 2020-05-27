@@ -34,9 +34,11 @@ import java.nio.file.Paths;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.TimeUnit;
 
 import static java.net.HttpURLConnection.HTTP_OK;
 
@@ -90,7 +92,12 @@ public class Main {
     public static void main(String[] args) throws IOException, InterruptedException, CsvException {
 
         Options options = new Options(args);
-        options.parse();
+        try {
+            options.parse();
+        } catch (Options.OptionsException ex) {
+            System.out.println(ex.getMessage());
+            System.exit(1);
+        }
 
         // Load member data properties
         Properties memberDataProperties = loadProperties(MEMBERDATA_PROPERTIES);
@@ -436,12 +443,21 @@ public class Main {
         csvData = Files.readString(Paths.get(usersFile));
         List<User> users = Parser.users(csvData);
 
+        List<DeliveryData> filesToProcess = new ArrayList<>();
+
         for (DeliveryData deliveryData : deliveryDataList) {
-
-//            Thread.sleep(100);
-
             // Process those newer than order history date
             if (deliveryData.date.compareTo(orderHistory.historyThroughDate) > 0) {
+                filesToProcess.add(deliveryData);
+            }
+        }
+
+        // If a reset of the order history has been done, we are going to download
+        // all of the delivery files.  Avoid getting rate limited by Discourse, which
+        // occurs when there are more than 60 requests per minute on a connection.
+        long napTime = (filesToProcess.size() > 10) ? TimeUnit.SECONDS.toMillis(1) : 0;
+
+        for (DeliveryData deliveryData : filesToProcess) {
                 LOGGER.debug("processing " + deliveryData);
                 // Download the delivery file
                 String deliveries = apiClient.downloadFile(deliveryData.uploadFile.fileName);
@@ -449,7 +465,8 @@ public class Main {
                 List<UserOrder> userOrders = Parser.parseOrders(deliveryData.uploadFile.originalFileName, deliveries);
                 // Merge the data into the existing order history
                 orderHistory.merge(deliveryData.date, userOrders, users);
-            }
+
+                Thread.sleep(napTime);
         }
 
         // Export updated order history

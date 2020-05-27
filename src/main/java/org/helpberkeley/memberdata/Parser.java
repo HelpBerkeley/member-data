@@ -360,6 +360,10 @@ public class Parser {
             //[HelpBerkeleyDeliveries - 3_28.csv|attachment](upload://xyzzy.csv) (828 Bytes)
 
             int index = raw.indexOf('\n');
+            if (index == -1) {
+                LOGGER.warn("Cannot parse daily deliver post: " + raw);
+                continue;
+            }
             String date = raw.substring(0, index);
 
             dailyDeliveries.add(new DeliveryData(date, downloadFileName(raw), shortURL(raw)));

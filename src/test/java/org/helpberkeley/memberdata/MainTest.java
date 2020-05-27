@@ -102,15 +102,6 @@ public class MainTest extends TestBase {
         Main.main(args);
     }
 
-    // FIX THIS, DS: update
-    @Test
-    @Ignore
-    public void postInreachTest() throws IOException, InterruptedException, CsvException {
-        String file = findFile(Main.INREACH_FILE, "csv");
-        String[] args = { Options.COMMAND_POST_INREACH, file, TEST_SHORT_URL };
-        Main.main(args);
-    }
-
     @Test
     public void postDispatchersTest() throws IOException, InterruptedException, CsvException {
         String file = findFile(Main.DISPATCHERS_FILE, "csv");
@@ -191,7 +182,7 @@ public class MainTest extends TestBase {
     }
 
     @Test
-    public void postIreachTest() throws IOException, InterruptedException, CsvException {
+    public void postInreachTest() throws IOException, InterruptedException, CsvException {
 
         String[] args = { Options.COMMAND_GET_ORDER_HISTORY };
         Main.main(args);
@@ -206,6 +197,8 @@ public class MainTest extends TestBase {
     }
 
     @Test
+    @Ignore
+    // FIX THIS, DS: generated files interacting with the other order history tests
     public void updateOrderHistoryTest() throws IOException, InterruptedException, CsvException {
 
         String[] args = { Options.COMMAND_GET_ORDER_HISTORY };

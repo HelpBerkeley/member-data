@@ -34,8 +34,7 @@ public class OptionsTest extends TestBase {
         Options options = new Options(new String[0]);
         Throwable thrown = catchThrowable(options::parse);
         assertThat(thrown).isInstanceOf(MemberDataException.class);
-        assertThat(thrown).hasMessageContaining(Options.MISSING_COMMAND);
-        assertThat(thrown).hasMessageContaining(Options.USAGE_ERROR);
+        assertThat(thrown).hasMessageContaining(Options.USAGE);
     }
 
     @Test
