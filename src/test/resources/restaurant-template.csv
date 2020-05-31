@@ -1,40 +1,29 @@
 Consumer,Driver,Name,User Name,Phone #,Phone2 #,Neighborhood,City,Address,Condo,Details,Restaurants,normal,veggie,#orders
 FALSE,TRUE,,,,,,,,,,,,,
-FALSE,,,,,,,,"1158 Solano Ave, Albany",,,Cafe Raj,,,0
-FALSE,,,,,,,,"1309 Solano Ave, Albany",,,Kim's,,,0
-FALSE,,,,,,,,"1561 Solano Ave, Berkeley",,,Talavera,,,0
-FALSE,,,,,,,,"1736 Solano Ave, Berkeley",,,Sweet Basil,,,0
-FALSE,,,,,,,,"1823 Solano Ave, Berkeley",,,Bopshop,,,0
+FALSE,,,,,,,,"1158 Solano Ave, Albany",FALSE,,Cafe Raj,,,
+FALSE,,,,,,,,"1309 Solano Ave, Albany",FALSE,,Kim's,,,
+FALSE,,,,,,,,"1561 Solano Ave, Berkeley",FALSE,,Talavera,,,
+FALSE,,,,,,,,"1736 Solano Ave, Berkeley",FALSE,,Sweet Basil,,,
+FALSE,,,,,,,,"1823 Solano Ave, Berkeley",FALSE,,Bopshop,,,
 ,,,,,,,,,,,,,,
 FALSE,TRUE,,,,,,,,,,,,,
-FALSE,,,,,,,,"1543 Shattuck Ave, Berkeley",,,Jot Mahal,,,0
-FALSE,,,,,,,,"1674 Shattuck Ave, Berkeley",,,Da Lian,,,0
-FALSE,,,,,,,,"1700 Shattuck Ave, Berkeley",,,Thai Delight,,,0
-FALSE,,,,,,,,"1956 Shattuck Ave, Berkeley",,,Kaze Ramen,,,0
-FALSE,,,,,,,,"2430 Shattuck Ave, Berkeley",,,Noodles Fresh,,,0
-,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,
-Shattuck Route,,,,,,,,,,,Cafe Raj,,,5:10 PM
-,,,,,,,,Closed Mondays,,,Kim's,,,5:10 PM
-,,,,,,,,,,,Talavera,,,5:00 PM
-,,,,,,,,,,,Sweet Basil,,,5:10 PM
-,,,,,,,,,,,Bopshop,,,5:10 PM
-,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,
-Solano Route,,,,,,,,,,,Jot Mahal,,,5:10 PM
-,,"Note: 5:15pm for 1 order, 5:20pm for more",,,,,,Closed Mondays,,,Da Lian,,,5:20 PM
-,,,,,,,,Closed Wednesdays,,,Thai Delight,,,5:10 PM
-,,,,,,,,Closed until 5/17,,,Kaze Ramen,,,5:10 PM
-,,,,,,,,,,,Noodles Fresh,,,5:10 PM
-,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,
-Consumers With Orders(MOVE HERE),,,,,,,,,,,,,,
+FALSE,,,,,,,,"1543 Shattuck Ave, Berkeley",FALSE,,Jot Mahal,,,
+FALSE,,,,,,,,"1674 Shattuck Ave, Berkeley",FALSE,,Da Lian,,,
+FALSE,,,,,,,,"1700 Shattuck Ave, Berkeley",FALSE,,Thai Delight,,,
+FALSE,,,,,,,,"2521 Hearst Ave, Berkeley, CA 94709",FALSE,"immediately E (uphill) of Etcheverry Hall, right against building",V & A Cafe,,,
+FALSE,,,,,,,,"1956 Shattuck Ave, Berkeley",FALSE,,Kaze Ramen,,,
 ,,,,,,,,,,,,,,
 ,,,,,,,,,,,,,,
 ,,,,,,,,,,,,,,
+Solano Route,,"(Note: every line with a start time needs a ""...Route"" in the Consumer column (for our sw)",,,,,,,,,Cafe Raj,,,5:10 PM
+Solano Route,,,,,,,,Closed Mondays,,,Kim's,,,5:10 PM
+Solano Route,,,,,,,,,,,Talavera,,,5:00 PM
+Solano Route,,,,,,,,,,,Sweet Basil,,,5:10 PM
+Solano Route,,,,,,,,,,,Bopshop,,,5:10 PM
 ,,,,,,,,,,,,,,
 ,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,
-"Consumers with No Orders, or Drivers and Dispatchers",,,,,,,,,,,,,,
+Shattuck Route,,,,,,,,,,,Jot Mahal,,,5:10 PM
+Shattuck Route,,"Note: 5:15pm for 1 order, 5:20pm for more",,,,,,Closed Mondays,,,Da Lian,,,5:20 PM
+Shattuck Route,,,,,,,,Closed Wednesdays,,,Thai Delight,,,5:10 PM
+Shattuck Route,,Closes right at 5:00pm,,,,,,,,,V & A Cafe,,,4:55 PM
+Shattuck Route,,,,,,,,,,,Kaze Ramen,,,5:10 PM

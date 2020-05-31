@@ -9,8 +9,10 @@ Audit/validate that the topic ids for posting are valid.
 
 Reverse engineer recipes for:
 	- Deleting a post.
+	- Uploading a file.
 
 	Documentation at https://docs.discourse.org/
+	Discussion at https://meta.discourse.org/
 
 ------------------------
 

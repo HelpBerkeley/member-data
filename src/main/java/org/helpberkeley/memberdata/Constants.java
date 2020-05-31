@@ -58,6 +58,18 @@ public class Constants {
     public static final String FIRST_ORDER_DATE_COLUMN = "First order date";
     public static final String LAST_ORDER_DATE_COLUMN = "Last order date";
 
+    public static final String WORKFLOW_CONSUMER_COLUMN = "Consumer";
+    public static final String WORKFLOW_DRIVER_COLUMN = "Driver";
+    public static final String WORKFLOW_NAME_COLUMN = "Name";
+    public static final String WORKFLOW_USER_NAME_COLUMN = "User Name";
+    public static final String WORKFLOW_PHONE_COLUMN = "Phone #";
+    public static final String WORKFLOW_ALT_PHONE_COLUMN = "Phone2 #";
+    public static final String WORKFLOW_DETAILS_COLUMN = "Details";
+    public static final String WORKFLOW_VEGGIE_COLUMN = "Veggie";
+    public static final String WORKFLOW_NORMAL_COLUMN = "Normal";
+    public static final String WORKFLOW_RESTAURANTS_COLUMN = "Restaurants";
+    public static final String WORKFLOW_ORDERS_COLUMN = "#orders";
+
     // Group names - FIX THIS, DS: hardwired
     public static final String GROUP_CONSUMERS = "consumers";
     public static final String GROUP_DRIVERS = "drivers";

@@ -1,0 +1,271 @@
+Automated Driver's Run Post Design
+Version 1.0.2
+
+Motivation
+==========
+
+The per driver delivery run posting is generated
+daily, manually, by cutting and pasting many different
+blocks of existing data from the workflow spreadsheet.
+This process is laborious and can be error prone.
+
+The algorithm for generating the driver's run posting is
+fixed and mechanical, and as such, lends itself to automation.
+
+Automated Work Flow Overview
+============================
+
+Look for posts in a fixed topic that contain
+uploaded, routed, workflow data.
+
+For each post that hasn't yet been processed
+ - Generate the per driver, run posts.
+ - Post the driver run posts
+ - Update the workflow post, marking it as having been
+   processed.
+
+ Or, if there are any errors
+
+ - Update the workflow post with information
+   about the errors encountered. No driver
+   run posts will be done if there are any
+   errors during the generation phase.
+ - Update the workflow post, marking it as having been
+   processed.
+
+
+Looking for routed workflow posts
+=================================
+
+Routed workflow data will be looked for in
+a topic called "Routed Workflow Data".
+
+Between the hours of 1900 and 0100 (next day) this topic will be checked
+every 3 minutes for unprocessed posts.
+
+Format for routed workflow posts
+================================
+
+YYYY/MM/DD
+Upload link to routed workflow data. 
+
+Format for processing status appended by back-end
+=================================================
+
+Status: Succeeded
+Driver Run Posts:
+	${DRIVER_NAME} : URL
+	...
+
+OR
+
+Status: Failed
+${ERROR_MESSAGE}
+
+Driver's Run Post
+=================
+
+1) Definition
+
+Consists of one section per post, from the thread:
+https://go.helpberkeley.org/t/automated-post-formatting-1-drivers-run/1967
+
+The first post is a control post.
+
+2) Explicit rules
+
+The following explicit rules are used:
+* one post will be written for each driver's block in the spreadsheet
+* Each section should be followed by a blank line. The original format of the post should be kept.
+* every time a composite variable is used, it should be iterated through all 
+instances  in the driver's block. If in a table, each table line should be an iteration.
+If in a conditional block boolean variable, each conditional block should be an iteration. In
+an enumeration, the enumeration should cover all items. For instance, a RESTAURANT composite 
+variable should be iterated through all dedicated restaurant lines in the driver's block.
+* By default, the order in which a table of composite variables should be output is in the order
+of the driver's block. 
+* A label should not be output. A label is always alone on its own line, and always surrounded
+by brackets. For instance, the first line of the second post is [header]: it is a label.
+* A variable should be indicated by the following syntax: ${VARIABLE_NAME}. THe only variables that
+will be rendered are those listed in the Variable section below.
+* The syntax for a conditional section should be as follows:
+IF ${BOOLEAN_VARIABLE} THEN {  [conditional block]  }
+
+
+3) Variables
+
+The following input variables may be used in a post:
+
+
+    Variable Name         | Description           | Source
+    ====================================================================================================
+    DRIVER                | Driver's user name    | Routed Workflow
+                          |                       | Driver Block, First row, Consumer=FALSE, DRIVER=TRUE,
+                          |                       | User Name field
+    -----------------------------------------------------------------------------------------------------
+	FIRST_RESTAURANT      | First restaurant on   | Routed Workflow
+	                      | the driver's route    | Driver Block, Second Row, Restaurant field
+    -----------------------------------------------------------------------------------------------------
+	RESTAURANT_START_TIME | Starting time for the | Restaurant Template
+	                      | first restaurant      | Matching Restaurant Route row, Orders field
+    -----------------------------------------------------------------------------------------------------
+    DISPATCHER            | On call dispatcher    | Hardwired to Michel until we have a mechanism in
+                          | name                  | place to make this configurable.
+    -----------------------------------------------------------------------------------------------------
+    DISPATCHER_PHONE      | Dispatcher's cell     | Hardwired to Michel until we have a mechanism in
+                          | phone number          | place to make this configurable.
+    -----------------------------------------------------------------------------------------------------
+    ANY_CONDO             | TRUE/FALSE, is there  | Routed Workflow, Logical OR of all Condo fields
+                          | condo for this driver | for the deliveries for this driver.
+    -----------------------------------------------------------------------------------------------------
+    RESTAURANT
+     .ADDRESS             |                       | Routed Workflow, Address field
+      - - - - - - - - - - | - - - - - - - - - - - | - - - - - - - - - - - - - - - - - - - - - - - - - - -
+     .NAME                |                       | Routed Workflow, Restaurants field
+      - - - - - - - - - - | - - - - - - - - - - - | - - - - - - - - - - - - - - - - - - - - - - - - - - -
+     .DETAILS             |                       | Restaurant Template
+                          |                       | Matching Restaurant Address row, Details field
+      - - - - - - - - - - | - - - - - - - - - - - | - - - - - - - - - - - - - - - - - - - - - - - - - - -
+     .ORDERS              | # of orders to pickup | Routed Workflow, #orders field
+    -----------------------------------------------------------------------------------------------------
+    CONSUMER
+      .NAME               |                       | Routed Workflow, Name field
+      - - - - - - - - - - | - - - - - - - - - - - | - - - - - - - - - - - - - - - - - - - - - - - - - - -
+      .USER_NAME          |                       | Routed Workflow, User Name field
+      - - - - - - - - - - | - - - - - - - - - - - | - - - - - - - - - - - - - - - - - - - - - - - - - - -
+      .PHONE              |                       | Routed Workflow, Phone # field
+      - - - - - - - - - - | - - - - - - - - - - - | - - - - - - - - - - - - - - - - - - - - - - - - - - -
+      .ALT_PHONE          |                       | Routed Workflow, Phone2 # field
+      - - - - - - - - - - | - - - - - - - - - - - | - - - - - - - - - - - - - - - - - - - - - - - - - - -
+      .CITY               |                       | Routed Workflow, City field
+      - - - - - - - - - - | - - - - - - - - - - - | - - - - - - - - - - - - - - - - - - - - - - - - - - -
+      .ADDRESS            |                       | Routed Workflow, Address field
+      - - - - - - - - - - | - - - - - - - - - - - | - - - - - - - - - - - - - - - - - - - - - - - - - - -
+      .CONDO              |                       | Routed Workflow, Condo field
+      - - - - - - - - - - | - - - - - - - - - - - | - - - - - - - - - - - - - - - - - - - - - - - - - - -
+      .DETAILS            | User-specific         | Routed Workflow, Details field
+                          | delivery details
+      - - - - - - - - - - | - - - - - - - - - - - | - - - - - - - - - - - - - - - - - - - - - - - - - - -
+      .RESTAURANT         |                       | Routed Workflow, Restaurant field
+      - - - - - - - - - - | - - - - - - - - - - - | - - - - - - - - - - - - - - - - - - - - - - - - - - -
+      .NORMAL             | # of normal rations   | Routed Workflow, normal field
+      - - - - - - - - - - | - - - - - - - - - - - | - - - - - - - - - - - - - - - - - - - - - - - - - - -
+      .VEGGIE             | # of veggie rations   | Routed Workflow, veggie field
+    -----------------------------------------------------------------------------------------------------
+    GMAP_URL              | GMAP static URL for   | Routed Workflow, last row of driver block
+                          | the full itinerary.   | Consumer field.
+                          | It may be a straight  |
+                          | URL or a URL link.    |
+    -----------------------------------------------------------------------------------------------------
+
+NOTE: we need the dispatcher info in the routed workflow sheet
+      and a convention for how to distinguish it.
+Note: the CONSUMER composite variable is sometimes shown as C.
+
+4) Please note the following optional developments:
+
+* the order of the Pickup matrix would, optionally, best follow the restaurant order rather than 
+the deliveries order, since the driver will use it at pickup time. This is a minor option.
+
+* We are now starting to share restaurants between drivers. We are using the following conditional
+conditional block for that purpose:
+
+"We are running an experiment:
+
+* you are one of two drivers going to pick orders at RestaurantName [the other one is @DriverName at DriverPhoneNumber]. The total number of orders is NOrders: you are picking up Porders of them.
+* you are the primary [secondary] driver for this restaurant, which means that you need [do not need] to take pics of the delivery form
+because two drivers are going to this restaurant, you need to be careful about what orders you are picking up
+if you are the first driver picking up orders there, please make sure you are picking YOUR orders, and tell the restaurant that a second driver is coming.
+if you are the second driver picking up orders, please make sure that there is no extra order."
+
+This is also deterministic information, all existing in the spreadsheet today. 
+
+----------------------------------------------------------------------------------------------------
+
+In the present condition, the posts consists of the following sections:
+  1) Header
+  2) Special Instructions
+  3) Restaurants
+  4) Pickup
+  5) Deliveries
+  6) Itinerary
+  6) Tips
+
+
+----------------------------------------------------------------------------------------------------
+[Header]
+
+Driver's run for @${DRIVER}
+
+**Please reply to this thread when you being your run!**
+**Your run starts at ${FIRST_RESTAURANT} at ${RESTAURANT_START_TIME}**
+
+Any problem, any issue: call or text @{DISPATCHER} ${DISPATCH_PHONE#}. They are a phone call/text away.
+----------------------------------------------------------------------------------------------------
+[Special Instructions]
+
+IF ${ANY_CONDO} THEN {  
+You have a condo on your run! Please be aware we have special delivering instructions and they are:
+**(1) Before departing the previous delivery destination, we MUST call the upcoming condo customer**
+and let her know when we are due, and to wait at street level;
+**(2)**  We do not walk up to the apartment/condo unit;
+**(3)**  When you arrive, ask her to maintain a 6 ft distance if necessary,
+leave the food a safe distance from the customer and walk away, wishing the customer a good day;
+**(4)**  If she is not waiting when you arrive call again and wait three minutes;
+**(5)**  If she is not down within three minutes (whether she ever picked up or not),
+we leave the food bag in the lobby, otherwise at the lobby front door,
+then we call again and explain that we left the food bag.}
+----------------------------------------------------------------------------------------------------
+[Restaurants]
+
+**Restaurants**
+
+Please go to every restaurant, in the sequence listed below, even if there are no pickups, in order to take pictures of the delivery form for the next day.
+
+|Address|Details|Restaurants|#orders|
+|---|---|---|---|
+|${RESTAURANT.ADDRESS}|${RESTAURANT.DETAILS}|${RESTAURANT.NAME}|${RESTAURANT.ORDERS}|
+
+
+-----------------------------------------------------------------------------------------------------
+[Pickup]
+
+**Detailed orders** (in order of deliveries):
+
+|Name|User Name|Restaurants|normal|veggie|
+|---|---|---|---|---|---|---|---|---|---|
+|${C.NAME}|${C.USER_NAME}|${C.RESTAURANT}|${C.NORMAL}|${C.VEGGIE}|
+-----------------------------------------------------------------------------------------------------
+[Deliveries]
+
+**Deliveries**
+
+|Name|User Name|Phone #|Phone2 #|City|Address|Condo|Restaurants|normal|veggie|
+|---|---|---|---|---|---|---|---|---|---|
+|${C.NAME}|${C.USER_NAME}|${C.PHONE}|${C.ALT_PHONE}|${C.CITY}|${C.ADDRESS}|${C.CONDO}|${C.RESTAURANT}|${C.NORMAL}|${C.VEGGIE}|
+-----------------------------------------------------------------------------------------------------
+[Itinerary]
+
+**GMap static URL :** ${GMAP_URL}
+-----------------------------------------------------------------------------------------------------
+[Tips]
+
+Some tips–read carefully:
+
+* First and foremost thank you for helping serve our COVID-vulnerable neighbors in Berkeley(plus)
+* The Five Must-Haves: Well-charged phone, gloves, clean food boxes, mask, social distancing
+* Before setting off, use your phone to open the email message you received for this run (it will save a cached version in the event you lose cellular connectivity during your run)
+* when using static GMAP URL, you might need to press Continue to go from waypoint to waypoint
+* **remember to arrive at the first restaurant on time**
+* always take a pic in portrait mode (not landscape)
+* remember to take 2 pictures of delivery form right when you arrive at the restaurant, to make sure there are no important missing parts to the pic
+  * **Cafe Raj: make sure to ask them if the delivery form is tomorrow’s orders (rather than today)**
+* make sure your pics include ALL THE INFO we need, including restaurant name at the top
+* verify that all bags are labeled if there is more than one order. If not, ask.
+  * Cafe Raj, Noodle Fresh, and Talavera sometimes forget
+* remember that some consumers may order from more than one restaurant. They are listed in your form above
+* remember to call consumers, after dropping off, from your car while parked on the street next to their house
+* remember to discard gloves, sanitize box, and thoroughly wash hands when coming home
+* **remember to upload right away the delivery forms by replying to this thread: we are waiting for them to start laying out tomorrow’s driver runs.**
+* Please write up a quick post of what did not go well, and suggestions on how to prepare the runs better. Let us know when you completed your run.
+-----------------------------------------------------------------------------------------------------

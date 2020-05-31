@@ -43,11 +43,11 @@ public class DailyDeliveriesTest extends TestBase {
 
     @Test
     public void expectedOrderColumnsTest() throws IOException, CsvException {
-        String header = Parser.DeliveryColumns.CONSUMER_COLUMN + Constants.CSV_SEPARATOR
-                + Parser.DeliveryColumns.NAME_COLUMN + Constants.CSV_SEPARATOR
-                + Parser.DeliveryColumns.USER_NAME_COLUMN + Constants.CSV_SEPARATOR
-                + Parser.DeliveryColumns.NORMAL_COLUMN + Constants.CSV_SEPARATOR
-                + Parser.DeliveryColumns.VEGGIE_COLUMN
+        String header = Constants.WORKFLOW_CONSUMER_COLUMN + Constants.CSV_SEPARATOR
+                + Constants.WORKFLOW_NAME_COLUMN + Constants.CSV_SEPARATOR
+                + Constants.WORKFLOW_USER_NAME_COLUMN + Constants.CSV_SEPARATOR
+                + Constants.WORKFLOW_NORMAL_COLUMN + Constants.CSV_SEPARATOR
+                + Constants.WORKFLOW_VEGGIE_COLUMN
                 + "\n";
 
         Parser.parseOrders("", header);
@@ -55,11 +55,11 @@ public class DailyDeliveriesTest extends TestBase {
 
     @Test
     public void outOfOrderColumnsTest() throws IOException, CsvException {
-        String header = Parser.DeliveryColumns.CONSUMER_COLUMN + Constants.CSV_SEPARATOR
-                + Parser.DeliveryColumns.NORMAL_COLUMN + Constants.CSV_SEPARATOR
-                + Parser.DeliveryColumns.USER_NAME_COLUMN + Constants.CSV_SEPARATOR
-                + Parser.DeliveryColumns.VEGGIE_COLUMN + Constants.CSV_SEPARATOR
-                + Parser.DeliveryColumns.NAME_COLUMN
+        String header = Constants.WORKFLOW_CONSUMER_COLUMN + Constants.CSV_SEPARATOR
+                + Constants.WORKFLOW_NORMAL_COLUMN + Constants.CSV_SEPARATOR
+                + Constants.WORKFLOW_USER_NAME_COLUMN + Constants.CSV_SEPARATOR
+                + Constants.WORKFLOW_VEGGIE_COLUMN + Constants.CSV_SEPARATOR
+                + Constants.WORKFLOW_NAME_COLUMN
                 + "\n";
 
         Parser.parseOrders("", header);
@@ -67,11 +67,11 @@ public class DailyDeliveriesTest extends TestBase {
 
     @Test
     public void spaceyColumnNamesTest() throws IOException, CsvException {
-        String header = " " + Parser.DeliveryColumns.CONSUMER_COLUMN + " " + Constants.CSV_SEPARATOR
-                + " " + Parser.DeliveryColumns.NORMAL_COLUMN + " " + Constants.CSV_SEPARATOR
-                + " " + Parser.DeliveryColumns.USER_NAME_COLUMN + " " + Constants.CSV_SEPARATOR
-                + " " + Parser.DeliveryColumns.VEGGIE_COLUMN + " " + Constants.CSV_SEPARATOR
-                + " " + Parser.DeliveryColumns.NAME_COLUMN
+        String header = " " + Constants.WORKFLOW_CONSUMER_COLUMN + " " + Constants.CSV_SEPARATOR
+                + " " + Constants.WORKFLOW_NORMAL_COLUMN + " " + Constants.CSV_SEPARATOR
+                + " " + Constants.WORKFLOW_USER_NAME_COLUMN + " " + Constants.CSV_SEPARATOR
+                + " " + Constants.WORKFLOW_VEGGIE_COLUMN + " " + Constants.CSV_SEPARATOR
+                + " " + Constants.WORKFLOW_NAME_COLUMN
                 + "\n";
 
         Parser.parseOrders("", header);
@@ -79,10 +79,10 @@ public class DailyDeliveriesTest extends TestBase {
 
     @Test
     public void missingUserNameColumnTest() throws IOException, CsvException {
-        String header = Parser.DeliveryColumns.CONSUMER_COLUMN + Constants.CSV_SEPARATOR
-                + Parser.DeliveryColumns.NAME_COLUMN + Constants.CSV_SEPARATOR
-                + Parser.DeliveryColumns.NORMAL_COLUMN + Constants.CSV_SEPARATOR
-                + Parser.DeliveryColumns.VEGGIE_COLUMN
+        String header = Constants.WORKFLOW_CONSUMER_COLUMN + Constants.CSV_SEPARATOR
+                + Constants.WORKFLOW_NAME_COLUMN + Constants.CSV_SEPARATOR
+                + Constants.WORKFLOW_NORMAL_COLUMN + Constants.CSV_SEPARATOR
+                + Constants.WORKFLOW_VEGGIE_COLUMN
                 + "\n";
 
         Parser.parseOrders("", header);
@@ -90,10 +90,10 @@ public class DailyDeliveriesTest extends TestBase {
 
     @Test
     public void missingNameColumnTest() throws IOException, CsvException {
-        String header = Parser.DeliveryColumns.CONSUMER_COLUMN + Constants.CSV_SEPARATOR
-                + Parser.DeliveryColumns.USER_NAME_COLUMN + Constants.CSV_SEPARATOR
-                + Parser.DeliveryColumns.NORMAL_COLUMN + Constants.CSV_SEPARATOR
-                + Parser.DeliveryColumns.VEGGIE_COLUMN
+        String header = Constants.WORKFLOW_CONSUMER_COLUMN + Constants.CSV_SEPARATOR
+                + Constants.WORKFLOW_USER_NAME_COLUMN + Constants.CSV_SEPARATOR
+                + Constants.WORKFLOW_NORMAL_COLUMN + Constants.CSV_SEPARATOR
+                + Constants.WORKFLOW_VEGGIE_COLUMN
                 + "\n";
 
         Parser.parseOrders("", header);
@@ -102,60 +102,60 @@ public class DailyDeliveriesTest extends TestBase {
     @Test
     public void missingConsumerColumnTest() {
         String fileName = "missing-consumer-column";
-        String header = Parser.DeliveryColumns.NAME_COLUMN + Constants.CSV_SEPARATOR
-                + Parser.DeliveryColumns.USER_NAME_COLUMN + Constants.CSV_SEPARATOR
-                + Parser.DeliveryColumns.NORMAL_COLUMN + Constants.CSV_SEPARATOR
-                + Parser.DeliveryColumns.VEGGIE_COLUMN
+        String header = Constants.WORKFLOW_NAME_COLUMN + Constants.CSV_SEPARATOR
+                + Constants.WORKFLOW_USER_NAME_COLUMN + Constants.CSV_SEPARATOR
+                + Constants.WORKFLOW_NORMAL_COLUMN + Constants.CSV_SEPARATOR
+                + Constants.WORKFLOW_VEGGIE_COLUMN
                 + "\n";
 
         Throwable thrown = catchThrowable(() -> Parser.parseOrders(fileName, header));
         assertThat(thrown).isInstanceOf(Error.class);
         assertThat(thrown).hasMessageContaining(fileName);
-        assertThat(thrown).hasMessageContaining(Parser.DeliveryColumns.CONSUMER_COLUMN);
+        assertThat(thrown).hasMessageContaining(Constants.WORKFLOW_CONSUMER_COLUMN);
     }
 
     @Test
     public void missingVeggieColumnTest() {
         String fileName = "missing-veggie-column";
-        String header = Parser.DeliveryColumns.CONSUMER_COLUMN + Constants.CSV_SEPARATOR
-                + Parser.DeliveryColumns.NAME_COLUMN + Constants.CSV_SEPARATOR
-                + Parser.DeliveryColumns.USER_NAME_COLUMN + Constants.CSV_SEPARATOR
-                + Parser.DeliveryColumns.NORMAL_COLUMN
+        String header = Constants.WORKFLOW_CONSUMER_COLUMN + Constants.CSV_SEPARATOR
+                + Constants.WORKFLOW_NAME_COLUMN + Constants.CSV_SEPARATOR
+                + Constants.WORKFLOW_USER_NAME_COLUMN + Constants.CSV_SEPARATOR
+                + Constants.WORKFLOW_NORMAL_COLUMN
                 + "\n";
 
         Throwable thrown = catchThrowable(() -> Parser.parseOrders(fileName, header));
         assertThat(thrown).isInstanceOf(Error.class);
         assertThat(thrown).hasMessageContaining(fileName);
-        assertThat(thrown).hasMessageContaining(Parser.DeliveryColumns.VEGGIE_COLUMN);
+        assertThat(thrown).hasMessageContaining(Constants.WORKFLOW_VEGGIE_COLUMN);
     }
 
     @Test
     public void missingNormalColumnTest() {
         String fileName = "missing-normal-column";
-        String header = Parser.DeliveryColumns.CONSUMER_COLUMN + Constants.CSV_SEPARATOR
-                + Parser.DeliveryColumns.NAME_COLUMN + Constants.CSV_SEPARATOR
-                + Parser.DeliveryColumns.USER_NAME_COLUMN + Constants.CSV_SEPARATOR
-                + Parser.DeliveryColumns.VEGGIE_COLUMN + Constants.CSV_SEPARATOR
+        String header = Constants.WORKFLOW_CONSUMER_COLUMN + Constants.CSV_SEPARATOR
+                + Constants.WORKFLOW_NAME_COLUMN + Constants.CSV_SEPARATOR
+                + Constants.WORKFLOW_USER_NAME_COLUMN + Constants.CSV_SEPARATOR
+                + Constants.WORKFLOW_VEGGIE_COLUMN + Constants.CSV_SEPARATOR
                 + "\n";
 
         Throwable thrown = catchThrowable(() -> Parser.parseOrders(fileName, header));
         assertThat(thrown).isInstanceOf(Error.class);
         assertThat(thrown).hasMessageContaining(fileName);
-        assertThat(thrown).hasMessageContaining(Parser.DeliveryColumns.NORMAL_COLUMN);
+        assertThat(thrown).hasMessageContaining(Constants.WORKFLOW_NORMAL_COLUMN);
     }
 
     @Test
     public void missingNameAndUserNameColumnsTest() {
         String fileName = "missing-name-username-columns";
-        String header = Parser.DeliveryColumns.CONSUMER_COLUMN + Constants.CSV_SEPARATOR
-                + Parser.DeliveryColumns.NORMAL_COLUMN + Constants.CSV_SEPARATOR
-                + Parser.DeliveryColumns.VEGGIE_COLUMN
+        String header = Constants.WORKFLOW_CONSUMER_COLUMN + Constants.CSV_SEPARATOR
+                + Constants.WORKFLOW_NORMAL_COLUMN + Constants.CSV_SEPARATOR
+                + Constants.WORKFLOW_VEGGIE_COLUMN
                 + "\n";
 
         Throwable thrown = catchThrowable(() -> Parser.parseOrders(fileName, header));
         assertThat(thrown).isInstanceOf(Error.class);
         assertThat(thrown).hasMessageContaining(fileName);
-        assertThat(thrown).hasMessageContaining(Parser.DeliveryColumns.USER_NAME_COLUMN);
-        assertThat(thrown).hasMessageContaining(Parser.DeliveryColumns.NAME_COLUMN);
+        assertThat(thrown).hasMessageContaining(Constants.WORKFLOW_USER_NAME_COLUMN);
+        assertThat(thrown).hasMessageContaining(Constants.WORKFLOW_NAME_COLUMN);
     }
 }

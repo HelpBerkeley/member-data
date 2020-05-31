@@ -85,9 +85,8 @@ public class Main {
     static final long DISPATCHERS_POST_ID = 5324;
     static final long ORDER_HISTORY_TOPIC = 1440;
     static final long ORDER_HISTORY_POST_ID = 6433;
-//    static final long RESTAURANT_TEMPLATE_POST_ID = 8664;
+    static final long RESTAURANT_TEMPLATE_POST_ID = 8664;
     static final long DELIVERY_DETAILS_TOPIC_ID = 1818;
-    static final long RESTAURANT_TEMPLATE_POST_ID = 9739;
 
     public static void main(String[] args) throws IOException, InterruptedException, CsvException {
 

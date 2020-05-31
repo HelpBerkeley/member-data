@@ -1,0 +1,285 @@
+Help Berkeley Schemas
+=====================
+
+Version: 2.0.0
+
+Full Member Record
+------------------
+
+Posting type:  Reply, containing attached CSV file 
+Sort type:     ID
+Where:         https://go.helpberkeley.org/t/full-member-info/837
+When:          Daily at 9:00 PM
+
+Column Name,Type,Description,
+ID,Long Integer,Discourse user ID,
+Created,String,YYYY/MM/DD HH:MM:SS (HH is 0-23)
+Name,String,Full name
+UserName,String,Discourse user name,
+Phone #,String,,
+Phone2 #,String,,
+Neighborhood,String,,
+City,String,,
+Address,String,,
+Condo,Boolean,In non-single family dwelling,
+Refer,String,where did you hear from us?,
+Consumer,Boolean,In consumer group,
+Voiceonly,Boolean,In voiceonly group,
+Driver,Boolean,In driver group,
+Dispatcher,Boolean,In dispatcher group,
+Workflow,Boolean,In workflow group,
+Inreach,Boolean,In inreach group,
+Outreach,Boolean,In outreach group,
+Helpline,Boolean,In helpline group,
+Siteline,Boolean,In siteline group,
+Marktg,Boolean,In Marketing group,
+Mods,Boolean,In mod group,
+Trust4,Boolean,In trust_level_4 group,
+Specs,Boolean,In specialist group,
+BHS,Boolean,In Berkeley High School Students group,
+CustInf,Boolean,In customerinfo group,
+Advsr,Boolean,In advisor group,
+Coordtr,Boolean,In coordinator group,
+Admin,Boolean,In admin group,
+ConsReq,Boolean,Made request for meals and not yet in consumer group,
+Volunteer Request,String,Volunteer request type and not yet in a driver dispatcher or specialist group,
+
+Full Member Record with Email
+-----------------------------
+
+Posting type:  Email to Michel
+Sort type:     ID
+When:          Sunday,Wednesday at 11:59 PM
+
+Column Name,Type,Description,
+ID,Long Integer,Discourse user ID,
+Created,String,YYYY/MM/DD HH:MM:SS (HH is 0-23)
+Name,String,Full name
+UserName,String,Discourse user name,
+EMail,String,,
+Phone #,String,,
+Phone2 #,String,,
+Neighborhood,String,,
+City,String,,
+Address,String,,
+Condo,Boolean,In non-single family dwelling,
+Refer,String,where did you hear from us?,
+Consumer,Boolean,In consumer group,
+Voiceonly,Boolean,In voiceonly group,
+Driver,Boolean,In driver group,
+Dispatcher,Boolean,In dispatcher group,
+Workflow,Boolean,In workflow group,
+Inreach,Boolean,In inreach group,
+Outreach,Boolean,In outreach group,
+Helpline,Boolean,In helpline group,
+Siteline,Boolean,In siteline group,
+Marktg,Boolean,In Marketing group,
+Mods,Boolean,In mod group,
+Trust4,Boolean,In trust_level_4 group,
+Specs,Boolean,In specialist group,
+BHS,Boolean,In Berkeley High School Students group,
+CustInf,Boolean,In customerinfo group,
+Advsr,Boolean,In advisor group,
+Coordtr,Boolean,In coordinator group,
+Admin,Boolean,In admin group,
+ConsReq,Boolean,Made request for meals and not yet in consumer group,
+Volunteer Request,String,Volunteer request type and not yet in a driver dispatcher or specialist group,
+
+Workflow data
+------------------
+
+Posting type:  Reply, containing attached CSV file 
+Sort type:     User name.
+Where:         https://go.helpberkeley.org/t/workflow-data/824
+When:          Daily at 6:30pm and 8:30pm.
+
+Sorted by Consumer True->False, then by driver True->False..
+
+Column Name,Usage
+Consumer,Boolean,In consumer group,
+Driver,Boolean,In driver group,
+Name,String,Full name
+User Name,String,Discourse user name,
+Phone #,String,,
+Phone2 #,String,,
+Neighborhood,String,,
+City,String,,
+Address,String,,
+Condo,Boolean,In non-single family dwelling,
+Details, String,,
+Restaurants, String,,
+normal, Int,,
+veggie, Int,,
+#orders, Int,,
+
+Restaurant Template
+------------------
+
+Location:      Closet/HushWorkflow
+Link:          https://go.helpberkeley.org/t/software-input-restaurant-template/1860/1
+Schema Used:   Workflow data
+
+Restaurant Block Marker
+Empty Row
+Restaurant Address Rows - Solano
+Restaurant Block Marker
+Restaurant Address Rows - Shattuck
+Empty Row
+Empty Row
+Empty Row
+Restaurant Route Rows - Solano Route
+Empty Row
+Empty Row
+Restaurant Route Rows - Shattuck Route
+
+
+Restaurant Block Marker  - FALSE,TRUE,,,,,,,,,,,,,
+Empty Row - ,,,,,,,,,,,,,,
+Example Solano Address row - FALSE,,,,,,,,"1158 Solano Ave, Albany",FALSE,,Cafe Raj,,,
+Example Shattuck Address row - FALSE,,,,,,,,"2521 Hearst Ave, Berkeley, CA 94709",FALSE,"immediately E (uphill) of Etcheverry Hall, right against building",V & A Cafe,,,
+Example Solano Route row - Solano Route,,,,,,,,Closed Mondays,,,Kim's,,,5:10 PM
+Example Shattuck Route row - Shattuck Route,,Closes right at 5:00pm,,,,,,,,,V & A Cafe,,,4:55 PM
+
+Inreach consumer data
+------------------
+
+Posting type:  Reply, containing attached CSV file 
+Sort type:     Create date
+Where:         https://go.helpberkeley.org/t/daily-customer-information/820
+When:          Daily at 9:00pm 
+
+Sorted by Created Date.
+Select only (Consumers == TRUE) OR ((Consumers == FALSE) AND (Drivers == FALSE) AND (Dispatchers == FALSE))
+
+Column Name,Type,Description,
+Created,String,YYYY/MM/DD HH:MM:SS (HH is 0-23)
+Name,String,Full name
+User Name,String,Discourse user name,
+Phone #,String,,
+Phone2 #,String,,
+City,String,,
+Address,String,,
+Condo,Boolean,In non-single family dwelling,
+OrderStatus,Boolean,have they ordered from HelpBerkeley,
+OrderNumber,integer,total number of orders,
+First order date, String,YYYY/MM/DD (date of first order),
+Last order date, String,YYYY/MM/DD (date of last order),
+Consumer,Boolean,In consumer group,
+Dispatcher,Boolean,In dispatcher group,
+Driver,Boolean,In driver group,
+
+In the future, the following would be great:
+
+Select only (Consumers == TRUE) OR ((Consumers == FALSE) AND (Drivers == FALSE) AND (Dispatchers == FALSE))
+Sort first by consumer in reverse aphabetical, then by created date.
+
+Drivers
+-------
+
+Posting type:  Update, containing attached CSV file
+Sort type:     Create time.
+Where:         https://go.helpberkeley.org/t/drivers/638/3
+When:          Whenever any change to any data in the full user record
+               of someone in the drivers group is detected.
+
+Same fields as the full member record.
+Select only Drivers == TRUE
+
+Column Name,Type,Description,
+Created,String,YYYY/MM/DD HH:MM:SS (HH is 0-23)
+Name,String,Full name
+User Name,String,Discourse user name,
+Phone #,String,,
+Neighborhood,String,,
+City,String,,
+Address,String,,
+Condo,Boolean,In non-single family dwelling,
+Consumer,Boolean,In consumer group,
+Dispatcher,Boolean,In dispatcher group,
+
+Dispatchers
+-------
+
+Posting type:  Reply, containing attached CSV file
+Sort type:     Create date
+Where:         https://go.helpberkeley.org/t/dispatchers/938/
+When:          Whenever any change to any data in the full user record
+               of someone in the drivers group is detected.
+
+Select only Dispatchers == TRUE
+
+Column Name,Type,Description,
+Created,String,YYYY/MM/DD HH:MM:SS (HH is 0-23)
+Name,String,Full name
+User Name,String,Discourse user name,
+Phone #,String,,
+Neighborhood,String,,
+City,String,,
+Address,String,,
+Condo,Boolean,In non-single family dwelling,
+Driver,Boolean,In driver group,
+Consumer,Boolean,In consumer group,
+BHS,Boolean,In BHS group,
+helpline,Boolean,In helpline group,
+siteline,Boolean,In siteline group,
+inreach,Boolean,In inreach group,
+outreach,Boolean,In outreach group,
+marketing,Boolean,In marketing group,
+mods,Boolean,In moderators group,
+specialist,Boolean,In specialists group,
+workflow,Boolean,In workflow group,
+
+Suggested additional columns:
+contacted,Boolean,In contacted group,
+replied,Boolean,In replied group,
+trainedx1,Boolean,In trainedx1 group,
+trainedx2,Boolean,In trainedx2 group,
+trainedx3,Boolean,In trainedx3 group,
+
+Consumer Requests
+-----------------
+
+Posting type:  Reply, containing markdown table
+Sort type:     Member creation time.
+Where:         https://go.helpberkeley.org/t/these-users-requested-meals/444
+When:          Whenever a new user signs up requesting meals, or a new
+               user requesting meals is promoted to the consumer group.
+
+Column Name,Type,Description,
+User Name,String,Discourse user name,
+Email Verified,Boolean,,
+City,String,,
+Address,String,,
+Condo,Boolean,In non-single family dwelling,
+Phone #,String,,
+
+Volunteer Requests
+------------------
+
+Posting type:  Reply, containing markdown table
+Sort type:     Member creation time.
+Where:         https://go.helpberkeley.org/t/these-users-volunteered/445
+When:          Whenever a new user signs up requesting to volunteer,
+               or a new user requesting to volunteer is added to
+	       either the driver, dispatcher, or specialist groups.
+
+Column Name,Type,Description,
+User Name,String,Discourse user name,
+Email Verified,Boolean,,
+Name,String,Full name
+Phone #,String,,
+City,String,,
+Volunteer Request,String,Volunteer request type and not yet in a driver dispatcher or specialist group,
+
+Member data requiring attention
+-------------------------------
+
+Posting type:  Update, containing markdown table
+Sort type:     User name
+Where:         https://go.helpberkeley.org/t/member-data-requiring-attention/129/25
+When:          Whenever a change in a new error is detected
+               in member data, or an existing error is corrected.
+
+Column Name,Type,Description,
+User Name,String,Discourse user name,
+Error type,String,Description of problem

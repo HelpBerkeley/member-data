@@ -674,15 +674,6 @@ public class Parser {
 
 
     static class DeliveryColumns {
-
-        static final String CONSUMER_COLUMN = "Consumer";
-        static final String NAME_COLUMN = "Name";
-        static final String USER_NAME_COLUMN = "User Name";
-        static final String PHONE_COLUMN = "Phone #";
-        static final String ALT_PHONE_COLUMN = "Phone2 #";
-        static final String VEGGIE_COLUMN = "Veggie";
-        static final String NORMAL_COLUMN = "Normal";
-
         private final int consumer;
         private final int name;
         private final int userName;
@@ -693,26 +684,27 @@ public class Parser {
 
         DeliveryColumns(final String fileName, final String[] columns) {
 
-            consumer = findOrderColumn(CONSUMER_COLUMN, columns);
-            name = findOrderColumn(NAME_COLUMN, columns);
-            userName = findOrderColumn(USER_NAME_COLUMN, columns);
-            phoneNumber = findOrderColumn(PHONE_COLUMN, columns);
-            altPhoneNumber = findOrderColumn(ALT_PHONE_COLUMN, columns);
-            veggie = findOrderColumn(VEGGIE_COLUMN, columns);
-            normal = findOrderColumn(NORMAL_COLUMN, columns);
+            consumer = findOrderColumn(Constants.WORKFLOW_CONSUMER_COLUMN, columns);
+            name = findOrderColumn(Constants.WORKFLOW_NAME_COLUMN, columns);
+            userName = findOrderColumn(Constants.WORKFLOW_USER_NAME_COLUMN, columns);
+            phoneNumber = findOrderColumn(Constants.WORKFLOW_PHONE_COLUMN, columns);
+            altPhoneNumber = findOrderColumn(Constants.WORKFLOW_ALT_PHONE_COLUMN, columns);
+            veggie = findOrderColumn(Constants.WORKFLOW_VEGGIE_COLUMN, columns);
+            normal = findOrderColumn(Constants.WORKFLOW_NORMAL_COLUMN, columns);
 
             String errors = "";
             if (consumer == -1) {
-                errors += "Cannot find column " + CONSUMER_COLUMN + "\n";
+                errors += "Cannot find column " + Constants.WORKFLOW_CONSUMER_COLUMN + "\n";
             }
             if ((userName == -1) && (name == -1)) {
-                errors += "Cannot find either " + NAME_COLUMN + " or " + USER_NAME_COLUMN + " column";
+                errors += "Cannot find either " + Constants.WORKFLOW_NAME_COLUMN
+                        + " or " + Constants.WORKFLOW_USER_NAME_COLUMN + " column";
             }
             if (veggie == -1) {
-                errors += "Cannot find column " + VEGGIE_COLUMN + "\n";
+                errors += "Cannot find column " + Constants.WORKFLOW_VEGGIE_COLUMN + "\n";
             }
             if (normal == -1) {
-                errors += "Cannot find column " + NORMAL_COLUMN + "\n";
+                errors += "Cannot find column " + Constants.WORKFLOW_NORMAL_COLUMN + "\n";
             }
 
             if (! errors.isEmpty()) {
