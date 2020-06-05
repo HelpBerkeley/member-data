@@ -28,7 +28,6 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -39,22 +38,54 @@ public class DriverPostFormat {
     private static final Logger LOGGER = LoggerFactory.getLogger(DriverPostFormat.class);
 
     private final ApiClient apiClient;
-    private String restaurantTemplate;
     private final List<Block> blocks = new ArrayList<>();
     private List<Driver> drivers;
+    private final Pattern compositeVariableRE;
+    private Map<String, Restaurant> restaurants;
 
     DriverPostFormat(ApiClient apiClient, final String routedDeliveries)
             throws IOException, InterruptedException, CsvValidationException {
         this.apiClient = apiClient;
+        compositeVariableRE = Pattern.compile("\\$\\{[A-Z_]+\\.[A-Z_]+\\}");
         loadRestaurantTemplate();
         loadFormatTopic();
         loadRoutedDeliveries(routedDeliveries);
     }
 
-    private void loadRestaurantTemplate() throws IOException, InterruptedException {
+    void generate() {
+
+        for (Driver driver : drivers) {
+            StringBuilder post = new StringBuilder();
+
+            for (Block block : blocks) {
+
+                if (block.hasConditional) {
+                    if (! evaluateCondition(driver, block.conditionalVariableName)) {
+                        continue;
+                    }
+                }
+
+                for (String line : block.contents.split("\n", -1)) {
+                    Matcher matcher = compositeVariableRE.matcher(line);
+
+                    if (matcher.find()) {
+                        post.append(processCompositeLine(driver, line));
+                    } else {
+                        post.append(processLine(driver, line));
+                    }
+                }
+            }
+
+            System.out.println(post.toString());
+        }
+    }
+
+    private void loadRestaurantTemplate() throws IOException, InterruptedException, CsvValidationException {
         String rawPost = Parser.postBody(apiClient.getPost(Main.RESTAURANT_TEMPLATE_POST_ID));
         RestaurantTemplatePost restaurantTemplatePost = Parser.restaurantTemplatePost(rawPost);
-        restaurantTemplate = apiClient.downloadFile(restaurantTemplatePost.uploadFile.fileName);
+        String restaurantTemplate = apiClient.downloadFile(restaurantTemplatePost.uploadFile.fileName);
+        RestaurantTemplateParser parser = new RestaurantTemplateParser(restaurantTemplate);
+        restaurants = parser.restaurants();
     }
 
     private void loadFormatTopic() throws IOException, InterruptedException {
@@ -92,83 +123,118 @@ public class DriverPostFormat {
         drivers = parser.drivers();
     }
 
+    private boolean evaluateCondition(final Driver driver, final String variableName) {
+        if (variableName.equals("ANY_CONDO")) {
+            return driver.hasCondo();
+        }
+
+        throw new Error("Unsupport connditional " + variableName);
+    }
+
+    private String processLine(final Driver driver, final String line) {
+
+        final String firstRestaurant = driver.getFirstRestaurantName();
+        final Restaurant restaurant = restaurants.get(firstRestaurant);
+        assert restaurant != null : restaurant + " was not found the in restaurant template post";
+        final String startTime = restaurant.getStartTime();
+
+        return line.replaceAll("\\$\\{DRIVER\\}", driver.getUserName())
+            .replaceAll("\\$\\{FIRST_RESTAURANT\\}", firstRestaurant)
+            .replaceAll("\\$\\{RESTAURANT_START_TIME\\}", startTime)
+            .replaceAll("\\$\\{GMAP_URL\\}", driver.getgMapURL())
+            + '\n';
+    }
+
+    private String processCompositeLine(final Driver driver, final String line) {
+
+        String processedLine;
+
+        if (line.contains("${C.")) {
+            processedLine = processConsumerLine(driver, line);
+        } else if (line.contains("${RESTAURANT.")) {
+            processedLine = processRestaurantLine(driver, line);
+        } else {
+            throw new Error("Unrecognized composite variable in " + line);
+        }
+
+        return processedLine;
+    }
+
+    private String processConsumerLine(final Driver driver, final String line) {
+        String processedLine = "";
+
+        for (Delivery delivery : driver.getDeliveries()) {
+
+            processedLine += line.replaceAll("\\$\\{C.NAME\\}", delivery.getName())
+                .replaceAll("\\$\\{C.USER_NAME\\}", delivery.getUserName())
+                .replaceAll("\\$\\{C.PHONE\\}", delivery.getPhone())
+                .replaceAll("\\$\\{C.ALT_PHONE\\}", delivery.getAltPhone())
+                .replaceAll("\\$\\{C.CITY\\}", delivery.getCity())
+                .replaceAll("\\$\\{C.ADDRESS\\}", delivery.getAddress())
+                .replaceAll("\\$\\{C.CONDO\\}", String.valueOf(delivery.isCondo()))
+                .replaceAll("\\$\\{C.DETAILS\\}", delivery.getDetails())
+                .replaceAll("\\$\\{C.RESTAURANT\\}", delivery.getRestaurant())
+                .replaceAll("\\$\\{C.NORMAL\\}", delivery.getNormalRations())
+                .replaceAll("\\$\\{C.VEGGIE\\}", delivery.getVeggieRations())
+                + '\n';
+        }
+
+        return processedLine;
+    }
+
+    private String processRestaurantLine(final Driver driver, final String line) {
+        String processedLine = "";
+
+        for (Restaurant restaurant : driver.getPickups()) {
+
+            processedLine += line.replaceAll("\\$\\{RESTAURANT.NAME\\}", restaurant.getName())
+                    .replaceAll("\\$\\{RESTAURANT.ADDRESS\\}", restaurant.getAddress())
+                    .replaceAll("\\$\\{RESTAURANT.DETAILS\\}", restaurant.getDetails())
+                    .replaceAll("\\$\\{RESTAURANT.ORDERS\\}", restaurant.getOrders())
+                    + '\n';
+        }
+
+        return processedLine;
+    }
+
     private static class Block {
         final String raw;
         final String name;
         final String contents;
         boolean hasConditional;
         String conditionalVariableName;
-        final Map<String, Variable> variables = new HashMap<>();
 
         Block(final String raw, final String name, final String contents) {
             this.raw = raw;
             this.name = name;
-            this.contents = contents;
+            checkForConditional(contents.trim());
 
-            findVariables();
-            checkForConditional();
-        }
+            if (hasConditional) {
 
-        boolean hasConditional() {
-            return hasConditional;
-        }
+                int index = contents.indexOf("THEN");
+                assert index != -1 : "bad conditional: " + contents;
+                index = contents.indexOf('{', index);
+                assert index != -1 : "bad conditional: " + contents;
 
-        private void findVariables() {
-
-            int previousIndex = 0;
-            int varStartIndex;
-
-            while ((varStartIndex = contents.indexOf("${", previousIndex)) != -1) {
-                int varEndIndex = contents.indexOf("}", varStartIndex);
-                assert (varEndIndex != -1) : "malformed variable at offset " + varStartIndex + " in " + contents;
-                String variable = contents.substring(varStartIndex, varEndIndex + 1);
-                previousIndex = varEndIndex + 1;
-
-                LOGGER.debug("found variable {} in {}", variable, name);
-                createVariable(variable);
+                int endIndex = contents.lastIndexOf('}');
+                assert endIndex != -1 : "bad conditional: " + contents;
+                this.contents = contents.substring(index + 1, endIndex);
+            } else {
+                this.contents = contents;
             }
         }
 
-        private void createVariable(final String name) {
+        private void checkForConditional(final String contents) {
 
-            if (isComposite(name)) {
-            }
-
-        }
-
-        private boolean isComposite(final String variableName) {
-            return variableName.contains(".");
-        }
-
-        private void checkForConditional() {
-
-            String contentsTrimmed = contents.trim();
-
-            if (!contentsTrimmed.startsWith("IF ${")) {
+            if (! contents.startsWith("IF ${")) {
                 hasConditional = false;
                 return;
             }
 
             hasConditional = true;
-            int endIndex = contentsTrimmed.indexOf("}");
+            int endIndex = contents.indexOf("}");
             assert (endIndex != -1) : "malformed conditional in " + contents;
-            conditionalVariableName = contentsTrimmed.substring(0, endIndex + 1);
-        }
-    }
-
-    private static class Variable {
-        final String name;
-
-        Variable(final String name) {
-            this.name = name;
-        }
-    }
-
-    private static class CompositeVariable extends Variable{
-        final Map<String, Variable> variables = new HashMap<>();
-
-        CompositeVariable(final String name) {
-            super(name);
+            conditionalVariableName = contents.substring(5, endIndex);
         }
     }
 }

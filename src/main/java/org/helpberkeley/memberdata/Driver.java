@@ -67,4 +67,10 @@ public class Driver {
     public List<Delivery> getDeliveries() {
         return deliveries;
     }
+
+    public String getFirstRestaurantName() {
+        assert ! pickups.isEmpty();
+
+        return pickups.get(0).getName();
+    }
 }

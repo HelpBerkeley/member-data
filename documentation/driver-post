@@ -72,27 +72,48 @@ https://go.helpberkeley.org/t/automated-post-formatting-1-drivers-run/1967
 
 The first post is a control post.
 
-2) Explicit rules
+FIX THIS: define control post.  Format, meaning, usage.
+
+2) Variable types
+
+Two types of substitution variables are supported.
+  * Simple. Support single value. Simple variable variable names
+    may only contain capital letters and underscores.
+  * Composite. Contain a list identifier and a variable name, separated by a dot.
+    Example: RESTAURANT.NAME
+    List identifiers imply iteration through all matching rows in the corresponding driver data.
+    A section may only use a single list identifier, by may contain multiple variables contained
+    by the list type.
+    EXAMPLE: ${RESTAURANT.NAME} ${RESTAURANT.ADDRESS}
+
+3) Explicit rules
 
 The following explicit rules are used:
-* one post will be written for each driver's block in the spreadsheet
-* Each section should be followed by a blank line. The original format of the post should be kept.
-* every time a composite variable is used, it should be iterated through all 
-instances  in the driver's block. If in a table, each table line should be an iteration.
-If in a conditional block boolean variable, each conditional block should be an iteration. In
-an enumeration, the enumeration should cover all items. For instance, a RESTAURANT composite 
-variable should be iterated through all dedicated restaurant lines in the driver's block.
-* By default, the order in which a table of composite variables should be output is in the order
-of the driver's block. 
-* A label should not be output. A label is always alone on its own line, and always surrounded
-by brackets. For instance, the first line of the second post is [header]: it is a label.
-* A variable should be indicated by the following syntax: ${VARIABLE_NAME}. THe only variables that
-will be rendered are those listed in the Variable section below.
-* The syntax for a conditional section should be as follows:
-IF ${BOOLEAN_VARIABLE} THEN {  [conditional block]  }
+  * one post will be written for each driver's block in the spreadsheet
+  * Each section should be followed by a blank line. The original format of the post should be kept.
+  * Every time a composite variable is used, it should be iterated through all
+    instances  in the driver's block. If in a table, each table line should be an iteration.
+
+    If in a conditional block boolean variable, each conditional block should be an iteration.
+
+    FIX THIS: not clear what this means.  reword, add example.
+
+    In an enumeration, the enumeration should cover all items. For instance, a RESTAURANT composite
+    variable should be iterated through all dedicated restaurant lines in the driver's block.
+
+    FIX THIS: what does enumeration mean here?  The same as iteration above?
+
+  * By default, the order in which a table of composite variables should be output is in the order
+    of the driver's block.
+  * A label should not be output. A label is always alone on its own line, and always surrounded
+    by brackets. For instance, the first line of the second post is [header]: it is a label.
+  * A variable should be indicated by the following syntax: ${VARIABLE_NAME}. THe only variables that
+    will be rendered are those listed in the Variable section below.
+  * The syntax for a conditional section should be as follows:
+    IF ${BOOLEAN_VARIABLE} THEN {  [conditional block]  }
 
 
-3) Variables
+4) Variables
 
 The following input variables may be used in a post:
 
@@ -118,7 +139,7 @@ The following input variables may be used in a post:
     ANY_CONDO             | TRUE/FALSE, is there  | Routed Workflow, Logical OR of all Condo fields
                           | condo for this driver | for the deliveries for this driver.
     -----------------------------------------------------------------------------------------------------
-    RESTAURANT
+    RESTAURANT            | Composite             |
      .ADDRESS             |                       | Routed Workflow, Address field
       - - - - - - - - - - | - - - - - - - - - - - | - - - - - - - - - - - - - - - - - - - - - - - - - - -
      .NAME                |                       | Routed Workflow, Restaurants field
@@ -127,7 +148,7 @@ The following input variables may be used in a post:
       - - - - - - - - - - | - - - - - - - - - - - | - - - - - - - - - - - - - - - - - - - - - - - - - - -
      .ORDERS              | # of orders to pickup | Routed Workflow, #orders field
     -----------------------------------------------------------------------------------------------------
-    CONSUMER
+    CONSUMER              | Composite             |
       .NAME               |                       | Routed Workflow, Name field
       - - - - - - - - - - | - - - - - - - - - - - | - - - - - - - - - - - - - - - - - - - - - - - - - - -
       .USER_NAME          |                       | Routed Workflow, User Name field
@@ -161,7 +182,7 @@ NOTE: we need the dispatcher info in the routed workflow sheet
       and a convention for how to distinguish it.
 Note: the CONSUMER composite variable is sometimes shown as C.
 
-4) Please note the following optional developments:
+5) Please note the following optional developments:
 
 * the order of the Pickup matrix would, optionally, best follow the restaurant order rather than 
 the deliveries order, since the driver will use it at pickup time. This is a minor option.

@@ -16,7 +16,7 @@
     ],
     [
       2,
-      "[Header]\n\nDriver's run for: @${DRIVER}\n\n**Please reply to this thread when you begin your run!**\n**Your run starts at  ${FIRST_RESTAURANT} at  ${RESTAURANT_START_TIME}**\n\nAny problem, any issue: call or text @MichelThouati 262.434.0554. He is a phone call/text away."
+      "[Header]\n\nDriver's run for: @${DRIVER}\n\n**Please reply to this thread when you begin your run!**\n**Your run starts at  ${FIRST_RESTAURANT} at  ${RESTAURANT_START_TIME}**\n\nAny problem, any issue: call or text @AloyisiusHutchinsonIII-Esq-Ltd 123.456.7890. He is a phone call/text away."
     ],
     [
       3,
@@ -24,7 +24,7 @@
     ],
     [
       4,
-      "[Restaurants]\n\n**Restaurants**\n\nPlease go to every restaurant, in the sequence listed below, even if there are no pickups, in order to take pictures of the delivery form for the next day.\n\n|Address|Details|Restaurants|#orders|\n|---|---|---|---|\n|${RESTAURANT.ADRESS}|${RESTAURANT.DETAILS}|${RESTAURANT.NAME}|${RESTAURANT.ORDERS}|"
+      "[Restaurants]\n\n**Restaurants**\n\nPlease go to every restaurant, in the sequence listed below, even if there are no pickups, in order to take pictures of the delivery form for the next day.\n\n|Address|Details|Restaurants|#orders|\n|---|---|---|---|\n|${RESTAURANT.ADDRESS}|${RESTAURANT.DETAILS}|${RESTAURANT.NAME}|${RESTAURANT.ORDERS}|"
     ],
     [
       5,

@@ -33,8 +33,10 @@ public class DriverPostTest extends TestBase {
     public void parseTest() throws IOException, InterruptedException, CsvValidationException {
 
         String routedDeliveries = readResourceFile("routed-deliveries.csv");
-        DriverPostFormat driverPostFormat = new DriverPostFormat(createApiSimulator(), routedDeliveries);
+        DriverPostFormat driverPostFormat =
+                new DriverPostFormat(createApiSimulator(), routedDeliveries);
 
+        driverPostFormat.generate();
         System.out.println(driverPostFormat);
     }
 }
