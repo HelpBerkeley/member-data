@@ -57,53 +57,42 @@ public class RestaurantTest extends TestBase {
         assertThat(restaurants).containsOnlyKeys(expectedRestaurants);
 
         Restaurant restaurant = restaurants.get("Cafe Raj");
-        assertThat(restaurant.getDetails()).isEmpty();
         assertThat(restaurant.getRoute()).isEqualTo("Solano Route");
         assertThat(restaurant.getStartTime()).isEqualTo("5:10 PM");
 
         restaurant = restaurants.get("Kim's");
-        assertThat(restaurant.getDetails()).isEmpty();
         assertThat(restaurant.getRoute()).isEqualTo("Solano Route");
         assertThat(restaurant.getStartTime()).isEqualTo("5:10 PM");
 
         restaurant = restaurants.get("Talavera");
-        assertThat(restaurant.getDetails()).isEmpty();
         assertThat(restaurant.getRoute()).isEqualTo("Solano Route");
         assertThat(restaurant.getStartTime()).isEqualTo("5:00 PM");
 
         restaurant = restaurants.get("Sweet Basil");
-        assertThat(restaurant.getDetails()).isEmpty();
         assertThat(restaurant.getRoute()).isEqualTo("Solano Route");
         assertThat(restaurant.getStartTime()).isEqualTo("5:10 PM");
 
         restaurant = restaurants.get("Bopshop");
-        assertThat(restaurant.getDetails()).isEmpty();
         assertThat(restaurant.getRoute()).isEqualTo("Solano Route");
         assertThat(restaurant.getStartTime()).isEqualTo("5:10 PM");
 
         restaurant = restaurants.get("Jot Mahal");
-        assertThat(restaurant.getDetails()).isEmpty();
         assertThat(restaurant.getRoute()).isEqualTo("Shattuck Route");
         assertThat(restaurant.getStartTime()).isEqualTo("5:10 PM");
 
         restaurant = restaurants.get("Da Lian");
-        assertThat(restaurant.getDetails()).isEmpty();
         assertThat(restaurant.getRoute()).isEqualTo("Shattuck Route");
         assertThat(restaurant.getStartTime()).isEqualTo("5:20 PM");
 
         restaurant = restaurants.get("Thai Delight");
-        assertThat(restaurant.getDetails()).isEmpty();
         assertThat(restaurant.getRoute()).isEqualTo("Shattuck Route");
         assertThat(restaurant.getStartTime()).isEqualTo("5:10 PM");
 
         restaurant = restaurants.get("V & A Cafe");
-        assertThat(restaurant.getDetails()).isEqualTo(
-            "immediately E (uphill) of Etcheverry Hall, right against building");
         assertThat(restaurant.getRoute()).isEqualTo("Shattuck Route");
-        assertThat(restaurant.getStartTime()).isEqualTo("4:55 PM");
+        assertThat(restaurant.getStartTime()).isEqualTo("4:50 PM");
 
         restaurant = restaurants.get("Kaze Ramen");
-        assertThat(restaurant.getDetails()).isEmpty();
         assertThat(restaurant.getRoute()).isEqualTo("Shattuck Route");
         assertThat(restaurant.getStartTime()).isEqualTo("5:10 PM");
     }

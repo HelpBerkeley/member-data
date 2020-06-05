@@ -1,0 +1,46 @@
+{
+  "success": true,
+  "errors": [],
+  "duration": 0.7,
+  "result_count": 8,
+  "params": {},
+  "columns": [
+    "post_number",
+    "raw"
+  ],
+  "default_limit": 1000,
+  "rows": [
+    [
+      1,
+      "Control post"
+    ],
+    [
+      2,
+      "[Header]\n\nDriver's run for: @${DRIVER}\n\n**Please reply to this thread when you begin your run!**\n**Your run starts at  ${FIRST_RESTAURANT} at  ${RESTAURANT_START_TIME}**\n\nAny problem, any issue: call or text @MichelThouati 262.434.0554. He is a phone call/text away."
+    ],
+    [
+      3,
+      "[Special instructions]\n\nIF ${ANY_CONDO} THEN\n{\nYou have a condo on your run! Please be aware we have special delivering instructions and they are:  **(1) Before departing the previous delivery destination, we MUST call the upcoming condo customer**  and let her know when we are due, and to wait at street level;  **(2)**  We do not walk up to the apartment/condo unit;  **(3)**  When you arrive, ask her to maintain a 6 ft distance if necessary, leave the food a safe distance from the customer and walk away, wishing the customer a good day;  **(4)**  If she is not waiting when you arrive call again and wait three minutes;  **(5)**  If she is not down within three minutes (whether she ever picked up or not), we leave the food bag in the lobby, otherwise at the lobby front door, then we call again and explain that we left the food bag.\n}"
+    ],
+    [
+      4,
+      "[Restaurants]\n\n**Restaurants**\n\nPlease go to every restaurant, in the sequence listed below, even if there are no pickups, in order to take pictures of the delivery form for the next day.\n\n|Address|Details|Restaurants|#orders|\n|---|---|---|---|\n|${RESTAURANT.ADRESS}|${RESTAURANT.DETAILS}|${RESTAURANT.NAME}|${RESTAURANT.ORDERS}|"
+    ],
+    [
+      5,
+      "[Pickup]\n\n**Detailed orders** (in order of deliveries):\n\n|Name|User Name|Restaurants|normal|veggie|\n|---|---|---|---|---|---|---|\n|${C.NAME}|${C.USER_NAME}|${C.RESTAURANT}|${C.NORMAL}|${C.VEGGIE}|"
+    ],
+    [
+      6,
+      "[Deliveries]\n\n**Deliveries** (user names, if needed, are listed above):\n\n|Name|Phone #|Phone2 #|City|Address|Condo|Details|\n| --- | --- | --- | --- | --- | --- | --- |\n|${C.NAME}|${C.PHONE}|${C.ALT_PHONE}|${C.CITY}|${C.ADDRESS}|${C.CONDO}|${C.DETAILS}|"
+    ],
+    [
+      7,
+      "[Itinerary]\n\n**GMap static URL :**  ${GMAP_URL}"
+    ],
+    [
+      8,
+      "[Tips]\n\nSome tips–read carefully:\n\n* First and foremost thank you for helping serve our COVID-vulnerable neighbors in Berkeley(plus)\n* The Five Must-Haves: Well-charged phone, gloves, clean food boxes, mask, social distancing\n* Before setting off, use your phone to open the email message you received for this run (it will save a cached version in the event you lose cellular connectivity during your run)\n* when using static GMAP URL, you might need to press Continue to go from waypoint to waypoint\n* **remember to arrive at the first restaurant on time**\n* always take a pic in portrait mode (not landscape)\n* remember to take 2 pictures of delivery form right when you arrive at the restaurant, to make sure there are no important missing parts to the pic\n  * **Cafe Raj: make sure to ask them if the delivery form is tomorrow’s orders (rather than today)**\n* make sure your pics include ALL THE INFO we need, including restaurant name at the top\n* verify that all bags are labeled if there is more than one order. If not, ask.\n  * Cafe Raj, Noodle Fresh, and Talavera sometimes forget\n* remember that some consumers may order from more than one restaurant. They are listed in your form above\n* remember to call consumers, after dropping off, from your car while parked on the street next to their house\n* remember to discard gloves, sanitize box, and thoroughly wash hands when coming home\n* **remember to upload right away the delivery forms by replying to this thread: we are waiting for them to start laying out tomorrow’s driver runs.**\n* Please write up a quick post of what did not go well, and suggestions on how to prepare the runs better. Let us know when you completed your run."
+    ]
+  ]
+}

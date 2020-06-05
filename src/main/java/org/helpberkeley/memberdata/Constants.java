@@ -36,6 +36,7 @@ public class Constants {
     public static final int QUERY_EMAIL_CONFIRMATIONS = 15;
     public static final int QUERY_GET_EMAILS = 11;
     public static final int QUERY_GET_DELIVERY_DETAILS = 17;
+    public static final int QUERY_GET_DRIVERS_POST_FORMAT = 19;
 
     public static final String COLUMN_ID = "id";
     public static final String COLUMN_NAME = "name";
@@ -64,9 +65,12 @@ public class Constants {
     public static final String WORKFLOW_USER_NAME_COLUMN = "User Name";
     public static final String WORKFLOW_PHONE_COLUMN = "Phone #";
     public static final String WORKFLOW_ALT_PHONE_COLUMN = "Phone2 #";
+    public static final String WORKFLOW_CITY_COLUMN = "City";
+    public static final String WORKFLOW_ADDRESS_COLUMN = "Address";
+    public static final String WORKFLOW_CONDO_COLUMN = "Condo";
     public static final String WORKFLOW_DETAILS_COLUMN = "Details";
-    public static final String WORKFLOW_VEGGIE_COLUMN = "Veggie";
-    public static final String WORKFLOW_NORMAL_COLUMN = "Normal";
+    public static final String WORKFLOW_VEGGIE_COLUMN = "veggie";
+    public static final String WORKFLOW_NORMAL_COLUMN = "normal";
     public static final String WORKFLOW_RESTAURANTS_COLUMN = "Restaurants";
     public static final String WORKFLOW_ORDERS_COLUMN = "#orders";
 

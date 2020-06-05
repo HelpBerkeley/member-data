@@ -140,8 +140,15 @@ Example Shattuck Address row - FALSE,,,,,,,,"2521 Hearst Ave, Berkeley, CA 94709
 Example Solano Route row - Solano Route,,,,,,,,Closed Mondays,,,Kim's,,,5:10 PM
 Example Shattuck Route row - Shattuck Route,,Closes right at 5:00pm,,,,,,,,,V & A Cafe,,,4:55 PM
 
+Routed Workflow
+---------------
+
+Location:      Closet/HushWorkflow
+Link:          https://go.helpberkeley.org/t/software-input-restaurant-template/1860/1
+Schema Used:   Workflow data
+
 Inreach consumer data
-------------------
+---------------------
 
 Posting type:  Reply, containing attached CSV file 
 Sort type:     Create date

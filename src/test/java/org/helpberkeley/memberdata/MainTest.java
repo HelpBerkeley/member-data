@@ -234,10 +234,4 @@ public class MainTest extends TestBase {
         assertThat(files).hasSize(1);
         return files[0].getName();
     }
-
-    @Test
-    public void deliveryDetailsTest() throws IOException, InterruptedException, CsvException {
-        String[] args = { Options.COMMAND_GET_DELIVERY_DETAILS };
-        Main.main(args);
-    }
 }

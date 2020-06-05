@@ -22,49 +22,21 @@
  */
 package org.helpberkeley.memberdata;
 
-import java.util.List;
+public class DriverPost {
 
-public class Driver {
+    private final Driver driver;
+    private final StringBuilder outputBuilder = new StringBuilder();
 
-    private final String userName;
-    private final String gMapURL;
-    private boolean hasCondo;
-    private final List<Restaurant> pickups;
-    private final List<Delivery> deliveries;
-
-    Driver(final String userName, List<Restaurant> pickups, List<Delivery> deliveries, final String gmapURL) {
-        this.userName = userName;
-        this.pickups = pickups;
-        this.deliveries = deliveries;
-        this.gMapURL = gmapURL;
-
-        boolean condo = false;
-        for (Delivery delivery : deliveries) {
-            if (delivery.isCondo()) {
-                condo = true;
-                break;
-            }
-        }
-        this.hasCondo = condo;
+    DriverPost(Driver driver) {
+        this.driver = driver;
     }
 
-    public String getUserName() {
-        return userName;
+    String generate() {
+        header();
+        return outputBuilder.toString();
     }
 
-    public String getgMapURL() {
-        return gMapURL;
-    }
+    private void header() {
 
-    public boolean hasCondo() {
-        return hasCondo;
-    }
-
-    public List<Restaurant> getPickups() {
-        return pickups;
-    }
-
-    public List<Delivery> getDeliveries() {
-        return deliveries;
     }
 }

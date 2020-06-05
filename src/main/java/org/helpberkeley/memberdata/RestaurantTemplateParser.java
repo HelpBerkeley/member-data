@@ -127,12 +127,6 @@ public class RestaurantTemplateParser {
             assert ! name.isEmpty() : "missing restaurant name, line " +  csvReader.getLinesRead();
             assert (! restaurants.containsKey(name)) :
                     name + ", line " + csvReader.getLinesRead() + ", has already been seen";
-
-            Restaurant restaurant = new Restaurant(name);
-            String details = rowMap.get(Constants.WORKFLOW_DETAILS_COLUMN);
-            restaurant.setDetails(details);
-
-            restaurants.put(restaurant.getName(), restaurant);
         }
     }
 
@@ -158,12 +152,11 @@ public class RestaurantTemplateParser {
                     routeName + ", line " + csvReader.getLinesRead() + ", missing start time";
 
 
-            Restaurant restaurant = restaurants.get(restaurantName);
-            assert restaurant != null :
-                    restaurantName + ", line " + csvReader.getLinesRead() + ", missing from address block";
+            assert ! restaurants.containsKey(restaurantName) : restaurantName + " appears twice in route block";
+            Restaurant restaurant = new Restaurant(restaurantName);
+            restaurants.put(restaurantName, restaurant);
             restaurant.setRoute(routeName);
             restaurant.setStartTime(startTime);
-
         } while ((rowMap = csvReader.readMap()) != null);
     }
 

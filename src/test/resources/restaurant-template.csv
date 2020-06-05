@@ -1,8 +1,8 @@
 Consumer,Driver,Name,User Name,Phone #,Phone2 #,Neighborhood,City,Address,Condo,Details,Restaurants,normal,veggie,#orders
 FALSE,TRUE,,,,,,,,,,,,,
 FALSE,,,,,,,,"1158 Solano Ave, Albany",FALSE,,Cafe Raj,,,
-FALSE,,,,,,,,"1309 Solano Ave, Albany",FALSE,,Kim's,,,
-FALSE,,,,,,,,"1561 Solano Ave, Berkeley",FALSE,,Talavera,,,
+FALSE,,,,,,,,"1309 Solano Ave, Albany",FALSE,"Pale yellow awning, E of the BART tracks.",Kim's,,,
+FALSE,,,,,,,,"1561 Solano Ave, Berkeley",FALSE,You may have to park across the street.,Talavera,,,
 FALSE,,,,,,,,"1736 Solano Ave, Berkeley",FALSE,,Sweet Basil,,,
 FALSE,,,,,,,,"1823 Solano Ave, Berkeley",FALSE,,Bopshop,,,
 ,,,,,,,,,,,,,,
@@ -20,10 +20,8 @@ Solano Route,,,,,,,,Closed Mondays,,,Kim's,,,5:10 PM
 Solano Route,,,,,,,,,,,Talavera,,,5:00 PM
 Solano Route,,,,,,,,,,,Sweet Basil,,,5:10 PM
 Solano Route,,,,,,,,,,,Bopshop,,,5:10 PM
-,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,
 Shattuck Route,,,,,,,,,,,Jot Mahal,,,5:10 PM
 Shattuck Route,,"Note: 5:15pm for 1 order, 5:20pm for more",,,,,,Closed Mondays,,,Da Lian,,,5:20 PM
 Shattuck Route,,,,,,,,Closed Wednesdays,,,Thai Delight,,,5:10 PM
-Shattuck Route,,Closes right at 5:00pm,,,,,,,,,V & A Cafe,,,4:55 PM
+Shattuck Route,,"Closes right at 5:00pm. On weekend, don't send a driver if no orders to pickup (they will text us an order sheet and won't be at the restaurant).",,,,,,,,,V & A Cafe,,,4:50 PM
 Shattuck Route,,,,,,,,,,,Kaze Ramen,,,5:10 PM

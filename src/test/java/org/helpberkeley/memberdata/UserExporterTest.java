@@ -198,6 +198,7 @@ public class UserExporterTest extends TestBase {
         assertThat(columns[index++]).isEqualTo(String.valueOf(u1.isOutReach()));
         assertThat(columns[index++]).isEqualTo(String.valueOf(u1.isMarketing()));
         assertThat(columns[index++]).isEqualTo(String.valueOf(u1.isModerator()));
+        //noinspection UnusedAssignment
         assertThat(columns[index++]).isEqualTo(String.valueOf(u1.isWorkflow()));
     }
 
@@ -266,6 +267,7 @@ public class UserExporterTest extends TestBase {
         assertThat(headerColumns[index++]).isEqualTo(User.SHORT_COORDINATOR_COLUMN);
         assertThat(headerColumns[index++]).isEqualTo(User.SHORT_ADMIN_COLUMN);
         assertThat(headerColumns[index++]).isEqualTo(User.SHORT_CONSUMER_REQUEST_COLUMN);
+        //noinspection UnusedAssignment
         assertThat(headerColumns[index++]).isEqualTo(User.SHORT_VOLUNTEER_REQUEST_COLUMN);
 
         // FIX THIS, DS: use CSVReader
@@ -303,6 +305,7 @@ public class UserExporterTest extends TestBase {
         assertThat(columns[index++]).isEqualTo(String.valueOf(u1.isCoordinator()));
         assertThat(columns[index++]).isEqualTo(String.valueOf(u1.isAdmin()));
         assertThat(columns[index++]).isEqualTo(String.valueOf(u1.hasConsumerRequest()));
+        //noinspection UnusedAssignment
         assertThat(columns[index++]).isEqualTo(u1.getVolunteerRequest());
     }
 

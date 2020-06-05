@@ -109,6 +109,9 @@ public class HttpClientSimulator extends HttpClient {
             case Constants.QUERY_GET_DELIVERY_DETAILS:
                 dataFile = "delivery-details.json";
                 break;
+            case Constants.QUERY_GET_DRIVERS_POST_FORMAT:
+                dataFile = "driver-format-topic.json";
+                break;
             default:
                 throw new RuntimeException("FIX THIS: query " + queryId + " not supported by the simulator");
         }

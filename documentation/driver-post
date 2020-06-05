@@ -1,5 +1,5 @@
 Automated Driver's Run Post Design
-Version 1.0.2
+Version 1.0.3
 
 Motivation
 ==========
@@ -123,8 +123,7 @@ The following input variables may be used in a post:
       - - - - - - - - - - | - - - - - - - - - - - | - - - - - - - - - - - - - - - - - - - - - - - - - - -
      .NAME                |                       | Routed Workflow, Restaurants field
       - - - - - - - - - - | - - - - - - - - - - - | - - - - - - - - - - - - - - - - - - - - - - - - - - -
-     .DETAILS             |                       | Restaurant Template
-                          |                       | Matching Restaurant Address row, Details field
+     .DETAILS             |                       | Routed Workflow, Details field
       - - - - - - - - - - | - - - - - - - - - - - | - - - - - - - - - - - - - - - - - - - - - - - - - - -
      .ORDERS              | # of orders to pickup | Routed Workflow, #orders field
     -----------------------------------------------------------------------------------------------------
@@ -240,9 +239,9 @@ Please go to every restaurant, in the sequence listed below, even if there are n
 
 **Deliveries**
 
-|Name|User Name|Phone #|Phone2 #|City|Address|Condo|Restaurants|normal|veggie|
-|---|---|---|---|---|---|---|---|---|---|
-|${C.NAME}|${C.USER_NAME}|${C.PHONE}|${C.ALT_PHONE}|${C.CITY}|${C.ADDRESS}|${C.CONDO}|${C.RESTAURANT}|${C.NORMAL}|${C.VEGGIE}|
+|Name|Phone #|Phone2 #|City|Address|Condo|Details|
+|---|---|---|---|---|---|---|---|---|
+|${C.NAME}|${C.PHONE}|${C.ALT_PHONE}|${C.CITY}|${C.ADDRESS}|${C.CONDO}|${C.DETAILS}|
 -----------------------------------------------------------------------------------------------------
 [Itinerary]
 

@@ -24,9 +24,11 @@ package org.helpberkeley.memberdata;
 
 public class Restaurant {
     private final String name;
-    private String startTime;
-    private String details;
-    private String route;
+    private String address = "";
+    private String startTime = "";
+    private String details = "";
+    private String route = "";
+    private String orders = "";
 
     Restaurant(final String name) {
         this.name = name;
@@ -40,6 +42,12 @@ public class Restaurant {
     }
     void setRoute(final String route) {
         this.route = route;
+    }
+    void setAddress(final String address) {
+        this.address = address;
+    }
+    void setOrders(final String orders) {
+        this.orders = orders;
     }
 
     String getName() {
@@ -56,5 +64,13 @@ public class Restaurant {
 
     String getDetails() {
         return details;
+    }
+
+    String getAddress() {
+        return address;
+    }
+
+    String getOrders() {
+        return orders;
     }
 }

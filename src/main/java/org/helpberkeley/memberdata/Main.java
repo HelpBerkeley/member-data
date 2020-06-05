@@ -87,6 +87,7 @@ public class Main {
     static final long ORDER_HISTORY_POST_ID = 6433;
     static final long RESTAURANT_TEMPLATE_POST_ID = 8664;
     static final long DELIVERY_DETAILS_TOPIC_ID = 1818;
+    static final long DRIVERS_POST_FORMAT_TOPIC_ID = 1967;
 
     public static void main(String[] args) throws IOException, InterruptedException, CsvException {
 
@@ -110,9 +111,6 @@ public class Main {
                 break;
             case Options.COMMAND_GET_ORDER_HISTORY:
                 getOrderHistory(apiClient);
-                break;
-            case Options.COMMAND_GET_DELIVERY_DETAILS:
-                getDeliveryDetails(apiClient);
                 break;
             case Options.COMMAND_MERGE_ORDER_HISTORY:
                 mergeOrderHistory(apiClient, options.getFileName(),
@@ -418,13 +416,6 @@ public class Main {
     static void getDailyDeliveryPosts(ApiClient apiClient) throws IOException, InterruptedException {
         List<DeliveryData> deliveryPosts = DeliveryData.deliveryPosts(apiClient);
         new DeliveryDataExporter(deliveryPosts).deliveryPostsToFile(DELIVERY_POSTS_FILE);
-    }
-
-    // FIX THIS, DS: remove?
-    static void getDeliveryDetails(ApiClient apiClient) throws IOException, InterruptedException {
-        String json = apiClient.runQuery(Constants.QUERY_GET_DELIVERY_DETAILS);
-        ApiQueryResult apiQueryResult = Parser.parseQueryResult(json);
-        Map<String, String> deliveryDetails = Parser.deliveryDetails(apiQueryResult);
     }
 
     static void mergeOrderHistory(ApiClient apiClient, final String usersFile,

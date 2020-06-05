@@ -22,49 +22,19 @@
  */
 package org.helpberkeley.memberdata;
 
-import java.util.List;
+import com.opencsv.exceptions.CsvValidationException;
+import org.junit.Test;
 
-public class Driver {
+import java.io.IOException;
 
-    private final String userName;
-    private final String gMapURL;
-    private boolean hasCondo;
-    private final List<Restaurant> pickups;
-    private final List<Delivery> deliveries;
+public class DriverPostTest extends TestBase {
 
-    Driver(final String userName, List<Restaurant> pickups, List<Delivery> deliveries, final String gmapURL) {
-        this.userName = userName;
-        this.pickups = pickups;
-        this.deliveries = deliveries;
-        this.gMapURL = gmapURL;
+    @Test
+    public void parseTest() throws IOException, InterruptedException, CsvValidationException {
 
-        boolean condo = false;
-        for (Delivery delivery : deliveries) {
-            if (delivery.isCondo()) {
-                condo = true;
-                break;
-            }
-        }
-        this.hasCondo = condo;
-    }
+        String routedDeliveries = readResourceFile("routed-deliveries.csv");
+        DriverPostFormat driverPostFormat = new DriverPostFormat(createApiSimulator(), routedDeliveries);
 
-    public String getUserName() {
-        return userName;
-    }
-
-    public String getgMapURL() {
-        return gMapURL;
-    }
-
-    public boolean hasCondo() {
-        return hasCondo;
-    }
-
-    public List<Restaurant> getPickups() {
-        return pickups;
-    }
-
-    public List<Delivery> getDeliveries() {
-        return deliveries;
+        System.out.println(driverPostFormat);
     }
 }

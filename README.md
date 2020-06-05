@@ -3,7 +3,7 @@ member-data
 A program to fetch member-data from helpberkeley.org, and post information
 about it to back to topics on the site.
 
-Currently the site postings are designed for assisting restaurant order
+Currently, the site postings are designed to assist restaurant order
 data reconciliation, driver dispatcher, and administrative member
 data tasks.
 
