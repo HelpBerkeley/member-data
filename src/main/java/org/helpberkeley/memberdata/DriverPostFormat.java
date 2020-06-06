@@ -38,7 +38,8 @@ public class DriverPostFormat {
     private static final Logger LOGGER = LoggerFactory.getLogger(DriverPostFormat.class);
 
     private final ApiClient apiClient;
-    private final List<Block> blocks = new ArrayList<>();
+    private final List<Section> driverPostSections = new ArrayList<>();
+    private final List<Section> groupInstructionSections = new ArrayList<>();
     private List<Driver> drivers;
     private final Pattern compositeVariableRE;
     private Map<String, Restaurant> restaurants;
@@ -48,24 +49,26 @@ public class DriverPostFormat {
         this.apiClient = apiClient;
         compositeVariableRE = Pattern.compile("\\$\\{[A-Z_]+\\.[A-Z_]+\\}");
         loadRestaurantTemplate();
-        loadFormatTopic();
+        loadDriverPostFormat();
+        loadGroupPostFormat();
         loadRoutedDeliveries(routedDeliveries);
     }
 
-    void generate() {
+    List<String> generateDriverPosts() {
 
+        List<String> driverPosts = new ArrayList<>();
         for (Driver driver : drivers) {
             StringBuilder post = new StringBuilder();
 
-            for (Block block : blocks) {
+            for (Section section : driverPostSections) {
 
-                if (block.hasConditional) {
-                    if (! evaluateCondition(driver, block.conditionalVariableName)) {
+                if (section.hasConditional) {
+                    if (! evaluateCondition(driver, section.conditionalVariableName)) {
                         continue;
                     }
                 }
 
-                for (String line : block.contents.split("\n", -1)) {
+                for (String line : section.contents.split("\n", -1)) {
                     Matcher matcher = compositeVariableRE.matcher(line);
 
                     if (matcher.find()) {
@@ -76,8 +79,55 @@ public class DriverPostFormat {
                 }
             }
 
-            System.out.println(post.toString());
+            driverPosts.add(post.toString());
         }
+
+        return driverPosts;
+    }
+
+    String generateGroupInstructionsPost() {
+
+        StringBuilder post = new StringBuilder();
+
+        for (Section section : groupInstructionSections) {
+            if (section.name.equals("thread title for reply")) {
+                // FIX THIS, DS: implement
+            }
+            // FIX THIS, DS: need to extend macro language to handle this section.
+            //               currently hardwired here.
+            else if (section.name.equals("header")) {
+                post.append(generateGroupInstructionHeader());
+            } else {
+                post.append(section.contents);
+            }
+        }
+
+        return post.toString();
+    }
+
+    private String generateGroupInstructionHeader() {
+
+        StringBuilder header = new StringBuilder();
+
+        header.append("Hi all!\n");
+        header.append("\n");
+
+        for (Driver driver : drivers) {
+            String firstRestaurant = driver.getFirstRestaurantName();
+            Restaurant restaurant = restaurants.get(firstRestaurant);
+            assert restaurant != null : restaurant + " was not found the in restaurant template post";
+            String startTime = restaurant.getStartTime();
+
+            header.append("**@");
+            header.append(driver.getUserName());
+            header.append( " your run starts at ");
+            header.append(firstRestaurant);
+            header.append(" at ");
+            header.append(startTime);
+            header.append("**\n");
+        }
+
+        return header.toString();
     }
 
     private void loadRestaurantTemplate() throws IOException, InterruptedException, CsvValidationException {
@@ -88,7 +138,7 @@ public class DriverPostFormat {
         restaurants = parser.restaurants();
     }
 
-    private void loadFormatTopic() throws IOException, InterruptedException {
+    private void loadDriverPostFormat() throws IOException, InterruptedException {
         String json = apiClient.runQuery(Constants.QUERY_GET_DRIVERS_POST_FORMAT);
         ApiQueryResult apiQueryResult = Parser.parseQueryResult(json);
 
@@ -100,21 +150,51 @@ public class DriverPostFormat {
             // Normalize EOL
             String raw = ((String)columns[1]).replaceAll("\\r\\n?", "\n");
 
-            // Look for block name of the form:
-            // [This is the block name]\n
+            // Look for section name of the form:
+            // [This is the section name]\n
             String pattern = "^\\[([A-Za-z0-9 ]+)\\]";
 
             Pattern re = Pattern.compile(pattern);
             Matcher match = re.matcher(raw);
 
             if (! match.find()) {
-                LOGGER.warn("Cannot find block name in {}", raw);
+                LOGGER.warn("Cannot find section name in {}", raw);
                 continue;
             }
 
-            String blockName = match.group(1);
-            String blockContents = raw.substring(match.end());
-            blocks.add(new Block(raw, blockName, blockContents));
+            String sectionName = match.group(1);
+            String sectionContents = raw.substring(match.end());
+            driverPostSections.add(new Section(raw, sectionName, sectionContents));
+        }
+    }
+
+    private void loadGroupPostFormat() throws IOException, InterruptedException {
+        String json = apiClient.runQuery(Constants.QUERY_GET_GROUP_INSTRUCTIONS_FORMAT);
+        ApiQueryResult apiQueryResult = Parser.parseQueryResult(json);
+
+        for (Object rowObj : apiQueryResult.rows) {
+            Object[] columns = (Object[]) rowObj;
+            assert columns.length == 2 : columns.length;
+
+            Long id = ((Long)columns[0]);
+            // Normalize EOL
+            String raw = ((String)columns[1]).replaceAll("\\r\\n?", "\n");
+
+            // Look for section name of the form:
+            // [This is the section name]\n
+            String pattern = "^\\[([A-Za-z0-9 ]+)\\]";
+
+            Pattern re = Pattern.compile(pattern);
+            Matcher match = re.matcher(raw);
+
+            if (! match.find()) {
+                LOGGER.warn("Cannot find section name in {}", raw);
+                continue;
+            }
+
+            String sectionName = match.group(1);
+            String sectionContents = raw.substring(match.end());
+            groupInstructionSections.add(new Section(raw, sectionName, sectionContents));
         }
     }
 
@@ -197,14 +277,14 @@ public class DriverPostFormat {
         return processedLine;
     }
 
-    private static class Block {
+    private static class Section {
         final String raw;
         final String name;
         final String contents;
         boolean hasConditional;
         String conditionalVariableName;
 
-        Block(final String raw, final String name, final String contents) {
+        Section(final String raw, final String name, final String contents) {
             this.raw = raw;
             this.name = name;
             checkForConditional(contents.trim());

@@ -26,17 +26,39 @@ import com.opencsv.exceptions.CsvValidationException;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.util.List;
 
 public class DriverPostTest extends TestBase {
 
     @Test
     public void parseTest() throws IOException, InterruptedException, CsvValidationException {
+        String routedDeliveries = readResourceFile("routed-deliveries.csv");
+        DriverPostFormat driverPostFormat =
+                new DriverPostFormat(createApiSimulator(), routedDeliveries);
+    }
 
+    @Test
+    public void generateDriverPostsTest() throws IOException, CsvValidationException, InterruptedException {
         String routedDeliveries = readResourceFile("routed-deliveries.csv");
         DriverPostFormat driverPostFormat =
                 new DriverPostFormat(createApiSimulator(), routedDeliveries);
 
-        driverPostFormat.generate();
-        System.out.println(driverPostFormat);
+        List<String> posts = driverPostFormat.generateDriverPosts();
+
+        for (String post : posts) {
+            System.out.println(post);
+            System.out.println("=====================================================================");
+        }
+    }
+
+    @Test
+    public void generateGroupInstructionsPostTest() throws IOException, CsvValidationException, InterruptedException {
+        String routedDeliveries = readResourceFile("routed-deliveries.csv");
+        DriverPostFormat driverPostFormat =
+                new DriverPostFormat(createApiSimulator(), routedDeliveries);
+
+        String post = driverPostFormat.generateGroupInstructionsPost();
+        System.out.println(post);
+
     }
 }

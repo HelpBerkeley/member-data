@@ -37,6 +37,7 @@ public class Constants {
     public static final int QUERY_GET_EMAILS = 11;
     public static final int QUERY_GET_DELIVERY_DETAILS = 17;
     public static final int QUERY_GET_DRIVERS_POST_FORMAT = 19;
+    public static final int QUERY_GET_GROUP_INSTRUCTIONS_FORMAT = 20;
 
     public static final String COLUMN_ID = "id";
     public static final String COLUMN_NAME = "name";
