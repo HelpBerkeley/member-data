@@ -28,14 +28,9 @@ import org.junit.Test;
 import java.io.IOException;
 import java.util.List;
 
-public class DriverPostTest extends TestBase {
+import static org.assertj.core.api.Assertions.assertThat;
 
-    @Test
-    public void parseTest() throws IOException, InterruptedException, CsvValidationException {
-        String routedDeliveries = readResourceFile("routed-deliveries.csv");
-        DriverPostFormat driverPostFormat =
-                new DriverPostFormat(createApiSimulator(), routedDeliveries);
-    }
+public class DriverPostTest extends TestBase {
 
     @Test
     public void generateDriverPostsTest() throws IOException, CsvValidationException, InterruptedException {
@@ -44,11 +39,28 @@ public class DriverPostTest extends TestBase {
                 new DriverPostFormat(createApiSimulator(), routedDeliveries);
 
         List<String> posts = driverPostFormat.generateDriverPosts();
+        assertThat(posts).hasSize(2);
 
-        for (String post : posts) {
-            System.out.println(post);
-            System.out.println("=====================================================================");
-        }
+        String post = posts.get(0);
+        assertThat(post).contains("@jbDriver");
+        assertThat(post).doesNotContain("You have a condo on your run!");
+        assertThat(post).contains("Talavera");
+        assertThat(post).contains("5:00 PM");
+        assertThat(post).contains("Sweet Basil");
+        assertThat(post).contains("Bopshop");
+        assertThat(post).contains("Cust Name 1");
+        assertThat(post).contains("Cust Name 2");
+        assertThat(post).contains("Cust Name 3");
+
+        post = posts.get(1);
+        assertThat(post).contains("@jsDriver");
+        assertThat(post).contains("You have a condo on your run!");
+        assertThat(post).contains("Cafe Raj");
+        assertThat(post).contains("5:10 PM");
+        assertThat(post).contains("Cust Name 4");
+        assertThat(post).contains("Cust Name 5");
+        assertThat(post).contains("Cust Name 6");
+        assertThat(post).contains("Cust Name 7");
     }
 
     @Test

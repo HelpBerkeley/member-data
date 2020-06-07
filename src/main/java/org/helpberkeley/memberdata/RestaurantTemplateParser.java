@@ -32,6 +32,7 @@ import java.util.Map;
 
 public class RestaurantTemplateParser {
 
+    static final String ERROR_NO_DATA = "empty restaurant template";
     private static final String ROUTE_MARKER = " Route";
 
     private final String csvData;
@@ -40,7 +41,9 @@ public class RestaurantTemplateParser {
     RestaurantTemplateParser(final String csvData) throws IOException {
         // Normalize EOL
         this.csvData = csvData.replaceAll("\\r\\n?", "\n");
-        assert ! csvData.isEmpty() : "empty restaurant template";
+        if (this.csvData.isEmpty()) {
+            throw new Error(ERROR_NO_DATA);
+        }
         csvReader = new CSVReaderHeaderAware(new StringReader(csvData));
     }
 

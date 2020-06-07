@@ -22,6 +22,7 @@
 package org.helpberkeley.memberdata;
 
 import com.opencsv.exceptions.CsvException;
+import com.opencsv.exceptions.CsvValidationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -163,6 +164,9 @@ public class Main {
                 break;
             case Options.COMMAND_WORKFLOW:
                 generateWorkflow(apiClient, options.getFileName());
+                break;
+            case Options.COMMAND_GENERATE_DRIVERS_POSTS:
+                generateDriversPosts(apiClient, options.getFileName());
                 break;
             default:
                 assert options.getCommand().equals(Options.COMMAND_POST_DRIVERS) : options.getCommand();
@@ -498,6 +502,21 @@ public class Main {
 
         String restaurantTemplate = apiClient.downloadFile(restaurantTemplatePost.uploadFile.fileName);
         new UserExporter(users).workflowToFile(restaurantTemplate, deliveryDetails, WORKFLOW_FILE);
+    }
+
+    static void generateDriversPosts(ApiClient apiClient, String workflowFile) throws IOException, CsvValidationException, InterruptedException {
+        String routedDeliveries = Files.readString(Paths.get(workflowFile));
+        DriverPostFormat driverPostFormat =
+                new DriverPostFormat(apiClient, routedDeliveries);
+
+        List<String> posts = driverPostFormat.generateDriverPosts();
+        for (String post : posts) {
+            System.out.println(post);
+            System.out.println("============================================");
+        }
+
+        String groupInstructionPost = driverPostFormat.generateGroupInstructionsPost();
+        System.out.println(groupInstructionPost);
     }
 }
 
