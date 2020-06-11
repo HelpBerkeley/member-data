@@ -38,13 +38,18 @@ public class RestaurantTemplateParser {
     private final String csvData;
     private final CSVReaderHeaderAware csvReader;
 
-    RestaurantTemplateParser(final String csvData) throws IOException {
+    RestaurantTemplateParser(final String csvData) {
         // Normalize EOL
         this.csvData = csvData.replaceAll("\\r\\n?", "\n");
+
         if (this.csvData.isEmpty()) {
-            throw new Error(ERROR_NO_DATA);
+            throw new MemberDataException(ERROR_NO_DATA);
         }
-        csvReader = new CSVReaderHeaderAware(new StringReader(csvData));
+        try {
+            csvReader = new CSVReaderHeaderAware(new StringReader(csvData));
+        } catch (IOException ex) {
+            throw new MemberDataException(ex);
+        }
     }
 
     private void auditRestaurantColumns() {
@@ -52,19 +57,28 @@ public class RestaurantTemplateParser {
         // FIX THIS, DS: implement
     }
 
-    Map<String, Restaurant> restaurants() throws IOException, CsvValidationException {
+    Map<String, Restaurant> restaurants() {
         Map<String, Restaurant> restaurants = new HashMap<>();
 
         Map<String, String> rowMap;
 
-        while ((rowMap = csvReader.readMap()) != null) {
-            if (isAddressBlockMarker(rowMap)) {
-                processAddressBlock(restaurants);
-            } else if (isRoute(rowMap)) {
-                processRouteBlock(rowMap, restaurants);
-            } else {
-                assert isEmptyRow(rowMap) : "Line " + csvReader.getLinesRead() + " is not empty";
+        try {
+            while ((rowMap = csvReader.readMap()) != null) {
+                if (isAddressBlockMarker(rowMap)) {
+                    processAddressBlock(restaurants);
+                } else if (isRoute(rowMap)) {
+                    processRouteBlock(rowMap, restaurants);
+                } else {
+                    if (! isEmptyRow(rowMap)){
+                        throw new MemberDataException(
+                            "Did not find empty row at line " + csvReader.getLinesRead()
+                            + " of the restaurant template");
+                    }
+                }
             }
+        } catch (IOException | CsvValidationException ex) {
+            throw new MemberDataException("Error at line " + csvReader.getLinesRead()
+                    + " of the restaurant template", ex);
         }
 
         return restaurants;

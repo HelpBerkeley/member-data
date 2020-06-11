@@ -82,6 +82,8 @@ public class RoutedDeliveriesParser {
 
         String driverUserName = rowMap.get(Constants.WORKFLOW_USER_NAME_COLUMN);
         assert !driverUserName.isEmpty() : "missing driver user name, line " + csvReader.getLinesRead();
+        String driverPhone = rowMap.get(Constants.WORKFLOW_PHONE_COLUMN);
+        assert !driverPhone.isEmpty() : "missing driver phone , line " + csvReader.getLinesRead();
 
         // Read 1 or more restaurant rows. Example:
         // FALSE,,,,,,,,"1561 Solano Ave, Berkeley",FALSE,,Talavera,,,0
@@ -98,7 +100,7 @@ public class RoutedDeliveriesParser {
         assert ! gmapURL.isEmpty() : "Driver " + driverUserName + " missing gmap URL";
         assert gmapURL.contains("https://") : "Driver " + driverUserName + " missing gmap URL";
 
-        return new Driver(driverUserName, restaurants, deliveries, gmapURL);
+        return new Driver(driverUserName, driverPhone, restaurants, deliveries, gmapURL);
     }
 
     List<Restaurant> processRestaurants() throws IOException, CsvValidationException {
@@ -183,109 +185,4 @@ public class RoutedDeliveriesParser {
         return deliveries;
 
     }
-
-//    /**
-//     * Is the passed in row the start of an restaurant address block?
-//     * @param rowMap Map of column names and values.
-//     * @return Whether or not the row is an address block start marker.
-//     */
-//    private boolean isAddressBlockMarker(final Map<String, String> rowMap) {
-//
-//        // An address block marker looks like:
-//        //    FALSE,TRUE,,,,,,,,,,,,,
-//        //
-//        return ((! Boolean.parseBoolean(rowMap.get(Constants.WORKFLOW_CONSUMER_COLUMN)))
-//                && Boolean.parseBoolean(rowMap.get(Constants.WORKFLOW_DRIVER_COLUMN))
-//                && rowMap.get(Constants.WORKFLOW_RESTAURANTS_COLUMN).isEmpty()
-//                && rowMap.get(Constants.WORKFLOW_ORDERS_COLUMN).isEmpty()
-//                && rowMap.get(Constants.WORKFLOW_DETAILS_COLUMN).isEmpty());
-//    }
-//
-//    /**
-//     * Is the passed in row empty?
-//     * @param rowMap Map of column names and values.
-//     * @return Whether or not the row is empty
-//     */
-//    private boolean isEmptyRow(final Map<String, String> rowMap) {
-//
-//        // An empty row looks like:
-//        //    ,,,,,,,,,,,,,,
-//        //
-//        return (rowMap.get(Constants.WORKFLOW_CONSUMER_COLUMN).isEmpty()
-//                && rowMap.get(Constants.WORKFLOW_DRIVER_COLUMN).isEmpty()
-//                && rowMap.get(Constants.WORKFLOW_RESTAURANTS_COLUMN).isEmpty()
-//                && rowMap.get(Constants.WORKFLOW_ORDERS_COLUMN).isEmpty()
-//                && rowMap.get(Constants.WORKFLOW_DETAILS_COLUMN).isEmpty());
-//    }
-//
-//    private void processAddressBlock(Map<String, Restaurant> restaurants) throws IOException, CsvValidationException {
-//
-//        Map<String, String> rowMap;
-//
-//        while ((rowMap = csvReader.readMap()) != null) {
-//            if (isEmptyRow(rowMap)) {
-//                return;
-//            }
-//
-//            String name = rowMap.get(Constants.WORKFLOW_RESTAURANTS_COLUMN);
-//            assert ! name.isEmpty() : "missing restaurant name, line " +  csvReader.getLinesRead();
-//            assert (! restaurants.containsKey(name)) :
-//                    name + ", line " + csvReader.getLinesRead() + ", has already been seen";
-//
-//            Restaurant restaurant = new Restaurant(name);
-//            String details = rowMap.get(Constants.WORKFLOW_DETAILS_COLUMN);
-//            restaurant.setDetails(details);
-//
-//            restaurants.put(restaurant.getName(), restaurant);
-//        }
-//    }
-//
-//    private void processRouteBlock(
-//            Map<String, String> rowMap,
-//            Map<String, Restaurant> restaurants) throws IOException, CsvValidationException {
-//
-//        // FIX THIS, DS: need to maintain restaurant route order
-//
-//        do {
-//            if (isEmptyRow(rowMap)) {
-//                return;
-//            }
-//
-//            String routeName = rowMap.get(Constants.WORKFLOW_CONSUMER_COLUMN);
-//            assert routeName.endsWith(ROUTE_MARKER) :
-//                    routeName + ", line " + csvReader.getLinesRead() + ", does not look like a route";
-//            String restaurantName = rowMap.get(Constants.WORKFLOW_RESTAURANTS_COLUMN);
-//            assert ! restaurantName.isEmpty() :
-//                    routeName + ", line " + csvReader.getLinesRead() + ", missing restaurant name";
-//            String startTime = rowMap.get(Constants.WORKFLOW_ORDERS_COLUMN);
-//            assert ! startTime.isEmpty() :
-//                    routeName + ", line " + csvReader.getLinesRead() + ", missing start time";
-//
-//
-//            Restaurant restaurant = restaurants.get(restaurantName);
-//            assert restaurant != null :
-//                    restaurantName + ", line " + csvReader.getLinesRead() + ", missing from address block";
-//            restaurant.setRoute(routeName);
-//            restaurant.setStartTime(startTime);
-//
-//        } while ((rowMap = csvReader.readMap()) != null);
-//    }
-//
-//    // FIX THIS, DS: add test and implement
-//    static void auditRestaurantColumns(final Map<String, String> row) {
-//        String errors = "";
-//
-////        List<String> requiredColumns = List.of(
-////                DeliveryColumns.CONSUMER_COLUMN
-////                DeliveryColumns.DRIVER_COLUMN
-////                DeliveryColumns.ADDRESS_COLUMN,
-////
-////                DeliveryColumns.NAME_COLUMN
-////                DeliveryColumns.NORMAL_COLUMN
-////
-////        if (! row.containsKey(DeliveryColumns.NAME_COLUMN)) {
-////            errors += "missing "
-////        }
-//
-//    }
 }

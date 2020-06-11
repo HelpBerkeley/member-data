@@ -22,34 +22,31 @@
  */
 package org.helpberkeley.memberdata;
 
+import java.util.Collections;
 import java.util.List;
 
 public class Driver {
 
     private final String userName;
+    private final String phoneNumber;
     private final String gMapURL;
-    private boolean hasCondo;
     private final List<Restaurant> pickups;
     private final List<Delivery> deliveries;
 
-    Driver(final String userName, List<Restaurant> pickups, List<Delivery> deliveries, final String gmapURL) {
+    Driver(final String userName, final String phoneNumber, List<Restaurant> pickups, List<Delivery> deliveries, final String gmapURL) {
         this.userName = userName;
+        this.phoneNumber = phoneNumber;
         this.pickups = pickups;
         this.deliveries = deliveries;
         this.gMapURL = gmapURL;
-
-        boolean condo = false;
-        for (Delivery delivery : deliveries) {
-            if (delivery.isCondo()) {
-                condo = true;
-                break;
-            }
-        }
-        this.hasCondo = condo;
     }
 
     public String getUserName() {
         return userName;
+    }
+
+    public String getPhoneNumber() {
+        return phoneNumber;
     }
 
     public String getgMapURL() {
@@ -57,20 +54,33 @@ public class Driver {
     }
 
     public boolean hasCondo() {
-        return hasCondo;
+        for (Delivery delivery : deliveries) {
+            if (delivery.isCondo()) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public List<Restaurant> getPickups() {
-        return pickups;
+        return Collections.unmodifiableList(pickups);
     }
 
     public List<Delivery> getDeliveries() {
-        return deliveries;
+        return Collections.unmodifiableList(deliveries);
     }
 
     public String getFirstRestaurantName() {
         assert ! pickups.isEmpty();
 
         return pickups.get(0).getName();
+    }
+
+    public int getNumStops() {
+        return pickups.size() + deliveries.size();
+    }
+
+    public int getNumPickups() {
+        return pickups.size();
     }
 }

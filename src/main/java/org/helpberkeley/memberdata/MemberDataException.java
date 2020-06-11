@@ -26,4 +26,12 @@ public class MemberDataException extends RuntimeException {
     MemberDataException(final String message) {
         super(message);
     }
+
+    MemberDataException(String message, Exception cause) {
+        super(message, cause);
+    }
+
+    MemberDataException(Exception cause) {
+        super(cause);
+    }
 }

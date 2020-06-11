@@ -89,6 +89,7 @@ public class Main {
     static final long RESTAURANT_TEMPLATE_POST_ID = 8664;
     static final long DELIVERY_DETAILS_TOPIC_ID = 1818;
     static final long DRIVERS_POST_FORMAT_TOPIC_ID = 1967;
+    static final long DRIVERS_POST_STAGING_TOPIC_ID = 2123;
 
     public static void main(String[] args) throws IOException, InterruptedException, CsvException {
 
@@ -510,13 +511,30 @@ public class Main {
                 new DriverPostFormat(apiClient, routedDeliveries);
 
         List<String> posts = driverPostFormat.generateDriverPosts();
-        for (String post : posts) {
-            System.out.println(post);
-            System.out.println("============================================");
+        for (String rawPost : posts) {
+            Post post = new Post();
+            post.title = "Generated Driver Post";
+            post.topic_id = DRIVERS_POST_STAGING_TOPIC_ID;
+            post.raw = rawPost.toString();
+            post.createdAt = ZonedDateTime.now(ZoneId.systemDefault())
+                    .format(DateTimeFormatter.ofPattern("uuuu.MM.dd.HH.mm.ss"));
+
+            HttpResponse<?> response = apiClient.post(post.toJson());
+            LOGGER.info("generateDriversPosts {}", response.statusCode() == HTTP_OK ?
+                    "" : "failed " + response.statusCode() + ": " + response.body());
         }
 
         String groupInstructionPost = driverPostFormat.generateGroupInstructionsPost();
-        System.out.println(groupInstructionPost);
+        Post post = new Post();
+        post.title = "Generated Group Instructions Post";
+        post.topic_id = DRIVERS_POST_STAGING_TOPIC_ID;
+        post.raw = driverPostFormat.generateGroupInstructionsPost();
+        post.createdAt = ZonedDateTime.now(ZoneId.systemDefault())
+                .format(DateTimeFormatter.ofPattern("uuuu.MM.dd.HH.mm.ss"));
+
+        HttpResponse<?> response = apiClient.post(post.toJson());
+        LOGGER.info("generateGroupInstructionsPost {}", response.statusCode() == HTTP_OK ?
+                "" : "failed " + response.statusCode() + ": " + response.body());
     }
 }
 

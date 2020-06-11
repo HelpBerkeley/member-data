@@ -226,6 +226,13 @@ public class MainTest extends TestBase {
         Main.main(args);
     }
 
+    @Test
+    public void generateDriversPostsTest() throws IOException, InterruptedException, CsvException {
+        String routedWorkflowFile = findResourceFile("routed-deliveries.csv");
+        String[] args = { Options.COMMAND_GENERATE_DRIVERS_POSTS, routedWorkflowFile };
+        Main.main(args);
+    }
+
     private String findFile(final String prefix, final String suffix) {
 
         File dir = new File(".");

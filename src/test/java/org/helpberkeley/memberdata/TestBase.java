@@ -374,4 +374,15 @@ public class TestBase {
             throw new RuntimeException(e);
         }
     }
+
+    String findResourceFile(final String fileName) {
+        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+        URL url = classLoader.getResource(fileName);
+
+        if (url == null) {
+            throw new RuntimeException("file " + fileName + " not found");
+        }
+
+        return url.getFile();
+    }
 }

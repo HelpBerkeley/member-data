@@ -22,13 +22,20 @@
  */
 package org.helpberkeley.memberdata;
 
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 public class Restaurant {
     private final String name;
     private String address = "";
     private String startTime = "";
     private String details = "";
     private String route = "";
-    private String orders = "";
+    private long orders = 0;
+    private Map<String, Driver> drivers = new HashMap<>();
+    private Driver primaryDriver;
 
     Restaurant(final String name) {
         this.name = name;
@@ -47,7 +54,20 @@ public class Restaurant {
         this.address = address;
     }
     void setOrders(final String orders) {
-        this.orders = orders;
+
+        double numOrders = Double.parseDouble(orders.trim());
+        this.orders += Math.round(numOrders);
+    }
+    void addOrders(long orders) {
+        this.orders += orders;
+    }
+    void addDriver(final Driver driver) {
+        assert ! drivers.containsKey(driver.getUserName()) : driver.getUserName();
+        drivers.put(driver.getUserName(), driver);
+    }
+
+    void setPrimaryDriver(Driver driver) {
+        primaryDriver = driver;
     }
 
     String getName() {
@@ -70,7 +90,15 @@ public class Restaurant {
         return address;
     }
 
-    String getOrders() {
+    long getOrders() {
         return orders;
+    }
+
+    Map<String, Driver> getDrivers() {
+        return Collections.unmodifiableMap(drivers);
+    }
+
+    Driver getPrimaryDriver() {
+        return primaryDriver;
     }
 }

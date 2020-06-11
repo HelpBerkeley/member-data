@@ -27,9 +27,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -52,6 +50,15 @@ public class DriverPostFormat {
         loadDriverPostFormat();
         loadGroupPostFormat();
         loadRoutedDeliveries(routedDeliveries);
+        processSplitRestaurants();
+    }
+
+    List<Driver> getDrivers() {
+        return drivers;
+    }
+
+    Map<String, Restaurant> getRestaurants() {
+        return restaurants;
     }
 
     List<String> generateDriverPosts() {
@@ -61,6 +68,12 @@ public class DriverPostFormat {
             StringBuilder post = new StringBuilder();
 
             for (Section section : driverPostSections) {
+
+                // FIX THIS, DS: remove when handled
+                if (section.name.equals("Split Restaurant")) {
+                    post.append(generateSplitRestaurants(section, driver));
+                    continue;
+                }
 
                 if (section.hasConditional) {
                     if (! evaluateCondition(driver, section.conditionalVariableName)) {
@@ -150,6 +163,10 @@ public class DriverPostFormat {
             // Normalize EOL
             String raw = ((String)columns[1]).replaceAll("\\r\\n?", "\n");
 
+            if (raw.startsWith("Control post")) {
+                continue;
+            }
+
             // Look for section name of the form:
             // [This is the section name]\n
             String pattern = "^\\[([A-Za-z0-9 ]+)\\]";
@@ -208,14 +225,14 @@ public class DriverPostFormat {
             return driver.hasCondo();
         }
 
-        throw new Error("Unsupport connditional " + variableName);
+        throw new Error("Unsupported conditional " + variableName);
     }
 
     private String processLine(final Driver driver, final String line) {
 
         final String firstRestaurant = driver.getFirstRestaurantName();
         final Restaurant restaurant = restaurants.get(firstRestaurant);
-        assert restaurant != null : restaurant + " was not found the in restaurant template post";
+        assert restaurant != null : firstRestaurant + " was not found the in restaurant template post";
         final String startTime = restaurant.getStartTime();
 
         return line.replaceAll("\\$\\{DRIVER\\}", driver.getUserName())
@@ -270,11 +287,178 @@ public class DriverPostFormat {
             processedLine += line.replaceAll("\\$\\{RESTAURANT.NAME\\}", restaurant.getName())
                     .replaceAll("\\$\\{RESTAURANT.ADDRESS\\}", restaurant.getAddress())
                     .replaceAll("\\$\\{RESTAURANT.DETAILS\\}", restaurant.getDetails())
-                    .replaceAll("\\$\\{RESTAURANT.ORDERS\\}", restaurant.getOrders())
+                    .replaceAll("\\$\\{RESTAURANT.ORDERS\\}",
+                    String.valueOf(restaurant.getOrders()))
                     + '\n';
         }
 
         return processedLine;
+    }
+
+    private void processSplitRestaurants() {
+
+        // Add all the individual driver pickups to the global restaurants,
+        // so the we can detect split restaurants.
+        for (Driver driver : drivers) {
+            for (Restaurant pickup : driver.getPickups()) {
+                Restaurant restaurant = restaurants.get(pickup.getName());
+                assert restaurant != null : "restaurant " + restaurant + " not found in template";
+                restaurant.addDriver(driver);
+                restaurant.addOrders(pickup.getOrders());
+            }
+        }
+
+        assignPrimarySecondaryDrivers();
+    }
+
+    private void assignPrimarySecondaryDrivers() {
+
+        for (Restaurant restaurant : restaurants.values()) {
+            Collection<Driver> drivers = restaurant.getDrivers().values();
+
+            // FIX THIS, DS: should this be an assertion?
+            if (drivers.size() == 0) {
+                LOGGER.warn("Restaurant {} has no drivers", restaurant.getName());
+                continue;
+            }
+
+            // Not a split restaurant
+            if (drivers.size() == 1) {
+                continue;
+            }
+            ArrayList<Driver> order = new ArrayList<>();
+
+            // The driver who arrives first (in order of restaurants in their list) at the split restaurant is primary
+
+            for (Driver driver : drivers) {
+                if (driver.getFirstRestaurantName().equals(restaurant.getName())) {
+                    order.add(driver);
+                }
+            }
+
+            assert order.size() > 0 : "No driver has " + restaurant.getName() + " as their first pickup";
+            if (order.size() == 1) {
+                restaurant.setPrimaryDriver(order.get(0));
+                continue;
+            }
+
+            // in case of ties, the driver with the smallest number of stops (restaurants + deliveries) is primary
+
+            List<Driver> driversList = new ArrayList(drivers);
+            driversList.sort(Comparator.comparing(Driver::getNumStops));
+
+            order.clear();
+            Driver firstDriver = driversList.get(0);
+            order.add(firstDriver);
+
+            for (int index = 1; index < driversList.size(); index++) {
+                Driver driver = driversList.get(index);
+                if (driver.getNumStops() == firstDriver.getNumStops()) {
+                    order.add(driver);
+                } else {
+                    break;
+                }
+            }
+
+            if (order.size() == 1) {
+                restaurant.setPrimaryDriver(order.get(0));
+                continue;
+            }
+
+            // in case of ties, the driver with the smallest number of restaurants is primary
+
+            driversList.sort(Comparator.comparing(Driver::getNumPickups));
+
+            order.clear();
+            firstDriver = driversList.get(0);
+            order.add(firstDriver);
+
+            for (int index = 1; index < driversList.size(); index++) {
+                Driver driver = driversList.get(index);
+                if (driver.getNumPickups() == firstDriver.getNumPickups()) {
+                    order.add(driver);
+                } else {
+                    break;
+                }
+            }
+
+            if (order.size() == 1) {
+                restaurant.setPrimaryDriver(order.get(0));
+                continue;
+            }
+
+            // in case of ties, the driver that comes first in username alphabetical order is primary
+
+            driversList.sort(Comparator.comparing(Driver::getUserName));
+            restaurant.setPrimaryDriver(driversList.get(0));
+        }
+    }
+
+    private String generateSplitRestaurants(Section section, Driver driver) {
+
+        StringBuilder output = new StringBuilder();
+        boolean hasSplit = false;
+
+        for (Restaurant pickup : driver.getPickups()) {
+
+            Restaurant restaurant = restaurants.get(pickup.getName());
+            assert restaurant != null : "Cannot find restaurant " + pickup.getName();
+
+            Collection<Driver> drivers = restaurant.getDrivers().values();
+            assert drivers.size() != 0;
+
+            if (drivers.size() == 1) {
+                continue;
+            }
+
+            hasSplit = true;
+            boolean isPrimary = restaurant.getPrimaryDriver().getUserName().equals(driver.getUserName());
+
+            LOGGER.debug("{} Driver {} has split restaurant {}",
+                    isPrimary ? "Primary" : "Secondary", driver.getUserName(), restaurant.getName());
+
+            if (output.length() == 0) {
+                output.append("\nWe are running an experiment:\n\n");
+            }
+
+            output.append("* you are one of ");
+            output.append(drivers.size());
+            output.append(" drivers going to pick up orders at **");
+            output.append(restaurant.getName());
+            output.append("** [all drivers: ");
+            for (Driver allDriver : drivers) {
+                output.append("@");
+                output.append(allDriver.getUserName());
+                output.append(" at ");
+                output.append(allDriver.getPhoneNumber());
+                output.append("; ");
+            }
+            output.append("]. The total number of orders is ");
+            output.append(restaurant.getOrders());
+            output.append(": you are picking up ");
+            output.append(pickup.getOrders());
+            output.append(" of them.\n");
+
+            output.append("* you are ");
+            output.append(isPrimary ? "primary" : "secondary");
+            output.append(" driver for this restaurant, which means that **you ");
+            output.append(isPrimary ? "need" : "do not need");
+            output.append(" to take pics** of the delivery form.\n");
+        }
+
+        if (hasSplit) {
+            output.append("* because several drivers are sharing restaurants, ");
+            output.append("you need to be careful about what orders you are picking up.\n");
+            output.append("* if you are not the last driver picking up orders, ");
+            output.append("please make sure you are picking up YOUR orders, and tell the ");
+            output.append("restaurant that other drivers are coming.\n");
+            output.append("* while you pick up your orders, please post on the thread to ");
+            output.append("let other drivers know (so that the last driver knows she is last)\n");
+            output.append("* if you are the last driver picking up orders, ");
+            output.append("please make sure there are no orders left --- otherwise call the dispatcher.\n");
+        }
+
+        return output.toString();
     }
 
     private static class Section {

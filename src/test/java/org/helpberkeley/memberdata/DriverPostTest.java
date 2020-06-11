@@ -27,6 +27,7 @@ import org.junit.Test;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -39,6 +40,7 @@ public class DriverPostTest extends TestBase {
                 new DriverPostFormat(createApiSimulator(), routedDeliveries);
 
         List<String> posts = driverPostFormat.generateDriverPosts();
+//for (String post : posts) { System.out.println(post); }
         assertThat(posts).hasSize(2);
 
         String post = posts.get(0);
@@ -70,7 +72,36 @@ public class DriverPostTest extends TestBase {
                 new DriverPostFormat(createApiSimulator(), routedDeliveries);
 
         String post = driverPostFormat.generateGroupInstructionsPost();
-        System.out.println(post);
+//        System.out.println(post);
 
+    }
+
+    @Test
+    public void splitRestaurantsTest() throws IOException, CsvValidationException, InterruptedException {
+        String routedDeliveries = readResourceFile(
+                "routed-deliveries-with-split-restaurants.csv");
+        DriverPostFormat driverPostFormat =
+                new DriverPostFormat(createApiSimulator(), routedDeliveries);
+
+        List<Driver> drivers = driverPostFormat.getDrivers();
+        Map<String, Restaurant> restaurants = driverPostFormat.getRestaurants();
+
+        assertThat(drivers).hasSize(3);
+        Driver driver = drivers.get(0);
+        assertThat(driver.getUserName()).isEqualTo("jbDriver");
+
+        driver = drivers.get(1);
+        assertThat(driver.getUserName()).isEqualTo("jsDriver");
+
+        driver = drivers.get(2);
+        assertThat(driver.getUserName()).isEqualTo("jcDriver");
+
+        List<String> posts = driverPostFormat.generateDriverPosts();
+
+//        for (String post : posts) {
+//            System.out.println(post);
+//        }
+
+        String post = posts.get(0);
     }
 }

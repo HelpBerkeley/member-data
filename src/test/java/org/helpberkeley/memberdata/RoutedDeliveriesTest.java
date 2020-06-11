@@ -50,19 +50,19 @@ public class RoutedDeliveriesTest extends TestBase {
         assertThat(restaurant.getName()).isEqualTo("Talavera");
         assertThat(restaurant.getAddress()).isEqualTo("1561 Solano Ave, Berkeley");
         assertThat(restaurant.getDetails()).isEmpty();
-        assertThat(restaurant.getOrders()).isEqualTo("0");
+        assertThat(restaurant.getOrders()).isEqualTo(0);
 
         restaurant = pickups.get(1);
         assertThat(restaurant.getName()).isEqualTo("Sweet Basil");
         assertThat(restaurant.getAddress()).isEqualTo("1736 Solano Ave, Berkeley");
         assertThat(restaurant.getDetails()).isEmpty();
-        assertThat(restaurant.getOrders()).isEqualTo("1");
+        assertThat(restaurant.getOrders()).isEqualTo(1);
 
         restaurant = pickups.get(2);
         assertThat(restaurant.getName()).isEqualTo("Bopshop");
         assertThat(restaurant.getAddress()).isEqualTo("1823 Solano Ave, Berkeley");
         assertThat(restaurant.getDetails()).isEmpty();
-        assertThat(restaurant.getOrders()).isEqualTo("2");
+        assertThat(restaurant.getOrders()).isEqualTo(2);
 
         List<Delivery> deliveries = driver.getDeliveries();
         assertThat(deliveries).hasSize(3);
@@ -118,7 +118,7 @@ public class RoutedDeliveriesTest extends TestBase {
         assertThat(restaurant.getName()).isEqualTo("Cafe Raj");
         assertThat(restaurant.getAddress()).isEqualTo("1158 Solano Ave, Albany");
         assertThat(restaurant.getDetails()).isEqualTo("One,Two,Three details");
-        assertThat(restaurant.getOrders()).isEqualTo("4");
+        assertThat(restaurant.getOrders()).isEqualTo(4);
 
         deliveries = driver.getDeliveries();
         assertThat(deliveries).hasSize(4);
@@ -174,5 +174,186 @@ public class RoutedDeliveriesTest extends TestBase {
         assertThat(delivery.getRestaurant()).isEqualTo("Cafe Raj");
         assertThat(delivery.getNormalRations()).isEqualTo("1");
         assertThat(delivery.getVeggieRations()).isEqualTo("0");
+    }
+
+    @Test
+    public void parseRoutedWithSplitRestaurantsTest() throws IOException, CsvValidationException {
+        String csvData = readResourceFile("routed-deliveries-with-split-restaurants.csv");
+        RoutedDeliveriesParser parser = new RoutedDeliveriesParser(csvData);
+        List<Driver> drivers = parser.drivers();
+
+        assertThat(drivers).hasSize(3);
+        Driver driver = drivers.get(0);
+        assertThat(driver.getUserName()).isEqualTo("jbDriver");
+        assertThat(driver.hasCondo()).isFalse();
+        assertThat(driver.getgMapURL()).isEqualTo("https://www.google.com/maps/dir/something+something+else");
+
+        List<Restaurant> pickups = driver.getPickups();
+        assertThat(pickups).hasSize(3);
+
+        Restaurant restaurant = pickups.get(0);
+        assertThat(restaurant.getName()).isEqualTo("Talavera");
+        assertThat(restaurant.getAddress()).isEqualTo("1561 Solano Ave, Berkeley");
+        assertThat(restaurant.getDetails()).isEmpty();
+        assertThat(restaurant.getOrders()).isEqualTo(0);
+
+        restaurant = pickups.get(1);
+        assertThat(restaurant.getName()).isEqualTo("Sweet Basil");
+        assertThat(restaurant.getAddress()).isEqualTo("1736 Solano Ave, Berkeley");
+        assertThat(restaurant.getDetails()).isEmpty();
+        assertThat(restaurant.getOrders()).isEqualTo(1);
+
+        restaurant = pickups.get(2);
+        assertThat(restaurant.getName()).isEqualTo("Bopshop");
+        assertThat(restaurant.getAddress()).isEqualTo("1823 Solano Ave, Berkeley");
+        assertThat(restaurant.getDetails()).isEmpty();
+        assertThat(restaurant.getOrders()).isEqualTo(2);
+
+        List<Delivery> deliveries = driver.getDeliveries();
+        assertThat(deliveries).hasSize(2);
+
+        Delivery delivery = deliveries.get(0);
+        assertThat(delivery.getName()).isEqualTo("Cust Name 1");
+        assertThat(delivery.getUserName()).isEqualTo("Cust1");
+        assertThat(delivery.getPhone()).isEqualTo("555-555-1112");
+        assertThat(delivery.getAltPhone()).isEqualTo("none");
+        assertThat(delivery.getCity()).isEqualTo("Berkeley");
+        assertThat(delivery.getAddress()).isEqualTo("123 456th Ave");
+        assertThat(delivery.isCondo()).isFalse();
+        assertThat(delivery.getDetails()).isEmpty();
+        assertThat(delivery.getRestaurant()).isEqualTo("Bopshop");
+        assertThat(delivery.getNormalRations()).isEqualTo("1");
+        assertThat(delivery.getVeggieRations()).isEqualTo("0");
+
+        delivery = deliveries.get(1);
+        assertThat(delivery.getName()).isEqualTo("Cust Name 2");
+        assertThat(delivery.getUserName()).isEqualTo("Cust2");
+        assertThat(delivery.getPhone()).isEqualTo("555-555-2222");
+        assertThat(delivery.getAltPhone()).isEqualTo("none");
+        assertThat(delivery.getCity()).isEqualTo("Berkeley");
+        assertThat(delivery.getAddress()).isEqualTo("77 77th St");
+        assertThat(delivery.isCondo()).isFalse();
+        assertThat(delivery.getDetails()).isEmpty();
+        assertThat(delivery.getRestaurant()).isEqualTo("Sweet Basil");
+        assertThat(delivery.getNormalRations()).isEqualTo("1");
+        assertThat(delivery.getVeggieRations()).isEqualTo("1");
+
+        driver = drivers.get(1);
+        assertThat(driver.getUserName()).isEqualTo("jsDriver");
+        assertThat(driver.hasCondo()).isTrue();
+        assertThat(driver.getgMapURL()).isEqualTo("https://www.google.com/maps/dir/x+y+z");
+
+        pickups = driver.getPickups();
+        assertThat(pickups).hasSize(1);
+
+        restaurant = pickups.get(0);
+        assertThat(restaurant.getName()).isEqualTo("Cafe Raj");
+        assertThat(restaurant.getAddress()).isEqualTo("1158 Solano Ave, Albany");
+        assertThat(restaurant.getDetails()).isEqualTo("One,Two,Three details");
+        assertThat(restaurant.getOrders()).isEqualTo(2);
+
+        deliveries = driver.getDeliveries();
+        assertThat(deliveries).hasSize(2);
+
+        delivery = deliveries.get(0);
+        assertThat(delivery.getName()).isEqualTo("Cust Name 4");
+        assertThat(delivery.getUserName()).isEqualTo("Cust4");
+        assertThat(delivery.getPhone()).isEqualTo("555-555-4444");
+        assertThat(delivery.getAltPhone()).isEqualTo("none");
+        assertThat(delivery.getCity()).isEqualTo("Berkeley");
+        assertThat(delivery.getAddress()).isEqualTo("44 44th St");
+        assertThat(delivery.isCondo()).isFalse();
+        assertThat(delivery.getDetails()).isEmpty();
+        assertThat(delivery.getRestaurant()).isEqualTo("Cafe Raj");
+        assertThat(delivery.getNormalRations()).isEqualTo("0");
+        assertThat(delivery.getVeggieRations()).isEqualTo("1");
+
+        delivery = deliveries.get(1);
+        assertThat(delivery.getName()).isEqualTo("Cust Name 5");
+        assertThat(delivery.getUserName()).isEqualTo("Cust5");
+        assertThat(delivery.getPhone()).isEqualTo("555-555-5555");
+        assertThat(delivery.getAltPhone()).isEqualTo("none");
+        assertThat(delivery.getCity()).isEqualTo("Berkeley");
+        assertThat(delivery.getAddress()).isEqualTo("55 55th St");
+        assertThat(delivery.isCondo()).isTrue();
+        assertThat(delivery.getDetails()).isEqualTo("listed as a condo but may not be.");
+        assertThat(delivery.getRestaurant()).isEqualTo("Cafe Raj");
+        assertThat(delivery.getNormalRations()).isEqualTo("1");
+        assertThat(delivery.getVeggieRations()).isEqualTo("0");
+
+        driver = drivers.get(2);
+        assertThat(driver.getUserName()).isEqualTo("jcDriver");
+        assertThat(driver.hasCondo()).isFalse();
+        assertThat(driver.getgMapURL()).isEqualTo("https://www.google.com/maps/dir/a+b+c");
+
+        pickups = driver.getPickups();
+        assertThat(pickups).hasSize(2);
+
+        restaurant = pickups.get(0);
+        assertThat(restaurant.getName()).isEqualTo("Cafe Raj");
+        assertThat(restaurant.getAddress()).isEqualTo("1158 Solano Ave, Albany");
+        assertThat(restaurant.getDetails()).isEqualTo("One,Two,Three details");
+        assertThat(restaurant.getOrders()).isEqualTo(3);
+
+        restaurant = pickups.get(1);
+        assertThat(restaurant.getName()).isEqualTo("Kim's");
+        assertThat(restaurant.getAddress()).isEqualTo("1823 Solano Ave, Berkeley");
+        assertThat(restaurant.getDetails()).isEmpty();
+        assertThat(restaurant.getOrders()).isEqualTo(1);
+
+        deliveries = driver.getDeliveries();
+        assertThat(deliveries).hasSize(4);
+
+        delivery = deliveries.get(0);
+        assertThat(delivery.getName()).isEqualTo("Cust Name 6");
+        assertThat(delivery.getUserName()).isEqualTo("Cust6");
+        assertThat(delivery.getPhone()).isEqualTo("555-555-6666");
+        assertThat(delivery.getAltPhone()).isEqualTo("none");
+        assertThat(delivery.getCity()).isEqualTo("Berkeley");
+        assertThat(delivery.getAddress()).isEqualTo("66 66th St");
+        assertThat(delivery.isCondo()).isFalse();
+        assertThat(delivery.getDetails()).isEmpty();
+        assertThat(delivery.getRestaurant()).isEqualTo("Cafe Raj");
+        assertThat(delivery.getNormalRations()).isEqualTo("1");
+        assertThat(delivery.getVeggieRations()).isEqualTo("0");
+
+        delivery = deliveries.get(1);
+        assertThat(delivery.getName()).isEqualTo("Cust Name 6");
+        assertThat(delivery.getUserName()).isEqualTo("Cust6");
+        assertThat(delivery.getPhone()).isEqualTo("555-555-6666");
+        assertThat(delivery.getAltPhone()).isEqualTo("none");
+        assertThat(delivery.getCity()).isEqualTo("Berkeley");
+        assertThat(delivery.getAddress()).isEqualTo("66 66th St");
+        assertThat(delivery.isCondo()).isFalse();
+        assertThat(delivery.getDetails()).isEmpty();
+        assertThat(delivery.getRestaurant()).isEqualTo("Kim's");
+        assertThat(delivery.getNormalRations()).isEqualTo("1");
+        assertThat(delivery.getVeggieRations()).isEqualTo("0");
+
+        delivery = deliveries.get(2);
+        assertThat(delivery.getName()).isEqualTo("Cust Name 7");
+        assertThat(delivery.getUserName()).isEqualTo("Cust7");
+        assertThat(delivery.getPhone()).isEqualTo("555-555-7777");
+        assertThat(delivery.getAltPhone()).isEqualTo("none");
+        assertThat(delivery.getCity()).isEqualTo("Berkeley");
+        assertThat(delivery.getAddress()).isEqualTo("77 77th St");
+        assertThat(delivery.isCondo()).isFalse();
+        assertThat(delivery.getDetails()).isEmpty();
+        assertThat(delivery.getRestaurant()).isEqualTo("Cafe Raj");
+        assertThat(delivery.getNormalRations()).isEqualTo("1");
+        assertThat(delivery.getVeggieRations()).isEqualTo("0");
+
+        delivery = deliveries.get(3);
+        assertThat(delivery.getName()).isEqualTo("Cust Name 8");
+        assertThat(delivery.getUserName()).isEqualTo("Cust8");
+        assertThat(delivery.getPhone()).isEqualTo("555-555-8888");
+        assertThat(delivery.getAltPhone()).isEqualTo("none");
+        assertThat(delivery.getCity()).isEqualTo("Berkeley");
+        assertThat(delivery.getAddress()).isEqualTo("88 88th St");
+        assertThat(delivery.isCondo()).isFalse();
+        assertThat(delivery.getDetails()).isEmpty();
+        assertThat(delivery.getRestaurant()).isEqualTo("Cafe Raj");
+        assertThat(delivery.getNormalRations()).isEqualTo("0");
+        assertThat(delivery.getVeggieRations()).isEqualTo("1");
     }
 }

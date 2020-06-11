@@ -1,5 +1,5 @@
 Automated Driver's Run Post Design
-Version 1.0.3
+Version 1.0.5
 
 Motivation
 ==========
@@ -70,9 +70,8 @@ Driver's Run Post
 Consists of one section per post, from the thread:
 https://go.helpberkeley.org/t/automated-post-formatting-1-drivers-run/1967
 
-The first post is a control post.
-
-FIX THIS: define control post.  Format, meaning, usage.
+The first post is a control post: it defines the content of the rest of the thread, and none of its 
+content should be used as a template for the generated driver's run post.
 
 2) Variable types
 
@@ -94,14 +93,17 @@ The following explicit rules are used:
   * Every time a composite variable is used, it should be iterated through all
     instances  in the driver's block. If in a table, each table line should be an iteration.
 
-    If in a conditional block boolean variable, each conditional block should be an iteration.
+    [If in a conditional block boolean variable, each conditional block should be an iteration.
 
     FIX THIS: not clear what this means.  reword, add example.
+    I am not quite sure what I meant :-) ]
 
-    In an enumeration, the enumeration should cover all items. For instance, a RESTAURANT composite
+    [In an enumeration, the enumeration should cover all items. For instance, a RESTAURANT composite
     variable should be iterated through all dedicated restaurant lines in the driver's block.
 
     FIX THIS: what does enumeration mean here?  The same as iteration above?
+    It is very poorly written. The enumeration was for the list of drivers, originally. But the example
+is for the restaurant matrix. I am not quite sure how to fix this until we have more syntax discussion]
 
   * By default, the order in which a table of composite variables should be output is in the order
     of the driver's block.
@@ -192,19 +194,34 @@ conditional block for that purpose:
 
 "We are running an experiment:
 
-* you are one of two drivers going to pick orders at RestaurantName [the other one is @DriverName at DriverPhoneNumber]. The total number of orders is NOrders: you are picking up Porders of them.
-* you are the primary [secondary] driver for this restaurant, which means that you need [do not need] to take pics of the delivery form
-because two drivers are going to this restaurant, you need to be careful about what orders you are picking up
-if you are the first driver picking up orders there, please make sure you are picking YOUR orders, and tell the restaurant that a second driver is coming.
-if you are the second driver picking up orders, please make sure that there is no extra order."
+* you are one of [# of drivers] drivers going to pick orders at RestaurantName [other drivers: @DriverName 
+at DriverPhoneNumber; (iterated, no worries about last ;)]. The total number of orders is NOrders: you are 
+picking up Porders of them.
+* you are primary [secondary] driver for this restaurant, which means that you need [do not need] to take 
+pics of the delivery form
+* because several drivers are going to this restaurant, you need to be careful about what orders you are 
+picking up
+* if you are not the last driver picking up orders, please make sure you are picking up YOUR orders, 
+and tell the restaurant that other drivers are coming.
+* while you pick up your orders, please post on the thread to let other drivers know (so that the last 
+driver knows she is last)
+* if you are the last driver picking up orders, please make sure that there is no extra order."
 
+Here is deterministic logic for determining who is primary driver (there can be several secondary drivers):
+* The driver who arrives first (in order of restaurants in their list) at the split restaurant is primary;
+* in case of ties, the driver with the smallest number of stops (restaurants + deliveries) is primary;
+* in case of ties, the driver with the smallest number of restaurants is primary;
+* in case of ties, the driver that comes first in username alphabetica order is primary.
+
+[I am leaving this section in place because it is more readable than the other section below]
 This is also deterministic information, all existing in the spreadsheet today. 
 
 ----------------------------------------------------------------------------------------------------
 
 In the present condition, the posts consists of the following sections:
   1) Header
-  2) Special Instructions
+  2) Split restaurant
+  3) Condo
   3) Restaurants
   4) Pickup
   5) Deliveries
@@ -222,7 +239,36 @@ Driver's run for @${DRIVER}
 
 Any problem, any issue: call or text @{DISPATCHER} ${DISPATCH_PHONE#}. They are a phone call/text away.
 ----------------------------------------------------------------------------------------------------
-[Special Instructions]
+[Split Restaurant]
+
+IF ${ANY_SPLIT_RESTAURANT} THEN
+{
+FOR ${EACH_SPLIT_RESTAURANT}
+{
+
+* you are one of ${SPLIT_RESTAURANT.NUMBER_OF_DRIVERS} drivers going to pick orders at 
+**${SPLIT_RESTAURANT.NAME}** [other driver(s): FOR ${SPLIT_RESTAURANT.THIS_DRIVER.EACH_OTHER_DRIVER}
+{
+@${SPLIT_RESTAURANT.THIS_DRIVER.OTHER_DRIVERS.NAME} at ${SPLIT_RESTAURANT.THIS_DRIVER.OTHER_DRIVERS.PHONE_NUMBER};
+}
+]. The total number of orders is ${SPLIT_RESTAURANT.TOTAL_ORDERS}: you are picking up 
+${SPLIT_RESTAURANT.THIS_DRIVER.ORDERS} of them.
+* you are IF {SPLIT_RESTAURANT.THIS_DRIVER.PRIMARY} {primary} ELSE {secondary} driver for this restaurant, 
+which means that you IF {SPLIT_RESTAURANT.THIS_DRIVER.PRIMARY} {need} ELSE {do not need} to take pics 
+of the delivery form
+}
+
+* because multiple drivers are going to the same restaurant, you need to be careful about what orders
+ you are picking up
+* if you are not the last driver picking up orders, please make sure you are picking YOUR orders, and 
+tell the restaurant that other drivers are coming.
+* while you pick up your orders, please post on the thread to let other drivers know (so that the last 
+driver knows she is last)
+* if you are the last driver picking up orders, please make sure that there is no extra order.
+}
+
+----------------------------------------------------------------------------------------------------
+[Condo]
 
 IF ${ANY_CONDO} THEN {  
 You have a condo on your run! Please be aware we have special delivering instructions and they are:
