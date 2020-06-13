@@ -22,6 +22,7 @@
 package org.helpberkeley.memberdata;
 
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.*;
@@ -416,6 +417,7 @@ public class UserTest extends TestBase {
     }
 
     @Test
+    @Ignore
     public void unknownBerkeleyNeighborhoodTest() {
 
         String[] unknowns = { "Unknown", "unknown", " unknown " };
@@ -436,6 +438,7 @@ public class UserTest extends TestBase {
     }
 
     @Test
+    @Ignore
     public void unknownBerkeleyNeighborhoodDriverTest() {
         Throwable thrown = catchThrowable(() -> createUserWithGroupAndNeighborhood(Constants.GROUP_DRIVERS, "unknown"));
         assertThat(thrown).isInstanceOf(UserException.class);
@@ -445,6 +448,7 @@ public class UserTest extends TestBase {
     }
 
     @Test
+    @Ignore
     public void unknownBerkeleyNeighborhoodDispatcherTest() {
         Throwable thrown = catchThrowable(() -> createUserWithGroupAndNeighborhood(Constants.GROUP_CONSUMERS, "unknown"));
         assertThat(thrown).isInstanceOf(UserException.class);

@@ -643,9 +643,9 @@ public class User {
             return;
         }
 
-        if (neighborhood.toLowerCase().trim().contains("unknown")) {
-            dataErrors.add(AUDIT_ERROR_NEIGHBORHOOD_UNKNOWN);
-        }
+//        if (neighborhood.toLowerCase().trim().contains("unknown")) {
+//            dataErrors.add(AUDIT_ERROR_NEIGHBORHOOD_UNKNOWN);
+//        }
     }
 
     // can arrive either as null, "", or a value

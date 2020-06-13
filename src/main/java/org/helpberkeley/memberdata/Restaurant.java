@@ -24,7 +24,6 @@ package org.helpberkeley.memberdata;
 
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class Restaurant {
@@ -34,7 +33,7 @@ public class Restaurant {
     private String details = "";
     private String route = "";
     private long orders = 0;
-    private Map<String, Driver> drivers = new HashMap<>();
+    private final Map<String, Driver> drivers = new HashMap<>();
     private Driver primaryDriver;
 
     Restaurant(final String name) {

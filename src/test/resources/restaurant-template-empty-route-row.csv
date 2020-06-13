@@ -1,0 +1,11 @@
+Consumer,Driver,Name,User Name,Phone #,Phone2 #,Neighborhood,City,Address,Condo,Details,Restaurants,normal,veggie,#orders
+FALSE,TRUE,,,,,,,,,,,,,
+FALSE,,,,,,,,"1158 Solano Ave, Albany",FALSE,,Cafe Raj,,,
+,,,,,,,,,,,,,,
+FALSE,TRUE,,,,,,,,,,,,,
+,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,
+Solano Route,,"(Note: every line with a start time needs a ""...Route"" in the Consumer column (for our sw)",,,,,,,,,Cafe Raj,,,5:10 PM
+,,,,,,,,,,,,,,
+Solano Route,,,,,,,,Closed Mondays,,,Kim's,,,5:10 PM

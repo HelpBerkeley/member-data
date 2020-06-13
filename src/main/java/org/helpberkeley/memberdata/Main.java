@@ -515,7 +515,7 @@ public class Main {
             Post post = new Post();
             post.title = "Generated Driver Post";
             post.topic_id = DRIVERS_POST_STAGING_TOPIC_ID;
-            post.raw = rawPost.toString();
+            post.raw = rawPost;
             post.createdAt = ZonedDateTime.now(ZoneId.systemDefault())
                     .format(DateTimeFormatter.ofPattern("uuuu.MM.dd.HH.mm.ss"));
 

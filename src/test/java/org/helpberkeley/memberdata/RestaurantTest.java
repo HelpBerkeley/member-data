@@ -34,7 +34,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class RestaurantTest extends TestBase {
 
     @Test
-    public void parseTest() throws IOException, CsvValidationException {
+    public void parseTest() {
 
         String csvData = readResourceFile("restaurant-template.csv");
         RestaurantTemplateParser parser = new RestaurantTemplateParser(csvData);

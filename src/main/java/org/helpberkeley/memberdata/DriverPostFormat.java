@@ -143,7 +143,7 @@ public class DriverPostFormat {
         return header.toString();
     }
 
-    private void loadRestaurantTemplate() throws IOException, InterruptedException, CsvValidationException {
+    private void loadRestaurantTemplate() throws IOException, InterruptedException {
         String rawPost = Parser.postBody(apiClient.getPost(Main.RESTAURANT_TEMPLATE_POST_ID));
         RestaurantTemplatePost restaurantTemplatePost = Parser.restaurantTemplatePost(rawPost);
         String restaurantTemplate = apiClient.downloadFile(restaurantTemplatePost.uploadFile.fileName);
@@ -338,13 +338,16 @@ public class DriverPostFormat {
 
             assert order.size() > 0 : "No driver has " + restaurant.getName() + " as their first pickup";
             if (order.size() == 1) {
+                LOGGER.info("Rule 1: Assigned {} as primary for {} because they are the only "
+                        + "driver with {} as their first pickup",
+                        order.get(0).getUserName(), restaurant.getName(), restaurant.getName());
                 restaurant.setPrimaryDriver(order.get(0));
                 continue;
             }
 
             // in case of ties, the driver with the smallest number of stops (restaurants + deliveries) is primary
 
-            List<Driver> driversList = new ArrayList(drivers);
+            List<Driver> driversList = new ArrayList<>(drivers);
             driversList.sort(Comparator.comparing(Driver::getNumStops));
 
             order.clear();
@@ -361,6 +364,8 @@ public class DriverPostFormat {
             }
 
             if (order.size() == 1) {
+                LOGGER.info("Rule 2: Assigned {} as primary for {} because they have the fewest stops",
+                        order.get(0).getUserName(), restaurant.getName());
                 restaurant.setPrimaryDriver(order.get(0));
                 continue;
             }
@@ -383,6 +388,8 @@ public class DriverPostFormat {
             }
 
             if (order.size() == 1) {
+                LOGGER.info("Rule 3: Assigned {} as primary for {} because they have the fewest pickups",
+                        order.get(0).getUserName(), restaurant.getName());
                 restaurant.setPrimaryDriver(order.get(0));
                 continue;
             }
@@ -391,6 +398,9 @@ public class DriverPostFormat {
 
             driversList.sort(Comparator.comparing(Driver::getUserName));
             restaurant.setPrimaryDriver(driversList.get(0));
+
+            LOGGER.info("Rule 4: Assigned {} as primary for {} based on alphabetical sort",
+                    order.get(0).getUserName(), restaurant.getName());
         }
     }
 

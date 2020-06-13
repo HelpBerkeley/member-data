@@ -28,57 +28,88 @@ import com.opencsv.exceptions.CsvValidationException;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class RestaurantTemplateParser {
 
-    static final String ERROR_NO_DATA = "empty restaurant template";
+    static final String TEMPLATE_ERROR = "Restaurant Template Error: ";
+    static final String ERROR_NO_DATA = "empty file";
+    static final String CSV_PARSE_ERROR = "CSV parser error: ";
+    static final String MISSING_COLUMN_ERROR = "missing column: ";
+    static final String MISSING_EMPTY_ROW = "did not find empty row at line ";
+    static final String MISSING_VALUE_ERROR = "missing value from column ";
+    static final String DUPLICATE_ROUTE_ERROR = " appears more than once in the route block";
     private static final String ROUTE_MARKER = " Route";
 
     private final String csvData;
     private final CSVReaderHeaderAware csvReader;
 
     RestaurantTemplateParser(final String csvData) {
+        CSVReaderHeaderAware csvReaderTemp;
+
         // Normalize EOL
         this.csvData = csvData.replaceAll("\\r\\n?", "\n");
 
         if (this.csvData.isEmpty()) {
-            throw new MemberDataException(ERROR_NO_DATA);
+            throwTemplateError(ERROR_NO_DATA);
         }
         try {
-            csvReader = new CSVReaderHeaderAware(new StringReader(csvData));
+            csvReaderTemp = new CSVReaderHeaderAware(new StringReader(csvData));
         } catch (IOException ex) {
-            throw new MemberDataException(ex);
+            csvReaderTemp = null;
+            throwTemplateError(ex.getMessage());
         }
+        csvReader = csvReaderTemp;
     }
 
-    private void auditRestaurantColumns() {
+    private void auditColumns(final Map<String, String> row) {
 
-        // FIX THIS, DS: implement
+        String errors = "";
+
+        for (String columnName : List.of(
+            Constants.WORKFLOW_CONSUMER_COLUMN,
+            Constants.WORKFLOW_DRIVER_COLUMN,
+            Constants.WORKFLOW_RESTAURANTS_COLUMN,
+            Constants.WORKFLOW_ORDERS_COLUMN,
+            Constants.WORKFLOW_DETAILS_COLUMN)) {
+
+            if (! row.containsKey(columnName)) {
+                errors += MISSING_COLUMN_ERROR + columnName + '\n';
+            }
+        }
+
+        if (! errors.isEmpty()) {
+            throwTemplateError(errors);
+        }
     }
 
     Map<String, Restaurant> restaurants() {
         Map<String, Restaurant> restaurants = new HashMap<>();
 
         Map<String, String> rowMap;
+        boolean firstLine = true;
 
         try {
             while ((rowMap = csvReader.readMap()) != null) {
+
+                if (firstLine) {
+                    auditColumns(rowMap);
+                    firstLine = false;
+                }
+
                 if (isAddressBlockMarker(rowMap)) {
                     processAddressBlock(restaurants);
                 } else if (isRoute(rowMap)) {
                     processRouteBlock(rowMap, restaurants);
                 } else {
                     if (! isEmptyRow(rowMap)){
-                        throw new MemberDataException(
-                            "Did not find empty row at line " + csvReader.getLinesRead()
-                            + " of the restaurant template");
+                        throwTemplateError(MISSING_EMPTY_ROW + csvReader.getLinesRead());
                     }
                 }
             }
         } catch (IOException | CsvValidationException ex) {
-            throw new MemberDataException("Error at line " + csvReader.getLinesRead()
-                    + " of the restaurant template", ex);
+            throwTemplateError(CSV_PARSE_ERROR + ex.getMessage());
         }
 
         return restaurants;
@@ -141,9 +172,14 @@ public class RestaurantTemplateParser {
             }
 
             String name = rowMap.get(Constants.WORKFLOW_RESTAURANTS_COLUMN);
-            assert ! name.isEmpty() : "missing restaurant name, line " +  csvReader.getLinesRead();
-            assert (! restaurants.containsKey(name)) :
-                    name + ", line " + csvReader.getLinesRead() + ", has already been seen";
+
+            if (name.isEmpty()) {
+                throwMissingValue(Constants.WORKFLOW_RESTAURANTS_COLUMN);
+            }
+            if (restaurants.containsKey(name)) {
+                throw new MemberDataException(name + " repeats in the restaurant template at line "
+                        + csvReader.getLinesRead());
+            }
         }
     }
 
@@ -159,17 +195,28 @@ public class RestaurantTemplateParser {
             }
 
             String routeName = rowMap.get(Constants.WORKFLOW_CONSUMER_COLUMN);
-            assert routeName.endsWith(ROUTE_MARKER) :
-                    routeName + ", line " + csvReader.getLinesRead() + ", does not look like a route";
+
+            if (routeName.isEmpty()) {
+                throwMissingValue(Constants.WORKFLOW_CONSUMER_COLUMN, "route name");
+            }
+            if (! routeName.endsWith(ROUTE_MARKER)) {
+                throw new MemberDataException("Line "
+                        + csvReader.getLinesRead()
+                        + " of the restaurant template does not look like a route");
+            }
+
             String restaurantName = rowMap.get(Constants.WORKFLOW_RESTAURANTS_COLUMN);
-            assert ! restaurantName.isEmpty() :
-                    routeName + ", line " + csvReader.getLinesRead() + ", missing restaurant name";
+            if (restaurantName.isEmpty()) {
+                throwMissingValue(Constants.WORKFLOW_RESTAURANTS_COLUMN);
+            }
             String startTime = rowMap.get(Constants.WORKFLOW_ORDERS_COLUMN);
-            assert ! startTime.isEmpty() :
-                    routeName + ", line " + csvReader.getLinesRead() + ", missing start time";
+            if (startTime.isEmpty()) {
+                throwMissingValue(Constants.WORKFLOW_RESTAURANTS_COLUMN, "start time");
+            }
 
-
-            assert ! restaurants.containsKey(restaurantName) : restaurantName + " appears twice in route block";
+            if (restaurants.containsKey(restaurantName)) {
+                throwTemplateError(restaurantName + DUPLICATE_ROUTE_ERROR);
+            }
             Restaurant restaurant = new Restaurant(restaurantName);
             restaurants.put(restaurantName, restaurant);
             restaurant.setRoute(routeName);
@@ -177,21 +224,23 @@ public class RestaurantTemplateParser {
         } while ((rowMap = csvReader.readMap()) != null);
     }
 
-    // FIX THIS, DS: add test and implement
-    static void auditRestaurantColumns(final Map<String, String> row) {
-        String errors = "";
+    private void throwTemplateError(final String message) {
+        throw new MemberDataException(TEMPLATE_ERROR + message);
+    }
 
-//        List<String> requiredColumns = List.of(
-//                DeliveryColumns.CONSUMER_COLUMN
-//                DeliveryColumns.DRIVER_COLUMN
-//                DeliveryColumns.ADDRESS_COLUMN,
-//
-//                DeliveryColumns.NAME_COLUMN
-//                DeliveryColumns.NORMAL_COLUMN
-//
-//        if (! row.containsKey(DeliveryColumns.NAME_COLUMN)) {
-//            errors += "missing "
-//        }
+    private void throwMissingValue(final String columnName) {
+        throwTemplateError(MISSING_VALUE_ERROR
+                + columnName
+                + ", line number "
+                + csvReader.getLinesRead());
+    }
 
+    private void throwMissingValue(final String columnName, final String columnUse) {
+        throwTemplateError("missing "
+                + columnUse
+                + " value from column "
+                + columnName
+                + ", line number "
+                + csvReader.getLinesRead());
     }
 }
