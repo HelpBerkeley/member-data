@@ -128,7 +128,7 @@ public class DriverPostFormat {
         for (Driver driver : drivers) {
             String firstRestaurant = driver.getFirstRestaurantName();
             Restaurant restaurant = restaurants.get(firstRestaurant);
-            assert restaurant != null : restaurant + " was not found the in restaurant template post";
+            assert restaurant != null : firstRestaurant + " was not found the in restaurant template post";
             String startTime = restaurant.getStartTime();
 
             header.append("**@");
@@ -159,7 +159,6 @@ public class DriverPostFormat {
             Object[] columns = (Object[]) rowObj;
             assert columns.length == 2 : columns.length;
 
-            Long id = ((Long)columns[0]);
             // Normalize EOL
             String raw = ((String)columns[1]).replaceAll("\\r\\n?", "\n");
 
@@ -193,7 +192,6 @@ public class DriverPostFormat {
             Object[] columns = (Object[]) rowObj;
             assert columns.length == 2 : columns.length;
 
-            Long id = ((Long)columns[0]);
             // Normalize EOL
             String raw = ((String)columns[1]).replaceAll("\\r\\n?", "\n");
 
@@ -280,19 +278,18 @@ public class DriverPostFormat {
     }
 
     private String processRestaurantLine(final Driver driver, final String line) {
-        String processedLine = "";
+        StringBuilder processedLine = new StringBuilder();
 
         for (Restaurant restaurant : driver.getPickups()) {
-
-            processedLine += line.replaceAll("\\$\\{RESTAURANT.NAME\\}", restaurant.getName())
-                    .replaceAll("\\$\\{RESTAURANT.ADDRESS\\}", restaurant.getAddress())
-                    .replaceAll("\\$\\{RESTAURANT.DETAILS\\}", restaurant.getDetails())
-                    .replaceAll("\\$\\{RESTAURANT.ORDERS\\}",
-                    String.valueOf(restaurant.getOrders()))
-                    + '\n';
+            processedLine.append(
+                line.replaceAll("\\$\\{RESTAURANT.NAME\\}", restaurant.getName())
+                .replaceAll("\\$\\{RESTAURANT.ADDRESS\\}", restaurant.getAddress())
+                .replaceAll("\\$\\{RESTAURANT.DETAILS\\}", restaurant.getDetails())
+                .replaceAll("\\$\\{RESTAURANT.ORDERS\\}",
+                String.valueOf(restaurant.getOrders()))).append('\n');
         }
 
-        return processedLine;
+        return processedLine.toString();
     }
 
     private void processSplitRestaurants() {
@@ -302,7 +299,7 @@ public class DriverPostFormat {
         for (Driver driver : drivers) {
             for (Restaurant pickup : driver.getPickups()) {
                 Restaurant restaurant = restaurants.get(pickup.getName());
-                assert restaurant != null : "restaurant " + restaurant + " not found in template";
+                assert restaurant != null : "restaurant " + pickup.getName() + " not found in template";
                 restaurant.addDriver(driver);
                 restaurant.addOrders(pickup.getOrders());
             }

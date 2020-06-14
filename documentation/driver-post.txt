@@ -1,16 +1,5 @@
 Automated Driver's Run Post Design
-Version 1.0.7
-
-Motivation
-==========
-
-The per driver delivery run posting is generated
-daily, manually, by cutting and pasting many different
-blocks of existing data from the workflow spreadsheet.
-This process is laborious and can be error prone.
-
-The algorithm for generating the driver's run posting is
-fixed and mechanical, and as such, lends itself to automation.
+Version 1.0.8
 
 Automated Work Flow Overview
 ============================
@@ -56,6 +45,7 @@ Status: Succeeded
 Driver Run Posts:
 	${DRIVER_NAME} : URL
 	...
+Group Instruction Post: URL
 
 OR
 
@@ -250,7 +240,7 @@ Here is deterministic logic for determining who is primary driver (there can be 
 * The driver who arrives first (in order of restaurants in their list) at the split restaurant is primary;
 * in case of ties, the driver with the smallest number of stops (restaurants + deliveries) is primary;
 * in case of ties, the driver with the smallest number of restaurants is primary;
-* in case of ties, the driver that comes first in username alphabetica order is primary.
+* in case of ties, the driver that comes first in username alphabetical order is primary.
 
 [I am leaving this section in place because it is more readable than the other section below]
 This is also deterministic information, all existing in the spreadsheet today. 

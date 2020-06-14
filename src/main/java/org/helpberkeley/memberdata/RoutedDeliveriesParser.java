@@ -34,15 +34,14 @@ import java.util.Map;
 public class RoutedDeliveriesParser {
 
 
-    private final String csvData;
     private final CSVReaderHeaderAware csvReader;
     private final List<Driver> drivers = new ArrayList<>();
 
     RoutedDeliveriesParser(final String csvData) throws IOException {
         // Normalize EOL
-        this.csvData = csvData.replaceAll("\\r\\n?", "\n");
+        String normalizedData = csvData.replaceAll("\\r\\n?", "\n");
         assert ! csvData.isEmpty() : "empty restaurant template";
-        csvReader = new CSVReaderHeaderAware(new StringReader(csvData));
+        csvReader = new CSVReaderHeaderAware(new StringReader(normalizedData));
     }
 
     private void auditColumnNames() {

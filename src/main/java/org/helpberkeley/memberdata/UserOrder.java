@@ -38,43 +38,43 @@ public class UserOrder {
         this.deliveryFile = deliveryFile;
     }
 
-    @Override
-    public String toString() {
-        return "Name=" + this.name + Constants.CSV_SEPARATOR
-                + "User Name=" + this.userName + Constants.CSV_SEPARATOR
-                + "Delivery File=" + deliveryFile;
-    }
+//    @Override
+//    public String toString() {
+//        return "Name=" + this.name + Constants.CSV_SEPARATOR
+//                + "User Name=" + this.userName + Constants.CSV_SEPARATOR
+//                + "Delivery File=" + deliveryFile;
+//    }
 
-    @Override
-    public boolean equals(Object obj) {
-        if (!(obj instanceof UserOrder)) {
-            return false;
-        }
-
-        UserOrder otherOrder = (UserOrder)obj;
-
-        if (! name.equals(otherOrder.name)) {
-            return false;
-        }
-
-        if (! userName.equals(otherOrder. userName)) {
-            return false;
-        }
-
-        if (! phone.equals(otherOrder.phone)) {
-            return false;
-        }
-
-        if (! phone.equals(otherOrder.altPhone)) {
-            return false;
-        }
-
-        //noinspection RedundantIfStatement
-        if (! deliveryFile.equals(otherOrder. deliveryFile)) {
-            return false;
-        }
-
-        return true;
-    }
+//    @Override
+//    public boolean equals(Object obj) {
+//        if (!(obj instanceof UserOrder)) {
+//            return false;
+//        }
+//
+//        UserOrder otherOrder = (UserOrder)obj;
+//
+//        if (! name.equals(otherOrder.name)) {
+//            return false;
+//        }
+//
+//        if (! userName.equals(otherOrder. userName)) {
+//            return false;
+//        }
+//
+//        if (! phone.equals(otherOrder.phone)) {
+//            return false;
+//        }
+//
+//        if (! phone.equals(otherOrder.altPhone)) {
+//            return false;
+//        }
+//
+//        //noinspection RedundantIfStatement
+//        if (! deliveryFile.equals(otherOrder. deliveryFile)) {
+//            return false;
+//        }
+//
+//        return true;
+//    }
 
 }

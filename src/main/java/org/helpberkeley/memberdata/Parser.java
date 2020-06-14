@@ -322,6 +322,7 @@ public class Parser {
                 groups.add(Constants.GROUP_COORDINATOR);
             }
 
+            //noinspection UnusedAssignment
             if (Boolean.parseBoolean(columns[index++])) {
                 groups.add(Constants.GROUP_ADMIN);
             }
@@ -418,7 +419,6 @@ public class Parser {
 
             // Normalize EOL
             raw = raw.replaceAll("\\r\\n?", "\n");
-            raw.trim();
 
             String[] lines = raw.split("\n");
 

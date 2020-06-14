@@ -90,6 +90,7 @@ public class Main {
     static final long DELIVERY_DETAILS_TOPIC_ID = 1818;
     static final long DRIVERS_POST_FORMAT_TOPIC_ID = 1967;
     static final long DRIVERS_POST_STAGING_TOPIC_ID = 2123;
+    static final long ROUTED_WORKFLOW_TOPIC_ID = 2504;
 
     public static void main(String[] args) throws IOException, InterruptedException, CsvException {
 
@@ -113,6 +114,9 @@ public class Main {
                 break;
             case Options.COMMAND_GET_ORDER_HISTORY:
                 getOrderHistory(apiClient);
+                break;
+            case Options.COMMAND_GET_ROUTED_WORKFLOW:
+                getRoutedWorkflow(apiClient);
                 break;
             case Options.COMMAND_MERGE_ORDER_HISTORY:
                 mergeOrderHistory(apiClient, options.getFileName(),
@@ -535,6 +539,9 @@ public class Main {
         HttpResponse<?> response = apiClient.post(post.toJson());
         LOGGER.info("generateGroupInstructionsPost {}", response.statusCode() == HTTP_OK ?
                 "" : "failed " + response.statusCode() + ": " + response.body());
+    }
+
+    static void getRoutedWorkflow(ApiClient apiClient) {
     }
 }
 

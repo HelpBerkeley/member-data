@@ -22,16 +22,11 @@
  */
 package org.helpberkeley.memberdata;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.IOException;
 import java.util.Comparator;
 import java.util.List;
 
 public class DeliveryData {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(DeliveryData.class);
 
     final String date;
     final UploadFile uploadFile;

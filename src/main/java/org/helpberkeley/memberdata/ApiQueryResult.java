@@ -68,19 +68,19 @@ public class ApiQueryResult {
         }
     }
 
-    @Override
-    public String toString() {
-        StringBuilder output = new StringBuilder();
-
-        for (String column : headers) {
-            output.append(column);
-            output.append(Constants.CSV_SEPARATOR);
-        }
-        output.append('\n');
-        output.append(rows.length);
-        output.append(" rows\n");
-
-
-        return output.toString();
-    }
+//    @Override
+//    public String toString() {
+//        StringBuilder output = new StringBuilder();
+//
+//        for (String column : headers) {
+//            output.append(column);
+//            output.append(Constants.CSV_SEPARATOR);
+//        }
+//        output.append('\n');
+//        output.append(rows.length);
+//        output.append(" rows\n");
+//
+//
+//        return output.toString();
+//    }
 }

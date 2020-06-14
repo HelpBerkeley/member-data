@@ -39,16 +39,8 @@ public class ApiClient {
     private static final Logger LOGGER = LoggerFactory.getLogger(ApiClient.class);
 
     private static final String BASE_URL = "https://go.helpberkeley.org/";
-    private static final String ADMIN_BASE = BASE_URL +  "admin/";
-    private static final String USER_ENDPOINT_BASE = ADMIN_BASE + "users/";
-    private static final String LATEST_POSTS_ENDPOINT = BASE_URL + "posts.json";
     private static final String POSTS_ENDPOINT = BASE_URL + "posts.json";
     static final String POSTS_BASE = BASE_URL + "posts/";
-    private static final String USER_FIELDS_ENDPOINT = ADMIN_BASE + "customize/user_fields.json";
-    private static final String CATEGORIES_ENDPOINT = BASE_URL + "categories.json";
-    private static final String GROUPS_ENDPOINT = BASE_URL + "groups.json";
-    private static final String GROUP_ENDPOINT_BASE = BASE_URL + "groups/";
-    private static final String LATEST_TOPICS_ENDPOINT = BASE_URL + "latest.json";
     private static final String DOWNLOAD_ENDPOINT = BASE_URL + "uploads/short-url/";
     static final String QUERY_BASE = BASE_URL + "admin/plugins/explorer/queries/";
 
@@ -160,41 +152,6 @@ public class ApiClient {
         }
 
         return response.body();
-    }
-
-    HttpResponse<String> getUser(long userId) throws IOException, InterruptedException {
-        String endpoint = USER_ENDPOINT_BASE + userId + ".json";
-        return get(endpoint);
-    }
-
-    HttpResponse<String> getLatestPosts() throws IOException, InterruptedException {
-        return get(LATEST_POSTS_ENDPOINT);
-    }
-
-    HttpResponse<String> getCategories() throws IOException, InterruptedException {
-        return get(CATEGORIES_ENDPOINT);
-    }
-
-    HttpResponse<String> getGroups() throws IOException, InterruptedException {
-        return get(GROUPS_ENDPOINT);
-    }
-
-    HttpResponse<String> getGroup(String groupName ) throws IOException, InterruptedException {
-        String endpoint = GROUP_ENDPOINT_BASE + groupName + ".json";
-        return get(endpoint);
-    }
-
-    HttpResponse<String> getGroupMembers(String groupName ) throws IOException, InterruptedException {
-        String endpoint = GROUP_ENDPOINT_BASE + groupName + "/members.json";
-        return get(endpoint);
-    }
-
-    HttpResponse<String> getLatestTopics() throws IOException, InterruptedException {
-        return get(LATEST_TOPICS_ENDPOINT);
-    }
-
-    HttpResponse<String> getUserFields() throws IOException, InterruptedException {
-        return get(USER_FIELDS_ENDPOINT);
     }
 
     String getPost(long postId) throws IOException, InterruptedException {

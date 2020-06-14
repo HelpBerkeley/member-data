@@ -42,20 +42,19 @@ public class RestaurantTemplateParser {
     static final String DUPLICATE_ROUTE_ERROR = " appears more than once in the route block";
     private static final String ROUTE_MARKER = " Route";
 
-    private final String csvData;
     private final CSVReaderHeaderAware csvReader;
 
     RestaurantTemplateParser(final String csvData) {
         CSVReaderHeaderAware csvReaderTemp;
 
         // Normalize EOL
-        this.csvData = csvData.replaceAll("\\r\\n?", "\n");
+        String normalizedData = csvData.replaceAll("\\r\\n?", "\n");
 
-        if (this.csvData.isEmpty()) {
+        if (normalizedData.isEmpty()) {
             throwTemplateError(ERROR_NO_DATA);
         }
         try {
-            csvReaderTemp = new CSVReaderHeaderAware(new StringReader(csvData));
+            csvReaderTemp = new CSVReaderHeaderAware(new StringReader(normalizedData));
         } catch (IOException ex) {
             csvReaderTemp = null;
             throwTemplateError(ex.getMessage());
