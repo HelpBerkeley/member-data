@@ -333,7 +333,6 @@ public class DriverPostFormat {
                 }
             }
 
-            assert order.size() > 0 : "No driver has " + restaurant.getName() + " as their first pickup";
             if (order.size() == 1) {
                 LOGGER.info("Rule 1: Assigned {} as primary for {} because they are the only "
                         + "driver with {} as their first pickup",

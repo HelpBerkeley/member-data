@@ -541,7 +541,11 @@ public class Main {
                 "" : "failed " + response.statusCode() + ": " + response.body());
     }
 
-    static void getRoutedWorkflow(ApiClient apiClient) {
+    static void getRoutedWorkflow(ApiClient apiClient) throws IOException, InterruptedException {
+        String routedWorkflowPosts = apiClient.runQueryWithParam(Constants.QUERY_GET_ALL_POSTS_IN_TOPICS,
+                "topic_id", String.valueOf(ROUTED_WORKFLOW_TOPIC_ID));
+
+        System.out.println(routedWorkflowPosts);
     }
 }
 

@@ -154,6 +154,33 @@ public class ApiClient {
         return response.body();
     }
 
+    String runQueryWithParam(int queryId, String paramName, String paramValue) throws IOException, InterruptedException {
+
+        String endpoint = QUERY_BASE + queryId + "/run";
+
+        // String body = "limit=1000000;" + paramName + '=' + paramValue;
+        // String body = "{params={\"" + paramName + "\":\"" + paramValue + "\"}";
+        String body = "\"" + paramName + "\":\"" + paramValue + "\"";
+
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(endpoint))
+                .header("Api-Username", apiUser)
+                .header("Api-Key", apiKey)
+                .header("Accept", "application/json")
+                .header("Content-Type", "multipart/form-data")
+                .POST(HttpRequest.BodyPublishers.ofString(body))
+                .build();
+
+        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+        if (response.statusCode() != HTTP_OK) {
+            // FIX THIS, DS: create a dedicated unchecked for this?
+            throw new Error("runQuery(" + endpoint + " failed: " + response.statusCode() + ": " + response.body());
+        }
+
+        return response.body();
+    }
+
     String getPost(long postId) throws IOException, InterruptedException {
         String endpoint = POSTS_BASE + postId + ".json";
         // Normalize EOL

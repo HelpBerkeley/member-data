@@ -356,4 +356,9 @@ public class RoutedDeliveriesTest extends TestBase {
         assertThat(delivery.getNormalRations()).isEqualTo("0");
         assertThat(delivery.getVeggieRations()).isEqualTo("1");
     }
+
+    @Test
+    public void missingGMapURLTest() {
+
+    }
 }

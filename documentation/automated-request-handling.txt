@@ -1,0 +1,139 @@
+Requirements
+============
+
+Provide a mechanism to reliably check a Discourse topic
+for a new piece of work to process.
+
+A given piece of work must not be processed twice.
+
+Provide a mechanism to return (post) status and
+informational and/or error messages.
+
+Configurable for use with different topics.
+
+Usable from within the Java application.
+
+Usable from the command line.
+
+Easy to use for the people submitting work. 
+
+Assumptions
+===========
+
+A given topic is dedicated for the use of one particular type of work.
+
+The first post in the topic explains the usage of the topic and the meaning
+and format of replies.
+
+There are only two types of replies supported in the topic:
+	1) Work requests
+	2) Status from the back-end processing
+
+Only the last reply will be considered as a candidate for new work.
+No mechanism is provided for automatically re-processing all work
+requests in the topic.
+
+Software Usage
+===============
+
+An external piece of logic (either in Java or a shell script)
+asks  if there is any new work request in a given topic.
+
+The last message of the topic is checked.
+If the last message of the topic is a work request,
+the file is downloaded, a new reply is automatically
+posted with the Processing status and the file name,
+and the file is returned  to the caller.
+
+The external logic processes the file, and then
+asks to make a status reply on the topic.  Containing
+the status (Succeeded of Fail) and any associated messages.
+
+Human Usage
+===========
+
+#1 Create a work request reply in the topic.
+
+#2 Check for the first status  message (standard Discourse notifications).
+
+	If the status says Processing, then the work request was accepted.
+
+	If the status says Failed, then there was a problem with the format
+	of the request, and will be described in the Failed reply. Fix
+	the problem and go back to step #1
+
+	No Processing or Failed status reply is seen within the agreed
+	upon maximum time (TDB), indicates a problem with the back-end
+	software. Contact the system administrator (TBD).
+
+#3 Check for the second status message, indicating that the work was processed.
+
+	If the status says Succeeded, then the work request was completed.
+	
+	If the status says Failed, and the messages indicated a problem
+	with the work file, address the problem and go back to step #1.
+
+	If the status, but the problem cannot be addressed, contact the
+	system administration(TBD).
+
+	If there is not second status message after the agreed upon
+	maximum time (TBD), contact the system administrator (TDB).
+
+
+Reply formats
+=============
+
+Work request
+------------
+
+A work request is fixed format reply consisting of:
+
+	Date (YYYY/MM/DD format)
+	Uploaded Work File URL (ideally with a meaningful file name).
+
+Empty lines, leading and trailing white space is ignored.
+Both Unix and Windows end of line conventions are accepted.
+
+Status message
+--------------
+
+A status message, posted by the back-end consists of:
+
+	Time		(YYYY/MM/dd HH:MM:SS)
+
+	Status: ${STATUS}	(Processing, Failed, or Succeeded)
+	File: ${WORKFILE}	(The name of the uploaded work file)
+
+	${MESSAGES}		(Varies. Provided by the processing logic. May be empty).
+
+Examples:
+
+	2020/06/20 21:06:52
+
+	Status: Processing
+	File: HelpBerkeleyDeliveries - 6_20.csv
+
+	-----------------------
+
+	2020/06/20 21:06:53
+
+	Status: Succeeded
+	File: HelpBerkeleyDeliveries - 6_20.csv
+
+	Info: There are no drivers for restaurant V & A.
+	@SomeDriver is the primary for split restaurant Gregoire 
+	@SomeOtherDriver is a secondary for split restaurant Gregoire 
+
+	-----------------------
+
+	2020/06/20 21:06:53
+
+	Status: Failed
+	File: HelpBerkeleyDeliveries - 6_20.csv
+
+	Line 6 is missing a value for the restaurant name.
+
+	
+
+
+

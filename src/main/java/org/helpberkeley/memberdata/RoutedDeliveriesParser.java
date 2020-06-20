@@ -56,11 +56,32 @@ public class RoutedDeliveriesParser {
 
         while ((rowMap = csvReader.readMap()) != null) {
 
+            if (isControlBlockRow(rowMap)) {
+                processControlBlock();
+            }
+
             assert isDriverRow(rowMap) : "line " + csvReader.getLinesRead() + " is not a driver row";
             drivers.add(processDriver(rowMap));
         }
 
         return drivers;
+    }
+
+    private boolean isControlBlockRow(final Map<String, String> rowMap) {
+
+        return (! Boolean.parseBoolean(rowMap.get(Constants.WORKFLOW_CONSUMER_COLUMN)))
+            && (! Boolean.parseBoolean(rowMap.get(Constants.WORKFLOW_DRIVER_COLUMN)))
+            && (rowMap.get(Constants.WORKFLOW_NAME_COLUMN).equals("CONTROL"));
+    }
+
+    private void processControlBlock() throws IOException, CsvValidationException {
+        Map<String, String> rowMap;
+
+        while ((rowMap = csvReader.readMap()) != null) {
+            if (! isControlBlockRow(rowMap)) {
+                continue;
+            }
+        }
     }
 
     /**
