@@ -1,3 +1,5 @@
+Handle unexpected null fields in user records.
+
 Build automation for WorkRequestHandling from Java.
 
 Build automation for WorkRequestHandling from shell.
@@ -21,3 +23,6 @@ Store queries in git (in addition to in the site).
 Replace all assertions with MemberDataException
 
 Improve code coverage / testing for exception reporting. 
+
+Handle if the user enters "none" or something
+similar for their second phone.

@@ -561,9 +561,21 @@ public class User {
 
     // Must be insensitive to null data
     private void auditAndNormalizeAltPhoneNumber() {
-        if ((altPhoneNumber == null) || altPhoneNumber.trim().isEmpty()){
+
+        if (altPhoneNumber == null) {
             altPhoneNumber = NOT_PROVIDED;
             return;
+        }
+
+        altPhoneNumber = altPhoneNumber.trim().toLowerCase();
+
+        switch (altPhoneNumber) {
+            case "":
+            case "none":
+            case "no":
+            case "n/a":
+                altPhoneNumber = NOT_PROVIDED;
+                return;
         }
 
         String digits = altPhoneNumber.replaceAll("[^\\d]", "");

@@ -676,4 +676,19 @@ public class UserTest extends TestBase {
         User u1 = createUserWithReferral("u1", referral);
         assertThat(u1.getReferral()).isEqualTo(referral);
     }
+
+    @Test
+    public void secondPhoneNoneTest() throws UserException {
+
+        List<String> altPhones = List.of(
+                "none",
+                " none ",
+                "NONE",
+                "n/a");
+
+        for (String altPhone : altPhones) {
+            User u1 = createUserWithAltPhone(altPhone);
+            assertThat(u1.getAltPhoneNumber()).isEqualTo(User.NOT_PROVIDED);
+        }
+    }
 }
