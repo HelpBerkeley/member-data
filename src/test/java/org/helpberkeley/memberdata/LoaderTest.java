@@ -35,10 +35,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class LoaderTest extends TestBase {
 
+    private final ApiClient apiClient;
+
+    public LoaderTest() throws IOException {
+        apiClient = createApiSimulator();
+    }
+
     @Test
     public void loadTest() throws IOException, InterruptedException, CsvException {
-        ApiClient apiClient = createApiSimulator();
-
         Loader loader = new Loader(apiClient);
 
         List<User> users = loader.load();
@@ -52,7 +56,6 @@ public class LoaderTest extends TestBase {
 
     @Test
     public void emailAddressTest() throws IOException, InterruptedException {
-        ApiClient apiClient = createApiSimulator();
         Loader loader = new Loader(apiClient);
 
         Map<Long, String> emailAddresses = loader.loadEmailAddresses();
@@ -93,10 +96,18 @@ public class LoaderTest extends TestBase {
 
         while ((columnsMap = csvReaderHeaderAware.readMap()) != null) {
             assertThat(columnsMap).containsOnlyKeys(columnNames);
-//                for (String columnName : columnNames) {
-//                    System.out.println(columnName + ": " + columnsMap.get(columnName));
-//                }
-//                System.out.println();
         }
+    }
+
+    @Test
+    public void nullUserFieldsTest() throws IOException, InterruptedException {
+        HttpClientSimulator.setQueryResponseFile(Constants.CURRENT_USERS_QUERY, "null-user.json");
+        Loader loader = new Loader(apiClient);
+        List<User> users = loader.load();
+
+        assertThat(users).hasSize(1);
+        User user = users.get(0);
+        assertThat(user.getDataErrors()).isNotEmpty();
+        assertThat(user.getDataErrors()).contains("Empty address", "Empty city", "Empty phone number");
     }
 }

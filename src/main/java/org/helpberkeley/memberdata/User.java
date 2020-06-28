@@ -430,27 +430,46 @@ public class User {
                 ':';
     }
 
+    //
+    // Originally these were all assertions, but we have seen:
+    //   - Discources support creating incomplete users
+    //   - Incomplete users created by some other means - unknown
+    //
     private void auditNullFields() {
 
-        assert name != null : "null name";
-        assert userName != null : "null userName";
-        assert address != null : "null address";
-        assert city != null : "null city";
-        assert phoneNumber != null : "null phoneNumber";
+        if (name == null) {
+            name = NOT_PROVIDED;
+            dataErrors.add("Empty name");
+        }
+        if (userName == null) {
+            userName = NOT_PROVIDED;
+            dataErrors.add("Empty user name");
+        }
+        if (address == null) {
+            address = NOT_PROVIDED;
+            dataErrors.add("Empty address");
+        }
+        if (city == null) {
+            city = NOT_PROVIDED;
+            dataErrors.add("Empty city");
+        }
+        if (phoneNumber == null) {
+            phoneNumber = NOT_PROVIDED;
+            dataErrors.add("Empty phone number");
+        }
 
-        // FIX THIS, DS: who changed this to optional?
-//        assert neighborhood != null;
         if (neighborhood == null) {
             neighborhood = "";
         }
 
-        assert emailVerified != null : "null emailVerified";
+        if (emailVerified == null) {
+            dataErrors.add("Missing emailVerified field");
+        }
     }
 
 
     // Must be insensitive to null data
     private void normalizeData() {
-//        removeCommas();
         removeNewlines();
         removeLeadingTrailingWhitespace();
         auditAndNormalizePhoneNumber();
@@ -524,7 +543,10 @@ public class User {
 
     // Must be insensitive to null data
     private void auditAndNormalizePhoneNumber() {
-        assert phoneNumber != null;
+        if (phoneNumber == null) {
+            assert ! dataErrors.isEmpty();
+            return;
+        }
 
         String digits = phoneNumber.replaceAll("[^\\d]", "");
 
@@ -613,7 +635,10 @@ public class User {
 
     // must be insensitive to null data
     private void auditAndNormalizeCity() {
-        assert city != null;
+        if (city == null) {
+            assert ! dataErrors.isEmpty();
+            return;
+        }
 
         if (cityIsBerkeley()) {
             city = Constants.BERKELEY;
@@ -627,7 +652,10 @@ public class User {
     // Try to remove the city portion of the address, if it is Berkeley.
     private void minimizeAddress() {
 
-        assert address != null;
+        if (address == null) {
+            assert ! dataErrors.isEmpty();
+            return;
+        }
 
         String lowerCase = address.toLowerCase();
 
@@ -682,7 +710,10 @@ public class User {
 
     private boolean cityIsBerkeley() {
 
-        assert city != null;
+        if (city == null) {
+            assert ! dataErrors.isEmpty();
+            return false;
+        }
 
         // Convert to lower case
         String cityName = city.toLowerCase();
@@ -725,7 +756,10 @@ public class User {
 
     private boolean cityIsAlbany() {
 
-        assert city != null;
+        if (city == null) {
+            assert ! dataErrors.isEmpty();
+            return false;
+        }
 
         // Convert to lower case
         String cityName = city.toLowerCase();
@@ -760,7 +794,10 @@ public class User {
 
     private boolean cityIsKensington() {
 
-        assert city != null;
+        if (city == null) {
+            assert ! dataErrors.isEmpty();
+            return false;
+        }
 
         // Convert to lower case
         String cityName = city.toLowerCase();
