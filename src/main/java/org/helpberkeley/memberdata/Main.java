@@ -90,7 +90,6 @@ public class Main {
     static final long DELIVERY_DETAILS_TOPIC_ID = 1818;
     static final long DRIVERS_POST_FORMAT_TOPIC_ID = 1967;
     static final long DRIVERS_POST_STAGING_TOPIC_ID = 2123;
-    static final long ROUTED_WORKFLOW_TOPIC_ID = 2504;
 
     public static void main(String[] args) throws IOException, InterruptedException, CsvException {
 
@@ -514,6 +513,45 @@ public class Main {
         DriverPostFormat driverPostFormat =
                 new DriverPostFormat(apiClient, routedDeliveries);
 
+        generateDriverPosts(apiClient, routedDeliveries);
+    }
+
+    static void getRoutedWorkflow(ApiClient apiClient) throws IOException, InterruptedException {
+        Query query = new Query(Constants.QUERY_GET_LAST_ROUTED_WORKFLOW_REPLY, Constants.TOPIC_ROUTED_WORKFLOW_DATA);
+        WorkRequestHandler requestHandler = new WorkRequestHandler(apiClient, query);
+
+        WorkRequestHandler.Reply reply = requestHandler.getLastReply();
+
+        LOGGER.info("getRoutedWorkflow found:\n" + reply);
+
+        if (reply instanceof WorkRequestHandler.Status) {
+            return;
+        }
+
+        WorkRequestHandler.WorkRequest request = (WorkRequestHandler.WorkRequest) reply;
+
+        // Download file
+        String routedDeliveries = apiClient.downloadFile(request.uploadFile.fileName);
+        request.postStatus(WorkRequestHandler.RequestStatus.Processing, "");
+
+        try {
+            generateDriverPosts(apiClient, routedDeliveries);
+            request.postStatus(WorkRequestHandler.RequestStatus.Succeeded, "");
+        } catch (MemberDataException ex) {
+            String reason = ex.getCause() != null ? ex.getCause().getMessage() : ex.getMessage();
+            request.postStatus(WorkRequestHandler.RequestStatus.Failed, reason);
+
+        } catch (InterruptedException|CsvValidationException|IOException ex) {
+            request.postStatus(WorkRequestHandler.RequestStatus.Failed, ex.getMessage());
+        }
+    }
+
+    static void generateDriverPosts(ApiClient apiClient, String routedDeliveries)
+            throws InterruptedException, CsvValidationException, IOException {
+
+        DriverPostFormat driverPostFormat =
+                new DriverPostFormat(apiClient, routedDeliveries);
+
         List<String> posts = driverPostFormat.generateDriverPosts();
         for (String rawPost : posts) {
             Post post = new Post();
@@ -528,7 +566,6 @@ public class Main {
                     "" : "failed " + response.statusCode() + ": " + response.body());
         }
 
-        String groupInstructionPost = driverPostFormat.generateGroupInstructionsPost();
         Post post = new Post();
         post.title = "Generated Group Instructions Post";
         post.topic_id = DRIVERS_POST_STAGING_TOPIC_ID;
@@ -539,13 +576,6 @@ public class Main {
         HttpResponse<?> response = apiClient.post(post.toJson());
         LOGGER.info("generateGroupInstructionsPost {}", response.statusCode() == HTTP_OK ?
                 "" : "failed " + response.statusCode() + ": " + response.body());
-    }
-
-    static void getRoutedWorkflow(ApiClient apiClient) throws IOException, InterruptedException {
-        String routedWorkflowPosts = apiClient.runQueryWithParam(Constants.QUERY_GET_ALL_POSTS_IN_TOPICS,
-                "topic_id", String.valueOf(ROUTED_WORKFLOW_TOPIC_ID));
-
-        System.out.println(routedWorkflowPosts);
     }
 }
 

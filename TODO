@@ -1,18 +1,23 @@
-------------------------
+Build automation for WorkRequestHandling from Java.
 
-Implement upload
-------------------------
+Build automation for WorkRequestHandling from shell.
 
 Audit/validate that the topic ids for posting are valid.
-
-------------------------
 
 Reverse engineer recipes for:
 	- Deleting a post.
 	- Uploading a file.
+	- Passing parameters to a queries
 
 	Documentation at https://docs.discourse.org/
 	Discussion at https://meta.discourse.org/
 
-------------------------
+Set large limit for all queries.
 
+Update all queries to ignore deleted posts
+
+Store queries in git (in addition to in the site).
+
+Replace all assertions with MemberDataException
+
+Improve code coverage / testing for exception reporting. 

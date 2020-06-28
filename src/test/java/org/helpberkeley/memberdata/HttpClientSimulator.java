@@ -34,6 +34,8 @@ import java.net.http.HttpResponse;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.Duration;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
@@ -43,6 +45,12 @@ import static java.net.HttpURLConnection.HTTP_OK;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class HttpClientSimulator extends HttpClient {
+
+    private static final Map<Integer, String> responseFiles = new HashMap<>();
+
+    static void setQueryResponseFile(int queryId, final String fileName) {
+        responseFiles.put(queryId, fileName);
+    }
 
     @Override
     public <T> HttpResponse<T> send(HttpRequest request, HttpResponse.BodyHandler<T> responseBodyHandler) {
@@ -84,8 +92,18 @@ public class HttpClientSimulator extends HttpClient {
 
     private <T> HttpResponse<T> doQuery(HttpRequest request) {
 
-        String dataFile;
         int queryId = getQueryId(request);
+        String dataFile = getQueryResponseFile(queryId);
+        return (HttpResponse<T>) new HttpResponseSimulator<>(readFile(dataFile));
+    }
+
+    private String getQueryResponseFile(int queryId) {
+
+        String dataFile = responseFiles.remove(queryId);
+
+        if (dataFile != null) {
+            return dataFile;
+        }
 
         switch (queryId) {
             case Constants.QUERY_GET_GROUPS_ID:
@@ -115,11 +133,14 @@ public class HttpClientSimulator extends HttpClient {
             case Constants.QUERY_GET_GROUP_INSTRUCTIONS_FORMAT:
                 dataFile = "group-instructions-post.json";
                 break;
+            case Constants.QUERY_GET_LAST_ROUTED_WORKFLOW_REPLY:
+                dataFile = "last-routed-workflow-reply.json";
+                break;
             default:
                 throw new RuntimeException("FIX THIS: query " + queryId + " not supported by the simulator");
         }
 
-        return (HttpResponse<T>) new HttpResponseSimulator<>(readFile(dataFile));
+        return dataFile;
     }
 
     private <T> HttpResponse<T> doPost(HttpRequest request) {

@@ -60,7 +60,9 @@ public class RoutedDeliveriesParser {
                 processControlBlock();
             }
 
-            assert isDriverRow(rowMap) : "line " + csvReader.getLinesRead() + " is not a driver row";
+            if (! isDriverRow(rowMap)) {
+                throw new MemberDataException("line " + csvReader.getLinesRead() + " is not a driver row");
+            }
             drivers.add(processDriver(rowMap));
         }
 
@@ -101,9 +103,13 @@ public class RoutedDeliveriesParser {
     Driver processDriver(Map<String, String> rowMap) throws IOException, CsvValidationException {
 
         String driverUserName = rowMap.get(Constants.WORKFLOW_USER_NAME_COLUMN);
-        assert !driverUserName.isEmpty() : "missing driver user name, line " + csvReader.getLinesRead();
+        if (driverUserName.isEmpty()) {
+            throw new MemberDataException("missing driver user name, line " + csvReader.getLinesRead());
+        }
         String driverPhone = rowMap.get(Constants.WORKFLOW_PHONE_COLUMN);
-        assert !driverPhone.isEmpty() : "missing driver phone , line " + csvReader.getLinesRead();
+        if (driverPhone.isEmpty()) {
+            throw new MemberDataException("missing driver phone , line " + csvReader.getLinesRead());
+        }
 
         // Read 1 or more restaurant rows. Example:
         // FALSE,,,,,,,,"1561 Solano Ave, Berkeley",FALSE,,Talavera,,,0
@@ -112,13 +118,22 @@ public class RoutedDeliveriesParser {
         List<Delivery> deliveries = processDeliveries();
 
         rowMap = csvReader.readMap();
-        assert isDriverRow(rowMap) : "line " + csvReader.getLinesRead() + " is not a driver row";
-        assert driverUserName.equals(rowMap.get(Constants.WORKFLOW_USER_NAME_COLUMN))
-                : driverUserName + ", line " + csvReader.getLinesRead() + ", mismatch driver end name";
+        if (! isDriverRow(rowMap)) {
+            throw new MemberDataException("line " + csvReader.getLinesRead() + " is not a driver row");
+        }
+        if (! driverUserName.equals(rowMap.get(Constants.WORKFLOW_USER_NAME_COLUMN))) {
+            throw new MemberDataException(driverUserName + ", line "
+                    + csvReader.getLinesRead() + ", mismatch driver end name");
+        }
+
         rowMap = csvReader.readMap();
         String gmapURL = rowMap.get(Constants.WORKFLOW_CONSUMER_COLUMN);
-        assert ! gmapURL.isEmpty() : "Driver " + driverUserName + " missing gmap URL";
-        assert gmapURL.contains("https://") : "Driver " + driverUserName + " missing gmap URL";
+        if (gmapURL.isEmpty()) {
+            throw new MemberDataException("Driver " + driverUserName + " missing gmap URL");
+        }
+        if (! gmapURL.contains("https://")) {
+            throw new MemberDataException("Driver " + driverUserName + " missing gmap URL");
+        }
 
         return new Driver(driverUserName, driverPhone, restaurants, deliveries, gmapURL);
     }
@@ -134,14 +149,25 @@ public class RoutedDeliveriesParser {
             }
 
             Map<String, String> rowMap = csvReader.readMap();
+            String errors = "";
 
             String restaurantName = rowMap.get(Constants.WORKFLOW_RESTAURANTS_COLUMN);
-            assert ! restaurantName.isEmpty() : "line " + csvReader.getLinesRead() + " missing restaurant name";
+            if (restaurantName.isEmpty()) {
+                errors += "missing restaurant name\n";
+            }
             String address = rowMap.get(Constants.WORKFLOW_ADDRESS_COLUMN);
-            assert ! address.isEmpty() : restaurantName + " line " + csvReader.getLinesRead() + " missing address";
+            if (address.isEmpty()) {
+                errors += "missing address\n";
+            }
             String details = rowMap.get(Constants.WORKFLOW_DETAILS_COLUMN);
             String orders = rowMap.get(Constants.WORKFLOW_ORDERS_COLUMN);
-            assert ! orders.isEmpty() : restaurantName + " line " + csvReader.getLinesRead() + " missing orders";
+            if (orders.isEmpty()) {
+                errors += "missing orders";
+            }
+
+            if (! errors.isEmpty()) {
+                throw new MemberDataException("line " + csvReader.getLinesRead() + " " + errors);
+            }
 
             Restaurant restaurant = new Restaurant(restaurantName);
             restaurant.setAddress(address);
@@ -165,27 +191,44 @@ public class RoutedDeliveriesParser {
             }
 
             Map<String, String> rowMap = csvReader.readMap();
+            String errors = "";
 
             String consumerName = rowMap.get(Constants.WORKFLOW_NAME_COLUMN);
-            assert ! consumerName.isEmpty() : "line " + csvReader.getLinesRead() + " missing consumer name";
+            if (consumerName.isEmpty()) {
+                errors += "missing consumer name\n";
+            }
             String userName = rowMap.get(Constants.WORKFLOW_USER_NAME_COLUMN);
-            assert ! userName.isEmpty() : consumerName + ", line " + csvReader.getLinesRead() + " missing user name";
+            if (userName.isEmpty()) {
+                errors += "missing user name\n";
+            }
             String phone = rowMap.get(Constants.WORKFLOW_PHONE_COLUMN);
-            assert ! phone.isEmpty() : consumerName + ", line " + csvReader.getLinesRead() + " missing phone";
+            if (phone.isEmpty()) {
+                errors += "missing phone\n";
+            }
             String altPhone = rowMap.get(Constants.WORKFLOW_ALT_PHONE_COLUMN);
             String city = rowMap.get(Constants.WORKFLOW_CITY_COLUMN);
-            assert ! city.isEmpty() : consumerName + ", line " + csvReader.getLinesRead() + " missing city";
+            if (city.isEmpty()) {
+                errors += "missing city\n";
+            }
             String address = rowMap.get(Constants.WORKFLOW_ADDRESS_COLUMN);
-            assert ! address.isEmpty() : consumerName + ", line " + csvReader.getLinesRead() + " missing address";
+            if (address.isEmpty()) {
+                errors += "missing address\n";
+            }
             boolean isCondo = Boolean.parseBoolean(rowMap.get(Constants.WORKFLOW_CONDO_COLUMN));
             String details = rowMap.get(Constants.WORKFLOW_DETAILS_COLUMN);
             String restaurantName = rowMap.get(Constants.WORKFLOW_RESTAURANTS_COLUMN);
-            assert ! restaurantName.isEmpty()
-                    : consumerName + ", line " + csvReader.getLinesRead() + " missing restaurant name";
+            if (restaurantName.isEmpty()) {
+                errors += "missing restaurant name\n";
+            }
             String normalRations = rowMap.get(Constants.WORKFLOW_NORMAL_COLUMN);
             String veggieRations = rowMap.get(Constants.WORKFLOW_VEGGIE_COLUMN);
-            assert ! (normalRations.isEmpty() && veggieRations.isEmpty())
-                    : consumerName + ", line " + csvReader.getLinesRead() + " no rations detected";
+            if (normalRations.isEmpty() && veggieRations.isEmpty()) {
+                errors += "no rations detected\n";
+            }
+
+            if (! errors.isEmpty()) {
+                throw new MemberDataException("line " + csvReader.getLinesRead() + " " + errors);
+            }
 
             Delivery delivery = new Delivery(consumerName);
             delivery.setUserName(userName);

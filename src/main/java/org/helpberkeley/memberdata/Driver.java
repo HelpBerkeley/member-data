@@ -50,7 +50,13 @@ public class Driver {
     }
 
     public String getgMapURL() {
-        return gMapURL;
+        int index = gMapURL.indexOf("/@");
+
+        if (index == -1) {
+            return gMapURL;
+        }
+
+        return "[" + gMapURL.substring(0, index) + "](" + gMapURL + ")";
     }
 
     public boolean hasCondo() {

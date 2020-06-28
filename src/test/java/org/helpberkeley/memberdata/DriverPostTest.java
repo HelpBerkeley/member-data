@@ -26,6 +26,7 @@ import com.opencsv.exceptions.CsvValidationException;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -72,7 +73,6 @@ public class DriverPostTest extends TestBase {
                 new DriverPostFormat(createApiSimulator(), routedDeliveries);
 
         String post = driverPostFormat.generateGroupInstructionsPost();
-//        System.out.println(post);
 
     }
 
@@ -98,10 +98,30 @@ public class DriverPostTest extends TestBase {
 
         List<String> posts = driverPostFormat.generateDriverPosts();
 
-//        for (String post : posts) {
-//            System.out.println(post);
-//        }
-
         String post = posts.get(0);
+    }
+
+    @Test
+    public void bikeGmapURLTest() {
+
+        String shortURL = "https://123+xyz+ccc+ddd+54";
+        String fullURL = shortURL + "/@xyzzy..54.zlkasflkj@asj77";
+        String expectedURL = "[" + shortURL + "](" + fullURL + ")";
+
+        Driver driver = new Driver("a", "555-555-1212",
+                Collections.EMPTY_LIST, Collections.EMPTY_LIST, fullURL);
+
+        assertThat(driver.getgMapURL()).isEqualTo(expectedURL);
+    }
+
+    @Test
+    public void carGmapURLTest() {
+
+        String shortURL = "https://123+xyz+ccc+ddd+54";
+
+        Driver driver = new Driver("a", "555-555-1212",
+                Collections.EMPTY_LIST, Collections.EMPTY_LIST, shortURL);
+
+        assertThat(driver.getgMapURL()).isEqualTo(shortURL);
     }
 }

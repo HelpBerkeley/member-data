@@ -23,6 +23,7 @@
 package org.helpberkeley.memberdata;
 
 import com.opencsv.exceptions.CsvValidationException;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -358,7 +359,9 @@ public class RoutedDeliveriesTest extends TestBase {
     }
 
     @Test
+    @Ignore
     public void missingGMapURLTest() {
 
+        // FIX THIS, DS: implement
     }
 }

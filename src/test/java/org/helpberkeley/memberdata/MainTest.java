@@ -233,6 +233,20 @@ public class MainTest extends TestBase {
         Main.main(args);
     }
 
+    @Test
+    public void getRoutedWorkflowRequestTest() throws IOException, InterruptedException, CsvException {
+        String[] args = { Options.COMMAND_GET_ROUTED_WORKFLOW };
+        Main.main(args);
+    }
+
+    @Test
+    public void getRoutedWorkflowStatusTest() throws IOException, InterruptedException, CsvException {
+        HttpClientSimulator.setQueryResponseFile(
+                Constants.QUERY_GET_LAST_ROUTED_WORKFLOW_REPLY, "last-routed-workflow-status.json");
+        String[] args = { Options.COMMAND_GET_ROUTED_WORKFLOW };
+        Main.main(args);
+    }
+
     private String findFile(final String prefix, final String suffix) {
 
         File dir = new File(".");
