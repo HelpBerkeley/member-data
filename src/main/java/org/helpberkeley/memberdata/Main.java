@@ -35,10 +35,7 @@ import java.nio.file.Paths;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 import static java.net.HttpURLConnection.HTTP_OK;
@@ -108,8 +105,6 @@ public class Main {
         ApiClient apiClient = new ApiClient(memberDataProperties);
 
         switch (options.getCommand()) {
-            case "test":
-                test(apiClient);
             case Options.COMMAND_FETCH:
                 fetch(apiClient);
                 break;
@@ -552,11 +547,14 @@ public class Main {
             throws InterruptedException, CsvValidationException, IOException {
 
         String statusMessages = "";
+        List<String> postURLs = new ArrayList<>();
+        String groupPostURL = null;
 
         DriverPostFormat driverPostFormat =
                 new DriverPostFormat(apiClient, routedDeliveries);
 
         List<String> posts = driverPostFormat.generateDriverPosts();
+        Iterator<Driver> driverIterator = driverPostFormat.getDrivers().iterator();
         for (String rawPost : posts) {
             Post post = new Post();
             post.title = "Generated Driver Post";
@@ -573,6 +571,18 @@ public class Main {
             if (response.statusCode() != HTTP_OK) {
                 statusMessages +=  "Failed posting driver's message: "
                         + response.statusCode() + ": " + response.body() + "\n";
+            } else {
+                PostResponse postResponse = Parser.postResponse((String)response.body());
+                postURLs.add(
+                        "["
+                        + driverIterator.next().getUserName()
+                        + " message](https://go.helpberkeley.org/t/"
+                        + postResponse.topicSlug
+                        + '/'
+                        + postResponse.topicId
+                        + '/'
+                        + postResponse.postNumber
+                        + ')');
             }
         }
 
@@ -590,24 +600,28 @@ public class Main {
         if (response.statusCode() != HTTP_OK) {
             statusMessages +=  "Failed posting group instructions message: "
                     + response.statusCode() + ": " + response.body() + "\n";
+        } else {
+            PostResponse postResponse = Parser.postResponse((String)response.body());
+            groupPostURL = ("https://go.helpberkeley.org/t/"
+                    + postResponse.topicSlug
+                    + '/'
+                    + postResponse.topicId
+                    + '/'
+                    + postResponse.postNumber);
         }
 
         statusMessages += driverPostFormat.statusMessages();
-        return statusMessages;
-    }
+        statusMessages += "\n";
 
-    static void test(ApiClient apiClient) throws IOException, InterruptedException {
-        Post post = new Post();
-        post.title = "testing testing testing";
-        post.topic_id = STONE_TEST_TOPIC;
-        post.raw = "as suggested previously, this is a test.";
-        post.createdAt = ZonedDateTime.now(ZoneId.systemDefault())
-                .format(DateTimeFormatter.ofPattern("uuuu.MM.dd.HH.mm.ss"));
-
-        HttpResponse<?> response = apiClient.post(post.toJson());
-        if (response.statusCode() != HTTP_OK) {
-            System.out.println("failed: " + response.statusCode() + ": " + response.body() + "\n");
+        for (String url : postURLs) {
+            statusMessages += url + "\n";
         }
+
+        if (groupPostURL != null) {
+            statusMessages += "[Group Instructions](" + groupPostURL + ")";
+        }
+
+        return statusMessages;
     }
 }
 

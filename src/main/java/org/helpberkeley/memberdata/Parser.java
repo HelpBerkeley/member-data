@@ -489,6 +489,22 @@ public class Parser {
         return (String)map.get("raw");
     }
 
+    static PostResponse postResponse(final String json) {
+        Map<String, Object> options = new HashMap<>();
+        options.put(JsonReader.USE_MAPS, Boolean.TRUE);
+
+        Map<String, Object> map = JsonReader.jsonToMaps(json, options);
+
+        assert map.containsKey("topic_id") : json;
+        long topic_id = (long)map.get("topic_id");
+        assert map.containsKey("post_number") : json;
+        long post_number = (long)map.get("post_number");
+        assert map.containsKey("topic_slug") : json;
+        String topicSlug = (String)map.get("topic_slug");
+
+        return new PostResponse(topic_id, post_number, topicSlug);
+    }
+
     static Map<Long, String> emailAddresses(final ApiQueryResult queryResult) {
         assert queryResult.headers.length == 3 : queryResult;
         assert queryResult.headers[0].equals("user_id") : queryResult;

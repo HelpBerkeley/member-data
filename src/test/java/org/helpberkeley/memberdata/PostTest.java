@@ -23,6 +23,10 @@ package org.helpberkeley.memberdata;
 
 import org.junit.Test;
 
+import java.io.IOException;
+import java.net.http.HttpResponse;
+
+import static java.net.HttpURLConnection.HTTP_OK;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class PostTest extends TestBase {
@@ -44,5 +48,21 @@ public class PostTest extends TestBase {
         assertThat(json).contains("\"title\":\"" + title + "\"");
         assertThat(json).contains("\"raw\":\"" + raw + "\"");
         assertThat(json).contains("\"topic_id\":" + topicId);
+    }
+
+    @Test
+    public void postResponseTest() throws IOException, InterruptedException {
+        ApiClient apiClient = createApiSimulator();
+
+        Post post = new Post();
+        String createdAt = TEST_CREATED_1;
+        String title = "Sir Funterf";
+        String raw = "kale";
+        long topicId = 42;
+
+        HttpResponse<String> response = apiClient.post(post.toJson());
+        assertThat(response.statusCode()).isEqualTo(HTTP_OK);
+
+        PostResponse postResponse = Parser.postResponse(response.body());
     }
 }

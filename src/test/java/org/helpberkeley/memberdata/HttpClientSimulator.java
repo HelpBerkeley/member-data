@@ -144,7 +144,8 @@ public class HttpClientSimulator extends HttpClient {
     }
 
     private <T> HttpResponse<T> doPost(HttpRequest request) {
-        return (HttpResponse<T>) new HttpResponseSimulator<>("");
+        String response = readFile("post-response.json");
+        return (HttpResponse<T>) new HttpResponseSimulator<>(response);
     }
 
     private <T> HttpResponse<T> doPut(HttpRequest request) {
