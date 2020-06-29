@@ -98,6 +98,7 @@ public class Options {
             String arg = args[index];
 
             switch (arg) {
+                case "test":
                 case COMMAND_FETCH:
                 case COMMAND_GET_ORDER_HISTORY:
                 case COMMAND_GET_DAILY_DELIVERIES:

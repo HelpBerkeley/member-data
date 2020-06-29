@@ -31,7 +31,8 @@ public class Constants {
 //    public static final int QUERY_GET_USERS_V14_ID = 12;
 //    public static final int QUERY_GET_USERS_V15_ID = 14;
     public static final int QUERY_GET_USERS_V16_ID = 16;
-    public static final int CURRENT_USERS_QUERY = QUERY_GET_USERS_V16_ID;
+    public static final int QUERY_GET_USERS_V17_ID = 23;
+    public static final int CURRENT_USERS_QUERY = QUERY_GET_USERS_V17_ID;
     public static final int QUERY_GET_DAILY_DELIVERIES = 13;
     public static final int QUERY_EMAIL_CONFIRMATIONS = 15;
     public static final int QUERY_GET_EMAILS = 11;
@@ -45,6 +46,7 @@ public class Constants {
 
     public static final String COLUMN_ID = "id";
     public static final String COLUMN_NAME = "name";
+    public static final String COLUMN_STAGED = "staged";
     public static final String COLUMN_USERNAME = "username";
     public static final String COLUMN_GROUP_ID = "group_id";
     public static final String COLUMN_USER_ID = "user_id";

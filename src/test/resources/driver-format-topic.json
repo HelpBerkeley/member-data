@@ -1,8 +1,8 @@
 {
   "success": true,
   "errors": [],
-  "duration": 0.6,
-  "result_count": 9,
+  "duration": 0.5,
+  "result_count": 11,
   "params": {},
   "columns": [
     "post_number",
@@ -12,38 +12,46 @@
   "rows": [
     [
       1,
-      "Control post"
+      "[control]\n\nControl post. This thread is specifying the way the software is formatting the drivers' threads.\n\n* Picked up by the software directly from the post:\n[Header]\n[Condo]\n[Restaurants]\n[Pickup]\n[Deliveries]\n[Itinerary]\n[Tips]\n\n* Hardwired:\n[Split Restaurant]"
     ],
     [
       2,
-      "[Header]\n\nDriver's run for: @${DRIVER}\n\n**Please reply to this thread when you begin your run!**\n**Your run starts at  ${FIRST_RESTAURANT} at  ${RESTAURANT_START_TIME}**\n\nAny problem, any issue: call or text @AloyisiusHutchinsonIII-Esq-Ltd 123.456.7890. He is a phone call/text away."
+      "[Header]\n\nDriver's run for: @${DRIVER}\n\n**Please reply to this thread when you begin your run!**\n**Your run starts at  ${FIRST_RESTAURANT} at  ${RESTAURANT_START_TIME}**\n\nAny problem, any issue: call or text today's on-call operations manager: @NicoReicher (510-932-0317)."
     ],
     [
       3,
-      "[Split Restaurant]\n\nIF ${ANY_SPLIT_RESTAURANT} THEN\n{\nFOR{EACH_SPLIT_RESTAURANT}\n{\n* you are one of {SPLIT_RESTAURANT.NUMBER_OF_DRIVERS} drivers going to pick orders at **${SPLIT_RESTAURANT.NAME}** [other driver(s): FOR ${SPLIT_RESTAURANT.THIS_DRIVER.EACH_OTHER_DRIVER} \n{ \n@${SPLIT_RESTAURANT.THIS_DRIVER.OTHER_DRIVERS.NAME} at ${SPLIT_RESTAURANT.THIS_DRIVER.OTHER_DRIVERS.PHONE_NUMBER};\n}\n ]. The total number of orders is ${SPLIT_RESTAURANT.TOTAL_ORDERS}: you are picking up ${SPLIT_RESTAURANT.THIS_DRIVER.ORDERS} of them.\n* you are IF ${SPLIT_RESTAURANT.THIS_DRIVER.PRIMARY} {primary} ELSE {secondary} driver for this restaurant, which means that you IF ${SPLIT_RESTAURANT.THIS_DRIVER.PRIMARY} {need} ELSE {do not need} to take pics of the delivery form\n\n}\n* because multiple drivers are going to the same restaurant, you need to be careful about what orders you are picking up\n* if you are not the last driver picking up orders, please make sure you are picking YOUR orders, and tell the restaurant that other drivers are coming.\n* **while you pick up your orders, please post on the thread to let other drivers know** (so that the last driver knows she is last)\n* if you are the last driver picking up orders, please make sure that there is no extra order.\n\n}"
+      "[Split Restaurant Header]\n\nIF ${ANY_SPLIT_RESTAURANT} THEN\n\n{\nWe are running an experiment:\n\n}"
     ],
     [
       4,
-      "[Condo]\n\nIF ${ANY_CONDO} THEN\n{\nYou have a condo on your run! Please be aware we have special delivering instructions and they are:  **(1) Before departing the previous delivery destination, we MUST call the upcoming condo customer**  and let her know when we are due, and to wait at street level;  **(2)**  We do not walk up to the apartment/condo unit;  **(3)**  When you arrive, ask her to maintain a 6 ft distance if necessary, leave the food a safe distance from the customer and walk away, wishing the customer a good day;  **(4)**  If she is not waiting when you arrive call again and wait three minutes;  **(5)**  If she is not down within three minutes (whether she ever picked up or not), we leave the food bag in the lobby, otherwise at the lobby front door, then we call again and explain that we left the food bag.\n}"
+      "[Split Restaurant]\n\nIF ${ANY_SPLIT_RESTAURANT} THEN\n{\n\nFOR{EACH_SPLIT_RESTAURANT}\n{\n* you are one of {SPLIT_RESTAURANT.NUMBER_OF_DRIVERS} drivers going to pick orders at **${SPLIT_RESTAURANT.NAME}** [other driver(s): FOR ${SPLIT_RESTAURANT.THIS_DRIVER.EACH_OTHER_DRIVER} \n{ \n@${SPLIT_RESTAURANT.THIS_DRIVER.OTHER_DRIVERS.NAME} at ${SPLIT_RESTAURANT.THIS_DRIVER.OTHER_DRIVERS.PHONE_NUMBER};\n}\n ]. The total number of orders is ${SPLIT_RESTAURANT.TOTAL_ORDERS}: you are picking up ${SPLIT_RESTAURANT.THIS_DRIVER.ORDERS} of them.\n* you are IF ${SPLIT_RESTAURANT.THIS_DRIVER.PRIMARY} {primary} ELSE {secondary} driver for this restaurant, which means that you IF ${SPLIT_RESTAURANT.THIS_DRIVER.PRIMARY} {need} ELSE {do not need} to take pics of the delivery form\n\n}\n\n\n}"
     ],
     [
       5,
-      "[Restaurants]\n\n**Restaurants**\n\nPlease go to every restaurant, in the sequence listed below, even if there are no pickups, in order to take pictures of the delivery form for the next day.\n\n|Address|Details|Restaurants|#orders|\n|---|---|---|---|\n|${RESTAURANT.ADDRESS}|${RESTAURANT.DETAILS}|${RESTAURANT.NAME}|${RESTAURANT.ORDERS}|"
+      "[Split restaurant common]\n\nIF ${ANY_SPLIT_RESTAURANT} THEN\n{\n\n* because multiple drivers are going to the same restaurant, you need to be careful about what orders you are picking up\n* if you are not the last driver picking up orders, please make sure you are picking YOUR orders, and tell the restaurant that other drivers are coming.\n* **while you pick up your orders, please post on the thread to let other drivers know**  (so that the last driver knows she is last)\n* if you are the last driver picking up orders, please make sure that there is no extra order.\n\n}"
     ],
     [
       6,
-      "[Pickup]\n\n**Detailed orders** (in order of deliveries):\n\n|Name|User Name|Restaurants|normal|veggie|\n|---|---|---|---|---|---|---|\n|${C.NAME}|${C.USER_NAME}|${C.RESTAURANT}|${C.NORMAL}|${C.VEGGIE}|"
+      "[Condo]\n\nIF ${ANY_CONDO} THEN\n{\nYou have a condo on your run! Please be aware we have special delivering instructions and they are:  **(1) Before departing the previous delivery destination, we MUST call the upcoming condo customer**  and let her know when we are due, and to wait at street level;  **(2)**  We do not walk up to the apartment/condo unit;  **(3)**  When you arrive, ask her to maintain a 6 ft distance if necessary, leave the food a safe distance from the customer and walk away, wishing the customer a good day;  **(4)**  If she is not waiting when you arrive call again and wait three minutes;  **(5)**  If she is not down within three minutes (whether she ever picked up or not), we leave the food bag in the lobby, otherwise at the lobby front door, then we call again and explain that we left the food bag.\n}"
     ],
     [
       7,
-      "[Deliveries]\n\n**Deliveries** (user names, if needed, are listed above):\n\n|Name|Phone #|Phone2 #|City|Address|Condo|Details|\n| --- | --- | --- | --- | --- | --- | --- |\n|${C.NAME}|${C.PHONE}|${C.ALT_PHONE}|${C.CITY}|${C.ADDRESS}|${C.CONDO}|${C.DETAILS}|"
+      "[Restaurants]\n\n**Restaurants**\n\nPlease go to every restaurant, in the sequence listed below, even if there are no pickups, in order to take pictures of the delivery form for the next day.\n\n|Address|Details|Restaurants|#orders|\n|---|---|---|---|\n|${RESTAURANT.ADDRESS}|${RESTAURANT.DETAILS}|${RESTAURANT.NAME}|${RESTAURANT.ORDERS}|"
     ],
     [
       8,
-      "[Itinerary]\n\n**GMap static URL :**  ${GMAP_URL}"
+      "[Pickup]\n\n**Detailed orders** (in order of deliveries):\n\n|Name|User Name|Restaurants|normal|veggie|\n|---|---|---|---|---|---|---|\n|${C.NAME}|${C.USER_NAME}|${C.RESTAURANT}|${C.NORMAL}|${C.VEGGIE}|"
     ],
     [
       9,
+      "[Deliveries]\n\n**Deliveries** (user names, if needed, are listed above):\n\n|Name|Phone #|Phone2 #|City|Address|Condo|Details|\n| --- | --- | --- | --- | --- | --- | --- |\n|${C.NAME}|${C.PHONE}|${C.ALT_PHONE}|${C.CITY}|${C.ADDRESS}|${C.CONDO}|${C.DETAILS}|"
+    ],
+    [
+      10,
+      "[Itinerary]\n\n**GMap static URL :**  ${GMAP_URL}"
+    ],
+    [
+      11,
       "[Tips]\n\nSome tips–read carefully:\n\n* First and foremost thank you for helping serve our COVID-vulnerable neighbors in Berkeley(plus)\n* The Five Must-Haves: Well-charged phone, gloves, clean food boxes, mask, social distancing\n* Before setting off, use your phone to open the email message you received for this run (it will save a cached version in the event you lose cellular connectivity during your run)\n* when using static GMAP URL, you might need to press Continue to go from waypoint to waypoint\n* **remember to arrive at the first restaurant on time**\n* always take a pic in portrait mode (not landscape)\n* remember to take 2 pictures of delivery form right when you arrive at the restaurant, to make sure there are no important missing parts to the pic\n  * **Cafe Raj: make sure to ask them if the delivery form is tomorrow’s orders (rather than today)**\n* make sure your pics include ALL THE INFO we need, including restaurant name at the top\n* verify that all bags are labeled if there is more than one order. If not, ask.\n  * Cafe Raj, Noodle Fresh, and Talavera sometimes forget\n* remember that some consumers may order from more than one restaurant. They are listed in your form above\n* remember to call consumers, after dropping off, from your car while parked on the street next to their house\n* remember to discard gloves, sanitize box, and thoroughly wash hands when coming home\n* **remember to upload right away the delivery forms by replying to this thread: we are waiting for them to start laying out tomorrow’s driver runs.**\n* Please write up a quick post of what did not go well, and suggestions on how to prepare the runs better. Let us know when you completed your run."
     ]
   ]

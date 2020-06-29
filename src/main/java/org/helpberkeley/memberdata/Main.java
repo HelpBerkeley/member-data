@@ -108,6 +108,8 @@ public class Main {
         ApiClient apiClient = new ApiClient(memberDataProperties);
 
         switch (options.getCommand()) {
+            case "test":
+                test(apiClient);
             case Options.COMMAND_FETCH:
                 fetch(apiClient);
                 break;
@@ -535,8 +537,8 @@ public class Main {
         request.postStatus(WorkRequestHandler.RequestStatus.Processing, "");
 
         try {
-            generateDriverPosts(apiClient, routedDeliveries);
-            request.postStatus(WorkRequestHandler.RequestStatus.Succeeded, "");
+            String statusMessage = generateDriverPosts(apiClient, routedDeliveries);
+            request.postStatus(WorkRequestHandler.RequestStatus.Succeeded, statusMessage);
         } catch (MemberDataException ex) {
             String reason = ex.getCause() != null ? ex.getCause().getMessage() : ex.getMessage();
             request.postStatus(WorkRequestHandler.RequestStatus.Failed, reason);
@@ -546,8 +548,10 @@ public class Main {
         }
     }
 
-    static void generateDriverPosts(ApiClient apiClient, String routedDeliveries)
+    static String generateDriverPosts(ApiClient apiClient, String routedDeliveries)
             throws InterruptedException, CsvValidationException, IOException {
+
+        String statusMessages = "";
 
         DriverPostFormat driverPostFormat =
                 new DriverPostFormat(apiClient, routedDeliveries);
@@ -562,8 +566,14 @@ public class Main {
                     .format(DateTimeFormatter.ofPattern("uuuu.MM.dd.HH.mm.ss"));
 
             HttpResponse<?> response = apiClient.post(post.toJson());
+
             LOGGER.info("generateDriversPosts {}", response.statusCode() == HTTP_OK ?
                     "" : "failed " + response.statusCode() + ": " + response.body());
+
+            if (response.statusCode() != HTTP_OK) {
+                statusMessages +=  "Failed posting driver's message: "
+                        + response.statusCode() + ": " + response.body() + "\n";
+            }
         }
 
         Post post = new Post();
@@ -576,6 +586,28 @@ public class Main {
         HttpResponse<?> response = apiClient.post(post.toJson());
         LOGGER.info("generateGroupInstructionsPost {}", response.statusCode() == HTTP_OK ?
                 "" : "failed " + response.statusCode() + ": " + response.body());
+
+        if (response.statusCode() != HTTP_OK) {
+            statusMessages +=  "Failed posting group instructions message: "
+                    + response.statusCode() + ": " + response.body() + "\n";
+        }
+
+        statusMessages += driverPostFormat.statusMessages();
+        return statusMessages;
+    }
+
+    static void test(ApiClient apiClient) throws IOException, InterruptedException {
+        Post post = new Post();
+        post.title = "testing testing testing";
+        post.topic_id = STONE_TEST_TOPIC;
+        post.raw = "as suggested previously, this is a test.";
+        post.createdAt = ZonedDateTime.now(ZoneId.systemDefault())
+                .format(DateTimeFormatter.ofPattern("uuuu.MM.dd.HH.mm.ss"));
+
+        HttpResponse<?> response = apiClient.post(post.toJson());
+        if (response.statusCode() != HTTP_OK) {
+            System.out.println("failed: " + response.statusCode() + ": " + response.body() + "\n");
+        }
     }
 }
 

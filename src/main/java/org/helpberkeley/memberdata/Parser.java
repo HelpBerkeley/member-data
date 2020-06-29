@@ -54,22 +54,23 @@ public class Parser {
 
         List<User> users = new ArrayList<>();
 
-        assert queryResult.headers.length == 13 :
+        assert queryResult.headers.length == 14 :
                 "Unexpected number of columns for users query result: " + queryResult;
 
         assert queryResult.headers[0].equals(Constants.COLUMN_USER_ID) : queryResult.headers[0];
         assert queryResult.headers[1].equals(Constants.COLUMN_USERNAME) : queryResult.headers[1];
         assert queryResult.headers[2].equals(Constants.COLUMN_NAME) : queryResult.headers[2];
-        assert queryResult.headers[3].equals(Constants.COLUMN_ADDRESS) : queryResult.headers[3];
-        assert queryResult.headers[4].equals(Constants.COLUMN_PHONE) : queryResult.headers[4];
-        assert queryResult.headers[5].equals(Constants.COLUMN_NEIGHBORHOOD) : queryResult.headers[5];
-        assert queryResult.headers[6].equals(Constants.COLUMN_CITY) : queryResult.headers[6];
-        assert queryResult.headers[7].equals(Constants.COLUMN_CONDO) : queryResult.headers[7];
-        assert queryResult.headers[8].equals(Constants.COLUMN_CONSUMER_REQUEST) : queryResult.headers[8];
-        assert queryResult.headers[9].equals(Constants.COLUMN_VOLUNTEER_REQUEST) : queryResult.headers[9];
-        assert queryResult.headers[10].equals(Constants.COLUMN_ALT_PHONE) : queryResult.headers[10];
-        assert queryResult.headers[11].equals(Constants.COLUMN_REFERRAL) : queryResult.headers[11];
-        assert queryResult.headers[12].equals(Constants.COLUMN_CREATE_TIME) : queryResult.headers[12];
+        assert queryResult.headers[3].equals(Constants.COLUMN_STAGED) : queryResult.headers[3];
+        assert queryResult.headers[4].equals(Constants.COLUMN_ADDRESS) : queryResult.headers[4];
+        assert queryResult.headers[5].equals(Constants.COLUMN_PHONE) : queryResult.headers[5];
+        assert queryResult.headers[6].equals(Constants.COLUMN_NEIGHBORHOOD) : queryResult.headers[6];
+        assert queryResult.headers[7].equals(Constants.COLUMN_CITY) : queryResult.headers[7];
+        assert queryResult.headers[8].equals(Constants.COLUMN_CONDO) : queryResult.headers[8];
+        assert queryResult.headers[9].equals(Constants.COLUMN_CONSUMER_REQUEST) : queryResult.headers[9];
+        assert queryResult.headers[10].equals(Constants.COLUMN_VOLUNTEER_REQUEST) : queryResult.headers[10];
+        assert queryResult.headers[11].equals(Constants.COLUMN_ALT_PHONE) : queryResult.headers[11];
+        assert queryResult.headers[12].equals(Constants.COLUMN_REFERRAL) : queryResult.headers[12];
+        assert queryResult.headers[13].equals(Constants.COLUMN_CREATE_TIME) : queryResult.headers[13];
 
         List<String> groupMemberships = new ArrayList<>();
 
@@ -79,7 +80,7 @@ public class Parser {
 
             long userId = (Long)columns[0];
 
-            if (skipUserId(userId)) {
+            if (skipUserId(userId) || (Boolean)columns[3]) {
                 continue;
             }
 
@@ -90,16 +91,16 @@ public class Parser {
                 continue;
             }
             String name = (String)columns[2];
-            String address = (String)columns[3];
-            String phone = (String)columns[4];
-            String neighborhood = (String)columns[5];
-            String city = (String)columns[6];
-            Boolean isCondo = Boolean.valueOf((String)columns[7]);
-            Boolean hasConsumerRequest = Boolean.valueOf((String)columns[8]);
-            String volunteerRequest = (String)columns[9];
-            String altPhone = (String)columns[10];
-            String referral = (String)columns[11];
-            String createdAt = (String)columns[12];
+            String address = (String)columns[4];
+            String phone = (String)columns[5];
+            String neighborhood = (String)columns[6];
+            String city = (String)columns[7];
+            Boolean isCondo = Boolean.valueOf((String)columns[8]);
+            Boolean hasConsumerRequest = Boolean.valueOf((String)columns[9]);
+            String volunteerRequest = (String)columns[10];
+            String altPhone = (String)columns[11];
+            String referral = (String)columns[12];
+            String createdAt = (String)columns[13];
 
             groupMemberships.clear();
 

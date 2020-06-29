@@ -15,10 +15,15 @@ FALSE,TRUE,Josephine B. Driver,jsDriver,888-888-8888,,,,,,,,,,
 "https://www.google.com/maps/dir/x+y+z",,,,,,,,,,,,,,
 FALSE,TRUE,Jack C Driver,jcDriver,999-999-9999,,,,,,,,,,
 FALSE,,,,,,,,"1158 Solano Ave, Albany",FALSE,"One,Two,Three details",Cafe Raj,,,3
-FALSE,,,,,,,,"1823 Solano Ave, Berkeley",FALSE,,Kim's,,,1
+FALSE,,,,,,,,"1823 Solano Ave, Berkeley",FALSE,,Kim's Cafe,,,1
 TRUE,FALSE,Cust Name 6,Cust6,555-555-6666,none,Hills,Berkeley,66 66th St,FALSE,,Cafe Raj,1,0,
-TRUE,FALSE,Cust Name 6,Cust6,555-555-6666,none,Hills,Berkeley,66 66th St,FALSE,,Kim's,1,0,
+TRUE,FALSE,Cust Name 6,Cust6,555-555-6666,none,Hills,Berkeley,66 66th St,FALSE,,Kim's Cafe,1,0,
 TRUE,FALSE,Cust Name 7,Cust7,555-555-7777,none,Hills,Berkeley,77 77th St,FALSE,,Cafe Raj,1,0,
 TRUE,FALSE,Cust Name 8,Cust8,555-555-8888,none,Hills,Berkeley,88 88th St,FALSE,,Cafe Raj,0,1,
 FALSE,TRUE,Jack C Driver,jcDriver,999-999-9999,,,,,,,,,,
+"https://www.google.com/maps/dir/a+b+c",,,,,,,,,,,,,,
+FALSE,TRUE,Joanne D Driver,jdDriver,999-999-9999,,,,,,,,,,
+FALSE,,,,,,,,"2521 Hearst Ave, Berkeley, CA 94709",FALSE,"immediately E (uphill) of Etcheverry Hall, right against building",V&A Cafe,,,1
+TRUE,FALSE,Cust Name 8,Cust8,555-555-8888,none,Hills,Berkeley,88 88th St,FALSE,,V&A Cafe,1,1,
+FALSE,TRUE,Joanne D Driver,jdDriver,999-999-9999,,,,,,,,,,
 "https://www.google.com/maps/dir/a+b+c",,,,,,,,,,,,,,

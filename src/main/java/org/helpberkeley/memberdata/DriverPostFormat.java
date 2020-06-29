@@ -41,6 +41,7 @@ public class DriverPostFormat {
     private List<Driver> drivers;
     private final Pattern compositeVariableRE;
     private Map<String, Restaurant> restaurants;
+    private String statusMessages = "";
 
     DriverPostFormat(ApiClient apiClient, final String routedDeliveries)
             throws IOException, InterruptedException, CsvValidationException {
@@ -61,6 +62,10 @@ public class DriverPostFormat {
         return restaurants;
     }
 
+    String statusMessages() {
+        return statusMessages;
+    }
+
     List<String> generateDriverPosts() {
 
         List<String> driverPosts = new ArrayList<>();
@@ -68,6 +73,13 @@ public class DriverPostFormat {
             StringBuilder post = new StringBuilder();
 
             for (Section section : driverPostSections) {
+
+                // FIX THIS, DS: implement fixed split restaurant section handling.
+                if (section.name.toLowerCase().equals("control")
+                    || section.name.toLowerCase().equals("split restaurant header")
+                    || section.name.toLowerCase().equals("split restaurant common")) {
+                    continue;
+                }
 
                 // FIX THIS, DS: remove when handled
                 if (section.name.equals("Split Restaurant")) {
@@ -103,8 +115,9 @@ public class DriverPostFormat {
         StringBuilder post = new StringBuilder();
 
         for (Section section : groupInstructionSections) {
-            if (section.name.equals("thread title for reply")) {
-                // FIX THIS, DS: implement
+
+            if (section.name.toLowerCase().equals("control")) {
+                continue;
             }
             // FIX THIS, DS: need to extend macro language to handle this section.
             //               currently hardwired here.
@@ -137,6 +150,9 @@ public class DriverPostFormat {
             header.append(firstRestaurant);
             header.append(" at ");
             header.append(startTime);
+            if (firstRestaurant.equals("V&A Cafe")) {
+                header.append(". This restaurant closes at 5:00 PM");
+            }
             header.append("**\n");
         }
 
@@ -175,6 +191,7 @@ public class DriverPostFormat {
 
             if (! match.find()) {
                 LOGGER.warn("Cannot find section name in {}", raw);
+                statusMessages += "Cannot find section name " + raw + " in restaurant template.\n";
                 continue;
             }
 
@@ -204,6 +221,7 @@ public class DriverPostFormat {
 
             if (! match.find()) {
                 LOGGER.warn("Cannot find section name in {}", raw);
+                statusMessages += "Cannot find section name " + raw + " in group instructions template.\n";
                 continue;
             }
 
@@ -223,7 +241,7 @@ public class DriverPostFormat {
             return driver.hasCondo();
         }
 
-        throw new Error("Unsupported conditional " + variableName);
+        throw new MemberDataException("Unsupported conditional " + variableName);
     }
 
     private String processLine(final Driver driver, final String line) {
@@ -231,7 +249,12 @@ public class DriverPostFormat {
         final String firstRestaurant = driver.getFirstRestaurantName();
         final Restaurant restaurant = restaurants.get(firstRestaurant);
         assert restaurant != null : firstRestaurant + " was not found the in restaurant template post";
-        final String startTime = restaurant.getStartTime();
+        String startTime = restaurant.getStartTime();
+
+        // FIX THIS, DS: quite a hack. We need some new conditional variable
+        if (firstRestaurant.equals("V&A Cafe")) {
+            startTime += ". This restaurant closes at 5:00 PM";
+        }
 
         return line.replaceAll("\\$\\{DRIVER\\}", driver.getUserName())
             .replaceAll("\\$\\{FIRST_RESTAURANT\\}", firstRestaurant)
@@ -249,7 +272,7 @@ public class DriverPostFormat {
         } else if (line.contains("${RESTAURANT.")) {
             processedLine = processRestaurantLine(driver, line);
         } else {
-            throw new Error("Unrecognized composite variable in " + line);
+            throw new MemberDataException("Unrecognized composite variable in " + line);
         }
 
         return processedLine;
@@ -313,9 +336,10 @@ public class DriverPostFormat {
         for (Restaurant restaurant : restaurants.values()) {
             Collection<Driver> drivers = restaurant.getDrivers().values();
 
-            // FIX THIS, DS: should this be an assertion?
             if (drivers.size() == 0) {
-                LOGGER.warn("Restaurant {} has no drivers", restaurant.getName());
+                String message = "Restaurant " + restaurant.getName() + " has no drivers.";
+                LOGGER.warn(message);
+                statusMessages += message + "\n";
                 continue;
             }
 
@@ -334,9 +358,16 @@ public class DriverPostFormat {
             }
 
             if (order.size() == 1) {
-                LOGGER.info("Rule 1: Assigned {} as primary for {} because they are the only "
-                        + "driver with {} as their first pickup",
-                        order.get(0).getUserName(), restaurant.getName(), restaurant.getName());
+                String message = "Assigned "
+                    + order.get(0).getUserName()
+                    + " as primary for "
+                    + restaurant.getName()
+                    + " because they are the only driver with "
+                    + restaurant.getName()
+                    + " as their first pickup.";
+                LOGGER.info(message);
+                statusMessages += message + "\n";
+
                 restaurant.setPrimaryDriver(order.get(0));
                 continue;
             }
@@ -360,8 +391,14 @@ public class DriverPostFormat {
             }
 
             if (order.size() == 1) {
-                LOGGER.info("Rule 2: Assigned {} as primary for {} because they have the fewest stops",
-                        order.get(0).getUserName(), restaurant.getName());
+                String message = "Assigned "
+                        + order.get(0).getUserName()
+                        + " as primary for "
+                        + restaurant.getName()
+                        + " because they have the fewest stops.";
+                LOGGER.info(message);
+                statusMessages += message + "\n";
+
                 restaurant.setPrimaryDriver(order.get(0));
                 continue;
             }
@@ -384,8 +421,14 @@ public class DriverPostFormat {
             }
 
             if (order.size() == 1) {
-                LOGGER.info("Rule 3: Assigned {} as primary for {} because they have the fewest pickups",
-                        order.get(0).getUserName(), restaurant.getName());
+                String message = "Assigned "
+                        + order.get(0).getUserName()
+                        + " as primary for "
+                        + restaurant.getName()
+                        + " because they have the fewest pickups.";
+                LOGGER.info(message);
+                statusMessages += message + "\n";
+
                 restaurant.setPrimaryDriver(order.get(0));
                 continue;
             }
@@ -395,8 +438,13 @@ public class DriverPostFormat {
             driversList.sort(Comparator.comparing(Driver::getUserName));
             restaurant.setPrimaryDriver(driversList.get(0));
 
-            LOGGER.info("Rule 4: Assigned {} as primary for {} based on alphabetical sort",
-                    order.get(0).getUserName(), restaurant.getName());
+            String message = "Assigned "
+                    + order.get(0).getUserName()
+                    + " as primary for "
+                    + restaurant.getName()
+                    + " based on alphabetical user name sort.";
+            LOGGER.info(message);
+            statusMessages += message + "\n";
         }
     }
 
@@ -420,8 +468,10 @@ public class DriverPostFormat {
             hasSplit = true;
             boolean isPrimary = restaurant.getPrimaryDriver().getUserName().equals(driver.getUserName());
 
-            LOGGER.debug("{} Driver {} has split restaurant {}",
-                    isPrimary ? "Primary" : "Secondary", driver.getUserName(), restaurant.getName());
+            if (! isPrimary) {
+                statusMessages += "Driver " + driver.getUserName()
+                        + " is a secondary for " + restaurant.getName() + "\n";
+            }
 
             if (output.length() == 0) {
                 output.append("\nWe are running an experiment:\n\n");

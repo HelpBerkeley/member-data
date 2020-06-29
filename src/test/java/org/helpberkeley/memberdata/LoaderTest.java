@@ -100,14 +100,10 @@ public class LoaderTest extends TestBase {
     }
 
     @Test
-    public void nullUserFieldsTest() throws IOException, InterruptedException {
+    public void stagedUserTest() throws IOException, InterruptedException {
         HttpClientSimulator.setQueryResponseFile(Constants.CURRENT_USERS_QUERY, "null-user.json");
         Loader loader = new Loader(apiClient);
         List<User> users = loader.load();
-
-        assertThat(users).hasSize(1);
-        User user = users.get(0);
-        assertThat(user.getDataErrors()).isNotEmpty();
-        assertThat(user.getDataErrors()).contains("Empty address", "Empty city", "Empty phone number");
+        assertThat(users).hasSize(0);
     }
 }

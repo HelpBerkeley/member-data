@@ -1,0 +1,5 @@
+Consumer,Driver,Name,User Name,Phone #,Phone2 #,Neighborhood,City,Address,Condo,Details,Restaurants,normal,veggie,#orders
+FALSE,TRUE,Josephine B. Driver,jsDriver,888-888-8888,,,,,,,,,,
+FALSE,,,,,,,,"1158 Solano Ave, Albany",FALSE,"One,Two,Three details",Cafe Raj,,,1
+TRUE,FALSE,,,,none,Hills,,,FALSE,,,,,
+"https://www.google.com/maps/dir/x+y+z",,,,,,,,,,,,,,

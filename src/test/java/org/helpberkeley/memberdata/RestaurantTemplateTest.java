@@ -154,7 +154,7 @@ public class RestaurantTemplateTest extends TestBase {
 
         Map<String, Restaurant> restaurants = new RestaurantTemplateParser(csvData).restaurants();
         assertThat(restaurants).hasSize(2);
-        assertThat(restaurants).containsKeys("Cafe Raj", "Kim's");
+        assertThat(restaurants).containsKeys("Cafe Raj", "Kim's Cafe");
     }
 
     @Test

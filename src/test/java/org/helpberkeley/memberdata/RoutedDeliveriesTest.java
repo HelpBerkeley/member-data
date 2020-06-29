@@ -183,7 +183,7 @@ public class RoutedDeliveriesTest extends TestBase {
         RoutedDeliveriesParser parser = new RoutedDeliveriesParser(csvData);
         List<Driver> drivers = parser.drivers();
 
-        assertThat(drivers).hasSize(3);
+        assertThat(drivers).hasSize(4);
         Driver driver = drivers.get(0);
         assertThat(driver.getUserName()).isEqualTo("jbDriver");
         assertThat(driver.hasCondo()).isFalse();
@@ -297,7 +297,7 @@ public class RoutedDeliveriesTest extends TestBase {
         assertThat(restaurant.getOrders()).isEqualTo(3);
 
         restaurant = pickups.get(1);
-        assertThat(restaurant.getName()).isEqualTo("Kim's");
+        assertThat(restaurant.getName()).isEqualTo("Kim's Cafe");
         assertThat(restaurant.getAddress()).isEqualTo("1823 Solano Ave, Berkeley");
         assertThat(restaurant.getDetails()).isEmpty();
         assertThat(restaurant.getOrders()).isEqualTo(1);
@@ -327,7 +327,7 @@ public class RoutedDeliveriesTest extends TestBase {
         assertThat(delivery.getAddress()).isEqualTo("66 66th St");
         assertThat(delivery.isCondo()).isFalse();
         assertThat(delivery.getDetails()).isEmpty();
-        assertThat(delivery.getRestaurant()).isEqualTo("Kim's");
+        assertThat(delivery.getRestaurant()).isEqualTo("Kim's Cafe");
         assertThat(delivery.getNormalRations()).isEqualTo("1");
         assertThat(delivery.getVeggieRations()).isEqualTo("0");
 
@@ -355,6 +355,37 @@ public class RoutedDeliveriesTest extends TestBase {
         assertThat(delivery.getDetails()).isEmpty();
         assertThat(delivery.getRestaurant()).isEqualTo("Cafe Raj");
         assertThat(delivery.getNormalRations()).isEqualTo("0");
+        assertThat(delivery.getVeggieRations()).isEqualTo("1");
+
+        driver = drivers.get(3);
+        assertThat(driver.getUserName()).isEqualTo("jdDriver");
+        assertThat(driver.hasCondo()).isFalse();
+        assertThat(driver.getgMapURL()).isEqualTo("https://www.google.com/maps/dir/a+b+c");
+
+        pickups = driver.getPickups();
+        assertThat(pickups).hasSize(1);
+
+        restaurant = pickups.get(0);
+        assertThat(restaurant.getName()).isEqualTo("V&A Cafe");
+        assertThat(restaurant.getAddress()).isEqualTo("2521 Hearst Ave, Berkeley, CA 94709");
+        assertThat(restaurant.getDetails()).isEqualTo(
+                "immediately E (uphill) of Etcheverry Hall, right against building");
+        assertThat(restaurant.getOrders()).isEqualTo(1);
+
+        deliveries = driver.getDeliveries();
+        assertThat(deliveries).hasSize(1);
+
+        delivery = deliveries.get(0);
+        assertThat(delivery.getName()).isEqualTo("Cust Name 8");
+        assertThat(delivery.getUserName()).isEqualTo("Cust8");
+        assertThat(delivery.getPhone()).isEqualTo("555-555-8888");
+        assertThat(delivery.getAltPhone()).isEqualTo("none");
+        assertThat(delivery.getCity()).isEqualTo("Berkeley");
+        assertThat(delivery.getAddress()).isEqualTo("88 88th St");
+        assertThat(delivery.isCondo()).isFalse();
+        assertThat(delivery.getDetails()).isEmpty();
+        assertThat(delivery.getRestaurant()).isEqualTo("V&A Cafe");
+        assertThat(delivery.getNormalRations()).isEqualTo("1");
         assertThat(delivery.getVeggieRations()).isEqualTo("1");
     }
 

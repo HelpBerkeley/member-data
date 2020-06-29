@@ -42,10 +42,10 @@ public class RoutedDeliveriesParser {
         String normalizedData = csvData.replaceAll("\\r\\n?", "\n");
         assert ! csvData.isEmpty() : "empty restaurant template";
         csvReader = new CSVReaderHeaderAware(new StringReader(normalizedData));
+        auditColumnNames();
     }
 
     private void auditColumnNames() {
-
         // FIX THIS, DS: implement
     }
 

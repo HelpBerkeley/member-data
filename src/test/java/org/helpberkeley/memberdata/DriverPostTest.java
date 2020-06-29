@@ -31,6 +31,7 @@ import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.catchThrowable;
 
 public class DriverPostTest extends TestBase {
 
@@ -78,15 +79,14 @@ public class DriverPostTest extends TestBase {
 
     @Test
     public void splitRestaurantsTest() throws IOException, CsvValidationException, InterruptedException {
-        String routedDeliveries = readResourceFile(
-                "routed-deliveries-with-split-restaurants.csv");
+        String routedDeliveries = readResourceFile("routed-deliveries-with-split-restaurants.csv");
         DriverPostFormat driverPostFormat =
                 new DriverPostFormat(createApiSimulator(), routedDeliveries);
 
         List<Driver> drivers = driverPostFormat.getDrivers();
         Map<String, Restaurant> restaurants = driverPostFormat.getRestaurants();
 
-        assertThat(drivers).hasSize(3);
+        assertThat(drivers).hasSize(4);
         Driver driver = drivers.get(0);
         assertThat(driver.getUserName()).isEqualTo("jbDriver");
 
@@ -96,9 +96,35 @@ public class DriverPostTest extends TestBase {
         driver = drivers.get(2);
         assertThat(driver.getUserName()).isEqualTo("jcDriver");
 
+        driver = drivers.get(3);
+        assertThat(driver.getUserName()).isEqualTo("jdDriver");
+
         List<String> posts = driverPostFormat.generateDriverPosts();
 
         String post = posts.get(0);
+
+        post = driverPostFormat.generateGroupInstructionsPost();
+    }
+
+    @Test
+    public void deliveryErrorsTest() throws IOException, CsvValidationException, InterruptedException {
+        String routedDeliveries = readResourceFile("routed-deliveries-delivery-errors.csv");
+        Throwable thrown = catchThrowable(() ->
+                new DriverPostFormat(createApiSimulator(), routedDeliveries));
+        assertThat(thrown).isInstanceOf(MemberDataException.class);
+        assertThat(thrown).hasMessageContainingAll("missing consumer name",
+                "missing user name", "missing phone", "missing city", "missing address",
+                "missing restaurant name", "no rations detected");
+    }
+
+    @Test
+    public void restaurantErrorsTest() throws IOException, CsvValidationException, InterruptedException {
+        String routedDeliveries = readResourceFile("routed-deliveries-restaurant-errors.csv");
+        Throwable thrown = catchThrowable(() ->
+                new DriverPostFormat(createApiSimulator(), routedDeliveries));
+        assertThat(thrown).isInstanceOf(MemberDataException.class);
+        assertThat(thrown).hasMessageContainingAll("missing restaurant name",
+                "missing address", "missing orders");
     }
 
     @Test

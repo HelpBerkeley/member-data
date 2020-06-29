@@ -41,14 +41,15 @@ public class RestaurantTest extends TestBase {
 
         List<String> expectedRestaurants = List.of(
                 "Cafe Raj",
-                "Kim's",
+                "Kim's Cafe",
                 "Talavera",
                 "Sweet Basil",
                 "Bopshop",
                 "Jot Mahal",
                 "Da Lian",
                 "Thai Delight",
-                "V & A Cafe",
+                "V&A Cafe",
+                "Gregoire",
                 "Kaze Ramen"
         );
 
@@ -58,7 +59,7 @@ public class RestaurantTest extends TestBase {
         assertThat(restaurant.getRoute()).isEqualTo("Solano Route");
         assertThat(restaurant.getStartTime()).isEqualTo("5:10 PM");
 
-        restaurant = restaurants.get("Kim's");
+        restaurant = restaurants.get("Kim's Cafe");
         assertThat(restaurant.getRoute()).isEqualTo("Solano Route");
         assertThat(restaurant.getStartTime()).isEqualTo("5:10 PM");
 
@@ -86,7 +87,7 @@ public class RestaurantTest extends TestBase {
         assertThat(restaurant.getRoute()).isEqualTo("Shattuck Route");
         assertThat(restaurant.getStartTime()).isEqualTo("5:10 PM");
 
-        restaurant = restaurants.get("V & A Cafe");
+        restaurant = restaurants.get("V&A Cafe");
         assertThat(restaurant.getRoute()).isEqualTo("Shattuck Route");
         assertThat(restaurant.getStartTime()).isEqualTo("4:50 PM");
 
