@@ -1,0 +1,20 @@
+{
+  "success": true,
+  "errors": [],
+  "duration": 0.4,
+  "result_count": 1,
+  "params": {},
+  "columns": [
+    "post_number",
+    "deleted_at",
+    "raw"
+  ],
+  "default_limit": 1000,
+  "rows": [
+    [
+      9,
+      null,
+      "There was a problem with the last request...\n"
+    ]
+  ]
+}

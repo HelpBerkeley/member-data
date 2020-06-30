@@ -107,7 +107,7 @@ public class DriverPostTest extends TestBase {
     }
 
     @Test
-    public void deliveryErrorsTest() throws IOException, CsvValidationException, InterruptedException {
+    public void deliveryErrorsTest() {
         String routedDeliveries = readResourceFile("routed-deliveries-delivery-errors.csv");
         Throwable thrown = catchThrowable(() ->
                 new DriverPostFormat(createApiSimulator(), routedDeliveries));
@@ -118,13 +118,41 @@ public class DriverPostTest extends TestBase {
     }
 
     @Test
-    public void restaurantErrorsTest() throws IOException, CsvValidationException, InterruptedException {
+    public void restaurantErrorsTest() {
         String routedDeliveries = readResourceFile("routed-deliveries-restaurant-errors.csv");
         Throwable thrown = catchThrowable(() ->
                 new DriverPostFormat(createApiSimulator(), routedDeliveries));
         assertThat(thrown).isInstanceOf(MemberDataException.class);
         assertThat(thrown).hasMessageContainingAll("missing restaurant name",
                 "missing address", "missing orders");
+    }
+
+    @Test
+    public void driverErrorsTest() {
+        String routedDeliveries = readResourceFile("routed-deliveries-driver-errors.csv");
+        Throwable thrown = catchThrowable(() ->
+                new DriverPostFormat(createApiSimulator(), routedDeliveries));
+        assertThat(thrown).isInstanceOf(MemberDataException.class);
+        assertThat(thrown).hasMessageContainingAll("missing driver user name",
+                "missing driver phone number");
+    }
+
+    @Test
+    public void missingGMapURLTest() {
+        String routedDeliveries = readResourceFile("routed-deliveries-missing-gmap-url.csv");
+        Throwable thrown = catchThrowable(() ->
+                new DriverPostFormat(createApiSimulator(), routedDeliveries));
+        assertThat(thrown).isInstanceOf(MemberDataException.class);
+        assertThat(thrown).hasMessageContainingAll("missing gmap URL");
+    }
+
+    @Test
+    public void emptyGMapURLTest() {
+        String routedDeliveries = readResourceFile("routed-deliveries-empty-gmap-url.csv");
+        Throwable thrown = catchThrowable(() ->
+                new DriverPostFormat(createApiSimulator(), routedDeliveries));
+        assertThat(thrown).isInstanceOf(MemberDataException.class);
+        assertThat(thrown).hasMessageContainingAll("empty gmap URL");
     }
 
     @Test
@@ -135,7 +163,7 @@ public class DriverPostTest extends TestBase {
         String expectedURL = "[" + shortURL + "](" + fullURL + ")";
 
         Driver driver = new Driver("a", "555-555-1212",
-                Collections.EMPTY_LIST, Collections.EMPTY_LIST, fullURL);
+                Collections.emptyList(), Collections.emptyList(), fullURL);
 
         assertThat(driver.getgMapURL()).isEqualTo(expectedURL);
     }
@@ -146,7 +174,7 @@ public class DriverPostTest extends TestBase {
         String shortURL = "https://123+xyz+ccc+ddd+54";
 
         Driver driver = new Driver("a", "555-555-1212",
-                Collections.EMPTY_LIST, Collections.EMPTY_LIST, shortURL);
+                Collections.emptyList(), Collections.emptyList(), shortURL);
 
         assertThat(driver.getgMapURL()).isEqualTo(shortURL);
     }

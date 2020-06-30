@@ -27,6 +27,7 @@ import org.junit.Test;
 import java.io.IOException;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.catchThrowable;
 
 public class WorkRequestHandlerTest extends TestBase {
 
@@ -69,5 +70,19 @@ public class WorkRequestHandlerTest extends TestBase {
         String statusMessage = "Somewhere the quick brown fox\nand the lazy dog\nare taking the day off\n";
         ((WorkRequestHandler.WorkRequest)reply).postStatus(
                 WorkRequestHandler.RequestStatus.Processing, statusMessage);
+    }
+
+    @Test
+    public void parseUnrecognizedPostTest() throws IOException, InterruptedException {
+        HttpClientSimulator.setQueryResponseFile(
+                Constants.QUERY_GET_LAST_ROUTED_WORKFLOW_REPLY, "bad-work-request.json");
+
+        Query query = new Query(
+                Constants.QUERY_GET_LAST_ROUTED_WORKFLOW_REPLY, Constants.TOPIC_ROUTED_WORKFLOW_DATA);
+        WorkRequestHandler requestHandler = new WorkRequestHandler(apiClient, query);
+        Throwable thrown = catchThrowable(() -> requestHandler.getLastReply());
+        assertThat(thrown).isInstanceOf(MemberDataException.class);
+        assertThat(thrown).hasMessageContaining("Post #9 in Routed Workflow Data is not "
+                + "recognizable as either a work request or a status message");
     }
 }

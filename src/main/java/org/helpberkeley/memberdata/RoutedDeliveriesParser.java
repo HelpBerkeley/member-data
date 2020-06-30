@@ -102,13 +102,19 @@ public class RoutedDeliveriesParser {
     
     Driver processDriver(Map<String, String> rowMap) throws IOException, CsvValidationException {
 
+        String errors = "";
+
         String driverUserName = rowMap.get(Constants.WORKFLOW_USER_NAME_COLUMN);
         if (driverUserName.isEmpty()) {
-            throw new MemberDataException("missing driver user name, line " + csvReader.getLinesRead());
+            errors += "missing driver user name\n";
         }
         String driverPhone = rowMap.get(Constants.WORKFLOW_PHONE_COLUMN);
         if (driverPhone.isEmpty()) {
-            throw new MemberDataException("missing driver phone , line " + csvReader.getLinesRead());
+            errors += "missing driver phone number\n";
+        }
+
+        if (! errors.isEmpty()) {
+            throw new MemberDataException("line " + csvReader.getLinesRead() + " " + errors);
         }
 
         // Read 1 or more restaurant rows. Example:
@@ -127,12 +133,18 @@ public class RoutedDeliveriesParser {
         }
 
         rowMap = csvReader.readMap();
+        if (rowMap == null) {
+            throw new MemberDataException("Driver " + driverUserName
+                    + " missing gmap URL after line " + csvReader.getLinesRead());
+        }
+
         String gmapURL = rowMap.get(Constants.WORKFLOW_CONSUMER_COLUMN);
         if (gmapURL.isEmpty()) {
-            throw new MemberDataException("Driver " + driverUserName + " missing gmap URL");
+            throw new MemberDataException("Line " + csvReader.getLinesRead()
+                    + ", driver " + driverUserName + " empty gmap URL");
         }
         if (! gmapURL.contains("https://")) {
-            throw new MemberDataException("Driver " + driverUserName + " missing gmap URL");
+            throw new MemberDataException("Driver " + driverUserName + " unrecognizable gmap URL");
         }
 
         return new Driver(driverUserName, driverPhone, restaurants, deliveries, gmapURL);

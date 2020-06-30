@@ -252,6 +252,7 @@ public class MainTest extends TestBase {
         File dir = new File(".");
         File[] files = dir.listFiles((dir1, name) -> name.startsWith(prefix) && name.endsWith(suffix));
 
+        assertThat(files).isNotNull();
         assertThat(files).hasSize(1);
         return files[0].getName();
     }

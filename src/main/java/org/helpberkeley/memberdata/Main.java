@@ -611,14 +611,18 @@ public class Main {
         }
 
         statusMessages += driverPostFormat.statusMessages();
-        statusMessages += "\n";
+        statusMessages += "\n\n";
+
+        statusMessages += "**Driver Messages Posted to "
+                + "[Staging Automated driver run messages]"
+                + "(https://go.helpberkeley.org/t/staging-automated-driver-run-messages/2123/)**\n\n";
 
         for (String url : postURLs) {
             statusMessages += url + "\n";
         }
 
         if (groupPostURL != null) {
-            statusMessages += "[Group Instructions](" + groupPostURL + ")";
+            statusMessages += "\n[Group Instructions](" + groupPostURL + ")";
         }
 
         return statusMessages;

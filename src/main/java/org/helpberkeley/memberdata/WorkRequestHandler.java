@@ -44,7 +44,6 @@ public class WorkRequestHandler {
 
     private final ApiClient apiClient;
     private final Query query;
-    private Reply lastReply;
 
     WorkRequestHandler(ApiClient apiClient, Query query) {
         this.apiClient = apiClient;
@@ -53,7 +52,7 @@ public class WorkRequestHandler {
 
     Reply getLastReply() throws IOException, InterruptedException {
 
-        lastReply = fetchLastReply();
+        Reply lastReply = fetchLastReply();
 
         List<String> lines = new ArrayList<>();
 
@@ -79,7 +78,7 @@ public class WorkRequestHandler {
 
         if (reply == null) {
            throw new MemberDataException(
-                    "Last post (#" + lastReply.postNumber + ") in " + query.topic
+                    "Post #" + lastReply.postNumber + " in " + query.topic
                     + " is not recognizable as either a work request or a status message");
         }
 
@@ -160,6 +159,7 @@ public class WorkRequestHandler {
 
             Post post = new Post();
             post.title = "Status response to post " + postNumber;
+            assert query.topic != null;
             post.topic_id = query.topic.id;
             post.raw = rawPost;
             post.createdAt = timeStamp;

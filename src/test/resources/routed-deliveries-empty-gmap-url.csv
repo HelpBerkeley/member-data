@@ -1,0 +1,8 @@
+Consumer,Driver,Name,User Name,Phone #,Phone2 #,Neighborhood,City,Address,Condo,Details,Restaurants,normal,veggie,#orders
+FALSE,TRUE,Joe B. Driver,jbDriver,777-777-7777,,,,,,,,,,
+FALSE,,,,,,,,"1561 Solano Ave, Berkeley",FALSE,,Talavera,,,0
+FALSE,,,,,,,,"1823 Solano Ave, Berkeley",FALSE,,Bopshop,,,2
+TRUE,FALSE,Cust Name 1,Cust1,555-555-1112,none,Hills,Berkeley,123 456th Ave,FALSE,,Bopshop,1,0,
+TRUE,FALSE,Cust Name 3,Cust3,555-555-3333,none,Hills,Berkeley,11 11th St,FALSE,,Bopshop,1,0,
+FALSE,TRUE,Joe B. Driver,jbDriver,777-777-7777,,,,,,,,,,
+,,,,,,,,,,,,,,

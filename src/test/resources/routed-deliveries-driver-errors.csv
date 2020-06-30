@@ -1,0 +1,5 @@
+Consumer,Driver,Name,User Name,Phone #,Phone2 #,Neighborhood,City,Address,Condo,Details,Restaurants,normal,veggie,#orders
+FALSE,TRUE,Joe B. Driver,,,,,,,,,,,,
+FALSE,,,,,,,,"1561 Solano Ave, Berkeley",FALSE,,Talavera,,,0
+FALSE,TRUE,Joe B. Driver,jbDriver,777-777-7777,,,,,,,,,,
+"https://www.google.com/maps/dir/something+something+else",,,,,,,,,,,,,,

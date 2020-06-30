@@ -46,7 +46,7 @@ public class DriverPostFormat {
     DriverPostFormat(ApiClient apiClient, final String routedDeliveries)
             throws IOException, InterruptedException, CsvValidationException {
         this.apiClient = apiClient;
-        compositeVariableRE = Pattern.compile("\\$\\{[A-Z_]+\\.[A-Z_]+\\}");
+        compositeVariableRE = Pattern.compile("\\$\\{[A-Z_]+\\.[A-Z_]+}");
         loadRestaurantTemplate();
         loadDriverPostFormat();
         loadGroupPostFormat();
@@ -184,7 +184,7 @@ public class DriverPostFormat {
 
             // Look for section name of the form:
             // [This is the section name]\n
-            String pattern = "^\\[([A-Za-z0-9 ]+)\\]";
+            String pattern = "^\\[([A-Za-z0-9 ]+)]";
 
             Pattern re = Pattern.compile(pattern);
             Matcher match = re.matcher(raw);
@@ -214,7 +214,7 @@ public class DriverPostFormat {
 
             // Look for section name of the form:
             // [This is the section name]\n
-            String pattern = "^\\[([A-Za-z0-9 ]+)\\]";
+            String pattern = "^\\[([A-Za-z0-9 ]+)]";
 
             Pattern re = Pattern.compile(pattern);
             Matcher match = re.matcher(raw);
@@ -256,10 +256,10 @@ public class DriverPostFormat {
             startTime += ". This restaurant closes at 5:00 PM";
         }
 
-        return line.replaceAll("\\$\\{DRIVER\\}", driver.getUserName())
-            .replaceAll("\\$\\{FIRST_RESTAURANT\\}", firstRestaurant)
-            .replaceAll("\\$\\{RESTAURANT_START_TIME\\}", startTime)
-            .replaceAll("\\$\\{GMAP_URL\\}", driver.getgMapURL())
+        return line.replaceAll("\\$\\{DRIVER}", driver.getUserName())
+            .replaceAll("\\$\\{FIRST_RESTAURANT}", firstRestaurant)
+            .replaceAll("\\$\\{RESTAURANT_START_TIME}", startTime)
+            .replaceAll("\\$\\{GMAP_URL}", driver.getgMapURL())
             + '\n';
     }
 
@@ -283,17 +283,17 @@ public class DriverPostFormat {
 
         for (Delivery delivery : driver.getDeliveries()) {
 
-            processedLine += line.replaceAll("\\$\\{C.NAME\\}", delivery.getName())
-                .replaceAll("\\$\\{C.USER_NAME\\}", delivery.getUserName())
-                .replaceAll("\\$\\{C.PHONE\\}", delivery.getPhone())
-                .replaceAll("\\$\\{C.ALT_PHONE\\}", delivery.getAltPhone())
-                .replaceAll("\\$\\{C.CITY\\}", delivery.getCity())
-                .replaceAll("\\$\\{C.ADDRESS\\}", delivery.getAddress())
-                .replaceAll("\\$\\{C.CONDO\\}", String.valueOf(delivery.isCondo()))
-                .replaceAll("\\$\\{C.DETAILS\\}", delivery.getDetails())
-                .replaceAll("\\$\\{C.RESTAURANT\\}", delivery.getRestaurant())
-                .replaceAll("\\$\\{C.NORMAL\\}", delivery.getNormalRations())
-                .replaceAll("\\$\\{C.VEGGIE\\}", delivery.getVeggieRations())
+            processedLine += line.replaceAll("\\$\\{C.NAME}", delivery.getName())
+                .replaceAll("\\$\\{C.USER_NAME}", delivery.getUserName())
+                .replaceAll("\\$\\{C.PHONE}", delivery.getPhone())
+                .replaceAll("\\$\\{C.ALT_PHONE}", delivery.getAltPhone())
+                .replaceAll("\\$\\{C.CITY}", delivery.getCity())
+                .replaceAll("\\$\\{C.ADDRESS}", delivery.getAddress())
+                .replaceAll("\\$\\{C.CONDO}", String.valueOf(delivery.isCondo()))
+                .replaceAll("\\$\\{C.DETAILS}", delivery.getDetails())
+                .replaceAll("\\$\\{C.RESTAURANT}", delivery.getRestaurant())
+                .replaceAll("\\$\\{C.NORMAL}", delivery.getNormalRations())
+                .replaceAll("\\$\\{C.VEGGIE}", delivery.getVeggieRations())
                 + '\n';
         }
 
@@ -305,10 +305,10 @@ public class DriverPostFormat {
 
         for (Restaurant restaurant : driver.getPickups()) {
             processedLine.append(
-                line.replaceAll("\\$\\{RESTAURANT.NAME\\}", restaurant.getName())
-                .replaceAll("\\$\\{RESTAURANT.ADDRESS\\}", restaurant.getAddress())
-                .replaceAll("\\$\\{RESTAURANT.DETAILS\\}", restaurant.getDetails())
-                .replaceAll("\\$\\{RESTAURANT.ORDERS\\}",
+                line.replaceAll("\\$\\{RESTAURANT.NAME}", restaurant.getName())
+                .replaceAll("\\$\\{RESTAURANT.ADDRESS}", restaurant.getAddress())
+                .replaceAll("\\$\\{RESTAURANT.DETAILS}", restaurant.getDetails())
+                .replaceAll("\\$\\{RESTAURANT.ORDERS}",
                 String.valueOf(restaurant.getOrders()))).append('\n');
         }
 

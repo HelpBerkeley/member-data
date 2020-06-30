@@ -39,8 +39,9 @@ public class Parser {
         Map<String, Object> options = new HashMap<>();
         options.put(JsonReader.USE_MAPS, Boolean.TRUE);
 
-        Map<String, Object> map = JsonReader.jsonToMaps(queryResultJson, options);
-
+        @SuppressWarnings("unchecked")
+        Map<String, Object> map =
+                (Map<String, Object>)JsonReader.jsonToJava(queryResultJson, options);
         Object[] columns = (Object[])map.get("columns");
         Object[] rows = (Object[])map.get("rows");
 
@@ -483,7 +484,9 @@ public class Parser {
         Map<String, Object> options = new HashMap<>();
         options.put(JsonReader.USE_MAPS, Boolean.TRUE);
 
-        Map<String, Object> map = JsonReader.jsonToMaps(json, options);
+        @SuppressWarnings("unchecked")
+        Map<String, Object> map = (Map<String, Object>)
+                JsonReader.jsonToJava(json, options);
 
         assert map.containsKey("raw") : json;
         return (String)map.get("raw");
@@ -493,7 +496,9 @@ public class Parser {
         Map<String, Object> options = new HashMap<>();
         options.put(JsonReader.USE_MAPS, Boolean.TRUE);
 
-        Map<String, Object> map = JsonReader.jsonToMaps(json, options);
+        @SuppressWarnings("unchecked")
+        Map<String, Object> map = (Map<String, Object>)
+                JsonReader.jsonToJava(json, options);
 
         assert map.containsKey("topic_id") : json;
         long topic_id = (long)map.get("topic_id");

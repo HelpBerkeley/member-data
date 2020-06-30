@@ -30,7 +30,7 @@ public class Constants {
 //    public static final int QUERY_GET_USERS_V13_ID = 10;
 //    public static final int QUERY_GET_USERS_V14_ID = 12;
 //    public static final int QUERY_GET_USERS_V15_ID = 14;
-    public static final int QUERY_GET_USERS_V16_ID = 16;
+//    public static final int QUERY_GET_USERS_V16_ID = 16;
     public static final int QUERY_GET_USERS_V17_ID = 23;
     public static final int CURRENT_USERS_QUERY = QUERY_GET_USERS_V17_ID;
     public static final int QUERY_GET_DAILY_DELIVERIES = 13;
