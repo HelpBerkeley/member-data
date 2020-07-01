@@ -46,6 +46,7 @@ public class Options {
     static final String COMMAND_WORKFLOW = "workflow";
     static final String COMMAND_GENERATE_DRIVERS_POSTS = "generate-drivers-posts";
     static final String COMMAND_GET_ROUTED_WORKFLOW = "get-routed-workflow";
+//    static final String COMMAND_GET_DRIVER_TAGS_REQUEST = "get-driver-tag"
 
     static final String USAGE_ERROR = "Usage error for command ";
     static final String UNKNOWN_COMMAND = USAGE_ERROR + ": unknown command: ";

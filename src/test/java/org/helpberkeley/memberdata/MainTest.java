@@ -247,6 +247,14 @@ public class MainTest extends TestBase {
         Main.main(args);
     }
 
+    @Test
+    public void getRoutedWorkflowBadRequestTest() throws IOException, InterruptedException, CsvException {
+        HttpClientSimulator.setQueryResponseFile(
+                Constants.QUERY_GET_LAST_ROUTED_WORKFLOW_REPLY, "last-routed-workflow-bad-request.json");
+        String[] args = { Options.COMMAND_GET_ROUTED_WORKFLOW };
+        Main.main(args);
+    }
+
     private String findFile(final String prefix, final String suffix) {
 
         File dir = new File(".");

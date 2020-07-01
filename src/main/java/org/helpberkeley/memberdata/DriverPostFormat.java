@@ -75,9 +75,7 @@ public class DriverPostFormat {
             for (Section section : driverPostSections) {
 
                 // FIX THIS, DS: implement fixed split restaurant section handling.
-                if (section.name.toLowerCase().equals("control")
-                    || section.name.toLowerCase().equals("split restaurant header")
-                    || section.name.toLowerCase().equals("split restaurant common")) {
+                if (section.name.toLowerCase().equals("control")) {
                     continue;
                 }
 
@@ -239,9 +237,24 @@ public class DriverPostFormat {
     private boolean evaluateCondition(final Driver driver, final String variableName) {
         if (variableName.equals("ANY_CONDO")) {
             return driver.hasCondo();
+        } else if (variableName.equals("ANY_SPLIT_RESTAURANT")) {
+            return driverHasSplitRestaurant(driver);
         }
 
         throw new MemberDataException("Unsupported conditional " + variableName);
+    }
+
+    private boolean driverHasSplitRestaurant(final Driver driver) {
+        for (Restaurant pickup : driver.getPickups()) {
+            Restaurant restaurant = restaurants.get(pickup.getName());
+
+            if (restaurant.getPrimaryDriver() != null) {
+                assert restaurant.getDrivers().size() > 1 : restaurant.getName();
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private String processLine(final Driver driver, final String line) {
@@ -473,10 +486,6 @@ public class DriverPostFormat {
                         + " is a secondary for " + restaurant.getName() + "\n";
             }
 
-            if (output.length() == 0) {
-                output.append("\nWe are running an experiment:\n\n");
-            }
-
             output.append("* you are one of ");
             output.append(drivers.size());
             output.append(" drivers going to pick up orders at **");
@@ -500,18 +509,6 @@ public class DriverPostFormat {
             output.append(" driver for this restaurant, which means that **you ");
             output.append(isPrimary ? "need" : "do not need");
             output.append(" to take pics** of the delivery form.\n");
-        }
-
-        if (hasSplit) {
-            output.append("* because several drivers are sharing restaurants, ");
-            output.append("you need to be careful about what orders you are picking up.\n");
-            output.append("* if you are not the last driver picking up orders, ");
-            output.append("please make sure you are picking up YOUR orders, and tell the ");
-            output.append("restaurant that other drivers are coming.\n");
-            output.append("* while you pick up your orders, please post on the thread to ");
-            output.append("let other drivers know (so that the last driver knows she is last)\n");
-            output.append("* if you are the last driver picking up orders, ");
-            output.append("please make sure there are no orders left --- otherwise call the dispatcher.\n");
         }
 
         return output.toString();

@@ -44,6 +44,7 @@ public class WorkRequestHandler {
 
     private final ApiClient apiClient;
     private final Query query;
+    private Reply lastReply;
 
     WorkRequestHandler(ApiClient apiClient, Query query) {
         this.apiClient = apiClient;
@@ -52,7 +53,7 @@ public class WorkRequestHandler {
 
     Reply getLastReply() throws IOException, InterruptedException {
 
-        Reply lastReply = fetchLastReply();
+        lastReply = fetchLastReply();
 
         List<String> lines = new ArrayList<>();
 
@@ -79,10 +80,34 @@ public class WorkRequestHandler {
         if (reply == null) {
            throw new MemberDataException(
                     "Post #" + lastReply.postNumber + " in " + query.topic
-                    + " is not recognizable as either a work request or a status message");
+                    + " is not recognizable as either a work request or a status message.");
         }
 
         return reply;
+    }
+
+    // Generate a reply to the topic id
+    void postStatus(RequestStatus status, final String statusMessage) throws IOException, InterruptedException {
+
+        String timeStamp = ZonedDateTime.now(ZoneId.systemDefault())
+                .format(DateTimeFormatter.ofPattern("uuuu/MM/dd HH:mm:ss"));
+
+        String rawPost = timeStamp + "\n"
+                + "\n"
+                + "Status: " + status + "\n"
+                + "\n"
+                + statusMessage + "\n";
+
+        Post post = new Post();
+        post.title = "Status response to post " + lastReply.postNumber;
+        assert query.topic != null;
+        post.topic_id = query.topic.id;
+        post.raw = rawPost;
+        post.createdAt = timeStamp;
+
+        HttpResponse<?> response = apiClient.post(post.toJson());
+        LOGGER.info("WorkRequest.postStatus {}", response.statusCode() == HTTP_OK ?
+                "" : "failed " + response.statusCode() + ": " + response.body());
     }
 
     private Reply fetchLastReply() throws IOException, InterruptedException {

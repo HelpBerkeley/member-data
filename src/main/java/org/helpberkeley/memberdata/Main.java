@@ -517,7 +517,14 @@ public class Main {
         Query query = new Query(Constants.QUERY_GET_LAST_ROUTED_WORKFLOW_REPLY, Constants.TOPIC_ROUTED_WORKFLOW_DATA);
         WorkRequestHandler requestHandler = new WorkRequestHandler(apiClient, query);
 
-        WorkRequestHandler.Reply reply = requestHandler.getLastReply();
+        WorkRequestHandler.Reply reply = null;
+
+        try {
+            reply = requestHandler.getLastReply();
+        } catch (MemberDataException ex) {
+            requestHandler.postStatus(WorkRequestHandler.RequestStatus.Failed, ex.getMessage());
+            return;
+        }
 
         LOGGER.info("getRoutedWorkflow found:\n" + reply);
 
