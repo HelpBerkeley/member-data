@@ -178,4 +178,49 @@ public class DriverPostTest extends TestBase {
 
         assertThat(driver.getgMapURL()).isEqualTo(shortURL);
     }
+
+    @Test
+    public void missingHeaderRowTest() {
+        String routedDeliveries = readResourceFile("routed-deliveries-missing-header.csv");
+        Throwable thrown = catchThrowable(() ->
+                new DriverPostFormat(createApiSimulator(), routedDeliveries));
+        assertThat(thrown).isInstanceOf(MemberDataException.class);
+
+        List<String> columnNames = List.of(
+                Constants.WORKFLOW_ADDRESS_COLUMN,
+                Constants.WORKFLOW_ALT_PHONE_COLUMN,
+                Constants.WORKFLOW_CITY_COLUMN,
+                Constants.WORKFLOW_CONDO_COLUMN,
+                Constants.WORKFLOW_CONSUMER_COLUMN,
+                Constants.WORKFLOW_DETAILS_COLUMN,
+                Constants.WORKFLOW_DRIVER_COLUMN,
+                Constants.WORKFLOW_NAME_COLUMN,
+                Constants.WORKFLOW_NORMAL_COLUMN,
+                Constants.WORKFLOW_ORDERS_COLUMN,
+                Constants.WORKFLOW_PHONE_COLUMN,
+                Constants.WORKFLOW_RESTAURANTS_COLUMN,
+                Constants.WORKFLOW_USER_NAME_COLUMN,
+                Constants.WORKFLOW_VEGGIE_COLUMN);
+
+        for (String columnName : columnNames) {
+            assertThat(thrown).hasMessageContaining(columnName);
+        }
+
+    }
+
+    @Test
+    public void pickupsAndDeliveriesMismatchTest() {
+        String routedDeliveries = readResourceFile("routed-deliveries-order-mismatch.csv");
+        Throwable thrown = catchThrowable(() ->
+                new DriverPostFormat(createApiSimulator(), routedDeliveries));
+        assertThat(thrown).isInstanceOf(MemberDataException.class);
+        assertThat(thrown).hasMessageContaining(
+                "orders for Talavera but no deliveries");
+        assertThat(thrown).hasMessageContaining(
+                "1 orders for Sweet Basil but 2 deliveries");
+        assertThat(thrown).hasMessageContaining(
+                "2 orders for Bopshop but 1 deliveries");
+        assertThat(thrown).hasMessageContaining(
+                "1 deliveries for Kim's Cafe but no orders");
+    }
 }

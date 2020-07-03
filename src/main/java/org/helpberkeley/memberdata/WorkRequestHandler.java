@@ -93,7 +93,6 @@ public class WorkRequestHandler {
                 .format(DateTimeFormatter.ofPattern("uuuu/MM/dd HH:mm:ss"));
 
         String rawPost = timeStamp + "\n"
-                + "\n"
                 + "Status: " + status + "\n"
                 + "\n"
                 + statusMessage + "\n";
@@ -206,7 +205,7 @@ public class WorkRequestHandler {
             Matcher matcher = pattern.matcher(dateLine);
 
             if (! matcher.find()) {
-                return null;
+                throw new MemberDataException("Invalid date in post #" + lastReply.postNumber + " : " + dateLine);
             }
 
             ListIterator<String> iterator = lines.listIterator(1);
@@ -262,13 +261,11 @@ public class WorkRequestHandler {
 
         final RequestStatus requestStatus;
         final String time;
-        final String fileName;
 
-        Status(Reply reply, RequestStatus requestStatus, final  String time, final String fileName) {
+        Status(Reply reply, RequestStatus requestStatus, final  String time) {
             super(reply);
             this.requestStatus = requestStatus;
             this.time = time;
-            this.fileName = fileName;
         }
 
         static Reply parse(Reply lastReply, final List<String> lines) {
@@ -299,28 +296,13 @@ public class WorkRequestHandler {
             status = matcher.group(1);
             RequestStatus requestStatus = RequestStatus.fromString(status);
 
-            matcher.reset();
-
-            assert lines.size() > 1;
-            String fileName = lines.get(2);
-
-            regex = "^File: ([A-Za-z\\d -_()]+\\.csv)$";
-            pattern = Pattern.compile(regex);
-            matcher = pattern.matcher(fileName);
-
-            if (! matcher.find()) {
-                return null;
-            }
-            fileName = matcher.group(1);
-
-            return new Status(lastReply, requestStatus, dateLine, fileName);
+            return new Status(lastReply, requestStatus, dateLine);
         }
         @Override
         public String toString() {
             return "Post: " + postNumber + '\n'
                     + "Status: " + requestStatus + '\n'
-                    + "Time: " + time + '\n'
-                    + "FileName: " + fileName + '\n';
+                    + "Time: " + time + '\n';
         }
     }
 }

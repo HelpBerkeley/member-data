@@ -23,13 +23,12 @@
 package org.helpberkeley.memberdata;
 
 import com.opencsv.CSVReaderHeaderAware;
+import com.opencsv.ICSVParser;
 import com.opencsv.exceptions.CsvValidationException;
 
 import java.io.IOException;
 import java.io.StringReader;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class RoutedDeliveriesParser {
 
@@ -42,11 +41,43 @@ public class RoutedDeliveriesParser {
         String normalizedData = csvData.replaceAll("\\r\\n?", "\n");
         assert ! csvData.isEmpty() : "empty restaurant template";
         csvReader = new CSVReaderHeaderAware(new StringReader(normalizedData));
-        auditColumnNames();
+        auditColumnNames(normalizedData);
     }
 
-    private void auditColumnNames() {
-        // FIX THIS, DS: implement
+    private void auditColumnNames(final String csvData) {
+        List<String> columnNames = List.of(
+                Constants.WORKFLOW_ADDRESS_COLUMN,
+                Constants.WORKFLOW_ALT_PHONE_COLUMN,
+                Constants.WORKFLOW_CITY_COLUMN,
+                Constants.WORKFLOW_CONDO_COLUMN,
+                Constants.WORKFLOW_CONSUMER_COLUMN,
+                Constants.WORKFLOW_DETAILS_COLUMN,
+                Constants.WORKFLOW_DRIVER_COLUMN,
+                Constants.WORKFLOW_NAME_COLUMN,
+                Constants.WORKFLOW_NORMAL_COLUMN,
+                Constants.WORKFLOW_ORDERS_COLUMN,
+                Constants.WORKFLOW_PHONE_COLUMN,
+                Constants.WORKFLOW_RESTAURANTS_COLUMN,
+                Constants.WORKFLOW_USER_NAME_COLUMN,
+                Constants.WORKFLOW_VEGGIE_COLUMN);
+
+        // get the header line
+        String header = csvData.substring(0, csvData.indexOf('\n'));
+
+        String[] columns = header.split(",");
+        Set<String> set = new HashSet<>();
+        set.addAll(Arrays.asList(columns));
+
+        String errors = "";
+        for (String columnName : columnNames) {
+            if (! set.contains(columnName)) {
+                errors += "Missing column header: " + columnName + "\n";
+            }
+        }
+
+        if (! errors.isEmpty()) {
+            throw new MemberDataException(errors);
+        }
     }
 
     List<Driver> drivers() throws IOException, CsvValidationException {
@@ -63,7 +94,10 @@ public class RoutedDeliveriesParser {
             if (! isDriverRow(rowMap)) {
                 throw new MemberDataException("line " + csvReader.getLinesRead() + " is not a driver row");
             }
-            drivers.add(processDriver(rowMap));
+
+            Driver driver = processDriver(rowMap);
+            auditPickupDeliveryMismatch(driver);
+            drivers.add(driver);
         }
 
         return drivers;
@@ -258,6 +292,60 @@ public class RoutedDeliveriesParser {
         }
 
         return deliveries;
+    }
 
+    private void auditPickupDeliveryMismatch(Driver driver) {
+
+        // First build of map of deliveries (orders) per restaurant
+        Map<String, Long> deliveryOrders = new HashMap<>();
+        for (Delivery delivery : driver.getDeliveries()) {
+            String restaurantName = delivery.getRestaurant();
+
+            Long orders = deliveryOrders.getOrDefault(restaurantName, 0L);
+            orders++;
+            deliveryOrders.put(restaurantName, orders);
+        }
+
+        // Now build a map of orders to pickup per restaurant
+        Map<String, Long> pickupOrders = new HashMap<>();
+        for (Restaurant restaurant : driver.getPickups()) {
+            String restaurantName = restaurant.getName();
+
+            // FIX THIS, DS: too late to audit this here?
+            if (pickupOrders.containsKey(restaurantName)) {
+                throw new MemberDataException("Restaurant " + restaurantName
+                        + " appears more than once for driver " + driver.getUserName());
+            }
+
+            pickupOrders.put(restaurantName, restaurant.getOrders());
+        }
+
+        String errors = "";
+
+        // Now check that the pickups match the deliveries
+        for (String restaurant : pickupOrders.keySet()) {
+
+            if (pickupOrders.get(restaurant) == 0L) {
+                if (deliveryOrders.containsKey(restaurant)){
+                    errors += "deliveries for " + restaurant + ", but 0 orders\n";
+                }
+            } else if (! deliveryOrders.containsKey(restaurant)) {
+                errors += "orders for " + restaurant + " but no deliveries\n";
+            } else if (deliveryOrders.get(restaurant) != pickupOrders.get(restaurant)) {
+                errors += pickupOrders.get(restaurant) + " orders for " + restaurant
+                        + " but " + deliveryOrders.get(restaurant) + " deliveries\n";
+            }
+        }
+
+        // And that each delivery order has a pickup
+        for (String restaurant : deliveryOrders.keySet()) {
+            if (! pickupOrders.containsKey(restaurant)) {
+                errors += deliveryOrders.get(restaurant) + " deliveries for " + restaurant + " but no orders\n";
+            }
+        }
+
+        if (! errors.isEmpty()) {
+            throw new MemberDataException("Driver " + driver.getUserName() + ": " + errors);
+        }
     }
 }

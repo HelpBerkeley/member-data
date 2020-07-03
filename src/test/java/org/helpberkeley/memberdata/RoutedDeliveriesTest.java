@@ -211,7 +211,7 @@ public class RoutedDeliveriesTest extends TestBase {
         assertThat(restaurant.getOrders()).isEqualTo(2);
 
         List<Delivery> deliveries = driver.getDeliveries();
-        assertThat(deliveries).hasSize(2);
+        assertThat(deliveries).hasSize(3);
 
         Delivery delivery = deliveries.get(0);
         assertThat(delivery.getName()).isEqualTo("Cust Name 1");
@@ -236,6 +236,19 @@ public class RoutedDeliveriesTest extends TestBase {
         assertThat(delivery.isCondo()).isFalse();
         assertThat(delivery.getDetails()).isEmpty();
         assertThat(delivery.getRestaurant()).isEqualTo("Sweet Basil");
+        assertThat(delivery.getNormalRations()).isEqualTo("1");
+        assertThat(delivery.getVeggieRations()).isEqualTo("1");
+
+        delivery = deliveries.get(2);
+        assertThat(delivery.getName()).isEqualTo("Cust Name 3");
+        assertThat(delivery.getUserName()).isEqualTo("Cust3");
+        assertThat(delivery.getPhone()).isEqualTo("555-555-3333");
+        assertThat(delivery.getAltPhone()).isEqualTo("none");
+        assertThat(delivery.getCity()).isEqualTo("Berkeley");
+        assertThat(delivery.getAddress()).isEqualTo("33 33th St");
+        assertThat(delivery.isCondo()).isFalse();
+        assertThat(delivery.getDetails()).isEmpty();
+        assertThat(delivery.getRestaurant()).isEqualTo("Bopshop");
         assertThat(delivery.getNormalRations()).isEqualTo("1");
         assertThat(delivery.getVeggieRations()).isEqualTo("1");
 
@@ -387,12 +400,5 @@ public class RoutedDeliveriesTest extends TestBase {
         assertThat(delivery.getRestaurant()).isEqualTo("V&A Cafe");
         assertThat(delivery.getNormalRations()).isEqualTo("1");
         assertThat(delivery.getVeggieRations()).isEqualTo("1");
-    }
-
-    @Test
-    @Ignore
-    public void missingGMapURLTest() {
-
-        // FIX THIS, DS: implement
     }
 }

@@ -82,7 +82,6 @@ public class WorkRequestHandlerTest extends TestBase {
         WorkRequestHandler requestHandler = new WorkRequestHandler(apiClient, query);
         Throwable thrown = catchThrowable(requestHandler::getLastReply);
         assertThat(thrown).isInstanceOf(MemberDataException.class);
-        assertThat(thrown).hasMessageContaining("Post #9 in Routed Workflow Data is not "
-                + "recognizable as either a work request or a status message");
+        assertThat(thrown).hasMessageContaining("Invalid date in post #9");
     }
 }

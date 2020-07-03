@@ -1,4 +1,3 @@
-Handle unexpected null fields in user records.
 
 Build automation for WorkRequestHandling from Java.
 
@@ -26,5 +25,3 @@ Improve code coverage / testing for exception reporting.
 
 Handle if the user enters "none" or something
 similar for their second phone.
-
-Add Links to Driver posts.

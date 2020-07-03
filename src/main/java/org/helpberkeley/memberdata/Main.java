@@ -526,11 +526,11 @@ public class Main {
             return;
         }
 
-        LOGGER.info("getRoutedWorkflow found:\n" + reply);
-
         if (reply instanceof WorkRequestHandler.Status) {
             return;
         }
+
+        LOGGER.info("getRoutedWorkflow found:\n" + reply);
 
         WorkRequestHandler.WorkRequest request = (WorkRequestHandler.WorkRequest) reply;
 
