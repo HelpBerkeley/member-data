@@ -23,23 +23,31 @@
 package org.helpberkeley.memberdata;
 
 import com.opencsv.CSVReaderHeaderAware;
-import com.opencsv.ICSVParser;
 import com.opencsv.exceptions.CsvValidationException;
 
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.*;
 
-public class RoutedDeliveriesParser {
+public class WorkflowParser {
+
+    enum Mode {
+        /** The CSV data is for passing to the routing software */
+        DRIVER_ROUTE_REQUEST,
+        /** The CSV data is for driver message generation */
+        DRIVER_MESSAGE_REQUEST,
+    }
 
 
+    private final Mode mode;
     private final CSVReaderHeaderAware csvReader;
     private final List<Driver> drivers = new ArrayList<>();
 
-    RoutedDeliveriesParser(final String csvData) throws IOException {
+    WorkflowParser(Mode mode, final String csvData) throws IOException {
+        this.mode = mode;
         // Normalize EOL
         String normalizedData = csvData.replaceAll("\\r\\n?", "\n");
-        assert ! csvData.isEmpty() : "empty restaurant template";
+        assert ! csvData.isEmpty() : "empty workflow";
         csvReader = new CSVReaderHeaderAware(new StringReader(normalizedData));
         auditColumnNames(normalizedData);
     }
@@ -166,22 +174,42 @@ public class RoutedDeliveriesParser {
                     + csvReader.getLinesRead() + ", mismatch driver end name");
         }
 
+        Driver driver;
+
         rowMap = csvReader.readMap();
-        if (rowMap == null) {
-            throw new MemberDataException("Driver " + driverUserName
-                    + " missing gmap URL after line " + csvReader.getLinesRead());
+
+        if (mode == Mode.DRIVER_MESSAGE_REQUEST) {
+            if (rowMap == null) {
+                throw new MemberDataException("Driver " + driverUserName
+                        + " missing gmap URL after line " + csvReader.getLinesRead());
+            }
+
+            String gmapURL = rowMap.get(Constants.WORKFLOW_CONSUMER_COLUMN);
+            if (gmapURL.isEmpty()) {
+                throw new MemberDataException("Line " + csvReader.getLinesRead()
+                        + ", driver " + driverUserName + " empty gmap URL");
+            }
+            if (!gmapURL.contains("https://")) {
+                throw new MemberDataException("Driver " + driverUserName + " unrecognizable gmap URL");
+            }
+
+            driver = new Driver(driverUserName, driverPhone,
+                    restaurants, deliveries, gmapURL);
+        } else {
+            assert mode == Mode.DRIVER_ROUTE_REQUEST;
+
+            // This can be either an empty row, marking boundary between this driver and the next,
+            // Or the end of file.
+
+            if ((rowMap != null) && (! emptyRow(rowMap))) {
+                throw new MemberDataException("Line " + csvReader.getLinesRead() + " is not empty");
+            }
+
+            driver = new Driver(driverUserName, driverPhone,
+                    restaurants, deliveries);
         }
 
-        String gmapURL = rowMap.get(Constants.WORKFLOW_CONSUMER_COLUMN);
-        if (gmapURL.isEmpty()) {
-            throw new MemberDataException("Line " + csvReader.getLinesRead()
-                    + ", driver " + driverUserName + " empty gmap URL");
-        }
-        if (! gmapURL.contains("https://")) {
-            throw new MemberDataException("Driver " + driverUserName + " unrecognizable gmap URL");
-        }
-
-        return new Driver(driverUserName, driverPhone, restaurants, deliveries, gmapURL);
+        return driver;
     }
 
     List<Restaurant> processRestaurants() throws IOException, CsvValidationException {
@@ -221,7 +249,6 @@ public class RoutedDeliveriesParser {
             restaurant.setOrders(orders);
 
             restaurants.add(restaurant);
-
         }
 
         return restaurants;
@@ -331,7 +358,7 @@ public class RoutedDeliveriesParser {
                 }
             } else if (! deliveryOrders.containsKey(restaurant)) {
                 errors += "orders for " + restaurant + " but no deliveries\n";
-            } else if (deliveryOrders.get(restaurant) != pickupOrders.get(restaurant)) {
+            } else if (! deliveryOrders.get(restaurant).equals(pickupOrders.get(restaurant))) {
                 errors += pickupOrders.get(restaurant) + " orders for " + restaurant
                         + " but " + deliveryOrders.get(restaurant) + " deliveries\n";
             }
@@ -347,5 +374,15 @@ public class RoutedDeliveriesParser {
         if (! errors.isEmpty()) {
             throw new MemberDataException("Driver " + driver.getUserName() + ": " + errors);
         }
+    }
+
+    private boolean emptyRow(Map<String, String> rowMap) {
+        for (String value : rowMap.values()) {
+            if (! value.isEmpty()) {
+                return false;
+            }
+        }
+
+        return true;
     }
 }

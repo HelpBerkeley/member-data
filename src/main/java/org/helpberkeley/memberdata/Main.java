@@ -169,6 +169,9 @@ public class Main {
             case Options.COMMAND_GENERATE_DRIVERS_POSTS:
                 generateDriversPosts(apiClient, options.getFileName());
                 break;
+            case Options.COMMAND_GET_REQUEST_DRIVER_ROUTES:
+                getRequestDriverRoutes(apiClient);
+                break;
             default:
                 assert options.getCommand().equals(Options.COMMAND_POST_DRIVERS) : options.getCommand();
                 postFile(apiClient, options.getFileName(),
@@ -517,7 +520,7 @@ public class Main {
         Query query = new Query(Constants.QUERY_GET_LAST_ROUTED_WORKFLOW_REPLY, Constants.TOPIC_ROUTED_WORKFLOW_DATA);
         WorkRequestHandler requestHandler = new WorkRequestHandler(apiClient, query);
 
-        WorkRequestHandler.Reply reply = null;
+        WorkRequestHandler.Reply reply;
 
         try {
             reply = requestHandler.getLastReply();
@@ -633,6 +636,50 @@ public class Main {
         }
 
         return statusMessages;
+    }
+
+    static void getRequestDriverRoutes(ApiClient apiClient) throws IOException, InterruptedException {
+        Query query = new Query(
+                Constants.QUERY_GET_LAST_ROUTE_REQUEST_REPLY, Constants.TOPIC_REQUEST_DRIVER_ROUTES);
+        WorkRequestHandler requestHandler = new WorkRequestHandler(apiClient, query);
+
+        WorkRequestHandler.Reply reply;
+
+        try {
+            reply = requestHandler.getLastReply();
+        } catch (MemberDataException ex) {
+            requestHandler.postStatus(WorkRequestHandler.RequestStatus.Failed, ex.getMessage());
+            return;
+        }
+
+        if (reply instanceof WorkRequestHandler.Status) {
+            return;
+        }
+
+        LOGGER.debug("getRequestDriverRoutes found:\n" + reply);
+
+        WorkRequestHandler.WorkRequest request = (WorkRequestHandler.WorkRequest) reply;
+
+        // Download file
+        String unroutedDeliveries = apiClient.downloadFile(request.uploadFile.fileName);
+        request.postStatus(WorkRequestHandler.RequestStatus.Processing, "");
+
+
+        try {
+            auditUnroutedDeliveries(apiClient, unroutedDeliveries);
+        } catch (MemberDataException ex) {
+            String reason = ex.getCause() != null ? ex.getCause().getMessage() : ex.getMessage();
+            request.postStatus(WorkRequestHandler.RequestStatus.Failed, reason);
+        } catch (InterruptedException|CsvValidationException|IOException ex) {
+            request.postStatus(WorkRequestHandler.RequestStatus.Failed, ex.getMessage());
+        }
+    }
+
+    private static void auditUnroutedDeliveries( ApiClient apiClient, final String unroutedDeliveries)
+            throws InterruptedException, CsvValidationException, IOException {
+        DriverPostFormat driverPostFormat =
+                new DriverPostFormat(apiClient, unroutedDeliveries);
+//        List<Driver> drivers = driverPostFormat.getDrivers();
     }
 }
 

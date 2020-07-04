@@ -25,3 +25,7 @@ Improve code coverage / testing for exception reporting.
 
 Handle if the user enters "none" or something
 similar for their second phone.
+
+Add more flexibility to command line auditing
+	- Non-file arguments
+	- command specific help messages

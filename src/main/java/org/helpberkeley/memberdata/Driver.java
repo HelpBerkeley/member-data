@@ -41,6 +41,14 @@ public class Driver {
         this.gMapURL = gmapURL;
     }
 
+    Driver(final String userName, final String phoneNumber, List<Restaurant> pickups, List<Delivery> deliveries) {
+        this.userName = userName;
+        this.phoneNumber = phoneNumber;
+        this.pickups = pickups;
+        this.deliveries = deliveries;
+        this.gMapURL = null;
+    }
+
     public String getUserName() {
         return userName;
     }

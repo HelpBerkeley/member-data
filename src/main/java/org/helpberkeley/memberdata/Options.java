@@ -46,7 +46,7 @@ public class Options {
     static final String COMMAND_WORKFLOW = "workflow";
     static final String COMMAND_GENERATE_DRIVERS_POSTS = "generate-drivers-posts";
     static final String COMMAND_GET_ROUTED_WORKFLOW = "get-routed-workflow";
-//    static final String COMMAND_GET_DRIVER_TAGS_REQUEST = "get-driver-tag"
+    static final String COMMAND_GET_REQUEST_DRIVER_ROUTES = "get-request-driver-routes";
 
     static final String USAGE_ERROR = "Usage error for command ";
     static final String UNKNOWN_COMMAND = USAGE_ERROR + ": unknown command: ";
@@ -63,6 +63,7 @@ public class Options {
                     + "    | " + COMMAND_GET_DAILY_DELIVERIES + "\n"
                     + "    | " + COMMAND_GET_ORDER_HISTORY + "\n"
                     + "    | " + COMMAND_GET_ROUTED_WORKFLOW + "\n"
+                    + "    | " + COMMAND_GET_REQUEST_DRIVER_ROUTES + "\n"
                     + "    | " + COMMAND_MERGE_ORDER_HISTORY
                                 + " all-members-file order-history-file daily-deliveries-file\n"
                     + "    | " + COMMAND_INREACH + " all-members-file order-history-file\n"
@@ -103,6 +104,7 @@ public class Options {
                 case COMMAND_GET_ORDER_HISTORY:
                 case COMMAND_GET_DAILY_DELIVERIES:
                 case COMMAND_GET_ROUTED_WORKFLOW:
+                case COMMAND_GET_REQUEST_DRIVER_ROUTES:
                     setCommand(arg);
                     break;
                 case COMMAND_POST_ERRORS:

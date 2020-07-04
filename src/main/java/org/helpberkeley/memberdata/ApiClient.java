@@ -54,11 +54,7 @@ public class ApiClient {
 
         apiUser = properties.getProperty(Main.API_USER_PROPERTY);
         apiKey = properties.getProperty(Main.API_KEY_PROPERTY);
-
-        if ((apiUser == null) || (apiKey == null)) {
-            LOGGER.error("Missing {} property or {} property or both", Main.API_USER_PROPERTY, Main.API_KEY_PROPERTY);
-            System.exit(1);
-        }
+        auditAPIKey();
 
         Authenticator authenticator = new Authenticator() {
             @Override
@@ -82,14 +78,18 @@ public class ApiClient {
 
         apiUser = properties.getProperty(Main.API_USER_PROPERTY);
         apiKey = properties.getProperty(Main.API_KEY_PROPERTY);
-
-        if ((apiUser == null) || (apiKey == null)) {
-            System.out.println("Missing " + Main.API_USER_PROPERTY + " property or "
-                    + Main.API_KEY_PROPERTY + " property, or both");
-            System.exit(1);
-        }
-
+        auditAPIKey();
         this.client = httpClient;
+    }
+
+    private void auditAPIKey() {
+        if ((apiUser == null) || (apiKey == null)) {
+            throw new MemberDataException("Missing "
+                    + Main.API_USER_PROPERTY
+                    + " property or "
+                    + Main.API_KEY_PROPERTY
+                    + " or both");
+        }
     }
 
     private HttpResponse<String> get(final String endpoint) throws IOException, InterruptedException {

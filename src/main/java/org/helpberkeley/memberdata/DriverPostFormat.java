@@ -230,7 +230,7 @@ public class DriverPostFormat {
     }
 
     private void loadRoutedDeliveries(final String routedDeliveries) throws IOException, CsvValidationException {
-        RoutedDeliveriesParser parser = new RoutedDeliveriesParser(routedDeliveries);
+        WorkflowParser parser = new WorkflowParser(WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, routedDeliveries);
         drivers = parser.drivers();
     }
 
@@ -478,7 +478,6 @@ public class DriverPostFormat {
                 continue;
             }
 
-            hasSplit = true;
             boolean isPrimary = restaurant.getPrimaryDriver().getUserName().equals(driver.getUserName());
 
             if (! isPrimary) {

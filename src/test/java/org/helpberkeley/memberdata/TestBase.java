@@ -110,6 +110,7 @@ public class TestBase {
             Options.COMMAND_GET_ORDER_HISTORY,
             Options.COMMAND_GET_DAILY_DELIVERIES,
             Options.COMMAND_GET_ROUTED_WORKFLOW,
+            Options.COMMAND_GET_REQUEST_DRIVER_ROUTES,
     };
 
     static final String TEST_FILE_NAME = "pom.xml";

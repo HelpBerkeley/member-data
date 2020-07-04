@@ -1,0 +1,20 @@
+{
+  "success": true,
+  "errors": [],
+  "duration": 0.4,
+  "result_count": 1,
+  "params": {},
+  "columns": [
+    "post_number",
+    "deleted_at",
+    "raw"
+  ],
+  "default_limit": 1000,
+  "rows": [
+    [
+      2,
+      null,
+      "2020/06/21\n\n[HelpBerkeleyDeliveries - 7_3.csv|attachment](upload://unrouted-deliveries.csv)"
+    ]
+  ]
+}

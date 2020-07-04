@@ -23,7 +23,6 @@
 package org.helpberkeley.memberdata;
 
 import com.opencsv.exceptions.CsvValidationException;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -35,7 +34,8 @@ public class RoutedDeliveriesTest extends TestBase {
     @Test
     public void parseRoutedTest() throws IOException, CsvValidationException {
         String csvData = readResourceFile("routed-deliveries.csv");
-        RoutedDeliveriesParser parser = new RoutedDeliveriesParser(csvData);
+        WorkflowParser parser =
+                new WorkflowParser(WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, csvData);
         List<Driver> drivers = parser.drivers();
 
         assertThat(drivers).hasSize(2);
@@ -180,7 +180,8 @@ public class RoutedDeliveriesTest extends TestBase {
     @Test
     public void parseRoutedWithSplitRestaurantsTest() throws IOException, CsvValidationException {
         String csvData = readResourceFile("routed-deliveries-with-split-restaurants.csv");
-        RoutedDeliveriesParser parser = new RoutedDeliveriesParser(csvData);
+        WorkflowParser parser =
+                new WorkflowParser(WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, csvData);
         List<Driver> drivers = parser.drivers();
 
         assertThat(drivers).hasSize(4);

@@ -255,6 +255,12 @@ public class MainTest extends TestBase {
         Main.main(args);
     }
 
+    @Test
+    public void getRouteRequestTest() throws IOException, InterruptedException, CsvException {
+        String[] args = { Options.COMMAND_GET_REQUEST_DRIVER_ROUTES};
+        Main.main(args);
+    }
+
     private String findFile(final String prefix, final String suffix) {
 
         File dir = new File(".");

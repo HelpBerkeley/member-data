@@ -32,9 +32,4 @@ public class Query {
         this.description = null;
         this.topic = topic;
     }
-    Query(int id, final String description) {
-        this.id = id;
-        this.description = description;
-        topic = null;
-    }
 }

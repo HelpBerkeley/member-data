@@ -136,6 +136,9 @@ public class HttpClientSimulator extends HttpClient {
             case Constants.QUERY_GET_LAST_ROUTED_WORKFLOW_REPLY:
                 dataFile = "last-routed-workflow-reply.json";
                 break;
+            case Constants.QUERY_GET_LAST_ROUTE_REQUEST_REPLY:
+                dataFile = "last-request-driver-routes-reply.json";
+                break;
             default:
                 throw new RuntimeException("FIX THIS: query " + queryId + " not supported by the simulator");
         }

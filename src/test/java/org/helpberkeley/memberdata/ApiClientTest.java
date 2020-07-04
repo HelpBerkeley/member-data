@@ -24,11 +24,22 @@ package org.helpberkeley.memberdata;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.util.Properties;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.ThrowableAssert.catchThrowable;
 
 public class ApiClientTest extends TestBase {
+
+    @Test
+    public void missingAPIUserNameTest() {
+        Properties properties = new Properties();
+        Throwable thrown = catchThrowable(() -> new ApiClient(properties));
+        assertThat(thrown).isInstanceOf(MemberDataException.class);
+        assertThat(thrown).hasMessageContaining("Missing ");
+        assertThat(thrown).hasMessageContaining(Main.API_KEY_PROPERTY);
+        assertThat(thrown).hasMessageContaining(Main.API_USER_PROPERTY);
+    }
 
     @Test
     public void getGroupsQueryTest() throws IOException, InterruptedException {
