@@ -105,8 +105,9 @@ public class WorkRequestHandler {
         post.createdAt = timeStamp;
 
         HttpResponse<?> response = apiClient.post(post.toJson());
-        LOGGER.info("WorkRequest.postStatus {}", response.statusCode() == HTTP_OK ?
-                "" : "failed " + response.statusCode() + ": " + response.body());
+
+        // FIX THIS, DS: what to do with this error?
+        assert response.statusCode() == HTTP_OK : "failed " + response.statusCode() + ": " + response.body();
     }
 
     private Reply fetchLastReply() throws IOException, InterruptedException {
@@ -189,8 +190,8 @@ public class WorkRequestHandler {
             post.createdAt = timeStamp;
 
             HttpResponse<?> response = apiClient.post(post.toJson());
-            LOGGER.info("WorkRequest.postStatus {}", response.statusCode() == HTTP_OK ?
-                    "" : "failed " + response.statusCode() + ": " + response.body());
+            // FIX THIS, DS: what to do with this error?
+            assert response.statusCode() == HTTP_OK : "failed " + response.statusCode() + ": " + response.body();
         }
 
         static Reply parse(Reply lastReply, final List<String> lines) {

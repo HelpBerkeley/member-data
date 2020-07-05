@@ -31,6 +31,7 @@ import java.io.InputStream;
 import java.net.URL;
 import java.net.http.HttpResponse;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -171,6 +172,14 @@ public class Main {
                 break;
             case Options.COMMAND_GET_REQUEST_DRIVER_ROUTES:
                 getRequestDriverRoutes(apiClient);
+                break;
+            case Options.COMMAND_REQUEST_DRIVER_ROUTES_SUCCEEDED:
+                postRequestDriverRoutesSucceeded(apiClient, options.getFileName(),
+                        options.getShortURL(), options.getStatusMessage());
+                break;
+            case Options.COMMAND_REQUEST_DRIVER_ROUTES_FAILED:
+                postRequestDriverRoutesFailed(apiClient,
+                        options.getRequestFileName(), options.getStatusMessage());
                 break;
             default:
                 assert options.getCommand().equals(Options.COMMAND_POST_DRIVERS) : options.getCommand();
@@ -656,7 +665,7 @@ public class Main {
             return;
         }
 
-        LOGGER.debug("getRequestDriverRoutes found:\n" + reply);
+//        LOGGER.debug("getRequestDriverRoutes found:\n" + reply);
 
         WorkRequestHandler.WorkRequest request = (WorkRequestHandler.WorkRequest) reply;
 
@@ -666,20 +675,75 @@ public class Main {
 
 
         try {
-            auditUnroutedDeliveries(apiClient, unroutedDeliveries);
+            auditUnroutedDeliveries(unroutedDeliveries);
         } catch (MemberDataException ex) {
             String reason = ex.getCause() != null ? ex.getCause().getMessage() : ex.getMessage();
             request.postStatus(WorkRequestHandler.RequestStatus.Failed, reason);
-        } catch (InterruptedException|CsvValidationException|IOException ex) {
+        } catch (CsvValidationException|IOException ex) {
             request.postStatus(WorkRequestHandler.RequestStatus.Failed, ex.getMessage());
         }
+
+        Path filePath = Paths.get(request.uploadFile.originalFileName);
+        // FIX THIS, DS: warn?  change name?
+        Files.deleteIfExists(filePath);
+        Files.createFile(filePath);
+        Files.writeString(filePath, unroutedDeliveries);
+
+        System.out.println("File: " + filePath);
     }
 
-    private static void auditUnroutedDeliveries( ApiClient apiClient, final String unroutedDeliveries)
-            throws InterruptedException, CsvValidationException, IOException {
-        DriverPostFormat driverPostFormat =
-                new DriverPostFormat(apiClient, unroutedDeliveries);
-//        List<Driver> drivers = driverPostFormat.getDrivers();
+    static void postRequestDriverRoutesSucceeded(ApiClient apiClient, final String fileName,
+            final String shortURL, final String statusMessage) throws IOException, InterruptedException {
+
+        String timeStamp = ZonedDateTime.now(ZoneId.systemDefault())
+                .format(DateTimeFormatter.ofPattern("uuuu/MM/dd HH:mm:ss"));
+
+        String rawPost = timeStamp + "\n"
+                + "Status: " + WorkRequestHandler.RequestStatus.Succeeded + "\n"
+                + "File: " + "[" + fileName + "](" + shortURL + ")\n"
+                + "\n"
+                + statusMessage + "\n";
+
+        Post post = new Post();
+        post.title = "Request Driver Route status response";
+        post.topic_id = Constants.TOPIC_REQUEST_DRIVER_ROUTES.id;
+        post.raw = rawPost;
+        post.createdAt = timeStamp;
+
+        HttpResponse<?> response = apiClient.post(post.toJson());
+
+        // FIX THIS, DS: what to do with this error?
+        assert response.statusCode() == HTTP_OK : "failed " + response.statusCode() + ": " + response.body();
+    }
+    static void postRequestDriverRoutesFailed(ApiClient apiClient,
+            final String requestFileName, final String statusMessage) throws IOException, InterruptedException {
+
+        String timeStamp = ZonedDateTime.now(ZoneId.systemDefault())
+                .format(DateTimeFormatter.ofPattern("uuuu/MM/dd HH:mm:ss"));
+
+        String rawPost = timeStamp + "\n"
+                + "Status: " + WorkRequestHandler.RequestStatus.Failed + "\n"
+                + "File: " + requestFileName + "\n"
+                + "\n"
+                + statusMessage + "\n";
+
+        Post post = new Post();
+        post.title = "Request Driver Route status response";
+        post.topic_id = Constants.TOPIC_REQUEST_DRIVER_ROUTES.id;
+        post.raw = rawPost;
+        post.createdAt = timeStamp;
+
+        HttpResponse<?> response = apiClient.post(post.toJson());
+
+        // FIX THIS, DS: what to do with this error?
+        assert response.statusCode() == HTTP_OK : "failed " + response.statusCode() + ": " + response.body();
+    }
+
+    private static void auditUnroutedDeliveries(final String unroutedDeliveries)
+            throws IOException, CsvValidationException {
+        WorkflowParser workflowParser =
+                new WorkflowParser(WorkflowParser.Mode.DRIVER_ROUTE_REQUEST, unroutedDeliveries);
+        workflowParser.drivers();
     }
 }
 

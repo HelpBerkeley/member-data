@@ -47,6 +47,8 @@ public class Options {
     static final String COMMAND_GENERATE_DRIVERS_POSTS = "generate-drivers-posts";
     static final String COMMAND_GET_ROUTED_WORKFLOW = "get-routed-workflow";
     static final String COMMAND_GET_REQUEST_DRIVER_ROUTES = "get-request-driver-routes";
+    static final String COMMAND_REQUEST_DRIVER_ROUTES_SUCCEEDED = "request-driver-routes-succeeded";
+    static final String COMMAND_REQUEST_DRIVER_ROUTES_FAILED = "request-driver-routes-failed";
 
     static final String USAGE_ERROR = "Usage error for command ";
     static final String UNKNOWN_COMMAND = USAGE_ERROR + ": unknown command: ";
@@ -55,6 +57,7 @@ public class Options {
     static final String COMMAND_REQUIRES_TWO_FILE_NAMES = ": command requires two file name parameters";
     static final String COMMAND_REQUIRES_THREE_FILE_NAMES = ": command requires three file name parameters";
     static final String COMMAND_REQUIRES_SHORT_URL = ": command requires a short URL";
+    static final String COMMAND_REQUIRES_REQUEST_FILE_NAME = ": command requires a request file name parameter";
     static final String BAD_SHORT_URL = USAGE_ERROR + ": short url syntax error";
     static final String FILE_DOES_NOT_EXIST = USAGE_ERROR + ": file does not exist: ";
 
@@ -64,6 +67,13 @@ public class Options {
                     + "    | " + COMMAND_GET_ORDER_HISTORY + "\n"
                     + "    | " + COMMAND_GET_ROUTED_WORKFLOW + "\n"
                     + "    | " + COMMAND_GET_REQUEST_DRIVER_ROUTES + "\n"
+                    + "    | " + COMMAND_REQUEST_DRIVER_ROUTES_SUCCEEDED
+                                + " uploaded-file-name"
+                                + " uploaded-short-url"
+                                + " [status messages ...]\n"
+                    + "    | " + COMMAND_REQUEST_DRIVER_ROUTES_FAILED
+                                + " request-file-name"
+                                + " [status messages ...]\n"
                     + "    | " + COMMAND_MERGE_ORDER_HISTORY
                                 + " all-members-file order-history-file daily-deliveries-file\n"
                     + "    | " + COMMAND_INREACH + " all-members-file order-history-file\n"
@@ -88,6 +98,8 @@ public class Options {
     private String secondFileName;
     private String thirdFileName;
     private String shortURL;
+    private String requestFileName;
+    private String statusMessage = "";
 
 
     Options(final String[] args) {
@@ -175,6 +187,38 @@ public class Options {
                     }
                     thirdFileName = args[index];
                     break;
+                case COMMAND_REQUEST_DRIVER_ROUTES_SUCCEEDED:
+                    setCommand(arg);
+                    index++;
+                    if (index == args.length) {
+                        dieMessage(USAGE_ERROR + arg + COMMAND_REQUIRES_FILE_NAME);
+                    }
+                    fileName = args[index];
+
+                    index++;
+                    if (index == args.length) {
+                        dieMessage(USAGE_ERROR + arg + COMMAND_REQUIRES_SHORT_URL);
+                    }
+                    shortURL = args[index];
+
+                    while (++index < args.length) {
+                        statusMessage += args[index] + " ";
+                    }
+
+                    break;
+                case COMMAND_REQUEST_DRIVER_ROUTES_FAILED:
+                    setCommand(arg);
+                    index++;
+                    if (index == args.length) {
+                        dieMessage(USAGE_ERROR + arg + COMMAND_REQUIRES_REQUEST_FILE_NAME);
+                    }
+                    requestFileName = args[index];
+
+                    while (++index < args.length) {
+                        statusMessage += args[index] + " ";
+                    }
+
+                    break;
                 default:
                     dieMessage(UNKNOWN_COMMAND + arg);
             }
@@ -225,6 +269,14 @@ public class Options {
 
     String getShortURL() {
         return shortURL;
+    }
+
+    String getRequestFileName() {
+        return requestFileName;
+    }
+
+    String getStatusMessage() {
+        return statusMessage;
     }
 
     private void setCommand(final String command) {
