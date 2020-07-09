@@ -505,9 +505,14 @@ public class DriverPostFormat {
 
             output.append("* you are ");
             output.append(isPrimary ? "primary" : "secondary");
-            output.append(" driver for this restaurant, which means that **you ");
-            output.append(isPrimary ? "need" : "do not need");
-            output.append(" to take pics** of the delivery form.\n");
+            output.append(" driver for this restaurant");
+            if (restaurant.getNoPics()) {
+                output.append(".\n");
+            } else {
+                output.append(", which means that **you ");
+                output.append(isPrimary ? "need" : "do not need");
+                output.append(" to take pics** of the delivery form.\n");
+            }
         }
 
         return output.toString();

@@ -71,7 +71,8 @@ public class RestaurantTemplateParser {
             Constants.WORKFLOW_DRIVER_COLUMN,
             Constants.WORKFLOW_RESTAURANTS_COLUMN,
             Constants.WORKFLOW_ORDERS_COLUMN,
-            Constants.WORKFLOW_DETAILS_COLUMN)) {
+            Constants.WORKFLOW_DETAILS_COLUMN,
+            Constants.WORKFLOW_CONDO_COLUMN)) {
 
             if (! row.containsKey(columnName)) {
                 errors += MISSING_COLUMN_ERROR + columnName + '\n';
@@ -220,6 +221,11 @@ public class RestaurantTemplateParser {
             restaurants.put(restaurantName, restaurant);
             restaurant.setRoute(routeName);
             restaurant.setStartTime(startTime);
+
+            String noPics = rowMap.get(Constants.WORKFLOW_CONDO_COLUMN);
+            if (noPics.toLowerCase().equals(Constants.WORKFLOW_NO_PICS)) {
+                restaurant.setNoPics();
+            }
         } while ((rowMap = csvReader.readMap()) != null);
     }
 

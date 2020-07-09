@@ -197,4 +197,12 @@ public class WorkflowParserTest extends TestBase {
         assertThat(thrown).isInstanceOf(MemberDataException.class);
         assertThat(thrown).hasMessageContaining("Line 10 is not empty");
     }
+
+    @Test
+    public void ignoreControlBlockTest() throws IOException, CsvValidationException {
+        String routedDeliveries = readResourceFile("routed-deliveries-with-control-block.csv");
+        WorkflowParser workflowParser =
+                new WorkflowParser(WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, routedDeliveries);
+        workflowParser.drivers();
+    }
 }

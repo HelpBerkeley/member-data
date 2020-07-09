@@ -42,6 +42,8 @@ public class WorkflowParser {
     private final Mode mode;
     private final CSVReaderHeaderAware csvReader;
     private final List<Driver> drivers = new ArrayList<>();
+    private final Map<String, String> controlBlockUniqueKeys = new HashMap<>();
+    private final Map<String, List<String>> controlBlockNoneUniqueKeys = new HashMap<>();
 
     WorkflowParser(Mode mode, final String csvData) throws IOException {
         this.mode = mode;
@@ -62,6 +64,7 @@ public class WorkflowParser {
                 Constants.WORKFLOW_DETAILS_COLUMN,
                 Constants.WORKFLOW_DRIVER_COLUMN,
                 Constants.WORKFLOW_NAME_COLUMN,
+                Constants.WORKFLOW_NEIGHBORHOOD_COLUMN,
                 Constants.WORKFLOW_NORMAL_COLUMN,
                 Constants.WORKFLOW_ORDERS_COLUMN,
                 Constants.WORKFLOW_PHONE_COLUMN,
@@ -95,8 +98,9 @@ public class WorkflowParser {
 
         while ((rowMap = csvReader.readMap()) != null) {
 
-            if (isControlBlockRow(rowMap)) {
+            if (isControlBlockBeginRow(rowMap)) {
                 processControlBlock();
+                continue;
             }
 
             if (! isDriverRow(rowMap)) {
@@ -111,21 +115,56 @@ public class WorkflowParser {
         return drivers;
     }
 
-    private boolean isControlBlockRow(final Map<String, String> rowMap) {
+    private boolean isControlBlockBeginRow(final Map<String, String> rowMap) {
 
         return (! Boolean.parseBoolean(rowMap.get(Constants.WORKFLOW_CONSUMER_COLUMN)))
             && (! Boolean.parseBoolean(rowMap.get(Constants.WORKFLOW_DRIVER_COLUMN)))
-            && (rowMap.get(Constants.WORKFLOW_NAME_COLUMN).equals("CONTROL"));
+            && (rowMap.get(Constants.WORKFLOW_NAME_COLUMN).equals(Constants.CONTROL_BLOCK_BEGIN));
+    }
+
+    private boolean isControlBlockEndRow(final Map<String, String> rowMap) {
+
+        return (! Boolean.parseBoolean(rowMap.get(Constants.WORKFLOW_CONSUMER_COLUMN)))
+                && (! Boolean.parseBoolean(rowMap.get(Constants.WORKFLOW_DRIVER_COLUMN)))
+                && (rowMap.get(Constants.WORKFLOW_NAME_COLUMN).equals(Constants.CONTROL_BLOCK_END));
     }
 
     private void processControlBlock() throws IOException, CsvValidationException {
         Map<String, String> rowMap;
 
         while ((rowMap = csvReader.readMap()) != null) {
-            if (! isControlBlockRow(rowMap)) {
+            if (isControlBlockEndRow(rowMap)) {
+                break;
+            }
+
+            String key = rowMap.get(Constants.WORKFLOW_NAME_COLUMN);
+            if (key != null) {
                 continue;
             }
+
+            String value = rowMap.get(Constants.WORKFLOW_NEIGHBORHOOD_COLUMN);
+            addControlBlockValue(key, value);
         }
+    }
+
+    private void addControlBlockValue(final String key, final String value) {
+
+        switch (key) {
+            case Constants.DATA_KEY_OP_MANANGER_USER_NAME:
+            case Constants.DATA_KEY_OP_MANANGER_PHONE:
+                if (controlBlockUniqueKeys.containsKey(key)) {
+                    throw new MemberDataException(
+                            "Duplicate data key name \"" + key + "\", line " + csvReader.getLinesRead());
+                }
+
+            case Constants.DATA_KEY_BACKUP_DRIVER:
+                break;
+            default:
+                throw new MemberDataException(
+                        "Unknown data key name \"" + key + "\", line " + csvReader.getLinesRead());
+        }
+
+
     }
 
     /**

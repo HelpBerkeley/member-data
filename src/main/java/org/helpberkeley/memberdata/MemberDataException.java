@@ -21,6 +21,9 @@
 //
 package org.helpberkeley.memberdata;
 
+/**
+ * Unchecked exception used throughout member-data
+ */
 public class MemberDataException extends RuntimeException {
 
     MemberDataException(final String message) {

@@ -35,6 +35,7 @@ public class Restaurant {
     private long orders = 0;
     private final Map<String, Driver> drivers = new HashMap<>();
     private Driver primaryDriver;
+    private boolean noPics = false;
 
     Restaurant(final String name) {
         this.name = name;
@@ -69,6 +70,10 @@ public class Restaurant {
         primaryDriver = driver;
     }
 
+    void setNoPics() {
+        noPics = true;
+    }
+
     String getName() {
         return name;
     }
@@ -99,5 +104,9 @@ public class Restaurant {
 
     Driver getPrimaryDriver() {
         return primaryDriver;
+    }
+
+    boolean getNoPics() {
+        return noPics;
     }
 }

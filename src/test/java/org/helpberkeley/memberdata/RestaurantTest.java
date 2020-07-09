@@ -50,6 +50,7 @@ public class RestaurantTest extends TestBase {
                 "Thai Delight",
                 "V&A Cafe",
                 "Gregoire",
+                "Crepevine",
                 "Kaze Ramen"
         );
 
@@ -76,6 +77,14 @@ public class RestaurantTest extends TestBase {
         assertThat(restaurant.getStartTime()).isEqualTo("5:10 PM");
 
         restaurant = restaurants.get("Jot Mahal");
+        assertThat(restaurant.getRoute()).isEqualTo("Shattuck Route");
+        assertThat(restaurant.getStartTime()).isEqualTo("5:10 PM");
+
+        restaurant = restaurants.get("Gregoire");
+        assertThat(restaurant.getRoute()).isEqualTo("Shattuck Route");
+        assertThat(restaurant.getStartTime()).isEqualTo("5:10 PM");
+
+        restaurant = restaurants.get("Crepevine");
         assertThat(restaurant.getRoute()).isEqualTo("Shattuck Route");
         assertThat(restaurant.getStartTime()).isEqualTo("5:10 PM");
 

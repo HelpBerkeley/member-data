@@ -74,6 +74,7 @@ public class Constants {
     public static final String WORKFLOW_USER_NAME_COLUMN = "User Name";
     public static final String WORKFLOW_PHONE_COLUMN = "Phone #";
     public static final String WORKFLOW_ALT_PHONE_COLUMN = "Phone2 #";
+    public static final String WORKFLOW_NEIGHBORHOOD_COLUMN = "Neighborhood";
     public static final String WORKFLOW_CITY_COLUMN = "City";
     public static final String WORKFLOW_ADDRESS_COLUMN = "Address";
     public static final String WORKFLOW_CONDO_COLUMN = "Condo";
@@ -82,6 +83,8 @@ public class Constants {
     public static final String WORKFLOW_NORMAL_COLUMN = "normal";
     public static final String WORKFLOW_RESTAURANTS_COLUMN = "Restaurants";
     public static final String WORKFLOW_ORDERS_COLUMN = "#orders";
+
+    public static final String WORKFLOW_NO_PICS = "no pics";
 
     // Group names - FIX THIS, DS: hardwired
     public static final String GROUP_CONSUMERS = "consumers";
@@ -110,4 +113,12 @@ public class Constants {
     public static final String CSV_SEPARATOR = ",";
 
     public static final String UPLOAD_URI_PREFIX = "upload://";
+
+    public static final String CONTROL_BLOCK_BEGIN = "Control-Begin";
+    public static final String CONTROL_BLOCK_END = "Control-End";
+    public static final String DATA_KEY_OP_MANANGER_USER_NAME = "OpsManagerName";
+    public static final String DATA_KEY_OP_MANANGER_PHONE = "OpsManagerPhoneNumber";
+    public static final String DATA_KEY_BACKUP_DRIVER = "BackupDriverName";
+
+    public static final String DATA_VALUE_DEFAULT_PREFIX = "Replace_This_With_";
 }

@@ -104,8 +104,8 @@ public class ApiClient {
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
         if (response.statusCode() != HTTP_OK) {
-            // FIX THIS, DS: create a dedicated unchecked for this?
-            throw new Error("post(" + POSTS_ENDPOINT + " failed: " + response.statusCode() + ": " + response.body());
+            throw new MemberDataException(
+                    "post(" + POSTS_ENDPOINT + " failed: " + response.statusCode() + ": " + response.body());
         }
 
         return response;
@@ -124,8 +124,8 @@ public class ApiClient {
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
         if (response.statusCode() != HTTP_OK) {
-            // FIX THIS, DS: create a dedicated unchecked for this?
-            throw new Error("post(" + POSTS_ENDPOINT + " failed: " + response.statusCode() + ": " + response.body());
+            throw new MemberDataException(
+                    "post(" + POSTS_ENDPOINT + " failed: " + response.statusCode() + ": " + response.body());
         }
 
         return response;
@@ -147,8 +147,8 @@ public class ApiClient {
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
         if (response.statusCode() != HTTP_OK) {
-            // FIX THIS, DS: create a dedicated unchecked for this?
-            throw new Error("runQuery(" + endpoint + " failed: " + response.statusCode() + ": " + response.body());
+            throw new MemberDataException(
+                    "runQuery(" + endpoint + " failed: " + response.statusCode() + ": " + response.body());
         }
 
         return response.body();
@@ -174,8 +174,8 @@ public class ApiClient {
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
         if (response.statusCode() != HTTP_OK) {
-            // FIX THIS, DS: create a dedicated unchecked for this?
-            throw new Error("runQuery(" + endpoint + " failed: " + response.statusCode() + ": " + response.body());
+            throw new MemberDataException(
+                    "runQuery(" + endpoint + " failed: " + response.statusCode() + ": " + response.body());
         }
 
         return response.body();
@@ -217,8 +217,8 @@ public class ApiClient {
         HttpResponse<String> response =  client.send(request, HttpResponse.BodyHandlers.ofString());
 
         if (response.statusCode() != HTTP_OK) {
-            // FIX THIS, DS: create a dedicated unchecked for this?
-            throw new Error("downloadFile(" + endpoint + " failed: " + response.statusCode() + ": " + response.body());
+            throw new MemberDataException(
+                    "downloadFile(" + endpoint + " failed: " + response.statusCode() + ": " + response.body());
         }
 
         // Normalize EOL

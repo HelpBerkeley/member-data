@@ -29,3 +29,6 @@ similar for their second phone.
 Add more flexibility to command line auditing
 	- Non-file arguments
 	- command specific help messages
+
+Detect restaurant name mispellings in workflow data.
+ - If detected, correct and warn?  Or audit fail?

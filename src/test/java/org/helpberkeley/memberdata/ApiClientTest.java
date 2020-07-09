@@ -64,7 +64,7 @@ public class ApiClientTest extends TestBase {
         long postId = 1234567;
         ApiClient apiClient = createApiSimulator();
         Throwable thrown = catchThrowable(() -> apiClient.getPost(postId));
-        assertThat(thrown).isInstanceOf(Error.class);
+        assertThat(thrown).isInstanceOf(MemberDataException.class);
         assertThat(thrown).hasMessageContaining(String.valueOf(postId));
         assertThat(thrown).hasMessageContaining("not found");
     }

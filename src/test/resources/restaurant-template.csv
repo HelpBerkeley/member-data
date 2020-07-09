@@ -8,8 +8,9 @@ FALSE,,,,,,,,"1823 Solano Ave, Berkeley",FALSE,,Bopshop,,,
 ,,,,,,,,,,,,,,
 FALSE,TRUE,,,,,,,,,,,,,
 FALSE,,,,,,,,"1543 Shattuck Ave, Berkeley",FALSE,,Jot Mahal,,,
-FALSE,,,,,,,,"2109 Cedar St., Berkeley",FALSE,,Gregoire,,,
-FALSE,,,,,,,,"1674 Shattuck Ave, Berkeley",FALSE,,Da Lian,,,
+FALSE,,,,,,,,"2109 Cedar St., Berkeley",FALSE,**Do not take pics of order form** (they upload directly). Kitchen door is in back driveway immediately uphill of restaurant,Gregoire,,,
+FALSE,,,,,,,,"1600 Shattuck Ave., Berkeley",FALSE,Ask the cashier,Crepevine,,,
+FALSE,,,,,,,,"1674 Shattuck Ave, Berkeley",FALSE,**Do not take pics of the order form** (they upload directly),Da Lian,,,
 FALSE,,,,,,,,"1700 Shattuck Ave, Berkeley",FALSE,,Thai Delight,,,
 FALSE,,,,,,,,"2521 Hearst Ave, Berkeley, CA 94709",FALSE,"immediately E (uphill) of Etcheverry Hall, right against building",V&A Cafe,,,
 FALSE,,,,,,,,"1956 Shattuck Ave, Berkeley",FALSE,,Kaze Ramen,,,
@@ -21,9 +22,10 @@ Solano Route,,,,,,,,Closed Mondays,,,Kim's Cafe,,,5:10 PM
 Solano Route,,,,,,,,,,,Talavera,,,5:00 PM
 Solano Route,,,,,,,,,,,Sweet Basil,,,5:10 PM
 Solano Route,,,,,,,,,,,Bopshop,,,5:10 PM
-Shattuck Route,,Closed on June 24,,,,,,,,,Jot Mahal,,,5:10 PM
-Shattuck Route,,,,,,,,,,,Gregoire,,,5:10 PM
-Shattuck Route,,"Note: 5:15pm for 1 order, 5:20pm for more",,,,,,Closed Mondays,,,Da Lian,,,5:20 PM
+Shattuck Route,,,,,,,,,,,Jot Mahal,,,5:10 PM
+Shattuck Route,,,,,,,,,No pics,,Gregoire,,,5:10 PM
+Shattuck Route,,,,,,,,,,,Crepevine,,,5:10 PM
+Shattuck Route,,"Note: 5:15pm for 1 order, 5:20pm for more",,,,,,Closed Mondays,No pics,,Da Lian,,,5:20 PM
 Shattuck Route,,,,,,,,Closed Wednesdays,,,Thai Delight,,,5:10 PM
-Shattuck Route,,"Closes right at 5:00pm. On weekend, don't send a driver if no orders to pickup (they will text us an order sheet and won't be at the restaurant).",,,,,,,,,V&A Cafe,,,4:50 PM
+Shattuck Route,,"Closes right at 5:00pm. On weekend, don't send a driver if no orders to pickup (they will upload directly).",,,,,,,,,V&A Cafe,,,4:50 PM
 Shattuck Route,,,,,,,,,,,Kaze Ramen,,,5:10 PM
