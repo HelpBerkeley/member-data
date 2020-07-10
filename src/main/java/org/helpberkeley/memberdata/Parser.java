@@ -687,7 +687,7 @@ public class Parser {
 
     // Skip Discourse system users. Not fully formed.
     private static boolean skipUserId(long userId) {
-        return (userId == -1) || (userId == -2) || (userId == 708);
+        return (userId == -1) || (userId == -2) || (userId == 708) || (userId == 844);
     }
 
 //    static void prettyPrint(final String pageJson) {
