@@ -22,11 +22,16 @@
  */
 package org.helpberkeley.memberdata;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
 public class OrderHistory {
+    private static final Logger LOGGER = LoggerFactory.getLogger(OrderHistory.class);
+
     private static final String ID_COLUMN = "ID";
     private static final String ORDERS_COLUMN = "Orders";
     private static final String FIRST_ORDER_DATE_COLUMN = "First Order Date";
@@ -63,7 +68,7 @@ public class OrderHistory {
             }
 
             if (user == null) {
-                throw new Error("Cannot find user for " + userOrder);
+                LOGGER.warn("Skipping user " + userOrder.userName + ": unknown user");
             }
 
             Row row = history.get(user.getId());
