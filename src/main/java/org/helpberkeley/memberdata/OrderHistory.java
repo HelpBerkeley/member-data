@@ -68,7 +68,9 @@ public class OrderHistory {
             }
 
             if (user == null) {
-                LOGGER.warn("Skipping user " + userOrder.userName + ": unknown user");
+                LOGGER.warn("Unknown user " + userOrder.userName + ": unknown user");
+                user = usersByUserName.get(Constants.UNKNOWN_USER);
+                assert user != null : "Could not find " + Constants.UNKNOWN_USER;
             }
 
             Row row = history.get(user.getId());

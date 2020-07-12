@@ -24,6 +24,7 @@ package org.helpberkeley.memberdata;
 
 import org.junit.Test;
 
+import java.io.IOException;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -58,47 +59,12 @@ public class OrderHistoryTest extends TestBase {
         assertThat(thrown).hasMessageContaining("Restaurant template upload link not found");
     }
 
-//    @Test
-//    public void parseDelivers3_28Test() {
-//        String fileName = "deliveries-3_28.csv";
-//        String data = readFile(fileName);
-//        List<UserOrder> userOrders = Parser.parseOrders(fileName, data);
-//
-//        List<UserOrder> expected = List.of(
-//                new UserOrder("Ms. Somebody", "Somebody", fileName),
-//                new UserOrder("Ms. Somebody", "Somebody", fileName),
-//                new UserOrder("Ms. Somebody", "", fileName),
-//                new UserOrder("Mr. Somebody", "SomebodyElse", fileName)
-//        );
-//
-//        assertThat(userOrders).isEqualTo(expected);
-//    }
-//
-//    @Test
-//    public void parseDelivers3_29Test() {
-//        String fileName = "deliveries-3_29.csv";
-//        String data = readFile(fileName);
-//        List<UserOrder> userOrders = Parser.parseOrders(fileName, data);
-//
-//        List<UserOrder> expected = List.of(
-//                new UserOrder("Mr. Somebody", "SomebodyElse", fileName),
-//                new UserOrder("Ms. Somebody", "Somebody", fileName)
-//        );
-//
-//        assertThat(userOrders).isEqualTo(expected);
-//    }
-//
-//    @Test
-//    public void parseDelivers3_31Test() {
-//        String fileName = "deliveries-3_31.csv";
-//        String data = readFile(fileName);
-//        List<UserOrder> userOrders = Parser.parseOrders(fileName, data);
-//
-//        List<UserOrder> expected = List.of(
-//                new UserOrder("", "ThirdPerson", fileName),
-//                new UserOrder("Ms. Somebody", "Somebody", fileName)
-//        );
-//
-//        assertThat(userOrders).isEqualTo(expected);
-//    }
+    @Test
+    public void unknownUserTest() throws UserException, IOException, InterruptedException {
+        Loader loader = new Loader(createApiSimulator());
+        List<User> users = loader.load();
+        OrderHistory orderHistory = new OrderHistory(("2020/01/01"));
+        UserOrder userOrder = new UserOrder("unregisteredUser", "", "", "", "");
+        orderHistory.merge("20202/01/02", List.of(userOrder), users);
+    }
 }

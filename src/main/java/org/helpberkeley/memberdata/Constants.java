@@ -121,4 +121,7 @@ public class Constants {
     public static final String DATA_KEY_BACKUP_DRIVER = "BackupDriverName";
 
     public static final String DATA_VALUE_DEFAULT_PREFIX = "Replace_This_With_";
+
+    public static final long UNKNOWN_USER_ID = 852;
+    public static final String UNKNOWN_USER = "unknown-user";
 }
