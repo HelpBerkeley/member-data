@@ -30,6 +30,8 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Parser {
 
@@ -415,50 +417,100 @@ public class Parser {
                 continue;
             }
 
-            // "@username :
-            //
-            // Multi-line delivery details.
-
-            // Normalize EOL
-            raw = raw.replaceAll("\\r\\n?", "\n");
-
-            String[] lines = raw.split("\n");
-
-            if (lines.length == 0) {
-                LOGGER.warn("Skipping post {}. No data", id);
-            }
-
-            String line = lines[0].trim();
-
-
-            if (! line.startsWith("@")) {
-               LOGGER.warn("Skipping post {}. Cannot parse delivery details in {}", id, raw);
-               continue;
-            }
-
-            int index = line.indexOf(':');
-            if (index == -1) {
-                LOGGER.warn("Skipping post {}. Cannot parse user name in {}", id, raw);
-                continue;
-            }
-
-            String userName = raw.substring(1, index).trim();
-
-            StringBuilder details = new StringBuilder();
-            for (index = 1; index < lines.length; index++) {
-                line = lines[index].trim();
-                if (! line.isEmpty()) {
-                    if (details.length() > 0) {
-                        details.append(" ");
-                    }
-                    details.append(line);
-                }
-            }
-
-            deliveryDetails.put(userName, details.toString());
+            permissiveParseDeliveryDetails(id, raw, deliveryDetails);
         }
 
         return deliveryDetails;
+    }
+
+    static void parseDeliveryDetails(long id, final String rawPost, Map<String, String> deliveryDetails) {
+        // "@username :
+        //
+        // Multi-line delivery details.
+
+        // Normalize EOL
+        String raw = rawPost.replaceAll("\\r\\n?", "\n");
+
+        String[] lines = raw.split("\n");
+
+        if (lines.length == 0) {
+            LOGGER.warn("Skipping post {}. No data", id);
+        }
+
+        String line = lines[0].trim();
+
+        if (! line.startsWith("@")) {
+            LOGGER.warn("Skipping post {}. Cannot parse delivery details in {}", id, raw);
+            return;
+        }
+
+        int index = line.indexOf(':');
+        if (index == -1) {
+            LOGGER.warn("Skipping post {}. Cannot parse user name in {}", id, raw);
+            return;
+        }
+
+        String userName = raw.substring(1, index).trim();
+
+        StringBuilder details = new StringBuilder();
+        for (index = 1; index < lines.length; index++) {
+            line = lines[index].trim();
+            if (! line.isEmpty()) {
+                if (details.length() > 0) {
+                    details.append(" ");
+                }
+                details.append(line);
+            }
+        }
+
+        deliveryDetails.put(userName, details.toString());
+    }
+
+    /**
+     * Find first occurrence of @username, and take everything after it as the details.
+     * Replace all newlines with spaces. Multiple spaces are collapsed.
+     *
+     * @param id post number
+     * @param rawPost post text
+     * @param deliveryDetails map, keyed by user name, to update with delivery details.
+     */
+    static void permissiveParseDeliveryDetails(long id, final String rawPost, Map<String, String> deliveryDetails) {
+
+        // Normalize EOL
+        String raw = rawPost.replaceAll("\\r\\n?", "\n");
+
+        int index = raw.indexOf("@");
+
+        if (index == -1) {
+            LOGGER.warn("Skipping post {}. Cannot parse user name in {}", id, raw);
+            return;
+        }
+
+        // Remove anything before @username
+        raw = raw.substring(index);
+
+        // Capture the user name line
+        index = raw.indexOf('\n');
+
+        if (index == -1) {
+            LOGGER.warn("Skipping post {}. No details found {}", id, raw);
+            return;
+        }
+
+        String userName = raw.substring(0, index);
+        raw = raw.substring(index);
+
+        String regex = "@([A-Za-z0-9._\\-]+)";
+        Pattern pattern = Pattern.compile(regex);
+        Matcher matcher = pattern.matcher(userName);
+        if (! matcher.find()) {
+            LOGGER.warn("Skipping post {}. No @user not found in post: {}", id, raw);
+        }
+
+        userName = matcher.group(1);
+        String details = raw.replaceAll("\n", " ").replaceAll("\\s+", " ").trim();
+
+        deliveryDetails.put(userName, details);
     }
 
     static String shortURL(final String line) {
