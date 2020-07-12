@@ -103,6 +103,7 @@ public class TestBase {
             Options.COMMAND_UPDATE_ERRORS,
             Options.COMMAND_EMAIL,
             Options.COMMAND_WORKFLOW,
+            Options.COMMAND_UPLOAD_FILE,
     };
 
     static final String[] COMMANDS_WITH_NO_PARAMETERS = {

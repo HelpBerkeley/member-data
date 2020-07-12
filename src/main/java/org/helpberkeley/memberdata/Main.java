@@ -181,6 +181,9 @@ public class Main {
                 postRequestDriverRoutesFailed(apiClient,
                         options.getRequestFileName(), options.getStatusMessage());
                 break;
+            case Options.COMMAND_UPLOAD_FILE:
+                uploadFile(apiClient, options.getFileName());
+                break;
             default:
                 assert options.getCommand().equals(Options.COMMAND_POST_DRIVERS) : options.getCommand();
                 postFile(apiClient, options.getFileName(),
@@ -744,6 +747,10 @@ public class Main {
         WorkflowParser workflowParser =
                 new WorkflowParser(WorkflowParser.Mode.DRIVER_ROUTE_REQUEST, unroutedDeliveries);
         workflowParser.drivers();
+    }
+
+    static void uploadFile(ApiClient apiClient, final String fileName) throws IOException, InterruptedException {
+        apiClient.uploadFile("test.csv", "a,b,c\n1,2,3\n");
     }
 }
 

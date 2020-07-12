@@ -28,9 +28,13 @@ import java.io.IOException;
 import java.net.Authenticator;
 import java.net.PasswordAuthentication;
 import java.net.URI;
+import java.net.URLEncoder;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
 
 import static java.net.HttpURLConnection.HTTP_OK;
@@ -41,6 +45,7 @@ public class ApiClient {
     private static final String BASE_URL = "https://go.helpberkeley.org/";
     private static final String POSTS_ENDPOINT = BASE_URL + "posts.json";
     static final String POSTS_BASE = BASE_URL + "posts/";
+    private static final String UPLOAD_ENDPOINT = BASE_URL + "uploads.json";
     private static final String DOWNLOAD_ENDPOINT = BASE_URL + "uploads/short-url/";
     static final String QUERY_BASE = BASE_URL + "admin/plugins/explorer/queries/";
 
@@ -230,5 +235,56 @@ public class ApiClient {
         }
 
         return fileData;
+    }
+
+    void uploadFile(final String fileName, final String fileData) throws IOException, InterruptedException {
+
+        // FIX THIS, DS: generate unique id? Not strictly necessary here
+        String boundary = "---------------------------86904839212366218363208480977";
+        String contentType = "multipart/form-data; boundary=" + boundary;
+
+        StringBuilder body = new StringBuilder();
+        body.append(boundary).append("\r\n");
+        body.append(boundary).append("Content-Disposition: form-data; name=\"type\"\r\n\r\ncomposer\r\n");
+        body.append(boundary).append("\r\n");
+        body.append("Content-Disposition: form-data; name=\"files[]\"; filename=\"").append(fileName).append("\"\r\n");
+        body.append("Content-Disposition: form-data; name=\"files[]\"; filename=\"").append(fileName).append("\"\r\n");
+        body.append("Content-Type: text/csv\r\n\r\n");
+        body.append(fileData).append("\r\n");
+        body.append(boundary).append("--\r\n");
+
+        StringBuilder filesArg = new StringBuilder();
+
+        // form parameters
+//        data.put("client_id", "1234b591bb4848dd899b6e6ee0feaff9");
+
+        HttpRequest request = HttpRequest.newBuilder()
+                .POST(HttpRequest.BodyPublishers.ofString(body.toString()))
+                .uri(URI.create(UPLOAD_ENDPOINT))
+                .header("Content-Type", contentType)
+                .header("Api-Username", apiUser)
+                .header("Api-Key", apiKey)
+                .build();
+
+        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+        // print status code
+        System.out.println(response.statusCode());
+
+        // print response body
+        System.out.println(response.body());
+    }
+
+    private HttpRequest.BodyPublisher ofFormData(Map<Object, Object> data) {
+        StringBuilder builder = new StringBuilder();
+        for (Map.Entry<Object, Object> entry : data.entrySet()) {
+            if (builder.length() > 0) {
+                builder.append("&");
+            }
+            builder.append(URLEncoder.encode(entry.getKey().toString(), StandardCharsets.UTF_8));
+            builder.append("=");
+            builder.append(URLEncoder.encode(entry.getValue().toString(), StandardCharsets.UTF_8));
+        }
+        return HttpRequest.BodyPublishers.ofString(builder.toString());
     }
 }

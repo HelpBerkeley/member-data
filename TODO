@@ -1,8 +1,4 @@
 
-Build automation for WorkRequestHandling from Java.
-
-Build automation for WorkRequestHandling from shell.
-
 Audit/validate that the topic ids for posting are valid.
 
 Reverse engineer recipes for:
