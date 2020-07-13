@@ -104,7 +104,8 @@ public class WorkflowParser {
             }
 
             if (! isDriverRow(rowMap)) {
-                throw new MemberDataException("line " + csvReader.getLinesRead() + " is not a driver row");
+                throw new MemberDataException("line " + csvReader.getLinesRead() + " is not a driver row. "
+                    + "Is this a driver who is also a consumer? If so, the consumer column must be set to false.");
             }
 
             Driver driver = processDriver(rowMap);
