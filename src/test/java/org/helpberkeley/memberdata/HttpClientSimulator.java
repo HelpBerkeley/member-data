@@ -158,7 +158,7 @@ public class HttpClientSimulator extends HttpClient {
     private <T> HttpResponse<T> doGet(HttpRequest request) {
         String fileName = request.uri().toString();
         int index = fileName.lastIndexOf(File.separatorChar);
-        assertThat(index).isNotEqualTo(-1);
+        assertThat(index).as(fileName).isNotEqualTo(-1);
         fileName = fileName.substring(index + 1);
 
         if (fileName.endsWith(Main.ORDER_HISTORY_POST_ID + ".json")) {
@@ -179,7 +179,7 @@ public class HttpClientSimulator extends HttpClient {
 
         String uri = request.uri().toString();
         int index = uri.lastIndexOf("/run");
-        assertThat(index).isNotEqualTo(-1);
+        assertThat(index).as(uri).isNotEqualTo(-1);
         String queryId = uri.substring(0, index);
         index = queryId.lastIndexOf('/');
         queryId = queryId.substring(index + 1);
