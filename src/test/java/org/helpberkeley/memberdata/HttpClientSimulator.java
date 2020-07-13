@@ -157,7 +157,7 @@ public class HttpClientSimulator extends HttpClient {
 
     private <T> HttpResponse<T> doGet(HttpRequest request) {
         String fileName = request.uri().toString();
-        int index = fileName.lastIndexOf(File.separatorChar);
+        int index = fileName.lastIndexOf('/');
         assertThat(index).as(fileName).isNotEqualTo(-1);
         fileName = fileName.substring(index + 1);
 
