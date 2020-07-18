@@ -42,8 +42,6 @@ public class WorkflowParser {
     private final Mode mode;
     private final CSVReaderHeaderAware csvReader;
     private final List<Driver> drivers = new ArrayList<>();
-    private final Map<String, String> controlBlockUniqueKeys = new HashMap<>();
-    private final Map<String, List<String>> controlBlockNoneUniqueKeys = new HashMap<>();
 
     WorkflowParser(Mode mode, final String csvData) throws IOException {
         this.mode = mode;
@@ -116,56 +114,115 @@ public class WorkflowParser {
         return drivers;
     }
 
+    /**
+     * The first row of a control block looks like:
+     *     FALSE,FALSE,ControlBegin,,,,,,,,,,,,,
+     * @return Whether or not the row is the beginning of a control block.
+     */
     private boolean isControlBlockBeginRow(final Map<String, String> rowMap) {
 
-        return (! Boolean.parseBoolean(rowMap.get(Constants.WORKFLOW_CONSUMER_COLUMN)))
-            && (! Boolean.parseBoolean(rowMap.get(Constants.WORKFLOW_DRIVER_COLUMN)))
-            && (rowMap.get(Constants.WORKFLOW_NAME_COLUMN).equals(Constants.CONTROL_BLOCK_BEGIN));
+        String consumerValue = rowMap.get(Constants.WORKFLOW_CONSUMER_COLUMN);
+        assert consumerValue != null;
+
+        String driverValue = rowMap.get(Constants.WORKFLOW_DRIVER_COLUMN);
+        assert driverValue != null;
+
+        String directive = rowMap.get(Constants.CONTROL_BLOCK_DIRECTIVE_COLUMN);
+        assert directive != null;
+
+        return (! Boolean.parseBoolean(consumerValue.trim()))
+            && (! Boolean.parseBoolean(driverValue.trim()))
+            && (directive.trim().equals(Constants.CONTROL_BLOCK_BEGIN));
     }
 
+    /**
+     * The final row of a control block looks like:
+     *     FALSE,FALSE,ControlEnd,,,,,,,,,,,,,
+     * @return Whether or not the row is the end of a control block.
+     */
     private boolean isControlBlockEndRow(final Map<String, String> rowMap) {
 
-        return (! Boolean.parseBoolean(rowMap.get(Constants.WORKFLOW_CONSUMER_COLUMN)))
-                && (! Boolean.parseBoolean(rowMap.get(Constants.WORKFLOW_DRIVER_COLUMN)))
-                && (rowMap.get(Constants.WORKFLOW_NAME_COLUMN).equals(Constants.CONTROL_BLOCK_END));
+        String consumerValue = rowMap.get(Constants.WORKFLOW_CONSUMER_COLUMN);
+        assert consumerValue != null;
+
+        String driverValue = rowMap.get(Constants.WORKFLOW_DRIVER_COLUMN);
+        assert driverValue != null;
+
+        String directive = rowMap.get(Constants.CONTROL_BLOCK_DIRECTIVE_COLUMN);
+        assert directive != null;
+
+        return (! Boolean.parseBoolean(consumerValue.trim()))
+                && (! Boolean.parseBoolean(driverValue.trim()))
+                && (directive.trim().equals(Constants.CONTROL_BLOCK_END));
     }
 
     private void processControlBlock() throws IOException, CsvValidationException {
         Map<String, String> rowMap;
 
+        ControlBlock controlBlock = new ControlBlock();
+
         while ((rowMap = csvReader.readMap()) != null) {
+
+            auditControlBlockRow(rowMap);
+
             if (isControlBlockEndRow(rowMap)) {
                 break;
-            }
-
-            String key = rowMap.get(Constants.WORKFLOW_NAME_COLUMN);
-            if (key != null) {
+            } else if (ignoreControlBlockRow(rowMap)) {
                 continue;
             }
 
-            String value = rowMap.get(Constants.WORKFLOW_NEIGHBORHOOD_COLUMN);
-            addControlBlockValue(key, value);
+            String key = rowMap.get(Constants.CONTROL_BLOCK_KEY_COLUMN);
+            String value = rowMap.get(Constants.CONTROL_BLOCK_VALUE_COLUMN);
+
+            controlBlock.processRow(key, value, csvReader.getLinesRead());
         }
     }
 
-    private void addControlBlockValue(final String key, final String value) {
+    private void auditControlBlockRow(Map<String, String> rowMap) {
+        String errors = "";
 
-        switch (key) {
-            case Constants.DATA_KEY_OP_MANANGER_USER_NAME:
-            case Constants.DATA_KEY_OP_MANANGER_PHONE:
-                if (controlBlockUniqueKeys.containsKey(key)) {
-                    throw new MemberDataException(
-                            "Duplicate data key name \"" + key + "\", line " + csvReader.getLinesRead());
-                }
+        for (String columnName : List.of(Constants.WORKFLOW_CONSUMER_COLUMN, Constants.WORKFLOW_DRIVER_COLUMN)) {
 
-            case Constants.DATA_KEY_BACKUP_DRIVER:
-                break;
-            default:
-                throw new MemberDataException(
-                        "Unknown data key name \"" + key + "\", line " + csvReader.getLinesRead());
+            String value = rowMap.get(columnName);
+
+            if (value == null) {
+                errors += "Missing value control block " + columnName
+                        + " column at line " + csvReader.getLinesRead() + ".\n";
+            } else if (! value.toLowerCase().equals("false")) {
+                errors += "Control block " + columnName
+                        + " column does not contain FALSE, at line " + csvReader.getLinesRead() + ".\n";
+            }
         }
 
+        String directive = rowMap.get(Constants.WORKFLOW_NAME_COLUMN).trim();
 
+        switch (directive) {
+            case "":
+            case Constants.CONTROL_BLOCK_COMMENT:
+            case Constants.CONTROL_BLOCK_END:
+                break;
+            default:
+                errors += "Unexpected control block directive \"" + rowMap.get(Constants.WORKFLOW_NAME_COLUMN)
+                    + "\" in " + Constants.WORKFLOW_NAME_COLUMN + " column at line " + csvReader.getLinesRead()
+                    + ".\n";
+        }
+
+        if (! errors.isEmpty()) {
+            throw new MemberDataException(errors);
+        }
+    }
+
+    private boolean ignoreControlBlockRow(Map<String, String> rowMap) {
+
+        String directive = rowMap.get(Constants.WORKFLOW_NAME_COLUMN).trim();
+
+        if (directive.equals(Constants.CONTROL_BLOCK_COMMENT)) {
+            return true;
+        }
+
+        return (directive.isEmpty()
+            && rowMap.get(Constants.WORKFLOW_USER_NAME_COLUMN).isEmpty()
+            && rowMap.get(Constants.WORKFLOW_NEIGHBORHOOD_COLUMN).trim().isEmpty());
     }
 
     /**
@@ -207,7 +264,8 @@ public class WorkflowParser {
 
         rowMap = csvReader.readMap();
         if (! isDriverRow(rowMap)) {
-            throw new MemberDataException("line " + csvReader.getLinesRead() + " is not a driver row");
+            throw new MemberDataException("line " + csvReader.getLinesRead() + " is not a driver row. "
+                    + "Is this a driver who is also a consumer? If so, the consumer column must be set to false.");
         }
         if (! driverUserName.equals(rowMap.get(Constants.WORKFLOW_USER_NAME_COLUMN))) {
             throw new MemberDataException(driverUserName + ", line "

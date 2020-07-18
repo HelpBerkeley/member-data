@@ -114,13 +114,20 @@ public class Constants {
 
     public static final String UPLOAD_URI_PREFIX = "upload://";
 
-    public static final String CONTROL_BLOCK_BEGIN = "Control-Begin";
-    public static final String CONTROL_BLOCK_END = "Control-End";
-    public static final String DATA_KEY_OP_MANANGER_USER_NAME = "OpsManagerName";
-    public static final String DATA_KEY_OP_MANANGER_PHONE = "OpsManagerPhoneNumber";
-    public static final String DATA_KEY_BACKUP_DRIVER = "BackupDriverName";
+    // Column overriding in the control block
+    public static final String CONTROL_BLOCK_DIRECTIVE_COLUMN = WORKFLOW_NAME_COLUMN;
+    public static final String CONTROL_BLOCK_KEY_COLUMN = WORKFLOW_USER_NAME_COLUMN;
+    public static final String CONTROL_BLOCK_VALUE_COLUMN = WORKFLOW_CITY_COLUMN;
 
-    public static final String DATA_VALUE_DEFAULT_PREFIX = "Replace_This_With_";
+    // Control block values
+    public static final String CONTROL_BLOCK_BEGIN = "ControlBegin";
+    public static final String CONTROL_BLOCK_END = "ControlEnd";
+    public static final String CONTROL_BLOCK_COMMENT = "Comment";
+    public static final String CONTROL_BLOCK_OPS_MANAGER = "OpsManager(UserName|Phone)";
+    public static final String CONTROL_BLOCK_SPLIT_RESTAURANT = "SplitRestaurant(Name|CleanupDriverUserName)";
+    public static final String CONTROL_BLOCK_BACKUP_DRIVER = "BackupDriverUserName";
+
+    public static final String DATA_VALUE_DEFAULT_PREFIX = "ReplaceThisBy";
 
     public static final long UNKNOWN_USER_ID = 852;
     public static final String UNKNOWN_USER = "unknown-user";

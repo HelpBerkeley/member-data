@@ -22,10 +22,12 @@
  */
 package org.helpberkeley.memberdata;
 
+import com.opencsv.bean.CsvToBeanBuilder;
 import com.opencsv.exceptions.CsvValidationException;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.io.StringReader;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -189,11 +191,11 @@ public class WorkflowParserTest extends TestBase {
     }
 
     @Test
-    public void unroutedWorkflowMissingEmptyRowTest() throws IOException, CsvValidationException {
+    public void unroutedWorkflowMissingEmptyRowTest() throws IOException {
         String unroutedDeliveries = readResourceFile("unrouted-deliveries-missing-empty.csv");
         WorkflowParser workflowParser =
                 new WorkflowParser(WorkflowParser.Mode.DRIVER_ROUTE_REQUEST, unroutedDeliveries);
-        Throwable thrown = catchThrowable(() -> workflowParser.drivers());
+        Throwable thrown = catchThrowable(workflowParser::drivers);
         assertThat(thrown).isInstanceOf(MemberDataException.class);
         assertThat(thrown).hasMessageContaining("Line 10 is not empty");
     }

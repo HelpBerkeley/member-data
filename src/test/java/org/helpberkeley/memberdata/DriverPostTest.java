@@ -26,12 +26,9 @@ import com.opencsv.exceptions.CsvValidationException;
 import org.junit.Test;
 
 import java.io.IOException;
-import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.catchThrowable;
 
 public class DriverPostTest extends TestBase {
 

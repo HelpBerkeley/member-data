@@ -24,7 +24,6 @@ package org.helpberkeley.memberdata;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLParameters;
 import javax.net.ssl.SSLSession;
-import java.io.File;
 import java.io.IOException;
 import java.net.*;
 import java.net.http.HttpClient;

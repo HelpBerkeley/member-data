@@ -60,7 +60,7 @@ public class OrderHistoryTest extends TestBase {
     }
 
     @Test
-    public void unknownUserTest() throws UserException, IOException, InterruptedException {
+    public void unknownUserTest() throws IOException, InterruptedException {
         Loader loader = new Loader(createApiSimulator());
         List<User> users = loader.load();
         OrderHistory orderHistory = new OrderHistory(("2020/01/01"));
