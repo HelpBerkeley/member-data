@@ -22,17 +22,15 @@
  */
 package org.helpberkeley.memberdata;
 
-import com.opencsv.exceptions.CsvValidationException;
 import org.junit.Test;
 
-import java.io.IOException;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class RoutedDeliveriesTest extends TestBase {
     @Test
-    public void parseRoutedTest() throws IOException, CsvValidationException {
+    public void parseRoutedTest() {
         String csvData = readResourceFile("routed-deliveries.csv");
         WorkflowParser parser =
                 new WorkflowParser(WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, csvData);
@@ -178,7 +176,7 @@ public class RoutedDeliveriesTest extends TestBase {
     }
 
     @Test
-    public void parseRoutedWithSplitRestaurantsTest() throws IOException, CsvValidationException {
+    public void parseRoutedWithSplitRestaurantsTest() {
         String csvData = readResourceFile("routed-deliveries-with-split-restaurants.csv");
         WorkflowParser parser =
                 new WorkflowParser(WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, csvData);

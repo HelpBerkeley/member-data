@@ -35,9 +35,10 @@ class ControlBlock {
 
     }
 
-    void processRow(final String key, final String value, long lineNumber) {
+    void processRow(WorkflowBean bean, long lineNumber) {
 
-        String variable = key.replaceAll("\\s", "");
+        String variable = bean.getControlBlockKey().replaceAll("\\s", "");
+        String value = bean.getControlBlockValue().replaceAll("\\s", "");
 
         switch (variable) {
             case Constants.CONTROL_BLOCK_OPS_MANAGER:
@@ -50,7 +51,7 @@ class ControlBlock {
                 processBackupDriver(value, lineNumber);
                 break;
             default:
-                throw new MemberDataException("Unknown key \"" + key + "\" in the "
+                throw new MemberDataException("Unknown key \"" + variable + "\" in the "
                         + Constants.WORKFLOW_USER_NAME_COLUMN + " column at line " + lineNumber + ".\n");
         }
     }

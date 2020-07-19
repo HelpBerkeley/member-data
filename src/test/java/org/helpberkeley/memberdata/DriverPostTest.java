@@ -22,7 +22,6 @@
  */
 package org.helpberkeley.memberdata;
 
-import com.opencsv.exceptions.CsvValidationException;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -33,7 +32,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class DriverPostTest extends TestBase {
 
     @Test
-    public void generateDriverPostsTest() throws IOException, CsvValidationException, InterruptedException {
+    public void generateDriverPostsTest() throws IOException, InterruptedException {
         String routedDeliveries = readResourceFile("routed-deliveries.csv");
         DriverPostFormat driverPostFormat =
                 new DriverPostFormat(createApiSimulator(), routedDeliveries);
@@ -65,7 +64,7 @@ public class DriverPostTest extends TestBase {
     }
 
     @Test
-    public void generateGroupInstructionsPostTest() throws IOException, CsvValidationException, InterruptedException {
+    public void generateGroupInstructionsPostTest() throws IOException, InterruptedException {
         String routedDeliveries = readResourceFile("routed-deliveries.csv");
         DriverPostFormat driverPostFormat =
                 new DriverPostFormat(createApiSimulator(), routedDeliveries);

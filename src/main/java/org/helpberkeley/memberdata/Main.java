@@ -22,7 +22,6 @@
 package org.helpberkeley.memberdata;
 
 import com.opencsv.exceptions.CsvException;
-import com.opencsv.exceptions.CsvValidationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -520,7 +519,7 @@ public class Main {
         new UserExporter(users).workflowToFile(restaurantTemplate, deliveryDetails, WORKFLOW_FILE);
     }
 
-    static void generateDriversPosts(ApiClient apiClient, String workflowFile) throws IOException, CsvValidationException, InterruptedException {
+    static void generateDriversPosts(ApiClient apiClient, String workflowFile) throws IOException, InterruptedException {
         String routedDeliveries = Files.readString(Paths.get(workflowFile));
         DriverPostFormat driverPostFormat =
                 new DriverPostFormat(apiClient, routedDeliveries);
@@ -560,15 +559,13 @@ public class Main {
             String reason = ex.getCause() != null ? ex.getCause().getMessage() : ex.getMessage();
             request.postStatus(WorkRequestHandler.RequestStatus.Failed, reason);
 
-        } catch (InterruptedException|CsvValidationException|IOException ex) {
-            request.postStatus(WorkRequestHandler.RequestStatus.Failed, ex.getMessage());
         }
     }
 
     static String generateDriverPosts(ApiClient apiClient, String routedDeliveries)
-            throws InterruptedException, CsvValidationException, IOException {
+            throws InterruptedException, IOException {
 
-        String statusMessages = "";
+        StringBuilder statusMessages = new StringBuilder();
         List<String> postURLs = new ArrayList<>();
         String groupPostURL = null;
 
@@ -591,8 +588,8 @@ public class Main {
                     "" : "failed " + response.statusCode() + ": " + response.body());
 
             if (response.statusCode() != HTTP_OK) {
-                statusMessages +=  "Failed posting driver's message: "
-                        + response.statusCode() + ": " + response.body() + "\n";
+                statusMessages.append("Failed posting driver's message: ")
+                        .append(response.statusCode()).append(": ").append(response.body()).append("\n");
             } else {
                 PostResponse postResponse = Parser.postResponse((String)response.body());
                 postURLs.add(
@@ -620,8 +617,8 @@ public class Main {
                 "" : "failed " + response.statusCode() + ": " + response.body());
 
         if (response.statusCode() != HTTP_OK) {
-            statusMessages +=  "Failed posting group instructions message: "
-                    + response.statusCode() + ": " + response.body() + "\n";
+            statusMessages.append("Failed posting group instructions message: ")
+                    .append(response.statusCode()).append(": ").append(response.body()).append("\n");
         } else {
             PostResponse postResponse = Parser.postResponse((String)response.body());
             groupPostURL = ("https://go.helpberkeley.org/t/"
@@ -632,22 +629,21 @@ public class Main {
                     + postResponse.postNumber);
         }
 
-        statusMessages += driverPostFormat.statusMessages();
-        statusMessages += "\n\n";
+        statusMessages.append(driverPostFormat.statusMessages());
+        statusMessages.append("\n\n");
 
-        statusMessages += "**Driver Messages Posted to "
-                + "[Staging Automated driver run messages]"
-                + "(https://go.helpberkeley.org/t/staging-automated-driver-run-messages/2123/)**\n\n";
+        statusMessages.append("**Driver Messages Posted to [Staging Automated driver run messages]")
+                .append("(https://go.helpberkeley.org/t/staging-automated-driver-run-messages/2123/)**\n\n");
 
         for (String url : postURLs) {
-            statusMessages += url + "\n";
+            statusMessages.append(url).append("\n");
         }
 
         if (groupPostURL != null) {
-            statusMessages += "\n[Group Instructions](" + groupPostURL + ")";
+            statusMessages.append("\n[Group Instructions](").append(groupPostURL).append(")");
         }
 
-        return statusMessages;
+        return statusMessages.toString();
     }
 
     static void getRequestDriverRoutes(ApiClient apiClient) throws IOException, InterruptedException {
@@ -682,8 +678,6 @@ public class Main {
         } catch (MemberDataException ex) {
             String reason = ex.getCause() != null ? ex.getCause().getMessage() : ex.getMessage();
             request.postStatus(WorkRequestHandler.RequestStatus.Failed, reason);
-        } catch (CsvValidationException|IOException ex) {
-            request.postStatus(WorkRequestHandler.RequestStatus.Failed, ex.getMessage());
         }
 
         Path filePath = Paths.get(request.uploadFile.originalFileName);
@@ -742,8 +736,7 @@ public class Main {
         assert response.statusCode() == HTTP_OK : "failed " + response.statusCode() + ": " + response.body();
     }
 
-    private static void auditUnroutedDeliveries(final String unroutedDeliveries)
-            throws IOException, CsvValidationException {
+    private static void auditUnroutedDeliveries(final String unroutedDeliveries) {
         WorkflowParser workflowParser =
                 new WorkflowParser(WorkflowParser.Mode.DRIVER_ROUTE_REQUEST, unroutedDeliveries);
         workflowParser.drivers();

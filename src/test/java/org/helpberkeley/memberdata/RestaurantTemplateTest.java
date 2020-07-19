@@ -23,21 +23,19 @@ public class RestaurantTemplateTest extends TestBase {
         Throwable thrown = catchThrowable(() -> new RestaurantTemplateParser(badCSV).restaurants());
         assertThat(thrown).isInstanceOf(MemberDataException.class);
         assertThat(thrown).hasMessageContaining(RestaurantTemplateParser.TEMPLATE_ERROR);
-        assertThat(thrown).hasMessageContaining(RestaurantTemplateParser.CSV_PARSE_ERROR);
+        assertThat(thrown).hasMessageContaining("All column names missing. Line 1 does not look like a header row");
     }
 
     @Test
     public void missingConsumerColumnTest() {
-        String template = String.join(",", List.of(
+        final String template = String.join(",", List.of(
                 Constants.WORKFLOW_DRIVER_COLUMN,
                 Constants.WORKFLOW_RESTAURANTS_COLUMN,
                 Constants.WORKFLOW_ORDERS_COLUMN,
                 Constants.WORKFLOW_DETAILS_COLUMN))
                 + "\n";
-        String data = ",,,\n";
-        RestaurantTemplateParser parser = new RestaurantTemplateParser(template + data);
 
-        Throwable thrown = catchThrowable(parser::restaurants);
+        Throwable thrown = catchThrowable(() -> new RestaurantTemplateParser(template));
         assertThat(thrown).isInstanceOf(MemberDataException.class);
         assertThat(thrown).hasMessageContaining(RestaurantTemplateParser.TEMPLATE_ERROR);
         assertThat(thrown).hasMessageContaining(
@@ -46,16 +44,14 @@ public class RestaurantTemplateTest extends TestBase {
 
     @Test
     public void missingDriverColumnTest() {
-        String template = String.join(",", List.of(
+        final String template = String.join(",", List.of(
                 Constants.WORKFLOW_CONSUMER_COLUMN,
                 Constants.WORKFLOW_RESTAURANTS_COLUMN,
                 Constants.WORKFLOW_ORDERS_COLUMN,
                 Constants.WORKFLOW_DETAILS_COLUMN))
                 + "\n";
-        String data = ",,,\n";
-        RestaurantTemplateParser parser = new RestaurantTemplateParser(template + data);
 
-        Throwable thrown = catchThrowable(parser::restaurants);
+        Throwable thrown = catchThrowable(() -> new RestaurantTemplateParser(template));
         assertThat(thrown).isInstanceOf(MemberDataException.class);
         assertThat(thrown).hasMessageContaining(RestaurantTemplateParser.TEMPLATE_ERROR);
         assertThat(thrown).hasMessageContaining(
@@ -64,16 +60,14 @@ public class RestaurantTemplateTest extends TestBase {
 
     @Test
     public void missingRestaurantsColumnTest() {
-        String template = String.join(",", List.of(
+        final String template = String.join(",", List.of(
                 Constants.WORKFLOW_CONSUMER_COLUMN,
                 Constants.WORKFLOW_DRIVER_COLUMN,
                 Constants.WORKFLOW_ORDERS_COLUMN,
                 Constants.WORKFLOW_DETAILS_COLUMN))
                 + "\n";
-        String data = ",,,\n";
-        RestaurantTemplateParser parser = new RestaurantTemplateParser(template + data);
 
-        Throwable thrown = catchThrowable(parser::restaurants);
+        Throwable thrown = catchThrowable(() -> new RestaurantTemplateParser(template));
         assertThat(thrown).isInstanceOf(MemberDataException.class);
         assertThat(thrown).hasMessageContaining(RestaurantTemplateParser.TEMPLATE_ERROR);
         assertThat(thrown).hasMessageContaining(
@@ -82,16 +76,14 @@ public class RestaurantTemplateTest extends TestBase {
 
     @Test
     public void missingCondoColumnTest() {
-        String template = String.join(",", List.of(
+        final String template = String.join(",", List.of(
                 Constants.WORKFLOW_CONSUMER_COLUMN,
                 Constants.WORKFLOW_DRIVER_COLUMN,
                 Constants.WORKFLOW_RESTAURANTS_COLUMN,
                 Constants.WORKFLOW_DETAILS_COLUMN))
                 + "\n";
-        String data = ",,,\n";
-        RestaurantTemplateParser parser = new RestaurantTemplateParser(template + data);
 
-        Throwable thrown = catchThrowable(parser::restaurants);
+        Throwable thrown = catchThrowable(() -> new RestaurantTemplateParser(template));
         assertThat(thrown).isInstanceOf(MemberDataException.class);
         assertThat(thrown).hasMessageContaining(RestaurantTemplateParser.TEMPLATE_ERROR);
         assertThat(thrown).hasMessageContaining(
@@ -100,16 +92,14 @@ public class RestaurantTemplateTest extends TestBase {
 
     @Test
     public void missingOrdersColumnTest() {
-        String template = String.join(",", List.of(
+        final String template = String.join(",", List.of(
                 Constants.WORKFLOW_CONSUMER_COLUMN,
                 Constants.WORKFLOW_DRIVER_COLUMN,
                 Constants.WORKFLOW_RESTAURANTS_COLUMN,
                 Constants.WORKFLOW_DETAILS_COLUMN))
                 + "\n";
-        String data = ",,,\n";
-        RestaurantTemplateParser parser = new RestaurantTemplateParser(template + data);
 
-        Throwable thrown = catchThrowable(parser::restaurants);
+        Throwable thrown = catchThrowable(() -> new RestaurantTemplateParser(template));
         assertThat(thrown).isInstanceOf(MemberDataException.class);
         assertThat(thrown).hasMessageContaining(RestaurantTemplateParser.TEMPLATE_ERROR);
         assertThat(thrown).hasMessageContaining(
@@ -118,16 +108,14 @@ public class RestaurantTemplateTest extends TestBase {
 
     @Test
     public void missingDetailsColumnTest() {
-        String template = String.join(",", List.of(
+        final String template = String.join(",", List.of(
                 Constants.WORKFLOW_CONSUMER_COLUMN,
                 Constants.WORKFLOW_DRIVER_COLUMN,
                 Constants.WORKFLOW_RESTAURANTS_COLUMN,
                 Constants.WORKFLOW_ORDERS_COLUMN))
                 + "\n";
-        String data = ",,,\n";
-        RestaurantTemplateParser parser = new RestaurantTemplateParser(template + data);
 
-        Throwable thrown = catchThrowable(parser::restaurants);
+        Throwable thrown = catchThrowable(() -> new RestaurantTemplateParser(template));
         assertThat(thrown).isInstanceOf(MemberDataException.class);
         assertThat(thrown).hasMessageContaining(RestaurantTemplateParser.TEMPLATE_ERROR);
         assertThat(thrown).hasMessageContaining(
@@ -187,6 +175,7 @@ public class RestaurantTemplateTest extends TestBase {
         assertThat(thrown).hasMessageContaining("missing route name value from column Consumer");
     }
 
+    @SuppressWarnings("RedundantIfStatement")
     @Test
     public void noPicsRestaurantTest() {
         final String csvData = readResourceFile("restaurant-template.csv");

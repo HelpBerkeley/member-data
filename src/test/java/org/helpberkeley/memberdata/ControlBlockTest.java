@@ -22,10 +22,7 @@
  */
 package org.helpberkeley.memberdata;
 
-import com.opencsv.exceptions.CsvValidationException;
 import org.junit.Test;
-
-import java.io.IOException;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.ThrowableAssert.catchThrowable;
@@ -45,7 +42,7 @@ public class ControlBlockTest extends TestBase {
     }
 
     @Test
-    public void controlBlockTest() throws IOException, CsvValidationException {
+    public void controlBlockTest() {
         WorkflowParser workflowParser =
                 new WorkflowParser(WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, controlBlockData);
 
@@ -54,7 +51,7 @@ public class ControlBlockTest extends TestBase {
 
     /** Test that true in a consumer column throws an exception */
     @Test
-    public void consumerTrueTest() throws IOException {
+    public void consumerTrueTest() {
 
         String workFlowData = HEADER + CONTROL_BLOCK_BEGIN_ROW + "TRUE,FALSE,,,,,,,,,,,,,\n";
 
@@ -67,7 +64,7 @@ public class ControlBlockTest extends TestBase {
 
     /** Test that true in a driver column throws an exception */
     @Test
-    public void driverTrueTest() throws IOException {
+    public void driverTrueTest() {
 
         String workFlowData = HEADER + CONTROL_BLOCK_BEGIN_ROW + "FALSE,TRUE,,,,,,,,,,,,,\n";
 

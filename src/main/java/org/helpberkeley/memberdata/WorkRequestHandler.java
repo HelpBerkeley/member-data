@@ -33,14 +33,9 @@ import java.util.ListIterator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import static java.net.HttpURLConnection.HTTP_OK;
 
 public class WorkRequestHandler {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(Parser.class);
 
     private final ApiClient apiClient;
     private final Query query;

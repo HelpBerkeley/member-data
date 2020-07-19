@@ -22,30 +22,26 @@
  */
 package org.helpberkeley.memberdata;
 
-import com.opencsv.CSVReaderHeaderAware;
-import com.opencsv.exceptions.CsvValidationException;
 
-import java.io.IOException;
+import com.opencsv.bean.CsvToBeanBuilder;
+
 import java.io.StringReader;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class RestaurantTemplateParser {
 
     static final String TEMPLATE_ERROR = "Restaurant Template Error: ";
     static final String ERROR_NO_DATA = "empty file";
-    static final String CSV_PARSE_ERROR = "CSV parser error: ";
     static final String MISSING_COLUMN_ERROR = "missing column: ";
     static final String MISSING_EMPTY_ROW = "did not find empty row at line ";
     static final String MISSING_VALUE_ERROR = "missing value from column ";
     static final String DUPLICATE_ROUTE_ERROR = " appears more than once in the route block";
     private static final String ROUTE_MARKER = " Route";
 
-    private final CSVReaderHeaderAware csvReader;
+    private long lineNumber = 0;
+    private final Iterator<RestaurantBean> iterator;
 
     RestaurantTemplateParser(final String csvData) {
-        CSVReaderHeaderAware csvReaderTemp;
 
         // Normalize EOL
         String normalizedData = csvData.replaceAll("\\r\\n?", "\n");
@@ -53,30 +49,55 @@ public class RestaurantTemplateParser {
         if (normalizedData.isEmpty()) {
             throwTemplateError(ERROR_NO_DATA);
         }
-        try {
-            csvReaderTemp = new CSVReaderHeaderAware(new StringReader(normalizedData));
-        } catch (IOException ex) {
-            csvReaderTemp = null;
-            throwTemplateError(ex.getMessage());
-        }
-        csvReader = csvReaderTemp;
+
+        auditColumns(normalizedData);
+
+        List<RestaurantBean> restaurantBeans = new CsvToBeanBuilder<RestaurantBean>(new StringReader(normalizedData))
+                .withType(RestaurantBean.class).build().parse();
+        iterator = restaurantBeans.iterator();
     }
 
-    private void auditColumns(final Map<String, String> row) {
+    /**
+     * Return the bean representation of the next row.
+     * Increments current line number
+     * @return Next bean, or null if at end.
+     */
+    private RestaurantBean nextRow() {
+        if (iterator.hasNext()) {
+            lineNumber++;
+            return iterator.next();
+        }
 
-        String errors = "";
+        return null;
+    }
 
-        for (String columnName : List.of(
+    private void auditColumns(final String csvData) {
+
+        List<String> columnNames =  List.of(
             Constants.WORKFLOW_CONSUMER_COLUMN,
             Constants.WORKFLOW_DRIVER_COLUMN,
             Constants.WORKFLOW_RESTAURANTS_COLUMN,
             Constants.WORKFLOW_ORDERS_COLUMN,
             Constants.WORKFLOW_DETAILS_COLUMN,
-            Constants.WORKFLOW_CONDO_COLUMN)) {
+            Constants.WORKFLOW_CONDO_COLUMN);
 
-            if (! row.containsKey(columnName)) {
+        // get the header line
+        String header = csvData.substring(0, csvData.indexOf('\n'));
+
+        String[] columns = header.split(",");
+        Set<String> set = new HashSet<>(Arrays.asList(columns));
+
+        int numErrors = 0;
+        String errors = "";
+        for (String columnName : columnNames) {
+            if (! set.contains(columnName)) {
                 errors += MISSING_COLUMN_ERROR + columnName + '\n';
+                numErrors++;
             }
+        }
+
+        if (numErrors == columnNames.size()) {
+            throwTemplateError("All column names missing. Line 1 does not look like a header row");
         }
 
         if (! errors.isEmpty()) {
@@ -87,131 +108,162 @@ public class RestaurantTemplateParser {
     Map<String, Restaurant> restaurants() {
         Map<String, Restaurant> restaurants = new HashMap<>();
 
-        Map<String, String> rowMap;
-        boolean firstLine = true;
+        RestaurantBean bean;
 
-        try {
-            while ((rowMap = csvReader.readMap()) != null) {
+        while ((bean = nextRow()) != null) {
 
-                if (firstLine) {
-                    auditColumns(rowMap);
-                    firstLine = false;
-                }
+            if (isControlBlockBeginRow(bean)) {
+                processControlBlock();
+                continue;
+            }
 
-                if (isAddressBlockMarker(rowMap)) {
-                    processAddressBlock(restaurants);
-                } else if (isRoute(rowMap)) {
-                    processRouteBlock(rowMap, restaurants);
-                } else {
-                    if (! isEmptyRow(rowMap)){
-                        throwTemplateError(MISSING_EMPTY_ROW + csvReader.getLinesRead());
-                    }
+            if (isAddressBlockMarker(bean)) {
+                processAddressBlock(restaurants);
+            } else if (isRoute(bean)) {
+                processRouteBlock(bean, restaurants);
+            } else {
+                if (!isEmptyRow(bean)) {
+                    throwTemplateError(MISSING_EMPTY_ROW + lineNumber);
                 }
             }
-        } catch (IOException | CsvValidationException ex) {
-            throwTemplateError(CSV_PARSE_ERROR + ex.getMessage());
         }
 
         return restaurants;
     }
 
     /**
-     * Is the passed in row the start of an restaurant address block?
-     * @param rowMap Map of column names and values.
-     * @return Whether or not the row is an address block start marker.
+     * The first row of a control block looks like:
+     *     FALSE,FALSE,ControlBegin,,,,,,,,,,,,,
+     * @param bean RestaurantBean representation of row
+     * @return Whether or not the row is the beginning of a control block.
      */
-    private boolean isAddressBlockMarker(final Map<String, String> rowMap) {
+    private boolean isControlBlockBeginRow(RestaurantBean bean) {
 
-        // An address block marker looks like:
-        //    FALSE,TRUE,,,,,,,,,,,,,
-        //
-        return ((! Boolean.parseBoolean(rowMap.get(Constants.WORKFLOW_CONSUMER_COLUMN)))
-                && Boolean.parseBoolean(rowMap.get(Constants.WORKFLOW_DRIVER_COLUMN))
-                && rowMap.get(Constants.WORKFLOW_RESTAURANTS_COLUMN).isEmpty()
-                && rowMap.get(Constants.WORKFLOW_ORDERS_COLUMN).isEmpty()
-                && rowMap.get(Constants.WORKFLOW_DETAILS_COLUMN).isEmpty());
+        String consumerValue = bean.getConsumer();
+        String driverValue = bean.getDriver();
+        String directive = bean.getControlBlockDirective();
+
+        return (! Boolean.parseBoolean(consumerValue))
+                && (! Boolean.parseBoolean(driverValue))
+                && (directive.equals(Constants.CONTROL_BLOCK_BEGIN));
     }
 
     /**
-     * Is the passed in row of a restaurant route entry?
-     * @param rowMap Map of column names and values.
-     * @return Whether or not the row is a restaurant route entry.
+     * The final row of a control block looks like:
+     *     FALSE,FALSE,ControlEnd,,,,,,,,,,,,,
+     * @param bean RestaurantBean representation of row
+     * @return Whether or not the row is the end of a control block.
      */
-    private boolean isRoute(final Map<String, String> rowMap) {
-        //
-        // A route entry looks like:
-        //    Solano Route,,,,,,,,,,,Bopshop,,,5:10 PM
-        //
-        return rowMap.get(Constants.WORKFLOW_CONSUMER_COLUMN).endsWith(ROUTE_MARKER);
+    private boolean isControlBlockEndRow(RestaurantBean bean) {
+
+        String consumerValue = bean.getConsumer();
+        String driverValue = bean.getDriver();
+        String directive = bean.getControlBlockDirective();
+
+        return (! Boolean.parseBoolean(consumerValue))
+                && (! Boolean.parseBoolean(driverValue))
+                && (directive.equals(Constants.CONTROL_BLOCK_END));
     }
 
-    /**
-     * Is the passed in row empty?
-     * @param rowMap Map of column names and values.
-     * @return Whether or not the row is empty
-     */
-    private boolean isEmptyRow(final Map<String, String> rowMap) {
+    private void processControlBlock() {
+        RestaurantBean bean;
 
-        // An empty row looks like:
-        //    ,,,,,,,,,,,,,,
-        //
-        return (rowMap.get(Constants.WORKFLOW_CONSUMER_COLUMN).isEmpty()
-                && rowMap.get(Constants.WORKFLOW_DRIVER_COLUMN).isEmpty()
-                && rowMap.get(Constants.WORKFLOW_RESTAURANTS_COLUMN).isEmpty()
-                && rowMap.get(Constants.WORKFLOW_ORDERS_COLUMN).isEmpty()
-                && rowMap.get(Constants.WORKFLOW_DETAILS_COLUMN).isEmpty());
-    }
+        while ((bean = nextRow()) != null) {
 
-    private void processAddressBlock(Map<String, Restaurant> restaurants) throws IOException, CsvValidationException {
-
-        Map<String, String> rowMap;
-
-        while ((rowMap = csvReader.readMap()) != null) {
-            if (isEmptyRow(rowMap)) {
-                return;
-            }
-
-            String name = rowMap.get(Constants.WORKFLOW_RESTAURANTS_COLUMN);
-
-            if (name.isEmpty()) {
-                throwMissingValue(Constants.WORKFLOW_RESTAURANTS_COLUMN);
-            }
-            if (restaurants.containsKey(name)) {
-                throw new MemberDataException(name + " repeats in the restaurant template at line "
-                        + csvReader.getLinesRead());
+            if (isControlBlockEndRow(bean)) {
+                break;
             }
         }
     }
 
-    private void processRouteBlock(
-            Map<String, String> rowMap,
-            Map<String, Restaurant> restaurants) throws IOException, CsvValidationException {
+    /**
+     * Is the passed in row the start of an restaurant address block?
+     * @param bean RestaurantBean row representation
+     * @return Whether or not the row is an address block start marker.
+     */
+    private boolean isAddressBlockMarker(final RestaurantBean bean) {
 
-        // FIX THIS, DS: need to maintain restaurant route order
+        // An address block marker looks like:
+        //    FALSE,TRUE,,,,,,,,,,,,,
+        //
+        return ((! Boolean.parseBoolean(bean.getConsumer()))
+                && Boolean.parseBoolean(bean.getDriver())
+                && bean.getRestaurant().isEmpty()
+                && bean.getOrders().isEmpty()
+                && bean.getDetails().isEmpty());
+    }
 
-        do {
-            if (isEmptyRow(rowMap)) {
+    /**
+     * Is the passed in row of a restaurant route entry?
+     * @param bean RestaurantBean row representation
+     * @return Whether or not the row is a restaurant route entry.
+     */
+    private boolean isRoute(final RestaurantBean bean) {
+        //
+        // A route entry looks like:
+        //    Solano Route,,,,,,,,,,,Bopshop,,,5:10 PM
+        //
+        return bean.getRoute().endsWith(ROUTE_MARKER);
+    }
+
+    /**
+     * Is the passed in row empty?
+     * @param bean RestaurantBean row representation
+     * @return Whether or not the row is empty
+     */
+    private boolean isEmptyRow(final RestaurantBean bean) {
+
+        //
+        // An empty row looks like:
+        //    ,,,,,,,,,,,,,,
+        //
+        return bean.isEmpty();
+    }
+
+    private void processAddressBlock(Map<String, Restaurant> restaurants) {
+
+        RestaurantBean bean;
+
+        while ((bean = nextRow()) != null) {
+            if (isEmptyRow(bean)) {
                 return;
             }
 
-            String routeName = rowMap.get(Constants.WORKFLOW_CONSUMER_COLUMN);
+            String name = bean.getRestaurant();
+
+            if (name.isEmpty()) {
+                throwMissingValue(bean.restaurantColumn());
+            }
+            if (restaurants.containsKey(name)) {
+                throw new MemberDataException(name + " repeats in the restaurant template at line " + lineNumber);
+            }
+        }
+    }
+
+    private void processRouteBlock(RestaurantBean bean, Map<String, Restaurant> restaurants) {
+
+        do {
+            if (isEmptyRow(bean)) {
+                return;
+            }
+
+            String routeName = bean.getRoute();
 
             if (routeName.isEmpty()) {
-                throwMissingValue(Constants.WORKFLOW_CONSUMER_COLUMN, "route name");
+                throwMissingValue(bean.routeColumn(), "route name");
             }
             if (! routeName.endsWith(ROUTE_MARKER)) {
-                throw new MemberDataException("Line "
-                        + csvReader.getLinesRead()
+                throw new MemberDataException("Line " + lineNumber
                         + " of the restaurant template does not look like a route");
             }
 
-            String restaurantName = rowMap.get(Constants.WORKFLOW_RESTAURANTS_COLUMN);
+            String restaurantName = bean.getRestaurant();
             if (restaurantName.isEmpty()) {
-                throwMissingValue(Constants.WORKFLOW_RESTAURANTS_COLUMN);
+                throwMissingValue(bean.restaurantColumn());
             }
-            String startTime = rowMap.get(Constants.WORKFLOW_ORDERS_COLUMN);
+            String startTime = bean.getStartTime();
             if (startTime.isEmpty()) {
-                throwMissingValue(Constants.WORKFLOW_RESTAURANTS_COLUMN, "start time");
+                throwMissingValue(bean.startTimeColumn(), "start time");
             }
 
             if (restaurants.containsKey(restaurantName)) {
@@ -222,11 +274,11 @@ public class RestaurantTemplateParser {
             restaurant.setRoute(routeName);
             restaurant.setStartTime(startTime);
 
-            String noPics = rowMap.get(Constants.WORKFLOW_CONDO_COLUMN);
+            String noPics = bean.getNoPics();
             if (noPics.toLowerCase().equals(Constants.WORKFLOW_NO_PICS)) {
                 restaurant.setNoPics();
             }
-        } while ((rowMap = csvReader.readMap()) != null);
+        } while ((bean = nextRow()) != null);
     }
 
     private void throwTemplateError(final String message) {
@@ -237,7 +289,7 @@ public class RestaurantTemplateParser {
         throwTemplateError(MISSING_VALUE_ERROR
                 + columnName
                 + ", line number "
-                + csvReader.getLinesRead());
+                + lineNumber);
     }
 
     private void throwMissingValue(final String columnName, final String columnUse) {
@@ -246,6 +298,6 @@ public class RestaurantTemplateParser {
                 + " value from column "
                 + columnName
                 + ", line number "
-                + csvReader.getLinesRead());
+                + lineNumber);
     }
 }

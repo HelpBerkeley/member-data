@@ -93,6 +93,7 @@ public class HttpClientSimulator extends HttpClient {
 
         int queryId = getQueryId(request);
         String dataFile = getQueryResponseFile(queryId);
+        //noinspection unchecked
         return (HttpResponse<T>) new HttpResponseSimulator<>(readFile(dataFile));
     }
 
@@ -147,10 +148,12 @@ public class HttpClientSimulator extends HttpClient {
 
     private <T> HttpResponse<T> doPost(HttpRequest request) {
         String response = readFile("post-response.json");
+        //noinspection unchecked
         return (HttpResponse<T>) new HttpResponseSimulator<>(response);
     }
 
     private <T> HttpResponse<T> doPut(HttpRequest request) {
+        //noinspection unchecked
         return (HttpResponse<T>) new HttpResponseSimulator<>("");
     }
 
@@ -167,8 +170,10 @@ public class HttpClientSimulator extends HttpClient {
         }
 
         try {
+            //noinspection unchecked
             return (HttpResponse<T>) new HttpResponseSimulator<>(readFile(fileName));
         } catch (RuntimeException ex) {
+            //noinspection unchecked
             return (HttpResponse<T>) new HttpResponseSimulator<>(ex.getMessage(), HTTP_NOT_FOUND);
         }
     }

@@ -24,6 +24,7 @@ package org.helpberkeley.memberdata;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 public class Driver {
 
@@ -58,7 +59,7 @@ public class Driver {
     }
 
     public String getgMapURL() {
-        int index = gMapURL.indexOf("/@");
+        int index = Objects.requireNonNull(gMapURL).indexOf("/@");
 
         if (index == -1) {
             return gMapURL;

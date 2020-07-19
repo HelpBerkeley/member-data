@@ -21,9 +21,6 @@
 //
 package org.helpberkeley.memberdata;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.IOException;
 import java.net.Authenticator;
 import java.net.PasswordAuthentication;
@@ -39,8 +36,6 @@ import java.util.Properties;
 import static java.net.HttpURLConnection.HTTP_OK;
 
 public class ApiClient {
-    private static final Logger LOGGER = LoggerFactory.getLogger(ApiClient.class);
-
     private static final String BASE_URL = "https://go.helpberkeley.org/";
     private static final String POSTS_ENDPOINT = BASE_URL + "posts.json";
     static final String POSTS_BASE = BASE_URL + "posts/";

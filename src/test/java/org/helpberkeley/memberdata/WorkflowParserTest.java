@@ -22,28 +22,26 @@
  */
 package org.helpberkeley.memberdata;
 
-import com.opencsv.bean.CsvToBeanBuilder;
-import com.opencsv.exceptions.CsvValidationException;
 import org.junit.Test;
 
 import java.io.IOException;
-import java.io.StringReader;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
 
 public class WorkflowParserTest extends TestBase {
     @Test
-    public void splitRestaurantsTest() throws IOException, CsvValidationException, InterruptedException {
+    public void splitRestaurantsTest() throws IOException, InterruptedException {
         String routedDeliveries = readResourceFile("routed-deliveries-with-split-restaurants.csv");
         DriverPostFormat driverPostFormat =
                 new DriverPostFormat(createApiSimulator(), routedDeliveries);
 
         List<Driver> drivers = driverPostFormat.getDrivers();
-        Map<String, Restaurant> restaurants = driverPostFormat.getRestaurants();
+
+        // FIX THIS, DS: add restaurants validation
+        driverPostFormat.getRestaurants();
 
         assertThat(drivers).hasSize(4);
         Driver driver = drivers.get(0);
@@ -58,11 +56,9 @@ public class WorkflowParserTest extends TestBase {
         driver = drivers.get(3);
         assertThat(driver.getUserName()).isEqualTo("jdDriver");
 
-        List<String> posts = driverPostFormat.generateDriverPosts();
-
-        String post = posts.get(0);
-
-        post = driverPostFormat.generateGroupInstructionsPost();
+        // FIX THIS, DS: how to validate generated posts?
+        driverPostFormat.generateDriverPosts();
+        driverPostFormat.generateGroupInstructionsPost();
     }
 
     @Test
@@ -144,7 +140,11 @@ public class WorkflowParserTest extends TestBase {
         Throwable thrown = catchThrowable(() ->
                 new DriverPostFormat(createApiSimulator(), routedDeliveries));
         assertThat(thrown).isInstanceOf(MemberDataException.class);
+        assertThat(thrown).hasMessage("All column names missing. Line 1 does not look like a header row");
+    }
 
+    @Test
+    public void missingHeaderColumnTest() {
         List<String> columnNames = List.of(
                 Constants.WORKFLOW_ADDRESS_COLUMN,
                 Constants.WORKFLOW_ALT_PHONE_COLUMN,
@@ -161,8 +161,24 @@ public class WorkflowParserTest extends TestBase {
                 Constants.WORKFLOW_USER_NAME_COLUMN,
                 Constants.WORKFLOW_VEGGIE_COLUMN);
 
-        for (String columnName : columnNames) {
-            assertThat(thrown).hasMessageContaining(columnName);
+        for (int columnNum = 0; columnNum < columnNames.size(); columnNum++) {
+            // Build header with with columnNum column missing
+
+            String header = "";
+            for (int index = 0; index < columnNames.size(); index++) {
+                if (index == columnNum) {
+                    continue;
+                }
+                header += columnNames.get(index) + ',';
+            }
+            header += '\n';
+
+            final String expected = header;
+
+            Throwable thrown = catchThrowable(() ->
+                    new WorkflowParser(WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, expected));
+            assertThat(thrown).isInstanceOf(MemberDataException.class);
+            assertThat(thrown).hasMessageContaining(columnNames.get(columnNum));
         }
     }
 
@@ -183,7 +199,7 @@ public class WorkflowParserTest extends TestBase {
     }
 
     @Test
-    public void unroutedWorkflowTest() throws IOException, CsvValidationException {
+    public void unroutedWorkflowTest() {
         String unroutedDeliveries = readResourceFile("unrouted-deliveries.csv");
         WorkflowParser workflowParser =
                 new WorkflowParser(WorkflowParser.Mode.DRIVER_ROUTE_REQUEST, unroutedDeliveries);
@@ -191,7 +207,7 @@ public class WorkflowParserTest extends TestBase {
     }
 
     @Test
-    public void unroutedWorkflowMissingEmptyRowTest() throws IOException {
+    public void unroutedWorkflowMissingEmptyRowTest() {
         String unroutedDeliveries = readResourceFile("unrouted-deliveries-missing-empty.csv");
         WorkflowParser workflowParser =
                 new WorkflowParser(WorkflowParser.Mode.DRIVER_ROUTE_REQUEST, unroutedDeliveries);
@@ -201,7 +217,7 @@ public class WorkflowParserTest extends TestBase {
     }
 
     @Test
-    public void ignoreControlBlockTest() throws IOException, CsvValidationException {
+    public void ignoreControlBlockTest() {
         String routedDeliveries = readResourceFile("routed-deliveries-with-control-block.csv");
         WorkflowParser workflowParser =
                 new WorkflowParser(WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, routedDeliveries);

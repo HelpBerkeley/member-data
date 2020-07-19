@@ -475,7 +475,6 @@ public class User {
         auditAndNormalizePhoneNumber();
         auditAndNormalizeAltPhoneNumber();
         auditAndNormalizeCity();
-        auditNeighborhood();
         minimizeAddress();
         normalizeVolunteerRequest();
         normalizeReferral();
@@ -673,19 +672,6 @@ public class User {
         //               to prevent chopping off street address info?
 
         address = address.substring(0, index);
-    }
-
-    // must be insensitive to null data
-    private void auditNeighborhood() {
-        assert neighborhood != null;
-
-        if (! isSupportedCity()) {
-            return;
-        }
-
-//        if (neighborhood.toLowerCase().trim().contains("unknown")) {
-//            dataErrors.add(AUDIT_ERROR_NEIGHBORHOOD_UNKNOWN);
-//        }
     }
 
     // can arrive either as null, "", or a value

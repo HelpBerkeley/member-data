@@ -34,8 +34,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class MainTest extends TestBase {
 
-    @BeforeClass
-    public static void initialize() throws IOException, InterruptedException, CsvException {
+    @Before
+    public void initialize() throws IOException, InterruptedException, CsvException {
         cleanupGeneratedFiles();
 
         // Fetches files that will be used by the tests.
@@ -197,8 +197,6 @@ public class MainTest extends TestBase {
     }
 
     @Test
-    @Ignore
-    // FIX THIS, DS: generated files interacting with the other order history tests
     public void updateOrderHistoryTest() throws IOException, InterruptedException, CsvException {
 
         String[] args = { Options.COMMAND_GET_ORDER_HISTORY };

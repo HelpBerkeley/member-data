@@ -22,7 +22,6 @@
  */
 package org.helpberkeley.memberdata;
 
-import com.opencsv.exceptions.CsvValidationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,10 +40,10 @@ public class DriverPostFormat {
     private List<Driver> drivers;
     private final Pattern compositeVariableRE;
     private Map<String, Restaurant> restaurants;
-    private String statusMessages = "";
+    private final StringBuilder statusMessages = new StringBuilder();
 
     DriverPostFormat(ApiClient apiClient, final String routedDeliveries)
-            throws IOException, InterruptedException, CsvValidationException {
+            throws IOException, InterruptedException {
         this.apiClient = apiClient;
         compositeVariableRE = Pattern.compile("\\$\\{[A-Z_]+\\.[A-Z_]+}");
         loadRestaurantTemplate();
@@ -63,7 +62,7 @@ public class DriverPostFormat {
     }
 
     String statusMessages() {
-        return statusMessages;
+        return statusMessages.toString();
     }
 
     List<String> generateDriverPosts() {
@@ -189,7 +188,7 @@ public class DriverPostFormat {
 
             if (! match.find()) {
                 LOGGER.warn("Cannot find section name in {}", raw);
-                statusMessages += "Cannot find section name " + raw + " in restaurant template.\n";
+                statusMessages.append("Cannot find section name ").append(raw).append(" in restaurant template.\n");
                 continue;
             }
 
@@ -219,7 +218,8 @@ public class DriverPostFormat {
 
             if (! match.find()) {
                 LOGGER.warn("Cannot find section name in {}", raw);
-                statusMessages += "Cannot find section name " + raw + " in group instructions template.\n";
+                statusMessages.append("Cannot find section name ")
+                        .append(raw).append(" in group instructions template.\n");
                 continue;
             }
 
@@ -229,7 +229,7 @@ public class DriverPostFormat {
         }
     }
 
-    private void loadRoutedDeliveries(final String routedDeliveries) throws IOException, CsvValidationException {
+    private void loadRoutedDeliveries(final String routedDeliveries) {
         WorkflowParser parser = new WorkflowParser(WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, routedDeliveries);
         drivers = parser.drivers();
     }
@@ -292,25 +292,23 @@ public class DriverPostFormat {
     }
 
     private String processConsumerLine(final Driver driver, final String line) {
-        String processedLine = "";
+        StringBuilder processedLine = new StringBuilder();
 
         for (Delivery delivery : driver.getDeliveries()) {
-
-            processedLine += line.replaceAll("\\$\\{C.NAME}", delivery.getName())
-                .replaceAll("\\$\\{C.USER_NAME}", delivery.getUserName())
-                .replaceAll("\\$\\{C.PHONE}", delivery.getPhone())
-                .replaceAll("\\$\\{C.ALT_PHONE}", delivery.getAltPhone())
-                .replaceAll("\\$\\{C.CITY}", delivery.getCity())
-                .replaceAll("\\$\\{C.ADDRESS}", delivery.getAddress())
-                .replaceAll("\\$\\{C.CONDO}", String.valueOf(delivery.isCondo()))
-                .replaceAll("\\$\\{C.DETAILS}", delivery.getDetails())
-                .replaceAll("\\$\\{C.RESTAURANT}", delivery.getRestaurant())
-                .replaceAll("\\$\\{C.NORMAL}", delivery.getNormalRations())
-                .replaceAll("\\$\\{C.VEGGIE}", delivery.getVeggieRations())
-                + '\n';
+            processedLine.append(line.replaceAll("\\$\\{C.NAME}", delivery.getName())
+                    .replaceAll("\\$\\{C.USER_NAME}", delivery.getUserName())
+                    .replaceAll("\\$\\{C.PHONE}", delivery.getPhone())
+                    .replaceAll("\\$\\{C.ALT_PHONE}", delivery.getAltPhone())
+                    .replaceAll("\\$\\{C.CITY}", delivery.getCity())
+                    .replaceAll("\\$\\{C.ADDRESS}", delivery.getAddress())
+                    .replaceAll("\\$\\{C.CONDO}", String.valueOf(delivery.isCondo()))
+                    .replaceAll("\\$\\{C.DETAILS}", delivery.getDetails())
+                    .replaceAll("\\$\\{C.RESTAURANT}", delivery.getRestaurant())
+                    .replaceAll("\\$\\{C.NORMAL}", delivery.getNormalRations())
+                    .replaceAll("\\$\\{C.VEGGIE}", delivery.getVeggieRations())).append('\n');
         }
 
-        return processedLine;
+        return processedLine.toString();
     }
 
     private String processRestaurantLine(final Driver driver, final String line) {
@@ -352,7 +350,7 @@ public class DriverPostFormat {
             if (drivers.size() == 0) {
                 String message = "Restaurant " + restaurant.getName() + " has no drivers.";
                 LOGGER.warn(message);
-                statusMessages += message + "\n";
+                statusMessages.append(message).append("\n");
                 continue;
             }
 
@@ -379,7 +377,7 @@ public class DriverPostFormat {
                     + restaurant.getName()
                     + " as their first pickup.";
                 LOGGER.info(message);
-                statusMessages += message + "\n";
+                statusMessages.append(message).append("\n");
 
                 restaurant.setPrimaryDriver(order.get(0));
                 continue;
@@ -410,7 +408,7 @@ public class DriverPostFormat {
                         + restaurant.getName()
                         + " because they have the fewest stops.";
                 LOGGER.info(message);
-                statusMessages += message + "\n";
+                statusMessages.append(message).append("\n");
 
                 restaurant.setPrimaryDriver(order.get(0));
                 continue;
@@ -440,7 +438,7 @@ public class DriverPostFormat {
                         + restaurant.getName()
                         + " because they have the fewest pickups.";
                 LOGGER.info(message);
-                statusMessages += message + "\n";
+                statusMessages.append(message).append("\n");
 
                 restaurant.setPrimaryDriver(order.get(0));
                 continue;
@@ -457,7 +455,7 @@ public class DriverPostFormat {
                     + restaurant.getName()
                     + " based on alphabetical user name sort.";
             LOGGER.info(message);
-            statusMessages += message + "\n";
+            statusMessages.append(message).append("\n");
         }
     }
 
@@ -481,8 +479,8 @@ public class DriverPostFormat {
             boolean isPrimary = restaurant.getPrimaryDriver().getUserName().equals(driver.getUserName());
 
             if (! isPrimary) {
-                statusMessages += "Driver " + driver.getUserName()
-                        + " is a secondary for " + restaurant.getName() + "\n";
+                statusMessages.append("Driver ").append(driver.getUserName())
+                        .append(" is a secondary for ").append(restaurant.getName()).append("\n");
             }
 
             output.append("* you are one of ");

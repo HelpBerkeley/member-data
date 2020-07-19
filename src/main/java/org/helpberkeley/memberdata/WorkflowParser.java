@@ -22,10 +22,10 @@
  */
 package org.helpberkeley.memberdata;
 
-import com.opencsv.CSVReaderHeaderAware;
-import com.opencsv.exceptions.CsvValidationException;
+import com.google.common.collect.Iterators;
+import com.google.common.collect.PeekingIterator;
+import com.opencsv.bean.CsvToBeanBuilder;
 
-import java.io.IOException;
 import java.io.StringReader;
 import java.util.*;
 
@@ -38,20 +38,54 @@ public class WorkflowParser {
         DRIVER_MESSAGE_REQUEST,
     }
 
-
     private final Mode mode;
-    private final CSVReaderHeaderAware csvReader;
     private final List<Driver> drivers = new ArrayList<>();
+    private final ControlBlock controlBlock = new ControlBlock();
+    private long lineNumber;
+    private final PeekingIterator<WorkflowBean> iterator;
 
-    WorkflowParser(Mode mode, final String csvData) throws IOException {
+    WorkflowParser(Mode mode, final String csvData) {
         this.mode = mode;
         // Normalize EOL
         String normalizedData = csvData.replaceAll("\\r\\n?", "\n");
         assert ! csvData.isEmpty() : "empty workflow";
-        csvReader = new CSVReaderHeaderAware(new StringReader(normalizedData));
         auditColumnNames(normalizedData);
+
+        List<WorkflowBean> workflowBeans = new CsvToBeanBuilder<WorkflowBean>(new StringReader(normalizedData))
+                .withType(WorkflowBean.class).build().parse();
+
+        iterator = Iterators.peekingIterator(workflowBeans.iterator());
+        lineNumber = 1;
     }
 
+    /**
+     * Return the bean representation of the next row.
+     * Increments current line number
+     * @return Next bean, or null if at end.
+     */
+    private WorkflowBean nextRow() {
+        if (iterator.hasNext()) {
+            lineNumber++;
+            return iterator.next();
+        }
+
+        return null;
+    }
+
+    /**
+     * Return a peek the bean representation of the next row.
+     * Does not increment current line number
+     * @return Next bean, or null if at end.
+     */
+    private WorkflowBean peekNextRow() {
+        return iterator.peek();
+    }
+
+    /**
+     * Check for missing columns.
+     * @param csvData Normalized workflow spreadsheet data
+     * @throws MemberDataException If there are any missing columns.
+     */
     private void auditColumnNames(final String csvData) {
         List<String> columnNames = List.of(
                 Constants.WORKFLOW_ADDRESS_COLUMN,
@@ -74,39 +108,43 @@ public class WorkflowParser {
         String header = csvData.substring(0, csvData.indexOf('\n'));
 
         String[] columns = header.split(",");
-        Set<String> set = new HashSet<>();
-        set.addAll(Arrays.asList(columns));
+        Set<String> set = new HashSet<>(Arrays.asList(columns));
 
+        int numErrors = 0;
         String errors = "";
         for (String columnName : columnNames) {
             if (! set.contains(columnName)) {
                 errors += "Missing column header: " + columnName + "\n";
+                numErrors++;
             }
         }
 
+        if (numErrors == columnNames.size()) {
+            throw new MemberDataException("All column names missing. Line 1 does not look like a header row");
+        }
         if (! errors.isEmpty()) {
             throw new MemberDataException(errors);
         }
     }
 
-    List<Driver> drivers() throws IOException, CsvValidationException {
+    List<Driver> drivers() {
 
         List<Driver> drivers = new ArrayList<>();
-        Map<String, String> rowMap;
+        WorkflowBean bean;
 
-        while ((rowMap = csvReader.readMap()) != null) {
+        while ((bean = nextRow()) != null) {
 
-            if (isControlBlockBeginRow(rowMap)) {
+            if (isControlBlockBeginRow(bean)) {
                 processControlBlock();
                 continue;
             }
 
-            if (! isDriverRow(rowMap)) {
-                throw new MemberDataException("line " + csvReader.getLinesRead() + " is not a driver row. "
+            if (! isDriverRow(bean)) {
+                throw new MemberDataException("line " + lineNumber + " is not a driver row. "
                     + "Is this a driver who is also a consumer? If so, the consumer column must be set to false.");
             }
 
-            Driver driver = processDriver(rowMap);
+            Driver driver = processDriver(bean);
             auditPickupDeliveryMismatch(driver);
             drivers.add(driver);
         }
@@ -117,84 +155,81 @@ public class WorkflowParser {
     /**
      * The first row of a control block looks like:
      *     FALSE,FALSE,ControlBegin,,,,,,,,,,,,,
+     * @param bean WorkflowBean representation of row
      * @return Whether or not the row is the beginning of a control block.
      */
-    private boolean isControlBlockBeginRow(final Map<String, String> rowMap) {
+    private boolean isControlBlockBeginRow(WorkflowBean bean) {
 
-        String consumerValue = rowMap.get(Constants.WORKFLOW_CONSUMER_COLUMN);
-        assert consumerValue != null;
+        String consumerValue = bean.getConsumer();
+        String driverValue = bean.getDriver();
+        String directive = bean.getControlBlockDirective();
 
-        String driverValue = rowMap.get(Constants.WORKFLOW_DRIVER_COLUMN);
-        assert driverValue != null;
-
-        String directive = rowMap.get(Constants.CONTROL_BLOCK_DIRECTIVE_COLUMN);
-        assert directive != null;
-
-        return (! Boolean.parseBoolean(consumerValue.trim()))
-            && (! Boolean.parseBoolean(driverValue.trim()))
-            && (directive.trim().equals(Constants.CONTROL_BLOCK_BEGIN));
+        return (! Boolean.parseBoolean(consumerValue))
+            && (! Boolean.parseBoolean(driverValue))
+            && (directive.equals(Constants.CONTROL_BLOCK_BEGIN));
     }
 
     /**
      * The final row of a control block looks like:
      *     FALSE,FALSE,ControlEnd,,,,,,,,,,,,,
+     * @param bean WorkflowBean representation of row
      * @return Whether or not the row is the end of a control block.
      */
-    private boolean isControlBlockEndRow(final Map<String, String> rowMap) {
+    private boolean isControlBlockEndRow(WorkflowBean bean) {
 
-        String consumerValue = rowMap.get(Constants.WORKFLOW_CONSUMER_COLUMN);
-        assert consumerValue != null;
+        String consumerValue = bean.getConsumer();
+        String driverValue = bean.getDriver();
+        String directive = bean.getControlBlockDirective();
 
-        String driverValue = rowMap.get(Constants.WORKFLOW_DRIVER_COLUMN);
-        assert driverValue != null;
-
-        String directive = rowMap.get(Constants.CONTROL_BLOCK_DIRECTIVE_COLUMN);
-        assert directive != null;
-
-        return (! Boolean.parseBoolean(consumerValue.trim()))
-                && (! Boolean.parseBoolean(driverValue.trim()))
-                && (directive.trim().equals(Constants.CONTROL_BLOCK_END));
+        return (! Boolean.parseBoolean(consumerValue))
+                && (! Boolean.parseBoolean(driverValue))
+                && (directive.equals(Constants.CONTROL_BLOCK_END));
     }
 
-    private void processControlBlock() throws IOException, CsvValidationException {
-        Map<String, String> rowMap;
+    /**
+     * A driver row looks like
+     *     FALSE,TRUE,...
+     * @param bean WorkflowBean representation of row
+     * @return Whether or not the row is a driver row
+     */
+    private boolean isDriverRow(WorkflowBean bean) {
+        String consumerValue = bean.getConsumer();
+        String driverValue = bean.getDriver();
 
-        ControlBlock controlBlock = new ControlBlock();
+        return ((! Boolean.parseBoolean(consumerValue))
+                && Boolean.parseBoolean(driverValue));
+    }
 
-        while ((rowMap = csvReader.readMap()) != null) {
+    private void processControlBlock() {
+        WorkflowBean bean;
 
-            auditControlBlockRow(rowMap);
+        while ((bean = nextRow()) != null) {
 
-            if (isControlBlockEndRow(rowMap)) {
+            auditControlBlockRow(bean);
+
+            if (isControlBlockEndRow(bean)) {
                 break;
-            } else if (ignoreControlBlockRow(rowMap)) {
+            } else if (ignoreControlBlockRow(bean)) {
                 continue;
             }
 
-            String key = rowMap.get(Constants.CONTROL_BLOCK_KEY_COLUMN);
-            String value = rowMap.get(Constants.CONTROL_BLOCK_VALUE_COLUMN);
-
-            controlBlock.processRow(key, value, csvReader.getLinesRead());
+            controlBlock.processRow(bean, lineNumber);
         }
     }
 
-    private void auditControlBlockRow(Map<String, String> rowMap) {
+    private void auditControlBlockRow(WorkflowBean bean) {
         String errors = "";
 
-        for (String columnName : List.of(Constants.WORKFLOW_CONSUMER_COLUMN, Constants.WORKFLOW_DRIVER_COLUMN)) {
-
-            String value = rowMap.get(columnName);
-
-            if (value == null) {
-                errors += "Missing value control block " + columnName
-                        + " column at line " + csvReader.getLinesRead() + ".\n";
-            } else if (! value.toLowerCase().equals("false")) {
-                errors += "Control block " + columnName
-                        + " column does not contain FALSE, at line " + csvReader.getLinesRead() + ".\n";
-            }
+        if (! bean.getConsumer().toLowerCase().equals("false")) {
+            errors += "Control block " + Constants.WORKFLOW_CONSUMER_COLUMN
+                    + " column does not contain FALSE, at line " + lineNumber + ".\n";
+        }
+        if (! bean.getDriver().toLowerCase().equals("false")) {
+            errors += "Control block " + Constants.WORKFLOW_DRIVER_COLUMN
+                    + " column does not contain FALSE, at line " + lineNumber + ".\n";
         }
 
-        String directive = rowMap.get(Constants.WORKFLOW_NAME_COLUMN).trim();
+        String directive = bean.getControlBlockDirective();
 
         switch (directive) {
             case "":
@@ -202,8 +237,8 @@ public class WorkflowParser {
             case Constants.CONTROL_BLOCK_END:
                 break;
             default:
-                errors += "Unexpected control block directive \"" + rowMap.get(Constants.WORKFLOW_NAME_COLUMN)
-                    + "\" in " + Constants.WORKFLOW_NAME_COLUMN + " column at line " + csvReader.getLinesRead()
+                errors += "Unexpected control block directive \"" + directive
+                    + "\" in " + Constants.WORKFLOW_NAME_COLUMN + " column at line " + lineNumber
                     + ".\n";
         }
 
@@ -212,48 +247,34 @@ public class WorkflowParser {
         }
     }
 
-    private boolean ignoreControlBlockRow(Map<String, String> rowMap) {
+    private boolean ignoreControlBlockRow(WorkflowBean bean) {
 
-        String directive = rowMap.get(Constants.WORKFLOW_NAME_COLUMN).trim();
+        String directive = bean.getControlBlockDirective();
 
         if (directive.equals(Constants.CONTROL_BLOCK_COMMENT)) {
             return true;
         }
 
-        return (directive.isEmpty()
-            && rowMap.get(Constants.WORKFLOW_USER_NAME_COLUMN).isEmpty()
-            && rowMap.get(Constants.WORKFLOW_NEIGHBORHOOD_COLUMN).trim().isEmpty());
+        return directive.isEmpty()
+                && bean.getControlBlockKey().isEmpty()
+                && bean.getControlBlockValue().isEmpty();
     }
 
-    /**
-     * Is the passed in row of a restaurant route entry?
-     * @param rowMap Map of column names and values.
-     * @return Whether or not the row is a restaurant route entry.
-     */
-    private boolean isDriverRow(final Map<String, String> rowMap) {
-        //
-        // The columns we look at in a driver row look like:
-        //    FALSE,TRUE,,jbDriver,,,,,,,,,,,
-        //
-        return (! Boolean.parseBoolean(rowMap.get(Constants.WORKFLOW_CONSUMER_COLUMN)))
-                && Boolean.parseBoolean(rowMap.get(Constants.WORKFLOW_DRIVER_COLUMN));
-    }
-    
-    Driver processDriver(Map<String, String> rowMap) throws IOException, CsvValidationException {
+    private Driver processDriver(WorkflowBean bean) {
 
         String errors = "";
 
-        String driverUserName = rowMap.get(Constants.WORKFLOW_USER_NAME_COLUMN);
+        String driverUserName = bean.getUserName();
         if (driverUserName.isEmpty()) {
             errors += "missing driver user name\n";
         }
-        String driverPhone = rowMap.get(Constants.WORKFLOW_PHONE_COLUMN);
+        String driverPhone = bean.getPhone();
         if (driverPhone.isEmpty()) {
             errors += "missing driver phone number\n";
         }
 
         if (! errors.isEmpty()) {
-            throw new MemberDataException("line " + csvReader.getLinesRead() + " " + errors);
+            throw new MemberDataException("line " + lineNumber + " " + errors);
         }
 
         // Read 1 or more restaurant rows. Example:
@@ -262,30 +283,30 @@ public class WorkflowParser {
         List<Restaurant> restaurants = processRestaurants();
         List<Delivery> deliveries = processDeliveries();
 
-        rowMap = csvReader.readMap();
-        if (! isDriverRow(rowMap)) {
-            throw new MemberDataException("line " + csvReader.getLinesRead() + " is not a driver row. "
+        bean = nextRow();
+        // FIX THIS, DS: audit null here
+
+        if (! isDriverRow(bean)) {
+            throw new MemberDataException("line " + lineNumber + " is not a driver row. "
                     + "Is this a driver who is also a consumer? If so, the consumer column must be set to false.");
         }
-        if (! driverUserName.equals(rowMap.get(Constants.WORKFLOW_USER_NAME_COLUMN))) {
-            throw new MemberDataException(driverUserName + ", line "
-                    + csvReader.getLinesRead() + ", mismatch driver end name");
+        if (! driverUserName.equals(bean.getUserName())) {
+            throw new MemberDataException(driverUserName + ", line " + lineNumber + ", mismatch driver end name");
         }
 
         Driver driver;
 
-        rowMap = csvReader.readMap();
+        bean = nextRow();
 
         if (mode == Mode.DRIVER_MESSAGE_REQUEST) {
-            if (rowMap == null) {
+            if (bean == null) {
                 throw new MemberDataException("Driver " + driverUserName
-                        + " missing gmap URL after line " + csvReader.getLinesRead());
+                        + " missing gmap URL after line " + lineNumber);
             }
 
-            String gmapURL = rowMap.get(Constants.WORKFLOW_CONSUMER_COLUMN);
+            String gmapURL = bean.getGMapURL();
             if (gmapURL.isEmpty()) {
-                throw new MemberDataException("Line " + csvReader.getLinesRead()
-                        + ", driver " + driverUserName + " empty gmap URL");
+                throw new MemberDataException("Line " + lineNumber + ", driver " + driverUserName + " empty gmap URL");
             }
             if (!gmapURL.contains("https://")) {
                 throw new MemberDataException("Driver " + driverUserName + " unrecognizable gmap URL");
@@ -299,8 +320,8 @@ public class WorkflowParser {
             // This can be either an empty row, marking boundary between this driver and the next,
             // Or the end of file.
 
-            if ((rowMap != null) && (! emptyRow(rowMap))) {
-                throw new MemberDataException("Line " + csvReader.getLinesRead() + " is not empty");
+            if ((bean != null) && (! emptyRow(bean))) {
+                throw new MemberDataException("Line " + lineNumber + " is not empty");
             }
 
             driver = new Driver(driverUserName, driverPhone,
@@ -310,35 +331,36 @@ public class WorkflowParser {
         return driver;
     }
 
-    List<Restaurant> processRestaurants() throws IOException, CsvValidationException {
+    private List<Restaurant> processRestaurants() {
 
         List<Restaurant> restaurants = new ArrayList<>();
+        WorkflowBean bean;
 
-        String[] columns;
-        while ((columns = csvReader.peek()) != null) {
-            if (! columns[0].toUpperCase().equals("FALSE")) {
+        while ((bean = peekNextRow()) != null) {
+
+            if (! bean.getConsumer().toUpperCase().equals("FALSE")) {
                 break;
             }
 
-            Map<String, String> rowMap = csvReader.readMap();
+            bean = nextRow();
             String errors = "";
 
-            String restaurantName = rowMap.get(Constants.WORKFLOW_RESTAURANTS_COLUMN);
+            String restaurantName = bean.getRestaurant();
             if (restaurantName.isEmpty()) {
                 errors += "missing restaurant name\n";
             }
-            String address = rowMap.get(Constants.WORKFLOW_ADDRESS_COLUMN);
+            String address = bean.getAddress();
             if (address.isEmpty()) {
                 errors += "missing address\n";
             }
-            String details = rowMap.get(Constants.WORKFLOW_DETAILS_COLUMN);
-            String orders = rowMap.get(Constants.WORKFLOW_ORDERS_COLUMN);
+            String details = bean.getDetails();
+            String orders = bean.getOrders();
             if (orders.isEmpty()) {
                 errors += "missing orders";
             }
 
             if (! errors.isEmpty()) {
-                throw new MemberDataException("line " + csvReader.getLinesRead() + " " + errors);
+                throw new MemberDataException("line " + lineNumber + " " + errors);
             }
 
             Restaurant restaurant = new Restaurant(restaurantName);
@@ -352,53 +374,53 @@ public class WorkflowParser {
         return restaurants;
     }
 
-    List<Delivery> processDeliveries() throws IOException, CsvValidationException {
+    private List<Delivery> processDeliveries() {
         List<Delivery> deliveries = new ArrayList<>();
+        WorkflowBean bean;
 
-        String[] columns;
-        while ((columns = csvReader.peek()) != null) {
-            if (! columns[0].toUpperCase().equals("TRUE")) {
+        while ((bean = peekNextRow()) != null) {
+            if (! bean.getConsumer().toUpperCase().equals("TRUE")) {
                 break;
             }
 
-            Map<String, String> rowMap = csvReader.readMap();
+            bean = nextRow();
             String errors = "";
 
-            String consumerName = rowMap.get(Constants.WORKFLOW_NAME_COLUMN);
+            String consumerName = bean.getName();
             if (consumerName.isEmpty()) {
                 errors += "missing consumer name\n";
             }
-            String userName = rowMap.get(Constants.WORKFLOW_USER_NAME_COLUMN);
+            String userName = bean.getUserName();
             if (userName.isEmpty()) {
                 errors += "missing user name\n";
             }
-            String phone = rowMap.get(Constants.WORKFLOW_PHONE_COLUMN);
+            String phone = bean.getPhone();
             if (phone.isEmpty()) {
                 errors += "missing phone\n";
             }
-            String altPhone = rowMap.get(Constants.WORKFLOW_ALT_PHONE_COLUMN);
-            String city = rowMap.get(Constants.WORKFLOW_CITY_COLUMN);
+            String altPhone = bean.getAltPhone();
+            String city = bean.getCity();
             if (city.isEmpty()) {
                 errors += "missing city\n";
             }
-            String address = rowMap.get(Constants.WORKFLOW_ADDRESS_COLUMN);
+            String address = bean.getAddress();
             if (address.isEmpty()) {
                 errors += "missing address\n";
             }
-            boolean isCondo = Boolean.parseBoolean(rowMap.get(Constants.WORKFLOW_CONDO_COLUMN));
-            String details = rowMap.get(Constants.WORKFLOW_DETAILS_COLUMN);
-            String restaurantName = rowMap.get(Constants.WORKFLOW_RESTAURANTS_COLUMN);
+            boolean isCondo = Boolean.parseBoolean(bean.getCondo());
+            String details = bean.getDetails();
+            String restaurantName = bean.getRestaurant();
             if (restaurantName.isEmpty()) {
                 errors += "missing restaurant name\n";
             }
-            String normalRations = rowMap.get(Constants.WORKFLOW_NORMAL_COLUMN);
-            String veggieRations = rowMap.get(Constants.WORKFLOW_VEGGIE_COLUMN);
+            String normalRations = bean.getNormal();
+            String veggieRations = bean.getVeggie();
             if (normalRations.isEmpty() && veggieRations.isEmpty()) {
                 errors += "no rations detected\n";
             }
 
             if (! errors.isEmpty()) {
-                throw new MemberDataException("line " + csvReader.getLinesRead() + " " + errors);
+                throw new MemberDataException("line " + lineNumber + " " + errors);
             }
 
             Delivery delivery = new Delivery(consumerName);
@@ -474,13 +496,7 @@ public class WorkflowParser {
         }
     }
 
-    private boolean emptyRow(Map<String, String> rowMap) {
-        for (String value : rowMap.values()) {
-            if (! value.isEmpty()) {
-                return false;
-            }
-        }
-
-        return true;
+    private boolean emptyRow(WorkflowBean bean) {
+        return bean.isEmpty();
     }
 }

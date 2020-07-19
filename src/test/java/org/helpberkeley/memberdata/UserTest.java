@@ -22,7 +22,6 @@
 package org.helpberkeley.memberdata;
 
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.*;
@@ -414,47 +413,6 @@ public class UserTest extends TestBase {
             User user = createUserWithCity(city.original);
             assertThat(user.getCity()).isEqualTo(city.expected);
         }
-    }
-
-    @Test
-    @Ignore
-    public void unknownBerkeleyNeighborhoodTest() {
-
-        String[] unknowns = { "Unknown", "unknown", " unknown " };
-
-        for (String neighborhood : unknowns) {
-            Throwable thrown = catchThrowable(() -> createUserWithGroupAndNeighborhood(Constants.GROUP_CONSUMERS, neighborhood));
-            assertThat(thrown).isInstanceOf(UserException.class);
-            UserException userException = (UserException) thrown;
-            assertThat(userException.user).isNotNull();
-            assertThat(userException.user.getDataErrors()).contains(User.AUDIT_ERROR_NEIGHBORHOOD_UNKNOWN);
-        }
-    }
-
-    @Test
-    public void unknownNonBerkeleyNeighborhoodTest() throws UserException {
-        User user = createUserWithCityAndNeighborhood("Oakland", "unknown");
-        assertThat(user.getDataErrors()).isEmpty();
-    }
-
-    @Test
-    @Ignore
-    public void unknownBerkeleyNeighborhoodDriverTest() {
-        Throwable thrown = catchThrowable(() -> createUserWithGroupAndNeighborhood(Constants.GROUP_DRIVERS, "unknown"));
-        assertThat(thrown).isInstanceOf(UserException.class);
-        UserException userException = (UserException) thrown;
-        assertThat(userException.user).isNotNull();
-        assertThat(userException.user.getDataErrors()).contains(User.AUDIT_ERROR_NEIGHBORHOOD_UNKNOWN);
-    }
-
-    @Test
-    @Ignore
-    public void unknownBerkeleyNeighborhoodDispatcherTest() {
-        Throwable thrown = catchThrowable(() -> createUserWithGroupAndNeighborhood(Constants.GROUP_CONSUMERS, "unknown"));
-        assertThat(thrown).isInstanceOf(UserException.class);
-        UserException userException = (UserException) thrown;
-        assertThat(userException.user).isNotNull();
-        assertThat(userException.user.getDataErrors()).contains(User.AUDIT_ERROR_NEIGHBORHOOD_UNKNOWN);
     }
 
     @Test
