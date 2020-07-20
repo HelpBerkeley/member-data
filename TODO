@@ -26,5 +26,8 @@ Add more flexibility to command line auditing
 	- Non-file arguments
 	- command specific help messages
 
-Detect restaurant name mispellings in workflow data.
+Detect restaurant name misspellings in workflow data.
  - If detected, correct and warn?  Or audit fail?
+
+ Update error strings to use a message catalog.
+ Update testing to removed duplicate expected strings.

@@ -152,6 +152,20 @@ public class WorkflowParser {
         return drivers;
     }
 
+    ControlBlock controlBlock() {
+
+        controlBlock.clear();
+
+        WorkflowBean bean;
+
+        bean = nextRow();
+        if ((bean != null) && isControlBlockBeginRow(bean)) {
+            processControlBlock();
+        }
+
+        return controlBlock;
+    }
+
     /**
      * The first row of a control block looks like:
      *     FALSE,FALSE,ControlBegin,,,,,,,,,,,,,

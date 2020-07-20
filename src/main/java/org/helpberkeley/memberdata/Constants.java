@@ -114,17 +114,12 @@ public class Constants {
 
     public static final String UPLOAD_URI_PREFIX = "upload://";
 
-    // Column overriding in the control block
-    public static final String CONTROL_BLOCK_DIRECTIVE_COLUMN = WORKFLOW_NAME_COLUMN;
-    public static final String CONTROL_BLOCK_KEY_COLUMN = WORKFLOW_USER_NAME_COLUMN;
-    public static final String CONTROL_BLOCK_VALUE_COLUMN = WORKFLOW_CITY_COLUMN;
-
     // Control block values
     public static final String CONTROL_BLOCK_BEGIN = "ControlBegin";
     public static final String CONTROL_BLOCK_END = "ControlEnd";
     public static final String CONTROL_BLOCK_COMMENT = "Comment";
-    public static final String CONTROL_BLOCK_OPS_MANAGER = "OpsManager(UserName|Phone)";
-    public static final String CONTROL_BLOCK_SPLIT_RESTAURANT = "SplitRestaurant(Name|CleanupDriverUserName)";
+    public static final String CONTROL_BLOCK_OPS_MANAGER = "OpsManager (UserName|Phone)";
+    public static final String CONTROL_BLOCK_SPLIT_RESTAURANT = "SplitRestaurant (Name|CleanupDriverUserName)";
     public static final String CONTROL_BLOCK_BACKUP_DRIVER = "BackupDriverUserName";
 
     public static final String DATA_VALUE_DEFAULT_PREFIX = "ReplaceThisBy";

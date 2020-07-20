@@ -22,23 +22,44 @@
  */
 package org.helpberkeley.memberdata;
 
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 class ControlBlock {
 
-    private final Map<String, String> controlBlockUniqueKeys = new HashMap<>();
-    private final Map<String, List<String>> controlBlockNoneUniqueKeys = new HashMap<>();
+    static final String INTRA_FIELD_SEPARATOR = "|";
+
+    private List<OpsManager> opsManagers = new ArrayList<>();
+    private List<SplitRestaurant> splitRestaurants = new ArrayList<>();
+    private List<String> backupDrivers = new ArrayList<>();
 
     ControlBlock() {
 
     }
 
+    List<OpsManager> getOpsManagers() {
+        return opsManagers;
+    }
+
+    List<SplitRestaurant> getSplitRestaurants() {
+        return splitRestaurants;
+    }
+
+    List<String> getBackupDrivers() {
+        return backupDrivers;
+    }
+
+    void clear()
+    {
+        opsManagers.clear();
+        splitRestaurants.clear();
+        backupDrivers.clear();
+    }
+
     void processRow(WorkflowBean bean, long lineNumber) {
 
-        String variable = bean.getControlBlockKey().replaceAll("\\s", "");
-        String value = bean.getControlBlockValue().replaceAll("\\s", "");
+        String variable = bean.getControlBlockKey().replaceAll("\\s*\\|\\s*", "|");
+        String value = bean.getControlBlockValue().replaceAll("\\s*\\|\\s*", "|");
 
         switch (variable) {
             case Constants.CONTROL_BLOCK_OPS_MANAGER:
@@ -56,33 +77,124 @@ class ControlBlock {
         }
     }
 
+    //
+    // An OpManager data field should look like "userName | phone number"
+    //
     private void processOpsManager(final String value, long lineNumber) {
-        System.out.println("Ops Manager: " + value);
+
+        String[] fields = value.split("\\" + INTRA_FIELD_SEPARATOR, -42);
+
+        if (fields.length != 2) {
+            throw new MemberDataException("OpManager value \"" + value
+                    + "\" at line " + lineNumber + " does not match \"username | phone\"");
+        }
+
+        String userName = fields[0].trim();
+        String phone = fields[1].trim();
+
+        StringBuilder errors = new StringBuilder();
+
+        if (userName.isEmpty()) {
+            errors.append("Empty OpsManager user name at line ").append(lineNumber).append(".\n");
+        }
+        if (userName.startsWith("@")) {
+            errors.append("OpsManager user name \"")
+                    .append(userName).append("\" at line ").append(lineNumber)
+                    .append(" cannot start with @\n");
+        }
+        if (userName.indexOf(' ') != -1) {
+            errors.append("OpsManager user name \"")
+                    .append(userName).append("\" at line ").append(lineNumber)
+                    .append(" cannot contain spaces.\n");
+        }
+
+        if (phone.isEmpty()) {
+            errors.append("Empty OpsManager phone number at line ").append(lineNumber).append(".\n");
+        }
+
+        // FIX THIS, DS: add auditing and transformation for phone number
+
+        if (errors.length() != 0) {
+            throw new MemberDataException(errors.toString());
+        }
+
+        opsManagers.add(new OpsManager(userName, phone));
     }
 
+    //
+    // An SplitRestaurant data field should look like "restaurant name | cleanup driver username"
+    //
     private void processSplitRestaurant(final String value, long lineNumber) {
-        System.out.println("Split restaurant : " + value);
+        String[] fields = value.split("\\" + INTRA_FIELD_SEPARATOR, -42);
+
+        if (fields.length != 2) {
+            throw new MemberDataException(Constants.CONTROL_BLOCK_SPLIT_RESTAURANT + " value \"" + value
+                    + "\" at line " + lineNumber
+                    + " does not match \"restaurant name | cleanup driver user name\"");
+        }
+
+        String restaurantName = fields[0].trim();
+        String cleanupDriver = fields[1].trim();
+
+        StringBuilder errors = new StringBuilder();
+
+        if (restaurantName.isEmpty()) {
+            errors.append("Empty SplitRestaurant restaurant name at line ").append(lineNumber).append(".\n");
+        }
+
+        if (cleanupDriver.isEmpty()) {
+            errors.append("Empty SplitRestaurant cleanup driver user name at line ").append(lineNumber).append(".\n");
+        }
+
+        if (cleanupDriver.startsWith("@")) {
+            errors.append("SplitRestaurant cleanup driver user name \"")
+                    .append(cleanupDriver).append("\" at line ").append(lineNumber)
+                    .append(" cannot start with @\n");
+        }
+
+        if (cleanupDriver.indexOf(' ') != -1) {
+            errors.append("SplitRestaurant cleanup driver user name \"")
+                    .append(cleanupDriver).append("\" at line ").append(lineNumber)
+                    .append(" cannot contain spaces.\n");
+        }
+
+        if (errors.length() != 0) {
+            throw new MemberDataException(errors.toString());
+        }
+
+        splitRestaurants.add(new SplitRestaurant(restaurantName, cleanupDriver));
     }
 
-    private void processBackupDriver(final String value, long lineNumber) {
-        System.out.println("Backup driver : " + value);
-    }
+    private void processBackupDriver(final String backupDriver, long lineNumber) {
 
-    private void addControlBlockValue(final String key, final String value) {
+        if (backupDriver.contains(INTRA_FIELD_SEPARATOR)) {
+            throw new MemberDataException(Constants.CONTROL_BLOCK_BACKUP_DRIVER + " value \"" + backupDriver
+                    + "\" at line " + lineNumber
+                    + " does not match \"backupDriverUserName\"");
+        }
 
-//        switch (key) {
-//            case Constants.DATA_KEY_OP_MANANGER_USER_NAME:
-//            case Constants.DATA_KEY_OP_MANANGER_PHONE:
-//                if (controlBlockUniqueKeys.containsKey(key)) {
-//                    throw new MemberDataException(
-//                            "Duplicate data key name \"" + key + "\", line " + csvReader.getLinesRead());
-//                }
-//
-//            case Constants.DATA_KEY_BACKUP_DRIVER:
-//                break;
-//            default:
-//                throw new MemberDataException(
-//                        "Unknown data key name \"" + key + "\", line " + csvReader.getLinesRead());
-//        }
+        StringBuilder errors = new StringBuilder();
+
+        if (backupDriver.isEmpty()) {
+            errors.append("Empty BackupDriver user name at line ").append(lineNumber).append(".\n");
+        }
+
+        if (backupDriver.startsWith("@")) {
+            errors.append("BackupDriver user name \"")
+                    .append(backupDriver).append("\" at line ").append(lineNumber)
+                    .append(" cannot start with a @\n");
+        }
+
+        if (backupDriver.indexOf(' ') != -1) {
+            errors.append("BackupDriver user name \"")
+                    .append(backupDriver).append("\" at line ").append(lineNumber)
+                    .append(" cannot contain spaces.\n");
+        }
+
+        if (errors.length() != 0) {
+            throw new MemberDataException(errors.toString());
+        }
+
+        backupDrivers.add(backupDriver);
     }
 }

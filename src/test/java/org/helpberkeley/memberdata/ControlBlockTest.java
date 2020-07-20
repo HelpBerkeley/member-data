@@ -24,7 +24,9 @@ package org.helpberkeley.memberdata;
 
 import org.junit.Test;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.ThrowableAssert.catchThrowable;
 
 public class ControlBlockTest extends TestBase {
@@ -46,7 +48,12 @@ public class ControlBlockTest extends TestBase {
         WorkflowParser workflowParser =
                 new WorkflowParser(WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, controlBlockData);
 
-        workflowParser.drivers();
+        ControlBlock controlBlock = workflowParser.controlBlock();
+        assertThat(controlBlock.getOpsManagers()).containsExactly(
+                new OpsManager("zzz", "123-456-7890"));
+        assertThat(controlBlock.getSplitRestaurants()).containsExactly(
+                new SplitRestaurant("Jot Mahal", "joebdriver"));
+        assertThat(controlBlock.getBackupDrivers()).containsExactly("josephinedriver");
     }
 
     /** Test that true in a consumer column throws an exception */
@@ -73,5 +80,248 @@ public class ControlBlockTest extends TestBase {
         Throwable thrown = catchThrowable(workflowParser::drivers);
         assertThat(thrown).isInstanceOf(MemberDataException.class);
         assertThat(thrown).hasMessage("Control block Driver column does not contain FALSE, at line 3.\n");
+    }
+
+    @Test
+    public void unknownDirectiveTest() {
+
+        String workFlowData = HEADER + CONTROL_BLOCK_BEGIN_ROW + "FALSE,FALSE,ControlBlockGarbage,,,,,,,,,,,,\n";
+
+        WorkflowParser workflowParser = new WorkflowParser(WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, workFlowData);
+
+        Throwable thrown = catchThrowable(workflowParser::drivers);
+        assertThat(thrown).isInstanceOf(MemberDataException.class);
+        assertThat(thrown).hasMessageContaining("Unexpected control block directive");
+        assertThat(thrown).hasMessageContaining("ControlBlockGarbage");
+    }
+
+    @Test
+    public void unknownVariableTest() {
+
+        String workFlowData = HEADER + CONTROL_BLOCK_BEGIN_ROW + "FALSE,FALSE,,BadVariableName,,,,,,,,,,,\n";
+
+        WorkflowParser workflowParser = new WorkflowParser(WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, workFlowData);
+
+        Throwable thrown = catchThrowable(workflowParser::drivers);
+        assertThat(thrown).isInstanceOf(MemberDataException.class);
+        assertThat(thrown).hasMessageContaining("Unknown key");
+        assertThat(thrown).hasMessageContaining("BadVariableName");
+    }
+
+    @Test
+    public void missingOpsManagerValueSeparatorTest() {
+
+        String workFlowData = HEADER + CONTROL_BLOCK_BEGIN_ROW
+                + "FALSE,FALSE,,OpsManager (UserName|Phone),,,,fred 123-456-7890,,,,,,,\n";
+
+        WorkflowParser workflowParser = new WorkflowParser(WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, workFlowData);
+
+        Throwable thrown = catchThrowable(workflowParser::drivers);
+        assertThat(thrown).isInstanceOf(MemberDataException.class);
+        assertThat(thrown).hasMessageContaining("does not match \"username | phone\"");
+        assertThat(thrown).hasMessageContaining("fred 123-456-7890");
+    }
+
+    @Test
+    public void tooManyOpsManagerValueSeparatorTest() {
+
+        String workFlowData = HEADER + CONTROL_BLOCK_BEGIN_ROW
+                + "FALSE,FALSE,,OpsManager (UserName|Phone),,,,|fred|123-456-7890|,,,,,,,\n";
+
+        WorkflowParser workflowParser = new WorkflowParser(WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, workFlowData);
+
+        Throwable thrown = catchThrowable(workflowParser::drivers);
+        assertThat(thrown).isInstanceOf(MemberDataException.class);
+        assertThat(thrown).hasMessageContaining("does not match \"username | phone\"");
+        assertThat(thrown).hasMessageContaining("|fred|123-456-7890|");
+    }
+
+    @Test
+    public void opsManagerEmptyUserNameTest() {
+
+        String workFlowData = HEADER + CONTROL_BLOCK_BEGIN_ROW
+                + "FALSE,FALSE,,OpsManager (UserName|Phone),,,,|123-456-7890,,,,,,,\n";
+
+        WorkflowParser workflowParser = new WorkflowParser(WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, workFlowData);
+
+        Throwable thrown = catchThrowable(workflowParser::drivers);
+        assertThat(thrown).isInstanceOf(MemberDataException.class);
+        assertThat(thrown).hasMessageContaining("Empty OpsManager user name at line 3.");
+    }
+
+    @Test
+    public void opsManagerUserNameWithAtSignTest() {
+
+        String workFlowData = HEADER + CONTROL_BLOCK_BEGIN_ROW
+                + "FALSE,FALSE,,OpsManager (UserName|Phone),,,,@fred|123-456-7890,,,,,,,\n";
+
+        WorkflowParser workflowParser = new WorkflowParser(WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, workFlowData);
+
+        Throwable thrown = catchThrowable(workflowParser::drivers);
+        assertThat(thrown).isInstanceOf(MemberDataException.class);
+        assertThat(thrown).hasMessageContaining("OpsManager user name \"@fred\" at line 3 cannot start with @");
+    }
+
+    @Test
+    public void opsManagerUserNameWithWithSpacesTest() {
+
+        String workFlowData = HEADER + CONTROL_BLOCK_BEGIN_ROW
+                + "FALSE,FALSE,,OpsManager (UserName|Phone),,,,fred e mercury|123-456-7890,,,,,,,\n";
+
+        WorkflowParser workflowParser = new WorkflowParser(WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, workFlowData);
+
+        Throwable thrown = catchThrowable(workflowParser::drivers);
+        assertThat(thrown).isInstanceOf(MemberDataException.class);
+        assertThat(thrown).hasMessageContaining(
+                "OpsManager user name \"fred e mercury\" at line 3 cannot contain spaces.");
+    }
+
+    @Test
+    public void opsManagerEmptyPhoneTest() {
+
+        String workFlowData = HEADER + CONTROL_BLOCK_BEGIN_ROW
+                + "FALSE,FALSE,,OpsManager (UserName|Phone),,,,biff| ,,,,,,,\n";
+
+        WorkflowParser workflowParser = new WorkflowParser(WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, workFlowData);
+
+        Throwable thrown = catchThrowable(workflowParser::drivers);
+        assertThat(thrown).isInstanceOf(MemberDataException.class);
+        assertThat(thrown).hasMessageContaining("Empty OpsManager phone number at line 3.");
+    }
+
+    @Test
+    public void missingSplitRestaurantValueSeparatorTest() {
+
+        String workFlowData = HEADER + CONTROL_BLOCK_BEGIN_ROW
+                + "FALSE,FALSE,,SplitRestaurant (Name|CleanupDriverUserName),,,,MickeyDs bobbyjo,,,,,,,\n";
+
+        WorkflowParser workflowParser = new WorkflowParser(WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, workFlowData);
+
+        Throwable thrown = catchThrowable(workflowParser::drivers);
+        assertThat(thrown).isInstanceOf(MemberDataException.class);
+        assertThat(thrown).hasMessageContaining("does not match \"restaurant name | cleanup driver user name\"");
+        assertThat(thrown).hasMessageContaining("\"MickeyDs bobbyjo\"");
+    }
+
+    @Test
+    public void tooManySplitRestaurantValueSeparatorTest() {
+
+        String workFlowData = HEADER + CONTROL_BLOCK_BEGIN_ROW
+                + "FALSE,FALSE,,SplitRestaurant (Name|CleanupDriverUserName),,,,|Max's|buzz|,,,,,,,\n";
+
+        WorkflowParser workflowParser = new WorkflowParser(WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, workFlowData);
+
+        Throwable thrown = catchThrowable(workflowParser::drivers);
+        assertThat(thrown).isInstanceOf(MemberDataException.class);
+        assertThat(thrown).hasMessageContaining("does not match \"restaurant name | cleanup driver user name\"");
+        assertThat(thrown).hasMessageContaining("|Max's|buzz|");
+    }
+
+    @Test
+    public void SplitRestaurantRestaurantNameTest() {
+
+        String workFlowData = HEADER + CONTROL_BLOCK_BEGIN_ROW
+                + "FALSE,FALSE,,SplitRestaurant (Name|CleanupDriverUserName),,,,|buzz,,,,,,,\n";
+
+        WorkflowParser workflowParser = new WorkflowParser(WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, workFlowData);
+
+        Throwable thrown = catchThrowable(workflowParser::drivers);
+        assertThat(thrown).isInstanceOf(MemberDataException.class);
+        assertThat(thrown).hasMessageContaining("Empty SplitRestaurant restaurant name at line 3.");
+    }
+
+    @Test
+    public void SplitRestaurantCleanupDriverUserNameWithAtSignTest() {
+
+        String workFlowData = HEADER + CONTROL_BLOCK_BEGIN_ROW
+                + "FALSE,FALSE,,SplitRestaurant (Name|CleanupDriverUserName),,,,Bopshop|@fred,,,,,,,\n";
+
+        WorkflowParser workflowParser = new WorkflowParser(WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, workFlowData);
+
+        Throwable thrown = catchThrowable(workflowParser::drivers);
+        assertThat(thrown).isInstanceOf(MemberDataException.class);
+        assertThat(thrown).hasMessageContaining(
+                "SplitRestaurant cleanup driver user name \"@fred\" at line 3 cannot start with @");
+    }
+
+    @Test
+    public void splitRestaurantCleanupDriverUserNameWithWithSpacesTest() {
+
+        String workFlowData = HEADER + CONTROL_BLOCK_BEGIN_ROW
+                + "FALSE,FALSE,,SplitRestaurant (Name|CleanupDriverUserName),,,,Bobshop|fred e mercury,,,,,,,\n";
+
+        WorkflowParser workflowParser = new WorkflowParser(WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, workFlowData);
+
+        Throwable thrown = catchThrowable(workflowParser::drivers);
+        assertThat(thrown).isInstanceOf(MemberDataException.class);
+        assertThat(thrown).hasMessageContaining(
+                "SplitRestaurant cleanup driver user name \"fred e mercury\" at line 3 cannot contain spaces.");
+    }
+
+    @Test
+    public void splitRestaurantEmptyCleanupDriverUserNameTest() {
+
+        String workFlowData = HEADER + CONTROL_BLOCK_BEGIN_ROW
+                + "FALSE,FALSE,,SplitRestaurant (Name|CleanupDriverUserName),,,,Bobshop|,,,,,,,\n";
+
+        WorkflowParser workflowParser = new WorkflowParser(WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, workFlowData);
+
+        Throwable thrown = catchThrowable(workflowParser::drivers);
+        assertThat(thrown).isInstanceOf(MemberDataException.class);
+        assertThat(thrown).hasMessageContaining("Empty SplitRestaurant cleanup driver user name at line 3.");
+    }
+
+    @Test
+    public void backupDriverUserNameWithSeparatorTest() {
+
+        String workFlowData = HEADER + CONTROL_BLOCK_BEGIN_ROW
+                + "FALSE,FALSE,,BackupDriverUserName,,,,bligzhfzzt|,,,,,,,\n";
+
+        WorkflowParser workflowParser = new WorkflowParser(WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, workFlowData);
+
+        Throwable thrown = catchThrowable(workflowParser::drivers);
+        assertThat(thrown).isInstanceOf(MemberDataException.class);
+        assertThat(thrown).hasMessageContaining(
+                "BackupDriverUserName value \"bligzhfzzt|\" at line 3 does not match \"backupDriverUserName\"");
+    }
+
+    @Test
+    public void emptyBackupDriverUserNameTest() {
+
+        String workFlowData = HEADER + CONTROL_BLOCK_BEGIN_ROW
+                + "FALSE,FALSE,,BackupDriverUserName,,,,,,,,,,,\n";
+
+        WorkflowParser workflowParser = new WorkflowParser(WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, workFlowData);
+
+        Throwable thrown = catchThrowable(workflowParser::drivers);
+        assertThat(thrown).isInstanceOf(MemberDataException.class);
+        assertThat(thrown).hasMessageContaining("Empty BackupDriver user name at line 3");
+    }
+
+    @Test
+    public void backupDriverUserNameWithAtSignTest() {
+
+        String workFlowData = HEADER + CONTROL_BLOCK_BEGIN_ROW
+                + "FALSE,FALSE,,BackupDriverUserName,,,,@roygbv,,,,,,,\n";
+
+        WorkflowParser workflowParser = new WorkflowParser(WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, workFlowData);
+
+        Throwable thrown = catchThrowable(workflowParser::drivers);
+        assertThat(thrown).isInstanceOf(MemberDataException.class);
+        assertThat(thrown).hasMessageContaining("BackupDriver user name \"@roygbv\" at line 3 cannot start with a @");
+    }
+
+    @Test
+    public void backupDriverUserNameWithSpacesTest() {
+
+        String workFlowData = HEADER + CONTROL_BLOCK_BEGIN_ROW
+                + "FALSE,FALSE,,BackupDriverUserName,,,,billy joe bob boy,,,,,,,\n";
+
+        WorkflowParser workflowParser = new WorkflowParser(WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, workFlowData);
+
+        Throwable thrown = catchThrowable(workflowParser::drivers);
+        assertThat(thrown).isInstanceOf(MemberDataException.class);
+        assertThat(thrown).hasMessageContaining(
+                "BackupDriver user name \"billy joe bob boy\" at line 3 cannot contain spaces");
     }
 }
