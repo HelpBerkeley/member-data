@@ -101,11 +101,9 @@ public class ControlBlockTest extends TestBase {
         String workFlowData = HEADER + CONTROL_BLOCK_BEGIN_ROW + "FALSE,FALSE,,BadVariableName,,,,,,,,,,,\n";
 
         WorkflowParser workflowParser = new WorkflowParser(WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, workFlowData);
-
-        Throwable thrown = catchThrowable(workflowParser::drivers);
-        assertThat(thrown).isInstanceOf(MemberDataException.class);
-        assertThat(thrown).hasMessageContaining("Unknown key");
-        assertThat(thrown).hasMessageContaining("BadVariableName");
+        ControlBlock controlBlock = workflowParser.controlBlock();
+        assertThat(controlBlock.getWarnings()).contains(
+                "Unknown key \"BadVariableName\" in the User Name column at line 3.");
     }
 
     @Test

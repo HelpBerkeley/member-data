@@ -33,6 +33,8 @@ class ControlBlock {
     private List<SplitRestaurant> splitRestaurants = new ArrayList<>();
     private List<String> backupDrivers = new ArrayList<>();
 
+    private StringBuilder warnings = new StringBuilder();
+
     ControlBlock() {
 
     }
@@ -72,9 +74,18 @@ class ControlBlock {
                 processBackupDriver(value, lineNumber);
                 break;
             default:
-                throw new MemberDataException("Unknown key \"" + variable + "\" in the "
-                        + Constants.WORKFLOW_USER_NAME_COLUMN + " column at line " + lineNumber + ".\n");
+                warnings.append("Unknown key \"")
+                        .append(variable)
+                        .append("\" in the ")
+                        .append(Constants.WORKFLOW_USER_NAME_COLUMN)
+                        .append(" column at line ")
+                        .append(lineNumber)
+                        .append(".\n");
         }
+    }
+
+    String getWarnings() {
+        return warnings.toString();
     }
 
     //
