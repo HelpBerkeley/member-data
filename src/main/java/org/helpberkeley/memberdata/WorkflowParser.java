@@ -39,7 +39,6 @@ public class WorkflowParser {
     }
 
     private final Mode mode;
-    private final List<Driver> drivers = new ArrayList<>();
     private final ControlBlock controlBlock = new ControlBlock();
     private long lineNumber;
     private final PeekingIterator<WorkflowBean> iterator;
@@ -139,6 +138,10 @@ public class WorkflowParser {
                 continue;
             }
 
+            if (bean.isEmpty()) {
+                 continue;
+            }
+
             if (! isDriverRow(bean)) {
                 throw new MemberDataException("line " + lineNumber + " is not a driver row. "
                     + "Is this a driver who is also a consumer? If so, the consumer column must be set to false.");
@@ -150,6 +153,10 @@ public class WorkflowParser {
         }
 
         return drivers;
+    }
+
+    ControlBlock getControlBlock() {
+        return controlBlock;
     }
 
     ControlBlock controlBlock() {
@@ -210,8 +217,7 @@ public class WorkflowParser {
         String consumerValue = bean.getConsumer();
         String driverValue = bean.getDriver();
 
-        return ((! Boolean.parseBoolean(consumerValue))
-                && Boolean.parseBoolean(driverValue));
+        return Boolean.parseBoolean(driverValue) && (! Boolean.parseBoolean(consumerValue));
     }
 
     private void processControlBlock() {
@@ -352,9 +358,11 @@ public class WorkflowParser {
 
         while ((bean = peekNextRow()) != null) {
 
-            if (! bean.getConsumer().toUpperCase().equals("FALSE")) {
+            if (! (bean.getConsumer().toUpperCase().equals("FALSE") && bean.getDriver().isEmpty())) {
                 break;
             }
+
+            isDriverRow(bean);
 
             bean = nextRow();
             String errors = "";

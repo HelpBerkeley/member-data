@@ -108,7 +108,7 @@ public class WorkRequestHandler {
     private Reply fetchLastReply() throws IOException, InterruptedException {
 
         String json = apiClient.runQuery(query.id);
-        ApiQueryResult apiQueryResult = Parser.parseQueryResult(json);
+        ApiQueryResult apiQueryResult = HBParser.parseQueryResult(json);
 
         // FIX THIS, DS: constant
         Integer postNumberIndex = apiQueryResult.getColumnIndex("post_number");
@@ -210,8 +210,8 @@ public class WorkRequestHandler {
                 String line = iterator.next();
 
                 if (line.contains(Constants.UPLOAD_URI_PREFIX)) {
-                    String shortURL =  Parser.shortURL(line);
-                    String fileName = Parser.downloadFileName(line);
+                    String shortURL =  HBParser.shortURL(line);
+                    String fileName = HBParser.downloadFileName(line);
 
                     UploadFile uploadFile = new UploadFile(fileName, shortURL);
 

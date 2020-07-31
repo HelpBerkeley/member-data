@@ -36,8 +36,8 @@ public class DailyDeliveriesTest extends TestBase {
     public void parseDailyDeliveriesQueryTest() throws IOException, InterruptedException {
         ApiClient apiClient = createApiSimulator();
         String jsonData = apiClient.runQuery(Constants.QUERY_GET_DAILY_DELIVERIES);
-        ApiQueryResult queryResult = Parser.parseQueryResult(jsonData);
-        List<DeliveryData> deliveries = Parser.dailyDeliveryPosts(queryResult);
+        ApiQueryResult queryResult = HBParser.parseQueryResult(jsonData);
+        List<DeliveryData> deliveries = HBParser.dailyDeliveryPosts(queryResult);
         // FIX THIS, DS: deliveries validation
     }
 
@@ -50,7 +50,7 @@ public class DailyDeliveriesTest extends TestBase {
                 + Constants.WORKFLOW_VEGGIE_COLUMN
                 + "\n";
 
-        Parser.parseOrders("", header);
+        HBParser.parseOrders("", header);
     }
 
     @Test
@@ -62,7 +62,7 @@ public class DailyDeliveriesTest extends TestBase {
                 + Constants.WORKFLOW_NAME_COLUMN
                 + "\n";
 
-        Parser.parseOrders("", header);
+        HBParser.parseOrders("", header);
     }
 
     @Test
@@ -74,7 +74,7 @@ public class DailyDeliveriesTest extends TestBase {
                 + " " + Constants.WORKFLOW_NAME_COLUMN
                 + "\n";
 
-        Parser.parseOrders("", header);
+        HBParser.parseOrders("", header);
     }
 
     @Test
@@ -85,7 +85,7 @@ public class DailyDeliveriesTest extends TestBase {
                 + Constants.WORKFLOW_VEGGIE_COLUMN
                 + "\n";
 
-        Parser.parseOrders("", header);
+        HBParser.parseOrders("", header);
     }
 
     @Test
@@ -96,7 +96,7 @@ public class DailyDeliveriesTest extends TestBase {
                 + Constants.WORKFLOW_VEGGIE_COLUMN
                 + "\n";
 
-        Parser.parseOrders("", header);
+        HBParser.parseOrders("", header);
     }
 
     @Test
@@ -108,7 +108,7 @@ public class DailyDeliveriesTest extends TestBase {
                 + Constants.WORKFLOW_VEGGIE_COLUMN
                 + "\n";
 
-        Throwable thrown = catchThrowable(() -> Parser.parseOrders(fileName, header));
+        Throwable thrown = catchThrowable(() -> HBParser.parseOrders(fileName, header));
         assertThat(thrown).isInstanceOf(Error.class);
         assertThat(thrown).hasMessageContaining(fileName);
         assertThat(thrown).hasMessageContaining(Constants.WORKFLOW_CONSUMER_COLUMN);
@@ -123,7 +123,7 @@ public class DailyDeliveriesTest extends TestBase {
                 + Constants.WORKFLOW_NORMAL_COLUMN
                 + "\n";
 
-        Throwable thrown = catchThrowable(() -> Parser.parseOrders(fileName, header));
+        Throwable thrown = catchThrowable(() -> HBParser.parseOrders(fileName, header));
         assertThat(thrown).isInstanceOf(Error.class);
         assertThat(thrown).hasMessageContaining(fileName);
         assertThat(thrown).hasMessageContaining(Constants.WORKFLOW_VEGGIE_COLUMN);
@@ -138,7 +138,7 @@ public class DailyDeliveriesTest extends TestBase {
                 + Constants.WORKFLOW_VEGGIE_COLUMN + Constants.CSV_SEPARATOR
                 + "\n";
 
-        Throwable thrown = catchThrowable(() -> Parser.parseOrders(fileName, header));
+        Throwable thrown = catchThrowable(() -> HBParser.parseOrders(fileName, header));
         assertThat(thrown).isInstanceOf(Error.class);
         assertThat(thrown).hasMessageContaining(fileName);
         assertThat(thrown).hasMessageContaining(Constants.WORKFLOW_NORMAL_COLUMN);
@@ -152,7 +152,7 @@ public class DailyDeliveriesTest extends TestBase {
                 + Constants.WORKFLOW_VEGGIE_COLUMN
                 + "\n";
 
-        Throwable thrown = catchThrowable(() -> Parser.parseOrders(fileName, header));
+        Throwable thrown = catchThrowable(() -> HBParser.parseOrders(fileName, header));
         assertThat(thrown).isInstanceOf(Error.class);
         assertThat(thrown).hasMessageContaining(fileName);
         assertThat(thrown).hasMessageContaining(Constants.WORKFLOW_USER_NAME_COLUMN);

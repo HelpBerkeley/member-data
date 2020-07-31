@@ -37,11 +37,19 @@ public class Constants {
     public static final int QUERY_EMAIL_CONFIRMATIONS = 15;
     public static final int QUERY_GET_EMAILS = 11;
     public static final int QUERY_GET_DELIVERY_DETAILS = 17;
-    public static final int QUERY_GET_DRIVERS_POST_FORMAT = 19;
-    public static final int QUERY_GET_GROUP_INSTRUCTIONS_FORMAT = 20;
+    public static final int QUERY_GET_DRIVERS_POST_FORMAT_V1 = 19;
+    public static final int QUERY_GET_GROUP_INSTRUCTIONS_FORMAT_V1 = 20;
     public static final int QUERY_GET_ALL_POSTS_IN_TOPICS = 21;
     public static final int QUERY_GET_LAST_ROUTED_WORKFLOW_REPLY = 22;
     public static final int QUERY_GET_LAST_ROUTE_REQUEST_REPLY = 25;
+    public static final int QUERY_GET_DRIVERS_POST_FORMAT_V12 = 26;
+    public static final int QUERY_GET_GROUP_INSTRUCTIONS_FORMAT_V12 = 27;
+    public static final int QUERY_GET_BACKUP_DRIVER_FORMAT_V12 = 28;
+
+    // Current spec version for these queries
+    public static final int QUERY_GET_DRIVERS_POST_FORMAT = QUERY_GET_DRIVERS_POST_FORMAT_V12;
+    public static final int QUERY_GET_GROUP_INSTRUCTIONS_FORMAT = QUERY_GET_GROUP_INSTRUCTIONS_FORMAT_V12;
+    public static final int QUERY_GET_BACKUP_DRIVER_FORMAT = QUERY_GET_BACKUP_DRIVER_FORMAT_V12;
 
     public static final Topic TOPIC_ROUTED_WORKFLOW_DATA = new Topic("Routed Workflow Data", 2504);
     public static final Topic TOPIC_REQUEST_DRIVER_ROUTES = new Topic("Request Driver Routes", 2844);
@@ -118,11 +126,12 @@ public class Constants {
     public static final String CONTROL_BLOCK_BEGIN = "ControlBegin";
     public static final String CONTROL_BLOCK_END = "ControlEnd";
     public static final String CONTROL_BLOCK_COMMENT = "Comment";
-    public static final String CONTROL_BLOCK_OPS_MANAGER = "OpsManager (UserName|Phone)";
-    public static final String CONTROL_BLOCK_SPLIT_RESTAURANT = "SplitRestaurant (Name|CleanupDriverUserName)";
+    public static final String CONTROL_BLOCK_OPS_MANAGER = "OpsManager(UserName|Phone)";
+    public static final String CONTROL_BLOCK_SPLIT_RESTAURANT = "SplitRestaurant(Name|CleanupDriverUserName)";
     public static final String CONTROL_BLOCK_BACKUP_DRIVER = "BackupDriverUserName";
+    public static final String CONTROL_BLOCK_RESTAURANT = "Restaurant(Name|Emoji)";
 
-    public static final String DATA_VALUE_DEFAULT_PREFIX = "ReplaceThisBy";
+    public static final String CONTROL_BLOCK_VALUE_DEFAULT_PREFIX = "ReplaceThisBy";
 
     public static final long UNKNOWN_USER_ID = 852;
     public static final String UNKNOWN_USER = "unknown-user";

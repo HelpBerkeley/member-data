@@ -58,7 +58,7 @@ public class RoundTripTest extends TestBase {
         UserExporter exporter = new UserExporter(users);
 
         String csvData = exporter.allMembersRaw();
-        List<User> usersFromCSV = Parser.users(csvData);
+        List<User> usersFromCSV = HBParser.users(csvData);
         assertThat(usersFromCSV).isEqualTo(users);
     }
 }

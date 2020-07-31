@@ -1,0 +1,16 @@
+Consumer,Driver,Name,User Name,Phone #,Phone2 #,Neighborhood,City,Address,Condo,Details,Restaurants,normal,veggie,#orders
+FALSE,FALSE,ControlBegin,,,,,,,,,,,,
+FALSE,FALSE,,Restaurant (Name | Emoji),,,,Cafe Raj | :open_umbrella:,,,,,,,
+FALSE,FALSE,,Restaurant (Name | Emoji),,,,Kim's Cafe | :basketball:,,,,,,,
+FALSE,FALSE,,Restaurant (Name | Emoji),,,,Talavera | :gloves:,,,,,,,
+FALSE,FALSE,,Restaurant (Name | Emoji),,,,Sweet Basil | :lemon:,,,,,,,
+FALSE,FALSE,,Restaurant (Name | Emoji),,,,Bopshop | :motor_scooter:,,,,,,,
+FALSE,FALSE,,OpsManager (UserName | Phone),,,,MrE | 510-555-1212,,,,,,,
+FALSE,FALSE,Comment,SplitRestaurant (Name | CleanupDriverUserName),,,,ReplaceThisBySplitRestaurantName | ReplaceThisByCleanupDriverUserName,,,,,,,
+FALSE,FALSE,,BackupDriverUserName,,,,ReplaceThisByTheBackUpDriverUserName,,,,,,,
+FALSE,FALSE,ControlEnd,,,,,,,,,,,,
+FALSE,TRUE,Josephine B. Driver,jsDriver,098-765-4321,,,,,,,,,,
+FALSE,,,,,,,,"1158 Solano Ave, Albany",FALSE,"One,Two,Three details",Cafe Raj,,,1
+TRUE,FALSE,Cust Name 5,Cust5,123-456-7890,none,Hills,Berkeley,55 55th St,TRUE,listed as a condo but may not be.,Cafe Raj,0,1,
+FALSE,TRUE,Josephine B. Driver,jsDriver,098-765-4321,,,,,,,,,,
+"https://www.google.com/maps/dir/x+y+z",,,,,,,,,,,,,,

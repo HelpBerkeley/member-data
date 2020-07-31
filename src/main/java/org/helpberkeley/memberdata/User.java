@@ -1117,6 +1117,11 @@ public class User {
         return true;
     }
 
+    @Override
+    public int hashCode() {
+        return Objects.hash(userName);
+    }
+
     private String escapeCommas(final String value) {
         if (value.indexOf(',') == -1) {
             return value;

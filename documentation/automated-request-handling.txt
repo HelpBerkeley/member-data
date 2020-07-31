@@ -120,9 +120,9 @@ Examples:
 	Status: Succeeded
 	File: HelpBerkeleyDeliveries - 6_20.csv
 
-	Info: There are no drivers for restaurant V & A.
-	@SomeDriver is the primary for split restaurant Gregoire 
-	@SomeOtherDriver is a secondary for split restaurant Gregoire 
+	Info: There are no drivers for controlBlockRestaurant V & A.
+	@SomeDriver is the primary for split controlBlockRestaurant Gregoire
+	@SomeOtherDriver is a secondary for split controlBlockRestaurant Gregoire
 
 	-----------------------
 
@@ -131,7 +131,7 @@ Examples:
 	Status: Failed
 	File: HelpBerkeleyDeliveries - 6_20.csv
 
-	Line 6 is missing a value for the restaurant name.
+	Line 6 is missing a value for the controlBlockRestaurant name.
 
 	
 

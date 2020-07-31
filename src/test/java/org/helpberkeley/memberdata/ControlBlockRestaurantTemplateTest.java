@@ -8,7 +8,7 @@ import java.util.Map;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
 
-public class RestaurantTemplateTest extends TestBase {
+public class ControlBlockRestaurantTemplateTest extends TestBase {
     @Test
     public void emptyDataTest() {
         Throwable thrown = catchThrowable(() -> new RestaurantTemplateParser(""));
@@ -175,7 +175,6 @@ public class RestaurantTemplateTest extends TestBase {
         assertThat(thrown).hasMessageContaining("missing route name value from column Consumer");
     }
 
-    @SuppressWarnings("RedundantIfStatement")
     @Test
     public void noPicsRestaurantTest() {
         final String csvData = readResourceFile("restaurant-template.csv");

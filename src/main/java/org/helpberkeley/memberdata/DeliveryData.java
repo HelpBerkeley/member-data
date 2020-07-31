@@ -39,8 +39,8 @@ public class DeliveryData {
     // Get daily delivery posts
     static List<DeliveryData> deliveryPosts(ApiClient apiClient) throws IOException, InterruptedException {
         String json = apiClient.runQuery(Constants.QUERY_GET_DAILY_DELIVERIES);
-        ApiQueryResult apiQueryResult = Parser.parseQueryResult(json);
-        List<DeliveryData> deliveryPosts = Parser.dailyDeliveryPosts(apiQueryResult);
+        ApiQueryResult apiQueryResult = HBParser.parseQueryResult(json);
+        List<DeliveryData> deliveryPosts = HBParser.dailyDeliveryPosts(apiQueryResult);
 
         // Sort by date ascending
         deliveryPosts.sort(Comparator.comparing(DeliveryData::getDate));
@@ -49,7 +49,7 @@ public class DeliveryData {
 
     // Get daily delivery posts
     static List<DeliveryData> deliveryPosts(final String csvData) {
-        List<DeliveryData> deliveryPosts = Parser.dailyDeliveryPosts(csvData);
+        List<DeliveryData> deliveryPosts = HBParser.dailyDeliveryPosts(csvData);
 
         // Sort by date ascending
         deliveryPosts.sort(Comparator.comparing(DeliveryData::getDate));

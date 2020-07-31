@@ -33,9 +33,9 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class Parser {
+public class HBParser {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(Parser.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(HBParser.class);
 
     static ApiQueryResult parseQueryResult(final String queryResultJson) {
         Map<String, Object> options = new HashMap<>();
@@ -417,53 +417,10 @@ public class Parser {
                 continue;
             }
 
-            permissiveParseDeliveryDetails(id, raw, deliveryDetails);
+            parseDeliveryDetails(id, raw, deliveryDetails);
         }
 
         return deliveryDetails;
-    }
-
-    static void parseDeliveryDetails(long id, final String rawPost, Map<String, String> deliveryDetails) {
-        // "@username :
-        //
-        // Multi-line delivery details.
-
-        // Normalize EOL
-        String raw = rawPost.replaceAll("\\r\\n?", "\n");
-
-        String[] lines = raw.split("\n");
-
-        if (lines.length == 0) {
-            LOGGER.warn("Skipping post {}. No data", id);
-        }
-
-        String line = lines[0].trim();
-
-        if (! line.startsWith("@")) {
-            LOGGER.warn("Skipping post {}. Cannot parse delivery details in {}", id, raw);
-            return;
-        }
-
-        int index = line.indexOf(':');
-        if (index == -1) {
-            LOGGER.warn("Skipping post {}. Cannot parse user name in {}", id, raw);
-            return;
-        }
-
-        String userName = raw.substring(1, index).trim();
-
-        StringBuilder details = new StringBuilder();
-        for (index = 1; index < lines.length; index++) {
-            line = lines[index].trim();
-            if (! line.isEmpty()) {
-                if (details.length() > 0) {
-                    details.append(" ");
-                }
-                details.append(line);
-            }
-        }
-
-        deliveryDetails.put(userName, details.toString());
     }
 
     /**
@@ -474,7 +431,7 @@ public class Parser {
      * @param rawPost post text
      * @param deliveryDetails map, keyed by user name, to update with delivery details.
      */
-    static void permissiveParseDeliveryDetails(long id, final String rawPost, Map<String, String> deliveryDetails) {
+    static void parseDeliveryDetails(long id, final String rawPost, Map<String, String> deliveryDetails) {
 
         // Normalize EOL
         String raw = rawPost.replaceAll("\\r\\n?", "\n");

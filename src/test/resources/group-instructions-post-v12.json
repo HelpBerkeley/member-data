@@ -1,0 +1,35 @@
+{
+  "success": true,
+  "errors": [],
+  "duration": 0.8,
+  "result_count": 4,
+  "params": {},
+  "columns": [
+    "post_number",
+    "raw",
+    "deleted_at"
+  ],
+  "default_limit": 1000,
+  "rows": [
+    [
+      1,
+      "[comment]\n\nComment post: this is where we spec the format of the summary post for the drivers.\n\n**Sections**\n[header]\n[SplitRestaurants]\n[Instructions]\n\n**Variables**\n\nDriver: list, workflow spreadsheet scope.\n.UserName   ... string, From workflow spreadsheet\n.FirstRestaurantName  ... string, from workflow spreadsheet\n.FirstRestaurantStartTime  ... string, from restaurant Template\n.IsFirstRestaurantClosingBefore7PM ... Boolean, calculated from restaurant template\n.FirstRestaurantClosingTime ... string, from restaurant template\n.Orders\n\nSplitRestaurant: list, workflow spreadsheet scope.\n.Name ... string, workflow spreadsheet scope, from restaurant template\n.Emoji ... string,\n.TotalOrders ... integer, workflow spreadsheet scope, calculated from workflow spreadsheet",
+      null
+    ],
+    [
+      2,
+      "[header]\n\nLOOP &{Driver}\n{\n    \"@\" &{Driver.UserName} \", your run starts at \"\n    &{Driver.FirstRestaurantName}  \" at  \"\n    &{Driver.FirstRestaurantStartTime}  \".\"\n    IF &{Driver.IsFirstRestaurantClosingBefore7PM} THEN\n    {\n        \" This restaurant closes at \"  &{Driver.FirstRestaurantClosingTime}  \".\"\n    }\n    \"\\n\"\n}",
+      null
+    ],
+    [
+      3,
+      "[SplitRestaurants]\n\nIF ${AnySplitRestaurants} THEN\n{\n    \"\\n**Split Restaurants**\\n\\n\"\n}\n\nLOOP &{SplitRestaurant}\n{\n    \"|\" &{SplitRestaurant.Name} \" \" &{SplitRestaurant.Emoji} \" drivers\"\n    \"|orders (\" &{SplitRestaurant.TotalOrders} \" total )|\\n\"\n    \"|---|---|\\n\"\n\n    LOOP &{SplitRestaurant.Driver}\n    {\n        \"|\" &{Driver.UserName} \"|\" &{Driver.SplitRestaurantOrders} \"|\\n\"\n    }   \n    \"\\n\"\n}",
+      null
+    ],
+    [
+      4,
+      "[Instructions]\n\n\"\\nA few quick reminders and special instructions:\\n\\n\n\n* if you can, use the DiscourseHub phone app (using this address when they ask for the site: [go.helpberkeley.org](http://go.helpberkeley.org/)), to get run information and to upload delivery form pics right away: it is much easier\\n\n* the restaurants are getting testy when we are late, so it is important to start the runs on time :slight_smile:\\n\n* stop at all the restaurants, even those with 0 orders, since we still need to find their orders for the next day\\n\n* because there are many orders, pls be sure to check that (a) you get exactly as many bags as you have orders, in each restaurant, and (b) each one of your bags is labeled. If either is incorrect, please talk to the restaurant before leaving so that you get both bags and labels\\n\n* remember that one customer order = one to-go bag (it may have more than one ration), [one ration = 2 meals—that is the unit used when our consumers order, but they may order several rations, and one customer order will typically be in one bag, even if made of several rations]\\n\n* If you have extra orders (more bags than you expect you should have), pls call your dispatcher, right away, from the restaurant, before leaving: he must agree to let you take the extra order\\n\n* Please make sure to carefully position the to-go bags in your dirty boxes, to avoid accidents that might make the food leak inside the bag (and possibly be careful driving…)\\n\n* If you have a problem where a ration leaks, particularly if the bag tears, please stay by the door (15 feet away) when the consumer opens, apologize for the accident, explain how it occurred, and offer to have us reorder and bring out another order [but it takes an extra hour]. If they take you up, call your dispatcher\\n\n* Our customers expect all runs finished before 7:30pm. If there is any time trouble brewing, please call your dispatcher, who can call the helpline so that they can let customers know. If you need to prep some navigation prior to the run, pls be fully ready when you leave!\\n\n* sometimes, a condo may not be a condo (possibly a duplex, for instance): please let us know if the condo we list is not a condo, so we can correct the listing. Let us know also in the other direction, if what we think is a regular single-family home is a condo!\\n\n* VERY IMPORTANT: post before leaving for your run, so we know that you took off on your run on time. If you don’t we’ll send another driver out.\\n\n* Don’t forget to upload pics as soon as possible for our workflow dispatchers to start tomorrow’s run. If possible, use the DiscourseHub app to upload pictures of the run: https://go.helpberkeley.org/t/helpberkeley-org-on-your-hand-held-devices/774\\n\n* please be available by phone/text in the evening in case we have urgent questions :slight_smile:\\n\n* Please post at the end of your run, letting us know whatever we could have done better, or any incident that occurred.  **Please also let us know at what time you finished your run!**\\n\\n\n\nThanks so much for taking the runs, and good luck!\"",
+      null
+    ]
+  ]
+}

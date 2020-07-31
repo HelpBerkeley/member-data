@@ -63,20 +63,20 @@ public class Loader {
     Map<Long, String> loadEmailAddresses() throws IOException, InterruptedException {
         assert apiClient != null;
         String json = apiClient.runQuery(Constants.QUERY_GET_EMAILS);
-        ApiQueryResult apiQueryResult = Parser.parseQueryResult(json);
-        return Parser.emailAddresses(apiQueryResult);
+        ApiQueryResult apiQueryResult = HBParser.parseQueryResult(json);
+        return HBParser.emailAddresses(apiQueryResult);
     }
 
     private void loadGroups() throws IOException, InterruptedException {
 
         assert apiClient != null;
         String json = apiClient.runQuery(Constants.QUERY_GET_GROUPS_ID);
-        ApiQueryResult apiQueryResult = Parser.parseQueryResult(json);
-        Map<Long, String> groupNames = Parser.groupNames(apiQueryResult);
+        ApiQueryResult apiQueryResult = HBParser.parseQueryResult(json);
+        Map<Long, String> groupNames = HBParser.groupNames(apiQueryResult);
 
         json = apiClient.runQuery(Constants.QUERY_GET_GROUP_USERS_ID);
-        apiQueryResult = Parser.parseQueryResult(json);
-        Map<String, List<Long>> groupUsers = Parser.groupUsers(groupNames, apiQueryResult);
+        apiQueryResult = HBParser.parseQueryResult(json);
+        Map<String, List<Long>> groupUsers = HBParser.groupUsers(groupNames, apiQueryResult);
 
         for (Map.Entry<String, List<Long>> entry : groupUsers.entrySet()) {
 
@@ -107,9 +107,9 @@ public class Loader {
     private void loadEmailConfirmations() throws IOException, InterruptedException {
         assert apiClient != null;
         String json = apiClient.runQuery(Constants.QUERY_EMAIL_CONFIRMATIONS);
-        ApiQueryResult apiQueryResult = Parser.parseQueryResult(json);
+        ApiQueryResult apiQueryResult = HBParser.parseQueryResult(json);
 
-        emailConfirmations = Parser.emailConfirmations(apiQueryResult);
+        emailConfirmations = HBParser.emailConfirmations(apiQueryResult);
     }
 
     private List<User> loadUsers() throws IOException, InterruptedException {
@@ -117,7 +117,7 @@ public class Loader {
 
         assert apiClient != null;
         String json = apiClient.runQuery(Constants.CURRENT_USERS_QUERY);
-        ApiQueryResult apiQueryResult = Parser.parseQueryResult(json);
-        return Parser.users(groups, emailConfirmations, apiQueryResult);
+        ApiQueryResult apiQueryResult = HBParser.parseQueryResult(json);
+        return HBParser.users(groups, emailConfirmations, apiQueryResult);
     }
 }

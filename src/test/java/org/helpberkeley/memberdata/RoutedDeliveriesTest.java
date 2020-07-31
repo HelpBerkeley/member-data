@@ -70,7 +70,7 @@ public class RoutedDeliveriesTest extends TestBase {
         assertThat(delivery.getName()).isEqualTo("Cust Name 1");
         assertThat(delivery.getUserName()).isEqualTo("Cust1");
         assertThat(delivery.getPhone()).isEqualTo("555-555-1112");
-        assertThat(delivery.getAltPhone()).isEqualTo("none");
+        assertThat(delivery.getAltPhone()).isEqualTo("111-222-3333");
         assertThat(delivery.getCity()).isEqualTo("Berkeley");
         assertThat(delivery.getAddress()).isEqualTo("123 456th Ave");
         assertThat(delivery.isCondo()).isFalse();
@@ -176,8 +176,8 @@ public class RoutedDeliveriesTest extends TestBase {
     }
 
     @Test
-    public void parseRoutedWithSplitRestaurantsTest() {
-        String csvData = readResourceFile("routed-deliveries-with-split-restaurants.csv");
+    public void parseRoutedWithSplitRestaurantTest() {
+        String csvData = readResourceFile("routed-deliveries-with-split-restaurant.csv");
         WorkflowParser parser =
                 new WorkflowParser(WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, csvData);
         List<Driver> drivers = parser.drivers();

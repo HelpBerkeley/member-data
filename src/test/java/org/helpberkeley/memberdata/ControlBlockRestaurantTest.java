@@ -29,7 +29,7 @@ import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class RestaurantTest extends TestBase {
+public class ControlBlockRestaurantTest extends TestBase {
 
     @Test
     public void parseTest() {
@@ -51,7 +51,8 @@ public class RestaurantTest extends TestBase {
                 "V&A Cafe",
                 "Gregoire",
                 "Crepevine",
-                "Kaze Ramen"
+                "Kaze Ramen",
+                "Tacos Sinaloa"
         );
 
         assertThat(restaurants).containsOnlyKeys(expectedRestaurants);

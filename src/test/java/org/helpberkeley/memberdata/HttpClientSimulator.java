@@ -127,17 +127,26 @@ public class HttpClientSimulator extends HttpClient {
             case Constants.QUERY_GET_DELIVERY_DETAILS:
                 dataFile = "delivery-details.json";
                 break;
-            case Constants.QUERY_GET_DRIVERS_POST_FORMAT:
+            case Constants.QUERY_GET_DRIVERS_POST_FORMAT_V1:
                 dataFile = "driver-format-topic.json";
                 break;
-            case Constants.QUERY_GET_GROUP_INSTRUCTIONS_FORMAT:
+            case Constants.QUERY_GET_DRIVERS_POST_FORMAT_V12:
+                dataFile = "driver-format-topic-v12.json";
+                break;
+            case Constants.QUERY_GET_GROUP_INSTRUCTIONS_FORMAT_V1:
                 dataFile = "group-instructions-post.json";
+                break;
+            case Constants.QUERY_GET_GROUP_INSTRUCTIONS_FORMAT_V12:
+                dataFile = "group-instructions-post-v12.json";
                 break;
             case Constants.QUERY_GET_LAST_ROUTED_WORKFLOW_REPLY:
                 dataFile = "last-routed-workflow-reply.json";
                 break;
             case Constants.QUERY_GET_LAST_ROUTE_REQUEST_REPLY:
                 dataFile = "last-request-driver-routes-reply.json";
+                break;
+            case Constants.QUERY_GET_BACKUP_DRIVER_FORMAT_V12:
+                dataFile = "backup-driver-format-v12.json";
                 break;
             default:
                 throw new RuntimeException("FIX THIS: query " + queryId + " not supported by the simulator");

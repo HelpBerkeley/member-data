@@ -32,29 +32,54 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class DriverPostTest extends TestBase {
 
     @Test
-    public void generateDriverPostsTest() throws IOException, InterruptedException {
+    public void parseTest() throws IOException, InterruptedException {
+        String routedDeliveries = readResourceFile("control-block.csv");
+        DriverPostFormat driverPostFormat = new DriverPostFormat(createApiSimulator(), routedDeliveries);
+    }
+
+    @Test
+    public void singleDriverMessageTest() throws IOException, InterruptedException {
+        String routedDeliveries = readResourceFile("routed-deliveries-single.csv");
+        DriverPostFormat driverPostFormat = new DriverPostFormat(createApiSimulator(), routedDeliveries);
+        List<String> posts = driverPostFormat.generateDriverPosts();
+        assertThat(posts).hasSize(1);
+        String post = posts.get(0);
+        assertThat(post).contains("@jsDriver");
+        assertThat(post).contains("You have a condo on your run");
+        assertThat(post).contains("Cafe Raj :open_umbrella:");
+        assertThat(post).contains("5:10 PM");
+        assertThat(post).contains("Cust Name 5");
+
+        System.out.println(post);
+    }
+
+    @Test
+    public void multiDriverMessageTest() throws IOException, InterruptedException {
         String routedDeliveries = readResourceFile("routed-deliveries.csv");
-        DriverPostFormat driverPostFormat =
-                new DriverPostFormat(createApiSimulator(), routedDeliveries);
+        DriverPostFormat driverPostFormat = new DriverPostFormat(createApiSimulator(), routedDeliveries);
 
         List<String> posts = driverPostFormat.generateDriverPosts();
-//for (String post : posts) { System.out.println(post); }
         assertThat(posts).hasSize(2);
 
         String post = posts.get(0);
+        System.out.println(post);
         assertThat(post).contains("@jbDriver");
-        assertThat(post).doesNotContain("You have a condo on your run!");
+        assertThat(post).doesNotContain("You have a condo on your run");
+        assertThat(post).doesNotContain("Complete condo instructions");
         assertThat(post).contains("Talavera");
         assertThat(post).contains("5:00 PM");
         assertThat(post).contains("Sweet Basil");
         assertThat(post).contains("Bopshop");
         assertThat(post).contains("Cust Name 1");
+        assertThat(post).contains("(555) 555.1112,(111) 222.3333");
         assertThat(post).contains("Cust Name 2");
         assertThat(post).contains("Cust Name 3");
 
         post = posts.get(1);
+        System.out.println(post);
         assertThat(post).contains("@jsDriver");
-        assertThat(post).contains("You have a condo on your run!");
+        assertThat(post).contains("You have a condo on your run");
+        assertThat(post).contains("Complete condo instructions");
         assertThat(post).contains("Cafe Raj");
         assertThat(post).contains("5:10 PM");
         assertThat(post).contains("Cust Name 4");
@@ -63,13 +88,76 @@ public class DriverPostTest extends TestBase {
         assertThat(post).contains("Cust Name 7");
     }
 
+    @Test public void multiDriverWithSplitMessageTest() throws IOException, InterruptedException {
+        String routedDeliveries = readResourceFile("routed-deliveries-with-split-restaurant.csv");
+        DriverPostFormat driverPostFormat =
+                new DriverPostFormat(createApiSimulator(), routedDeliveries);
+
+        List<String> posts = driverPostFormat.generateDriverPosts();
+        assertThat(posts).hasSize(4);
+        String post = posts.get(0);
+        post = posts.get(1);
+        post = posts.get(2);
+        System.out.println(post);
+        post = posts.get(3);
+    }
+
+    @Test public void multiDriverWithMultiSplitsMessageTest() throws IOException, InterruptedException {
+        String routedDeliveries = readResourceFile("routed-deliveries-with-split-restaurants.csv");
+        DriverPostFormat driverPostFormat =
+                new DriverPostFormat(createApiSimulator(), routedDeliveries);
+
+        List<String> posts = driverPostFormat.generateDriverPosts();
+        assertThat(posts).hasSize(2);
+        String post = posts.get(0);
+        System.out.println(post);
+        post = posts.get(1);
+    }
+
     @Test
-    public void generateGroupInstructionsPostTest() throws IOException, InterruptedException {
+    public void generateGroupInstructionsNoSplitsPostTest() throws IOException, InterruptedException {
         String routedDeliveries = readResourceFile("routed-deliveries.csv");
         DriverPostFormat driverPostFormat =
                 new DriverPostFormat(createApiSimulator(), routedDeliveries);
 
         String post = driverPostFormat.generateGroupInstructionsPost();
+//        System.out.println(post);
+        assertThat(post).doesNotContain("**Split Restaurants**");
+    }
 
+    @Test
+    public void generateGroupInstructionsWithSplitsPostTest() throws IOException, InterruptedException {
+        String routedDeliveries = readResourceFile("routed-deliveries-with-split-restaurant.csv");
+        DriverPostFormat driverPostFormat =
+                new DriverPostFormat(createApiSimulator(), routedDeliveries);
+
+        String post = driverPostFormat.generateGroupInstructionsPost();
+//        System.out.println(post);
+        assertThat(post).contains("**Split Restaurants**");
+    }
+
+    @Test
+    public void generateBackupDriverPostTest() throws IOException, InterruptedException {
+        String routedDeliveries = readResourceFile("routed-deliveries.csv");
+        DriverPostFormat driverPostFormat =
+                new DriverPostFormat(createApiSimulator(), routedDeliveries);
+
+        String post = driverPostFormat.generateBackupDriverPost();
+        System.out.println(post);
+    }
+
+    @Test
+    public void noDeliveriesTest() throws IOException, InterruptedException {
+        String routedDeliveries = readResourceFile("routed-deliveries-pickup-only.csv");
+        DriverPostFormat driverPostFormat =
+                new DriverPostFormat(createApiSimulator(), routedDeliveries);
+
+        assertThat(driverPostFormat.getDrivers()).hasSize(1);
+        Driver driver = driverPostFormat.getDrivers().get(0);
+        assertThat(driver.getUserName()).isEqualTo("jsDriver");
+        assertThat(driver.getDeliveries()).isEmpty();
+        List<String> posts = driverPostFormat.generateDriverPosts();
+        String post = posts.get(0);
+        System.out.println(post);
     }
 }

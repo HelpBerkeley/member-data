@@ -63,6 +63,6 @@ public class PostTest extends TestBase {
         HttpResponse<String> response = apiClient.post(post.toJson());
         assertThat(response.statusCode()).isEqualTo(HTTP_OK);
 
-        PostResponse postResponse = Parser.postResponse(response.body());
+        PostResponse postResponse = HBParser.postResponse(response.body());
     }
 }

@@ -24,11 +24,13 @@ package org.helpberkeley.memberdata;
 
 import org.junit.Test;
 
+import java.util.Collections;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.ThrowableAssert.catchThrowable;
 
+@SuppressWarnings("unchecked")
 public class ControlBlockTest extends TestBase {
 
     private final String controlBlockData;
@@ -38,6 +40,8 @@ public class ControlBlockTest extends TestBase {
         + "Address,Condo,Details,Restaurants,normal,veggie,#orders\n";
     private static final String  CONTROL_BLOCK_BEGIN_ROW =
             "FALSE,FALSE," + Constants.CONTROL_BLOCK_BEGIN + ",,,,,,,,,,,,\n";
+    private static final String  CONTROL_BLOCK_END_ROW =
+            "FALSE,FALSE," + Constants.CONTROL_BLOCK_END + ",,,,,,,,,,,,\n";
 
     public ControlBlockTest() {
         controlBlockData = readResourceFile("control-block.csv");
@@ -50,9 +54,9 @@ public class ControlBlockTest extends TestBase {
 
         ControlBlock controlBlock = workflowParser.controlBlock();
         assertThat(controlBlock.getOpsManagers()).containsExactly(
-                new OpsManager("zzz", "123-456-7890"));
+                new ControlBlock.OpsManager("zzz", "123-456-7890"));
         assertThat(controlBlock.getSplitRestaurants()).containsExactly(
-                new SplitRestaurant("Jot Mahal", "joebdriver"));
+                new ControlBlock.SplitRestaurant("Jot Mahal", "joebdriver"));
         assertThat(controlBlock.getBackupDrivers()).containsExactly("josephinedriver");
     }
 
@@ -216,7 +220,7 @@ public class ControlBlockTest extends TestBase {
     }
 
     @Test
-    public void SplitRestaurantRestaurantNameTest() {
+    public void splitRestaurantRestaurantNameTest() {
 
         String workFlowData = HEADER + CONTROL_BLOCK_BEGIN_ROW
                 + "FALSE,FALSE,,SplitRestaurant (Name|CleanupDriverUserName),,,,|buzz,,,,,,,\n";
@@ -229,7 +233,7 @@ public class ControlBlockTest extends TestBase {
     }
 
     @Test
-    public void SplitRestaurantCleanupDriverUserNameWithAtSignTest() {
+    public void splitRestaurantCleanupDriverUserNameWithAtSignTest() {
 
         String workFlowData = HEADER + CONTROL_BLOCK_BEGIN_ROW
                 + "FALSE,FALSE,,SplitRestaurant (Name|CleanupDriverUserName),,,,Bopshop|@fred,,,,,,,\n";
@@ -321,5 +325,202 @@ public class ControlBlockTest extends TestBase {
         assertThat(thrown).isInstanceOf(MemberDataException.class);
         assertThat(thrown).hasMessageContaining(
                 "BackupDriver user name \"billy joe bob boy\" at line 3 cannot contain spaces");
+    }
+
+    @Test
+    public void missingRestaurantValueSeparatorTest() {
+
+        String workFlowData = HEADER + CONTROL_BLOCK_BEGIN_ROW
+                + "FALSE,FALSE,,Restaurant (Name|Emoji),,,,Bopshop :splatt:,,,,,,,\n";
+
+        WorkflowParser workflowParser = new WorkflowParser(WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, workFlowData);
+
+        Throwable thrown = catchThrowable(workflowParser::drivers);
+        assertThat(thrown).isInstanceOf(MemberDataException.class);
+        assertThat(thrown).hasMessageContaining("does not match \"name | emoji\"");
+        assertThat(thrown).hasMessageContaining("Bopshop :splatt:");
+    }
+
+    @Test
+    public void tooManyRestaurantValueSeparatorTest() {
+
+        String workFlowData = HEADER + CONTROL_BLOCK_BEGIN_ROW
+                + "FALSE,FALSE,,Restaurant (Name|Emoji),,,,|x|:splatt:|,,,,,,,\n";
+
+        WorkflowParser workflowParser = new WorkflowParser(WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, workFlowData);
+
+        Throwable thrown = catchThrowable(workflowParser::drivers);
+        assertThat(thrown).isInstanceOf(MemberDataException.class);
+        assertThat(thrown).hasMessageContaining("does not match \"name | emoji\"");
+        assertThat(thrown).hasMessageContaining("|x|:splatt:|");
+    }
+
+    @Test
+    public void restaurantEmptyNameTest() {
+
+        String workFlowData = HEADER + CONTROL_BLOCK_BEGIN_ROW
+                + "FALSE,FALSE,,Restaurant (Name|Emoji),,,,|:splatt:,,,,,,,\n";
+
+        WorkflowParser workflowParser = new WorkflowParser(WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, workFlowData);
+
+        Throwable thrown = catchThrowable(workflowParser::drivers);
+        assertThat(thrown).isInstanceOf(MemberDataException.class);
+        assertThat(thrown).hasMessageContaining("Empty Restaurant name at line 3.");
+    }
+
+    @Test
+    public void restaurantEmptyEmojiTest() {
+
+        String workFlowData = HEADER + CONTROL_BLOCK_BEGIN_ROW
+                + "FALSE,FALSE,,Restaurant (Name|Emoji),,,,V&A Cafe|,,,,,,,\n";
+
+        WorkflowParser workflowParser = new WorkflowParser(WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, workFlowData);
+
+        Throwable thrown = catchThrowable(workflowParser::drivers);
+        assertThat(thrown).isInstanceOf(MemberDataException.class);
+        assertThat(thrown).hasMessageContaining("Empty Restaurant emoji at line 3.");
+    }
+
+    @Test
+    public void auditNoOpsManagerTest() {
+        String workFlowData = HEADER + CONTROL_BLOCK_BEGIN_ROW + CONTROL_BLOCK_END_ROW;
+
+        WorkflowParser workflowParser = new WorkflowParser(WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, workFlowData);
+
+        Throwable thrown = catchThrowable(() ->
+                workflowParser.controlBlock().audit(Collections.EMPTY_LIST, Collections.EMPTY_LIST));
+        assertThat(thrown).isInstanceOf(MemberDataException.class);
+        assertThat(thrown).hasMessageContaining(ControlBlock.ERROR_MISSING_OPS_MANAGER);
+    }
+
+    @Test
+    public void auditNoSplitRestaurantsNotFound() {
+        String workFlowData = HEADER + CONTROL_BLOCK_BEGIN_ROW + CONTROL_BLOCK_END_ROW;
+
+        List<String> splitRestaurantNames = List.of("Bob's Big Boy", "Daimo");
+
+        WorkflowParser workflowParser = new WorkflowParser(WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, workFlowData);
+
+        Throwable thrown = catchThrowable(()
+                -> workflowParser.controlBlock().audit(Collections.EMPTY_LIST, splitRestaurantNames));
+        assertThat(thrown).isInstanceOf(MemberDataException.class);
+        assertThat(thrown).hasMessageContaining(ControlBlock.ERROR_MISSING_OPS_MANAGER);
+
+        for (String name : splitRestaurantNames) {
+            assertThat(thrown).hasMessageContaining(
+                    "Control block does not contain a SplitRestaurant(Name|CleanupDriverUserName) entry for "
+                    + name);
+        }
+    }
+
+    @Test
+    public void opsManagerUserNameDefaultValueTest() {
+        String workFlowData = HEADER + CONTROL_BLOCK_BEGIN_ROW
+            + "FALSE,FALSE,,OpsManager (UserName | Phone),,,,"
+            + "ReplaceThisByUserName | 510-555-1212,,,,,,,\n"
+            + CONTROL_BLOCK_END_ROW;
+        WorkflowParser workflowParser = new WorkflowParser(WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, workFlowData);
+
+        Throwable thrown = catchThrowable(() ->
+                workflowParser.controlBlock().audit(Collections.EMPTY_LIST, Collections.EMPTY_LIST));
+        assertThat(thrown).isInstanceOf(MemberDataException.class);
+        assertThat(thrown).hasMessage(
+                "Set OpsManager user name \"ReplaceThisByUserName\" at line 3 to a valid OpsManager user name.\n");
+    }
+
+    @Test
+    public void opsManagerPhoneDefaultValueTest() {
+        String workFlowData = HEADER + CONTROL_BLOCK_BEGIN_ROW
+                + "FALSE,FALSE,,OpsManager (UserName | Phone),,,,"
+                + "FredZ | ReplaceThisByPhone#In510-555-1212Format,,,,,,,\n"
+                + CONTROL_BLOCK_END_ROW;
+        WorkflowParser workflowParser = new WorkflowParser(WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, workFlowData);
+
+        Throwable thrown = catchThrowable(() ->
+                workflowParser.controlBlock().audit(Collections.EMPTY_LIST, Collections.EMPTY_LIST));
+        assertThat(thrown).isInstanceOf(MemberDataException.class);
+        assertThat(thrown).hasMessage("Set OpsManager phone "
+                + "\"ReplaceThisByPhone#In510-555-1212Format\" at line 3 to a valid phone number.\n");
+    }
+
+    @Test
+    public void multipleOpsManagersTest() {
+        String workFlowData = HEADER + CONTROL_BLOCK_BEGIN_ROW
+                + "FALSE,FALSE,,OpsManager (UserName | Phone),,,,"
+                + "FredZ | 510-555-1212,,,,,,,\n"
+                + "FALSE,FALSE,,OpsManager (UserName | Phone),,,,"
+                + "Fredrica | 510-555-1213,,,,,,,\n"
+                + CONTROL_BLOCK_END_ROW;
+        WorkflowParser workflowParser = new WorkflowParser(WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, workFlowData);
+
+        Throwable thrown = catchThrowable(() ->
+                workflowParser.controlBlock().audit(Collections.EMPTY_LIST, Collections.EMPTY_LIST));
+        assertThat(thrown).isInstanceOf(MemberDataException.class);
+        assertThat(thrown).hasMessage("Line 4, multiple OpsManager entries not yet supported.\n");
+    }
+
+    @Test
+    public void splitRestaurantNameDefaultValueTest() {
+        String workFlowData = HEADER + CONTROL_BLOCK_BEGIN_ROW
+                + "FALSE,FALSE,,OpsManager (UserName | Phone),,,,"
+                + "FredZ | 510-555-1212,,,,,,,\n"
+                + "FALSE,FALSE,,SplitRestaurant (Name | CleanupDriverUserName)"
+                + ",,,,ReplaceThisBySplitRestaurantName | RalphKramden,,,,,,,\n"
+                + CONTROL_BLOCK_END_ROW;
+        WorkflowParser workflowParser = new WorkflowParser(WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, workFlowData);
+
+        Throwable thrown = catchThrowable(() ->
+                workflowParser.controlBlock().audit(Collections.EMPTY_LIST, Collections.EMPTY_LIST));
+        assertThat(thrown).isInstanceOf(MemberDataException.class);
+        assertThat(thrown).hasMessage("Set SplitRestaurant name "
+                + "\"ReplaceThisBySplitRestaurantName\" at line 4 to a valid restaurant name.\n");
+    }
+
+    @Test
+    public void splitRestaurantCleanupDefaultValueTest() {
+        String workFlowData = HEADER + CONTROL_BLOCK_BEGIN_ROW
+                + "FALSE,FALSE,,OpsManager (UserName | Phone),,,,"
+                + "FredZ | 510-555-1212,,,,,,,\n"
+                + "FALSE,FALSE,,SplitRestaurant (Name | CleanupDriverUserName)"
+                + ",,,,White Castle| ReplaceThisByCleanupDriverUserName,,,,,,,\n"
+                + CONTROL_BLOCK_END_ROW;
+        WorkflowParser workflowParser = new WorkflowParser(WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, workFlowData);
+
+        Throwable thrown = catchThrowable(() ->
+                workflowParser.controlBlock().audit(Collections.EMPTY_LIST, Collections.EMPTY_LIST));
+        assertThat(thrown).isInstanceOf(MemberDataException.class);
+        assertThat(thrown).hasMessage("Set SplitRestaurant cleanup driver user name "
+                + "\"White Castle\" at line 4 to a valid user name.\n");
+    }
+
+    @Test
+    public void missingEmojiTest() {
+        String workFlowData = HEADER + CONTROL_BLOCK_BEGIN_ROW
+                + "FALSE,FALSE,,OpsManager (UserName | Phone),,,,"
+                + "FredZ | 510-555-1212,,,,,,,\n"
+                + CONTROL_BLOCK_END_ROW;
+
+        List<String> restaurants = List.of("Bopshop", "Cafe Raj", "Jot Mahal");
+
+        WorkflowParser workflowParser = new WorkflowParser(WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, workFlowData);
+        ControlBlock controlBlock = workflowParser.controlBlock();
+        controlBlock.audit(restaurants, Collections.EMPTY_LIST);
+        for (String restaurant : restaurants) {
+            assertThat(controlBlock.getWarnings()).contains("Restaurant "
+                    + restaurant + " does not have a Restaurant(Name|Emoji) entry in the control block.\n");
+        }
+    }
+
+    @Test
+    public void noBackupDriversTest() {
+        String workFlowData = HEADER + CONTROL_BLOCK_BEGIN_ROW
+                + "FALSE,FALSE,,OpsManager (UserName | Phone),,,,"
+                + "FredZ | 510-555-1212,,,,,,,\n"
+                + CONTROL_BLOCK_END_ROW;
+
+        WorkflowParser workflowParser = new WorkflowParser(WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, workFlowData);
+        ControlBlock controlBlock = workflowParser.controlBlock();
+        controlBlock.audit(Collections.EMPTY_LIST, Collections.EMPTY_LIST);
+        assertThat(controlBlock.getWarnings()).contains("No BackupDriverUserName set in the control block.\n");
     }
 }

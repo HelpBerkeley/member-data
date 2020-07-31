@@ -22,19 +22,50 @@
  */
 package org.helpberkeley.memberdata;
 
-public class UploadFile {
-    final String shortURL;
-    final String fileName;
-    final String originalFileName;
+import java.util.ArrayList;
+import java.util.List;
 
-    UploadFile(final String fileName, final String shortURL) {
-        this.originalFileName = fileName;
-        this.shortURL = shortURL;
-        this.fileName = HBParser.fileNameFromShortURL(shortURL);
+public class MessageBlockLoop implements MessageBlockScope, MessageBlockElement {
+
+    private final List<MessageBlockElement> elements = new ArrayList<>();
+    private MessageBlockElement loopRef;
+
+    MessageBlockElement getLoopRef() {
+        return loopRef;
+    }
+
+    @Override
+    public String getName() {
+        return "LOOP";
+    }
+
+    @Override
+    public void addElement(MessageBlockElement element) {
+        //
+        // The first element added is the loop variable.
+        // Subsequent elements are the body.
+        //
+        if (loopRef == null) {
+            addLoopRef(element);
+        } else {
+            elements.add(element);
+        }
+    }
+
+    private void addLoopRef(MessageBlockElement loopRef) {
+
+        assert ((loopRef instanceof MessageBlockListNameRef)
+            || (loopRef instanceof MessageBlockListRef))  : loopRef;
+        this.loopRef = loopRef;
+    }
+
+    @Override
+    public List<MessageBlockElement> getElements() {
+        return elements;
     }
 
     @Override
     public String toString() {
-        return fileName + " -> " + shortURL;
+        return getName() + ":" + loopRef;
     }
 }

@@ -68,7 +68,7 @@ public class DeliveryDetailsTest extends TestBase {
         for (String userSpec : userNameLines) {
             deliveryDetails.clear();
 
-            Parser.permissiveParseDeliveryDetails(1, userSpec + details, deliveryDetails);
+            HBParser.parseDeliveryDetails(1, userSpec + details, deliveryDetails);
             assertThat(deliveryDetails).as(userSpec).containsOnlyKeys("testUser");
             assertThat(deliveryDetails).as(userSpec).containsValue(details);
         }
@@ -82,14 +82,14 @@ public class DeliveryDetailsTest extends TestBase {
         String userSpec = "@testUser\n";
         String details = "simple";
 
-        Parser.permissiveParseDeliveryDetails(1, userSpec + details, deliveryDetails);
+        HBParser.parseDeliveryDetails(1, userSpec + details, deliveryDetails);
         assertThat(deliveryDetails).containsKey("testUser");
         assertThat(deliveryDetails.get("testUser")).isEqualTo(details);
 
         details = "\n\n\n and this is \n\n something else.\n ";
         String expected = "and this is something else.";
 
-        Parser.permissiveParseDeliveryDetails(1, userSpec + details, deliveryDetails);
+        HBParser.parseDeliveryDetails(1, userSpec + details, deliveryDetails);
         assertThat(deliveryDetails).containsKey("testUser");
         assertThat(deliveryDetails.get("testUser")).isEqualTo(expected);
     }

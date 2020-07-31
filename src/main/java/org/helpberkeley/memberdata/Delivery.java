@@ -36,6 +36,14 @@ public class Delivery {
     private String normalRations;
     private String veggieRations;
 
+    @Override
+    public String toString() {
+        return getUserName()
+                + ", condo:" + isCondo
+                + ", restaurant: " + getRestaurant()
+                + ", rations:" + getNormalRations() + ':' + getVeggieRations();
+    }
+
     public Delivery(final String name) {
         this.name = name;
     }

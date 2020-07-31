@@ -22,19 +22,26 @@
  */
 package org.helpberkeley.memberdata;
 
-public class UploadFile {
-    final String shortURL;
-    final String fileName;
-    final String originalFileName;
+public class MessageBlockQuotedString implements MessageBlockElement {
 
-    UploadFile(final String fileName, final String shortURL) {
-        this.originalFileName = fileName;
-        this.shortURL = shortURL;
-        this.fileName = HBParser.fileNameFromShortURL(shortURL);
+    final String value;
+
+    MessageBlockQuotedString(String quotedString) {
+        assert quotedString.startsWith("\"") && quotedString.endsWith("\"") : quotedString;
+        this.value = quotedString.substring(1, quotedString.length() - 1);
+    }
+
+    @Override
+    public String getName() {
+        return "QuotedString";
+    }
+
+    public String getValue() {
+        return  value;
     }
 
     @Override
     public String toString() {
-        return fileName + " -> " + shortURL;
+        return getName() + ": \"" + value + '"';
     }
 }

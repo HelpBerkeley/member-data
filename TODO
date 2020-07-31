@@ -1,4 +1,3 @@
-
 Audit/validate that the topic ids for posting are valid.
 
 Reverse engineer recipes for:
@@ -26,7 +25,7 @@ Add more flexibility to command line auditing
 	- Non-file arguments
 	- command specific help messages
 
-Detect restaurant name misspellings in workflow data.
+Detect controlBlockRestaurant name misspellings in workflow data.
  - If detected, correct and warn?  Or audit fail?
 
  Update error strings to use a message catalog.

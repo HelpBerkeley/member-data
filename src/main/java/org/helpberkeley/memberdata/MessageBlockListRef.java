@@ -22,19 +22,29 @@
  */
 package org.helpberkeley.memberdata;
 
-public class UploadFile {
-    final String shortURL;
-    final String fileName;
-    final String originalFileName;
+public class MessageBlockListRef implements MessageBlockElement {
 
-    UploadFile(final String fileName, final String shortURL) {
-        this.originalFileName = fileName;
-        this.shortURL = shortURL;
-        this.fileName = HBParser.fileNameFromShortURL(shortURL);
+    private final String name;
+    private final String listName;
+
+    MessageBlockListRef(String name) {
+        this.name = name;
+        assert name.indexOf('.') != -1 : name;
+        this.listName = name.substring(0, name.indexOf('.'));
+    }
+
+    String getListName() {
+        return listName;
+    }
+
+    @Override
+    public String getName() {
+        return name;
     }
 
     @Override
     public String toString() {
-        return fileName + " -> " + shortURL;
+        return "ListRef: " + name;
     }
+
 }

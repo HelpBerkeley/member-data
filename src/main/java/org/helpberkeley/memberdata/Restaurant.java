@@ -34,11 +34,15 @@ public class Restaurant {
     private String route = "";
     private long orders = 0;
     private final Map<String, Driver> drivers = new HashMap<>();
-    private Driver primaryDriver;
     private boolean noPics = false;
 
     Restaurant(final String name) {
         this.name = name;
+    }
+
+    @Override
+    public String toString() {
+        return name + ", orders: " + orders + ", start:" + startTime + ", drivers:" + drivers.keySet();
     }
 
     void setStartTime(final String startTime) {
@@ -64,10 +68,6 @@ public class Restaurant {
     void addDriver(final Driver driver) {
         assert ! drivers.containsKey(driver.getUserName()) : driver.getUserName();
         drivers.put(driver.getUserName(), driver);
-    }
-
-    void setPrimaryDriver(Driver driver) {
-        primaryDriver = driver;
     }
 
     void setNoPics() {
@@ -102,11 +102,47 @@ public class Restaurant {
         return Collections.unmodifiableMap(drivers);
     }
 
-    Driver getPrimaryDriver() {
-        return primaryDriver;
-    }
-
     boolean getNoPics() {
         return noPics;
+    }
+
+    // FIX THIS, DS: currently hardwired.  Get this from the restaurant template when we add it there.
+    //
+    boolean closesBefore7PM() {
+
+        boolean closesEarly;
+
+        switch (name) {
+            case "Kim's Cafe":
+            case "V&A Cafe":
+            case "Taco Sinaloa":
+                closesEarly = true;
+                break;
+            default:
+                closesEarly = false;
+        }
+
+        return closesEarly;
+    }
+
+    // FIX THIS, DS: currently hardwired.  Get this from the restaurant template when we add it there.
+    //
+    String getClosingTime() {
+
+        String value;
+
+        switch (name) {
+            case "Kim's Cafe":
+            case "Taco Sinaloa":
+                value = "6:00 PM";
+                break;
+            case "V&A Cafe":
+                value = "5:00 PM";
+                break;
+            default:
+                throw new MemberDataException(name + ": implement closining time handling");
+        }
+
+        return value;
     }
 }

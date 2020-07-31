@@ -57,7 +57,7 @@ Driver's Run Post
 
 1) Definition
 
-Consists of one section per post, from the thread:
+Consists of one messageBlock per post, from the thread:
 https://go.helpberkeley.org/t/automated-post-formatting-1-drivers-run/1967
 
 The first post is a control post: it defines the content of the rest of the thread, and none of its 
@@ -71,7 +71,7 @@ Two types of substitution variables are supported.
   * Composite. Contain a list identifier and a variable name, separated by a dot.
     Example: RESTAURANT.NAME
     List identifiers imply iteration through all matching rows in the corresponding driver data.
-    A section may only use a single list identifier, by may contain multiple variables contained
+    A messageBlock may only use a single list identifier, by may contain multiple variables contained
     by the list type.
     EXAMPLE: ${RESTAURANT.NAME} ${RESTAURANT.ADDRESS}
 
@@ -79,7 +79,7 @@ Two types of substitution variables are supported.
 
 The following explicit rules are used:
   * one post will be written for each driver's block in the spreadsheet
-  * Each section should be followed by a blank line. The original format of the post should be kept.
+  * Each messageBlock should be followed by a blank line. The original format of the post should be kept.
   * Every time a composite variable is used, it should be iterated through all
     instances  in the driver's block. If in a table, each table line should be an iteration.
 
@@ -89,48 +89,48 @@ The following explicit rules are used:
     I am not quite sure what I meant :-) ]
 
     [In an enumeration, the enumeration should cover all items. For instance, a RESTAURANT composite
-    variable should be iterated through all dedicated restaurant lines in the driver's block.
+    variable should be iterated through all dedicated controlBlockRestaurant lines in the driver's block.
 
     FIX THIS: what does enumeration mean here?  The same as iteration above?
     It is very poorly written. The enumeration was for the list of drivers, originally. But the example
-is for the restaurant matrix. I am not quite sure how to fix this until we have more syntax discussion]
+is for the controlBlockRestaurant matrix. I am not quite sure how to fix this until we have more syntax discussion]
 
   * By default, the order in which a table of composite variables should be output is in the order
     of the driver's block.
   * A label should not be output. A label is always alone on its own line, and always surrounded
     by brackets. For instance, the first line of the second post is [header]: it is a label.
   * A variable should be indicated by the following syntax: ${VARIABLE_NAME}. THe only variables that
-    will be rendered are those listed in the Variable section below.
-  * The syntax for a conditional section should be as follows:
+    will be rendered are those listed in the Variable messageBlock below.
+  * The syntax for a conditional messageBlock should be as follows:
     IF ${BOOLEAN_VARIABLE} THEN {  [conditional block]  }
 
 4) Special rules
 
 4.1) CALCULATED_RESTAURANT_START_TIME 
 
-* regardless of the number of orders, if RESTAURANT_START_TIME is before 5:00 PM for any restaurant on
+* regardless of the number of orders, if RESTAURANT_START_TIME is before 5:00 PM for any controlBlockRestaurant on
 the itinerary:
  POSSIBLE_RESTAURANT_START_TIME = RESTAURANT_START_TIME - p * 5 minutes where:
- p = number of restaurants on the itinerary before this restaurant
+ p = number of restaurants on the itinerary before this controlBlockRestaurant
 Then CALCULATED_RESTAURANT_START_TIME = min { set of POSSIBLE_RESTAURANT_START_TIME for all
  such restaurants}
 
 
-If RESTAURANT_START_TIME is not before 5:00 PM for any restaurant on itinerary:
-* If at least one restaurant has orders, then:
+If RESTAURANT_START_TIME is not before 5:00 PM for any controlBlockRestaurant on itinerary:
+* If at least one controlBlockRestaurant has orders, then:
 CALCULATED_RESTAURANT_START_TIME = RESTAURANT_START_TIME - p * 5 minutes
 where:
- p = number of restaurants with 0 orders on the itinerary before the first restaurant with one or more orders
- RESTAURANT_START_TIME = that for the first restaurant with one or more orders on the itinerary
+ p = number of restaurants with 0 orders on the itinerary before the first controlBlockRestaurant with one or more orders
+ RESTAURANT_START_TIME = that for the first controlBlockRestaurant with one or more orders on the itinerary
 except that CALCULATED_RESTAURANT_START_TIME cannot be less than 5:00 PM
 * If all restaurants on the itinerary have 0 orders, then
 CALCULATED_RESTAURANT_START_TIME = 5:00PM
 
-4.2 This restaurant closes at ${CLOSING_TIME}
+4.2 This controlBlockRestaurant closes at ${CLOSING_TIME}
 
-PLease note that I added the appropriate logic in the Header section, with 3 additional variables in 
-the variables table. I should not add the present section 4.2: I added it only to bring your attention
-to the changes in the header section.
+PLease note that I added the appropriate logic in the Header messageBlock, with 3 additional variables in
+the variables table. I should not add the present messageBlock 4.2: I added it only to bring your attention
+to the changes in the header messageBlock.
 
 
 5) Variables
@@ -144,11 +144,11 @@ The following input variables may be used in a post:
                           |                       | Driver Block, First row, Consumer=FALSE, DRIVER=TRUE,
                           |                       | User Name field
     -----------------------------------------------------------------------------------------------------
-	FIRST_RESTAURANT      | First restaurant on   | Routed Workflow
+	FIRST_RESTAURANT      | First controlBlockRestaurant on   | Routed Workflow
 	                      | the driver's route    | Driver Block, Second Row, Restaurant field
     -----------------------------------------------------------------------------------------------------
 	RESTAURANT_START_TIME | Starting time for the | Restaurant Template
-	                      | first restaurant      | Matching Restaurant Route row, Orders field
+	                      | first controlBlockRestaurant      | Matching Restaurant Route row, Orders field
     -----------------------------------------------------------------------------------------------------
     DISPATCHER            | On call dispatcher    | Hardwired to Michel until we have a mechanism in
                           | name                  | place to make this configurable.
@@ -200,7 +200,7 @@ The following input variables may be used in a post:
     CLOSING_TIME          | Closing time for first| Restaurant template, closing column
     -----------------------------------------------------------------------------------------------------
     CALCULATED_RESTAURANT | start time from first | Calculated from special rule 4.1
-    _START_TIME           | restaurant based on   |
+    _START_TIME           | controlBlockRestaurant based on   |
                           | itinerary             |
     -----------------------------------------------------------------------------------------------------
     CLOSING_EARLY         | TRUE/FALSE, is closing| Restaurant Template, Routed Workflow. 
@@ -215,7 +215,7 @@ Note: the CONSUMER composite variable is sometimes shown as C.
 
 6) Please note the following optional developments:
 
-* the order of the Pickup matrix would, optionally, best follow the restaurant order rather than 
+* the order of the Pickup matrix would, optionally, best follow the controlBlockRestaurant order rather than
 the deliveries order, since the driver will use it at pickup time. This is a minor option.
 
 * We are now starting to share restaurants between drivers. We are using the following conditional
@@ -226,30 +226,30 @@ conditional block for that purpose:
 * you are one of [# of drivers] drivers going to pick orders at RestaurantName [all drivers: @DriverName 
 at DriverPhoneNumber; (iterated, no worries about last ;)]. The total number of orders is NOrders: you are 
 picking up Porders of them.
-* you are primary [secondary] driver for this restaurant, which means that **you need [do not need] to take 
+* you are primary [secondary] driver for this controlBlockRestaurant, which means that **you need [do not need] to take
 pics** of the delivery form
-* because several drivers are going to this restaurant, you need to be careful about what orders you are 
+* because several drivers are going to this controlBlockRestaurant, you need to be careful about what orders you are
 picking up
 * if you are not the last driver picking up orders, please make sure you are picking up YOUR orders, 
-and tell the restaurant that other drivers are coming.
+and tell the controlBlockRestaurant that other drivers are coming.
 * while you pick up your orders, please post on the thread to let other drivers know (so that the last 
 driver knows she is last)
 * if you are the last driver picking up orders, please make sure that there is no extra order."
 
 Here is deterministic logic for determining who is primary driver (there can be several secondary drivers):
-* The driver who arrives first (in order of restaurants in their list) at the split restaurant is primary;
+* The driver who arrives first (in order of restaurants in their list) at the split controlBlockRestaurant is primary;
 * in case of ties, the driver with the smallest number of stops (restaurants + deliveries) is primary;
 * in case of ties, the driver with the smallest number of restaurants is primary;
 * in case of ties, the driver that comes first in username alphabetical order is primary.
 
-[I am leaving this section in place because it is more readable than the other section below]
+[I am leaving this messageBlock in place because it is more readable than the other messageBlock below]
 This is also deterministic information, all existing in the spreadsheet today. 
 
 ----------------------------------------------------------------------------------------------------
 
 In the present condition, the posts consists of the following sections:
   1) Header
-  2) Split restaurant
+  2) Split controlBlockRestaurant
   3) Condo
   3) Restaurants
   4) Pickup
@@ -265,7 +265,7 @@ Driver's run for @${DRIVER}
 
 **Please reply to this thread when you being your run!**
 **Your run starts at ${FIRST_RESTAURANT} at ${CALCULATED_RESTAURANT_START_TIME}. IF ${CLOSING_EARLY} 
-{ **This restaurant closes at ${CLOSING_TIME}.** }
+{ **This controlBlockRestaurant closes at ${CLOSING_TIME}.** }
 
 Any problem, any issue: call or text @{DISPATCHER} ${DISPATCH_PHONE#}. They are a phone call/text away.
 ----------------------------------------------------------------------------------------------------
@@ -276,7 +276,7 @@ IF ${ANY_SPLIT_RESTAURANT} THEN
 FOR ${EACH_SPLIT_RESTAURANT}
 {
 
-FIX THIS TO MATCH description section above
+FIX THIS TO MATCH description messageBlock above
 * you are one of ${SPLIT_RESTAURANT.NUMBER_OF_DRIVERS} drivers going to pick orders at 
 **${SPLIT_RESTAURANT.NAME}** [all drivers: FOR ${SPLIT_RESTAURANT.EACH_DRIVER}
 {
@@ -284,15 +284,15 @@ FIX THIS TO MATCH description section above
 }
 ]. The total number of orders is ${SPLIT_RESTAURANT.TOTAL_ORDERS}: you are picking up 
 ${SPLIT_RESTAURANT.THIS_DRIVER.ORDERS} of them.
-* you are IF {SPLIT_RESTAURANT.THIS_DRIVER.PRIMARY} {primary} ELSE {secondary} driver for this restaurant, 
+* you are IF {SPLIT_RESTAURANT.THIS_DRIVER.PRIMARY} {primary} ELSE {secondary} driver for this controlBlockRestaurant,
 which means that you IF {SPLIT_RESTAURANT.THIS_DRIVER.PRIMARY} {need} ELSE {do not need} to take pics 
 of the delivery form
 }
 
-* because multiple drivers are going to the same restaurant, you need to be careful about what orders
+* because multiple drivers are going to the same controlBlockRestaurant, you need to be careful about what orders
  you are picking up
 * if you are not the last driver picking up orders, please make sure you are picking YOUR orders, and 
-tell the restaurant that other drivers are coming.
+tell the controlBlockRestaurant that other drivers are coming.
 * while you pick up your orders, please post on the thread to let other drivers know (so that the last 
 driver knows she is last)
 * if you are the last driver picking up orders, please make sure that there is no extra order.
@@ -317,7 +317,7 @@ then we call again and explain that we left the food bag.}
 
 **Restaurants**
 
-Please go to every restaurant, in the sequence listed below, even if there are no pickups, in order to take pictures of the delivery form for the next day.
+Please go to every controlBlockRestaurant, in the sequence listed below, even if there are no pickups, in order to take pictures of the delivery form for the next day.
 
 |Address|Details|Restaurants|#orders|
 |---|---|---|---|
@@ -353,14 +353,14 @@ Some tips–read carefully:
 * The Five Must-Haves: Well-charged phone, gloves, clean food boxes, mask, social distancing
 * Before setting off, use your phone to open the email message you received for this run (it will save a cached version in the event you lose cellular connectivity during your run)
 * when using static GMAP URL, you might need to press Continue to go from waypoint to waypoint
-* **remember to arrive at the first restaurant on time**
+* **remember to arrive at the first controlBlockRestaurant on time**
 * always take a pic in portrait mode (not landscape)
-* remember to take 2 pictures of delivery form right when you arrive at the restaurant, to make sure there are no important missing parts to the pic
+* remember to take 2 pictures of delivery form right when you arrive at the controlBlockRestaurant, to make sure there are no important missing parts to the pic
   * **Cafe Raj: make sure to ask them if the delivery form is tomorrow’s orders (rather than today)**
-* make sure your pics include ALL THE INFO we need, including restaurant name at the top
+* make sure your pics include ALL THE INFO we need, including controlBlockRestaurant name at the top
 * verify that all bags are labeled if there is more than one order. If not, ask.
   * Cafe Raj, Noodle Fresh, and Talavera sometimes forget
-* remember that some consumers may order from more than one restaurant. They are listed in your form above
+* remember that some consumers may order from more than one controlBlockRestaurant. They are listed in your form above
 * remember to call consumers, after dropping off, from your car while parked on the street next to their house
 * remember to discard gloves, sanitize box, and thoroughly wash hands when coming home
 * **remember to upload right away the delivery forms by replying to this thread: we are waiting for them to start laying out tomorrow’s driver runs.**

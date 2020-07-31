@@ -22,32 +22,21 @@
  */
 package org.helpberkeley.memberdata;
 
-public class SplitRestaurant {
-    private final String name;
-    private final String cleanupDriverUserName;
+public class MessageBlockSimpleRef implements MessageBlockElement {
 
-    SplitRestaurant(String name, String cleanupDriverUserName) {
+    private final String name;
+
+    MessageBlockSimpleRef(String name) {
         this.name = name;
-        this.cleanupDriverUserName = cleanupDriverUserName;
     }
 
+    @Override
     public String getName() {
         return name;
     }
 
-    public String getCleanupDriverUserName() {
-        return cleanupDriverUserName;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        return ((obj != null)
-                && (name.equals(((SplitRestaurant)obj).name))
-                && (cleanupDriverUserName.equals(((SplitRestaurant)obj).cleanupDriverUserName)));
-    }
-
     @Override
     public String toString() {
-        return (name + ", " + cleanupDriverUserName);
+        return "SimpleRef: " + name;
     }
 }

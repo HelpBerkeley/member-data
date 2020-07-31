@@ -24,7 +24,6 @@ package org.helpberkeley.memberdata;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 
 public class Driver {
 
@@ -50,6 +49,11 @@ public class Driver {
         this.gMapURL = null;
     }
 
+    @Override
+    public String toString() {
+        return getUserName();
+    }
+
     public String getUserName() {
         return userName;
     }
@@ -59,13 +63,7 @@ public class Driver {
     }
 
     public String getgMapURL() {
-        int index = Objects.requireNonNull(gMapURL).indexOf("/@");
-
-        if (index == -1) {
-            return gMapURL;
-        }
-
-        return "[" + gMapURL.substring(0, index) + "](" + gMapURL + ")";
+        return gMapURL;
     }
 
     public boolean hasCondo() {
@@ -91,11 +89,15 @@ public class Driver {
         return pickups.get(0).getName();
     }
 
-    public int getNumStops() {
-        return pickups.size() + deliveries.size();
-    }
+    long getOrders(String restaurantName) {
+        // FIX THIS, DS: use ordered map for pickups
+        for (Restaurant restaurant : pickups) {
+            if (restaurantName.equals(restaurant.getName())) {
+                return restaurant.getOrders();
+            }
+        }
 
-    public int getNumPickups() {
-        return pickups.size();
+        throw new MemberDataException("Could not find restaurant " + restaurantName
+                + " in driver " + userName + "'s pickups");
     }
 }

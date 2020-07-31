@@ -20,21 +20,10 @@
  * SOFTWARE.
  *
  */
+
 package org.helpberkeley.memberdata;
 
-public class UploadFile {
-    final String shortURL;
-    final String fileName;
-    final String originalFileName;
+public interface MessageBlockElement {
 
-    UploadFile(final String fileName, final String shortURL) {
-        this.originalFileName = fileName;
-        this.shortURL = shortURL;
-        this.fileName = HBParser.fileNameFromShortURL(shortURL);
-    }
-
-    @Override
-    public String toString() {
-        return fileName + " -> " + shortURL;
-    }
+    String getName();
 }

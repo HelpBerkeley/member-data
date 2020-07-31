@@ -27,21 +27,25 @@ import org.junit.Test;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
 
-public class WorkflowParserTest extends TestBase {
+public class WorkflowHBParserTest extends TestBase {
     @Test
     public void splitRestaurantsTest() throws IOException, InterruptedException {
-        String routedDeliveries = readResourceFile("routed-deliveries-with-split-restaurants.csv");
+        String routedDeliveries = readResourceFile("routed-deliveries-with-split-restaurant.csv");
         DriverPostFormat driverPostFormat =
                 new DriverPostFormat(createApiSimulator(), routedDeliveries);
 
         List<Driver> drivers = driverPostFormat.getDrivers();
 
-        // FIX THIS, DS: add restaurants validation
-        driverPostFormat.getRestaurants();
+        Map<String, Restaurant> restaurants = driverPostFormat.getRestaurants();
+        assertThat(restaurants).hasSize(13);
+        assertThat(restaurants.get("Cafe Raj").getDrivers()).hasSize(2);
+        assertThat(restaurants.get("Cafe Raj").getDrivers()).containsKey("jcDriver");
+        assertThat(restaurants.get("Cafe Raj").getDrivers()).containsKey("jsDriver");
 
         assertThat(drivers).hasSize(4);
         Driver driver = drivers.get(0);
@@ -56,9 +60,10 @@ public class WorkflowParserTest extends TestBase {
         driver = drivers.get(3);
         assertThat(driver.getUserName()).isEqualTo("jdDriver");
 
-        // FIX THIS, DS: how to validate generated posts?
-        driverPostFormat.generateDriverPosts();
-        driverPostFormat.generateGroupInstructionsPost();
+        List<String> posts = driverPostFormat.generateDriverPosts();
+        String groupPost = driverPostFormat.generateGroupInstructionsPost();
+
+        // FIX THIS, DS: add validation
     }
 
     @Test
@@ -111,20 +116,7 @@ public class WorkflowParserTest extends TestBase {
     }
 
     @Test
-    public void bikeGmapURLTest() {
-
-        String shortURL = "https://123+xyz+ccc+ddd+54";
-        String fullURL = shortURL + "/@xyzzy..54.zlkasflkj@asj77";
-        String expectedURL = "[" + shortURL + "](" + fullURL + ")";
-
-        Driver driver = new Driver("a", "555-555-1212",
-                Collections.emptyList(), Collections.emptyList(), fullURL);
-
-        assertThat(driver.getgMapURL()).isEqualTo(expectedURL);
-    }
-
-    @Test
-    public void carGmapURLTest() {
+    public void gmapURLTest() {
 
         String shortURL = "https://123+xyz+ccc+ddd+54";
 

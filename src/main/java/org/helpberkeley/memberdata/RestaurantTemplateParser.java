@@ -30,7 +30,7 @@ import java.util.*;
 
 public class RestaurantTemplateParser {
 
-    static final String TEMPLATE_ERROR = "Restaurant Template Error: ";
+    static final String TEMPLATE_ERROR = "ControlBlockRestaurant Template Error: ";
     static final String ERROR_NO_DATA = "empty file";
     static final String MISSING_COLUMN_ERROR = "missing column: ";
     static final String MISSING_EMPTY_ROW = "did not find empty row at line ";
@@ -234,9 +234,11 @@ public class RestaurantTemplateParser {
             if (name.isEmpty()) {
                 throwMissingValue(bean.restaurantColumn());
             }
+            // FIX THIS, DS: this will never fail.  We aren't populating the map yet.
             if (restaurants.containsKey(name)) {
                 throw new MemberDataException(name + " repeats in the restaurant template at line " + lineNumber);
             }
+
         }
     }
 

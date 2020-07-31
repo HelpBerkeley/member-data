@@ -22,19 +22,33 @@
  */
 package org.helpberkeley.memberdata;
 
-public class UploadFile {
-    final String shortURL;
-    final String fileName;
-    final String originalFileName;
+import org.antlr.v4.runtime.*;
 
-    UploadFile(final String fileName, final String shortURL) {
-        this.originalFileName = fileName;
-        this.shortURL = shortURL;
-        this.fileName = HBParser.fileNameFromShortURL(shortURL);
+public class MessageBlockBailLexer extends MessageBlockLexer {
+
+    final String blockName;
+    final long postNumber;
+
+    public MessageBlockBailLexer(String blockName, long postNumber, CharStream input) {
+        super(input);
+        this.blockName = (blockName == null) ? "unknown" : blockName;
+        this.postNumber = postNumber;
     }
 
     @Override
-    public String toString() {
-        return fileName + " -> " + shortURL;
+    public void recover(LexerNoViableAltException lexerException) {
+
+        int startIndex = lexerException.getStartIndex();
+        String input = lexerException.getInputStream().toString();
+
+        String error = "Section: " + blockName + ", "
+                + "post: " + postNumber + ", "
+                + "problem at offset " + startIndex + ", "
+                + lexerException.toString() + ", "
+                + "in : " + input
+                + "\n";
+
+        throw new MemberDataException(error);
     }
+
 }

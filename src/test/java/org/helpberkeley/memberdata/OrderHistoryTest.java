@@ -54,7 +54,7 @@ public class OrderHistoryTest extends TestBase {
 
     @Test
     public void missingOrderHistoryURLTest() {
-        Throwable thrown = catchThrowable(() -> Parser.restaurantTemplatePost(""));
+        Throwable thrown = catchThrowable(() -> HBParser.restaurantTemplatePost(""));
         assertThat(thrown).isInstanceOf(Error.class);
         assertThat(thrown).hasMessageContaining("Restaurant template upload link not found");
     }

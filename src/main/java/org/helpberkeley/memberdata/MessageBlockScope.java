@@ -20,34 +20,13 @@
  * SOFTWARE.
  *
  */
+
 package org.helpberkeley.memberdata;
 
-public class OpsManager {
-    private final String userName;
-    private final String phone;
+import java.util.List;
 
-    OpsManager(String userName, String phone) {
-        this.userName = userName;
-        this.phone = phone;
-    }
+public interface MessageBlockScope {
 
-    public String getUserName() {
-        return userName;
-    }
-
-    public String getPhone() {
-        return phone;
-    }
-
-    @Override
-    public String toString() {
-        return "userName" + ", " + phone;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        return ((obj != null)
-                && (userName.equals(((OpsManager)obj).userName)))
-                && (phone.equals(((OpsManager)obj).phone));
-    }
+    void addElement(MessageBlockElement element);
+    List<MessageBlockElement> getElements();
 }

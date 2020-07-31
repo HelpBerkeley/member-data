@@ -1,0 +1,110 @@
+{
+  "success": true,
+  "errors": [],
+  "duration": 0.5,
+  "result_count": 19,
+  "params": {},
+  "columns": [
+    "post_number",
+    "raw",
+    "deleted_at"
+  ],
+  "default_limit": 1000,
+  "rows": [
+    [
+      1,
+      "[comment]\n\nComment post. This thread is specifying the way the software is formatting the drivers' threads.\n\n* Picked up by the software directly from the post:\n[Header]\n[SplitRestaurantHeader]\n[SplitRestaurant]\n[SplitRestaurantTail]\n[Condo]\n[RestaurantsHead]\n[Restaurants]\n[PickupHead]\n[Pickup]\n[DeliveriesHead]\n[Deliveries]\n[Itinerary]\n[CompleteCondo]\n\n**Variables**\n\n**ThisDriverUserName** ... string, driver's block scope, from workflow spreadsheet\n**ThisDriverFirstRestaurant** ... string, driver's block scope, from workflow spreadsheet\n**ThisDriverFirstRestaurantStartTime** ... string, driver's block scope, from workflow spreadsheet\n**ThisDriverGMapURL**  ... string, driver's block scope, from workflow spreadsheet\n\n**OnCallOpsManager**  ... structure\n**.UserName** ... string, workflow spreadsheet scope, from workflow control block\n**.Phone** ... string, workflow spreadsheet scope, from workflow control block\n**.CompactPhone** ... string, workflow spreadsheet scope, from workflow control block, in format (510) 555.1212\n**ThisDriverSplitsAnyRestaurant** ... boolean, driver's block scope scope, from workflow spreadsheet\n**ThisDriverAnyCondo**  ... boolean, driver's block scope scope, from workflow spreadsheet\n\n**ThisDriverSplitRestaurant** list, driver's block scope\n**.Name** ... string, calculated from workflow spreadsheet\n**.Emoji** ... string, from workflow spreadsheet\n**.IsSecondaryDriver** ... boolean, from workflow control block\n**.IsCleanupAndNeedPics** ... boolean, calculated from workflow control block and from restaurant template\n**.IsCleanupAndNoPics** ... boolean, calculated from workflow control block and from restaurant template\n**.TotalDrivers** ... integer, calculated from workflow spreadsheet\n**.TotalOrders** ... integer, calculated from workflow spreadsheet\n**.ThisDriverOrders** ... integer, from workflow spreadsheet\n\n**ThisDriverRestaurant**   list, driver's block scope\n**.Name** ... string, from workflow spreadsheet\n**.Emoji**. ... string, from workflow spreadsheet\n**.Address** ... string, from workflow spreadsheet\n**.Details**  ... string, from workflow spreadsheet\n**.ThisDriverOrders**  ... integer, from workflow spreadsheet\n\n**Consumer**  list, driver's block scope\n**.Name** ... string, from workflow spreadsheet\n**.UserName** ... string, from workflow spreadsheet\n**.CompactPhone** ... string, from workflow spreadsheet, in format (510) 555.1212\n**.CompactAltPhone** ... string, from workflow spreadsheet, in format (510) 555.1212\n**.IsAltPhone** ... boolean, from workflow spreadsheet (meaning: is there an Alt phone number?)\n**.City** ... string, from workflow spreadsheet\n**.Address** ... string, from workflow spreadsheet\n**.IsCondo** ... boolean, from workflow spreadsheet\n**.Details**  ... string, from workflow spreadsheet\n**.Restaurant**  ... string, from workflow spreadsheet\n**.RestaurantEmoji** ... string, from workflow spreadsheet\n**.Normal**  ... integer, from workflow spreadsheet\n**.Veggie**  ... integer, from workflow spreadsheet",
+      null
+    ],
+    [
+      2,
+      "[Header]\n\n\"Driver's run for @\"${ThisDriverUserName}\": start at **\"${ThisDriverFirstRestaurant}\"** at **\"${ThisDriverFirstRestaurantStartTime}\". Please reply to this thread when you begin your run!**\\n\\n\n\nAny issue: call today's on-call ops manager, @\"${OnCallOpsManager.UserName}\", at \"${OnCallOpsManager.CompactPhone}\".\\n\\n\"",
+      null
+    ],
+    [
+      3,
+      "[SplitRestaurantHeader]\n\nIF ${ThisDriverSplitsAnyRestaurant} THEN\n{\n    \"You are sharing at least one restaurant with other drivers:\\n\"\n}",
+      null
+    ],
+    [
+      4,
+      "[SplitRestaurant]\n```\nLOOP &{ThisDriverSplitRestaurant}\n{\n\n  \"* you are picking up **\"  &{ThisDriverSplitRestaurant.ThisDriverOrders}  \"** of \"  &{ThisDriverSplitRestaurant.TotalOrders}  \" orders at **\"  &{ThisDriverSplitRestaurant.Name} \" \" &{ThisDriverSplitRestaurant.Emoji}  \" **(\"  &{ThisDriverSplitRestaurant.TotalDrivers}  \" drivers).\"\n\n   IF &{ThisDriverSplitRestaurant.IsSecondaryDriver} THEN\n   {\n     \" You **do not need to take pics.**\\n\"\n   }\n\n  IF &{ThisDriverSplitRestaurant.IsCleanupAndNeedPics} THEN\n  {\n    \" **You are cleanup driver: take pics** of the order form, and **remain on location** until all orders are picked up. If problem, call the ops manager.\\n\"\n  }\n\n\n  IF &{ThisDriverSplitRestaurant.IsCleanupAndNoPics} THEN\n  {\n    \" **You are cleanup driver**: you **do not need to take pics** (uploaded directly); **remain on location**  until all orders are picked up. If problem, call the ops manager.\\n\"\n  }\n\n}\n```",
+      null
+    ],
+    [
+      5,
+      "[SplitRestaurantTail]\n\nIF ${ThisDriverSplitsAnyRestaurant} THEN\n{\n\"* be careful to take the right orders; always explain that other drivers are coming.\\n\\n\"\n}",
+      null
+    ],
+    [
+      6,
+      "[Condo]\n\nIF ${ThisDriverAnyCondo} THEN\n{\n\"You have a condo on your run: **from the previous delivery location, call the condo consumer** and ask to meet downstairs. Always leave a message. Find full instructions at the end of this message.\\n\\n\"\n\n}",
+      null
+    ],
+    [
+      7,
+      "[RestaurantsHead]\n\n\"**Restaurants**\\n\\n\n\nGo to each restaurant, in this sequence (even if no pickups, to take pics of tomorrow’s order form). The driving sequence is due to the restaurants' schedules!\\n\\n\"",
+      null
+    ],
+    [
+      8,
+      "[Restaurants]\n\n\"|Restaurant|Address|Details|Orders|\\n\n|---|---|---|---|\\n\"\nLOOP &{ThisDriverRestaurant}\n{\n    \"|\" &{ThisDriverRestaurant.Name} \" \" &{ThisDriverRestaurant.Emoji}\n    \"|\" &{ThisDriverRestaurant.Address}\n    \"|\" &{ThisDriverRestaurant.Details}\n    \"|\"&{ThisDriverRestaurant.ThisDriverOrders}\n    \"|\\n\"\n}",
+      null
+    ],
+    [
+      9,
+      "[PickupHead]\n\n\"**Detailed orders** (in order of deliveries, with # & type of rations, 1 order per line):\\n\"",
+      null
+    ],
+    [
+      10,
+      "[Pickup]\n\n\"|Name|UserName|Restaurant|reg|veg|\\n\n|---|---|---|---|---|---|---|\\n\"\nLOOP &{Consumer}\n{\n     \"|\" &{Consumer.Name}\n     \"|\" &{Consumer.UserName}\n     \"|\" &{Consumer.Restaurant} \" \" &{Consumer.RestaurantEmoji}\n     \"|\" &{Consumer.Normal}\n     \"|\" &{Consumer.Veggie}\n     \"|\\n\"\n}",
+      null
+    ],
+    [
+      11,
+      "[DeliveriesHead]\n\n\"**Deliveries**  (user names, if needed, are listed above):\\n\\n\"",
+      null
+    ],
+    [
+      12,
+      "[Deliveries]\n\n\"|Name|Phone|Address|Details|\\n\n| --- | --- | --- | --- |\\n\"\nLOOP &{Consumer}\n{\n    \"|\" &{Consumer.Name}\n    \"|\" &{Consumer.CompactPhone} IF &{Consumer.IsAltPhone} THEN {\n    \",\" &{Consumer.CompactAltPhone} }\n    \"|\" &{Consumer.Address} \", \" &{Consumer.City}\n    \"|\" IF &{Consumer.IsCondo} THEN {\"&#x1f53b;**Condo**&#x1f53b;\" }\n    \" \" &{Consumer.RestaurantEmoji} \" \" &{Consumer.Details}\n    \"|\\n\"\n}",
+      null
+    ],
+    [
+      13,
+      "[Itinerary]\n\n\n\"**GMap static URL:** [\" ${ThisDriverUserName} \"'s itinerary](\" ${ThisDriverGMapURL} \")\\n\\n\"",
+      null
+    ],
+    [
+      14,
+      "[CompleteCondo]\n\nIF ${ThisDriverAnyCondo} THEN\n{\n\"**Complete condo instructions** (read carefully by clicking the down arrow):\\n\\n\n\nhttps://go.helpberkeley.org/t/experimental-condo-instructions/3109 \\n\\n\"\n}\n\n\"Thanks so much for taking the run, and good luck!\"",
+      null
+    ],
+    [
+      15,
+      "[comment]\n\n  Make ***ThisDriver** a struct variable containing **UserName**, **FirstRestaurant**,  **FirstRestaurantStartTime**,  **GMapURL**, **SplitsAnyRestaurant**\n\nNot seeing the need for saying **ThisDriver** versus **Driver** here.  This post is for generating message to a specific driver.  There is no other driver here.",
+      null
+    ],
+    [
+      16,
+      "[comment]\nI thought we were going to take the \"This\" from \"ThisDriver\" etc. off?",
+      null
+    ],
+    [
+      17,
+      "[comment]\n\nTo make comments in this thread that will be ignored, please use the comment header.  I updated the reply above that was missing it and causing and audit failure in the software.\n\nAnswering your question.  Yes,  I do want to remove those.  Just haven't got to it yet.\n\nRemember, variables cannot be added or changed without updating the software.",
+      null
+    ],
+    [
+      18,
+      "[comment]\n\nSorry, I was not thinking.",
+      null
+    ],
+    [
+      19,
+      "[comment]\n\nThis is the old [SplitRestaurant] block:\n\nLOOP &{ThisDriverSplitRestaurant}\n{\n\n    IF &{ThisDriverSplitRestaurant.IsSecondaryDriver} THEN\n    {\n        \"* you are one of \"\n       &{ThisDriverSplitRestaurant.TotalDrivers}\n       \" drivers going to **\"\n      &{ThisDriverSplitRestaurant.Name} \"**\" &{ThisDriverSplitRestaurant.Emoji}\n      \". You are picking up **\"\n      &{ThisDriverSplitRestaurant.ThisDriverOrders}\n      \"** of \"\n     &{ThisDriverSplitRestaurant.TotalOrders}\n     \" orders total.\\n\n    * you **do not need to take pics** of the order form.\\n\"\n    }\n\n   IF &{ThisDriverSplitRestaurant.IsCleanupAndNeedPics} THEN\n   {\n        \"* you are one of \"\n        &{ThisDriverSplitRestaurant.TotalDrivers}\n        \" drivers going to  **\"\n       &{ThisDriverSplitRestaurant.Name} \"** \" &{ThisDriverSplitRestaurant.Emoji}\n       \". You are picking up **\"\n       &{ThisDriverSplitRestaurant.ThisDriverOrders}\n       \"** of \"\n       &{ThisDriverSplitRestaurant.TotalOrders}\n        \" orders total.\\n\n   * you are this restaurant's cleanup driver. \n     Pls **take pics** of the order form, and **remain on location**\n     until all orders are picked up. If problem, call the ops manager.\\n\"\n    }\n\n   IF &{ThisDriverSplitRestaurant.IsCleanupAndNoPics} THEN\n    {\n        \"* you are one of \"\n        &{ThisDriverSplitRestaurant.TotalDrivers}\n        \" drivers going to **\"\n        &{ThisDriverSplitRestaurant.Name} \"** \" &{ThisDriverSplitRestaurant.Emoji}\n        \". You are picking up **\"\n        &{ThisDriverSplitRestaurant.ThisDriverOrders}\n        \"** of \"\n        &{ThisDriverSplitRestaurant.TotalOrders}\n        \" orders total.\\n\n   * you are this restaurant's cleanup driver. Pls **no pics** of the order form (restaurant uploads directly), and **remain on location** until all orders are picked up. If problem, call the ops manager.\\n\"\n} \n\n}",
+      null
+    ]
+  ]
+}

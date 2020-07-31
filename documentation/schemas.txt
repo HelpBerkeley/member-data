@@ -116,7 +116,7 @@ Restaurant Template
 ------------------
 
 Location:      Closet/HushWorkflow
-Link:          https://go.helpberkeley.org/t/software-input-restaurant-template/1860/1
+Link:          https://go.helpberkeley.org/t/software-input-controlBlockRestaurant-template/1860/1
 Schema Used:   Workflow data
 
 Restaurant Block Marker
@@ -144,7 +144,7 @@ Routed Workflow
 ---------------
 
 Location:      Closet/HushWorkflow
-Link:          https://go.helpberkeley.org/t/software-input-restaurant-template/1860/1
+Link:          https://go.helpberkeley.org/t/software-input-controlBlockRestaurant-template/1860/1
 Schema Used:   Workflow data
 
 Inreach consumer data
