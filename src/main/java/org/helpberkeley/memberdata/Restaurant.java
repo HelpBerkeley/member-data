@@ -140,7 +140,7 @@ public class Restaurant {
                 value = "5:00 PM";
                 break;
             default:
-                throw new MemberDataException(name + ": implement closining time handling");
+                throw new MemberDataException(name + ": implement closing time handling");
         }
 
         return value;

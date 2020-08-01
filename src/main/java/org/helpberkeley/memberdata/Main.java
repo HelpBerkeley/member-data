@@ -658,8 +658,8 @@ public class Main {
         statusMessages.append(driverPostFormat.statusMessages());
         statusMessages.append("\n\n");
 
-        statusMessages.append("**Driver Messages Posted to [Staging Automated driver run messages]")
-                .append("(https://go.helpberkeley.org/t/staging-automated-driver-run-messages/2123/)**\n\n");
+        statusMessages.append("**Driver Messages Posted to [Get driver messages]")
+                .append("(https://go.helpberkeley.org/t/get-driver-messages/2123/)**\n\n");
 
         for (String url : postURLs) {
             statusMessages.append(url).append("\n");
