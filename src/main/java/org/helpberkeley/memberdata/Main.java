@@ -709,6 +709,7 @@ public class Main {
         } catch (MemberDataException ex) {
             String reason = ex.getCause() != null ? ex.getCause().getMessage() : ex.getMessage();
             request.postStatus(WorkRequestHandler.RequestStatus.Failed, reason);
+            return;
         }
 
         Path filePath = Paths.get(request.uploadFile.originalFileName);
