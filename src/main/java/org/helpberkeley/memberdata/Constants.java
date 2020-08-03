@@ -45,10 +45,12 @@ public class Constants {
     public static final int QUERY_GET_DRIVERS_POST_FORMAT_V12 = 26;
     public static final int QUERY_GET_GROUP_INSTRUCTIONS_FORMAT_V12 = 27;
     public static final int QUERY_GET_BACKUP_DRIVER_FORMAT_V12 = 28;
+    public static final int QUERY_GET_DRIVERS_POST_FORMAT_V21 = 29;
+    public static final int QUERY_GET_GROUP_INSTRUCTIONS_FORMAT_V21 = 30;
 
     // Current spec version for these queries
-    public static final int QUERY_GET_DRIVERS_POST_FORMAT = QUERY_GET_DRIVERS_POST_FORMAT_V12;
-    public static final int QUERY_GET_GROUP_INSTRUCTIONS_FORMAT = QUERY_GET_GROUP_INSTRUCTIONS_FORMAT_V12;
+    public static final int QUERY_GET_DRIVERS_POST_FORMAT = QUERY_GET_DRIVERS_POST_FORMAT_V21;
+    public static final int QUERY_GET_GROUP_INSTRUCTIONS_FORMAT = QUERY_GET_GROUP_INSTRUCTIONS_FORMAT_V21;
     public static final int QUERY_GET_BACKUP_DRIVER_FORMAT = QUERY_GET_BACKUP_DRIVER_FORMAT_V12;
 
     public static final Topic TOPIC_ROUTED_WORKFLOW_DATA = new Topic("Routed Workflow Data", 2504);

@@ -570,7 +570,6 @@ public class Main {
         DriverPostFormat driverPostFormat =
                 new DriverPostFormat(apiClient, routedDeliveries);
 
-
         long topic_id = DRIVERS_POST_STAGING_TOPIC_ID;
 //        long topic_id = Main.STONE_TEST_TOPIC;
 
@@ -657,6 +656,8 @@ public class Main {
 
         statusMessages.append(driverPostFormat.statusMessages());
         statusMessages.append("\n\n");
+
+        statusMessages.append(driverPostFormat.generateSummary());
 
         statusMessages.append("**Driver Messages Posted to [Get driver messages]")
                 .append("(https://go.helpberkeley.org/t/get-driver-messages/2123/)**\n\n");

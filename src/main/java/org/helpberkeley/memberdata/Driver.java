@@ -22,6 +22,7 @@
  */
 package org.helpberkeley.memberdata;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -99,5 +100,66 @@ public class Driver {
 
         throw new MemberDataException("Could not find restaurant " + restaurantName
                 + " in driver " + userName + "'s pickups");
+    }
+
+    //
+    //  How to calculate the start time for a first restaurant with zero orders
+    //
+    //    find the StartTime for the first restaurant on the list that has at least one order
+    //
+    //    If the StartTime for the first restaurant with at least one order
+    //    is already 5:00 PM or under 5:00 PM, do not change it.
+    //
+    //    If the StartTime for the first restaurant with at least one order is later than 5:00 PM
+    //    for each restaurant with zero orders that precedes it, take 5 mins off of the StartTime
+    //    But never let the StartTime get under 5:00 PM
+    //
+    // FIX THIS, DS: this algorithm doesn't handle V&A Cafe which has a start time of 4:50.
+    //
+    String getFirstRestaurantStartTime() {
+
+        if (getPickups().isEmpty()) {
+            throw new MemberDataException("Driver " + userName + " has no pickups\n");
+        }
+
+        List<Restaurant> zeroOrders = new ArrayList<>();
+        Restaurant firstPickupRestaurant = null;
+
+        for (Restaurant restaurant : getPickups()) {
+            if (restaurant.getOrders() == 0) {
+                zeroOrders.add(restaurant);
+            } else {
+                firstPickupRestaurant = restaurant;
+                break;
+            }
+        }
+
+        // Do we have only 0 order restaurants?
+        if (firstPickupRestaurant == null) {
+            return zeroOrders.get(0).getStartTime();
+        }
+
+        // No 0 order restaurants?
+        if (zeroOrders.size() == 0) {
+            return firstPickupRestaurant.getStartTime();
+        }
+
+        int firstStartTime = convertStartingTime(firstPickupRestaurant.getStartTime());
+
+        // Is the first pickup restaurant already at 5 or earlier?
+        if (firstStartTime <= 500) {
+            return firstPickupRestaurant.getStartTime();
+        }
+
+        while (firstStartTime > 500) {
+
+        }
+
+        return "";
+    }
+
+    int convertStartingTime(String startingTime) {
+        String time = startingTime.replaceAll("[ :pmPM]", "");
+        return Integer.parseInt(time);
     }
 }

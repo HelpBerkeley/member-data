@@ -45,12 +45,13 @@ public class DriverPostTest extends TestBase {
         assertThat(posts).hasSize(1);
         String post = posts.get(0);
         assertThat(post).contains("@jsDriver");
+        assertThat(post).contains("Any issue: call today's on-call ops manager, @MrE, at (510) 555.1212.\n");
         assertThat(post).contains("You have a condo on your run");
+        assertThat(post).contains("**Complete condo instructions**");
         assertThat(post).contains("Cafe Raj :open_umbrella:");
         assertThat(post).contains("5:10 PM");
         assertThat(post).contains("Cust Name 5");
-
-        System.out.println(post);
+        assertThat(post).contains("**GMap static URL:** [jsDriver's itinerary](https://www.google.com/maps/dir/x+y+z)");
     }
 
     @Test
@@ -64,6 +65,7 @@ public class DriverPostTest extends TestBase {
         String post = posts.get(0);
         System.out.println(post);
         assertThat(post).contains("@jbDriver");
+        assertThat(post).contains("Any issue: call today's on-call ops manager, @CantankerousIII, at (510) 555.1212.\n");
         assertThat(post).doesNotContain("You have a condo on your run");
         assertThat(post).doesNotContain("Complete condo instructions");
         assertThat(post).contains("Talavera");
@@ -78,6 +80,7 @@ public class DriverPostTest extends TestBase {
         post = posts.get(1);
         System.out.println(post);
         assertThat(post).contains("@jsDriver");
+        assertThat(post).contains("Any issue: call today's on-call ops manager, @CantankerousIII, at (510) 555.1212.\n");
         assertThat(post).contains("You have a condo on your run");
         assertThat(post).contains("Complete condo instructions");
         assertThat(post).contains("Cafe Raj");
@@ -112,6 +115,8 @@ public class DriverPostTest extends TestBase {
         String post = posts.get(0);
         System.out.println(post);
         post = posts.get(1);
+
+        System.out.println(driverPostFormat.generateSummary());
     }
 
     @Test
@@ -133,7 +138,9 @@ public class DriverPostTest extends TestBase {
 
         String post = driverPostFormat.generateGroupInstructionsPost();
 //        System.out.println(post);
-        assertThat(post).contains("**Split Restaurants**");
+        assertThat(post).contains("**Split restaurant drivers:**");
+        assertThat(post).contains("(888) 888.8888");
+        assertThat(post).contains("(999) 999.9999");
     }
 
     @Test

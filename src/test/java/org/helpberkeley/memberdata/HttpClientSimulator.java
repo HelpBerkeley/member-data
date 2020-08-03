@@ -45,10 +45,15 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class HttpClientSimulator extends HttpClient {
 
-    private static final Map<Integer, String> responseFiles = new HashMap<>();
+    private static final Map<Integer, String> queryResponseFiles = new HashMap<>();
+    private static final Map<Integer, String> queryResponseData = new HashMap<>();
 
     static void setQueryResponseFile(int queryId, final String fileName) {
-        responseFiles.put(queryId, fileName);
+        queryResponseFiles.put(queryId, fileName);
+    }
+
+    static void setQueryResponseData(int queryId, final String queryData) {
+        queryResponseData.put(queryId, queryData);
     }
 
     @Override
@@ -92,14 +97,25 @@ public class HttpClientSimulator extends HttpClient {
     private <T> HttpResponse<T> doQuery(HttpRequest request) {
 
         int queryId = getQueryId(request);
-        String dataFile = getQueryResponseFile(queryId);
+        String responseData;
+
+        // Support for tests overriding the query response either with
+        // a string or a file.
+        //
+        if (queryResponseData.containsKey(queryId)) {
+            responseData = queryResponseData.remove(queryId);
+        } else {
+            String dataFile = getQueryResponseFile(queryId);
+            responseData = readFile(dataFile);
+        }
+
         //noinspection unchecked
-        return (HttpResponse<T>) new HttpResponseSimulator<>(readFile(dataFile));
+        return (HttpResponse<T>) new HttpResponseSimulator<>(responseData);
     }
 
     private String getQueryResponseFile(int queryId) {
 
-        String dataFile = responseFiles.remove(queryId);
+        String dataFile = queryResponseFiles.remove(queryId);
 
         if (dataFile != null) {
             return dataFile;
@@ -133,11 +149,17 @@ public class HttpClientSimulator extends HttpClient {
             case Constants.QUERY_GET_DRIVERS_POST_FORMAT_V12:
                 dataFile = "driver-format-topic-v12.json";
                 break;
+            case Constants.QUERY_GET_DRIVERS_POST_FORMAT_V21:
+                dataFile = "driver-format-topic-v21.json";
+                break;
             case Constants.QUERY_GET_GROUP_INSTRUCTIONS_FORMAT_V1:
                 dataFile = "group-instructions-post.json";
                 break;
             case Constants.QUERY_GET_GROUP_INSTRUCTIONS_FORMAT_V12:
                 dataFile = "group-instructions-post-v12.json";
+                break;
+            case Constants.QUERY_GET_GROUP_INSTRUCTIONS_FORMAT_V21:
+                dataFile = "group-instructions-post-v21.json";
                 break;
             case Constants.QUERY_GET_LAST_ROUTED_WORKFLOW_REPLY:
                 dataFile = "last-routed-workflow-reply.json";
