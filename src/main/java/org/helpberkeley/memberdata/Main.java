@@ -519,11 +519,6 @@ public class Main {
         new UserExporter(users).workflowToFile(restaurantTemplate, deliveryDetails, WORKFLOW_FILE);
     }
 
-    static void generateDriversPosts(ApiClient apiClient, String workflowFile) throws IOException, InterruptedException {
-        String routedDeliveries = Files.readString(Paths.get(workflowFile));
-        generateDriverPosts(apiClient, routedDeliveries);
-    }
-
     static void getRoutedWorkflow(ApiClient apiClient) throws IOException, InterruptedException {
         Query query = new Query(Constants.QUERY_GET_LAST_ROUTED_WORKFLOW_REPLY, Constants.TOPIC_ROUTED_WORKFLOW_DATA);
         WorkRequestHandler requestHandler = new WorkRequestHandler(apiClient, query);
@@ -545,12 +540,15 @@ public class Main {
 
         WorkRequestHandler.WorkRequest request = (WorkRequestHandler.WorkRequest) reply;
 
+        long topic = (request.topic != null) ? request.topic : DRIVERS_POST_STAGING_TOPIC_ID;
+
         // Download file
         String routedDeliveries = apiClient.downloadFile(request.uploadFile.fileName);
         request.postStatus(WorkRequestHandler.RequestStatus.Processing, "");
 
+
         try {
-            String statusMessage = generateDriverPosts(apiClient, routedDeliveries);
+            String statusMessage = generateDriverPosts(apiClient, routedDeliveries, topic);
             request.postStatus(WorkRequestHandler.RequestStatus.Succeeded, statusMessage);
         } catch (MemberDataException ex) {
             String reason = ex.getCause() != null ? ex.getCause().getMessage() : ex.getMessage();
@@ -559,7 +557,12 @@ public class Main {
         }
     }
 
-    static String generateDriverPosts(ApiClient apiClient, String routedDeliveries)
+    static void generateDriversPosts(ApiClient apiClient, String workflowFile) throws IOException, InterruptedException {
+        String routedDeliveries = Files.readString(Paths.get(workflowFile));
+        generateDriverPosts(apiClient, routedDeliveries, DRIVERS_POST_STAGING_TOPIC_ID);
+    }
+
+    static String generateDriverPosts(ApiClient apiClient, String routedDeliveries, long topic)
             throws InterruptedException, IOException {
 
         StringBuilder statusMessages = new StringBuilder();
@@ -570,15 +573,12 @@ public class Main {
         DriverPostFormat driverPostFormat =
                 new DriverPostFormat(apiClient, routedDeliveries);
 
-        long topic_id = DRIVERS_POST_STAGING_TOPIC_ID;
-//        long topic_id = Main.STONE_TEST_TOPIC;
-
         List<String> posts = driverPostFormat.generateDriverPosts();
         Iterator<Driver> driverIterator = driverPostFormat.getDrivers().iterator();
         for (String rawPost : posts) {
             Post post = new Post();
             post.title = "Generated Driver Post";
-            post.topic_id = topic_id;
+            post.topic_id = topic;
             post.raw = rawPost;
             post.createdAt = ZonedDateTime.now(ZoneId.systemDefault())
                     .format(DateTimeFormatter.ofPattern("uuuu.MM.dd.HH.mm.ss"));
@@ -608,7 +608,7 @@ public class Main {
 
         Post post = new Post();
         post.title = "Generated Group Instructions Post";
-        post.topic_id = topic_id;
+        post.topic_id = topic;
         post.raw = driverPostFormat.generateGroupInstructionsPost();
         post.createdAt = ZonedDateTime.now(ZoneId.systemDefault())
                 .format(DateTimeFormatter.ofPattern("uuuu.MM.dd.HH.mm.ss"));
@@ -632,7 +632,7 @@ public class Main {
 
         post = new Post();
         post.title = "Generated Backup Driver Post";
-        post.topic_id = topic_id;
+        post.topic_id = topic;
         post.raw = driverPostFormat.generateBackupDriverPost();
         post.createdAt = ZonedDateTime.now(ZoneId.systemDefault())
                 .format(DateTimeFormatter.ofPattern("uuuu.MM.dd.HH.mm.ss"));

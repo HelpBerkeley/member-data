@@ -157,11 +157,13 @@ public class WorkRequestHandler {
 
         final String date;
         final UploadFile uploadFile;
+        Long topic;
 
-        WorkRequest(Reply reply, final String date, final UploadFile uploadFile) {
+        WorkRequest(Reply reply, final String date, final UploadFile uploadFile, final Long topic) {
             super(reply);
             this.date = date;
             this.uploadFile = uploadFile;
+            this.topic = topic;
         }
 
         // Generate a reply to the topic id
@@ -205,17 +207,21 @@ public class WorkRequestHandler {
             }
 
             ListIterator<String> iterator = lines.listIterator(1);
+            Long topic = null;
 
             while (iterator.hasNext()) {
                 String line = iterator.next();
 
-                if (line.contains(Constants.UPLOAD_URI_PREFIX)) {
+                if (line.startsWith("Topic:")) {
+                    // FIX THIS, DS: handle number format exception
+                    topic = Long.parseLong(line.replaceAll("Topic: ", ""));
+                } else if (line.contains(Constants.UPLOAD_URI_PREFIX)) {
                     String shortURL =  HBParser.shortURL(line);
                     String fileName = HBParser.downloadFileName(line);
 
                     UploadFile uploadFile = new UploadFile(fileName, shortURL);
 
-                    return new WorkRequest(lastReply, dateLine, uploadFile);
+                    return new WorkRequest(lastReply, dateLine, uploadFile, topic);
                 }
             }
 
@@ -227,6 +233,7 @@ public class WorkRequestHandler {
             return "Post: " + postNumber + '\n'
                     + "WorkRequest\n"
                     + "Date: " + date + '\n'
+                    + "Topic: " + topic + '\n'
                     + "FileName: " + uploadFile.fileName + '\n';
         }
     }

@@ -15,7 +15,7 @@ Usable from within the Java application.
 
 Usable from the command line.
 
-Easy to use for the people submitting work. 
+Easy to use for the people submitting work.
 
 Assumptions
 ===========
@@ -94,6 +94,17 @@ A work request is fixed format reply consisting of:
 Empty lines, leading and trailing white space is ignored.
 Both Unix and Windows end of line conventions are accepted.
 
+
+Directed work request
+---------------------
+
+A directed work request is used to direct the posted messages
+to a specific topic ID.
+
+	Date (YYYY/MM/DD format)
+	Topic: N (N is a topic number)
+	Uploaded Work File URL (ideally with a meaningful file name).
+
 Status message
 --------------
 
@@ -133,7 +144,9 @@ Examples:
 
 	Line 6 is missing a value for the controlBlockRestaurant name.
 
-	
 
+Directed work request example:
 
-
+	2020/06/20
+	Topic: 54607
+	UploadedFileURL
