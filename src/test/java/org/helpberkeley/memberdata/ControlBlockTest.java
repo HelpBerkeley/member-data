@@ -523,4 +523,32 @@ public class ControlBlockTest extends TestBase {
         controlBlock.audit(Collections.EMPTY_LIST, Collections.EMPTY_LIST);
         assertThat(controlBlock.getWarnings()).contains("No BackupDriverUserName set in the control block.\n");
     }
+
+    @Test
+    public void versionNotANumberTest() {
+        String workFlowData = HEADER + CONTROL_BLOCK_BEGIN_ROW
+                + "FALSE,FALSE,,Version,,,,ThisIsNotAVersionNumber,,,,,,,\n"
+                + CONTROL_BLOCK_END_ROW;
+
+        WorkflowParser workflowParser = new WorkflowParser(WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, workFlowData);
+        Throwable thrown = catchThrowable(workflowParser::controlBlock);
+        assertThat(thrown).isInstanceOf(MemberDataException.class);
+        assertThat(thrown).hasMessage("Version \"ThisIsNotAVersionNumber\" at line 3 is not valid version number.\n");
+    }
+
+    @Test
+    public void unsupportedVersionTest() {
+        String unsupportedVersion = Integer.toString(Constants.CONTROL_BLOCK_CURRENT_VERSION + 1);
+        String workFlowData = HEADER + CONTROL_BLOCK_BEGIN_ROW
+                + "FALSE,FALSE,,Version,,,,"
+                + unsupportedVersion
+                + ",,,,,,,\n"
+                + CONTROL_BLOCK_END_ROW;
+
+        WorkflowParser workflowParser = new WorkflowParser(WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, workFlowData);
+        ControlBlock controlBlock = workflowParser.controlBlock();
+        Throwable thrown = catchThrowable(() -> controlBlock.audit(Collections.EMPTY_LIST, Collections.EMPTY_LIST));
+        assertThat(thrown).isInstanceOf(MemberDataException.class);
+        assertThat(thrown).hasMessageContaining("Control block version " + unsupportedVersion + " is not supported.\n");
+    }
 }

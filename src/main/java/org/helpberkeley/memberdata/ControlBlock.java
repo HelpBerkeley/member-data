@@ -30,6 +30,7 @@ class ControlBlock {
     static final String ERROR_MISSING_OPS_MANAGER =
             "Control block missing a " + Constants.CONTROL_BLOCK_OPS_MANAGER + " entry.\n";
 
+    private int version = Constants.CONTROL_BLOCK_VERSION_UNKNOWN;
     private final List<OpsManager> opsManagers = new ArrayList<>();
     // FIX THIS, DS: remove and just use map
     private final List<SplitRestaurant> splitRestaurants = new ArrayList<>();
@@ -46,6 +47,7 @@ class ControlBlock {
     void audit(List<String> allRestaurants, List<String> splitRestaurants) {
         StringBuilder errors = new StringBuilder();
 
+        auditVersion(errors);
         auditOpsManager(errors);
         auditEmojis(allRestaurants);
         auditSplitRestaurants(splitRestaurants, errors);
@@ -55,6 +57,12 @@ class ControlBlock {
 
         if (errors.length() != 0) {
             throw new MemberDataException(errors.toString());
+        }
+    }
+
+    private void auditVersion(StringBuilder errors) {
+        if (version > Constants.CONTROL_BLOCK_CURRENT_VERSION) {
+            errors.append("Control block version " + version + " is not supported.\n");
         }
     }
 
@@ -91,6 +99,10 @@ class ControlBlock {
         if (backupDrivers.isEmpty()) {
             warnings.append("No " + Constants.CONTROL_BLOCK_BACKUP_DRIVER + " set in the control block.\n");
         }
+    }
+
+    int getVersion() {
+        return version;
     }
 
     List<OpsManager> getOpsManagers() {
@@ -143,6 +155,7 @@ class ControlBlock {
 
     void clear()
     {
+        version = Constants.CONTROL_BLOCK_VERSION_UNKNOWN;
         opsManagers.clear();
         splitRestaurants.clear();
         splitRestaurantMap.clear();
@@ -155,6 +168,9 @@ class ControlBlock {
         String value = bean.getControlBlockValue().replaceAll("\\s*\\|\\s*", "|");
 
         switch (variable) {
+            case Constants.CONTROL_BLOCK_VERSION:
+                processVersion(value, lineNumber);
+                break;
             case Constants.CONTROL_BLOCK_OPS_MANAGER:
                 processOpsManager(value, lineNumber);
                 break;
@@ -182,6 +198,15 @@ class ControlBlock {
         return warnings.toString();
     }
 
+    private void processVersion(String value, long lineNumber) {
+        try {
+            version = Integer.parseInt(value.trim());
+        } catch (NumberFormatException ex) {
+            throw new MemberDataException("Version \"" + value + "\" at line " + lineNumber
+                    + " is not valid version number.\n");
+        }
+    }
+
     //
     // An OpManager data field should look like "userName | phone number"
     //
@@ -190,8 +215,8 @@ class ControlBlock {
         String[] fields = value.split("\\" + INTRA_FIELD_SEPARATOR, -42);
 
         if (fields.length != 2) {
-            throw new MemberDataException("OpManager value \"" + value
-                    + "\" at line " + lineNumber + " does not match \"username | phone\"");
+            throw new MemberDataException("OpsManager value \"" + value
+                    + "\" at line " + lineNumber + " does not match \"username | phone\".\n");
         }
 
         String userName = fields[0].trim();

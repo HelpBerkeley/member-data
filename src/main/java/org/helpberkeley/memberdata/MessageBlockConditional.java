@@ -73,7 +73,7 @@ public class MessageBlockConditional implements MessageBlockScope, MessageBlockE
 
     @Override
     public String toString() {
-        return "IF"
+        return getName()
             + ((evaluationType == EvaluationType.EVAL_FALSE) ? " NOT" : "")
             + ": "
             + conditionalRef.toString();

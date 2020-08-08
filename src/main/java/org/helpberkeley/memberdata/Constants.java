@@ -47,9 +47,10 @@ public class Constants {
     public static final int QUERY_GET_BACKUP_DRIVER_FORMAT_V12 = 28;
     public static final int QUERY_GET_DRIVERS_POST_FORMAT_V21 = 29;
     public static final int QUERY_GET_GROUP_INSTRUCTIONS_FORMAT_V21 = 30;
+    public static final int QUERY_GET_DRIVERS_POST_FORMAT_V22 = 31;
 
     // Current spec version for these queries
-    public static final int QUERY_GET_DRIVERS_POST_FORMAT = QUERY_GET_DRIVERS_POST_FORMAT_V21;
+    public static final int QUERY_GET_DRIVERS_POST_FORMAT = QUERY_GET_DRIVERS_POST_FORMAT_V22;
     public static final int QUERY_GET_GROUP_INSTRUCTIONS_FORMAT = QUERY_GET_GROUP_INSTRUCTIONS_FORMAT_V21;
     public static final int QUERY_GET_BACKUP_DRIVER_FORMAT = QUERY_GET_BACKUP_DRIVER_FORMAT_V12;
 
@@ -132,8 +133,14 @@ public class Constants {
     public static final String CONTROL_BLOCK_SPLIT_RESTAURANT = "SplitRestaurant(Name|CleanupDriverUserName)";
     public static final String CONTROL_BLOCK_BACKUP_DRIVER = "BackupDriverUserName";
     public static final String CONTROL_BLOCK_RESTAURANT = "Restaurant(Name|Emoji)";
+    public static final String CONTROL_BLOCK_VERSION = "Version";
 
     public static final String CONTROL_BLOCK_VALUE_DEFAULT_PREFIX = "ReplaceThisBy";
+    public static final int CONTROL_BLOCK_VERSION_UNKNOWN = 0;
+    public static final int CONTROL_BLOCK_VERSION_1 = 1;
+
+    public static final int CONTROL_BLOCK_CURRENT_VERSION = CONTROL_BLOCK_VERSION_1;
+
 
     public static final long UNKNOWN_USER_ID = 852;
     public static final String UNKNOWN_USER = "unknown-user";

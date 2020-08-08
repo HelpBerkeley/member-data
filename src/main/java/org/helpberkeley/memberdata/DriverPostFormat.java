@@ -346,25 +346,24 @@ public class DriverPostFormat {
         String varName = simpleRef.getName();
         String value;
 
+        final String firstRestaurant = context.getDriver().getFirstRestaurantName();
+        final Restaurant restaurant = restaurants.get(firstRestaurant);
+        assert restaurant != null : firstRestaurant + " was not found the in restaurant template post";
+
         switch (varName) {
             case "ThisDriverUserName":
                 value = context.getDriver().getUserName();
                 break;
-            case "ThisDriverFirstRestaurant": {
-                final String firstRestaurant = context.getDriver().getFirstRestaurantName();
-                final Restaurant restaurant = restaurants.get(firstRestaurant);
-                assert restaurant != null : firstRestaurant + " was not found the in restaurant template post";
+            case "ThisDriverFirstRestaurant":
                 value = restaurant.getName();
                 break;
-            }
-            case "ThisDriverFirstRestaurantStartTime": {
-                final String firstRestaurant = context.getDriver().getFirstRestaurantName();
-                final Restaurant restaurant = restaurants.get(firstRestaurant);
-                assert restaurant != null : firstRestaurant + " was not found the in restaurant template post";
+            case "ThisDriverFirstRestaurantStartTime":
                 // FIX THIS, DS: do we still need to special case V & A here?
                 value = restaurant.getStartTime();
                 break;
-            }
+            case "FirstRestaurantEmoji":
+                value = controlBlock.getEmoji(firstRestaurant);
+                break;
             case "ThisDriverGMapURL":
                 value = context.getDriver().getgMapURL();
                 break;
@@ -417,6 +416,9 @@ public class DriverPostFormat {
                 break;
             case "SplitRestaurant":
                 value = processSplitRestaurantListRef(listRef, context);
+                break;
+            case "Pickup":
+                value = processThisRestaurantPickupListRef(listRef, context);
                 break;
             default:
                 throw new MemberDataException(context.formatException(
@@ -575,6 +577,36 @@ public class DriverPostFormat {
         return value;
     }
 
+    private String processThisRestaurantPickupListRef(MessageBlockListRef listRef, MessageBlockContext context) {
+        String refName = listRef.getName();
+        String value;
+
+        Restaurant pickupRestaurant = context.getPickupRestaurant();
+        Delivery delivery = context.getDelivery();
+        assert delivery.getRestaurant().equals(pickupRestaurant.getName()) :
+                delivery.getRestaurant() + " != " + pickupRestaurant.getName();
+
+        switch (refName) {
+            case "Pickup.MemberName":
+                value = delivery.getName();
+                break;
+            case "Pickup.UserName":
+                value = delivery.getUserName();
+                break;
+            case "Pickup.Normal":
+                value = delivery.getNormalRations();
+                break;
+            case "Pickup.Veggie":
+                value = delivery.getVeggieRations();
+                break;
+            default:
+                throw new MemberDataException(context.formatException("unknown list variable &{" + refName + "}"));
+        }
+
+        LOGGER.trace("${{}} = \"{}\"", refName, value);
+        return value;
+    }
+
     private String processConditional(MessageBlockConditional conditional, MessageBlockContext context) {
 
         StringBuilder output = new StringBuilder();
@@ -618,14 +650,18 @@ public class DriverPostFormat {
         Driver driver = context.getDriver();
         boolean value;
 
-        if (refName.equals("ThisDriverSplitsAnyRestaurant")) {
-            value = driverHasSplitRestaurant(driver);
-        } else if (refName.equals("ThisDriverAnyCondo")) {
-            value = driver.hasCondo();
-        } else if (refName.equals("AnySplitRestaurants")) {
-            value = anySplitRestaurants();
-        } else {
-            throw new MemberDataException(context.formatException("unknown boolean variable ${" + refName + "}"));
+        switch (refName) {
+            case "ThisDriverSplitsAnyRestaurant":
+                value = driverHasSplitRestaurant(driver);
+                break;
+            case "ThisDriverAnyCondo":
+                value = driver.hasCondo();
+                break;
+            case "AnySplitRestaurants":
+                value = anySplitRestaurants();
+                break;
+            default:
+                throw new MemberDataException(context.formatException("unknown boolean variable ${" + refName + "}"));
         }
 
         LOGGER.trace("${{}} = \"{}\"", element, value);
@@ -663,6 +699,8 @@ public class DriverPostFormat {
                     ControlBlock.SplitRestaurant splitRestaurant = controlBlock.getSplitRestaurant(restaurantName);
                     // FIX THIS, DS: what if the control block is missing this split restaurant? Audit
                     return splitRestaurant.getCleanupDriverUserName().equals(driverUserName);
+                case "ThisDriverRestaurant.AnyOrder":
+                    return (restaurant.getOrders() != 0);
                 default:
                     throw new MemberDataException(
                             context.formatException("Unknown boolean variable &{" + refName + "}"));
@@ -760,6 +798,9 @@ public class DriverPostFormat {
             case "SplitRestaurant.Driver":
                 processedLoop = processSplitRestaurantDrivers(loop, context);
                 break;
+            case "ThisDriverRestaurant.Pickup":
+                processedLoop = processRestaurantPickups(loop, context);
+                break;
             default:
                 throw new MemberDataException(context.formatException("unknown loop list ref &{" + listRef + "}"));
         }
@@ -786,6 +827,31 @@ public class DriverPostFormat {
 
         LOGGER.trace("${{}} = \"{}\"", loop, processedLoop);
         return processedLoop.toString();
+    }
+
+    private String processRestaurantPickups(MessageBlockLoop loop, MessageBlockContext context) {
+
+        StringBuilder output = new StringBuilder();
+        Driver driver = context.getDriver();
+        MessageBlockContext deliveryContext = new MessageBlockContext("Delivery", context);
+
+        LOGGER.trace("processRestaurantPickups: {}", deliveryContext);
+
+        Restaurant restaurant = context.getPickupRestaurant();
+
+        // Look through deliveries and find consumers/orders for this restaurant
+
+        for (Delivery delivery : driver.getDeliveries()) {
+            if (delivery.getRestaurant().equals(restaurant.getName())) {
+                context.setDelivery(delivery);
+                for (MessageBlockElement loopElement : loop.getElements()) {
+                    output.append(processElement(loopElement, deliveryContext));
+                }
+            }
+        }
+
+        LOGGER.trace("${{}} = \"{}\"", loop, output.toString());
+        return output.toString();
     }
 
     private String processPickups(MessageBlockLoop loop, MessageBlockContext context) {

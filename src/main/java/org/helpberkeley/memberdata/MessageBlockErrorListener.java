@@ -71,7 +71,7 @@ public class MessageBlockErrorListener extends BaseErrorListener {
         underlineError(recognizer, (Token) offendingSymbol, line, charPositionInLine);
     }
 
-    private void underlineError(Recognizer recognizer, Token offendingToken, int line, int charPositionInLine) {
+    private void underlineError(Recognizer<?, ?> recognizer, Token offendingToken, int line, int charPositionInLine) {
         CommonTokenStream tokens =
                 (CommonTokenStream) recognizer.getInputStream();
         String input = tokens.getTokenSource().getInputStream().toString();

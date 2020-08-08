@@ -73,7 +73,7 @@ public class DriverPostTest extends TestBase {
         assertThat(post).contains("Sweet Basil");
         assertThat(post).contains("Bopshop");
         assertThat(post).contains("Cust Name 1");
-        assertThat(post).contains("(555) 555.1112,(111) 222.3333");
+        assertThat(post).contains("**(555) 555.1112**,(111) 222.3333");
         assertThat(post).contains("Cust Name 2");
         assertThat(post).contains("Cust Name 3");
 
