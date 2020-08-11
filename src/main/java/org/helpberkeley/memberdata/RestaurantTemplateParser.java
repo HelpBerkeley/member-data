@@ -30,7 +30,7 @@ import java.util.*;
 
 public class RestaurantTemplateParser {
 
-    static final String TEMPLATE_ERROR = "ControlBlockRestaurant Template Error: ";
+    static final String TEMPLATE_ERROR = "Restaurant Template Error: ";
     static final String ERROR_NO_DATA = "empty file";
     static final String MISSING_COLUMN_ERROR = "missing column: ";
     static final String MISSING_EMPTY_ROW = "did not find empty row at line ";
@@ -40,6 +40,7 @@ public class RestaurantTemplateParser {
 
     private long lineNumber = 0;
     private final Iterator<RestaurantBean> iterator;
+    private int version = Constants.CONTROL_BLOCK_VERSION_UNKNOWN;
 
     RestaurantTemplateParser(final String csvData) {
 
@@ -77,6 +78,8 @@ public class RestaurantTemplateParser {
             Constants.WORKFLOW_CONSUMER_COLUMN,
             Constants.WORKFLOW_DRIVER_COLUMN,
             Constants.WORKFLOW_RESTAURANTS_COLUMN,
+            Constants.WORKFLOW_VEGGIE_COLUMN,
+            Constants.WORKFLOW_NORMAL_COLUMN,
             Constants.WORKFLOW_ORDERS_COLUMN,
             Constants.WORKFLOW_DETAILS_COLUMN,
             Constants.WORKFLOW_CONDO_COLUMN);
@@ -117,14 +120,22 @@ public class RestaurantTemplateParser {
                 continue;
             }
 
+            if (version != Constants.CONTROL_BLOCK_CURRENT_VERSION) {
+                throw new MemberDataException(
+                        "Unsupported control block version: " + version
+                                + "\nCurrent supported version is: " + Constants.CONTROL_BLOCK_CURRENT_VERSION + "\n");
+            }
+
             if (isAddressBlockMarker(bean)) {
                 processAddressBlock(restaurants);
             } else if (isRoute(bean)) {
                 processRouteBlock(bean, restaurants);
+            } else if (isEmptyRow(bean)) {
+                continue;
+            } else if (isRouteBlockLabelRow(bean)) {
+                continue;
             } else {
-                if (!isEmptyRow(bean)) {
-                    throwTemplateError(MISSING_EMPTY_ROW + lineNumber);
-                }
+                throwTemplateError(MISSING_EMPTY_ROW + lineNumber);
             }
         }
 
@@ -165,15 +176,55 @@ public class RestaurantTemplateParser {
                 && (directive.equals(Constants.CONTROL_BLOCK_END));
     }
 
+    /**
+     * The label row at the beginning of the route section looks like:
+     *     ,,,,,,,,,Pics,,,Emojis,Starting,Closing
+     * @param bean RestaurantBean representation of row
+     * @return Whether or not the row is the end of a control block.
+     */
+    private boolean isRouteBlockLabelRow(RestaurantBean bean) {
+
+        return bean.getConsumer().isEmpty()
+                && bean.getDriver().isEmpty()
+                && bean.getRestaurant().isEmpty();
+    }
+
     private void processControlBlock() {
         RestaurantBean bean;
+        ControlBlock controlBlock = new ControlBlock();
 
         while ((bean = nextRow()) != null) {
 
             if (isControlBlockEndRow(bean)) {
                 break;
             }
+
+            if (! ignoreControlBlockRow(bean)) {
+                controlBlock.processRow(bean, lineNumber);
+            }
         }
+
+        version = controlBlock.getVersion();
+
+        if (version != Constants.CONTROL_BLOCK_CURRENT_VERSION) {
+            throw new MemberDataException(
+                    "Unsupported control block version: " + version
+                        + "\nCurrent supported version is: " + Constants.CONTROL_BLOCK_CURRENT_VERSION + "\n");
+        }
+    }
+
+    // FIX THIS, DS: move to ControlBlock.  Call by processRow
+    private boolean ignoreControlBlockRow(RestaurantBean bean) {
+
+        String directive = bean.getControlBlockDirective();
+
+        if (directive.equals(Constants.CONTROL_BLOCK_COMMENT)) {
+            return true;
+        }
+
+        return directive.isEmpty()
+                && bean.getControlBlockKey().isEmpty()
+                && bean.getControlBlockValue().isEmpty();
     }
 
     /**
@@ -267,6 +318,10 @@ public class RestaurantTemplateParser {
             if (startTime.isEmpty()) {
                 throwMissingValue(bean.startTimeColumn(), "start time");
             }
+            String emoji = bean.getEmoji();
+            if (emoji.isEmpty()) {
+                throwMissingValue(bean.emojiColumn(), "emoji");
+            }
 
             if (restaurants.containsKey(restaurantName)) {
                 throwTemplateError(restaurantName + DUPLICATE_ROUTE_ERROR);
@@ -275,6 +330,7 @@ public class RestaurantTemplateParser {
             restaurants.put(restaurantName, restaurant);
             restaurant.setRoute(routeName);
             restaurant.setStartTime(startTime);
+            restaurant.setEmoji(emoji);
 
             String noPics = bean.getNoPics();
             if (noPics.toLowerCase().equals(Constants.WORKFLOW_NO_PICS)) {

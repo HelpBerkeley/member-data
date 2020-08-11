@@ -31,6 +31,7 @@ public class Restaurant {
     private String address = "";
     private String startTime = "";
     private String details = "";
+    private String emoji = "";
     private String route = "";
     private long orders = 0;
     private final Map<String, Driver> drivers = new HashMap<>();
@@ -69,6 +70,9 @@ public class Restaurant {
         assert ! drivers.containsKey(driver.getUserName()) : driver.getUserName();
         drivers.put(driver.getUserName(), driver);
     }
+    void setEmoji(String emoji) {
+        this.emoji = emoji;
+    }
 
     void setNoPics() {
         noPics = true;
@@ -92,6 +96,10 @@ public class Restaurant {
 
     String getAddress() {
         return address;
+    }
+
+    String getEmoji() {
+        return emoji;
     }
 
     long getOrders() {

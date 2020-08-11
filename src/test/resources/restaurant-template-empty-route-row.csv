@@ -1,11 +1,15 @@
 Consumer,Driver,Name,User Name,Phone #,Phone2 #,Neighborhood,City,Address,Condo,Details,Restaurants,normal,veggie,#orders
+FALSE,FALSE,ControlBegin,,,,,,,,,,,,
+FALSE,FALSE,,Version,,,,1,,,,,,,
+FALSE,FALSE,ControlEnd,,,,,,,,,,,,
+,,,,,,,,,,,,,,
 FALSE,TRUE,,,,,,,,,,,,,
 FALSE,,,,,,,,"1158 Solano Ave, Albany",FALSE,,Cafe Raj,,,
 ,,,,,,,,,,,,,,
 FALSE,TRUE,,,,,,,,,,,,,
 ,,,,,,,,,,,,,,
 ,,,,,,,,,,,,,,
+,,,,,,,,,Pics,,,Emojis,Starting,Closing
+Solano Route,,,,,,,,,,,Cafe Raj,:open_umbrella:,5:10 PM,10:00 PM
 ,,,,,,,,,,,,,,
-Solano Route,,"(Note: every line with a start time needs a ""...Route"" in the Consumer column (for our sw)",,,,,,,,,Cafe Raj,,,5:10 PM
-,,,,,,,,,,,,,,
-Solano Route,,,,,,,,Closed Mondays,,,Kim's Cafe,,,5:10 PM
+Solano Route,,,,,,,,Closed Mondays,,,Kim's Cafe,:basketball:,5:10 PM,6:00 PM

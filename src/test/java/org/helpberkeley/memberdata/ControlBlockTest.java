@@ -328,60 +328,6 @@ public class ControlBlockTest extends TestBase {
     }
 
     @Test
-    public void missingRestaurantValueSeparatorTest() {
-
-        String workFlowData = HEADER + CONTROL_BLOCK_BEGIN_ROW
-                + "FALSE,FALSE,,Restaurant (Name|Emoji),,,,Bopshop :splatt:,,,,,,,\n";
-
-        WorkflowParser workflowParser = new WorkflowParser(WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, workFlowData);
-
-        Throwable thrown = catchThrowable(workflowParser::drivers);
-        assertThat(thrown).isInstanceOf(MemberDataException.class);
-        assertThat(thrown).hasMessageContaining("does not match \"name | emoji\"");
-        assertThat(thrown).hasMessageContaining("Bopshop :splatt:");
-    }
-
-    @Test
-    public void tooManyRestaurantValueSeparatorTest() {
-
-        String workFlowData = HEADER + CONTROL_BLOCK_BEGIN_ROW
-                + "FALSE,FALSE,,Restaurant (Name|Emoji),,,,|x|:splatt:|,,,,,,,\n";
-
-        WorkflowParser workflowParser = new WorkflowParser(WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, workFlowData);
-
-        Throwable thrown = catchThrowable(workflowParser::drivers);
-        assertThat(thrown).isInstanceOf(MemberDataException.class);
-        assertThat(thrown).hasMessageContaining("does not match \"name | emoji\"");
-        assertThat(thrown).hasMessageContaining("|x|:splatt:|");
-    }
-
-    @Test
-    public void restaurantEmptyNameTest() {
-
-        String workFlowData = HEADER + CONTROL_BLOCK_BEGIN_ROW
-                + "FALSE,FALSE,,Restaurant (Name|Emoji),,,,|:splatt:,,,,,,,\n";
-
-        WorkflowParser workflowParser = new WorkflowParser(WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, workFlowData);
-
-        Throwable thrown = catchThrowable(workflowParser::drivers);
-        assertThat(thrown).isInstanceOf(MemberDataException.class);
-        assertThat(thrown).hasMessageContaining("Empty Restaurant name at line 3.");
-    }
-
-    @Test
-    public void restaurantEmptyEmojiTest() {
-
-        String workFlowData = HEADER + CONTROL_BLOCK_BEGIN_ROW
-                + "FALSE,FALSE,,Restaurant (Name|Emoji),,,,V&A Cafe|,,,,,,,\n";
-
-        WorkflowParser workflowParser = new WorkflowParser(WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, workFlowData);
-
-        Throwable thrown = catchThrowable(workflowParser::drivers);
-        assertThat(thrown).isInstanceOf(MemberDataException.class);
-        assertThat(thrown).hasMessageContaining("Empty Restaurant emoji at line 3.");
-    }
-
-    @Test
     public void auditNoOpsManagerTest() {
         String workFlowData = HEADER + CONTROL_BLOCK_BEGIN_ROW + CONTROL_BLOCK_END_ROW;
 
@@ -491,24 +437,6 @@ public class ControlBlockTest extends TestBase {
         assertThat(thrown).isInstanceOf(MemberDataException.class);
         assertThat(thrown).hasMessage("Set SplitRestaurant cleanup driver user name "
                 + "\"White Castle\" at line 4 to a valid user name.\n");
-    }
-
-    @Test
-    public void missingEmojiTest() {
-        String workFlowData = HEADER + CONTROL_BLOCK_BEGIN_ROW
-                + "FALSE,FALSE,,OpsManager (UserName | Phone),,,,"
-                + "FredZ | 510-555-1212,,,,,,,\n"
-                + CONTROL_BLOCK_END_ROW;
-
-        List<String> restaurants = List.of("Bopshop", "Cafe Raj", "Jot Mahal");
-
-        WorkflowParser workflowParser = new WorkflowParser(WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, workFlowData);
-        ControlBlock controlBlock = workflowParser.controlBlock();
-        controlBlock.audit(restaurants, Collections.EMPTY_LIST);
-        for (String restaurant : restaurants) {
-            assertThat(controlBlock.getWarnings()).contains("Restaurant "
-                    + restaurant + " does not have a Restaurant(Name|Emoji) entry in the control block.\n");
-        }
     }
 
     @Test

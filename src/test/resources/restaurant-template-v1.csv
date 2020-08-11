@@ -1,0 +1,61 @@
+Consumer,Driver,Name,User Name,Phone #,Phone2 #,Neighborhood,City,Address,Condo,Details,Restaurants,normal,veggie,#orders
+FALSE,FALSE,ControlBegin,,,,,,,,,,,,
+FALSE,FALSE,Comment ,"This is a control block, where we can hand specific information to the software outside the drivers' blocks, and write comments",,,,,,,,,,,
+FALSE,FALSE,Comment ,"Each line starting with ""Comment"" in the Name column can be used for free-form comments",,,,,,,,,,,
+FALSE,FALSE,Comment ,Below is the version number for the specific version of this control block: it is important that it not be changed,,,,,,,,,,,
+FALSE,FALSE,,,,,,,,,,,,,
+FALSE,FALSE,,Version,,,,1,,,,,,,
+FALSE,FALSE,,,,,,,,,,,,,
+FALSE,FALSE,Comment ,"As you can see, we can leave lines mostly  blank, but, for each line in the control block, they MUST start with FALSE/ FALSE",,,,,,,,,,,
+FALSE,FALSE,Comment ,"In order to pass information to the software, we must define the type of information we want to share in the UserName column, and the actual value in the City column",,,,,,,,,,,
+FALSE,FALSE,,,,,,,,,,,,,
+FALSE,FALSE,Comment ,"In order to tell the software who is the ops manager and what is her phone number, we write:",,,,,,,,,,,
+FALSE,FALSE,Comment ,OpsManager (UserName | Phone),,,,SamWhatAnonymous | 111-222-3333,,[this is an example],,,,,
+FALSE,FALSE,Comment ,Please note that the separator between the name and the number is a specific separator: |,,,,,,,,,,,
+FALSE,FALSE,Comment,"In order to tell the software who is (are) the backup driver(s), we write this line, which can be repeated for several backup drivers:",,,,,,,,,,,
+FALSE,FALSE,Comment,BackupDriverUserName,,,,MichelThouati,,[this is an example],,,,,
+FALSE,FALSE,Comment,"In order to tell the software who is the cleanup driver for each split restaurant, we write (this line can be repeated for several split restaurants):",,,,,,,,,,,
+FALSE,FALSE,Comment,SplitRestaurant (Name | CleanupDriverUserName),,,,Jot Mahal | Ferdinandinandinand,,[this is an example],,,,,
+FALSE,FALSE,Comment,"We need a SplitRestaurant line for each split restaurant in the run. If none are split, the SplitRestaurant line must be deleted or commented",,,,,,,,,,,
+FALSE,FALSE,,,,,,,,,,,,,
+FALSE,FALSE,Comment,"When you are ready to request routes, (a) take out the control block, and (b) submit to ""Request driver routes DRAFT'"" thread in Hushworkflow",,,,,,,,,,,
+FALSE,FALSE,Comment,"When you are ready to request driver messages, (a) make sure the control block is there and filled, and (b) submit to ""Request driver messages"" in Hushworkflow",,,,,,,,,,,
+FALSE,FALSE,,,,,,,,,,,,,
+FALSE,FALSE,,OpsManager (UserName | Phone),,,,ReplaceThisByUserName | ReplaceThisByPhone#In510-555-1212Format,,,,,,,
+FALSE,FALSE,,SplitRestaurant (Name | CleanupDriverUserName),,,,ReplaceThisBySplitRestaurantName | ReplaceThisByCleanupDriverUserName,,,,,,,
+FALSE,FALSE,,BackupDriverUserName,,,,ReplaceThisByTheBackUpDriverUserName,,,,,,,
+FALSE,FALSE,,,,,,,,,,,,,
+FALSE,FALSE,ControlEnd,,,,,,,,,,,,
+,,,,,,,,,,,,,,
+FALSE,TRUE,,,,,,,,,,,,,
+FALSE,,,,,,,,"1158 Solano Ave, Albany",FALSE,,Cafe Raj,,,
+FALSE,,,,,,,,"1309 Solano Ave, Albany",FALSE,"Pale yellow awning, E of the BART tracks.",Kim's Cafe,,,
+FALSE,,,,,,,,"1561 Solano Ave, Berkeley",FALSE,You may have to park across the street.,Talavera,,,
+FALSE,,,,,,,,"1736 Solano Ave, Berkeley",FALSE,,Sweet Basil,,,
+FALSE,,,,,,,,"1823 Solano Ave, Berkeley",FALSE,,Bopshop,,,
+,,,,,,,,,,,,,,
+FALSE,TRUE,,,,,,,,,,,,,
+FALSE,,,,,,,,"1543 Shattuck Ave, Berkeley",FALSE,,Jot Mahal,,,
+FALSE,,,,,,,,"2109 Cedar St, Berkeley",FALSE,"If over 8 orders go to kitchen door in back driveway uphill of restaurant, else go to front.",Gregoire,,,
+FALSE,,,,,,,,"1600 Shattuck Ave, Berkeley",FALSE,Ask the cashier,Crepevine,,,
+FALSE,,,,,,,,"1674 Shattuck Ave, Berkeley",FALSE,,Da Lian,,,
+FALSE,,,,,,,,"1700 Shattuck Ave, Berkeley",FALSE,,Thai Delight,,,
+FALSE,,,,,,,,"2521 Hearst Ave, Berkeley",FALSE,"Immediately E (uphill) of Etcheverry Hall, right against building",V&A Cafe,,,
+FALSE,,,,,,,,"1956 Shattuck Ave, Berkeley",FALSE,,Kaze Ramen,,,
+FALSE,,,,,,,,"2384 Telegraph Ave, Berkeley",FALSE,"If no parking in front, double park and call them @ (510) 665-7895: they will bring orders and order form to the car.",Tacos Sinaloa,,,
+,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,
+,,,,,,,,,Pics,,,Emojis,Starting,Closing
+Solano Route,,"(Note: every line with a start time needs a ""...Route"" in the Consumer column (for our sw)",,,,,,,,,Cafe Raj,:open_umbrella:,5:10 PM,10:00 PM
+Solano Route,,,,,,,,Closed Mondays,,,Kim's Cafe,:basketball:,5:10 PM,6:00 PM
+Solano Route,,,,,,,,,,,Talavera,:gloves:,5:00 PM,10:00 PM
+Solano Route,,,,,,,,,,,Sweet Basil,:lemon:,5:10 PM,8:00 PM
+Solano Route,,,,,,,,,,,Bopshop,:motor_scooter:,5:10 PM,9:00 PM
+Shattuck Route,,,,,,,,,,,Jot Mahal,:tractor:,5:10 PM,9:00 PM
+Shattuck Route,,,,,,,,,No pics,,Gregoire,:cyclone:,5:10 PM,9:00 PM
+Shattuck Route,,,,,,,,,,,Crepevine,:watermelon:,5:10 PM,9:00 PM
+Shattuck Route,,"Note: 5:15pm for 1 order, 5:20pm for more",,,,,,Closed Mondays,No pics,,Da Lian,:ping_pong:,5:20 PM,8:30 PM
+Shattuck Route,,,,,,,,Closed Wednesdays,,,Thai Delight,:earth_asia:,5:10 PM,8:30 PM
+Shattuck Route,,"Closes right at 5:00pm. On weekend, don't send a driver if no orders to pickup (they will upload directly).",,,,,,,,,V&A Cafe,:boot:,4:50 PM,5:00 PM
+Shattuck Route,,,,,,,,,,,Kaze Ramen,:shinto_shrine:,5:10 PM,8:00 PM
+Shattuck Route,,,,,,,,,,,Tacos Sinaloa,:rainbow:,5:10 PM,6:00 PM

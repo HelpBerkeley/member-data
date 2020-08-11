@@ -362,7 +362,7 @@ public class DriverPostFormat {
                 value = restaurant.getStartTime();
                 break;
             case "FirstRestaurantEmoji":
-                value = controlBlock.getEmoji(firstRestaurant);
+                value = restaurant.getEmoji();
                 break;
             case "ThisDriverGMapURL":
                 value = context.getDriver().getgMapURL();
@@ -442,7 +442,7 @@ public class DriverPostFormat {
                 value = pickupRestaurant.getName();
                 break;
             case "ThisDriverRestaurant.Emoji":
-                value = controlBlock.getEmoji(pickupRestaurant.getName());
+                value = globalRestaurant.getEmoji();
                 break;
             case "ThisDriverRestaurant.Address":
                 value = pickupRestaurant.getAddress();
@@ -499,7 +499,7 @@ public class DriverPostFormat {
                 value = delivery.getRestaurant();
                 break;
             case "Consumer.RestaurantEmoji":
-                value = controlBlock.getEmoji(delivery.getRestaurant());
+                value = restaurants.get(delivery.getRestaurant()).getEmoji();
                 break;
             case "Consumer.Normal":
                 value = delivery.getNormalRations();
@@ -564,7 +564,7 @@ public class DriverPostFormat {
                 value = name;
                 break;
             case "SplitRestaurant.Emoji":
-                value = controlBlock.getEmoji(name);
+                value = splitRestaurant.getEmoji();
                 break;
             case "SplitRestaurant.TotalOrders":
                 value = Long.toString(splitRestaurant.getOrders());

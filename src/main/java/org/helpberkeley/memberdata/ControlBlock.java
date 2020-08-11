@@ -36,7 +36,6 @@ class ControlBlock {
     private final List<SplitRestaurant> splitRestaurants = new ArrayList<>();
     private final Map<String, SplitRestaurant> splitRestaurantMap = new HashMap<>();
     private final List<String> backupDrivers = new ArrayList<>();
-    private final Map<String, ControlBlockRestaurant> controlBlockRestaurants = new HashMap<>();
 
     private final StringBuilder warnings = new StringBuilder();
 
@@ -49,7 +48,6 @@ class ControlBlock {
 
         auditVersion(errors);
         auditOpsManager(errors);
-        auditEmojis(allRestaurants);
         auditSplitRestaurants(splitRestaurants, errors);
         auditBackupDrivers();
 
@@ -82,15 +80,6 @@ class ControlBlock {
                         .append(" entry for ")
                         .append(restaurant)
                         .append("\n");
-            }
-        }
-    }
-
-    private void auditEmojis(List<String> splitRestaurants) {
-        for (String restaurant : splitRestaurants) {
-            if (! controlBlockRestaurants.containsKey(restaurant)) {
-                warnings.append("Restaurant ").append(restaurant).append(" does not have a ")
-                        .append(Constants.CONTROL_BLOCK_RESTAURANT).append(" entry in the control block.\n");
             }
         }
     }
@@ -137,22 +126,6 @@ class ControlBlock {
         return backupDrivers;
     }
 
-    String getEmoji(String restaurantName) {
-
-        ControlBlockRestaurant controlBlockRestaurant = controlBlockRestaurants.get(restaurantName);
-        String value;
-
-        if (controlBlockRestaurant != null) {
-            value = controlBlockRestaurant.getEmoji();
-        } else {
-            warnings.append("Restaurant ").append(restaurantName).append(" does not have a ")
-                    .append(Constants.CONTROL_BLOCK_RESTAURANT).append(" entry in the control block");
-            value = "";
-        }
-
-        return value;
-    }
-
     void clear()
     {
         version = Constants.CONTROL_BLOCK_VERSION_UNKNOWN;
@@ -180,8 +153,30 @@ class ControlBlock {
             case Constants.CONTROL_BLOCK_BACKUP_DRIVER:
                 processBackupDriver(value, lineNumber);
                 break;
-            case Constants.CONTROL_BLOCK_RESTAURANT:
-                processRestaurant(value, lineNumber);
+            default:
+                warnings.append("Unknown key \"")
+                        .append(variable)
+                        .append("\" in the ")
+                        .append(Constants.WORKFLOW_USER_NAME_COLUMN)
+                        .append(" column at line ")
+                        .append(lineNumber)
+                        .append(".\n");
+        }
+    }
+
+    // FIX THIS, DS: refactor the two beans
+    void processRow(RestaurantBean bean, long lineNumber) {
+        String variable = bean.getControlBlockKey().replaceAll(" ", "");
+        String value = bean.getControlBlockValue().replaceAll("\\s*\\|\\s*", "|");
+
+        switch (variable) {
+            case Constants.CONTROL_BLOCK_VERSION:
+                processVersion(value, lineNumber);
+                break;
+            case Constants.CONTROL_BLOCK_OPS_MANAGER:
+            case Constants.CONTROL_BLOCK_SPLIT_RESTAURANT:
+            case Constants.CONTROL_BLOCK_BACKUP_DRIVER:
+                // Skip.  Not relevant to restaurant template
                 break;
             default:
                 warnings.append("Unknown key \"")
@@ -192,6 +187,7 @@ class ControlBlock {
                         .append(lineNumber)
                         .append(".\n");
         }
+
     }
 
     String getWarnings() {
@@ -328,40 +324,6 @@ class ControlBlock {
         splitRestaurantMap.put(restaurantName, new SplitRestaurant(restaurantName, cleanupDriver));
     }
 
-    //
-    // A ControlBlockRestaurant data field should look like "restaurant name | emoji"
-    //
-    private void processRestaurant(final String value, long lineNumber) {
-        String[] fields = value.split("\\" + INTRA_FIELD_SEPARATOR, -42);
-
-        if (fields.length != 2) {
-            throw new MemberDataException(Constants.CONTROL_BLOCK_RESTAURANT + " value \"" + value
-                    + "\" at line " + lineNumber
-                    + " does not match \"name | emoji\"");
-        }
-
-        String restaurantName = fields[0].trim();
-        String emoji = fields[1].trim();
-
-        StringBuilder errors = new StringBuilder();
-
-        if (restaurantName.isEmpty()) {
-            errors.append("Empty Restaurant name at line ").append(lineNumber).append(".\n");
-        }
-
-        if (emoji.isEmpty()) {
-            errors.append("Empty Restaurant emoji at line ").append(lineNumber).append(".\n");
-        }
-
-        // FIX THIS, DS: emoji audit?
-
-        if (errors.length() != 0) {
-            throw new MemberDataException(errors.toString());
-        }
-
-        controlBlockRestaurants.put(restaurantName, new ControlBlockRestaurant(restaurantName, emoji));
-    }
-
     private void processBackupDriver(final String backupDriver, long lineNumber) {
 
         if (backupDriver.contains(INTRA_FIELD_SEPARATOR)) {
@@ -428,42 +390,6 @@ class ControlBlock {
         @Override
         public String toString() {
             return (name + ", " + cleanupDriverUserName);
-        }
-    }
-
-    static class ControlBlockRestaurant {
-        private final String name;
-        private final String emoji;
-
-        ControlBlockRestaurant(String name, String emoji) {
-            this.name = name;
-            this.emoji = emoji;
-        }
-
-        public String getName() {
-            return name;
-        }
-
-        public String getEmoji() {
-            return emoji;
-        }
-
-        @Override
-        public boolean equals(Object obj) {
-            return ((obj != null)
-                    && (obj instanceof ControlBlockRestaurant)
-                    && (name.equals(((ControlBlockRestaurant)obj).name))
-                    && (emoji.equals(((ControlBlockRestaurant)obj).emoji)));
-        }
-
-        @Override
-        public int hashCode() {
-            return Objects.hash(name, emoji);
-        }
-
-        @Override
-        public String toString() {
-            return (name + ", " + emoji);
         }
     }
 

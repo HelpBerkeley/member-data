@@ -35,11 +35,23 @@ public class RestaurantBean {
     @CsvBindByName(column = Constants.WORKFLOW_NAME_COLUMN)
     private String name;
 
+    @CsvBindByName(column = Constants.WORKFLOW_USER_NAME_COLUMN)
+    private String userName;
+
+    @CsvBindByName(column = Constants.WORKFLOW_CITY_COLUMN)
+    private String city;
+
     @CsvBindByName(column = Constants.WORKFLOW_RESTAURANTS_COLUMN)
     private String restaurant;
 
     @CsvBindByName(column = Constants.WORKFLOW_CONDO_COLUMN)
     private String condo;
+
+    @CsvBindByName(column = Constants.WORKFLOW_NORMAL_COLUMN)
+    private String normal;
+
+    @CsvBindByName(column = Constants.WORKFLOW_VEGGIE_COLUMN)
+    private String veggie;
 
     @CsvBindByName(column = Constants.WORKFLOW_ORDERS_COLUMN)
     private String orders;
@@ -64,12 +76,22 @@ public class RestaurantBean {
     }
 
     /**
-     * In the restaurant template, in the route block, the
-     * orders column is used for the start time
+     * In the restaurant template, V1 and later, in the route block,
+     * the veggie column is used for the start time
      *
      * @return start time
      */
     public String getStartTime() {
+        return getVeggie();
+    }
+
+    /**
+     * In the restaurant template, V1 and later, in the route block,
+     * the orders column is used for the closing time
+     *
+     * @return closing time
+     */
+    public String getClosingTime() {
         return getOrders();
     }
 
@@ -83,6 +105,16 @@ public class RestaurantBean {
         return getCondo();
     }
 
+    /**
+     * In the restaurant template, V1 and later, in the route block,
+     * the normal column is used for the restaurant emoji
+     *
+     * @return start time
+     */
+    public String getEmoji() {
+        return getNormal();
+    }
+
     // Accessors for overloaded columns
 
     /**
@@ -91,6 +123,22 @@ public class RestaurantBean {
      */
     public String getControlBlockDirective() {
         return getName().trim();
+    }
+
+    /**
+     * In control blocks, the User Name column is used for the key value
+     * @return Control block key value
+     */
+    public String getControlBlockKey() {
+        return getUserName().trim();
+    }
+
+    /**
+     * In control blocks, the City column is used for the data value
+     * @return Control block data value
+     */
+    public String getControlBlockValue() {
+        return getCity().trim();
     }
 
     // Column name accessors
@@ -107,12 +155,20 @@ public class RestaurantBean {
         return getColumnName("orders");
     }
 
+    public String normalColumn() {
+        return getColumnName("normal");
+    }
+
     public String startTimeColumn() {
         return ordersColumn();
     }
 
     public String routeColumn() {
         return consumerColumn();
+    }
+
+    public String emojiColumn() {
+        return normalColumn();
     }
 
 
@@ -136,7 +192,6 @@ public class RestaurantBean {
                 && condo.isEmpty()
                 && orders.isEmpty()
                 && details.isEmpty();
-
     }
 
     // Annotated accessors for CSV parser
@@ -165,6 +220,22 @@ public class RestaurantBean {
         this.name = name;
     }
 
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
+    public String getCity() {
+        return city;
+    }
+
+    public void setCity(String city) {
+        this.city = city;
+    }
+
     public String getRestaurant() {
         return restaurant.trim();
     }
@@ -179,6 +250,22 @@ public class RestaurantBean {
 
     public void setCondo(String condo) {
         this.condo = condo;
+    }
+
+    public String getNormal() {
+        return normal.trim();
+    }
+
+    public void setNormal(String normal) {
+        this.normal = normal;
+    }
+
+    public String getVeggie() {
+        return veggie.trim();
+    }
+
+    public void setVeggie(String veggie) {
+        this.veggie = veggie;
     }
 
     public String getOrders() {

@@ -267,6 +267,7 @@ public class WorkflowParser {
         }
     }
 
+    // FIX THIS, DS: move to ControlBlock.  Call by processRow
     private boolean ignoreControlBlockRow(WorkflowBean bean) {
 
         String directive = bean.getControlBlockDirective();

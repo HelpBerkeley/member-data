@@ -28,13 +28,26 @@ import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.catchThrowable;
 
 public class ControlBlockRestaurantTest extends TestBase {
 
     @Test
+    public void downRevVersionTest() {
+        String csvData = readResourceFile("restaurant-template.csv");
+        RestaurantTemplateParser parser = new RestaurantTemplateParser(csvData);
+
+        Throwable thrown = catchThrowable(parser::restaurants);
+        assertThat(thrown).isInstanceOf(MemberDataException.class);
+        assertThat(thrown).hasMessageContaining("Unsupported control block version: 0");
+        assertThat(thrown).hasMessageContaining(
+                "Current supported version is: " + Constants.CONTROL_BLOCK_CURRENT_VERSION);
+    }
+
+    @Test
     public void parseTest() {
 
-        String csvData = readResourceFile("restaurant-template.csv");
+        String csvData = readResourceFile("restaurant-template-v1.csv");
         RestaurantTemplateParser parser = new RestaurantTemplateParser(csvData);
         Map<String, Restaurant> restaurants = parser.restaurants();
 
