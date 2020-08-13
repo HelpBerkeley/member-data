@@ -155,6 +155,9 @@ public class HttpClientSimulator extends HttpClient {
             case Constants.QUERY_GET_DRIVERS_POST_FORMAT_V22:
                 dataFile = "driver-format-topic-v22.json";
                 break;
+            case Constants.QUERY_GET_DRIVERS_POST_FORMAT_V23:
+                dataFile = "driver-format-topic-v23.json";
+                break;
             case Constants.QUERY_GET_GROUP_INSTRUCTIONS_FORMAT_V1:
                 dataFile = "group-instructions-post.json";
                 break;
@@ -163,6 +166,9 @@ public class HttpClientSimulator extends HttpClient {
                 break;
             case Constants.QUERY_GET_GROUP_INSTRUCTIONS_FORMAT_V21:
                 dataFile = "group-instructions-post-v21.json";
+                break;
+            case Constants.QUERY_GET_GROUP_INSTRUCTIONS_FORMAT_V22:
+                dataFile = "group-instructions-post-v22.json";
                 break;
             case Constants.QUERY_GET_LAST_ROUTED_WORKFLOW_REPLY:
                 dataFile = "last-routed-workflow-reply.json";

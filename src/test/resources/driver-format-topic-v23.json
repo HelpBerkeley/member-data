@@ -1,0 +1,65 @@
+{
+  "success": true,
+  "errors": [],
+  "duration": 0.6,
+  "result_count": 10,
+  "params": {},
+  "columns": [
+    "post_number",
+    "raw",
+    "deleted_at"
+  ],
+  "default_limit": 1000,
+  "rows": [
+    [
+      1,
+      "[Comment]\n\nComment post. This thread is specifying the way the software is formatting the drivers' threads.\n\n* Picked up by the software directly from the post:\n[Header]\n[SplitRestaurant]\n[Condo]\n[Restaurants]\n[Pickup]\n[Deliveries]\n[Itinerary]\n[CompleteCondo]\n\n**Variables**\n\n**ThisDriverUserName** ... string, driver's block scope, from workflow spreadsheet\n**ThisDriverFirstRestaurant** ... string, driver's block scope, from workflow spreadsheet\n**FirstRestaurantEmoji**   ... string, calculated from workflow spreadsheet and restaurant template\n**ThisDriverFirstRestaurantStartTime** ... string, driver's block scope, from workflow spreadsheet\n**ThisDriverGMapURL**  ... string, driver's block scope, from workflow spreadsheet\n\n\n**OnCallOpsManager**  ... structure\n**.UserName** ... string, workflow spreadsheet scope, from workflow control block\n**.Phone** ... string, workflow spreadsheet scope, from workflow control block\n**.CompactPhone** ... string, workflow spreadsheet scope, from workflow control block, in format (510) 555.1212\n\n**ThisDriverRestaurant.AnyOrder**  ... boolean, driver block\n**ThisDriverSplitsAnyRestaurant** ... boolean, driver's block scope scope, from workflow spreadsheet\n**ThisDriverAnyCondo**  ... boolean, driver's block scope scope, from workflow spreadsheet\n\n**ThisDriverRestaurant**   list, driver's block scope\n**.MemberName** ... string, from workflow spreadsheet\n**.Emoji**. ... string, from workflow spreadsheet\n**.Address** ... string, from workflow spreadsheet\n**.Details**  ... string, from workflow spreadsheet\n**.ThisDriverOrders**  ... integer, from workflow spreadsheet\n**.IsSplit** ... boolean, calculated from workflow spreadsheet \n**.NoPics** ... boolean, restaurant template (i.e. if the restaurant uploads directly)\n**.IsCleanup** ... boolean, from workflow control block (is it split AND is driver cleanup?)\n**.TotalDrivers** ... integer, calculated from workflow spreadsheet (for this restaurant)\n**.TotalOrders** ... integer, calculated from workflow spreadsheet (for this restaurant)\n**.Pickup**  ... list, from workflow spreadsheet\n\n**ThisDriverRestaurant.Pickup** ... list, driver block scope\n**.Name**  ... string, from driver block\n**.UserName**  ... string, from driver block\n**.Normal**   ... integer, driver block\n**.Veggie**   ... integer, driver block\n\n**Consumer**  list, driver's block scope\n**.Name** ... string, from workflow spreadsheet\n**.UserName** ... string, from workflow spreadsheet\n**.CompactPhone** ... string, from workflow spreadsheet, in format (510) 555.1212\n**.CompactAltPhone** ... string, from workflow spreadsheet, in format (510) 555.1212\n**.IsAltPhone** ... boolean, from workflow spreadsheet (meaning: is there an Alt phone number?)\n**.City** ... string, from workflow spreadsheet\n**.Address** ... string, from workflow spreadsheet\n**.IsCondo** ... boolean, from workflow spreadsheet\n**.Details**  ... string, from workflow spreadsheet\n**.Restaurant**  ... string, from workflow spreadsheet\n**.RestaurantEmoji** ... string, from workflow spreadsheet\n**.Normal**  ... integer, from workflow spreadsheet\n**.Veggie**  ... integer, from workflow spreadsheet\n\n----\n\n**Suggested changes**\n\n----\n**For v2.3**\n\nAdd:\n**ThisDriverFirstRestaurantClosingTime** ... string, driver's block scope, from workflow spreadsheet\n**IsFirstRestaurantClosingBefore545PM**  … Boolean, calculated from restaurant template\n\n\n\n----\nFuture versions\n\nReplace the single variables in this list:\n\n**ThisDriverUserName** ... string, driver's block scope, from workflow spreadsheet\n**ThisDriverFirstRestaurant** ... string, driver's block scope, from workflow spreadsheet\n**FirstRestaurantEmoji**   ... string, calculated from workflow spreadsheet and restaurant template\n**ThisDriverFirstRestaurantStartTime** ... string, driver's block scope, from workflow spreadsheet\n**ThisDriverGMapURL**  ... string, driver's block scope, from workflow spreadsheet\n**ThisDriverSplitsAnyRestaurant** ... boolean, driver's block scope scope, from workflow spreadsheet\n**ThisDriverAnyCondo**  ... boolean, driver's block scope scope, from workflow spreadsheet\n\nby the following structure\n\n**Driver**  ...  struct, driver's block scope\n**.UserName** ... string, from workflow spreadsheet\n**.FirstRestaurant** ... string, from workflow spreadsheet\n**.FirstRestaurantEmoji**   ... string, calculated from workflow spreadsheet and restaurant template\n**.FirstRestaurantStartTime** ... string, driver's, calculated from from workflow spreadsheet and restaurant template\n**.SplitsAnyRestaurant** ... boolean, calculated from workflow spreadsheet\n**.AnyCondo**  ... boolean, calculated from workflow spreadsheet\n**.GMapURL**  ... string, from workflow spreadsheet\n\nAdd:\n\n**.AnyDelivery** ... boolean, calculated from workflow spreadsheet (any orders to deliver?)\n\nPossibly (?) turn:\n\n**ThisDriverSplitRestaurant**  list, driver’s block scope\n**ThisDriverRestaurant**   list, driver's block scope\n\ninto:\n**Driver**\n**.SplitRestaurant** ... list\n**.Restaurant** ... list\n\n----\n\nTurn:\n**OnCallOpsManager**  ... structure\n\nInto\n**OnCallOpsManager**  ... list",
+      null
+    ],
+    [
+      2,
+      "```\n[Header]\n\n\"Driver's run for @\"    ${ThisDriverUserName}\n\": start at **\"  ${ThisDriverFirstRestaurant} \" \" ${FirstRestaurantEmoji}\n\"** at **\"  ${ThisDriverFirstRestaurantStartTime}  \". \"\n\nIF ${IsFirstRestaurantClosingBefore545PM} THEN\n{\n  \"This restaurant closes at \" \n  ${ThisDriverFirstRestaurantClosingTime}  \".\"\n}\n\n\"\\nPlease reply to this thread when you begin your run!**\\n\\n\n\nAny issue: call today's on-call ops manager,\"\n\" @\"${OnCallOpsManager.UserName}\", at \"${OnCallOpsManager.CompactPhone}\".\\n\\n\"\n\n```",
+      null
+    ],
+    [
+      3,
+      "```\n[SplitRestaurant]\n\nIF ${ThisDriverSplitsAnyRestaurant} THEN\n{\n  \"You are sharing at least one restaurant \"\n  \"with other drivers:\\n\"\n\n  LOOP &{ThisDriverRestaurant}\n  {\n    IF &{ThisDriverRestaurant.IsSplit} THEN \n    {\n      \"**&ast;** you are picking up **\"  \n      &{ThisDriverRestaurant.ThisDriverOrders}  \n      \"** of \"  &{ThisDriverRestaurant.TotalOrders}  \n      \" orders at **\"  \n      &{ThisDriverRestaurant.Name} \"** \" \n      &{ThisDriverRestaurant.Emoji}  \n      \" (\" &{ThisDriverRestaurant.TotalDrivers}  \" drivers).\"\n\n\n```\n```\n      IF &{ThisDriverRestaurant.IsCleanup} THEN\n      {\n        \" **You are cleanup driver:** \"\n\n        IF &{ThisDriverRestaurant.NoPics} THEN\n          {  \"you **do not need to take pics** (uploaded directly); \"  }\n\n        IF NOT &{ThisDriverRestaurant.NoPics} THEN\n          {  \"**take pics** of the order form; \"  }\n\n        \"**remain on location** until all orders are picked up. \"\n        \"If problem, call the ops manager.\\n\"\n      }\n\n```\n```\n      IF NOT &{ThisDriverRestaurant.IsCleanup} THEN\n        {  \" You **do not need to take pics.**\\n\"  }\n    \n    }\n  }\n\n  \"**&ast;** be careful to take the right orders; \"\n  \"always explain that other drivers are coming.\\n\\n\"\n\n}\n```",
+      null
+    ],
+    [
+      4,
+      "```\n[Condo]\n\nIF ${ThisDriverAnyCondo} THEN\n{\n    \":warning:You have a condo on your run: **from the previous delivery \"\n    \"location, call condo consumer** and ask to meet downstairs. \"\n    \"Always leave a message, & **post** if delivery fails \"\n     \"(full instructions at the end).\\n\\n\"\n}\n```",
+      null
+    ],
+    [
+      5,
+      "```\n[Restaurants]\n\n\"**Restaurants**:\"\n\" go to each restaurant, in this sequence \"\n\"(even if no pickups, to take pics of tomorrow’s order form).\"\n\" The driving sequence is based on the restaurants' schedule!\\n\\n\"\n\n\"|Restaurant|Address|Details|Orders|\\n\n|---|---|---|---|\\n\"\nLOOP &{ThisDriverRestaurant}\n{\n  \"|\" &{ThisDriverRestaurant.Name} \" \" &{ThisDriverRestaurant.Emoji}\n  \"|\" &{ThisDriverRestaurant.Address}\n  \"|\" \n  IF NOT &{ThisDriverRestaurant.IsSplit} THEN \n  {\n\n    IF &{ThisDriverRestaurant.NoPics} THEN \n      {  \":no_mobile_phones:**No pics** \"  }\n    IF NOT &{ThisDriverRestaurant.NoPics} THEN \n      {  \":camera:**Take pics** \"  }\n  }\n```\n```\n  IF &{ThisDriverRestaurant.IsSplit} THEN\n  {\n    \":knife:**Split** \" \n    IF NOT &{ThisDriverRestaurant.IsCleanup} THEN \n      {\":no_mobile_phones:**No pics** \"}\n\n    IF &{ThisDriverRestaurant.IsCleanup} THEN\n    {\n\n      IF &{ThisDriverRestaurant.NoPics} THEN \n        {\":no_mobile_phones:**No pics** \"}\n\n      IF NOT &{ThisDriverRestaurant.NoPics} THEN \n        {\":camera:**Take pics** \"}\n\n      IF &{ThisDriverRestaurant.IsCleanup} THEN\n        {\" :broom:**Cleanup driver** \"}\n    }\n  }\n\n  &{ThisDriverRestaurant.Details}\n  \"|\" &{ThisDriverRestaurant.ThisDriverOrders}\n  \"|\\n\"\n}\n```",
+      null
+    ],
+    [
+      6,
+      "```\n[Pickup]\n\n\"**Pickups**\"\n\" (by restaurant, with # & type of rations, 1 order per line):\\n\"\n\n\"|Restaurant|Name|UserName|Reg|Veg|\\n\n|---|---|---|---|---|\\n\"\n\n```\n```\nLOOP &{ThisDriverRestaurant}\n{\n\n  IF &{ThisDriverRestaurant.AnyOrder} THEN \n  {\n\n    LOOP &{ThisDriverRestaurant.Pickup}\n    {\n       \"|\" &{ThisDriverRestaurant.Name} \" \" &{ThisDriverRestaurant.Emoji}\n       \"|\" &{Pickup.MemberName}\n       \"|\" &{Pickup.UserName}\n       \"|\" &{Pickup.Normal}\n       \"|\" &{Pickup.Veggie}\n       \"|\\n\"\n    }\n  }\n}\n```",
+      null
+    ],
+    [
+      7,
+      "```\n[Deliveries]\n\n\"**Deliveries**  (:point_right: shows primary phone):\\n\\n\"\n\n\"|Name|Phone|Address|Details|\\n\n| --- | --- | --- | --- |\\n\"\nLOOP &{Consumer}\n{\n    \"|\" &{Consumer.Name}\n    \"|\" \" :point_right:\" &{Consumer.CompactPhone}   IF &{Consumer.IsAltPhone} THEN {\n    \", \" &{Consumer.CompactAltPhone} }\n    \"|\" &{Consumer.Address} \", \" &{Consumer.City}\n    \"|\" IF &{Consumer.IsCondo} THEN {\":warning:**Condo**\" }\n    \" \" &{Consumer.RestaurantEmoji} \" \" &{Consumer.Details}\n    \"|\\n\"\n}\n```",
+      null
+    ],
+    [
+      8,
+      "```\n[Itinerary]\n\n\"**GMap static URL:** \"\n\"[\"   ${ThisDriverUserName} \"'s itinerary](\" ${ThisDriverGMapURL} \")\\n\\n\"\n```",
+      null
+    ],
+    [
+      9,
+      "```\n[CompleteCondo]\n\nIF ${ThisDriverAnyCondo} THEN\n{\n    \":warning: **Complete condo instructions** \"\n    \"(read carefully by clicking the down arrow):\\n\\n\"\n\n    \"https://go.helpberkeley.org/t/experimental-condo-instructions/3109 \\n\\n\"\n}\n\n\"Thanks so much for taking the run, and good luck!\"\n```",
+      null
+    ],
+    [
+      10,
+      "[Comment]\n\nHow we could combine the first two tables:\n\n**Restaurants**: go to each restaurant, in this sequence (even if no pickups, to take pics of tomorrow’s order form). The driving sequence is based on the restaurants' schedule!\n\n|Restaurant|Address|Details|Ordrs|\n|---|---|---|---|\n|**V&A Cafe** :boot:|2521 Hearst Ave, Berkeley|:camera:**Take pics** Immediately E (uphill) of Etcheverry Hall, right against building|1|\n|Blake Jenkins|BlakeJenkins|1 normal 1 veggie ||\n|**Kaze Ramen** :shinto_shrine:|1956 Shattuck Ave, Berkeley|:camera:**Take pics** |0|\n|**Tacos Sinaloa** :rainbow:|2384 Telegraph Ave, Berkeley|:camera:**Take pics** If no parking in front, double park and call them @ (510) 665-7895: they will bring orders and order form to the car.|3|\n||Ruth Morgan| ruthmorgan 1 reg 0 veg||\n|Kester Watters|Ket|1 reg 1 veg||\n|Stan Heard|sheard|2 reg 0 veg||\n**Detailed orders** (in order of deliveries, with # & type of rations, 1 order per line):\n|Name|UserName|Restaurant|reg|veg|\n|---|---|---|---|---|---|---|\n|Blake Jenkins|BlakeJenkins|V&A Cafe :boot:|1|1|\n|Ruth Morgan|ruthmorgan|Tacos Sinaloa :rainbow:|1|0|\n|Kester Watters|Ket|Tacos Sinaloa :rainbow:|1|1|\n|Stan Heard|sheard|Tacos Sinaloa :rainbow:|2|0|",
+      null
+    ]
+  ]
+}

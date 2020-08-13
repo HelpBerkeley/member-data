@@ -358,8 +358,10 @@ public class DriverPostFormat {
                 value = restaurant.getName();
                 break;
             case "ThisDriverFirstRestaurantStartTime":
-                // FIX THIS, DS: do we still need to special case V & A here?
                 value = restaurant.getStartTime();
+                break;
+            case "ThisDriverFirstRestaurantClosingTime":
+                value = restaurant.getClosingTime();
                 break;
             case "FirstRestaurantEmoji":
                 value = restaurant.getEmoji();
@@ -660,6 +662,11 @@ public class DriverPostFormat {
             case "AnySplitRestaurants":
                 value = anySplitRestaurants();
                 break;
+            case "IsFirstRestaurantClosingBefore545PM":
+                String restaurantName = driver.getFirstRestaurantName();
+                Restaurant restaurant = restaurants.get(restaurantName);
+                value = restaurant.closesBefore(545);
+                break;
             default:
                 throw new MemberDataException(context.formatException("unknown boolean variable ${" + refName + "}"));
         }
@@ -721,7 +728,12 @@ public class DriverPostFormat {
             Driver driver = context.getDriver();
             String firstName = driver.getFirstRestaurantName();
             Restaurant firstRestaurant = restaurants.get(firstName);
-            value = firstRestaurant.closesBefore7PM();
+            value = firstRestaurant.closesBefore(700);
+        } else if (refName.equals("Driver.IsFirstRestaurantClosingBefore545PM")) {
+            Driver driver = context.getDriver();
+            String firstName = driver.getFirstRestaurantName();
+            Restaurant firstRestaurant = restaurants.get(firstName);
+            value = firstRestaurant.closesBefore(545);
         } else if (refName.equals("Driver.IsCleanup")) {
             Driver driver = context.getDriver();
             String driverUserName = context.getDriver().getUserName();

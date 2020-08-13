@@ -318,6 +318,11 @@ public class RestaurantTemplateParser {
             if (startTime.isEmpty()) {
                 throwMissingValue(bean.startTimeColumn(), "start time");
             }
+
+            String closingTime = bean.getClosingTime();
+            if (closingTime.isEmpty()) {
+                throwMissingValue(bean.closingTimeColumn(), "closing time");
+            }
             String emoji = bean.getEmoji();
             if (emoji.isEmpty()) {
                 throwMissingValue(bean.emojiColumn(), "emoji");
@@ -330,6 +335,7 @@ public class RestaurantTemplateParser {
             restaurants.put(restaurantName, restaurant);
             restaurant.setRoute(routeName);
             restaurant.setStartTime(startTime);
+            restaurant.setClosingTime(closingTime);
             restaurant.setEmoji(emoji);
 
             String noPics = bean.getNoPics();

@@ -159,7 +159,15 @@ public class RestaurantBean {
         return getColumnName("normal");
     }
 
+    public String veggieColumn() {
+        return getColumnName("veggie");
+    }
+
     public String startTimeColumn() {
+        return veggieColumn();
+    }
+
+    public String closingTimeColumn() {
         return ordersColumn();
     }
 
@@ -190,6 +198,7 @@ public class RestaurantBean {
                 && driver.isEmpty()
                 && restaurant.isEmpty()
                 && condo.isEmpty()
+                && veggie.isEmpty()
                 && orders.isEmpty()
                 && details.isEmpty();
     }

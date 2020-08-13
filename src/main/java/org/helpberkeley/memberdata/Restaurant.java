@@ -30,6 +30,9 @@ public class Restaurant {
     private final String name;
     private String address = "";
     private String startTime = "";
+    private int startTimeValue = 0;
+    private String closingTime = "";
+    private int closingTimeValue = 0;
     private String details = "";
     private String emoji = "";
     private String route = "";
@@ -48,6 +51,17 @@ public class Restaurant {
 
     void setStartTime(final String startTime) {
         this.startTime = startTime;
+        this.startTimeValue = convertTime(startTime);
+    }
+    void setClosingTime(final String closingTime) {
+        this.closingTime = closingTime;
+        this.closingTimeValue = convertTime(closingTime);
+    }
+
+    // FIX THIS, DS: need audit/assert for expected time string
+    private int convertTime(String time) {
+        String digits = time.replaceAll("[ :pmPM]", "");
+        return Integer.parseInt(digits);
     }
     void setDetails(final String details) {
         this.details = (details == null) ? "" : details;
@@ -90,6 +104,10 @@ public class Restaurant {
         return startTime;
     }
 
+    String getClosingTime() {
+        return closingTime;
+    }
+
     String getDetails() {
         return details;
     }
@@ -114,43 +132,12 @@ public class Restaurant {
         return noPics;
     }
 
-    // FIX THIS, DS: currently hardwired.  Get this from the restaurant template when we add it there.
-    //
-    boolean closesBefore7PM() {
-
-        boolean closesEarly;
-
-        switch (name) {
-            case "Kim's Cafe":
-            case "V&A Cafe":
-            case "Taco Sinaloa":
-                closesEarly = true;
-                break;
-            default:
-                closesEarly = false;
-        }
-
-        return closesEarly;
-    }
-
-    // FIX THIS, DS: currently hardwired.  Get this from the restaurant template when we add it there.
-    //
-    String getClosingTime() {
-
-        String value;
-
-        switch (name) {
-            case "Kim's Cafe":
-            case "Taco Sinaloa":
-                value = "6:00 PM";
-                break;
-            case "V&A Cafe":
-                value = "5:00 PM";
-                break;
-            default:
-                throw new MemberDataException(name + ": implement closing time handling");
-        }
-
-        return value;
+    /**
+     *
+     * @param closingTime 545 means 5:45 PM, 700, 7:00 PM, etc...
+     * @return Does this restaurant close before the passed in time?
+     */
+    boolean closesBefore(int closingTime) {
+        return closingTimeValue < closingTime;
     }
 }

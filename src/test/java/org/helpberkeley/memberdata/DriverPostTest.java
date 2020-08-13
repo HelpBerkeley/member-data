@@ -63,9 +63,9 @@ public class DriverPostTest extends TestBase {
         assertThat(posts).hasSize(2);
 
         String post = posts.get(0);
-        System.out.println(post);
+//        System.out.println(post);
         assertThat(post).contains("@jbDriver");
-        assertThat(post).contains("Any issue: call today's on-call ops manager, @CantankerousIII, at (510) 555.1212.\n");
+        assertThat(post).contains("Any issue: call today's on-call ops manager, @CantankerousIII, at (510) 876.5432.\n");
         assertThat(post).doesNotContain("You have a condo on your run");
         assertThat(post).doesNotContain("Complete condo instructions");
         assertThat(post).contains("Talavera");
@@ -73,14 +73,14 @@ public class DriverPostTest extends TestBase {
         assertThat(post).contains("Sweet Basil");
         assertThat(post).contains("Bopshop");
         assertThat(post).contains("Cust Name 1");
-        assertThat(post).contains("**(555) 555.1112**,(111) 222.3333");
+        assertThat(post).contains("(555) 555.1112, (111) 222.3333");
         assertThat(post).contains("Cust Name 2");
         assertThat(post).contains("Cust Name 3");
 
         post = posts.get(1);
-        System.out.println(post);
+//        System.out.println(post);
         assertThat(post).contains("@jsDriver");
-        assertThat(post).contains("Any issue: call today's on-call ops manager, @CantankerousIII, at (510) 555.1212.\n");
+        assertThat(post).contains("Any issue: call today's on-call ops manager, @CantankerousIII, at (510) 876.5432.\n");
         assertThat(post).contains("You have a condo on your run");
         assertThat(post).contains("Complete condo instructions");
         assertThat(post).contains("Cafe Raj");
@@ -101,7 +101,7 @@ public class DriverPostTest extends TestBase {
         String post = posts.get(0);
         post = posts.get(1);
         post = posts.get(2);
-        System.out.println(post);
+//        System.out.println(post);
         post = posts.get(3);
     }
 
@@ -113,10 +113,9 @@ public class DriverPostTest extends TestBase {
         List<String> posts = driverPostFormat.generateDriverPosts();
         assertThat(posts).hasSize(2);
         String post = posts.get(0);
-        System.out.println(post);
+//        System.out.println(post);
         post = posts.get(1);
-
-        System.out.println(driverPostFormat.generateSummary());
+        post = driverPostFormat.generateSummary();
     }
 
     @Test
@@ -128,6 +127,7 @@ public class DriverPostTest extends TestBase {
         String post = driverPostFormat.generateGroupInstructionsPost();
 //        System.out.println(post);
         assertThat(post).doesNotContain("**Split Restaurants**");
+        assertThat(post).doesNotContain("closes at");
     }
 
     @Test
@@ -141,6 +141,7 @@ public class DriverPostTest extends TestBase {
         assertThat(post).contains("**Split restaurant drivers:**");
         assertThat(post).contains("(888) 888.8888");
         assertThat(post).contains("(999) 999.9999");
+        assertThat(post).contains("closes at 5:00 PM.");
     }
 
     @Test
@@ -150,7 +151,7 @@ public class DriverPostTest extends TestBase {
                 new DriverPostFormat(createApiSimulator(), routedDeliveries);
 
         String post = driverPostFormat.generateBackupDriverPost();
-        System.out.println(post);
+//        System.out.println(post);
     }
 
     @Test
@@ -165,6 +166,6 @@ public class DriverPostTest extends TestBase {
         assertThat(driver.getDeliveries()).isEmpty();
         List<String> posts = driverPostFormat.generateDriverPosts();
         String post = posts.get(0);
-        System.out.println(post);
+//        System.out.println(post);
     }
 }
