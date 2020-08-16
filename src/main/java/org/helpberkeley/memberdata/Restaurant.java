@@ -128,6 +128,17 @@ public class Restaurant {
         return Collections.unmodifiableMap(drivers);
     }
 
+    void mergeGlobal(Restaurant globalRestaurant) {
+
+        // FIX THIS, DS: add enough data to audit address against template?
+
+        route = globalRestaurant.route;
+        startTime = globalRestaurant.startTime;
+        closingTime = globalRestaurant.closingTime;
+        emoji = globalRestaurant.emoji;
+        noPics = globalRestaurant.noPics;
+    }
+
     boolean getNoPics() {
         return noPics;
     }

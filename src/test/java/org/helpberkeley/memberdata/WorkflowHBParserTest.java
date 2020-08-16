@@ -168,7 +168,7 @@ public class WorkflowHBParserTest extends TestBase {
             final String expected = header;
 
             Throwable thrown = catchThrowable(() ->
-                    new WorkflowParser(WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, expected));
+                    new WorkflowParser(WorkflowParser.Mode.DRIVER_ROUTE_REQUEST, expected));
             assertThat(thrown).isInstanceOf(MemberDataException.class);
             assertThat(thrown).hasMessageContaining(columnNames.get(columnNum));
         }
@@ -206,13 +206,5 @@ public class WorkflowHBParserTest extends TestBase {
         Throwable thrown = catchThrowable(workflowParser::drivers);
         assertThat(thrown).isInstanceOf(MemberDataException.class);
         assertThat(thrown).hasMessageContaining("Line 10 is not empty");
-    }
-
-    @Test
-    public void ignoreControlBlockTest() {
-        String routedDeliveries = readResourceFile("routed-deliveries-with-control-block.csv");
-        WorkflowParser workflowParser =
-                new WorkflowParser(WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, routedDeliveries);
-        workflowParser.drivers();
     }
 }

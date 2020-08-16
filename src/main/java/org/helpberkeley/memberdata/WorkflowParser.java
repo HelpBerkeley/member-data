@@ -40,11 +40,26 @@ public class WorkflowParser {
 
     private final Mode mode;
     private final ControlBlock controlBlock = new ControlBlock();
-    private long lineNumber;
+    private long lineNumber = 1;
     private final PeekingIterator<WorkflowBean> iterator;
+    private final Map<String, Restaurant> globalRestaurants;
+
+
+    WorkflowParser(Mode mode, Map<String, Restaurant> globalRestaurants, final String csvData) {
+        this.mode = mode;
+        assert mode == Mode.DRIVER_MESSAGE_REQUEST : mode;
+        this.globalRestaurants = globalRestaurants;
+        iterator = initializeIterator(csvData);
+    }
 
     WorkflowParser(Mode mode, final String csvData) {
         this.mode = mode;
+        assert mode == Mode.DRIVER_ROUTE_REQUEST : mode;
+        this.globalRestaurants = null;
+        iterator = initializeIterator(csvData);
+    }
+
+    private PeekingIterator<WorkflowBean> initializeIterator(final String csvData) {
         // Normalize EOL
         String normalizedData = csvData.replaceAll("\\r\\n?", "\n");
         assert ! csvData.isEmpty() : "empty workflow";
@@ -53,8 +68,7 @@ public class WorkflowParser {
         List<WorkflowBean> workflowBeans = new CsvToBeanBuilder<WorkflowBean>(new StringReader(normalizedData))
                 .withType(WorkflowBean.class).build().parse();
 
-        iterator = Iterators.peekingIterator(workflowBeans.iterator());
-        lineNumber = 1;
+        return Iterators.peekingIterator(workflowBeans.iterator());
     }
 
     /**
@@ -67,7 +81,6 @@ public class WorkflowParser {
             lineNumber++;
             return iterator.next();
         }
-
         return null;
     }
 
@@ -390,6 +403,16 @@ public class WorkflowParser {
             restaurant.setAddress(address);
             restaurant.setDetails(details);
             restaurant.setOrders(orders);
+
+            // FIX THIS, DS: refactor to a single map of restaurants
+            if (globalRestaurants != null) {
+                Restaurant globalRestaurant = globalRestaurants.get(restaurantName);
+                if (globalRestaurant == null) {
+                    throw new MemberDataException("Restaurant " + restaurantName + ", line number " + lineNumber
+                        + ", not found in restaurant template");
+                }
+                restaurant.mergeGlobal(globalRestaurant);
+            }
 
             restaurants.add(restaurant);
         }

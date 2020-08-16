@@ -253,7 +253,8 @@ public class DriverPostFormat {
     }
 
     private void loadRoutedDeliveries(final String routedDeliveries) {
-        WorkflowParser parser = new WorkflowParser(WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, routedDeliveries);
+        WorkflowParser parser =
+                new WorkflowParser(WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, restaurants, routedDeliveries);
         drivers = parser.drivers();
         controlBlock = parser.getControlBlock();
 

@@ -22,11 +22,18 @@
  */
 package org.helpberkeley.memberdata;
 
-import java.util.ArrayList;
+import java.text.MessageFormat;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 import java.util.List;
 
 public class Driver {
+
+    static final String WARNING_MAY_BE_REACHED_AFTER_CLOSING =
+                "Warning: restaurant {0} may be reached after closing time";
+    static final String WARNING_MAY_BE_REACHED_AFTER_EXPECTED =
+                "Warning: restaurant {0}  may be reached later than when the driver is expected";
 
     private final String userName;
     private final String phoneNumber;
@@ -34,7 +41,8 @@ public class Driver {
     private final List<Restaurant> pickups;
     private final List<Delivery> deliveries;
 
-    Driver(final String userName, final String phoneNumber, List<Restaurant> pickups, List<Delivery> deliveries, final String gmapURL) {
+    Driver(final String userName, final String phoneNumber,
+           List<Restaurant> pickups, List<Delivery> deliveries, final String gmapURL) {
         this.userName = userName;
         this.phoneNumber = phoneNumber;
         this.pickups = pickups;
@@ -105,61 +113,164 @@ public class Driver {
     //
     //  How to calculate the start time for a first restaurant with zero orders
     //
-    //    find the StartTime for the first restaurant on the list that has at least one order
+    // See: https://go.helpberkeley.org/t/priority-lists-for-backend-and-procedural-tasks/2810/6
     //
-    //    If the StartTime for the first restaurant with at least one order
-    //    is already 5:00 PM or under 5:00 PM, do not change it.
     //
-    //    If the StartTime for the first restaurant with at least one order is later than 5:00 PM
-    //    for each restaurant with zero orders that precedes it, take 5 mins off of the StartTime
-    //    But never let the StartTime get under 5:00 PM
-    //
-    // FIX THIS, DS: this algorithm doesn't handle V&A Cafe which has a start time of 4:50.
-    //
-    String getFirstRestaurantStartTime() {
+    String getFirstRestaurantStartTime(List<String> warnings) {
+
+        String firstRestaurantStartTime = calculateFirstRestaurantStartTime();
+        generateWarnings(firstRestaurantStartTime, warnings);
+        return firstRestaurantStartTime;
+    }
+
+    private String calculateFirstRestaurantStartTime() {
+
+        LocalTime FIVE_PM = LocalTime.of(5, 0);
 
         if (getPickups().isEmpty()) {
             throw new MemberDataException("Driver " + userName + " has no pickups\n");
         }
 
-        List<Restaurant> zeroOrders = new ArrayList<>();
-        Restaurant firstPickupRestaurant = null;
+        Restaurant firstRestaurant = pickups.get(0);
 
-        for (Restaurant restaurant : getPickups()) {
-            if (restaurant.getOrders() == 0) {
-                zeroOrders.add(restaurant);
-            } else {
-                firstPickupRestaurant = restaurant;
+        if (firstRestaurant.getOrders() != 0) {
+            throw new MemberDataException("Driver " + userName + ", first pickup is not 0 order\n");
+        }
+
+        LocalTime firstCloseTime = convertTime(firstRestaurant.getClosingTime());
+
+        // If the starting zero order restaurant RS has a closing time where ClosingTimeS - 10 mins < 5:00pm,
+        // then CalculatedStartTimeS = ClosingTimeS - 10 mins
+
+        if ( firstCloseTime.minusMinutes(10).compareTo(FIVE_PM) < 0) {
+            return formatTime(firstCloseTime.minusMinutes(10));
+        }
+
+
+        // find the StartTime0 for the first restaurant R0 on the list that has at least one order
+        // If StartTime0 <= 5pm, CalculatedStartTimeS = StartTime0
+
+        Restaurant firstOrderRestaurant = getFirstOrderRestaurant();
+
+        if (firstOrderRestaurant == null) {
+            return formatTime(FIVE_PM);
+        }
+
+        LocalTime firstOrderRestaurantStartTime = convertTime(firstOrderRestaurant.getStartTime());
+
+        if ( firstOrderRestaurantStartTime.compareTo(FIVE_PM) <= 0) {
+            return formatTime(firstOrderRestaurantStartTime);
+        }
+
+        // for each restaurant zero order Rp before R0,
+        // take out 5 minutes off of StartTime0 if Rp-> Rp-1 is the same route,
+        // take out 10 minutes if Rp->Rp-1 is a different route,
+        // until you find CalculatedStartTimeS for the starting restaurant.
+        // If CalculatedStartTimeS <5pm, then CalculatedStartTimeS = 5pm
+
+        Restaurant prev = null;
+
+        for (Restaurant restaurant : pickups) {
+
+            if (prev != null) {
+                firstOrderRestaurantStartTime = firstOrderRestaurantStartTime.minusMinutes(5);
+
+                if (! prev.getRoute().equals(restaurant.getRoute())) {
+                    firstOrderRestaurantStartTime = firstOrderRestaurantStartTime.minusMinutes(5);
+                }
+            }
+
+            if (restaurant == firstOrderRestaurant) {
                 break;
+            }
+
+            prev = restaurant;
+        }
+
+        if (firstOrderRestaurantStartTime.compareTo(FIVE_PM) < 0) {
+            firstOrderRestaurantStartTime = FIVE_PM;
+        }
+
+        return formatTime(firstOrderRestaurantStartTime);
+    }
+
+//    From CalculatedStartTimeS,
+//    calculate CalculatedStartTimeP for each restaurant P
+//    from restaurant S to restaurant 0.
+//
+//    For each restaurant P,
+//    IF CalculatedStartTimeP > ClosingTimeP - 10 minutes,
+//    THEN
+//    {
+//        write diagnosis warning:
+//    "Warning: restaurant P may be reached after closing time"
+//    }
+//
+//    IF R0 has at least one order AND CalculatedTime0 > StartTime0,
+//    THEN
+//    {
+//        write diagnosis warning:
+//    "Warning: restaurant 0 may be reached later than when driver is expected."
+//    }
+
+    private void generateWarnings(String firstRestaurantStartTime, List<String> warnings) {
+        warnings.clear();
+
+        LocalTime startTime = convertTime(firstRestaurantStartTime);
+
+        Restaurant prev = null;
+
+        for (Restaurant pickup : pickups) {
+
+            if (prev != null) {
+                startTime = startTime.plusMinutes(prev.getRoute().equals(pickup.getRoute()) ? 5 : 10);
+            }
+
+            LocalTime closingTime = convertTime(pickup.getClosingTime());
+
+            if (startTime.compareTo(closingTime.minusMinutes(10)) > 0) {
+                warnings.add(MessageFormat.format(WARNING_MAY_BE_REACHED_AFTER_CLOSING, pickup.getName()));
+            }
+
+            if (pickup.getOrders() > 0) {
+
+                if (startTime.compareTo(convertTime(pickup.getStartTime())) > 0) {
+                    warnings.add(MessageFormat.format(WARNING_MAY_BE_REACHED_AFTER_EXPECTED, pickup.getName()));
+                }
+
+                break;
+            }
+
+            prev = pickup;
+        }
+    }
+
+    private Restaurant getFirstOrderRestaurant() {
+        for (Restaurant restaurant : pickups) {
+            if (restaurant.getOrders() > 0) {
+                return restaurant;
             }
         }
 
-        // Do we have only 0 order restaurants?
-        if (firstPickupRestaurant == null) {
-            return zeroOrders.get(0).getStartTime();
-        }
-
-        // No 0 order restaurants?
-        if (zeroOrders.size() == 0) {
-            return firstPickupRestaurant.getStartTime();
-        }
-
-        int firstStartTime = convertStartingTime(firstPickupRestaurant.getStartTime());
-
-        // Is the first pickup restaurant already at 5 or earlier?
-        if (firstStartTime <= 500) {
-            return firstPickupRestaurant.getStartTime();
-        }
-
-        while (firstStartTime > 500) {
-
-        }
-
-        return "";
+        return null;
     }
 
-    int convertStartingTime(String startingTime) {
-        String time = startingTime.replaceAll("[ :pmPM]", "");
-        return Integer.parseInt(time);
+    private String formatTime(LocalTime localTime) {
+        return localTime.format(DateTimeFormatter.ofPattern("K:mm")) + " PM";
+    }
+
+    LocalTime convertTime(String time) {
+        String timeStr = time.replaceAll("[ pmPM]", "");
+        int colonIndex = timeStr.indexOf(':');
+        if (colonIndex == -1) {
+            throw new MemberDataException("Restaurant time " + time + " is not of the form: \"5:45 PM\"");
+        }
+
+        // Need to pre-pad with a 0, to make a 2 digit hour, to make LocalTime happy.
+        if (colonIndex == 1) {
+            timeStr = "0" + timeStr;
+        }
+
+        return LocalTime.parse(timeStr);
     }
 }

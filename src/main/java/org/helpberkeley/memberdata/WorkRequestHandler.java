@@ -157,7 +157,7 @@ public class WorkRequestHandler {
 
         final String date;
         final UploadFile uploadFile;
-        Long topic;
+        final Long topic;
 
         WorkRequest(Reply reply, final String date, final UploadFile uploadFile, final Long topic) {
             super(reply);

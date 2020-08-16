@@ -24,17 +24,19 @@ package org.helpberkeley.memberdata;
 
 import org.junit.Test;
 
+import java.io.IOException;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class RoutedDeliveriesTest extends TestBase {
+
     @Test
-    public void parseRoutedTest() {
+    public void parseRoutedTest() throws IOException, InterruptedException {
         String csvData = readResourceFile("routed-deliveries.csv");
-        WorkflowParser parser =
-                new WorkflowParser(WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, csvData);
-        List<Driver> drivers = parser.drivers();
+
+        DriverPostFormat driverPostFormat = new DriverPostFormat(createApiSimulator(), csvData);
+        List<Driver> drivers = driverPostFormat.getDrivers();
 
         assertThat(drivers).hasSize(2);
         Driver driver = drivers.get(0);
@@ -176,11 +178,10 @@ public class RoutedDeliveriesTest extends TestBase {
     }
 
     @Test
-    public void parseRoutedWithSplitRestaurantTest() {
+    public void parseRoutedWithSplitRestaurantTest() throws IOException, InterruptedException {
         String csvData = readResourceFile("routed-deliveries-with-split-restaurant.csv");
-        WorkflowParser parser =
-                new WorkflowParser(WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, csvData);
-        List<Driver> drivers = parser.drivers();
+        DriverPostFormat driverPostFormat = new DriverPostFormat(createApiSimulator(), csvData);
+        List<Driver> drivers = driverPostFormat.getDrivers();
 
         assertThat(drivers).hasSize(4);
         Driver driver = drivers.get(0);
