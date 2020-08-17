@@ -49,6 +49,7 @@ public class DriverPostFormat {
         loadGroupPostFormat();
         loadBackupDriverPostFormat();
         loadRoutedDeliveries(routedDeliveries);
+        adjustDriverStartTimes();
         auditControlBlock();
     }
 
@@ -64,6 +65,13 @@ public class DriverPostFormat {
         return statusMessages.toString();
     }
 
+    void adjustDriverStartTimes() {
+        List<String> warnings = new ArrayList<>();
+
+        for (Driver driver : drivers) {
+        }
+    }
+
     String generateSummary() {
         StringBuilder summary = new StringBuilder();
 
@@ -73,6 +81,26 @@ public class DriverPostFormat {
                 summary.append("No drivers going to ").append(restaurant.getName()).append("\n");
             }
         }
+        summary.append("\n");
+
+        for (Driver driver : drivers) {
+            String originalStartTime = driver.getOriginalStartTime();
+            String startTime = driver.getStartTime();
+
+            if (! startTime.equals(originalStartTime)) {
+
+                summary.append("Driver ").append(driver.getUserName())
+                        .append(", start time for ").append(driver.getFirstRestaurantName())
+                        .append(" adjusted to ").append(startTime).append(" from ").append(originalStartTime)
+                        .append('\n');
+            }
+
+            for (String warning : driver.getWarningMessages()) {
+                summary.append("Warning: driver ").append(driver.getUserName())
+                        .append(" ").append(warning).append('\n');
+            }
+        }
+
         summary.append("\n");
 
         // Split restaurants / cleanup drivers / orders
@@ -359,7 +387,7 @@ public class DriverPostFormat {
                 value = restaurant.getName();
                 break;
             case "ThisDriverFirstRestaurantStartTime":
-                value = restaurant.getStartTime();
+                value = context.getDriver().getStartTime();
                 break;
             case "ThisDriverFirstRestaurantClosingTime":
                 value = restaurant.getClosingTime();
@@ -535,7 +563,7 @@ public class DriverPostFormat {
                 value = firstRestaurantName;
                 break;
             case "Driver.FirstRestaurantStartTime":
-                value = restaurant.getStartTime();
+                value = driver.getStartTime();
                 break;
             case "Driver.FirstRestaurantClosingTime":
                 value = restaurant.getClosingTime();

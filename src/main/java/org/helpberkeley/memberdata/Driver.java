@@ -25,21 +25,27 @@ package org.helpberkeley.memberdata;
 import java.text.MessageFormat;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 public class Driver {
 
     static final String WARNING_MAY_BE_REACHED_AFTER_CLOSING =
-                "Warning: restaurant {0} may be reached after closing time";
+                "restaurant {0} may be reached after closing time";
     static final String WARNING_MAY_BE_REACHED_AFTER_EXPECTED =
-                "Warning: restaurant {0}  may be reached later than when the driver is expected";
+                "restaurant {0}  may be reached later than when the driver is expected";
+
+    private static final LocalTime FIVE_PM = LocalTime.of(5, 0);
 
     private final String userName;
     private final String phoneNumber;
     private final String gMapURL;
     private final List<Restaurant> pickups;
     private final List<Delivery> deliveries;
+    private String originalStartTime;
+    private String startTime;
+    private final List<String> warningMessages = new ArrayList<>();
 
     Driver(final String userName, final String phoneNumber,
            List<Restaurant> pickups, List<Delivery> deliveries, final String gmapURL) {
@@ -48,6 +54,7 @@ public class Driver {
         this.pickups = pickups;
         this.deliveries = deliveries;
         this.gMapURL = gmapURL;
+        setStartTime();
     }
 
     Driver(final String userName, final String phoneNumber, List<Restaurant> pickups, List<Delivery> deliveries) {
@@ -110,32 +117,46 @@ public class Driver {
                 + " in driver " + userName + "'s pickups");
     }
 
+    String getStartTime() {
+        return startTime;
+    }
+
+    String getOriginalStartTime() {
+        return originalStartTime;
+    }
+
+    List<String> getWarningMessages() {
+        return warningMessages;
+    }
+
+    private void setStartTime() {
+
+        Restaurant restaurant = pickups.get(0);
+
+        // FIX THIS, DS: verify that upstream auditing can make this an assertion
+        if (restaurant == null) {
+            throw new MemberDataException("Driver " + getUserName() + " has no pickups");
+        }
+
+        originalStartTime = restaurant.getStartTime();
+        startTime = originalStartTime;
+
+        if (restaurant.getOrders() == 0) {
+            startTime = calculateFirstRestaurantStartTime();
+            generateStartTimeWarnings();
+        }
+    }
+
     //
     //  How to calculate the start time for a first restaurant with zero orders
     //
-    // See: https://go.helpberkeley.org/t/priority-lists-for-backend-and-procedural-tasks/2810/6
+    // See: https://go.helpberkeley.org/t/spec-start-time-for-runs-with-leading-0-order-restaurants/3499
     //
-    //
-    String getFirstRestaurantStartTime(List<String> warnings) {
-
-        String firstRestaurantStartTime = calculateFirstRestaurantStartTime();
-        generateWarnings(firstRestaurantStartTime, warnings);
-        return firstRestaurantStartTime;
-    }
-
     private String calculateFirstRestaurantStartTime() {
 
-        LocalTime FIVE_PM = LocalTime.of(5, 0);
-
-        if (getPickups().isEmpty()) {
-            throw new MemberDataException("Driver " + userName + " has no pickups\n");
-        }
-
         Restaurant firstRestaurant = pickups.get(0);
-
-        if (firstRestaurant.getOrders() != 0) {
-            throw new MemberDataException("Driver " + userName + ", first pickup is not 0 order\n");
-        }
+        assert firstRestaurant != null : "Driver " + userName + " has no pickups";
+        assert firstRestaurant.getOrders() == 0 : "Driver " + userName + ", first pickup is not 0 order";
 
         LocalTime firstCloseTime = convertTime(firstRestaurant.getClosingTime());
 
@@ -213,10 +234,9 @@ public class Driver {
 //    "Warning: restaurant 0 may be reached later than when driver is expected."
 //    }
 
-    private void generateWarnings(String firstRestaurantStartTime, List<String> warnings) {
-        warnings.clear();
+    private void generateStartTimeWarnings() {
 
-        LocalTime startTime = convertTime(firstRestaurantStartTime);
+        LocalTime startTime = convertTime(this.startTime);
 
         Restaurant prev = null;
 
@@ -229,13 +249,13 @@ public class Driver {
             LocalTime closingTime = convertTime(pickup.getClosingTime());
 
             if (startTime.compareTo(closingTime.minusMinutes(10)) > 0) {
-                warnings.add(MessageFormat.format(WARNING_MAY_BE_REACHED_AFTER_CLOSING, pickup.getName()));
+                warningMessages.add(MessageFormat.format(WARNING_MAY_BE_REACHED_AFTER_CLOSING, pickup.getName()));
             }
 
             if (pickup.getOrders() > 0) {
 
                 if (startTime.compareTo(convertTime(pickup.getStartTime())) > 0) {
-                    warnings.add(MessageFormat.format(WARNING_MAY_BE_REACHED_AFTER_EXPECTED, pickup.getName()));
+                    warningMessages.add(MessageFormat.format(WARNING_MAY_BE_REACHED_AFTER_EXPECTED, pickup.getName()));
                 }
 
                 break;

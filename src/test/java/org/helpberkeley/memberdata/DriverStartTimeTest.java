@@ -591,21 +591,20 @@ public class DriverStartTimeTest extends TestBase {
 
     private void checkStartTime(TestData testData) {
         Driver driver = buildDriver(testData);
-        List<String> warnings = new ArrayList<>();
-        assertThat(driver.getFirstRestaurantStartTime(warnings))
+        assertThat(driver.getStartTime())
                 .as(testData.toString())
                 .isEqualTo(testData.expectedStartTime);
-        assertThat(warnings).as(testData.toString()).isEmpty();
+        assertThat(driver.getWarningMessages()).as(testData.toString()).isEmpty();
 
     }
 
     private void checkStartTime(TestData testData, List<String> expectedWarnings) {
         Driver driver = buildDriver(testData);
-        List<String> warnings = new ArrayList<>();
-        assertThat(driver.getFirstRestaurantStartTime(warnings))
+        assertThat(driver.getStartTime())
                 .as(testData.toString())
                 .isEqualTo(testData.expectedStartTime);
-        assertThat(warnings).as(testData.toString()).containsOnlyOnceElementsOf(expectedWarnings);
+        assertThat(driver.getWarningMessages())
+                .as(testData.toString()).containsOnlyOnceElementsOf(expectedWarnings);
     }
 
     private Driver buildDriver(TestData testData) {
@@ -621,7 +620,7 @@ public class DriverStartTimeTest extends TestBase {
             pickupRestaurants.add(restaurant);
         }
 
-        return new Driver("jb", "123-456-7890", pickupRestaurants, null);
+        return new Driver("jb", "123-456-7890", pickupRestaurants, null, "https://something");
     }
 
     static class TestData {

@@ -116,17 +116,6 @@ public class WorkflowHBParserTest extends TestBase {
     }
 
     @Test
-    public void gmapURLTest() {
-
-        String shortURL = "https://123+xyz+ccc+ddd+54";
-
-        Driver driver = new Driver("a", "555-555-1212",
-                Collections.emptyList(), Collections.emptyList(), shortURL);
-
-        assertThat(driver.getgMapURL()).isEqualTo(shortURL);
-    }
-
-    @Test
     public void missingHeaderRowTest() {
         String routedDeliveries = readResourceFile("routed-deliveries-missing-header.csv");
         Throwable thrown = catchThrowable(() ->

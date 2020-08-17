@@ -69,7 +69,7 @@ public class DriverPostTest extends TestBase {
         assertThat(post).doesNotContain("You have a condo on your run");
         assertThat(post).doesNotContain("Complete condo instructions");
         assertThat(post).contains("Talavera");
-        assertThat(post).contains("5:00 PM");
+        assertThat(post).contains("5:05 PM");   // Adjusted start time
         assertThat(post).contains("Sweet Basil");
         assertThat(post).contains("Bopshop");
         assertThat(post).contains("Cust Name 1");
