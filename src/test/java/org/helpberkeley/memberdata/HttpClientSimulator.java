@@ -38,6 +38,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static java.net.HttpURLConnection.HTTP_NOT_FOUND;
 import static java.net.HttpURLConnection.HTTP_OK;
@@ -47,17 +48,27 @@ public class HttpClientSimulator extends HttpClient {
 
     private static final Map<Integer, String> queryResponseFiles = new HashMap<>();
     private static final Map<Integer, String> queryResponseData = new HashMap<>();
+    private static final AtomicInteger sendFailCount = new AtomicInteger(0);
 
     static void setQueryResponseFile(int queryId, final String fileName) {
         queryResponseFiles.put(queryId, fileName);
     }
-
     static void setQueryResponseData(int queryId, final String queryData) {
         queryResponseData.put(queryId, queryData);
     }
 
+    static void setSendFailureCount(int numFailures) {
+        sendFailCount.set(numFailures);
+    }
+
     @Override
-    public <T> HttpResponse<T> send(HttpRequest request, HttpResponse.BodyHandler<T> responseBodyHandler) {
+    public <T> HttpResponse<T> send(HttpRequest request,
+            HttpResponse.BodyHandler<T> responseBodyHandler) throws IOException {
+
+        if (sendFailCount.get() > 0) {
+            sendFailCount.decrementAndGet();
+            throw new IOException("Simulated IOException: GOAWAY");
+        }
 
         if (isQuery(request)) {
             return doQuery(request);

@@ -68,4 +68,24 @@ public class ApiClientTest extends TestBase {
         assertThat(thrown).hasMessageContaining(String.valueOf(postId));
         assertThat(thrown).hasMessageContaining("not found");
     }
+
+    @Test
+    public void retrySucceedTest() throws IOException, InterruptedException {
+        ApiClient.RETRY_NAP_MILLISECONDS = 0;
+        HttpClientSimulator.setSendFailureCount(1);
+
+        ApiClient apiClient = createApiSimulator();
+        apiClient.runQuery(Constants.QUERY_GET_EMAILS);
+    }
+
+    @Test
+    public void retryFailTest() throws IOException, InterruptedException {
+        ApiClient.RETRY_NAP_MILLISECONDS = 0;
+        HttpClientSimulator.setSendFailureCount(10);
+
+        ApiClient apiClient = createApiSimulator();
+        Throwable thrown = catchThrowable(() -> apiClient.runQuery(Constants.QUERY_GET_EMAILS));
+        assertThat(thrown).isInstanceOf(RuntimeException.class);
+        assertThat(thrown).hasMessageContaining("10 attempts to talk with Discourse failed");
+    }
 }

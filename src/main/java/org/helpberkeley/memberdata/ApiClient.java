@@ -21,6 +21,9 @@
 //
 package org.helpberkeley.memberdata;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.IOException;
 import java.net.Authenticator;
 import java.net.PasswordAuthentication;
@@ -32,6 +35,7 @@ import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.TimeUnit;
 
 import static java.net.HttpURLConnection.HTTP_OK;
 
@@ -43,11 +47,15 @@ public class ApiClient {
     private static final String DOWNLOAD_ENDPOINT = BASE_URL + "uploads/short-url/";
     static final String QUERY_BASE = BASE_URL + "admin/plugins/explorer/queries/";
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(ApiClient.class);
+
     private final String apiUser;
     private final String apiKey;
     private final HttpClient client;
 
+    // Test support
     static HttpClientFactory httpClientFactory = null;
+    static long RETRY_NAP_MILLISECONDS = TimeUnit.SECONDS.toMillis(10);
 
     ApiClient(final Properties properties) {
 
@@ -91,6 +99,34 @@ public class ApiClient {
         }
     }
 
+    private HttpResponse<String> send(HttpRequest request) throws IOException, InterruptedException {
+
+        for (int retry = 0; retry < 10; retry++ ) {
+            try {
+                return client.send(request, HttpResponse.BodyHandlers.ofString());
+            } catch (IOException ex) {
+                ex.printStackTrace();
+                if (ex.getMessage().contains("GOAWAY") ||
+                        ((ex.getCause() != null) && ex.getCause().getMessage().contains("GOAWAY"))) {
+
+                    if (retry < 9) {
+                        LOGGER.warn("GOAWAY seen from Discourse, waiting 10 seconds and retrying");
+                        nap(RETRY_NAP_MILLISECONDS);
+                    }
+                }
+            }
+        }
+
+        LOGGER.warn("10th GOAWAY seen from Discourse, exiting with a failure");
+        throw new RuntimeException("10 attempts to talk with Discourse failed");
+    }
+
+    private void nap(long milliseconds) {
+        try {
+            Thread.sleep(milliseconds);
+        } catch (InterruptedException ignored) { }
+    }
+
     private HttpResponse<String> get(final String endpoint) throws IOException, InterruptedException {
 
         HttpRequest request = HttpRequest.newBuilder()
@@ -100,7 +136,7 @@ public class ApiClient {
                 .header("Api-Key", apiKey)
                 .build();
 
-        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+        HttpResponse<String> response = send(request);
 
         if (response.statusCode() != HTTP_OK) {
             throw new MemberDataException(
@@ -120,7 +156,7 @@ public class ApiClient {
                 .POST(HttpRequest.BodyPublishers.ofString(json))
                 .build();
 
-        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+        HttpResponse<String> response = send(request);
 
         if (response.statusCode() != HTTP_OK) {
             throw new MemberDataException(
@@ -143,7 +179,7 @@ public class ApiClient {
                 .POST(HttpRequest.BodyPublishers.ofString("limit=1000000"))
                 .build();
 
-        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+        HttpResponse<String> response = send(request);
 
         if (response.statusCode() != HTTP_OK) {
             throw new MemberDataException(
@@ -170,7 +206,7 @@ public class ApiClient {
                 .POST(HttpRequest.BodyPublishers.ofString(body))
                 .build();
 
-        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+        HttpResponse<String> response = send(request);
 
         if (response.statusCode() != HTTP_OK) {
             throw new MemberDataException(
@@ -199,7 +235,7 @@ public class ApiClient {
                 .PUT(HttpRequest.BodyPublishers.ofString(postBody))
                 .build();
 
-        return client.send(request, HttpResponse.BodyHandlers.ofString());
+        return send(request);
     }
 
     String downloadFile(final String shortURLFileName) throws IOException, InterruptedException {
@@ -213,7 +249,7 @@ public class ApiClient {
                 .header("Api-Key", apiKey)
                 .build();
 
-        HttpResponse<String> response =  client.send(request, HttpResponse.BodyHandlers.ofString());
+        HttpResponse<String> response = send(request);
 
         if (response.statusCode() != HTTP_OK) {
             throw new MemberDataException(
@@ -260,7 +296,7 @@ public class ApiClient {
                 .header("Api-Key", apiKey)
                 .build();
 
-        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+        HttpResponse<String> response = send(request);
 
         // print status code
         System.out.println(response.statusCode());
