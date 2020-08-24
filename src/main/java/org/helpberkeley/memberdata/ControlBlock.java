@@ -43,7 +43,7 @@ class ControlBlock {
 
     }
 
-    void audit(List<String> allRestaurants, List<String> splitRestaurants) {
+    void audit(List<String> splitRestaurants) {
         StringBuilder errors = new StringBuilder();
 
         auditVersion(errors);

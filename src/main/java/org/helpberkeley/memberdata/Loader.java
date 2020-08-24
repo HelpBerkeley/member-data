@@ -24,7 +24,6 @@ package org.helpberkeley.memberdata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -50,24 +49,23 @@ public class Loader {
      * Return a list of Users fetched from the website.
      *
      * @return User list.
-     * @throws IOException          Website interaction exception.
      * @throws InterruptedException Website interaction exception.
      */
-    public List<User> load() throws IOException, InterruptedException {
+    public List<User> load() throws InterruptedException {
         LOGGER.trace("load");
         loadGroups();
         loadEmailConfirmations();
         return loadUsers();
     }
 
-    Map<Long, String> loadEmailAddresses() throws IOException, InterruptedException {
+    Map<Long, String> loadEmailAddresses() throws InterruptedException {
         assert apiClient != null;
         String json = apiClient.runQuery(Constants.QUERY_GET_EMAILS);
         ApiQueryResult apiQueryResult = HBParser.parseQueryResult(json);
         return HBParser.emailAddresses(apiQueryResult);
     }
 
-    private void loadGroups() throws IOException, InterruptedException {
+    private void loadGroups() throws InterruptedException {
 
         assert apiClient != null;
         String json = apiClient.runQuery(Constants.QUERY_GET_GROUPS_ID);
@@ -104,7 +102,7 @@ public class Loader {
         }
     }
 
-    private void loadEmailConfirmations() throws IOException, InterruptedException {
+    private void loadEmailConfirmations() throws InterruptedException {
         assert apiClient != null;
         String json = apiClient.runQuery(Constants.QUERY_EMAIL_CONFIRMATIONS);
         ApiQueryResult apiQueryResult = HBParser.parseQueryResult(json);
@@ -112,7 +110,7 @@ public class Loader {
         emailConfirmations = HBParser.emailConfirmations(apiQueryResult);
     }
 
-    private List<User> loadUsers() throws IOException, InterruptedException {
+    private List<User> loadUsers() throws InterruptedException {
         LOGGER.trace("loadUsers");
 
         assert apiClient != null;

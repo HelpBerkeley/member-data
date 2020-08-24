@@ -23,7 +23,6 @@ package org.helpberkeley.memberdata;
 
 import org.junit.Test;
 
-import java.io.IOException;
 import java.net.http.HttpResponse;
 
 import static java.net.HttpURLConnection.HTTP_OK;
@@ -51,7 +50,7 @@ public class PostTest extends TestBase {
     }
 
     @Test
-    public void postResponseTest() throws IOException, InterruptedException {
+    public void postResponseTest() throws InterruptedException {
         ApiClient apiClient = createApiSimulator();
 
         Post post = new Post();

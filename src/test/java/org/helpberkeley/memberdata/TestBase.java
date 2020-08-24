@@ -88,7 +88,6 @@ public class TestBase {
 
     static final String[] COMMANDS_WITH_URL = {
             Options.COMMAND_POST_ALL_MEMBERS,
-            Options.COMMAND_POST_WORKFLOW,
             Options.COMMAND_POST_DRIVERS,
             Options.COMMAND_POST_INREACH,
             Options.COMMAND_POST_DISPATCHERS,
@@ -103,7 +102,6 @@ public class TestBase {
             Options.COMMAND_UPDATE_ERRORS,
             Options.COMMAND_EMAIL,
             Options.COMMAND_WORKFLOW,
-            Options.COMMAND_UPLOAD_FILE,
     };
 
     static final String[] COMMANDS_WITH_NO_PARAMETERS = {
@@ -124,7 +122,7 @@ public class TestBase {
         ApiClient.httpClientFactory = new HttpClientSimulatorFactory();
     }
 
-    ApiClient createApiSimulator() throws IOException {
+    ApiClient createApiSimulator() {
         Properties properties = Main.loadProperties(Main.MEMBERDATA_PROPERTIES);
         HttpClientSimulator httpClientSimulator = new HttpClientSimulator();
         return new ApiClient(properties, httpClientSimulator);

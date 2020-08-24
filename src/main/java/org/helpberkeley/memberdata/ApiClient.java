@@ -24,16 +24,16 @@ package org.helpberkeley.memberdata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.net.Authenticator;
-import java.net.PasswordAuthentication;
-import java.net.URI;
-import java.net.URLEncoder;
+import java.net.*;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.util.Map;
+import java.nio.file.Path;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 
@@ -43,7 +43,7 @@ public class ApiClient {
     private static final String BASE_URL = "https://go.helpberkeley.org/";
     private static final String POSTS_ENDPOINT = BASE_URL + "posts.json";
     static final String POSTS_BASE = BASE_URL + "posts/";
-    private static final String UPLOAD_ENDPOINT = BASE_URL + "uploads.json";
+    static final String UPLOAD_ENDPOINT = BASE_URL + "uploads.json";
     private static final String DOWNLOAD_ENDPOINT = BASE_URL + "uploads/short-url/";
     static final String QUERY_BASE = BASE_URL + "admin/plugins/explorer/queries/";
 
@@ -74,7 +74,8 @@ public class ApiClient {
             this.client = httpClientFactory.createClient();
 
         } else {
-            this.client = HttpClient.newBuilder()
+        this.client = HttpClient.newBuilder()
+//                    .proxy(ProxySelector.of(new InetSocketAddress("localhost", 8080)))
                     .followRedirects(HttpClient.Redirect.ALWAYS)
                     .authenticator(authenticator)
                     .build();
@@ -99,13 +100,12 @@ public class ApiClient {
         }
     }
 
-    private HttpResponse<String> send(HttpRequest request) throws IOException, InterruptedException {
+    private HttpResponse<String> send(HttpRequest request) throws InterruptedException {
 
         for (int retry = 0; retry < 10; retry++ ) {
             try {
                 return client.send(request, HttpResponse.BodyHandlers.ofString());
             } catch (IOException ex) {
-                ex.printStackTrace();
                 if (ex.getMessage().contains("GOAWAY") ||
                         ((ex.getCause() != null) && ex.getCause().getMessage().contains("GOAWAY"))) {
 
@@ -113,6 +113,8 @@ public class ApiClient {
                         LOGGER.warn("GOAWAY seen from Discourse, waiting 10 seconds and retrying");
                         nap(RETRY_NAP_MILLISECONDS);
                     }
+                } else {
+                    throw new MemberDataException("Send failed", ex);
                 }
             }
         }
@@ -127,7 +129,7 @@ public class ApiClient {
         } catch (InterruptedException ignored) { }
     }
 
-    private HttpResponse<String> get(final String endpoint) throws IOException, InterruptedException {
+    private HttpResponse<String> get(final String endpoint) throws InterruptedException {
 
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(endpoint))
@@ -146,7 +148,7 @@ public class ApiClient {
         return response;
     }
 
-    HttpResponse<String> post(final String json) throws IOException, InterruptedException {
+    HttpResponse<String> post(final String json) throws InterruptedException {
 
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(POSTS_ENDPOINT))
@@ -166,7 +168,7 @@ public class ApiClient {
         return response;
     }
 
-    String runQuery(int queryId) throws IOException, InterruptedException {
+    String runQuery(int queryId) throws InterruptedException {
 
         String endpoint = QUERY_BASE + queryId + "/run";
 
@@ -189,7 +191,7 @@ public class ApiClient {
         return response.body();
     }
 
-    String runQueryWithParam(int queryId, String paramName, String paramValue) throws IOException, InterruptedException {
+    String runQueryWithParam(int queryId, String paramName, String paramValue) throws InterruptedException {
 
         String endpoint = QUERY_BASE + queryId + "/run";
 
@@ -216,13 +218,13 @@ public class ApiClient {
         return response.body();
     }
 
-    String getPost(long postId) throws IOException, InterruptedException {
+    String getPost(long postId) throws InterruptedException {
         String endpoint = POSTS_BASE + postId + ".json";
         // Normalize EOL
         return get(endpoint).body().replaceAll("\\r\\n?", "\n");
     }
 
-    HttpResponse<String> updatePost(long postId, final String body) throws IOException, InterruptedException {
+    HttpResponse<String> updatePost(long postId, final String body) throws InterruptedException {
 
         String endpoint =  POSTS_BASE + postId;
         String postBody = "{ \"post\" : { \"raw\" : \"" + body + "\" } }";
@@ -238,7 +240,7 @@ public class ApiClient {
         return send(request);
     }
 
-    String downloadFile(final String shortURLFileName) throws IOException, InterruptedException {
+    String downloadFile(final String shortURLFileName) throws InterruptedException {
 
         String endpoint = DOWNLOAD_ENDPOINT + shortURLFileName;
 
@@ -267,54 +269,32 @@ public class ApiClient {
         return fileData;
     }
 
-    void uploadFile(final String fileName, final String fileData) throws IOException, InterruptedException {
+    String upload(String fileName) throws URISyntaxException, InterruptedException {
+        String clientId = "1234b591bb4848dd899b6e6ee0feaff9";
 
-        // FIX THIS, DS: generate unique id? Not strictly necessary here
-        String boundary = "---------------------------86904839212366218363208480977";
-        String contentType = "multipart/form-data; boundary=" + boundary;
-
-        StringBuilder body = new StringBuilder();
-        body.append(boundary).append("\r\n");
-        body.append(boundary).append("Content-Disposition: form-data; name=\"type\"\r\n\r\ncomposer\r\n");
-        body.append(boundary).append("\r\n");
-        body.append("Content-Disposition: form-data; name=\"files[]\"; filename=\"").append(fileName).append("\"\r\n");
-        body.append("Content-Disposition: form-data; name=\"files[]\"; filename=\"").append(fileName).append("\"\r\n");
-        body.append("Content-Type: text/csv\r\n\r\n");
-        body.append(fileData).append("\r\n");
-        body.append(boundary).append("--\r\n");
-
-        StringBuilder filesArg = new StringBuilder();
-
-        // form parameters
-//        data.put("client_id", "1234b591bb4848dd899b6e6ee0feaff9");
+        MultiPartBodyPublisher publisher = new MultiPartBodyPublisher()
+                .addPart("type",
+                        new String("composer".getBytes(Charset.defaultCharset()), StandardCharsets.UTF_8))
+                .addPart("client_id",
+                        new String(clientId.getBytes(Charset.defaultCharset()), StandardCharsets.UTF_8))
+                .addPart("files[]", () -> {
+                    try {
+                        return new FileInputStream(Path.of(fileName).toFile());
+                    } catch (FileNotFoundException e) {
+                        e.printStackTrace();
+                        throw new RuntimeException(e);
+                    }
+                }, fileName, "text/plain");
 
         HttpRequest request = HttpRequest.newBuilder()
-                .POST(HttpRequest.BodyPublishers.ofString(body.toString()))
-                .uri(URI.create(UPLOAD_ENDPOINT))
-                .header("Content-Type", contentType)
-                .header("Api-Username", apiUser)
-                .header("Api-Key", apiKey)
+                .uri(new URI(UPLOAD_ENDPOINT))
+                .setHeader("Content-Type", "multipart/form-data; charset=UTF-8; boundary=" + publisher.getBoundary())
+                .setHeader("Api-Key", apiKey)
+                .setHeader("Api-Username", apiUser)
+                .POST(publisher.build())
                 .build();
 
         HttpResponse<String> response = send(request);
-
-        // print status code
-        System.out.println(response.statusCode());
-
-        // print response body
-        System.out.println(response.body());
-    }
-
-    private HttpRequest.BodyPublisher ofFormData(Map<Object, Object> data) {
-        StringBuilder builder = new StringBuilder();
-        for (Map.Entry<Object, Object> entry : data.entrySet()) {
-            if (builder.length() > 0) {
-                builder.append("&");
-            }
-            builder.append(URLEncoder.encode(entry.getKey().toString(), StandardCharsets.UTF_8));
-            builder.append("=");
-            builder.append(URLEncoder.encode(entry.getValue().toString(), StandardCharsets.UTF_8));
-        }
-        return HttpRequest.BodyPublishers.ofString(builder.toString());
+        return response.body();
     }
 }

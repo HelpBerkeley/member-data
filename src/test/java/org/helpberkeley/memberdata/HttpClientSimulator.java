@@ -198,7 +198,15 @@ public class HttpClientSimulator extends HttpClient {
     }
 
     private <T> HttpResponse<T> doPost(HttpRequest request) {
-        String response = readFile("post-response.json");
+        String response;
+
+        // Is this an upload request?
+        if (request.uri().toString().endsWith(ApiClient.UPLOAD_ENDPOINT)) {
+            response = readFile("upload-response.json");
+        } else {
+            response = readFile("post-response.json");
+        }
+
         //noinspection unchecked
         return (HttpResponse<T>) new HttpResponseSimulator<>(response);
     }

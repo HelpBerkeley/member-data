@@ -215,16 +215,6 @@ public class MainTest extends TestBase {
     }
 
     @Test
-    public void postWorkFlowTest() throws IOException, InterruptedException, CsvException {
-        String usersFile = findFile(Main.MEMBERDATA_RAW_FILE, "csv");
-        String[] args = { Options.COMMAND_WORKFLOW, usersFile };
-        Main.main(args);
-        String workflowFile = findFile(Main.WORKFLOW_FILE, "csv");
-        args = new String[] { Options.COMMAND_POST_WORKFLOW, workflowFile, TEST_SHORT_URL };
-        Main.main(args);
-    }
-
-    @Test
     public void generateDriversPostsTest() throws IOException, InterruptedException, CsvException {
         String routedWorkflowFile = findResourceFile("routed-deliveries.csv");
         String[] args = { Options.COMMAND_GENERATE_DRIVERS_POSTS, routedWorkflowFile };

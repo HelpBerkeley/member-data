@@ -24,8 +24,6 @@ package org.helpberkeley.memberdata;
 
 import org.junit.Test;
 
-import java.io.IOException;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
 
@@ -33,12 +31,12 @@ public class WorkRequestHandlerTest extends TestBase {
 
     private final ApiClient apiClient;
 
-    public WorkRequestHandlerTest() throws IOException {
+    public WorkRequestHandlerTest() {
         apiClient = createApiSimulator();
     }
 
     @Test
-    public void parseWorkRequestTest() throws IOException, InterruptedException {
+    public void parseWorkRequestTest() throws InterruptedException {
 
         Query query = new Query(
                 Constants.QUERY_GET_LAST_ROUTED_WORKFLOW_REPLY, Constants.TOPIC_ROUTED_WORKFLOW_DATA);
@@ -48,7 +46,7 @@ public class WorkRequestHandlerTest extends TestBase {
     }
 
     @Test
-    public void parseStatusTest() throws IOException, InterruptedException {
+    public void parseStatusTest() throws InterruptedException {
         HttpClientSimulator.setQueryResponseFile(
                 Constants.QUERY_GET_LAST_ROUTED_WORKFLOW_REPLY, "last-routed-workflow-status.json");
 
@@ -60,7 +58,7 @@ public class WorkRequestHandlerTest extends TestBase {
     }
 
     @Test
-    public void postStatusTest() throws IOException, InterruptedException {
+    public void postStatusTest() throws InterruptedException {
         Query query = new Query(
                 Constants.QUERY_GET_LAST_ROUTED_WORKFLOW_REPLY, Constants.TOPIC_ROUTED_WORKFLOW_DATA);
         WorkRequestHandler requestHandler = new WorkRequestHandler(apiClient, query);

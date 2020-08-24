@@ -24,8 +24,6 @@ package org.helpberkeley.memberdata;
 
 import org.junit.Test;
 
-import java.io.IOException;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -34,7 +32,7 @@ import static org.assertj.core.api.Assertions.catchThrowable;
 
 public class WorkflowHBParserTest extends TestBase {
     @Test
-    public void splitRestaurantsTest() throws IOException, InterruptedException {
+    public void splitRestaurantsTest() throws InterruptedException {
         String routedDeliveries = readResourceFile("routed-deliveries-with-split-restaurant.csv");
         DriverPostFormat driverPostFormat =
                 new DriverPostFormat(createApiSimulator(), routedDeliveries);

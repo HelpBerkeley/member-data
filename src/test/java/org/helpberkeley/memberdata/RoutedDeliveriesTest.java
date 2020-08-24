@@ -24,7 +24,6 @@ package org.helpberkeley.memberdata;
 
 import org.junit.Test;
 
-import java.io.IOException;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -32,7 +31,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class RoutedDeliveriesTest extends TestBase {
 
     @Test
-    public void parseRoutedTest() throws IOException, InterruptedException {
+    public void parseRoutedTest() throws InterruptedException {
         String csvData = readResourceFile("routed-deliveries.csv");
 
         DriverPostFormat driverPostFormat = new DriverPostFormat(createApiSimulator(), csvData);
@@ -178,7 +177,7 @@ public class RoutedDeliveriesTest extends TestBase {
     }
 
     @Test
-    public void parseRoutedWithSplitRestaurantTest() throws IOException, InterruptedException {
+    public void parseRoutedWithSplitRestaurantTest() throws InterruptedException {
         String csvData = readResourceFile("routed-deliveries-with-split-restaurant.csv");
         DriverPostFormat driverPostFormat = new DriverPostFormat(createApiSimulator(), csvData);
         List<Driver> drivers = driverPostFormat.getDrivers();

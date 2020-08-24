@@ -38,7 +38,6 @@ public class Options {
     static final String COMMAND_POST_CONSUMER_REQUESTS = "post-consumer-requests";
     static final String COMMAND_POST_DRIVERS = "post-drivers";
     static final String COMMAND_POST_ALL_MEMBERS = "post-all-members";
-    static final String COMMAND_POST_WORKFLOW = "post-workflow";
     static final String COMMAND_POST_INREACH = "post-inreach";
     static final String COMMAND_POST_DISPATCHERS = "post-dispatchers";
     static final String COMMAND_INREACH = "inreach";
@@ -49,7 +48,6 @@ public class Options {
     static final String COMMAND_GET_REQUEST_DRIVER_ROUTES = "get-request-driver-routes";
     static final String COMMAND_REQUEST_DRIVER_ROUTES_SUCCEEDED = "request-driver-routes-succeeded";
     static final String COMMAND_REQUEST_DRIVER_ROUTES_FAILED = "request-driver-routes-failed";
-    static final String COMMAND_UPLOAD_FILE = "upload";
 
     static final String USAGE_ERROR = "Usage error for command ";
     static final String UNKNOWN_COMMAND = USAGE_ERROR + ": unknown command: ";
@@ -86,13 +84,11 @@ public class Options {
                     + "    | " + COMMAND_POST_VOLUNTEER_REQUESTS + " volunteer-requests-file-name\n"
                     + "    | " + COMMAND_POST_DRIVERS + " drivers-file upload://short-url-file-name\n"
                     + "    | " + COMMAND_POST_ALL_MEMBERS + " all-members-file upload://short-url-file-name\n"
-                    + "    | " + COMMAND_POST_WORKFLOW + " workflow-file upload://short-url-file-name\n"
                     + "    | " + COMMAND_POST_INREACH + " inreach-file upload://short-url-file-name\n"
                     + "    | " + COMMAND_POST_DISPATCHERS + " dispatchers-file upload://short-url-file-name\n"
                     + "    | " + COMMAND_UPDATE_ERRORS + " errors-file-name\n"
                     + "    | " + COMMAND_UPDATE_DISPATCHERS + " dispatchers-file-name upload://short-url-file-name\n"
-                    + "    | " + COMMAND_UPDATE_ORDER_HISTORY + " order-history-file-name upload://short-url-file-name\n"
-                    + "    | " + COMMAND_UPLOAD_FILE + " file-name\n";
+                    + "    | " + COMMAND_UPDATE_ORDER_HISTORY + " order-history-file-name upload://short-url-file-name\n";
 
     private final String[] args;
     private String command;
@@ -131,7 +127,6 @@ public class Options {
                 case COMMAND_EMAIL:
                 case COMMAND_GENERATE_DRIVERS_POSTS:
                 case COMMAND_WORKFLOW:
-                case COMMAND_UPLOAD_FILE:
                     setCommand(arg);
                     index++;
                     if (index == args.length) {
@@ -140,7 +135,6 @@ public class Options {
                     fileName = args[index];
                     break;
                 case COMMAND_POST_ALL_MEMBERS:
-                case COMMAND_POST_WORKFLOW:
                 case COMMAND_POST_DRIVERS:
                 case COMMAND_POST_INREACH:
                 case COMMAND_POST_DISPATCHERS:

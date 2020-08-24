@@ -25,7 +25,6 @@ package org.helpberkeley.memberdata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
 import java.util.*;
 
 public class DriverPostFormat {
@@ -41,15 +40,13 @@ public class DriverPostFormat {
     private Map<String, Restaurant> restaurants;
     private final StringBuilder statusMessages = new StringBuilder();
 
-    DriverPostFormat(ApiClient apiClient, final String routedDeliveries)
-            throws IOException, InterruptedException {
+    DriverPostFormat(ApiClient apiClient, final String routedDeliveries) throws InterruptedException {
         this.apiClient = apiClient;
         loadRestaurantTemplate();
         loadDriverPostFormat();
         loadGroupPostFormat();
         loadBackupDriverPostFormat();
         loadRoutedDeliveries(routedDeliveries);
-        adjustDriverStartTimes();
         auditControlBlock();
     }
 
@@ -63,13 +60,6 @@ public class DriverPostFormat {
 
     String statusMessages() {
         return statusMessages.toString();
-    }
-
-    void adjustDriverStartTimes() {
-        List<String> warnings = new ArrayList<>();
-
-        for (Driver driver : drivers) {
-        }
     }
 
     String generateSummary() {
@@ -211,23 +201,21 @@ public class DriverPostFormat {
     private void auditControlBlock() {
 
         List<String> splitRestaurants = new ArrayList<>();
-        List<String> allRestaurants = new ArrayList<>();
 
         for (Restaurant restaurant : restaurants.values()) {
             if (restaurant.getDrivers().size() > 1) {
                 splitRestaurants.add(restaurant.getName());
             }
-            allRestaurants.add(restaurant.getName());
         }
 
-        controlBlock.audit(allRestaurants, splitRestaurants);
+        controlBlock.audit(splitRestaurants);
 
         // FIX THIS, DS: are there warnings that only appear after calls to the generate post methods?
         //           Could a clear method and fetch them before each generate call.
         statusMessages.append(controlBlock.getWarnings());
     }
 
-    private void loadRestaurantTemplate() throws IOException, InterruptedException {
+    private void loadRestaurantTemplate() throws InterruptedException {
         String rawPost = HBParser.postBody(apiClient.getPost(Main.RESTAURANT_TEMPLATE_POST_ID));
         RestaurantTemplatePost restaurantTemplatePost = HBParser.restaurantTemplatePost(rawPost);
         String restaurantTemplate = apiClient.downloadFile(restaurantTemplatePost.uploadFile.fileName);
@@ -235,7 +223,7 @@ public class DriverPostFormat {
         restaurants = parser.restaurants();
     }
 
-    private void loadDriverPostFormat() throws IOException, InterruptedException {
+    private void loadDriverPostFormat() throws InterruptedException {
         String json = apiClient.runQuery(Constants.QUERY_GET_DRIVERS_POST_FORMAT);
         ApiQueryResult apiQueryResult = HBParser.parseQueryResult(json);
 
@@ -250,7 +238,7 @@ public class DriverPostFormat {
         }
     }
 
-    private void loadGroupPostFormat() throws IOException, InterruptedException {
+    private void loadGroupPostFormat() throws InterruptedException {
         String json = apiClient.runQuery(Constants.QUERY_GET_GROUP_INSTRUCTIONS_FORMAT);
         ApiQueryResult apiQueryResult = HBParser.parseQueryResult(json);
 
@@ -265,7 +253,7 @@ public class DriverPostFormat {
         }
     }
 
-    private void loadBackupDriverPostFormat() throws IOException, InterruptedException {
+    private void loadBackupDriverPostFormat() throws InterruptedException {
         String json = apiClient.runQuery(Constants.QUERY_GET_BACKUP_DRIVER_FORMAT);
         ApiQueryResult apiQueryResult = HBParser.parseQueryResult(json);
 

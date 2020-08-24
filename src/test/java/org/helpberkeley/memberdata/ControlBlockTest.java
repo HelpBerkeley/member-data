@@ -334,7 +334,7 @@ public class ControlBlockTest extends TestBase {
         WorkflowParser workflowParser = new WorkflowParser(WorkflowParser.Mode.DRIVER_ROUTE_REQUEST, workFlowData);
 
         Throwable thrown = catchThrowable(() ->
-                workflowParser.controlBlock().audit(Collections.EMPTY_LIST, Collections.EMPTY_LIST));
+                workflowParser.controlBlock().audit(Collections.EMPTY_LIST));
         assertThat(thrown).isInstanceOf(MemberDataException.class);
         assertThat(thrown).hasMessageContaining(ControlBlock.ERROR_MISSING_OPS_MANAGER);
     }
@@ -348,7 +348,7 @@ public class ControlBlockTest extends TestBase {
         WorkflowParser workflowParser = new WorkflowParser(WorkflowParser.Mode.DRIVER_ROUTE_REQUEST, workFlowData);
 
         Throwable thrown = catchThrowable(()
-                -> workflowParser.controlBlock().audit(Collections.EMPTY_LIST, splitRestaurantNames));
+                -> workflowParser.controlBlock().audit(splitRestaurantNames));
         assertThat(thrown).isInstanceOf(MemberDataException.class);
         assertThat(thrown).hasMessageContaining(ControlBlock.ERROR_MISSING_OPS_MANAGER);
 
@@ -368,7 +368,7 @@ public class ControlBlockTest extends TestBase {
         WorkflowParser workflowParser = new WorkflowParser(WorkflowParser.Mode.DRIVER_ROUTE_REQUEST, workFlowData);
 
         Throwable thrown = catchThrowable(() ->
-                workflowParser.controlBlock().audit(Collections.EMPTY_LIST, Collections.EMPTY_LIST));
+                workflowParser.controlBlock().audit(Collections.EMPTY_LIST));
         assertThat(thrown).isInstanceOf(MemberDataException.class);
         assertThat(thrown).hasMessage(
                 "Set OpsManager user name \"ReplaceThisByUserName\" at line 3 to a valid OpsManager user name.\n");
@@ -383,7 +383,7 @@ public class ControlBlockTest extends TestBase {
         WorkflowParser workflowParser = new WorkflowParser(WorkflowParser.Mode.DRIVER_ROUTE_REQUEST, workFlowData);
 
         Throwable thrown = catchThrowable(() ->
-                workflowParser.controlBlock().audit(Collections.EMPTY_LIST, Collections.EMPTY_LIST));
+                workflowParser.controlBlock().audit(Collections.EMPTY_LIST));
         assertThat(thrown).isInstanceOf(MemberDataException.class);
         assertThat(thrown).hasMessage("Set OpsManager phone "
                 + "\"ReplaceThisByPhone#In510-555-1212Format\" at line 3 to a valid phone number.\n");
@@ -400,7 +400,7 @@ public class ControlBlockTest extends TestBase {
         WorkflowParser workflowParser = new WorkflowParser(WorkflowParser.Mode.DRIVER_ROUTE_REQUEST, workFlowData);
 
         Throwable thrown = catchThrowable(() ->
-                workflowParser.controlBlock().audit(Collections.EMPTY_LIST, Collections.EMPTY_LIST));
+                workflowParser.controlBlock().audit(Collections.EMPTY_LIST));
         assertThat(thrown).isInstanceOf(MemberDataException.class);
         assertThat(thrown).hasMessage("Line 4, multiple OpsManager entries not yet supported.\n");
     }
@@ -416,7 +416,7 @@ public class ControlBlockTest extends TestBase {
         WorkflowParser workflowParser = new WorkflowParser(WorkflowParser.Mode.DRIVER_ROUTE_REQUEST, workFlowData);
 
         Throwable thrown = catchThrowable(() ->
-                workflowParser.controlBlock().audit(Collections.EMPTY_LIST, Collections.EMPTY_LIST));
+                workflowParser.controlBlock().audit(Collections.EMPTY_LIST));
         assertThat(thrown).isInstanceOf(MemberDataException.class);
         assertThat(thrown).hasMessage("Set SplitRestaurant name "
                 + "\"ReplaceThisBySplitRestaurantName\" at line 4 to a valid restaurant name.\n");
@@ -433,7 +433,7 @@ public class ControlBlockTest extends TestBase {
         WorkflowParser workflowParser = new WorkflowParser(WorkflowParser.Mode.DRIVER_ROUTE_REQUEST, workFlowData);
 
         Throwable thrown = catchThrowable(() ->
-                workflowParser.controlBlock().audit(Collections.EMPTY_LIST, Collections.EMPTY_LIST));
+                workflowParser.controlBlock().audit(Collections.EMPTY_LIST));
         assertThat(thrown).isInstanceOf(MemberDataException.class);
         assertThat(thrown).hasMessage("Set SplitRestaurant cleanup driver user name "
                 + "\"White Castle\" at line 4 to a valid user name.\n");
@@ -448,7 +448,7 @@ public class ControlBlockTest extends TestBase {
 
         WorkflowParser workflowParser = new WorkflowParser(WorkflowParser.Mode.DRIVER_ROUTE_REQUEST, workFlowData);
         ControlBlock controlBlock = workflowParser.controlBlock();
-        controlBlock.audit(Collections.EMPTY_LIST, Collections.EMPTY_LIST);
+        controlBlock.audit(Collections.EMPTY_LIST);
         assertThat(controlBlock.getWarnings()).contains("No BackupDriverUserName set in the control block.\n");
     }
 
@@ -475,7 +475,7 @@ public class ControlBlockTest extends TestBase {
 
         WorkflowParser workflowParser = new WorkflowParser(WorkflowParser.Mode.DRIVER_ROUTE_REQUEST, workFlowData);
         ControlBlock controlBlock = workflowParser.controlBlock();
-        Throwable thrown = catchThrowable(() -> controlBlock.audit(Collections.EMPTY_LIST, Collections.EMPTY_LIST));
+        Throwable thrown = catchThrowable(() -> controlBlock.audit(Collections.EMPTY_LIST));
         assertThat(thrown).isInstanceOf(MemberDataException.class);
         assertThat(thrown).hasMessageContaining("Control block version " + unsupportedVersion + " is not supported.\n");
     }

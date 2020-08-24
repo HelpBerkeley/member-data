@@ -37,7 +37,7 @@ public class LoaderTest extends TestBase {
 
     private final ApiClient apiClient;
 
-    public LoaderTest() throws IOException {
+    public LoaderTest() {
         apiClient = createApiSimulator();
     }
 
@@ -55,7 +55,7 @@ public class LoaderTest extends TestBase {
     }
 
     @Test
-    public void emailAddressTest() throws IOException, InterruptedException {
+    public void emailAddressTest() throws InterruptedException {
         Loader loader = new Loader(apiClient);
 
         Map<Long, String> emailAddresses = loader.loadEmailAddresses();
@@ -100,7 +100,7 @@ public class LoaderTest extends TestBase {
     }
 
     @Test
-    public void stagedUserTest() throws IOException, InterruptedException {
+    public void stagedUserTest() throws InterruptedException {
         HttpClientSimulator.setQueryResponseFile(Constants.CURRENT_USERS_QUERY, "null-user.json");
         Loader loader = new Loader(apiClient);
         List<User> users = loader.load();

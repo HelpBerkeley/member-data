@@ -134,7 +134,6 @@ public class Constants {
     public static final String CONTROL_BLOCK_OPS_MANAGER = "OpsManager(UserName|Phone)";
     public static final String CONTROL_BLOCK_SPLIT_RESTAURANT = "SplitRestaurant(Name|CleanupDriverUserName)";
     public static final String CONTROL_BLOCK_BACKUP_DRIVER = "BackupDriverUserName";
-    public static final String CONTROL_BLOCK_RESTAURANT = "Restaurant(Name|Emoji)";
     public static final String CONTROL_BLOCK_VERSION = "Version";
 
     public static final String CONTROL_BLOCK_VALUE_DEFAULT_PREFIX = "ReplaceThisBy";

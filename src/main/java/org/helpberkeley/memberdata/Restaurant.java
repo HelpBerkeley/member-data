@@ -30,7 +30,6 @@ public class Restaurant {
     private final String name;
     private String address = "";
     private String startTime = "";
-    private int startTimeValue = 0;
     private String closingTime = "";
     private int closingTimeValue = 0;
     private String details = "";
@@ -51,7 +50,6 @@ public class Restaurant {
 
     void setStartTime(final String startTime) {
         this.startTime = startTime;
-        this.startTimeValue = convertTime(startTime);
     }
     void setClosingTime(final String closingTime) {
         this.closingTime = closingTime;

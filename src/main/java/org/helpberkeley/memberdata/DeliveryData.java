@@ -22,7 +22,6 @@
  */
 package org.helpberkeley.memberdata;
 
-import java.io.IOException;
 import java.util.Comparator;
 import java.util.List;
 
@@ -37,7 +36,7 @@ public class DeliveryData {
     }
 
     // Get daily delivery posts
-    static List<DeliveryData> deliveryPosts(ApiClient apiClient) throws IOException, InterruptedException {
+    static List<DeliveryData> deliveryPosts(ApiClient apiClient) throws InterruptedException {
         String json = apiClient.runQuery(Constants.QUERY_GET_DAILY_DELIVERIES);
         ApiQueryResult apiQueryResult = HBParser.parseQueryResult(json);
         List<DeliveryData> deliveryPosts = HBParser.dailyDeliveryPosts(apiQueryResult);

@@ -24,7 +24,6 @@ package org.helpberkeley.memberdata;
 
 import org.junit.Test;
 
-import java.io.IOException;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -60,7 +59,7 @@ public class OrderHistoryTest extends TestBase {
     }
 
     @Test
-    public void unknownUserTest() throws IOException, InterruptedException {
+    public void unknownUserTest() throws InterruptedException {
         Loader loader = new Loader(createApiSimulator());
         List<User> users = loader.load();
         OrderHistory orderHistory = new OrderHistory(("2020/01/01"));

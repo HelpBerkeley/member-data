@@ -33,7 +33,7 @@ import static org.assertj.core.api.Assertions.catchThrowable;
 
 public class DailyDeliveriesTest extends TestBase {
     @Test
-    public void parseDailyDeliveriesQueryTest() throws IOException, InterruptedException {
+    public void parseDailyDeliveriesQueryTest() throws InterruptedException {
         ApiClient apiClient = createApiSimulator();
         String jsonData = apiClient.runQuery(Constants.QUERY_GET_DAILY_DELIVERIES);
         ApiQueryResult queryResult = HBParser.parseQueryResult(jsonData);

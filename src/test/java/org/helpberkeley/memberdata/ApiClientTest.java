@@ -23,7 +23,6 @@ package org.helpberkeley.memberdata;
 
 import org.junit.Test;
 
-import java.io.IOException;
 import java.util.Properties;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -42,25 +41,25 @@ public class ApiClientTest extends TestBase {
     }
 
     @Test
-    public void getGroupsQueryTest() throws IOException, InterruptedException {
+    public void getGroupsQueryTest() throws InterruptedException {
         ApiClient apiClient = createApiSimulator();
         apiClient.runQuery(Constants.QUERY_GET_GROUPS_ID);
     }
 
     @Test
-    public void groupsQueryTest() throws IOException, InterruptedException {
+    public void groupsQueryTest() throws InterruptedException {
         ApiClient apiClient = createApiSimulator();
         apiClient.runQuery(Constants.QUERY_GET_GROUPS_ID);
     }
 
     @Test
-    public void usersQueryTest() throws IOException, InterruptedException {
+    public void usersQueryTest() throws InterruptedException {
         ApiClient apiClient = createApiSimulator();
         apiClient.runQuery(Constants.CURRENT_USERS_QUERY);
     }
 
     @Test
-    public void getErrorTest() throws IOException {
+    public void getErrorTest() {
         long postId = 1234567;
         ApiClient apiClient = createApiSimulator();
         Throwable thrown = catchThrowable(() -> apiClient.getPost(postId));
@@ -70,7 +69,7 @@ public class ApiClientTest extends TestBase {
     }
 
     @Test
-    public void retrySucceedTest() throws IOException, InterruptedException {
+    public void retrySucceedTest() throws InterruptedException {
         ApiClient.RETRY_NAP_MILLISECONDS = 0;
         HttpClientSimulator.setSendFailureCount(1);
 
@@ -79,7 +78,7 @@ public class ApiClientTest extends TestBase {
     }
 
     @Test
-    public void retryFailTest() throws IOException, InterruptedException {
+    public void retryFailTest() {
         ApiClient.RETRY_NAP_MILLISECONDS = 0;
         HttpClientSimulator.setSendFailureCount(10);
 

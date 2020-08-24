@@ -141,10 +141,6 @@ public class Main {
                 postFile(apiClient, options.getFileName(),
                         options.getShortURL(), ALL_MEMBERS_TITLE, ALL_MEMBERS_POST_TOPIC);
                 break;
-            case Options.COMMAND_POST_WORKFLOW:
-                postFile(apiClient, options.getFileName(),
-                        options.getShortURL(), WORKFLOW_TITLE, WORKFLOW_DATA_TOPIC);
-                break;
             case Options.COMMAND_POST_INREACH:
                 postFile(apiClient, options.getFileName(),
                         options.getShortURL(), INREACH_TITLE, INREACH_POST_TOPIC);
@@ -180,9 +176,6 @@ public class Main {
                 postRequestDriverRoutesFailed(apiClient,
                         options.getRequestFileName(), options.getStatusMessage());
                 break;
-            case Options.COMMAND_UPLOAD_FILE:
-                uploadFile(apiClient, options.getFileName());
-                break;
             default:
                 assert options.getCommand().equals(Options.COMMAND_POST_DRIVERS) : options.getCommand();
                 postFile(apiClient, options.getFileName(),
@@ -191,7 +184,7 @@ public class Main {
         }
     }
 
-    static Properties loadProperties(final String fileName) throws IOException {
+    static Properties loadProperties(final String fileName) {
 
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
         URL propertiesFile = classLoader.getResource(fileName);
@@ -207,6 +200,8 @@ public class Main {
         try (InputStream is = propertiesFile.openStream())
         {
             properties.load(is);
+        } catch (IOException e) {
+            throw new MemberDataException(e.getMessage());
         } finally {}
 
         return properties;
@@ -374,7 +369,7 @@ public class Main {
     }
 
     static void postFile(ApiClient apiClient, final String fileName, final String shortUrl,
-                 final String title, long topicId) throws IOException, InterruptedException {
+                 final String title, long topicId) throws InterruptedException {
 
         String now = ZonedDateTime.now(ZoneId.systemDefault()).format(
                 DateTimeFormatter.ofPattern("uuuu.MM.dd HH:mm:ss"));
@@ -397,7 +392,7 @@ public class Main {
     }
 
     static void updateFile(ApiClient apiClient, final String fileName,
-                final String shortUrl, String title, long postId) throws IOException, InterruptedException {
+                final String shortUrl, String title, long postId) throws InterruptedException {
 
         String now = ZonedDateTime.now(ZoneId.systemDefault()).format(
                 DateTimeFormatter.ofPattern("uuuu.MM.dd HH:mm:ss"));
@@ -505,21 +500,34 @@ public class Main {
     static void generateWorkflow(ApiClient apiClient, final String usersFile)
             throws IOException, InterruptedException, CsvException {
 
+        // Read/parse the members data
         String csvData = Files.readString(Paths.get(usersFile));
         List<User> users = HBParser.users(csvData);
 
+        // Fetch/parse the restaurant template post
         String rawPost = HBParser.postBody(apiClient.getPost(RESTAURANT_TEMPLATE_POST_ID));
         RestaurantTemplatePost restaurantTemplatePost = HBParser.restaurantTemplatePost(rawPost);
 
+        // Fetch/parse the delivery details
         String json = apiClient.runQuery(Constants.QUERY_GET_DELIVERY_DETAILS);
         ApiQueryResult apiQueryResult = HBParser.parseQueryResult(json);
         Map<String, String> deliveryDetails = HBParser.deliveryDetails(apiQueryResult);
 
+        // Download the restaurant template file
         String restaurantTemplate = apiClient.downloadFile(restaurantTemplatePost.uploadFile.fileName);
-        new UserExporter(users).workflowToFile(restaurantTemplate, deliveryDetails, WORKFLOW_FILE);
+
+        // Generate the workflow file
+        String workflowFileName =
+                new UserExporter(users).workflowToFile(restaurantTemplate, deliveryDetails, WORKFLOW_FILE);
+
+        // Upload it to Discourse
+        Upload upload = new Upload(apiClient, workflowFileName);
+
+        // Create a post in with a link to the uploaded file.
+        postFile(apiClient, workflowFileName, upload.getShortURL(), WORKFLOW_TITLE, WORKFLOW_DATA_TOPIC);
     }
 
-    static void getRoutedWorkflow(ApiClient apiClient) throws IOException, InterruptedException {
+    static void getRoutedWorkflow(ApiClient apiClient) throws InterruptedException {
         Query query = new Query(Constants.QUERY_GET_LAST_ROUTED_WORKFLOW_REPLY, Constants.TOPIC_ROUTED_WORKFLOW_DATA);
         WorkRequestHandler requestHandler = new WorkRequestHandler(apiClient, query);
 
@@ -563,7 +571,7 @@ public class Main {
     }
 
     static String generateDriverPosts(ApiClient apiClient, String routedDeliveries, long topic)
-            throws InterruptedException, IOException {
+            throws InterruptedException {
 
         StringBuilder statusMessages = new StringBuilder();
         List<String> postURLs = new ArrayList<>();
@@ -722,7 +730,7 @@ public class Main {
     }
 
     static void postRequestDriverRoutesSucceeded(ApiClient apiClient, final String fileName,
-            final String shortURL, final String statusMessage) throws IOException, InterruptedException {
+            final String shortURL, final String statusMessage) throws InterruptedException {
 
         String timeStamp = ZonedDateTime.now(ZoneId.systemDefault())
                 .format(DateTimeFormatter.ofPattern("uuuu/MM/dd HH:mm:ss"));
@@ -745,7 +753,7 @@ public class Main {
         assert response.statusCode() == HTTP_OK : "failed " + response.statusCode() + ": " + response.body();
     }
     static void postRequestDriverRoutesFailed(ApiClient apiClient,
-            final String requestFileName, final String statusMessage) throws IOException, InterruptedException {
+            final String requestFileName, final String statusMessage) throws InterruptedException {
 
         String timeStamp = ZonedDateTime.now(ZoneId.systemDefault())
                 .format(DateTimeFormatter.ofPattern("uuuu/MM/dd HH:mm:ss"));
@@ -772,10 +780,6 @@ public class Main {
         WorkflowParser workflowParser =
                 new WorkflowParser(WorkflowParser.Mode.DRIVER_ROUTE_REQUEST, unroutedDeliveries);
         workflowParser.drivers();
-    }
-
-    static void uploadFile(ApiClient apiClient, final String fileName) throws IOException, InterruptedException {
-        apiClient.uploadFile("test.csv", "a,b,c\n1,2,3\n");
     }
 }
 

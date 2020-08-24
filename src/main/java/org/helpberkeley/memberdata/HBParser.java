@@ -371,7 +371,7 @@ public class HBParser {
             }
             String date = raw.substring(0, index);
 
-            dailyDeliveries.add(new DeliveryData(date, downloadFileName(raw), shortURL(raw)));
+            dailyDeliveries.add(new DeliveryData(date, downloadFileName(raw), shortURLDiscoursePost(raw)));
         }
 
         return dailyDeliveries;
@@ -470,11 +470,21 @@ public class HBParser {
         deliveryDetails.put(userName, details);
     }
 
-    static String shortURL(final String line) {
+    static String shortURLDiscoursePost(final String line) {
         int index = line.indexOf("upload://");
         assert index != -1 : line;
         String shortURL = line.substring(index);
         index = shortURL.indexOf(')');
+        shortURL = shortURL.substring(0, index);
+
+        return shortURL;
+    }
+
+    static String shortURLUploadResponse(final String line) {
+        int index = line.indexOf("upload://");
+        assert index != -1 : line;
+        String shortURL = line.substring(index);
+        index = shortURL.indexOf('"');
         shortURL = shortURL.substring(0, index);
 
         return shortURL;
@@ -552,7 +562,7 @@ public class HBParser {
         String date = lines[0].substring(start.length());
         assert date.endsWith("**");
         date = date.substring(0, date.length() - 2);
-        String shortURL =  shortURL(lines[2]);
+        String shortURL =  shortURLDiscoursePost(lines[2]);
         String fileName = downloadFileName(lines[2]);
 
         return new OrderHistoryPost(date, fileName, shortURL);
@@ -568,7 +578,7 @@ public class HBParser {
 
         for (String line : rawPost.split("\n")) {
             if (line.contains(Constants.UPLOAD_URI_PREFIX)) {
-                String shortURL =  shortURL(line);
+                String shortURL =  shortURLDiscoursePost(line);
                 String fileName = downloadFileName(line);
                 return new RestaurantTemplatePost(fileName, shortURL);
             }

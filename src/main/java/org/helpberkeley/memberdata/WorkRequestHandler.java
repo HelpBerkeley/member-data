@@ -22,7 +22,6 @@
  */
 package org.helpberkeley.memberdata;
 
-import java.io.IOException;
 import java.net.http.HttpResponse;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -46,7 +45,7 @@ public class WorkRequestHandler {
         this.query = query;
     }
 
-    Reply getLastReply() throws IOException, InterruptedException {
+    Reply getLastReply() throws InterruptedException {
 
         lastReply = fetchLastReply();
 
@@ -82,7 +81,7 @@ public class WorkRequestHandler {
     }
 
     // Generate a reply to the topic id
-    void postStatus(RequestStatus status, final String statusMessage) throws IOException, InterruptedException {
+    void postStatus(RequestStatus status, final String statusMessage) throws InterruptedException {
 
         String timeStamp = ZonedDateTime.now(ZoneId.systemDefault())
                 .format(DateTimeFormatter.ofPattern("uuuu/MM/dd HH:mm:ss"));
@@ -105,7 +104,7 @@ public class WorkRequestHandler {
         assert response.statusCode() == HTTP_OK : "failed " + response.statusCode() + ": " + response.body();
     }
 
-    private Reply fetchLastReply() throws IOException, InterruptedException {
+    private Reply fetchLastReply() throws InterruptedException {
 
         String json = apiClient.runQuery(query.id);
         ApiQueryResult apiQueryResult = HBParser.parseQueryResult(json);
@@ -167,7 +166,7 @@ public class WorkRequestHandler {
         }
 
         // Generate a reply to the topic id
-        void postStatus(RequestStatus status, final String statusMessage) throws IOException, InterruptedException {
+        void postStatus(RequestStatus status, final String statusMessage) throws InterruptedException {
 
             String timeStamp = ZonedDateTime.now(ZoneId.systemDefault())
                     .format(DateTimeFormatter.ofPattern("uuuu/MM/dd HH:mm:ss"));
@@ -216,7 +215,7 @@ public class WorkRequestHandler {
                     // FIX THIS, DS: handle number format exception
                     topic = Long.parseLong(line.replaceAll("Topic: ", ""));
                 } else if (line.contains(Constants.UPLOAD_URI_PREFIX)) {
-                    String shortURL =  HBParser.shortURL(line);
+                    String shortURL =  HBParser.shortURLDiscoursePost(line);
                     String fileName = HBParser.downloadFileName(line);
 
                     UploadFile uploadFile = new UploadFile(fileName, shortURL);
