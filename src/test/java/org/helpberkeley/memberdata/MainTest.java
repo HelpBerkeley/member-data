@@ -75,7 +75,7 @@ public class MainTest extends TestBase {
         String memberDataFile = findFile(Main.MEMBERDATA_REPORT_FILE, "csv");
         assertThat(memberDataFile).isNotNull();
 
-        String[] args = { Options.COMMAND_POST_ALL_MEMBERS, memberDataFile, TEST_SHORT_URL };
+        String[] args = { Options.COMMAND_POST_ALL_MEMBERS, memberDataFile };
         Main.main(args);
     }
 

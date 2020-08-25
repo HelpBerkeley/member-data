@@ -51,13 +51,11 @@ public class OptionsTest extends TestBase {
     }
 
     @Test
-    public void tooManyCommandsTest() {
+    public void tooManyArgumentsTest() {
 
         Options options = new Options(new String[] { Options.COMMAND_FETCH, Options.COMMAND_POST_ERRORS });
         Throwable thrown = catchThrowable(options::parse);
         assertThat(thrown).isInstanceOf(MemberDataException.class);
-        assertThat(thrown).hasMessageContaining(Options.TOO_MANY_COMMANDS);
-        assertThat(thrown).hasMessageContaining(Options.USAGE_ERROR);
         assertThat(thrown).hasMessageContaining(Options.USAGE);
     }
 

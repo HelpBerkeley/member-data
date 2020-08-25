@@ -138,8 +138,7 @@ public class Main {
                 postConsumerRequests(apiClient, options.getFileName());
                 break;
             case Options.COMMAND_POST_ALL_MEMBERS:
-                postFile(apiClient, options.getFileName(),
-                        options.getShortURL(), ALL_MEMBERS_TITLE, ALL_MEMBERS_POST_TOPIC);
+                postAllMembers(apiClient, options.getFileName());
                 break;
             case Options.COMMAND_POST_INREACH:
                 postFile(apiClient, options.getFileName(),
@@ -366,6 +365,12 @@ public class Main {
         HttpResponse<?> response = apiClient.updatePost(MEMBER_DATA_REQUIRING_ATTENTION_POST_ID, postRaw);
         LOGGER.info("updateUserErrors {}", response.statusCode() == HTTP_OK ?
                 "" : "failed " + response.statusCode() + ": " + response.body());
+    }
+
+    static void postAllMembers(ApiClient apiClient, final String fileName) throws InterruptedException {
+        // Upload it to Discourse
+        Upload upload = new Upload(apiClient, fileName);
+        postFile(apiClient, fileName, upload.getShortURL(), ALL_MEMBERS_TITLE, ALL_MEMBERS_POST_TOPIC);
     }
 
     static void postFile(ApiClient apiClient, final String fileName, final String shortUrl,

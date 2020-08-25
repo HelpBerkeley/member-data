@@ -83,7 +83,7 @@ public class Options {
                     + "    | " + COMMAND_POST_CONSUMER_REQUESTS + " consumer-requests-file-name\n"
                     + "    | " + COMMAND_POST_VOLUNTEER_REQUESTS + " volunteer-requests-file-name\n"
                     + "    | " + COMMAND_POST_DRIVERS + " drivers-file upload://short-url-file-name\n"
-                    + "    | " + COMMAND_POST_ALL_MEMBERS + " all-members-file upload://short-url-file-name\n"
+                    + "    | " + COMMAND_POST_ALL_MEMBERS + " all-members-file\n"
                     + "    | " + COMMAND_POST_INREACH + " inreach-file upload://short-url-file-name\n"
                     + "    | " + COMMAND_POST_DISPATCHERS + " dispatchers-file upload://short-url-file-name\n"
                     + "    | " + COMMAND_UPDATE_ERRORS + " errors-file-name\n"
@@ -105,126 +105,119 @@ public class Options {
     }
 
     void parse() {
-        for (int index = 0; index < args.length; index++) {
 
-            // Note: when adding a command, add it to the appropriate COMMANDS_WITH_... array
-            //       in TestBase, to get automated testing of option handling for it.
-
-            String arg = args[index];
-
-            switch (arg) {
-                case COMMAND_FETCH:
-                case COMMAND_GET_ORDER_HISTORY:
-                case COMMAND_GET_DAILY_DELIVERIES:
-                case COMMAND_GET_ROUTED_WORKFLOW:
-                case COMMAND_GET_REQUEST_DRIVER_ROUTES:
-                    setCommand(arg);
-                    break;
-                case COMMAND_POST_ERRORS:
-                case COMMAND_POST_CONSUMER_REQUESTS:
-                case COMMAND_POST_VOLUNTEER_REQUESTS:
-                case COMMAND_UPDATE_ERRORS:
-                case COMMAND_EMAIL:
-                case COMMAND_GENERATE_DRIVERS_POSTS:
-                case COMMAND_WORKFLOW:
-                    setCommand(arg);
-                    index++;
-                    if (index == args.length) {
-                        dieMessage(USAGE_ERROR + arg + COMMAND_REQUIRES_FILE_NAME);
-                    }
-                    fileName = args[index];
-                    break;
-                case COMMAND_POST_ALL_MEMBERS:
-                case COMMAND_POST_DRIVERS:
-                case COMMAND_POST_INREACH:
-                case COMMAND_POST_DISPATCHERS:
-                case COMMAND_UPDATE_DISPATCHERS:
-                case COMMAND_UPDATE_ORDER_HISTORY:
-                    setCommand(arg);
-                    index++;
-                    if (index == args.length) {
-                        dieMessage(USAGE_ERROR + arg + COMMAND_REQUIRES_FILE_NAME);
-                    }
-                    fileName = args[index];
-
-                    index++;
-                    if (index == args.length) {
-                        dieMessage(USAGE_ERROR + arg + COMMAND_REQUIRES_SHORT_URL);
-                    }
-                    shortURL = args[index];
-                    break;
-                case COMMAND_INREACH:
-                    setCommand(arg);
-                    index++;
-                    if (index == args.length) {
-                        dieMessage(USAGE_ERROR + arg + COMMAND_REQUIRES_TWO_FILE_NAMES);
-                    }
-                    fileName = args[index];
-
-                    index++;
-                    if (index == args.length) {
-                        dieMessage(USAGE_ERROR + arg + COMMAND_REQUIRES_TWO_FILE_NAMES);
-                    }
-                    secondFileName = args[index];
-                    break;
-                case COMMAND_MERGE_ORDER_HISTORY:
-                    setCommand(arg);
-                    index++;
-                    if (index == args.length) {
-                        dieMessage(USAGE_ERROR + arg + COMMAND_REQUIRES_THREE_FILE_NAMES);
-                    }
-                    fileName = args[index];
-
-                    index++;
-                    if (index == args.length) {
-                        dieMessage(USAGE_ERROR + arg + COMMAND_REQUIRES_THREE_FILE_NAMES);
-                    }
-                    secondFileName = args[index];
-
-                    index++;
-                    if (index == args.length) {
-                        dieMessage(USAGE_ERROR + arg + COMMAND_REQUIRES_THREE_FILE_NAMES);
-                    }
-                    thirdFileName = args[index];
-                    break;
-                case COMMAND_REQUEST_DRIVER_ROUTES_SUCCEEDED:
-                    setCommand(arg);
-                    index++;
-                    if (index == args.length) {
-                        dieMessage(USAGE_ERROR + arg + COMMAND_REQUIRES_FILE_NAME);
-                    }
-                    fileName = args[index];
-
-                    index++;
-                    if (index == args.length) {
-                        dieMessage(USAGE_ERROR + arg + COMMAND_REQUIRES_SHORT_URL);
-                    }
-                    shortURL = args[index];
-
-                    while (++index < args.length) {
-                        statusMessage += args[index] + " ";
-                    }
-
-                    break;
-                case COMMAND_REQUEST_DRIVER_ROUTES_FAILED:
-                    setCommand(arg);
-                    index++;
-                    if (index == args.length) {
-                        dieMessage(USAGE_ERROR + arg + COMMAND_REQUIRES_REQUEST_FILE_NAME);
-                    }
-                    requestFileName = args[index];
-
-                    while (++index < args.length) {
-                        statusMessage += args[index] + " ";
-                    }
-
-                    break;
-                default:
-                    dieMessage(UNKNOWN_COMMAND + arg);
-            }
+        if (args.length == 0) {
+            dieUsage();
         }
 
-        if (command == null) {
+        // Note: when adding a command, add it to the appropriate COMMANDS_WITH_... array
+        //       in TestBase, to get automated testing of option handling for it.
+
+        int index = 0;
+
+        String arg = args[index++];
+
+        switch (arg) {
+            case COMMAND_FETCH:
+            case COMMAND_GET_ORDER_HISTORY:
+            case COMMAND_GET_DAILY_DELIVERIES:
+            case COMMAND_GET_ROUTED_WORKFLOW:
+            case COMMAND_GET_REQUEST_DRIVER_ROUTES:
+                setCommand(arg);
+                break;
+            case COMMAND_POST_ERRORS:
+            case COMMAND_POST_CONSUMER_REQUESTS:
+            case COMMAND_POST_VOLUNTEER_REQUESTS:
+            case COMMAND_UPDATE_ERRORS:
+            case COMMAND_EMAIL:
+            case COMMAND_GENERATE_DRIVERS_POSTS:
+            case COMMAND_WORKFLOW:
+            case COMMAND_POST_ALL_MEMBERS:
+                setCommand(arg);
+                if (index == args.length) {
+                    dieMessage(USAGE_ERROR + arg + COMMAND_REQUIRES_FILE_NAME);
+                }
+                fileName = args[index++];
+                break;
+            case COMMAND_POST_DRIVERS:
+            case COMMAND_POST_INREACH:
+            case COMMAND_POST_DISPATCHERS:
+            case COMMAND_UPDATE_DISPATCHERS:
+            case COMMAND_UPDATE_ORDER_HISTORY:
+                setCommand(arg);
+                if (index == args.length) {
+                    dieMessage(USAGE_ERROR + arg + COMMAND_REQUIRES_FILE_NAME);
+                }
+                fileName = args[index++];
+
+                if (index == args.length) {
+                    dieMessage(USAGE_ERROR + arg + COMMAND_REQUIRES_SHORT_URL);
+                }
+                shortURL = args[index++];
+                break;
+            case COMMAND_INREACH:
+                setCommand(arg);
+                if (index == args.length) {
+                    dieMessage(USAGE_ERROR + arg + COMMAND_REQUIRES_TWO_FILE_NAMES);
+                }
+                fileName = args[index++];
+
+                if (index == args.length) {
+                    dieMessage(USAGE_ERROR + arg + COMMAND_REQUIRES_TWO_FILE_NAMES);
+                }
+                secondFileName = args[index++];
+                break;
+            case COMMAND_MERGE_ORDER_HISTORY:
+                setCommand(arg);
+                if (index == args.length) {
+                    dieMessage(USAGE_ERROR + arg + COMMAND_REQUIRES_THREE_FILE_NAMES);
+                }
+                fileName = args[index++];
+
+                if (index == args.length) {
+                    dieMessage(USAGE_ERROR + arg + COMMAND_REQUIRES_THREE_FILE_NAMES);
+                }
+                secondFileName = args[index++];
+
+                if (index == args.length) {
+                    dieMessage(USAGE_ERROR + arg + COMMAND_REQUIRES_THREE_FILE_NAMES);
+                }
+                thirdFileName = args[index++];
+                break;
+            case COMMAND_REQUEST_DRIVER_ROUTES_SUCCEEDED:
+                setCommand(arg);
+                if (index == args.length) {
+                    dieMessage(USAGE_ERROR + arg + COMMAND_REQUIRES_FILE_NAME);
+                }
+                fileName = args[index++];
+
+                if (index == args.length) {
+                    dieMessage(USAGE_ERROR + arg + COMMAND_REQUIRES_SHORT_URL);
+                }
+                shortURL = args[index];
+
+                while (++index < args.length) {
+                    statusMessage += args[index] + " ";
+                }
+
+                break;
+            case COMMAND_REQUEST_DRIVER_ROUTES_FAILED:
+                setCommand(arg);
+                if (index == args.length) {
+                    dieMessage(USAGE_ERROR + arg + COMMAND_REQUIRES_REQUEST_FILE_NAME);
+                }
+                requestFileName = args[index];
+
+                while (++index < args.length) {
+                    statusMessage += args[index] + " ";
+                }
+
+                break;
+            default:
+                dieMessage(UNKNOWN_COMMAND + arg);
+        }
+
+        if (index < args.length) {
             dieUsage();
         }
 

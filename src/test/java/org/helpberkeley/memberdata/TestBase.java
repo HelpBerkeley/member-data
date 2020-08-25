@@ -87,7 +87,6 @@ public class TestBase {
     final List<String>  TEST_USER_3_GROUPS = List.of(Constants.GROUP_DRIVERS, Constants.GROUP_DISPATCHERS);
 
     static final String[] COMMANDS_WITH_URL = {
-            Options.COMMAND_POST_ALL_MEMBERS,
             Options.COMMAND_POST_DRIVERS,
             Options.COMMAND_POST_INREACH,
             Options.COMMAND_POST_DISPATCHERS,
@@ -96,6 +95,7 @@ public class TestBase {
     };
 
     static final String[] COMMANDS_WITH_FILE = {
+            Options.COMMAND_POST_ALL_MEMBERS,
             Options.COMMAND_POST_ERRORS,
             Options.COMMAND_POST_CONSUMER_REQUESTS,
             Options.COMMAND_POST_VOLUNTEER_REQUESTS,
