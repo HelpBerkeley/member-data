@@ -177,8 +177,7 @@ public class Main {
                 break;
             default:
                 assert options.getCommand().equals(Options.COMMAND_POST_DRIVERS) : options.getCommand();
-                postFile(apiClient, options.getFileName(),
-                        options.getShortURL(), DRIVERS_TITLE, DRIVERS_POST_TOPIC);
+                postDrivers(apiClient, options.getFileName());
                 break;
         }
     }
@@ -370,7 +369,15 @@ public class Main {
     static void postAllMembers(ApiClient apiClient, final String fileName) throws InterruptedException {
         // Upload it to Discourse
         Upload upload = new Upload(apiClient, fileName);
+        // Post
         postFile(apiClient, fileName, upload.getShortURL(), ALL_MEMBERS_TITLE, ALL_MEMBERS_POST_TOPIC);
+    }
+
+    static void postDrivers(ApiClient apiClient, final String fileName) throws InterruptedException {
+        // Upload it to Discourse
+        Upload upload = new Upload(apiClient, fileName);
+        // Post
+        postFile(apiClient, fileName, upload.getShortURL(), DRIVERS_TITLE, DRIVERS_POST_TOPIC);
     }
 
     static void postFile(ApiClient apiClient, final String fileName, final String shortUrl,

@@ -84,7 +84,7 @@ public class MainTest extends TestBase {
         String file = findFile(Main.DRIVERS_FILE, "csv");
         assertThat(file).isNotNull();
 
-        String[] args = { Options.COMMAND_POST_DRIVERS, file, TEST_SHORT_URL };
+        String[] args = { Options.COMMAND_POST_DRIVERS, file };
         Main.main(args);
     }
 

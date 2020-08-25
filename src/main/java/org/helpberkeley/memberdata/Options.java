@@ -82,7 +82,7 @@ public class Options {
                     + "    | " + COMMAND_POST_ERRORS + " errors-file-name\n"
                     + "    | " + COMMAND_POST_CONSUMER_REQUESTS + " consumer-requests-file-name\n"
                     + "    | " + COMMAND_POST_VOLUNTEER_REQUESTS + " volunteer-requests-file-name\n"
-                    + "    | " + COMMAND_POST_DRIVERS + " drivers-file upload://short-url-file-name\n"
+                    + "    | " + COMMAND_POST_DRIVERS + " drivers-file\n"
                     + "    | " + COMMAND_POST_ALL_MEMBERS + " all-members-file\n"
                     + "    | " + COMMAND_POST_INREACH + " inreach-file upload://short-url-file-name\n"
                     + "    | " + COMMAND_POST_DISPATCHERS + " dispatchers-file upload://short-url-file-name\n"
@@ -133,13 +133,13 @@ public class Options {
             case COMMAND_GENERATE_DRIVERS_POSTS:
             case COMMAND_WORKFLOW:
             case COMMAND_POST_ALL_MEMBERS:
+            case COMMAND_POST_DRIVERS:
                 setCommand(arg);
                 if (index == args.length) {
                     dieMessage(USAGE_ERROR + arg + COMMAND_REQUIRES_FILE_NAME);
                 }
                 fileName = args[index++];
                 break;
-            case COMMAND_POST_DRIVERS:
             case COMMAND_POST_INREACH:
             case COMMAND_POST_DISPATCHERS:
             case COMMAND_UPDATE_DISPATCHERS:
