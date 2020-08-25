@@ -112,7 +112,7 @@ public class MainTest extends TestBase {
     @Test
     public void updateDispatchersTest() throws IOException, InterruptedException, CsvException {
         String dispatchersFile = findFile(Main.DISPATCHERS_FILE, "csv");
-        String[] args = { Options.COMMAND_UPDATE_DISPATCHERS, dispatchersFile, TEST_SHORT_URL};
+        String[] args = { Options.COMMAND_UPDATE_DISPATCHERS, dispatchersFile };
         Main.main(args);
     }
 

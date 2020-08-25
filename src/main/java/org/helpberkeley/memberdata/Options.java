@@ -87,7 +87,7 @@ public class Options {
                     + "    | " + COMMAND_POST_INREACH + " inreach-file upload://short-url-file-name\n"
                     + "    | " + COMMAND_POST_DISPATCHERS + " dispatchers-file upload://short-url-file-name\n"
                     + "    | " + COMMAND_UPDATE_ERRORS + " errors-file-name\n"
-                    + "    | " + COMMAND_UPDATE_DISPATCHERS + " dispatchers-file-name upload://short-url-file-name\n"
+                    + "    | " + COMMAND_UPDATE_DISPATCHERS + " dispatchers-file-name\n"
                     + "    | " + COMMAND_UPDATE_ORDER_HISTORY + " order-history-file-name upload://short-url-file-name\n";
 
     private final String[] args;
@@ -134,6 +134,7 @@ public class Options {
             case COMMAND_WORKFLOW:
             case COMMAND_POST_ALL_MEMBERS:
             case COMMAND_POST_DRIVERS:
+            case COMMAND_UPDATE_DISPATCHERS:
                 setCommand(arg);
                 if (index == args.length) {
                     dieMessage(USAGE_ERROR + arg + COMMAND_REQUIRES_FILE_NAME);
@@ -142,7 +143,6 @@ public class Options {
                 break;
             case COMMAND_POST_INREACH:
             case COMMAND_POST_DISPATCHERS:
-            case COMMAND_UPDATE_DISPATCHERS:
             case COMMAND_UPDATE_ORDER_HISTORY:
                 setCommand(arg);
                 if (index == args.length) {

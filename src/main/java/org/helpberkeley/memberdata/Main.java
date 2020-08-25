@@ -149,8 +149,7 @@ public class Main {
                         options.getShortURL(), DISPATCHERS_TITLE, DISPATCHERS_POST_TOPIC);
                 break;
             case Options.COMMAND_UPDATE_DISPATCHERS:
-                updateFile(apiClient, options.getFileName(),
-                        options.getShortURL(), DISPATCHERS_TITLE, DISPATCHERS_POST_ID);
+                updateDispatchers(apiClient, options.getFileName());
                 break;
             case Options.COMMAND_INREACH:
                 generateInreach(options.getFileName(), options.getSecondFileName());
@@ -378,6 +377,13 @@ public class Main {
         Upload upload = new Upload(apiClient, fileName);
         // Post
         postFile(apiClient, fileName, upload.getShortURL(), DRIVERS_TITLE, DRIVERS_POST_TOPIC);
+    }
+
+    static void updateDispatchers(ApiClient apiClient, final String fileName) throws InterruptedException {
+        // Upload it to Discourse
+        Upload upload = new Upload(apiClient, fileName);
+        // Post
+        updateFile(apiClient, fileName, upload.getShortURL(), DISPATCHERS_TITLE, DISPATCHERS_POST_ID);
     }
 
     static void postFile(ApiClient apiClient, final String fileName, final String shortUrl,

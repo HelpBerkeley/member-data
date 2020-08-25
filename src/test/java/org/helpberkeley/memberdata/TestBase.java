@@ -89,7 +89,6 @@ public class TestBase {
     static final String[] COMMANDS_WITH_URL = {
             Options.COMMAND_POST_INREACH,
             Options.COMMAND_POST_DISPATCHERS,
-            Options.COMMAND_UPDATE_DISPATCHERS,
             Options.COMMAND_UPDATE_ORDER_HISTORY,
     };
 
@@ -102,6 +101,7 @@ public class TestBase {
             Options.COMMAND_UPDATE_ERRORS,
             Options.COMMAND_EMAIL,
             Options.COMMAND_WORKFLOW,
+            Options.COMMAND_UPDATE_DISPATCHERS,
     };
 
     static final String[] COMMANDS_WITH_NO_PARAMETERS = {
