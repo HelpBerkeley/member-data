@@ -22,6 +22,7 @@
  */
 package org.helpberkeley.memberdata;
 
+import java.text.MessageFormat;
 import java.util.*;
 
 class ControlBlock {
@@ -29,6 +30,12 @@ class ControlBlock {
     static final String INTRA_FIELD_SEPARATOR = "|";
     static final String ERROR_MISSING_OPS_MANAGER =
             "Control block missing a " + Constants.CONTROL_BLOCK_OPS_MANAGER + " entry.\n";
+
+    static final String UNKNOWN_BACKUP_DRIVER =
+            Constants.CONTROL_BLOCK_BACKUP_DRIVER + " {0} is not a member.  Misspelling?\n";
+
+    static final String BACKUP_IS_NOT_A_DRIVER =
+            Constants.CONTROL_BLOCK_BACKUP_DRIVER + " {0} is not a driver.\n";
 
     private int version = Constants.CONTROL_BLOCK_VERSION_UNKNOWN;
     private final List<OpsManager> opsManagers = new ArrayList<>();
@@ -43,15 +50,13 @@ class ControlBlock {
 
     }
 
-    void audit(List<String> splitRestaurants) {
+    void audit(Map<String, User> users, List<String> splitRestaurants) {
         StringBuilder errors = new StringBuilder();
 
         auditVersion(errors);
         auditOpsManager(errors);
         auditSplitRestaurants(splitRestaurants, errors);
-        auditBackupDrivers();
-
-        // FIX THIS, DS: add warning for no backup driver
+        auditBackupDrivers(errors, users);
 
         if (errors.length() != 0) {
             throw new MemberDataException(errors.toString());
@@ -84,9 +89,19 @@ class ControlBlock {
         }
     }
 
-    private void auditBackupDrivers() {
+    private void auditBackupDrivers(StringBuilder errors, Map<String, User> users) {
         if (backupDrivers.isEmpty()) {
             warnings.append("No " + Constants.CONTROL_BLOCK_BACKUP_DRIVER + " set in the control block.\n");
+        }
+
+        for (String backupDriver : backupDrivers) {
+            User user = users.get(backupDriver);
+
+            if (user == null) {
+                errors.append(MessageFormat.format(UNKNOWN_BACKUP_DRIVER, backupDriver));
+            } else if (! user.isDriver()) {
+                warnings.append(MessageFormat.format(BACKUP_IS_NOT_A_DRIVER, backupDriver));
+            }
         }
     }
 
@@ -336,6 +351,12 @@ class ControlBlock {
 
         if (backupDriver.isEmpty()) {
             errors.append("Empty BackupDriver user name at line ").append(lineNumber).append(".\n");
+        }
+
+        if (backupDriver.startsWith(Constants.CONTROL_BLOCK_VALUE_DEFAULT_PREFIX)) {
+            errors.append("Set BackupDriverUserName \"")
+                    .append(backupDriver).append("\" at line ").append(lineNumber)
+                    .append(" to a valid user name.\n");
         }
 
         if (backupDriver.startsWith("@")) {

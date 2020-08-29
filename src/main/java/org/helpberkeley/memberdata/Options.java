@@ -43,8 +43,7 @@ public class Options {
     static final String COMMAND_INREACH = "inreach";
     static final String COMMAND_EMAIL = "email";
     static final String COMMAND_WORKFLOW = "workflow";
-    static final String COMMAND_GENERATE_DRIVERS_POSTS = "generate-drivers-posts";
-    static final String COMMAND_GET_ROUTED_WORKFLOW = "get-routed-workflow";
+    static final String COMMAND_DRIVER_MESSAGES = "driver-messages";
     static final String COMMAND_GET_REQUEST_DRIVER_ROUTES = "get-request-driver-routes";
     static final String COMMAND_REQUEST_DRIVER_ROUTES_SUCCEEDED = "request-driver-routes-succeeded";
     static final String COMMAND_REQUEST_DRIVER_ROUTES_FAILED = "request-driver-routes-failed";
@@ -64,7 +63,7 @@ public class Options {
             "Usage: " + COMMAND_FETCH + "\n"
                     + "    | " + COMMAND_GET_DAILY_DELIVERIES + "\n"
                     + "    | " + COMMAND_GET_ORDER_HISTORY + "\n"
-                    + "    | " + COMMAND_GET_ROUTED_WORKFLOW + "\n"
+                    + "    | " + COMMAND_DRIVER_MESSAGES + " all-members-file\n"
                     + "    | " + COMMAND_GET_REQUEST_DRIVER_ROUTES + "\n"
                     + "    | " + COMMAND_REQUEST_DRIVER_ROUTES_SUCCEEDED
                                 + " uploaded-file-name"
@@ -78,7 +77,6 @@ public class Options {
                     + "    | " + COMMAND_INREACH + " all-members-file order-history-file\n"
                     + "    | " + COMMAND_EMAIL + " all-members-file\n"
                     + "    | " + COMMAND_WORKFLOW + " all-members-file\n"
-                    + "    | " + COMMAND_GENERATE_DRIVERS_POSTS + " routed-workflow-file\n"
                     + "    | " + COMMAND_POST_ERRORS + " errors-file-name\n"
                     + "    | " + COMMAND_POST_CONSUMER_REQUESTS + " consumer-requests-file-name\n"
                     + "    | " + COMMAND_POST_VOLUNTEER_REQUESTS + " volunteer-requests-file-name\n"
@@ -121,7 +119,6 @@ public class Options {
             case COMMAND_FETCH:
             case COMMAND_GET_ORDER_HISTORY:
             case COMMAND_GET_DAILY_DELIVERIES:
-            case COMMAND_GET_ROUTED_WORKFLOW:
             case COMMAND_GET_REQUEST_DRIVER_ROUTES:
                 setCommand(arg);
                 break;
@@ -130,7 +127,7 @@ public class Options {
             case COMMAND_POST_VOLUNTEER_REQUESTS:
             case COMMAND_UPDATE_ERRORS:
             case COMMAND_EMAIL:
-            case COMMAND_GENERATE_DRIVERS_POSTS:
+            case COMMAND_DRIVER_MESSAGES:
             case COMMAND_WORKFLOW:
             case COMMAND_POST_ALL_MEMBERS:
             case COMMAND_POST_DRIVERS:

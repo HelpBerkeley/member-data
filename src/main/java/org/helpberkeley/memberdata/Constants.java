@@ -40,7 +40,7 @@ public class Constants {
     public static final int QUERY_GET_DRIVERS_POST_FORMAT_V1 = 19;
     public static final int QUERY_GET_GROUP_INSTRUCTIONS_FORMAT_V1 = 20;
     public static final int QUERY_GET_ALL_POSTS_IN_TOPICS = 21;
-    public static final int QUERY_GET_LAST_ROUTED_WORKFLOW_REPLY = 22;
+    public static final int QUERY_GET_LAST_REQUEST_DRIVER_MESSAGES_REPLY = 22;
     public static final int QUERY_GET_LAST_ROUTE_REQUEST_REPLY = 25;
     public static final int QUERY_GET_DRIVERS_POST_FORMAT_V12 = 26;
     public static final int QUERY_GET_GROUP_INSTRUCTIONS_FORMAT_V12 = 27;
@@ -56,7 +56,7 @@ public class Constants {
     public static final int QUERY_GET_GROUP_INSTRUCTIONS_FORMAT = QUERY_GET_GROUP_INSTRUCTIONS_FORMAT_V22;
     public static final int QUERY_GET_BACKUP_DRIVER_FORMAT = QUERY_GET_BACKUP_DRIVER_FORMAT_V12;
 
-    public static final Topic TOPIC_ROUTED_WORKFLOW_DATA = new Topic("Routed Workflow Data", 2504);
+    public static final Topic TOPIC_REQUEST_DRIVER_MESSAGES = new Topic("Request Driver Messages", 2504);
     public static final Topic TOPIC_REQUEST_DRIVER_ROUTES = new Topic("Request Driver Routes", 2844);
 
     public static final String COLUMN_ID = "id";

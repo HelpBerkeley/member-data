@@ -111,8 +111,8 @@ public class Main {
             case Options.COMMAND_GET_ORDER_HISTORY:
                 getOrderHistory(apiClient);
                 break;
-            case Options.COMMAND_GET_ROUTED_WORKFLOW:
-                getRoutedWorkflow(apiClient);
+            case Options.COMMAND_DRIVER_MESSAGES:
+                driverMessages(apiClient, options.getFileName());
                 break;
             case Options.COMMAND_MERGE_ORDER_HISTORY:
                 mergeOrderHistory(apiClient, options.getFileName(),
@@ -159,9 +159,6 @@ public class Main {
                 break;
             case Options.COMMAND_WORKFLOW:
                 generateWorkflow(apiClient, options.getFileName());
-                break;
-            case Options.COMMAND_GENERATE_DRIVERS_POSTS:
-                generateDriversPosts(apiClient, options.getFileName());
                 break;
             case Options.COMMAND_GET_REQUEST_DRIVER_ROUTES:
                 getRequestDriverRoutes(apiClient);
@@ -545,8 +542,18 @@ public class Main {
         postFile(apiClient, workflowFileName, upload.getShortURL(), WORKFLOW_TITLE, WORKFLOW_DATA_TOPIC);
     }
 
-    static void getRoutedWorkflow(ApiClient apiClient) throws InterruptedException {
-        Query query = new Query(Constants.QUERY_GET_LAST_ROUTED_WORKFLOW_REPLY, Constants.TOPIC_ROUTED_WORKFLOW_DATA);
+    /**
+     * Check the Request Driver Messages topic for a request.
+     * Generate driver messages if a request is present.
+     *
+     * @param apiClient Discourse API handling
+     * @param allMembersFile CSV file of all current members
+     * @throws InterruptedException
+     */
+    static void driverMessages(ApiClient apiClient, String allMembersFile)
+            throws InterruptedException, IOException, CsvException {
+        Query query = new Query(
+                Constants.QUERY_GET_LAST_REQUEST_DRIVER_MESSAGES_REPLY, Constants.TOPIC_REQUEST_DRIVER_MESSAGES);
         WorkRequestHandler requestHandler = new WorkRequestHandler(apiClient, query);
 
         WorkRequestHandler.Reply reply;
@@ -558,11 +565,16 @@ public class Main {
             return;
         }
 
+        // Nothing to do.
         if (reply instanceof WorkRequestHandler.Status) {
             return;
         }
 
-        LOGGER.info("getRoutedWorkflow found:\n" + reply);
+        LOGGER.info("Driver message request found:\n" + reply);
+
+        // Parse users files
+        String csvData = Files.readString(Paths.get(allMembersFile));
+        Map<String, User> users = new Tables(HBParser.users(csvData)).mapByUserName();
 
         WorkRequestHandler.WorkRequest request = (WorkRequestHandler.WorkRequest) reply;
 
@@ -574,7 +586,7 @@ public class Main {
 
 
         try {
-            String statusMessage = generateDriverPosts(apiClient, routedDeliveries, topic);
+            String statusMessage = generateDriverPosts(apiClient, users, routedDeliveries, topic);
             request.postStatus(WorkRequestHandler.RequestStatus.Succeeded, statusMessage);
         } catch (MemberDataException ex) {
             String reason = ex.getCause() != null ? ex.getCause().getMessage() : ex.getMessage();
@@ -583,21 +595,15 @@ public class Main {
         }
     }
 
-    static void generateDriversPosts(ApiClient apiClient, String workflowFile) throws IOException, InterruptedException {
-        String routedDeliveries = Files.readString(Paths.get(workflowFile));
-        generateDriverPosts(apiClient, routedDeliveries, DRIVERS_POST_STAGING_TOPIC_ID);
-    }
-
-    static String generateDriverPosts(ApiClient apiClient, String routedDeliveries, long topic)
-            throws InterruptedException {
+    static String generateDriverPosts(ApiClient apiClient, Map<String,
+            User> users, String routedDeliveries, long topic) throws InterruptedException {
 
         StringBuilder statusMessages = new StringBuilder();
         List<String> postURLs = new ArrayList<>();
         String groupPostURL = null;
         String backupPostURL = null;
 
-        DriverPostFormat driverPostFormat =
-                new DriverPostFormat(apiClient, routedDeliveries);
+        DriverPostFormat driverPostFormat = new DriverPostFormat(apiClient, users, routedDeliveries);
 
         List<String> posts = driverPostFormat.generateDriverPosts();
         Iterator<Driver> driverIterator = driverPostFormat.getDrivers().iterator();

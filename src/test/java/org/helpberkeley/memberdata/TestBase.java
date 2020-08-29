@@ -101,6 +101,7 @@ public class TestBase {
             Options.COMMAND_UPDATE_ERRORS,
             Options.COMMAND_EMAIL,
             Options.COMMAND_WORKFLOW,
+            Options.COMMAND_DRIVER_MESSAGES,
             Options.COMMAND_UPDATE_DISPATCHERS,
     };
 
@@ -108,7 +109,6 @@ public class TestBase {
             Options.COMMAND_FETCH,
             Options.COMMAND_GET_ORDER_HISTORY,
             Options.COMMAND_GET_DAILY_DELIVERIES,
-            Options.COMMAND_GET_ROUTED_WORKFLOW,
             Options.COMMAND_GET_REQUEST_DRIVER_ROUTES,
     };
 

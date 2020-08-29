@@ -39,7 +39,7 @@ public class WorkRequestHandlerTest extends TestBase {
     public void parseWorkRequestTest() throws InterruptedException {
 
         Query query = new Query(
-                Constants.QUERY_GET_LAST_ROUTED_WORKFLOW_REPLY, Constants.TOPIC_ROUTED_WORKFLOW_DATA);
+                Constants.QUERY_GET_LAST_REQUEST_DRIVER_MESSAGES_REPLY, Constants.TOPIC_REQUEST_DRIVER_MESSAGES);
         WorkRequestHandler requestHandler = new WorkRequestHandler(apiClient, query);
         WorkRequestHandler.Reply reply = requestHandler.getLastReply();
         assertThat(reply).isInstanceOf(WorkRequestHandler.WorkRequest.class);
@@ -48,10 +48,10 @@ public class WorkRequestHandlerTest extends TestBase {
     @Test
     public void parseStatusTest() throws InterruptedException {
         HttpClientSimulator.setQueryResponseFile(
-                Constants.QUERY_GET_LAST_ROUTED_WORKFLOW_REPLY, "last-routed-workflow-status.json");
+                Constants.QUERY_GET_LAST_REQUEST_DRIVER_MESSAGES_REPLY, "last-routed-workflow-status.json");
 
         Query query = new Query(
-                Constants.QUERY_GET_LAST_ROUTED_WORKFLOW_REPLY, Constants.TOPIC_ROUTED_WORKFLOW_DATA);
+                Constants.QUERY_GET_LAST_REQUEST_DRIVER_MESSAGES_REPLY, Constants.TOPIC_REQUEST_DRIVER_MESSAGES);
         WorkRequestHandler requestHandler = new WorkRequestHandler(apiClient, query);
         WorkRequestHandler.Reply reply = requestHandler.getLastReply();
         assertThat(reply).isInstanceOf(WorkRequestHandler.Status.class);
@@ -60,7 +60,7 @@ public class WorkRequestHandlerTest extends TestBase {
     @Test
     public void postStatusTest() throws InterruptedException {
         Query query = new Query(
-                Constants.QUERY_GET_LAST_ROUTED_WORKFLOW_REPLY, Constants.TOPIC_ROUTED_WORKFLOW_DATA);
+                Constants.QUERY_GET_LAST_REQUEST_DRIVER_MESSAGES_REPLY, Constants.TOPIC_REQUEST_DRIVER_MESSAGES);
         WorkRequestHandler requestHandler = new WorkRequestHandler(apiClient, query);
         WorkRequestHandler.Reply reply = requestHandler.getLastReply();
         assertThat(reply).isInstanceOf(WorkRequestHandler.WorkRequest.class);
@@ -73,10 +73,10 @@ public class WorkRequestHandlerTest extends TestBase {
     @Test
     public void parseUnrecognizedPostTest() {
         HttpClientSimulator.setQueryResponseFile(
-                Constants.QUERY_GET_LAST_ROUTED_WORKFLOW_REPLY, "bad-work-request.json");
+                Constants.QUERY_GET_LAST_REQUEST_DRIVER_MESSAGES_REPLY, "bad-work-request.json");
 
         Query query = new Query(
-                Constants.QUERY_GET_LAST_ROUTED_WORKFLOW_REPLY, Constants.TOPIC_ROUTED_WORKFLOW_DATA);
+                Constants.QUERY_GET_LAST_REQUEST_DRIVER_MESSAGES_REPLY, Constants.TOPIC_REQUEST_DRIVER_MESSAGES);
         WorkRequestHandler requestHandler = new WorkRequestHandler(apiClient, query);
         Throwable thrown = catchThrowable(requestHandler::getLastReply);
         assertThat(thrown).isInstanceOf(MemberDataException.class);

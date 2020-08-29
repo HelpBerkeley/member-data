@@ -35,13 +35,16 @@ public class DriverPostFormat {
     private final List<MessageBlock> driverPostMessageBlocks = new ArrayList<>();
     private final List<MessageBlock> groupInstructionMessageBlocks = new ArrayList<>();
     private final List<MessageBlock> backupDriverMessageBlocks = new ArrayList<>();
+    private final Map<String, User> users;
     private List<Driver> drivers;
     private ControlBlock controlBlock;
     private Map<String, Restaurant> restaurants;
     private final StringBuilder statusMessages = new StringBuilder();
 
-    DriverPostFormat(ApiClient apiClient, final String routedDeliveries) throws InterruptedException {
+    DriverPostFormat(ApiClient apiClient,
+                     Map<String, User> users, String routedDeliveries) throws InterruptedException {
         this.apiClient = apiClient;
+        this.users = users;
         loadRestaurantTemplate();
         loadDriverPostFormat();
         loadGroupPostFormat();
@@ -208,7 +211,7 @@ public class DriverPostFormat {
             }
         }
 
-        controlBlock.audit(splitRestaurants);
+        controlBlock.audit(users, splitRestaurants);
 
         // FIX THIS, DS: are there warnings that only appear after calls to the generate post methods?
         //           Could a clear method and fetch them before each generate call.

@@ -215,31 +215,27 @@ public class MainTest extends TestBase {
     }
 
     @Test
-    public void generateDriversPostsTest() throws IOException, InterruptedException, CsvException {
-        String routedWorkflowFile = findResourceFile("routed-deliveries.csv");
-        String[] args = { Options.COMMAND_GENERATE_DRIVERS_POSTS, routedWorkflowFile };
-        Main.main(args);
-    }
-
-    @Test
-    public void getRoutedWorkflowRequestTest() throws IOException, InterruptedException, CsvException {
-        String[] args = { Options.COMMAND_GET_ROUTED_WORKFLOW };
+    public void driverMessagesTest() throws IOException, InterruptedException, CsvException {
+        String usersFile = findFile(Main.MEMBERDATA_RAW_FILE, "csv");
+        String[] args = { Options.COMMAND_DRIVER_MESSAGES, usersFile };
         Main.main(args);
     }
 
     @Test
     public void getRoutedWorkflowStatusTest() throws IOException, InterruptedException, CsvException {
+        String usersFile = findFile(Main.MEMBERDATA_RAW_FILE, "csv");
         HttpClientSimulator.setQueryResponseFile(
-                Constants.QUERY_GET_LAST_ROUTED_WORKFLOW_REPLY, "last-routed-workflow-status.json");
-        String[] args = { Options.COMMAND_GET_ROUTED_WORKFLOW };
+                Constants.QUERY_GET_LAST_REQUEST_DRIVER_MESSAGES_REPLY, "last-routed-workflow-status.json");
+        String[] args = { Options.COMMAND_DRIVER_MESSAGES, usersFile };
         Main.main(args);
     }
 
     @Test
     public void getRoutedWorkflowBadRequestTest() throws IOException, InterruptedException, CsvException {
+        String usersFile = findFile(Main.MEMBERDATA_RAW_FILE, "csv");
         HttpClientSimulator.setQueryResponseFile(
-                Constants.QUERY_GET_LAST_ROUTED_WORKFLOW_REPLY, "last-routed-workflow-bad-request.json");
-        String[] args = { Options.COMMAND_GET_ROUTED_WORKFLOW };
+                Constants.QUERY_GET_LAST_REQUEST_DRIVER_MESSAGES_REPLY, "last-routed-workflow-bad-request.json");
+        String[] args = { Options.COMMAND_DRIVER_MESSAGES, usersFile };
         Main.main(args);
     }
 

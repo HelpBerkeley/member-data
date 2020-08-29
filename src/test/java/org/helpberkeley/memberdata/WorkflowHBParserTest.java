@@ -31,11 +31,19 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
 
 public class WorkflowHBParserTest extends TestBase {
+
+    private final Map<String, User> users;
+
+    public WorkflowHBParserTest() throws InterruptedException {
+        Loader loader = new Loader(createApiSimulator());
+        users = new Tables(loader.load()).mapByUserName();
+    }
+
     @Test
     public void splitRestaurantsTest() throws InterruptedException {
         String routedDeliveries = readResourceFile("routed-deliveries-with-split-restaurant.csv");
         DriverPostFormat driverPostFormat =
-                new DriverPostFormat(createApiSimulator(), routedDeliveries);
+                new DriverPostFormat(createApiSimulator(), users, routedDeliveries);
 
         List<Driver> drivers = driverPostFormat.getDrivers();
 
@@ -68,7 +76,7 @@ public class WorkflowHBParserTest extends TestBase {
     public void deliveryErrorsTest() {
         String routedDeliveries = readResourceFile("routed-deliveries-delivery-errors.csv");
         Throwable thrown = catchThrowable(() ->
-                new DriverPostFormat(createApiSimulator(), routedDeliveries));
+                new DriverPostFormat(createApiSimulator(), users, routedDeliveries));
         assertThat(thrown).isInstanceOf(MemberDataException.class);
         assertThat(thrown).hasMessageContainingAll("missing consumer name",
                 "missing user name", "missing phone", "missing city", "missing address",
@@ -79,7 +87,7 @@ public class WorkflowHBParserTest extends TestBase {
     public void restaurantErrorsTest() {
         String routedDeliveries = readResourceFile("routed-deliveries-restaurant-errors.csv");
         Throwable thrown = catchThrowable(() ->
-                new DriverPostFormat(createApiSimulator(), routedDeliveries));
+                new DriverPostFormat(createApiSimulator(), users, routedDeliveries));
         assertThat(thrown).isInstanceOf(MemberDataException.class);
         assertThat(thrown).hasMessageContainingAll("missing restaurant name",
                 "missing address", "missing orders");
@@ -89,7 +97,7 @@ public class WorkflowHBParserTest extends TestBase {
     public void driverErrorsTest() {
         String routedDeliveries = readResourceFile("routed-deliveries-driver-errors.csv");
         Throwable thrown = catchThrowable(() ->
-                new DriverPostFormat(createApiSimulator(), routedDeliveries));
+                new DriverPostFormat(createApiSimulator(), users, routedDeliveries));
         assertThat(thrown).isInstanceOf(MemberDataException.class);
         assertThat(thrown).hasMessageContainingAll("missing driver user name",
                 "missing driver phone number");
@@ -99,7 +107,7 @@ public class WorkflowHBParserTest extends TestBase {
     public void missingGMapURLTest() {
         String routedDeliveries = readResourceFile("routed-deliveries-missing-gmap-url.csv");
         Throwable thrown = catchThrowable(() ->
-                new DriverPostFormat(createApiSimulator(), routedDeliveries));
+                new DriverPostFormat(createApiSimulator(), users, routedDeliveries));
         assertThat(thrown).isInstanceOf(MemberDataException.class);
         assertThat(thrown).hasMessageContainingAll("missing gmap URL");
     }
@@ -108,7 +116,7 @@ public class WorkflowHBParserTest extends TestBase {
     public void emptyGMapURLTest() {
         String routedDeliveries = readResourceFile("routed-deliveries-empty-gmap-url.csv");
         Throwable thrown = catchThrowable(() ->
-                new DriverPostFormat(createApiSimulator(), routedDeliveries));
+                new DriverPostFormat(createApiSimulator(), users, routedDeliveries));
         assertThat(thrown).isInstanceOf(MemberDataException.class);
         assertThat(thrown).hasMessageContainingAll("empty gmap URL");
     }
@@ -117,7 +125,7 @@ public class WorkflowHBParserTest extends TestBase {
     public void missingHeaderRowTest() {
         String routedDeliveries = readResourceFile("routed-deliveries-missing-header.csv");
         Throwable thrown = catchThrowable(() ->
-                new DriverPostFormat(createApiSimulator(), routedDeliveries));
+                new DriverPostFormat(createApiSimulator(), users, routedDeliveries));
         assertThat(thrown).isInstanceOf(MemberDataException.class);
         assertThat(thrown).hasMessage("All column names missing. Line 1 does not look like a header row");
     }
@@ -165,7 +173,7 @@ public class WorkflowHBParserTest extends TestBase {
     public void pickupsAndDeliveriesMismatchTest() {
         String routedDeliveries = readResourceFile("routed-deliveries-order-mismatch.csv");
         Throwable thrown = catchThrowable(() ->
-                new DriverPostFormat(createApiSimulator(), routedDeliveries));
+                new DriverPostFormat(createApiSimulator(), users, routedDeliveries));
         assertThat(thrown).isInstanceOf(MemberDataException.class);
         assertThat(thrown).hasMessageContaining(
                 "orders for Talavera but no deliveries");

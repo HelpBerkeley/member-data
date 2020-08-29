@@ -25,16 +25,24 @@ package org.helpberkeley.memberdata;
 import org.junit.Test;
 
 import java.util.List;
+import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class RoutedDeliveriesTest extends TestBase {
 
+    private final Map<String, User> users;
+
+    public RoutedDeliveriesTest() throws InterruptedException {
+        Loader loader = new Loader(createApiSimulator());
+        users = new Tables(loader.load()).mapByUserName();
+    }
+
     @Test
     public void parseRoutedTest() throws InterruptedException {
         String csvData = readResourceFile("routed-deliveries.csv");
 
-        DriverPostFormat driverPostFormat = new DriverPostFormat(createApiSimulator(), csvData);
+        DriverPostFormat driverPostFormat = new DriverPostFormat(createApiSimulator(), users, csvData);
         List<Driver> drivers = driverPostFormat.getDrivers();
 
         assertThat(drivers).hasSize(2);
@@ -179,7 +187,7 @@ public class RoutedDeliveriesTest extends TestBase {
     @Test
     public void parseRoutedWithSplitRestaurantTest() throws InterruptedException {
         String csvData = readResourceFile("routed-deliveries-with-split-restaurant.csv");
-        DriverPostFormat driverPostFormat = new DriverPostFormat(createApiSimulator(), csvData);
+        DriverPostFormat driverPostFormat = new DriverPostFormat(createApiSimulator(), users, csvData);
         List<Driver> drivers = driverPostFormat.getDrivers();
 
         assertThat(drivers).hasSize(4);
