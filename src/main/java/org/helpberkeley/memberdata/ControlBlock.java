@@ -83,11 +83,11 @@ class ControlBlock {
             if (user == null) {
                 errors.append(MessageFormat.format(UNKNOWN_OPS_MANAGER, opsManager.userName));
             } else {
-                String phone = opsManager.phone.replaceAll("\\d", "");
-                boolean match = phone.equals(user.getPhoneNumber().replace("\\d", ""));
+                String phone = opsManager.phone.replaceAll("\\D", "");
+                boolean match = phone.equals(user.getPhoneNumber().replace("\\D", ""));
 
                 if (! match) {
-                    match = phone.equals(user.getAltPhoneNumber().replace("\\d", ""));
+                    match = phone.equals(user.getAltPhoneNumber().replace("\\D", ""));
                 }
 
                 if (! match) {
