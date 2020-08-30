@@ -32,10 +32,13 @@ class ControlBlock {
             "Control block missing a " + Constants.CONTROL_BLOCK_OPS_MANAGER + " entry.\n";
 
     static final String UNKNOWN_BACKUP_DRIVER =
-            Constants.CONTROL_BLOCK_BACKUP_DRIVER + " {0} is not a member.  Misspelling?\n";
-
+            Constants.CONTROL_BLOCK_BACKUP_DRIVER + " {0} is not a member. Misspelling?\n";
     static final String BACKUP_IS_NOT_A_DRIVER =
             Constants.CONTROL_BLOCK_BACKUP_DRIVER + " {0} is not a driver.\n";
+    static final String UNKNOWN_OPS_MANAGER =
+            Constants.CONTROL_BLOCK_OPS_MANAGER + " {0} is not a member. Misspelling?\n";
+    static final String OPS_MANAGER_PHONE_MISMATCH =
+            Constants.CONTROL_BLOCK_OPS_MANAGER + " {0} phone {1} does not match the member data";
 
     private int version = Constants.CONTROL_BLOCK_VERSION_UNKNOWN;
     private final List<OpsManager> opsManagers = new ArrayList<>();
@@ -54,7 +57,7 @@ class ControlBlock {
         StringBuilder errors = new StringBuilder();
 
         auditVersion(errors);
-        auditOpsManager(errors);
+        auditOpsManager(errors, users);
         auditSplitRestaurants(splitRestaurants, errors);
         auditBackupDrivers(errors, users);
 
@@ -69,10 +72,29 @@ class ControlBlock {
         }
     }
 
-    private void auditOpsManager(StringBuilder errors) {
-
+    private void auditOpsManager(StringBuilder errors, Map<String, User> users) {
         if (opsManagers.isEmpty()) {
             errors.append(ERROR_MISSING_OPS_MANAGER);
+        }
+
+        for (OpsManager opsManager : opsManagers) {
+            User user = users.get(opsManager.userName);
+
+            if (user == null) {
+                errors.append(MessageFormat.format(UNKNOWN_OPS_MANAGER, opsManager.userName));
+            } else {
+                String phone = opsManager.phone.replaceAll("\\d", "");
+                boolean match = phone.equals(user.getPhoneNumber().replace("\\d", ""));
+
+                if (! match) {
+                    match = phone.equals(user.getAltPhoneNumber().replace("\\d", ""));
+                }
+
+                if (! match) {
+                    warnings.append(MessageFormat.format(OPS_MANAGER_PHONE_MISMATCH,
+                            opsManager.userName, opsManager.phone));
+                }
+            }
         }
     }
 

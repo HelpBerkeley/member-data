@@ -59,7 +59,7 @@ public class ControlBlockTest extends TestBase {
 
         ControlBlock controlBlock = workflowParser.controlBlock();
         assertThat(controlBlock.getOpsManagers()).containsExactly(
-                new ControlBlock.OpsManager("zzz", "123-456-7890"));
+                new ControlBlock.OpsManager("JVol", "123-456-7890"));
         assertThat(controlBlock.getSplitRestaurants()).containsExactly(
                 new ControlBlock.SplitRestaurant("Jot Mahal", "joebdriver"));
         assertThat(controlBlock.getBackupDrivers()).containsExactly("JVol");
@@ -183,6 +183,20 @@ public class ControlBlockTest extends TestBase {
                 "OpsManager user name \"fred e mercury\" at line 3 cannot contain spaces.");
     }
 
+    /** Test the audit for an ops manager that is not a known user */
+    @Test
+    public void opsManagerUnknownUserTest() {
+        String workFlowData = HEADER + CONTROL_BLOCK_BEGIN_ROW
+                + "FALSE,FALSE,,OpsManager (UserName|Phone),,,,UnknownDudette|123-456-7890,,,,,,,\n";
+
+        WorkflowParser workflowParser = new WorkflowParser(WorkflowParser.Mode.DRIVER_ROUTE_REQUEST, workFlowData);
+        ControlBlock controlBlock = workflowParser.controlBlock();
+        Throwable thrown = catchThrowable(() -> controlBlock.audit(users, Collections.EMPTY_LIST));
+        assertThat(thrown).isInstanceOf(MemberDataException.class);
+        assertThat(thrown).hasMessageContaining(
+                MessageFormat.format(ControlBlock.UNKNOWN_OPS_MANAGER, "UnknownDudette"));
+    }
+
     @Test
     public void opsManagerEmptyPhoneTest() {
 
@@ -194,6 +208,18 @@ public class ControlBlockTest extends TestBase {
         Throwable thrown = catchThrowable(workflowParser::drivers);
         assertThat(thrown).isInstanceOf(MemberDataException.class);
         assertThat(thrown).hasMessageContaining("Empty OpsManager phone number at line 3.");
+    }
+
+    @Test
+    public void opsManagerMismatchedPhoneTest() {
+
+        String workFlowData = HEADER + CONTROL_BLOCK_BEGIN_ROW
+                + "FALSE,FALSE,,OpsManager (UserName|Phone),,,,JVol|222-222-2222,,,,,,,\n";
+        WorkflowParser workflowParser = new WorkflowParser(WorkflowParser.Mode.DRIVER_ROUTE_REQUEST, workFlowData);
+        ControlBlock controlBlock = workflowParser.controlBlock();
+        controlBlock.audit(users, Collections.EMPTY_LIST);
+        assertThat(controlBlock.getWarnings()).contains(
+                MessageFormat.format(ControlBlock.OPS_MANAGER_PHONE_MISMATCH, "JVol", "222-222-2222"));
     }
 
     @Test
@@ -448,7 +474,7 @@ public class ControlBlockTest extends TestBase {
     public void noBackupDriversTest() {
         String workFlowData = HEADER + CONTROL_BLOCK_BEGIN_ROW
                 + "FALSE,FALSE,,OpsManager (UserName | Phone),,,,"
-                + "FredZ | 510-555-1212,,,,,,,\n"
+                + "JVol | 123-456-7890,,,,,,,\n"
                 + CONTROL_BLOCK_END_ROW;
 
         WorkflowParser workflowParser = new WorkflowParser(WorkflowParser.Mode.DRIVER_ROUTE_REQUEST, workFlowData);
@@ -508,7 +534,7 @@ public class ControlBlockTest extends TestBase {
     public void backupNotADriverTest() {
         String workFlowData = HEADER + CONTROL_BLOCK_BEGIN_ROW
                 + "FALSE,FALSE,,OpsManager (UserName | Phone),,,,"
-                + "FredZ | 510-555-1212,,,,,,,\n"
+                + "JVol | 123-456-7890,,,,,,,\n"
                 + "FALSE,FALSE,,BackupDriverUserName,,,,"
                 + "ZZZ,,,,,,,\n"
                 + CONTROL_BLOCK_END_ROW;

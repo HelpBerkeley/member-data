@@ -52,7 +52,7 @@ public class DriverPostTest extends TestBase {
         assertThat(posts).hasSize(1);
         String post = posts.get(0);
         assertThat(post).contains("@jsDriver");
-        assertThat(post).contains("Any issue: call today's on-call ops manager, @MrE, at (510) 555.1212.\n");
+        assertThat(post).contains("Any issue: call today's on-call ops manager, @JVol, at (123) 456.7890.\n");
         assertThat(post).contains("You have a condo on your run");
         assertThat(post).contains("**Complete condo instructions**");
         assertThat(post).contains("Cafe Raj :open_umbrella:");
@@ -72,7 +72,7 @@ public class DriverPostTest extends TestBase {
         String post = posts.get(0);
 //        System.out.println(post);
         assertThat(post).contains("@jbDriver");
-        assertThat(post).contains("Any issue: call today's on-call ops manager, @CantankerousIII, at (510) 876.5432.\n");
+        assertThat(post).contains("Any issue: call today's on-call ops manager, @JVol, at (123) 456.7890.\n");
         assertThat(post).doesNotContain("You have a condo on your run");
         assertThat(post).doesNotContain("Complete condo instructions");
         assertThat(post).contains("Talavera");
@@ -87,7 +87,7 @@ public class DriverPostTest extends TestBase {
         post = posts.get(1);
 //        System.out.println(post);
         assertThat(post).contains("@jsDriver");
-        assertThat(post).contains("Any issue: call today's on-call ops manager, @CantankerousIII, at (510) 876.5432.\n");
+        assertThat(post).contains("Any issue: call today's on-call ops manager, @JVol, at (123) 456.7890.\n");
         assertThat(post).contains("You have a condo on your run");
         assertThat(post).contains("Complete condo instructions");
         assertThat(post).contains("Cafe Raj");
