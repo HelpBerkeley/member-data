@@ -203,18 +203,15 @@ public class DriverPostFormat {
 
     private void auditControlBlock() {
 
-        List<String> splitRestaurants = new ArrayList<>();
+        List<Restaurant> splitRestaurants = new ArrayList<>();
 
         for (Restaurant restaurant : restaurants.values()) {
             if (restaurant.getDrivers().size() > 1) {
-                splitRestaurants.add(restaurant.getName());
+                splitRestaurants.add(restaurant);
             }
         }
 
-        controlBlock.audit(users, splitRestaurants);
-
-        // FIX THIS, DS: are there warnings that only appear after calls to the generate post methods?
-        //           Could a clear method and fetch them before each generate call.
+        controlBlock.audit(users, restaurants, splitRestaurants);
         statusMessages.append(controlBlock.getWarnings());
     }
 

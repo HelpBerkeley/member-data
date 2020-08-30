@@ -22,8 +22,12 @@
  */
 package org.helpberkeley.memberdata;
 
+import com.opencsv.exceptions.CsvException;
 import org.junit.Test;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 
@@ -175,4 +179,16 @@ public class DriverPostTest extends TestBase {
         String post = posts.get(0);
 //        System.out.println(post);
     }
+//
+//    @Test
+//    public void scratchTest() throws InterruptedException, IOException, CsvException {
+//        String routedDeliveries = Files.readString(Path.of("deliveries.CSV"));
+//
+//        List<User> userList = HBParser.users(Files.readString(Path.of("member-data.CSV")));
+//        Map<String, User> userMap = new Tables(userList).mapByUserName();
+//
+//        DriverPostFormat driverPostFormat =
+//                new DriverPostFormat(createApiSimulator(), userMap, routedDeliveries);
+//
+//    }
 }

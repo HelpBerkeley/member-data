@@ -22,6 +22,7 @@
  */
 package org.helpberkeley.memberdata;
 
+import java.net.UnknownServiceException;
 import java.text.MessageFormat;
 import java.util.*;
 
@@ -38,12 +39,19 @@ class ControlBlock {
     static final String UNKNOWN_OPS_MANAGER =
             Constants.CONTROL_BLOCK_OPS_MANAGER + " {0} is not a member. Misspelling?\n";
     static final String OPS_MANAGER_PHONE_MISMATCH =
-            Constants.CONTROL_BLOCK_OPS_MANAGER + " {0} phone {1} does not match the member data";
+            Constants.CONTROL_BLOCK_OPS_MANAGER + " {0} phone {1} does not match the member data\n";
+    static final String UNKNOWN_SPLIT_RESTAURANT =
+            Constants.CONTROL_BLOCK_SPLIT_RESTAURANT + " contains unknown restaurant {0}. Misspelling?\n";
+    static final String UNKNOWN_CLEANUP_DRIVER =
+            Constants.CONTROL_BLOCK_SPLIT_RESTAURANT + " {0} for {1} is not a member. Misspelling?\n";
+    static final String WRONG_CLEANUP_DRIVER =
+            Constants.CONTROL_BLOCK_SPLIT_RESTAURANT + " {0} is not going {1}.\n";
+    static final String MISSING_SPLIT_RESTAURANT =
+            "Control block does not contain a "
+            + Constants.CONTROL_BLOCK_SPLIT_RESTAURANT + " entry for {0}\n";
 
     private int version = Constants.CONTROL_BLOCK_VERSION_UNKNOWN;
     private final List<OpsManager> opsManagers = new ArrayList<>();
-    // FIX THIS, DS: remove and just use map
-    private final List<SplitRestaurant> splitRestaurants = new ArrayList<>();
     private final Map<String, SplitRestaurant> splitRestaurantMap = new HashMap<>();
     private final List<String> backupDrivers = new ArrayList<>();
 
@@ -53,12 +61,12 @@ class ControlBlock {
 
     }
 
-    void audit(Map<String, User> users, List<String> splitRestaurants) {
+    void audit(Map<String, User> users, Map<String, Restaurant> restaurants, List<Restaurant> splitRestaurants) {
         StringBuilder errors = new StringBuilder();
 
         auditVersion(errors);
         auditOpsManager(errors, users);
-        auditSplitRestaurants(splitRestaurants, errors);
+        auditSplitRestaurants(errors, users, restaurants, splitRestaurants);
         auditBackupDrivers(errors, users);
 
         if (errors.length() != 0) {
@@ -84,10 +92,11 @@ class ControlBlock {
                 errors.append(MessageFormat.format(UNKNOWN_OPS_MANAGER, opsManager.userName));
             } else {
                 String phone = opsManager.phone.replaceAll("\\D", "");
-                boolean match = phone.equals(user.getPhoneNumber().replace("\\D", ""));
+
+                boolean match = phone.equals(user.getPhoneNumber().replaceAll("\\D", ""));
 
                 if (! match) {
-                    match = phone.equals(user.getAltPhoneNumber().replace("\\D", ""));
+                    match = phone.equals(user.getAltPhoneNumber().replaceAll("\\D", ""));
                 }
 
                 if (! match) {
@@ -98,15 +107,42 @@ class ControlBlock {
         }
     }
 
-    private void auditSplitRestaurants(List<String> splitRestaurants, StringBuilder errors) {
+    //
+    // Split Restaurant audits:
+    //  - valid restaurant name
+    //  - all split restaurants have control block entries
+    //  - cleanup driver is a valid user name
+    //  - cleanup driver is picking up at that restaurant
+    //
+    private void auditSplitRestaurants(StringBuilder errors, Map<String, User> users,
+            Map<String, Restaurant> allRestaurants, List<Restaurant> splitRestaurants) {
 
-        for (String restaurant : splitRestaurants) {
-            if (!splitRestaurantMap.containsKey(restaurant)) {
-                errors.append("Control block does not contain a ")
-                        .append(Constants.CONTROL_BLOCK_SPLIT_RESTAURANT)
-                        .append(" entry for ")
-                        .append(restaurant)
-                        .append("\n");
+        for (SplitRestaurant splitRestaurant : splitRestaurantMap.values()) {
+            if (!allRestaurants.containsKey(splitRestaurant.name)) {
+                errors.append(MessageFormat.format(UNKNOWN_SPLIT_RESTAURANT, splitRestaurant.name));
+            }
+        }
+
+        for (Restaurant restaurant : splitRestaurants) {
+            String name = restaurant.getName();
+
+            SplitRestaurant splitRestaurant = splitRestaurantMap.get(name);
+            if (splitRestaurant == null) {
+                errors.append(MessageFormat.format(MISSING_SPLIT_RESTAURANT, name));
+                continue;
+            }
+
+            if (! users.containsKey(splitRestaurant.cleanupDriverUserName)) {
+                errors.append(MessageFormat.format(UNKNOWN_CLEANUP_DRIVER,
+                        splitRestaurant.cleanupDriverUserName, name));
+                continue;
+            }
+
+            Map<String, Driver> drivers = restaurant.getDrivers();
+            assert drivers != null : name;
+            if (! drivers.containsKey(splitRestaurant.cleanupDriverUserName)) {
+                errors.append(MessageFormat.format(
+                        WRONG_CLEANUP_DRIVER, splitRestaurant.cleanupDriverUserName, name));
             }
         }
     }
@@ -144,7 +180,7 @@ class ControlBlock {
     }
 
     List<SplitRestaurant> getSplitRestaurants() {
-        return splitRestaurants;
+        return new ArrayList(splitRestaurantMap.values());
     }
 
     SplitRestaurant getSplitRestaurant(String restaurantName) {
@@ -167,7 +203,6 @@ class ControlBlock {
     {
         version = Constants.CONTROL_BLOCK_VERSION_UNKNOWN;
         opsManagers.clear();
-        splitRestaurants.clear();
         splitRestaurantMap.clear();
         backupDrivers.clear();
     }
@@ -357,7 +392,6 @@ class ControlBlock {
             throw new MemberDataException(errors.toString());
         }
 
-        splitRestaurants.add(new SplitRestaurant(restaurantName, cleanupDriver));
         splitRestaurantMap.put(restaurantName, new SplitRestaurant(restaurantName, cleanupDriver));
     }
 
