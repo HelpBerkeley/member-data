@@ -45,7 +45,7 @@ class ControlBlock {
     static final String UNKNOWN_CLEANUP_DRIVER =
             Constants.CONTROL_BLOCK_SPLIT_RESTAURANT + " {0} for {1} is not a member. Misspelling?\n";
     static final String WRONG_CLEANUP_DRIVER =
-            Constants.CONTROL_BLOCK_SPLIT_RESTAURANT + " {0} is not going {1}.\n";
+            Constants.CONTROL_BLOCK_SPLIT_RESTAURANT + " {0} is not going to {1}.\n";
     static final String MISSING_SPLIT_RESTAURANT =
             "Control block does not contain a "
             + Constants.CONTROL_BLOCK_SPLIT_RESTAURANT + " entry for {0}\n";

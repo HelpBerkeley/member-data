@@ -213,7 +213,7 @@ public class WorkRequestHandler {
 
                 if (line.startsWith("Topic:")) {
                     // FIX THIS, DS: handle number format exception
-                    topic = Long.parseLong(line.replaceAll("Topic: ", ""));
+                    topic = Long.parseLong(line.replaceAll("Topic:", "").trim());
                 } else if (line.contains(Constants.UPLOAD_URI_PREFIX)) {
                     String shortURL =  HBParser.shortURLDiscoursePost(line);
                     String fileName = HBParser.downloadFileName(line);
