@@ -111,7 +111,6 @@ public class TestBase {
             Options.COMMAND_FETCH,
             Options.COMMAND_GET_ORDER_HISTORY,
             Options.COMMAND_GET_DAILY_DELIVERIES,
-            Options.COMMAND_GET_REQUEST_DRIVER_ROUTES,
             Options.COMMAND_DRIVER_ROUTES,
     };
 

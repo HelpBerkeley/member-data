@@ -179,7 +179,7 @@ class ControlBlock {
     }
 
     List<SplitRestaurant> getSplitRestaurants() {
-        return new ArrayList(splitRestaurantMap.values());
+        return new ArrayList<>(splitRestaurantMap.values());
     }
 
     SplitRestaurant getSplitRestaurant(String restaurantName) {
@@ -452,10 +452,9 @@ class ControlBlock {
 
         @Override
         public boolean equals(Object obj) {
-            return ((obj != null)
-                    && (obj instanceof SplitRestaurant)
-                    && (name.equals(((SplitRestaurant)obj).name))
-                    && (cleanupDriverUserName.equals(((SplitRestaurant)obj).cleanupDriverUserName)));
+            return ((obj instanceof SplitRestaurant)
+                    && (name.equals(((SplitRestaurant) obj).name))
+                    && (cleanupDriverUserName.equals(((SplitRestaurant) obj).cleanupDriverUserName)));
         }
 
         @Override
@@ -495,9 +494,8 @@ class ControlBlock {
         @Override
         public boolean equals(Object obj) {
 
-            return ((obj != null)
-                    && (obj instanceof OpsManager)
-                    && (userName.equals(((OpsManager)obj).userName)))
+            return ((obj instanceof OpsManager)
+                    && (userName.equals(((OpsManager) obj).userName)))
                     && (phone.equals(((OpsManager)obj).phone));
         }
 

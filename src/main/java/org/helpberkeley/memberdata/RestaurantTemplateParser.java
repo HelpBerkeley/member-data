@@ -131,9 +131,9 @@ public class RestaurantTemplateParser {
             } else if (isRoute(bean)) {
                 processRouteBlock(bean, restaurants);
             } else if (isEmptyRow(bean)) {
-                continue;
+                // ignore
             } else if (isRouteBlockLabelRow(bean)) {
-                continue;
+                // ignore
             } else {
                 throwTemplateError(MISSING_EMPTY_ROW + lineNumber);
             }

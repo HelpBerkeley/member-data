@@ -82,7 +82,7 @@ class GMapApiImpl implements GMapApi {
     }
 
     private void initialize() {
-        Properties properties = loadProperties(Constants.MEMBERDATA_PROPERTIES);
+        Properties properties = loadProperties();
         String apiKey = properties.getProperty(Constants.GMAPS_API_KEY_PROPERTY);
 
         if (apiKey == null) {
@@ -94,13 +94,13 @@ class GMapApiImpl implements GMapApi {
                 .build();
     }
 
-    private Properties loadProperties(final String fileName) {
+    private Properties loadProperties() {
 
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-        URL propertiesFile = classLoader.getResource(fileName);
+        URL propertiesFile = classLoader.getResource(Constants.MEMBERDATA_PROPERTIES);
 
         if (propertiesFile == null) {
-            LOGGER.error("Required properties file {} cannot be found", fileName);
+            LOGGER.error("Required properties file {} cannot be found", propertiesFile.toString());
             System.exit(1);
         }
 

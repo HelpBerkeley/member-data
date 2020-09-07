@@ -28,7 +28,6 @@ import org.helpberkeley.memberdata.Restaurant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.lang.reflect.Array;
 import java.util.*;
 
 /**
@@ -43,7 +42,7 @@ public class Route {
     public void route(Driver driver) {
 
         List<Restaurant> pickups = driver.getPickups();
-        List<Delivery> deliveries = new ArrayList(driver.getDeliveries());
+        List<Delivery> deliveries = new ArrayList<>(driver.getDeliveries());
         totalSeconds = 0;
 
         // Get the last pickup as our starting point for routing.

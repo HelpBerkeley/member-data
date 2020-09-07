@@ -752,7 +752,6 @@ public class DriverPostFormat {
             Restaurant firstRestaurant = restaurants.get(firstName);
             value = firstRestaurant.closesBefore(545);
         } else if (refName.equals("Driver.IsCleanup")) {
-            Driver driver = context.getDriver();
             String driverUserName = context.getDriver().getUserName();
             Restaurant restaurant = context.getSplitRestaurant();
             // FIX THIS, DS: what if we aren't in a split restaurant context?  Audit

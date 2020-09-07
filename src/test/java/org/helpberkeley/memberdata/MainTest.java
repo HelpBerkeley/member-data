@@ -240,35 +240,6 @@ public class MainTest extends TestBase {
     }
 
     @Test
-    public void getRequestDriverRoutesTest() throws IOException, InterruptedException, CsvException {
-        String[] args = { Options.COMMAND_GET_REQUEST_DRIVER_ROUTES};
-        Main.main(args);
-    }
-
-    @Test
-    public void requestDriverRoutesFailedTest() throws IOException, InterruptedException, CsvException {
-        String[] args = {
-                Options.COMMAND_REQUEST_DRIVER_ROUTES_FAILED,
-                "my-test-file.csv",
-                "This is\n",
-                "some message\n"
-        };
-        Main.main(args);
-    }
-
-    @Test
-    public void requestDriverRoutesSucceededTest() throws IOException, InterruptedException, CsvException {
-        String[] args = {
-                Options.COMMAND_REQUEST_DRIVER_ROUTES_SUCCEEDED,
-                findFile(Main.MEMBERDATA_REPORT_FILE, "csv"),
-                TEST_SHORT_URL,
-                "This is\n",
-                "some message\n"
-        };
-        Main.main(args);
-    }
-
-    @Test
     public void driverRoutesTest() throws InterruptedException, IOException, CsvException {
         String[] args = { Options.COMMAND_DRIVER_ROUTES};
         Main.main(args);

@@ -160,17 +160,6 @@ public class Main {
             case Options.COMMAND_WORKFLOW:
                 generateWorkflow(apiClient, options.getFileName());
                 break;
-            case Options.COMMAND_GET_REQUEST_DRIVER_ROUTES:
-                getRequestDriverRoutes(apiClient);
-                break;
-            case Options.COMMAND_REQUEST_DRIVER_ROUTES_SUCCEEDED:
-                postRequestDriverRoutesSucceeded(apiClient, options.getFileName(),
-                        options.getShortURL(), options.getStatusMessage());
-                break;
-            case Options.COMMAND_REQUEST_DRIVER_ROUTES_FAILED:
-                postRequestDriverRoutesFailed(apiClient,
-                        options.getRequestFileName(), options.getStatusMessage());
-                break;
             default:
                 assert options.getCommand().equals(Options.COMMAND_POST_DRIVERS) : options.getCommand();
                 postDrivers(apiClient, options.getFileName());
@@ -635,7 +624,7 @@ public class Main {
      *
      * @param apiClient Discourse API handling
      * @param allMembersFile CSV file of all current members
-     * @throws InterruptedException
+     * @throws InterruptedException unexpected
      */
     static void driverMessages(ApiClient apiClient, String allMembersFile)
             throws InterruptedException, IOException, CsvException {
@@ -796,50 +785,6 @@ public class Main {
         return statusMessages.toString();
     }
 
-    static void getRequestDriverRoutes(ApiClient apiClient) throws IOException, InterruptedException {
-        Query query = new Query(
-                Constants.QUERY_GET_LAST_ROUTE_REQUEST_REPLY, Constants.TOPIC_REQUEST_DRIVER_ROUTES);
-        WorkRequestHandler requestHandler = new WorkRequestHandler(apiClient, query);
-
-        WorkRequestHandler.Reply reply;
-
-        try {
-            reply = requestHandler.getLastReply();
-        } catch (MemberDataException ex) {
-            requestHandler.postStatus(WorkRequestHandler.RequestStatus.Failed, ex.getMessage());
-            return;
-        }
-
-        if (reply instanceof WorkRequestHandler.Status) {
-            return;
-        }
-
-//        LOGGER.debug("getRequestDriverRoutes found:\n" + reply);
-
-        WorkRequestHandler.WorkRequest request = (WorkRequestHandler.WorkRequest) reply;
-
-        // Download file
-        String unroutedDeliveries = apiClient.downloadFile(request.uploadFile.fileName);
-        request.postStatus(WorkRequestHandler.RequestStatus.Processing, "");
-
-
-        try {
-            auditUnroutedDeliveries(unroutedDeliveries);
-        } catch (MemberDataException ex) {
-            String reason = ex.getCause() != null ? ex.getCause().getMessage() : ex.getMessage();
-            request.postStatus(WorkRequestHandler.RequestStatus.Failed, reason);
-            return;
-        }
-
-        Path filePath = Paths.get(request.uploadFile.originalFileName);
-        // FIX THIS, DS: warn?  change name?
-        Files.deleteIfExists(filePath);
-        Files.createFile(filePath);
-        Files.writeString(filePath, unroutedDeliveries);
-
-        System.out.println("File: " + filePath);
-    }
-
     static void postRequestDriverRoutesSucceeded(ApiClient apiClient, final String fileName,
             final String shortURL, final String statusMessage) throws InterruptedException {
 
@@ -862,35 +807,6 @@ public class Main {
 
         // FIX THIS, DS: what to do with this error?
         assert response.statusCode() == HTTP_OK : "failed " + response.statusCode() + ": " + response.body();
-    }
-    static void postRequestDriverRoutesFailed(ApiClient apiClient,
-            final String requestFileName, final String statusMessage) throws InterruptedException {
-
-        String timeStamp = ZonedDateTime.now(ZoneId.systemDefault())
-                .format(DateTimeFormatter.ofPattern("uuuu/MM/dd HH:mm:ss"));
-
-        String rawPost = timeStamp + "\n"
-                + "Status: " + WorkRequestHandler.RequestStatus.Failed + "\n"
-                + "File: " + requestFileName + "\n"
-                + "\n"
-                + statusMessage + "\n";
-
-        Post post = new Post();
-        post.title = "Request Driver Route status response";
-        post.topic_id = Constants.TOPIC_REQUEST_DRIVER_ROUTES.id;
-        post.raw = rawPost;
-        post.createdAt = timeStamp;
-
-        HttpResponse<?> response = apiClient.post(post.toJson());
-
-        // FIX THIS, DS: what to do with this error?
-        assert response.statusCode() == HTTP_OK : "failed " + response.statusCode() + ": " + response.body();
-    }
-
-    private static void auditUnroutedDeliveries(final String unroutedDeliveries) {
-        WorkflowParser workflowParser =
-                new WorkflowParser(WorkflowParser.Mode.DRIVER_ROUTE_REQUEST, unroutedDeliveries);
-        workflowParser.drivers();
     }
 }
 

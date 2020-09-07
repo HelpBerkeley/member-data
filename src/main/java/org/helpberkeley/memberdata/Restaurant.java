@@ -52,7 +52,6 @@ public class Restaurant {
     //
     public String pickupRow() {
         StringBuilder row = new StringBuilder();
-        String value;
 
         // Consumer, Driver, Name, UserName, Phone, Alt Phone, Neighborhood, City
         row.append("FALSE,,,,,,,,");

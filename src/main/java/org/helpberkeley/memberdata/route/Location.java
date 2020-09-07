@@ -53,7 +53,7 @@ public class Location {
 
     @Override
     public int hashCode() {
-        Double latLng = Double.valueOf(latitude * longitude);
+        Double latLng = latitude * longitude;
         return latLng.hashCode();
     }
 
