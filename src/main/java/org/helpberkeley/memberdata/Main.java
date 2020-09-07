@@ -22,6 +22,7 @@
 package org.helpberkeley.memberdata;
 
 import com.opencsv.exceptions.CsvException;
+import org.helpberkeley.memberdata.route.Route;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,10 +43,6 @@ import static java.net.HttpURLConnection.HTTP_OK;
 
 public class Main {
     private static final Logger LOGGER = LoggerFactory.getLogger(ApiClient.class);
-
-    static final String MEMBERDATA_PROPERTIES = "memberdata.properties";
-    static final String API_USER_PROPERTY = "Api-Username";
-    static final String API_KEY_PROPERTY = "Api-Key";
 
     static final String MEMBERDATA_ERRORS_FILE = "memberdata-errors";
     static final String MEMBERDATA_REPORT_FILE = "member-data-report";
@@ -99,7 +96,7 @@ public class Main {
         }
 
         // Load member data properties
-        Properties memberDataProperties = loadProperties(MEMBERDATA_PROPERTIES);
+        Properties memberDataProperties = loadProperties(Constants.MEMBERDATA_PROPERTIES);
 
         // Set up an HTTP client
         ApiClient apiClient = new ApiClient(memberDataProperties);
@@ -113,6 +110,9 @@ public class Main {
                 break;
             case Options.COMMAND_DRIVER_MESSAGES:
                 driverMessages(apiClient, options.getFileName());
+                break;
+            case Options.COMMAND_DRIVER_ROUTES:
+                driverRoutes(apiClient);
                 break;
             case Options.COMMAND_MERGE_ORDER_HISTORY:
                 mergeOrderHistory(apiClient, options.getFileName(),
@@ -540,6 +540,93 @@ public class Main {
 
         // Create a post in with a link to the uploaded file.
         postFile(apiClient, workflowFileName, upload.getShortURL(), WORKFLOW_TITLE, WORKFLOW_DATA_TOPIC);
+    }
+
+    static void driverRoutes(ApiClient apiClient) throws InterruptedException {
+        Query query = new Query(
+                Constants.QUERY_GET_LAST_ROUTE_REQUEST_REPLY, Constants.TOPIC_REQUEST_DRIVER_ROUTES);
+        WorkRequestHandler requestHandler = new WorkRequestHandler(apiClient, query);
+
+        WorkRequestHandler.Reply reply;
+
+        try {
+            reply = requestHandler.getLastReply();
+        } catch (MemberDataException ex) {
+            requestHandler.postStatus(WorkRequestHandler.RequestStatus.Failed, ex.getMessage());
+            return;
+        }
+
+        if (reply instanceof WorkRequestHandler.Status) {
+            return;
+        }
+
+        WorkRequestHandler.WorkRequest request = (WorkRequestHandler.WorkRequest) reply;
+
+        // Download file
+        String unroutedDeliveries = apiClient.downloadFile(request.uploadFile.fileName);
+        request.postStatus(WorkRequestHandler.RequestStatus.Processing, "");
+
+        Route route = new Route();
+
+        try {
+            WorkflowParser workflowParser =
+                    new WorkflowParser(WorkflowParser.Mode.DRIVER_ROUTE_REQUEST, unroutedDeliveries);
+            List<Driver> drivers = workflowParser.drivers();
+
+            for (Driver driver : drivers) {
+                route.route(driver);
+            }
+
+            StringBuilder statusMessage = new StringBuilder();
+            long locationCalls = route.getLocationCalls();
+            long directionsCalls = route.getDirectionsCalls();
+
+
+
+            statusMessage.append("|Maps API|Number of Calls|Cost|\n");
+            statusMessage.append("|---|---|---|\n");
+            statusMessage.append("|Location|")
+                    .append(locationCalls)
+                    .append('|')
+                    .append(String.format("$%.2g", locationCalls * .005))
+                    .append("|\n");
+            statusMessage.append("|Directions|")
+                    .append(directionsCalls)
+                    .append('|')
+                    .append(String.format("$%.2g", directionsCalls * .005))
+                    .append("|\n");
+            statusMessage.append("|Total||")
+                    .append(String.format("$%.2g", (locationCalls + directionsCalls) * .005))
+                    .append("|\n");
+
+            // Create new workflow file
+            //
+            StringBuilder routedWorkflow = new StringBuilder();
+
+            // Original control block
+            routedWorkflow.append(workflowParser.rawControlBlock());
+
+            // Add a separator row for ease of viewing in the Google sheets
+            routedWorkflow.append(workflowParser.emptyRow());
+
+            for (Driver driver : drivers) {
+                routedWorkflow.append(driver.driverBlock());
+                routedWorkflow.append(workflowParser.emptyRow());
+            }
+
+            Exporter exporter = new Exporter();
+            String fileName = "routed-" + request.uploadFile.originalFileName;
+            exporter.writeFile(fileName, routedWorkflow.toString());
+            Upload upload = new Upload(apiClient, fileName);
+            postRequestDriverRoutesSucceeded(apiClient, fileName, upload.getShortURL(), statusMessage.toString());
+            Files.delete(Path.of(fileName));
+        } catch (MemberDataException | IOException ex) {
+            String reason = ex.getCause() != null ? ex.getCause().getMessage() : ex.getMessage();
+            request.postStatus(WorkRequestHandler.RequestStatus.Failed, reason);
+            return;
+        } finally {
+            route.shutdown();
+        }
     }
 
     /**

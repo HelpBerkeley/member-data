@@ -26,7 +26,7 @@ package org.helpberkeley.memberdata;
  */
 public class MemberDataException extends RuntimeException {
 
-    MemberDataException(final String message) {
+    public MemberDataException(final String message) {
         super(message);
     }
     MemberDataException(final String message, Exception ex) {

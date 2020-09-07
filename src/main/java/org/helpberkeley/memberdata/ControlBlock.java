@@ -22,7 +22,6 @@
  */
 package org.helpberkeley.memberdata;
 
-import java.net.UnknownServiceException;
 import java.text.MessageFormat;
 import java.util.*;
 

@@ -31,7 +31,7 @@ import java.util.*;
 
 public class WorkflowParser {
 
-    enum Mode {
+    public enum Mode {
         /** The CSV data is for passing to the routing software */
         DRIVER_ROUTE_REQUEST,
         /** The CSV data is for driver message generation */
@@ -43,7 +43,7 @@ public class WorkflowParser {
     private long lineNumber = 1;
     private final PeekingIterator<WorkflowBean> iterator;
     private final Map<String, Restaurant> globalRestaurants;
-
+    private String normalizedCSVData;
 
     WorkflowParser(Mode mode, Map<String, Restaurant> globalRestaurants, final String csvData) {
         this.mode = mode;
@@ -52,20 +52,49 @@ public class WorkflowParser {
         iterator = initializeIterator(csvData);
     }
 
-    WorkflowParser(Mode mode, final String csvData) {
+    public WorkflowParser(Mode mode, final String csvData) {
         this.mode = mode;
         assert mode == Mode.DRIVER_ROUTE_REQUEST : mode;
         this.globalRestaurants = null;
         iterator = initializeIterator(csvData);
     }
 
+    public String rawControlBlock() {
+
+        StringBuilder lines = new StringBuilder();
+
+        // Copy all lines up to the first driver block
+        for (String line : normalizedCSVData.split("\n")) {
+
+            if (line.startsWith("FALSE,TRUE,")) {
+                break;
+            }
+
+            lines.append(line).append('\n');
+        }
+
+        return lines.toString();
+    }
+
+    /**
+     * Based upon the header row, return an empty row.
+     * @return Empty row
+     */
+    public String emptyRow() {
+
+        int endOfFirstLine = normalizedCSVData.indexOf('\n');
+        String row = normalizedCSVData.substring(0, endOfFirstLine);
+
+        return row.replaceAll("[^,]", "") + "\n";
+    }
+
     private PeekingIterator<WorkflowBean> initializeIterator(final String csvData) {
         // Normalize EOL
-        String normalizedData = csvData.replaceAll("\\r\\n?", "\n");
-        assert ! csvData.isEmpty() : "empty workflow";
-        auditColumnNames(normalizedData);
+        normalizedCSVData = csvData.replaceAll("\\r\\n?", "\n");
+        assert ! normalizedCSVData.isEmpty() : "empty workflow";
+        auditColumnNames(normalizedCSVData);
 
-        List<WorkflowBean> workflowBeans = new CsvToBeanBuilder<WorkflowBean>(new StringReader(normalizedData))
+        List<WorkflowBean> workflowBeans = new CsvToBeanBuilder<WorkflowBean>(new StringReader(normalizedCSVData))
                 .withType(WorkflowBean.class).build().parse();
 
         return Iterators.peekingIterator(workflowBeans.iterator());
@@ -139,7 +168,7 @@ public class WorkflowParser {
         }
     }
 
-    List<Driver> drivers() {
+    public List<Driver> drivers() {
 
         List<Driver> drivers = new ArrayList<>();
         WorkflowBean bean;
@@ -294,15 +323,15 @@ public class WorkflowParser {
                 && bean.getControlBlockValue().isEmpty();
     }
 
-    private Driver processDriver(WorkflowBean bean) {
+    private Driver processDriver(WorkflowBean driverBean) {
 
         String errors = "";
 
-        String driverUserName = bean.getUserName();
+        String driverUserName = driverBean.getUserName();
         if (driverUserName.isEmpty()) {
             errors += "missing driver user name\n";
         }
-        String driverPhone = bean.getPhone();
+        String driverPhone = driverBean.getPhone();
         if (driverPhone.isEmpty()) {
             errors += "missing driver phone number\n";
         }
@@ -317,7 +346,7 @@ public class WorkflowParser {
         List<Restaurant> restaurants = processRestaurants();
         List<Delivery> deliveries = processDeliveries();
 
-        bean = nextRow();
+        WorkflowBean bean = nextRow();
         // FIX THIS, DS: audit null here
 
         if (! isDriverRow(bean)) {
@@ -346,8 +375,7 @@ public class WorkflowParser {
                 throw new MemberDataException("Driver " + driverUserName + " unrecognizable gmap URL");
             }
 
-            driver = new Driver(driverUserName, driverPhone,
-                    restaurants, deliveries, gmapURL);
+            driver = new Driver(driverBean, restaurants, deliveries, gmapURL);
         } else {
             assert mode == Mode.DRIVER_ROUTE_REQUEST;
 
@@ -358,8 +386,7 @@ public class WorkflowParser {
                 throw new MemberDataException("Line " + lineNumber + " is not empty");
             }
 
-            driver = new Driver(driverUserName, driverPhone,
-                    restaurants, deliveries);
+            driver = new Driver(driverBean, restaurants, deliveries);
         }
 
         return driver;
@@ -445,6 +472,7 @@ public class WorkflowParser {
                 errors += "missing phone\n";
             }
             String altPhone = bean.getAltPhone();
+            String neighborhood = bean.getNeighborhood();
             String city = bean.getCity();
             if (city.isEmpty()) {
                 errors += "missing city\n";
@@ -473,6 +501,7 @@ public class WorkflowParser {
             delivery.setUserName(userName);
             delivery.setPhone(phone);
             delivery.setAltPhone(altPhone);
+            delivery.setNeighborhood(neighborhood);
             delivery.setCity(city);
             delivery.setAddress(address);
             delivery.setIsCondo(isCondo);

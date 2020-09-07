@@ -145,4 +145,9 @@ public class Constants {
 
     public static final long UNKNOWN_USER_ID = 852;
     public static final String UNKNOWN_USER = "unknown-user";
+
+    public static final String GMAPS_API_KEY_PROPERTY = "GMaps-Api-Key";
+    public static final String MEMBERDATA_PROPERTIES = "memberdata.properties";
+    static final String API_USER_PROPERTY = "Api-Username";
+    static final String API_KEY_PROPERTY = "Api-Key";
 }

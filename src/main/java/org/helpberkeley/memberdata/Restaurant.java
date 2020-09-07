@@ -48,6 +48,42 @@ public class Restaurant {
         return name + ", orders: " + orders + ", start:" + startTime + ", drivers:" + drivers.keySet();
     }
 
+    // FIX THIS, DS: columns are hard wired
+    //
+    public String pickupRow() {
+        StringBuilder row = new StringBuilder();
+        String value;
+
+        // Consumer, Driver, Name, UserName, Phone, Alt Phone, Neighborhood, City
+        row.append("FALSE,,,,,,,,");
+
+        // Address
+        row.append('"').append(address).append('"').append(',');
+
+        // Condo
+        row.append("FALSE,");
+
+        // Details
+        if (! details.isEmpty()) {
+            row.append('"').append(details).append('"').append(',');
+        } else {
+            row.append(',');
+        }
+
+        // Restaurant
+        row.append('"').append(name).append('"').append(',');
+
+        // Empty columns for  normal and veggie
+        row.append(",,");
+
+        // Orders
+        row.append(orders);
+
+        row.append('\n');
+
+        return row.toString();
+    }
+
     void setStartTime(final String startTime) {
         this.startTime = startTime;
     }
@@ -110,7 +146,7 @@ public class Restaurant {
         return details;
     }
 
-    String getAddress() {
+    public String getAddress() {
         return address;
     }
 

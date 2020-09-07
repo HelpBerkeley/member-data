@@ -36,8 +36,8 @@ public class ApiClientTest extends TestBase {
         Throwable thrown = catchThrowable(() -> new ApiClient(properties));
         assertThat(thrown).isInstanceOf(MemberDataException.class);
         assertThat(thrown).hasMessageContaining("Missing ");
-        assertThat(thrown).hasMessageContaining(Main.API_KEY_PROPERTY);
-        assertThat(thrown).hasMessageContaining(Main.API_USER_PROPERTY);
+        assertThat(thrown).hasMessageContaining(Constants.API_KEY_PROPERTY);
+        assertThat(thrown).hasMessageContaining(Constants.API_USER_PROPERTY);
     }
 
     @Test

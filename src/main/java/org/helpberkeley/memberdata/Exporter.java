@@ -35,16 +35,16 @@ import java.time.format.DateTimeFormatter;
 
 public class Exporter {
 
-    protected static final Logger LOGGER = LoggerFactory.getLogger(Exporter.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(Exporter.class);
     protected final String separator = Constants.CSV_SEPARATOR;
 
-    protected String generateFileName(String fileName, String suffix) {
+    public String generateFileName(String fileName, String suffix) {
         String timestamp = ZonedDateTime.now(ZoneId.systemDefault()).
                 format(DateTimeFormatter.ofPattern("uuMMdd-HHmm-ss"));
         return fileName + '-' + timestamp + '.' + suffix;
     }
 
-    protected void writeFile(final String fileName, final String fileData) throws IOException {
+    public void writeFile(final String fileName, final String fileData) throws IOException {
         Path filePath = Paths.get(fileName);
         Files.deleteIfExists(filePath);
         Files.createFile(Paths.get(fileName));
@@ -53,7 +53,7 @@ public class Exporter {
         LOGGER.trace("Wrote: " + fileName);
     }
 
-    protected String escapeCommas(final String value) {
+    public String escapeCommas(final String value) {
         if (value.indexOf(',') == -1) {
             return value;
         }

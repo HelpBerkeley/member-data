@@ -22,6 +22,10 @@
  */
 package org.helpberkeley.memberdata;
 
+import org.helpberkeley.memberdata.route.Location;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.text.MessageFormat;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
@@ -38,28 +42,27 @@ public class Driver {
 
     private static final LocalTime FIVE_PM = LocalTime.of(5, 0);
 
-    private final String userName;
-    private final String phoneNumber;
-    private final String gMapURL;
+    private static final Logger LOGGER = LoggerFactory.getLogger(Driver.class);
+
+    private String gMapURL;
+    private final WorkflowBean bean;
     private final List<Restaurant> pickups;
     private final List<Delivery> deliveries;
     private String originalStartTime;
     private String startTime;
+    private long routeSeconds = 0;
     private final List<String> warningMessages = new ArrayList<>();
 
-    Driver(final String userName, final String phoneNumber,
-           List<Restaurant> pickups, List<Delivery> deliveries, final String gmapURL) {
-        this.userName = userName;
-        this.phoneNumber = phoneNumber;
+    Driver(WorkflowBean driverBean, List<Restaurant> pickups, List<Delivery> deliveries, String gmapURL) {
+        this.bean = driverBean;
         this.pickups = pickups;
         this.deliveries = deliveries;
         this.gMapURL = gmapURL;
         setStartTime();
     }
 
-    Driver(final String userName, final String phoneNumber, List<Restaurant> pickups, List<Delivery> deliveries) {
-        this.userName = userName;
-        this.phoneNumber = phoneNumber;
+    Driver(WorkflowBean driverBean, List<Restaurant> pickups, List<Delivery> deliveries) {
+        this.bean = driverBean;
         this.pickups = pickups;
         this.deliveries = deliveries;
         this.gMapURL = null;
@@ -71,11 +74,15 @@ public class Driver {
     }
 
     public String getUserName() {
-        return userName;
+        return bean.getUserName();
+    }
+
+    public String getName() {
+        return bean.getName();
     }
 
     public String getPhoneNumber() {
-        return phoneNumber;
+        return bean.getPhone();
     }
 
     public String getgMapURL() {
@@ -91,6 +98,14 @@ public class Driver {
         return false;
     }
 
+    public String getFullAddress() {
+        return bean.getAddress() + ", " + bean.getCity() + ", " + "CA";
+    }
+
+    public long getRouteSeconds() {
+        return routeSeconds;
+    }
+
     public List<Restaurant> getPickups() {
         return Collections.unmodifiableList(pickups);
     }
@@ -99,10 +114,159 @@ public class Driver {
         return Collections.unmodifiableList(deliveries);
     }
 
+    public void setDeliveries(List<Delivery> deliveries, long totalSeconds) {
+        this.deliveries.clear();
+        this.deliveries.addAll(deliveries);
+        generateURL();
+        this.routeSeconds = totalSeconds;
+    }
+
     public String getFirstRestaurantName() {
         assert ! pickups.isEmpty();
 
         return pickups.get(0).getName();
+    }
+
+    private void generateURL() {
+        StringBuilder url = new StringBuilder();
+
+        url.append("https://www.google.com/maps/dir/");
+
+        // The driver's home address is the beginning of the route.
+        String address = getFullAddress()
+                .replaceAll("\\s+", " ")
+                .replaceAll(" ", "+")
+                .replaceAll("#", "%23");
+        url.append(address).append('/');
+
+        for (Restaurant pickup : pickups) {
+
+            address = pickup.getAddress().replaceAll(" ", "+").replaceAll("#", "%23");
+            url.append(address).append('/');
+        }
+
+        Location prevLocation = null;
+
+        for (Delivery delivery : deliveries) {
+
+            Location location = delivery.getLocation();
+
+            if (location.equals(prevLocation)) {
+                LOGGER.info("Skipping adding duplicate location {} to route", delivery.getFullAddress());
+            } else {
+                address = delivery.getFullAddress()
+                        .replaceAll("\\s+", " ")
+                        .replaceAll(" ", "+")
+                        .replaceAll("#", "%23");
+                url.append(address).append('/');
+            }
+            prevLocation = location;
+        }
+
+        // The driver's home address is also the end of the route.
+        address = getFullAddress()
+                .replaceAll("\\s+", " ")
+                .replaceAll(" ", "+")
+                .replaceAll("#", "%23");
+        url.append(address).append('/');
+
+        // FIX THIS, DS: remove trailing '/' ?
+
+        gMapURL = url.toString();
+    }
+
+    public String driverBlock() {
+
+        StringBuilder block = new StringBuilder();
+
+        String driverRow = driverRow();
+
+        block.append(driverRow);
+
+        for (Restaurant pickup : pickups) {
+            block.append(pickup.pickupRow());
+        }
+
+        for (Delivery delivery : deliveries) {
+            block.append(delivery.deliveryRow());
+        }
+
+        block.append(driverRow);
+        block.append('"').append(gMapURL).append('"').append('\n');
+
+        return block.toString();
+    }
+
+    // FIX THIS, DS: this is hardwired to column order/length
+    private String driverRow() {
+
+        StringBuilder row = new StringBuilder();
+        String value;
+
+        // Consumer
+        row.append("FALSE,");
+
+        // Driver
+        row.append("TRUE,");
+
+        // Name
+        value = bean.getName();
+        if (value.contains(",")) {
+            value = "\"" + value + "\"";
+        }
+        row.append(value).append(",");
+
+        // User Name
+        value = bean.getUserName();
+        assert ! value.contains((",")) : "bad user name: " + value;
+        row.append(value).append(",");
+
+        // Phone
+        value = bean.getPhone();
+        assert ! value.contains((",")) : "bad phone: " + value;
+        row.append(value).append(",");
+
+        // Alt Phone
+        value = bean.getAltPhone();
+        assert ! value.contains((",")) : "bad alt phone: " + value;
+        row.append(value).append(",");
+
+        // Neighborhood
+        value = bean.getNeighborhood();
+        if (value.contains(",")) {
+            value = "\"" + value + "\"";
+        }
+        row.append(value).append(",");
+
+        // City
+        value = bean.getCity();
+        if (value.contains(",")) {
+            value = "\"" + value + "\"";
+        }
+        row.append(value).append(",");
+
+        // Address
+        value = bean.getAddress();
+        if (value.contains(",")) {
+            value = "\"" + value + "\"";
+        }
+        row.append(value).append(",");
+
+        // Condo
+        value = bean.getCondo();
+        row.append(value).append(",");
+
+        // Details
+        value = bean.getDetails();
+        if (value.contains(",")) {
+            value = "\"" + value + "\"";
+        }
+        row.append(value).append(",");
+
+        // Empty columns for Restaurants,normal,veggie,#orders
+        row.append(",,,\n");
+
+        return row.toString();
     }
 
     long getOrders(String restaurantName) {
@@ -114,7 +278,7 @@ public class Driver {
         }
 
         throw new MemberDataException("Could not find restaurant " + restaurantName
-                + " in driver " + userName + "'s pickups");
+                + " in driver " + getUserName() + "'s pickups");
     }
 
     String getStartTime() {
@@ -155,8 +319,8 @@ public class Driver {
     private String calculateFirstRestaurantStartTime() {
 
         Restaurant firstRestaurant = pickups.get(0);
-        assert firstRestaurant != null : "Driver " + userName + " has no pickups";
-        assert firstRestaurant.getOrders() == 0 : "Driver " + userName + ", first pickup is not 0 order";
+        assert firstRestaurant != null : "Driver " + getUserName() + " has no pickups";
+        assert firstRestaurant.getOrders() == 0 : "Driver " + getUserName() + ", first pickup is not 0 order";
 
         LocalTime firstCloseTime = convertTime(firstRestaurant.getClosingTime());
 

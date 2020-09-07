@@ -620,7 +620,10 @@ public class DriverStartTimeTest extends TestBase {
             pickupRestaurants.add(restaurant);
         }
 
-        return new Driver("jb", "123-456-7890", pickupRestaurants, null, "https://something");
+        WorkflowBean driverBean = new WorkflowBean();
+        driverBean.setUserName("jb");
+
+        return new Driver(driverBean, pickupRestaurants, null, "https://something");
     }
 
     static class TestData {

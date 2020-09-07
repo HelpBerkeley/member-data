@@ -21,6 +21,8 @@
 //
 package org.helpberkeley.memberdata;
 
+import org.helpberkeley.memberdata.route.GMapApiClient;
+import org.helpberkeley.memberdata.route.GmapApiSimulatorFactory;
 import org.junit.BeforeClass;
 
 import java.io.IOException;
@@ -110,6 +112,7 @@ public class TestBase {
             Options.COMMAND_GET_ORDER_HISTORY,
             Options.COMMAND_GET_DAILY_DELIVERIES,
             Options.COMMAND_GET_REQUEST_DRIVER_ROUTES,
+            Options.COMMAND_DRIVER_ROUTES,
     };
 
     static final String TEST_FILE_NAME = "pom.xml";
@@ -120,10 +123,11 @@ public class TestBase {
     @BeforeClass
     public static void installHttpClientSimulatorFactory() {
         ApiClient.httpClientFactory = new HttpClientSimulatorFactory();
+        GMapApiClient.apiFactory = new GmapApiSimulatorFactory();
     }
 
     ApiClient createApiSimulator() {
-        Properties properties = Main.loadProperties(Main.MEMBERDATA_PROPERTIES);
+        Properties properties = Main.loadProperties(Constants.MEMBERDATA_PROPERTIES);
         HttpClientSimulator httpClientSimulator = new HttpClientSimulator();
         return new ApiClient(properties, httpClientSimulator);
     }
@@ -355,7 +359,7 @@ public class TestBase {
                 TEST_REFERRAL_1, TEST_VERIFIED_1, groups);
     }
 
-    String readResourceFile(final String fileName) {
+    public String readResourceFile(final String fileName) {
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
         URL url = classLoader.getResource(fileName);
 

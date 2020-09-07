@@ -44,6 +44,7 @@ public class Options {
     static final String COMMAND_EMAIL = "email";
     static final String COMMAND_WORKFLOW = "workflow";
     static final String COMMAND_DRIVER_MESSAGES = "driver-messages";
+    static final String COMMAND_DRIVER_ROUTES = "driver-routes";
     static final String COMMAND_GET_REQUEST_DRIVER_ROUTES = "get-request-driver-routes";
     static final String COMMAND_REQUEST_DRIVER_ROUTES_SUCCEEDED = "request-driver-routes-succeeded";
     static final String COMMAND_REQUEST_DRIVER_ROUTES_FAILED = "request-driver-routes-failed";
@@ -64,6 +65,7 @@ public class Options {
                     + "    | " + COMMAND_GET_DAILY_DELIVERIES + "\n"
                     + "    | " + COMMAND_GET_ORDER_HISTORY + "\n"
                     + "    | " + COMMAND_DRIVER_MESSAGES + " all-members-file\n"
+                    + "    | " + COMMAND_DRIVER_ROUTES + "\n"
                     + "    | " + COMMAND_GET_REQUEST_DRIVER_ROUTES + "\n"
                     + "    | " + COMMAND_REQUEST_DRIVER_ROUTES_SUCCEEDED
                                 + " uploaded-file-name"
@@ -120,6 +122,7 @@ public class Options {
             case COMMAND_GET_ORDER_HISTORY:
             case COMMAND_GET_DAILY_DELIVERIES:
             case COMMAND_GET_REQUEST_DRIVER_ROUTES:
+            case COMMAND_DRIVER_ROUTES:
                 setCommand(arg);
                 break;
             case COMMAND_POST_ERRORS:

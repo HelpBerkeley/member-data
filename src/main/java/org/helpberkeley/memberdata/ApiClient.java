@@ -59,8 +59,8 @@ public class ApiClient {
 
     ApiClient(final Properties properties) {
 
-        apiUser = properties.getProperty(Main.API_USER_PROPERTY);
-        apiKey = properties.getProperty(Main.API_KEY_PROPERTY);
+        apiUser = properties.getProperty(Constants.API_USER_PROPERTY);
+        apiKey = properties.getProperty(Constants.API_KEY_PROPERTY);
         auditAPIKey();
 
         Authenticator authenticator = new Authenticator() {
@@ -84,8 +84,8 @@ public class ApiClient {
 
     ApiClient(final Properties properties, HttpClient httpClient) {
 
-        apiUser = properties.getProperty(Main.API_USER_PROPERTY);
-        apiKey = properties.getProperty(Main.API_KEY_PROPERTY);
+        apiUser = properties.getProperty(Constants.API_USER_PROPERTY);
+        apiKey = properties.getProperty(Constants.API_KEY_PROPERTY);
         auditAPIKey();
         this.client = httpClient;
     }
@@ -93,9 +93,9 @@ public class ApiClient {
     private void auditAPIKey() {
         if ((apiUser == null) || (apiKey == null)) {
             throw new MemberDataException("Missing "
-                    + Main.API_USER_PROPERTY
+                    + Constants.API_USER_PROPERTY
                     + " property or "
-                    + Main.API_KEY_PROPERTY
+                    + Constants.API_KEY_PROPERTY
                     + " or both");
         }
     }
