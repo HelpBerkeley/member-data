@@ -52,17 +52,11 @@ public class Route {
         String address = lastPickup.getAddress() + ", CA";
         PickupLocation lastPickupLocation = new PickupLocation(gMapClient.getLocation(address), lastPickup);
 
-        // Get the last delivery as our ending point for routing.
-        assert deliveries.size() > 1 : "0 length deliveries for driver " + driver.getUserName();
-        Delivery lastDelivery = deliveries.get(deliveries.size() - 1);
-        address = lastDelivery.getAddress() + ", " + lastDelivery.getCity() + ", CA";
-        DeliveryLocation lastDeliveryLocation =
-                new DeliveryLocation(address, gMapClient.getLocation(address), lastDelivery);
+        // Get the driver's home address as the fixed endpoint for the routing.
+        Location driversHomeLocation = gMapClient.getLocation(driver.getFullAddress());
 
         // FIX THIS, DS: remove duplicate locations
 
-        // Remove the ending point
-        deliveries.remove(deliveries.size() - 1);
         List<DeliveryLocation> deliveryLocations = getLocations(deliveries);
 
 //        List<DeliveryLocation> uniqueLocations = new ArrayList<>(new LinkedHashSet<>(locations));
@@ -70,7 +64,7 @@ public class Route {
 
         Location[] route = new Location[deliveryLocations.size() + 2];
         route[0] = lastPickupLocation;
-        route[route.length - 1] = lastDeliveryLocation;
+        route[route.length - 1] = driversHomeLocation;
 
         if (route.length == 2) {
             return;
@@ -82,12 +76,15 @@ public class Route {
             route = reverse(route);
         }
         assert route[0].equals(lastPickupLocation);
+        assert route[route.length - 1].equals(driversHomeLocation);
 
         deliveries.clear();
 
         // Update deliveries
-        for (int i = 1; i < route.length; i++) {
-            assert route[i] instanceof DeliveryLocation;
+
+        // Skip starting restaurant and driver home location
+        for (int i = 1; i < (route.length - 1); i++) {
+            assert route[i] instanceof DeliveryLocation : i + ": " + route[i];
             DeliveryLocation deliveryLocation = (DeliveryLocation)route[i];
             deliveryLocation.delivery.setLocation(deliveryLocation);
             deliveries.add(deliveryLocation.delivery);

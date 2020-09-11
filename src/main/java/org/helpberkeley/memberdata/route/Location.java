@@ -64,4 +64,9 @@ public class Location {
                 && (((Location)obj).latitude == latitude)
                 && (((Location)obj).longitude == longitude);
     }
+
+    @Override
+    public String toString() {
+        return Double.toString(latitude) + ", " + Double.toString(longitude);
+    }
 }

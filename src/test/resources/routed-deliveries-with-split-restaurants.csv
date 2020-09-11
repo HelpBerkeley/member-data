@@ -5,17 +5,17 @@ FALSE,FALSE,,SplitRestaurant (Name | CleanupDriverUserName),,,,Cafe Raj | jcDriv
 FALSE,FALSE,,SplitRestaurant (Name | CleanupDriverUserName),,,,Kim's Cafe | jsDriver,,,,,,,
 FALSE,FALSE,,BackupDriverUserName,,,,JVol,,,,,,,
 FALSE,FALSE,ControlEnd,,,,,,,,,,,,
-FALSE,TRUE,Josephine B. Driver,jsDriver,888-888-8888,,,,,,,,,,
+FALSE,TRUE,Josephine B. Driver,jsDriver,888-888-8888,none,Hills,Berkeley,88 88th Place,,,,,,
 FALSE,,,,,,,,"1823 Solano Ave, Berkeley",FALSE,,Kim's Cafe,,,1
 FALSE,,,,,,,,"1158 Solano Ave, Albany",FALSE,"One,Two,Three details",Cafe Raj,,,1
 TRUE,FALSE,Cust Name 4,Cust4,555-555-4444,none,Hills,Berkeley,44 44th St,FALSE,,Kim's Cafe,0,1,
 TRUE,FALSE,Cust Name 5,Cust5,555-555-5555,none,Hills,Berkeley,55 55th St,TRUE,listed as a condo but may not be.,Cafe Raj,1,0,
-FALSE,TRUE,Josephine B. Driver,jsDriver,888-888-8888,,,,,,,,,,
+FALSE,TRUE,Josephine B. Driver,jsDriver,888-888-8888,none,Hills,Berkeley,88 88th Place,,,,,,
 "https://www.google.com/maps/dir/x+y+z",,,,,,,,,,,,,,
-FALSE,TRUE,Jack C Driver,jcDriver,999-999-9999,,,,,,,,,,
+FALSE,TRUE,Jack C Driver,jcDriver,999-999-9999,none,Hills,Berkeley,99 99th Place,,,,,,
 FALSE,,,,,,,,"1158 Solano Ave, Albany",FALSE,"One,Two,Three details",Cafe Raj,,,1
 FALSE,,,,,,,,"1823 Solano Ave, Berkeley",FALSE,,Kim's Cafe,,,1
 TRUE,FALSE,Cust Name 6,Cust6,555-555-6666,none,Hills,Berkeley,66 66th St,FALSE,,Cafe Raj,1,0,
 TRUE,FALSE,Cust Name 6,Cust6,555-555-6666,none,Hills,Berkeley,66 66th St,FALSE,,Kim's Cafe,1,0,
-FALSE,TRUE,Jack C Driver,jcDriver,999-999-9999,,,,,,,,,,
+FALSE,TRUE,Jack C Driver,jcDriver,999-999-9999,none,Hills,Berkeley,99 99th Place,,,,,,
 "https://www.google.com/maps/dir/a+b+c",,,,,,,,,,,,,,

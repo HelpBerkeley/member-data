@@ -335,6 +335,14 @@ public class WorkflowParser {
         if (driverPhone.isEmpty()) {
             errors += "missing driver phone number\n";
         }
+        String driverAddress = driverBean.getAddress();
+        if (driverAddress.isEmpty()) {
+            errors += "missing driver address\n";
+        }
+        String driverCity = driverBean.getCity();
+        if (driverCity.isEmpty()) {
+            errors += "missing driver city\n";
+        }
 
         if (! errors.isEmpty()) {
             throw new MemberDataException("line " + lineNumber + " " + errors);

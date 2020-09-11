@@ -28,6 +28,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.http.HttpResponse;
 import java.nio.file.Files;
@@ -807,6 +808,16 @@ public class Main {
 
         // FIX THIS, DS: what to do with this error?
         assert response.statusCode() == HTTP_OK : "failed " + response.statusCode() + ": " + response.body();
+    }
+
+    static void testQuery(ApiClient apiClient) throws InterruptedException {
+        try {
+            String response = apiClient.runQueryWithParam(5, "limit", "10");
+            System.out.println("response");
+        } catch (URISyntaxException ex) {
+            throw new MemberDataException("runQueryWithParams failed", ex);
+
+        }
     }
 }
 

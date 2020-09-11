@@ -191,21 +191,29 @@ public class ApiClient {
         return response.body();
     }
 
-    String runQueryWithParam(int queryId, String paramName, String paramValue) throws InterruptedException {
+    String runQueryWithParam(int queryId, String paramName, String paramValue) throws InterruptedException, URISyntaxException {
 
         String endpoint = QUERY_BASE + queryId + "/run";
 
         // String body = "limit=1000000;" + paramName + '=' + paramValue;
         // String body = "{params={\"" + paramName + "\":\"" + paramValue + "\"}";
-        String body = "\"" + paramName + "\":\"" + paramValue + "\"";
+
+        String body = "params={\"" + paramName + "\":\"" + paramValue + "\"}";
+        String encodedBody = URLEncoder.encode(body, StandardCharsets.UTF_8);
+
+        String clientId = "1234b591bb4848dd899b6e6ee0feaff9";
+
+        MultiPartBodyPublisher publisher = new MultiPartBodyPublisher()
+                .addPart("client_id",
+                        new String(clientId.getBytes(Charset.defaultCharset()), StandardCharsets.UTF_8))
+                .addPart("params[]", encodedBody);
 
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(endpoint))
-                .header("Api-Username", apiUser)
-                .header("Api-Key", apiKey)
-                .header("Accept", "application/json")
-                .header("Content-Type", "multipart/form-data")
-                .POST(HttpRequest.BodyPublishers.ofString(body))
+                .uri(new URI(endpoint))
+                .setHeader("Content-Type", "multipart/form-data; charset=UTF-8; boundary=" + publisher.getBoundary())
+                .setHeader("Api-Key", apiKey)
+                .setHeader("Api-Username", apiUser)
+                .POST(publisher.build())
                 .build();
 
         HttpResponse<String> response = send(request);

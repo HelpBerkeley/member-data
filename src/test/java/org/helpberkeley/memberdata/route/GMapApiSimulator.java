@@ -74,6 +74,14 @@ public class GMapApiSimulator implements GMapApi {
                 latitude = 37.889501;
                 longitude = -122.273232;
                 break;
+            case "77 77th Place, Berkeley, CA":
+                latitude = 37.865113;
+                longitude = -122.281274;
+                break;
+            case "88 88th Place, Berkeley, CA":
+                latitude = 37.8674274;
+                longitude = -122.271193;
+                break;
             default:
                 throw new MemberDataException("Address " + address + " not known to simulator");
         }
@@ -147,6 +155,8 @@ public class GMapApiSimulator implements GMapApi {
             Location l7 = new Location("60 Alamo Ave., Berkeley, CA", 37.8990125, -122.2713268);
             Location l8 = new Location("2550 Dana St. #9H, Berkeley, CA", 37.8632015, -122.2628637);
             Location l9 = new Location("2032 Del Norte Street, Berkeley, CA", 37.889501, -122.273232);
+            Location l10 = new Location("77 77th Place, Berkeley, CA", 37.865113,-122.281274);
+            Location l11 = new Location("88 88th Place, Berkeley, CA", 37.8674274,-122.271193);
 
             // l1
             Map<Location, Long> destinations = new HashMap<>();
@@ -215,6 +225,23 @@ public class GMapApiSimulator implements GMapApi {
             destinations.put(l7, TimeUnit.MINUTES.toSeconds(4));
             destinations.put(l8, TimeUnit.MINUTES.toSeconds(10));
             travelSeconds.put(l9, destinations);
+
+            // l10
+            destinations = new HashMap<>();
+            destinations.put(l1, TimeUnit.MINUTES.toSeconds(2));
+            destinations.put(l2, TimeUnit.MINUTES.toSeconds(3));
+            destinations.put(l3, TimeUnit.MINUTES.toSeconds(4));
+            destinations.put(l4, TimeUnit.MINUTES.toSeconds(5));
+            travelSeconds.put(l10, destinations);
+
+            // l11
+            destinations = new HashMap<>();
+            destinations.put(l5, TimeUnit.MINUTES.toSeconds(2));
+            destinations.put(l6, TimeUnit.MINUTES.toSeconds(3));
+            destinations.put(l7, TimeUnit.MINUTES.toSeconds(4));
+            destinations.put(l8, TimeUnit.MINUTES.toSeconds(5));
+            destinations.put(l9, TimeUnit.MINUTES.toSeconds(5));
+            travelSeconds.put(l11, destinations);
         }
     }
 }

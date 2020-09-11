@@ -23,6 +23,7 @@ package org.helpberkeley.memberdata;
 
 import org.junit.Test;
 
+import java.net.URISyntaxException;
 import java.util.Properties;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -86,5 +87,13 @@ public class ApiClientTest extends TestBase {
         Throwable thrown = catchThrowable(() -> apiClient.runQuery(Constants.QUERY_GET_EMAILS));
         assertThat(thrown).isInstanceOf(RuntimeException.class);
         assertThat(thrown).hasMessageContaining("10 attempts to talk with Discourse failed");
+    }
+
+    @Test
+    public void queryWithParamsTest() throws InterruptedException, URISyntaxException {
+        ApiClient apiClient = createApiSimulator();
+
+        String result = apiClient.runQueryWithParam(Constants.CURRENT_USERS_QUERY, "limit", "100");
+        System.out.println(result);
     }
 }
