@@ -75,7 +75,7 @@ class ControlBlock {
 
     private void auditVersion(StringBuilder errors) {
         if (version > Constants.CONTROL_BLOCK_CURRENT_VERSION) {
-            errors.append("Control block version " + version + " is not supported.\n");
+            errors.append("Control block version ").append(version).append(" is not supported.\n");
         }
     }
 
@@ -440,10 +440,6 @@ class ControlBlock {
         SplitRestaurant(String name, String cleanupDriverUserName) {
             this.name = name;
             this.cleanupDriverUserName = cleanupDriverUserName;
-        }
-
-        public String getName() {
-            return name;
         }
 
         public String getCleanupDriverUserName() {

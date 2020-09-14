@@ -81,7 +81,7 @@ public class MainTest extends TestBase {
 
     @Test
     public void postDriversTest() throws IOException, InterruptedException, CsvException {
-        String file = findFile(Main.DRIVERS_FILE, "csv");
+        String file = findFile(Constants.DRIVERS_FILE, "csv");
         assertThat(file).isNotNull();
 
         String[] args = { Options.COMMAND_POST_DRIVERS, file };
@@ -90,28 +90,28 @@ public class MainTest extends TestBase {
 
     @Test
     public void postConsumerRequestsTest() throws IOException, InterruptedException, CsvException {
-        String consumerRequestsFile = findFile(Main.CONSUMER_REQUESTS_FILE, "csv");
+        String consumerRequestsFile = findFile(Constants.CONSUMER_REQUESTS_FILE, "csv");
         String[] args = { Options.COMMAND_POST_CONSUMER_REQUESTS, consumerRequestsFile };
         Main.main(args);
     }
 
     @Test
     public void postVolunteerRequestsTest() throws IOException, InterruptedException, CsvException {
-        String consumerRequestsFile = findFile(Main.VOLUNTEER_REQUESTS_FILE, "csv");
+        String consumerRequestsFile = findFile(Constants.VOLUNTEER_REQUESTS_FILE, "csv");
         String[] args = { Options.COMMAND_POST_VOLUNTEER_REQUESTS, consumerRequestsFile };
         Main.main(args);
     }
 
     @Test
     public void postDispatchersTest() throws IOException, InterruptedException, CsvException {
-        String file = findFile(Main.DISPATCHERS_FILE, "csv");
+        String file = findFile(Constants.DISPATCHERS_FILE, "csv");
         String[] args = { Options.COMMAND_POST_DISPATCHERS, file, TEST_SHORT_URL };
         Main.main(args);
     }
 
     @Test
     public void updateDispatchersTest() throws IOException, InterruptedException, CsvException {
-        String dispatchersFile = findFile(Main.DISPATCHERS_FILE, "csv");
+        String dispatchersFile = findFile(Constants.DISPATCHERS_FILE, "csv");
         String[] args = { Options.COMMAND_UPDATE_DISPATCHERS, dispatchersFile };
         Main.main(args);
     }
@@ -137,7 +137,7 @@ public class MainTest extends TestBase {
 
     @Test
     public void emailTest() throws IOException, InterruptedException, CsvException {
-        String file = findFile(Main.MEMBERDATA_RAW_FILE, "csv");
+        String file = findFile(Constants.MEMBERDATA_RAW_FILE, "csv");
         String[] args = { Options.COMMAND_EMAIL, file };
         Main.main(args);
     }
@@ -147,13 +147,13 @@ public class MainTest extends TestBase {
 
         String[] args = { Options.COMMAND_GET_ORDER_HISTORY };
         Main.main(args);
-        String orderHistoryFile = findFile(Main.ORDER_HISTORY_FILE, "csv");
+        String orderHistoryFile = findFile(Constants.ORDER_HISTORY_FILE, "csv");
 
         args = new String[]{Options.COMMAND_GET_DAILY_DELIVERIES};
         Main.main(args);
-        String deliveriesPostFile = findFile(Main.DELIVERY_POSTS_FILE, "csv");
+        String deliveriesPostFile = findFile(Constants.DELIVERY_POSTS_FILE, "csv");
 
-        String usersFile = findFile(Main.MEMBERDATA_RAW_FILE, "csv");
+        String usersFile = findFile(Constants.MEMBERDATA_RAW_FILE, "csv");
 
         args = new String[] {
                 Options.COMMAND_MERGE_ORDER_HISTORY,
@@ -169,9 +169,9 @@ public class MainTest extends TestBase {
 
         String[] args = { Options.COMMAND_GET_ORDER_HISTORY };
         Main.main(args);
-        String orderHistoryFile = findFile(Main.ORDER_HISTORY_FILE, "csv");
+        String orderHistoryFile = findFile(Constants.ORDER_HISTORY_FILE, "csv");
 
-        String usersFile = findFile(Main.MEMBERDATA_RAW_FILE, "csv");
+        String usersFile = findFile(Constants.MEMBERDATA_RAW_FILE, "csv");
 
         args = new String[] {
                 Options.COMMAND_INREACH,
@@ -186,7 +186,7 @@ public class MainTest extends TestBase {
 
         String[] args = { Options.COMMAND_GET_ORDER_HISTORY };
         Main.main(args);
-        String orderHistoryFile = findFile(Main.ORDER_HISTORY_FILE, "csv");
+        String orderHistoryFile = findFile(Constants.ORDER_HISTORY_FILE, "csv");
 
         args = new String[] {
                 Options.COMMAND_POST_INREACH,
@@ -201,7 +201,7 @@ public class MainTest extends TestBase {
 
         String[] args = { Options.COMMAND_GET_ORDER_HISTORY };
         Main.main(args);
-        String orderHistoryFile = findFile(Main.ORDER_HISTORY_FILE, "csv");
+        String orderHistoryFile = findFile(Constants.ORDER_HISTORY_FILE, "csv");
 
         args = new String[] { Options.COMMAND_UPDATE_ORDER_HISTORY, orderHistoryFile, TEST_SHORT_URL };
         Main.main(args);
@@ -209,21 +209,21 @@ public class MainTest extends TestBase {
 
     @Test
     public void workflowTest() throws IOException, InterruptedException, CsvException {
-        String usersFile = findFile(Main.MEMBERDATA_RAW_FILE, "csv");
+        String usersFile = findFile(Constants.MEMBERDATA_RAW_FILE, "csv");
         String[] args = { Options.COMMAND_WORKFLOW, usersFile };
         Main.main(args);
     }
 
     @Test
     public void driverMessagesTest() throws IOException, InterruptedException, CsvException {
-        String usersFile = findFile(Main.MEMBERDATA_RAW_FILE, "csv");
+        String usersFile = findFile(Constants.MEMBERDATA_RAW_FILE, "csv");
         String[] args = { Options.COMMAND_DRIVER_MESSAGES, usersFile };
         Main.main(args);
     }
 
     @Test
     public void getRoutedWorkflowStatusTest() throws IOException, InterruptedException, CsvException {
-        String usersFile = findFile(Main.MEMBERDATA_RAW_FILE, "csv");
+        String usersFile = findFile(Constants.MEMBERDATA_RAW_FILE, "csv");
         HttpClientSimulator.setQueryResponseFile(
                 Constants.QUERY_GET_LAST_REQUEST_DRIVER_MESSAGES_REPLY, "last-routed-workflow-status.json");
         String[] args = { Options.COMMAND_DRIVER_MESSAGES, usersFile };
@@ -232,7 +232,7 @@ public class MainTest extends TestBase {
 
     @Test
     public void getRoutedWorkflowBadRequestTest() throws IOException, InterruptedException, CsvException {
-        String usersFile = findFile(Main.MEMBERDATA_RAW_FILE, "csv");
+        String usersFile = findFile(Constants.MEMBERDATA_RAW_FILE, "csv");
         HttpClientSimulator.setQueryResponseFile(
                 Constants.QUERY_GET_LAST_REQUEST_DRIVER_MESSAGES_REPLY, "last-routed-workflow-bad-request.json");
         String[] args = { Options.COMMAND_DRIVER_MESSAGES, usersFile };

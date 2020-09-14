@@ -126,7 +126,7 @@ public class TestBase {
     }
 
     ApiClient createApiSimulator() {
-        Properties properties = Main.loadProperties(Constants.MEMBERDATA_PROPERTIES);
+        Properties properties = Main.loadProperties();
         HttpClientSimulator httpClientSimulator = new HttpClientSimulator();
         return new ApiClient(properties, httpClientSimulator);
     }

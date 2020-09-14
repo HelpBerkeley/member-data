@@ -47,18 +47,7 @@ public class Main {
 
     static final String MEMBERDATA_ERRORS_FILE = "memberdata-errors";
     static final String MEMBERDATA_REPORT_FILE = "member-data-report";
-    static final String MEMBERDATA_WITH_EMAIL_REPORT_FILE = "member-data-with-email";
-    static final String MEMBERDATA_RAW_FILE = "member-data-raw";
-    static final String CONSUMER_REQUESTS_FILE = "consumer-requests";
-    static final String VOLUNTEER_REQUESTS_FILE = "volunteer-requests";
-    static final String DRIVERS_FILE = "drivers";
-    static final String WORKFLOW_FILE = "workflow";
-    static final String INREACH_FILE = "inreach";
-    static final String DISPATCHERS_FILE = "dispatchers";
-    static final String ORDER_HISTORY_FILE = "order-history";
-    static final String DELIVERY_POSTS_FILE = "delivery-posts";
 
-    static final String ALL_MEMBERS_TITLE = "All Members";
     static final String WORKFLOW_TITLE = "Workflow Data";
     static final String DISPATCHERS_TITLE = "Dispatchers Info";
     static final String INREACH_TITLE = "Customer Info";
@@ -79,12 +68,14 @@ public class Main {
     static final long DISPATCHERS_POST_TOPIC = 938;
     static final long STONE_TEST_TOPIC = 422;
     static final long DISPATCHERS_POST_ID = 5324;
-    static final long ORDER_HISTORY_TOPIC = 1440;
     static final long ORDER_HISTORY_POST_ID = 6433;
     static final long RESTAURANT_TEMPLATE_POST_ID = 8664;
-    static final long DELIVERY_DETAILS_TOPIC_ID = 1818;
-    static final long DRIVERS_POST_FORMAT_TOPIC_ID = 1967;
     static final long DRIVERS_POST_STAGING_TOPIC_ID = 2123;
+
+    // FIX THIS, DS: uncomment when we can past parameters to queries
+//    static final long ORDER_HISTORY_TOPIC = 1440;
+//    static final long DELIVERY_DETAILS_TOPIC_ID = 1818;
+//    static final long DRIVERS_POST_FORMAT_TOPIC_ID = 1967;
 
     public static void main(String[] args) throws IOException, InterruptedException, CsvException {
 
@@ -97,7 +88,7 @@ public class Main {
         }
 
         // Load member data properties
-        Properties memberDataProperties = loadProperties(Constants.MEMBERDATA_PROPERTIES);
+        Properties memberDataProperties = loadProperties();
 
         // Set up an HTTP client
         ApiClient apiClient = new ApiClient(memberDataProperties);
@@ -168,13 +159,13 @@ public class Main {
         }
     }
 
-    static Properties loadProperties(final String fileName) {
+    static Properties loadProperties() {
 
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-        URL propertiesFile = classLoader.getResource(fileName);
+        URL propertiesFile = classLoader.getResource(Constants.MEMBERDATA_PROPERTIES);
 
         if (propertiesFile == null) {
-            LOGGER.error("Required properties file {} cannot be found", fileName);
+            LOGGER.error("Required properties file {} cannot be found", Constants.MEMBERDATA_PROPERTIES);
             System.exit(1);
         }
 
@@ -202,7 +193,7 @@ public class Main {
         UserExporter exporter = new UserExporter(users);
 
         // Export all users
-        exporter.allMembersRawToFile(MEMBERDATA_RAW_FILE);
+        exporter.allMembersRawToFile(Constants.MEMBERDATA_RAW_FILE);
 
         // Export all users report
         exporter.allMembersReportToFile(MEMBERDATA_REPORT_FILE);
@@ -211,16 +202,16 @@ public class Main {
         exporter.errorsToFile(MEMBERDATA_ERRORS_FILE);
 
         // Export non-consumer group members, with a consumer request
-        exporter.consumerRequestsToFile(CONSUMER_REQUESTS_FILE);
+        exporter.consumerRequestsToFile(Constants.CONSUMER_REQUESTS_FILE);
 
         // Export new volunteers-consumer group members, with a volunteer request
-        exporter.volunteerRequestsToFile(VOLUNTEER_REQUESTS_FILE);
+        exporter.volunteerRequestsToFile(Constants.VOLUNTEER_REQUESTS_FILE);
 
         // Export drivers
-        exporter.driversToFile(DRIVERS_FILE);
+        exporter.driversToFile(Constants.DRIVERS_FILE);
 
         // Export dispatchers
-        exporter.dispatchersToFile(DISPATCHERS_FILE);
+        exporter.dispatchersToFile(Constants.DISPATCHERS_FILE);
     }
 
     static void postConsumerRequests(ApiClient apiClient, final String fileName)
@@ -356,7 +347,7 @@ public class Main {
         // Upload it to Discourse
         Upload upload = new Upload(apiClient, fileName);
         // Post
-        postFile(apiClient, fileName, upload.getShortURL(), ALL_MEMBERS_TITLE, ALL_MEMBERS_POST_TOPIC);
+        postFile(apiClient, fileName, upload.getShortURL(), Constants.ALL_MEMBERS_TITLE, ALL_MEMBERS_POST_TOPIC);
     }
 
     static void postDrivers(ApiClient apiClient, final String fileName) throws InterruptedException {
@@ -429,12 +420,12 @@ public class Main {
         OrderHistory orderHistory = HBParser.orderHistory(orderHistoryData);
 
         // Export the order history to a file
-        new OrderHistoryExporter(orderHistory).orderHistoryToFile(ORDER_HISTORY_FILE);
+        new OrderHistoryExporter(orderHistory).orderHistoryToFile();
     }
 
     static void getDailyDeliveryPosts(ApiClient apiClient) throws IOException, InterruptedException {
         List<DeliveryData> deliveryPosts = DeliveryData.deliveryPosts(apiClient);
-        new DeliveryDataExporter(deliveryPosts).deliveryPostsToFile(DELIVERY_POSTS_FILE);
+        new DeliveryDataExporter(deliveryPosts).deliveryPostsToFile();
     }
 
     static void mergeOrderHistory(ApiClient apiClient, final String usersFile,
@@ -479,7 +470,7 @@ public class Main {
         }
 
         // Export updated order history
-        new OrderHistoryExporter(orderHistory).orderHistoryToFile(ORDER_HISTORY_FILE);
+        new OrderHistoryExporter(orderHistory).orderHistoryToFile();
     }
 
     static void generateInreach(final String usersFile, final String orderHistoryFile) throws IOException, CsvException {
@@ -489,7 +480,7 @@ public class Main {
         csvData = Files.readString(Paths.get(orderHistoryFile));
         OrderHistory orderHistory = HBParser.orderHistory(csvData);
 
-        new UserExporter(users).inreachToFile(INREACH_FILE, orderHistory);
+        new UserExporter(users).inreachToFile(orderHistory);
     }
 
     static void generateEmail(ApiClient apiClient, final String usersFile)
@@ -499,7 +490,7 @@ public class Main {
 
         Map<Long, String> emails = new Loader(apiClient).loadEmailAddresses();
 
-        new UserExporter(users).allMembersWithEmailReportToFile(emails, MEMBERDATA_WITH_EMAIL_REPORT_FILE);
+        new UserExporter(users).allMembersWithEmailReportToFile(emails);
     }
 
     static void generateWorkflow(ApiClient apiClient, final String usersFile)
@@ -523,7 +514,7 @@ public class Main {
 
         // Generate the workflow file
         String workflowFileName =
-                new UserExporter(users).workflowToFile(restaurantTemplate, deliveryDetails, WORKFLOW_FILE);
+                new UserExporter(users).workflowToFile(restaurantTemplate, deliveryDetails, Constants.WORKFLOW_FILE);
 
         // Upload it to Discourse
         Upload upload = new Upload(apiClient, workflowFileName);

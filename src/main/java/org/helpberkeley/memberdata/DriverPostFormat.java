@@ -285,7 +285,6 @@ public class DriverPostFormat {
                     throw new MemberDataException("Restaurant \"" + pickup.getName() + "\" from driver "
                             + driver.getUserName() + " not found.  Is it misspelled?");
                 }
-                assert restaurant != null : "restaurant " + pickup.getName() + " not found in template";
                 restaurant.addDriver(driver);
                 restaurant.addOrders(pickup.getOrders());
             }

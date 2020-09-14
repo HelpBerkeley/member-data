@@ -100,7 +100,7 @@ class GMapApiImpl implements GMapApi {
         URL propertiesFile = classLoader.getResource(Constants.MEMBERDATA_PROPERTIES);
 
         if (propertiesFile == null) {
-            LOGGER.error("Required properties file {} cannot be found", propertiesFile.toString());
+            LOGGER.error("Required properties file {} cannot be found", Constants.MEMBERDATA_PROPERTIES);
             System.exit(1);
         }
 

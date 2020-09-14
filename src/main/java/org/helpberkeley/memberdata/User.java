@@ -103,9 +103,6 @@ public class User {
     static final String ERROR_SECOND_PHONE_MISSING_AREA_CODE = "Second phone missing area code, assuming 510";
     static final String ERROR_SECOND_PHONE_CANNOT_PARSE_PHONE = "Cannot parse second phone number";
 
-    // Audit error strings
-    static final String AUDIT_ERROR_NEIGHBORHOOD_UNKNOWN = "Neighborhood unknown";
-
     static final String NOT_PROVIDED = "none";
 
     static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");

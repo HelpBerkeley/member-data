@@ -119,10 +119,6 @@ public class Delivery {
         return city;
     }
 
-    public String getNeighborhood() {
-        return neighborhood;
-    }
-
     public String getAddress() {
         return address;
     }

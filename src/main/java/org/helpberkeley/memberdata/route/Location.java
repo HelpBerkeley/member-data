@@ -39,22 +39,22 @@ public class Location {
         this.longitude = longitude;
     }
 
-    public String getAddress() {
+    public final String getAddress() {
         return address;
     }
 
-    public double getLatitude() {
+    public final double getLatitude() {
         return latitude;
     }
 
-    public double getLongitude() {
+    public final double getLongitude() {
         return longitude;
     }
 
     @Override
     public int hashCode() {
-        Double latLng = latitude * longitude;
-        return latLng.hashCode();
+        double latLng = latitude * longitude;
+        return Double.hashCode(latLng);
     }
 
     @Override
@@ -67,6 +67,6 @@ public class Location {
 
     @Override
     public String toString() {
-        return Double.toString(latitude) + ", " + Double.toString(longitude);
+        return latitude + ", " + longitude;
     }
 }

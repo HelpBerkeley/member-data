@@ -35,6 +35,7 @@ Example:
 ```
 Api-Username   aloyisus
 Api-Key        123456789abcdef987654321
+GMaps-Api-Key  xyzzy12345
 ```
 
 ###[License](LICENSE.txt)

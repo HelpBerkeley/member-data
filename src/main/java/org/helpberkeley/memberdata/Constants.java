@@ -22,7 +22,19 @@
 package org.helpberkeley.memberdata;
 
 public class Constants {
-//    public static final int QUERY_GET_USERS_ID = 1;
+    static final String MEMBERDATA_WITH_EMAIL_REPORT_FILE = "member-data-with-email";
+    static final String MEMBERDATA_RAW_FILE = "member-data-raw";
+    static final String CONSUMER_REQUESTS_FILE = "consumer-requests";
+    static final String VOLUNTEER_REQUESTS_FILE = "volunteer-requests";
+    static final String DRIVERS_FILE = "drivers";
+    static final String WORKFLOW_FILE = "workflow";
+    static final String INREACH_FILE = "inreach";
+    static final String DISPATCHERS_FILE = "dispatchers";
+    static final String ORDER_HISTORY_FILE = "order-history";
+    static final String DELIVERY_POSTS_FILE = "delivery-posts";
+    static final String ALL_MEMBERS_TITLE = "All Members";
+
+    //    public static final int QUERY_GET_USERS_ID = 1;
     public static final int QUERY_GET_GROUPS_ID = 3;
     public static final int QUERY_GET_GROUP_USERS_ID = 4;
 //    public static final int QUERY_GET_USERS_V11_ID = 8;

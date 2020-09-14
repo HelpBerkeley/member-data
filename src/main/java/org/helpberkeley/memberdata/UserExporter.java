@@ -151,12 +151,10 @@ public class UserExporter extends Exporter {
         return csvData.toString();
     }
 
-    String allMembersWithEmailReportToFile(final Map<Long, String> emailAddresses,
-        final String fileName) throws IOException {
+    void allMembersWithEmailReportToFile(final Map<Long, String> emailAddresses) throws IOException {
 
-        String outputFileName = generateFileName(fileName, "csv");
+        String outputFileName = generateFileName(Constants.MEMBERDATA_WITH_EMAIL_REPORT_FILE, "csv");
         writeFile(outputFileName, allMembersWithEmailReport(emailAddresses));
-        return outputFileName;
     }
 
     String drivers() {
@@ -394,12 +392,9 @@ public class UserExporter extends Exporter {
 
     }
 
-    String inreachToFile(final String fileName, OrderHistory orderHistory) throws IOException {
-
-        String outputFileName = generateFileName(fileName, "csv");
+    void inreachToFile(OrderHistory orderHistory) throws IOException {
+        String outputFileName = generateFileName(Constants.INREACH_FILE, "csv");
         writeFile(outputFileName, inreach(orderHistory));
-
-        return outputFileName;
     }
 
     String inreachHeaders() {

@@ -33,12 +33,9 @@ public class DeliveryDataExporter extends Exporter {
         this.deliveryData = deliveryData;
     }
 
-    String deliveryPostsToFile(final String fileName) throws IOException {
-
-        String outputFileName = generateFileName(fileName, "csv");
+    void deliveryPostsToFile() throws IOException {
+        String outputFileName = generateFileName(Constants.DELIVERY_POSTS_FILE, "csv");
         writeFile(outputFileName, deliveryPosts());
-
-        return outputFileName;
     }
 
     String deliveryPosts() {
