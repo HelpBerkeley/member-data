@@ -275,7 +275,10 @@ public class WorkflowParser {
                 continue;
             }
 
-            controlBlock.processRow(bean, lineNumber);
+            if (mode != Mode.DRIVER_ROUTE_REQUEST) {
+                assert mode == Mode.DRIVER_MESSAGE_REQUEST : mode;
+                controlBlock.processRow(bean, lineNumber);
+            }
         }
     }
 

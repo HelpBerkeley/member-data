@@ -562,8 +562,6 @@ public class Main {
             long locationCalls = route.getLocationCalls();
             long directionsCalls = route.getDirectionsCalls();
 
-
-
             statusMessage.append("|Maps API|Number of Calls|Cost|\n");
             statusMessage.append("|---|---|---|\n");
             statusMessage.append("|Location|")

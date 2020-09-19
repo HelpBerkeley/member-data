@@ -94,6 +94,6 @@ public class ApiClientTest extends TestBase {
         ApiClient apiClient = createApiSimulator();
 
         String result = apiClient.runQueryWithParam(Constants.CURRENT_USERS_QUERY, "limit", "100");
-        System.out.println(result);
+        // FIX THIS, DS: update when query parameters are working with Discourse
     }
 }

@@ -59,8 +59,8 @@ public class ControlBlockTest extends TestBase {
 
     @Test
     public void controlBlockTest() {
-        WorkflowParser workflowParser =
-                new WorkflowParser(WorkflowParser.Mode.DRIVER_ROUTE_REQUEST, controlBlockData);
+        WorkflowParser workflowParser = new WorkflowParser(
+                WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, allRestaurants, controlBlockData);
 
         ControlBlock controlBlock = workflowParser.controlBlock();
         assertThat(controlBlock.getOpsManagers()).containsExactly(
@@ -114,7 +114,8 @@ public class ControlBlockTest extends TestBase {
 
         String workFlowData = HEADER + CONTROL_BLOCK_BEGIN_ROW + "FALSE,FALSE,,BadVariableName,,,,,,,,,,,\n";
 
-        WorkflowParser workflowParser = new WorkflowParser(WorkflowParser.Mode.DRIVER_ROUTE_REQUEST, workFlowData);
+        WorkflowParser workflowParser = new WorkflowParser(
+                WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, allRestaurants, workFlowData);
         ControlBlock controlBlock = workflowParser.controlBlock();
         assertThat(controlBlock.getWarnings()).contains(
                 "Unknown key \"BadVariableName\" in the User Name column at line 3.");
@@ -126,7 +127,8 @@ public class ControlBlockTest extends TestBase {
         String workFlowData = HEADER + CONTROL_BLOCK_BEGIN_ROW
                 + "FALSE,FALSE,,OpsManager (UserName|Phone),,,,fred 123-456-7890,,,,,,,\n";
 
-        WorkflowParser workflowParser = new WorkflowParser(WorkflowParser.Mode.DRIVER_ROUTE_REQUEST, workFlowData);
+        WorkflowParser workflowParser = new WorkflowParser(
+                WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, allRestaurants, workFlowData);
 
         Throwable thrown = catchThrowable(workflowParser::drivers);
         assertThat(thrown).isInstanceOf(MemberDataException.class);
@@ -140,7 +142,8 @@ public class ControlBlockTest extends TestBase {
         String workFlowData = HEADER + CONTROL_BLOCK_BEGIN_ROW
                 + "FALSE,FALSE,,OpsManager (UserName|Phone),,,,|fred|123-456-7890|,,,,,,,\n";
 
-        WorkflowParser workflowParser = new WorkflowParser(WorkflowParser.Mode.DRIVER_ROUTE_REQUEST, workFlowData);
+        WorkflowParser workflowParser = new WorkflowParser(
+                WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, allRestaurants, workFlowData);
 
         Throwable thrown = catchThrowable(workflowParser::drivers);
         assertThat(thrown).isInstanceOf(MemberDataException.class);
@@ -154,7 +157,8 @@ public class ControlBlockTest extends TestBase {
         String workFlowData = HEADER + CONTROL_BLOCK_BEGIN_ROW
                 + "FALSE,FALSE,,OpsManager (UserName|Phone),,,,|123-456-7890,,,,,,,\n";
 
-        WorkflowParser workflowParser = new WorkflowParser(WorkflowParser.Mode.DRIVER_ROUTE_REQUEST, workFlowData);
+        WorkflowParser workflowParser = new WorkflowParser(
+                WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, allRestaurants, workFlowData);
 
         Throwable thrown = catchThrowable(workflowParser::drivers);
         assertThat(thrown).isInstanceOf(MemberDataException.class);
@@ -167,7 +171,8 @@ public class ControlBlockTest extends TestBase {
         String workFlowData = HEADER + CONTROL_BLOCK_BEGIN_ROW
                 + "FALSE,FALSE,,OpsManager (UserName|Phone),,,,@fred|123-456-7890,,,,,,,\n";
 
-        WorkflowParser workflowParser = new WorkflowParser(WorkflowParser.Mode.DRIVER_ROUTE_REQUEST, workFlowData);
+        WorkflowParser workflowParser = new WorkflowParser(
+                WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, allRestaurants, workFlowData);
 
         Throwable thrown = catchThrowable(workflowParser::drivers);
         assertThat(thrown).isInstanceOf(MemberDataException.class);
@@ -180,7 +185,8 @@ public class ControlBlockTest extends TestBase {
         String workFlowData = HEADER + CONTROL_BLOCK_BEGIN_ROW
                 + "FALSE,FALSE,,OpsManager (UserName|Phone),,,,fred e mercury|123-456-7890,,,,,,,\n";
 
-        WorkflowParser workflowParser = new WorkflowParser(WorkflowParser.Mode.DRIVER_ROUTE_REQUEST, workFlowData);
+        WorkflowParser workflowParser = new WorkflowParser(
+                WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, allRestaurants, workFlowData);
 
         Throwable thrown = catchThrowable(workflowParser::drivers);
         assertThat(thrown).isInstanceOf(MemberDataException.class);
@@ -194,7 +200,8 @@ public class ControlBlockTest extends TestBase {
         String workFlowData = HEADER + CONTROL_BLOCK_BEGIN_ROW
                 + "FALSE,FALSE,,OpsManager (UserName|Phone),,,,UnknownDudette|123-456-7890,,,,,,,\n";
 
-        WorkflowParser workflowParser = new WorkflowParser(WorkflowParser.Mode.DRIVER_ROUTE_REQUEST, workFlowData);
+        WorkflowParser workflowParser = new WorkflowParser(
+                WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, allRestaurants, workFlowData);
         ControlBlock controlBlock = workflowParser.controlBlock();
         Throwable thrown = catchThrowable(() -> controlBlock.audit(users, allRestaurants, Collections.EMPTY_LIST));
         assertThat(thrown).isInstanceOf(MemberDataException.class);
@@ -208,7 +215,8 @@ public class ControlBlockTest extends TestBase {
         String workFlowData = HEADER + CONTROL_BLOCK_BEGIN_ROW
                 + "FALSE,FALSE,,OpsManager (UserName|Phone),,,,biff| ,,,,,,,\n";
 
-        WorkflowParser workflowParser = new WorkflowParser(WorkflowParser.Mode.DRIVER_ROUTE_REQUEST, workFlowData);
+        WorkflowParser workflowParser = new WorkflowParser(
+                WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, allRestaurants, workFlowData);
 
         Throwable thrown = catchThrowable(workflowParser::drivers);
         assertThat(thrown).isInstanceOf(MemberDataException.class);
@@ -220,7 +228,8 @@ public class ControlBlockTest extends TestBase {
 
         String workFlowData = HEADER + CONTROL_BLOCK_BEGIN_ROW
                 + "FALSE,FALSE,,OpsManager (UserName|Phone),,,,JVol|222-222-2222,,,,,,,\n";
-        WorkflowParser workflowParser = new WorkflowParser(WorkflowParser.Mode.DRIVER_ROUTE_REQUEST, workFlowData);
+        WorkflowParser workflowParser = new WorkflowParser(
+                WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, allRestaurants, workFlowData);
         ControlBlock controlBlock = workflowParser.controlBlock();
         controlBlock.audit(users, allRestaurants, Collections.EMPTY_LIST);
         assertThat(controlBlock.getWarnings()).contains(
@@ -233,7 +242,8 @@ public class ControlBlockTest extends TestBase {
         String workFlowData = HEADER + CONTROL_BLOCK_BEGIN_ROW
                 + "FALSE,FALSE,,SplitRestaurant (Name|CleanupDriverUserName),,,,MickeyDs bobbyjo,,,,,,,\n";
 
-        WorkflowParser workflowParser = new WorkflowParser(WorkflowParser.Mode.DRIVER_ROUTE_REQUEST, workFlowData);
+        WorkflowParser workflowParser = new WorkflowParser(
+                WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, allRestaurants, workFlowData);
 
         Throwable thrown = catchThrowable(workflowParser::drivers);
         assertThat(thrown).isInstanceOf(MemberDataException.class);
@@ -247,7 +257,8 @@ public class ControlBlockTest extends TestBase {
         String workFlowData = HEADER + CONTROL_BLOCK_BEGIN_ROW
                 + "FALSE,FALSE,,SplitRestaurant (Name|CleanupDriverUserName),,,,|Max's|buzz|,,,,,,,\n";
 
-        WorkflowParser workflowParser = new WorkflowParser(WorkflowParser.Mode.DRIVER_ROUTE_REQUEST, workFlowData);
+        WorkflowParser workflowParser = new WorkflowParser(
+                WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, allRestaurants, workFlowData);
 
         Throwable thrown = catchThrowable(workflowParser::drivers);
         assertThat(thrown).isInstanceOf(MemberDataException.class);
@@ -261,7 +272,8 @@ public class ControlBlockTest extends TestBase {
         String workFlowData = HEADER + CONTROL_BLOCK_BEGIN_ROW
                 + "FALSE,FALSE,,SplitRestaurant (Name|CleanupDriverUserName),,,,|buzz,,,,,,,\n";
 
-        WorkflowParser workflowParser = new WorkflowParser(WorkflowParser.Mode.DRIVER_ROUTE_REQUEST, workFlowData);
+        WorkflowParser workflowParser = new WorkflowParser(
+                WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, allRestaurants, workFlowData);
 
         Throwable thrown = catchThrowable(workflowParser::drivers);
         assertThat(thrown).isInstanceOf(MemberDataException.class);
@@ -274,7 +286,8 @@ public class ControlBlockTest extends TestBase {
         String workFlowData = HEADER + CONTROL_BLOCK_BEGIN_ROW
                 + "FALSE,FALSE,,SplitRestaurant (Name|CleanupDriverUserName),,,,Bopshop|@fred,,,,,,,\n";
 
-        WorkflowParser workflowParser = new WorkflowParser(WorkflowParser.Mode.DRIVER_ROUTE_REQUEST, workFlowData);
+        WorkflowParser workflowParser = new WorkflowParser(
+                WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, allRestaurants, workFlowData);
 
         Throwable thrown = catchThrowable(workflowParser::drivers);
         assertThat(thrown).isInstanceOf(MemberDataException.class);
@@ -288,7 +301,8 @@ public class ControlBlockTest extends TestBase {
         String workFlowData = HEADER + CONTROL_BLOCK_BEGIN_ROW
                 + "FALSE,FALSE,,SplitRestaurant (Name|CleanupDriverUserName),,,,Bobshop|fred e mercury,,,,,,,\n";
 
-        WorkflowParser workflowParser = new WorkflowParser(WorkflowParser.Mode.DRIVER_ROUTE_REQUEST, workFlowData);
+        WorkflowParser workflowParser = new WorkflowParser(
+                WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, allRestaurants, workFlowData);
 
         Throwable thrown = catchThrowable(workflowParser::drivers);
         assertThat(thrown).isInstanceOf(MemberDataException.class);
@@ -302,7 +316,8 @@ public class ControlBlockTest extends TestBase {
         String workFlowData = HEADER + CONTROL_BLOCK_BEGIN_ROW
                 + "FALSE,FALSE,,SplitRestaurant (Name|CleanupDriverUserName),,,,Bobshop|,,,,,,,\n";
 
-        WorkflowParser workflowParser = new WorkflowParser(WorkflowParser.Mode.DRIVER_ROUTE_REQUEST, workFlowData);
+        WorkflowParser workflowParser = new WorkflowParser(
+                WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, allRestaurants, workFlowData);
 
         Throwable thrown = catchThrowable(workflowParser::drivers);
         assertThat(thrown).isInstanceOf(MemberDataException.class);
@@ -315,7 +330,8 @@ public class ControlBlockTest extends TestBase {
         String workFlowData = HEADER + CONTROL_BLOCK_BEGIN_ROW
                 + "FALSE,FALSE,,BackupDriverUserName,,,,bligzhfzzt|,,,,,,,\n";
 
-        WorkflowParser workflowParser = new WorkflowParser(WorkflowParser.Mode.DRIVER_ROUTE_REQUEST, workFlowData);
+        WorkflowParser workflowParser = new WorkflowParser(
+                WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, allRestaurants, workFlowData);
 
         Throwable thrown = catchThrowable(workflowParser::drivers);
         assertThat(thrown).isInstanceOf(MemberDataException.class);
@@ -329,7 +345,8 @@ public class ControlBlockTest extends TestBase {
         String workFlowData = HEADER + CONTROL_BLOCK_BEGIN_ROW
                 + "FALSE,FALSE,,BackupDriverUserName,,,,,,,,,,,\n";
 
-        WorkflowParser workflowParser = new WorkflowParser(WorkflowParser.Mode.DRIVER_ROUTE_REQUEST, workFlowData);
+        WorkflowParser workflowParser = new WorkflowParser(
+                WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, allRestaurants, workFlowData);
 
         Throwable thrown = catchThrowable(workflowParser::drivers);
         assertThat(thrown).isInstanceOf(MemberDataException.class);
@@ -342,7 +359,8 @@ public class ControlBlockTest extends TestBase {
         String workFlowData = HEADER + CONTROL_BLOCK_BEGIN_ROW
                 + "FALSE,FALSE,,BackupDriverUserName,,,,@roygbv,,,,,,,\n";
 
-        WorkflowParser workflowParser = new WorkflowParser(WorkflowParser.Mode.DRIVER_ROUTE_REQUEST, workFlowData);
+        WorkflowParser workflowParser = new WorkflowParser(
+                WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, allRestaurants, workFlowData);
 
         Throwable thrown = catchThrowable(workflowParser::drivers);
         assertThat(thrown).isInstanceOf(MemberDataException.class);
@@ -355,7 +373,8 @@ public class ControlBlockTest extends TestBase {
         String workFlowData = HEADER + CONTROL_BLOCK_BEGIN_ROW
                 + "FALSE,FALSE,,BackupDriverUserName,,,,billy joe bob boy,,,,,,,\n";
 
-        WorkflowParser workflowParser = new WorkflowParser(WorkflowParser.Mode.DRIVER_ROUTE_REQUEST, workFlowData);
+        WorkflowParser workflowParser = new WorkflowParser(
+                WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, allRestaurants, workFlowData);
 
         Throwable thrown = catchThrowable(workflowParser::drivers);
         assertThat(thrown).isInstanceOf(MemberDataException.class);
@@ -367,7 +386,8 @@ public class ControlBlockTest extends TestBase {
     public void auditNoOpsManagerTest() {
         String workFlowData = HEADER + CONTROL_BLOCK_BEGIN_ROW + CONTROL_BLOCK_END_ROW;
 
-        WorkflowParser workflowParser = new WorkflowParser(WorkflowParser.Mode.DRIVER_ROUTE_REQUEST, workFlowData);
+        WorkflowParser workflowParser = new WorkflowParser(
+                WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, allRestaurants, workFlowData);
 
         Throwable thrown = catchThrowable(() ->
                 workflowParser.controlBlock().audit(users, allRestaurants, Collections.EMPTY_LIST));
@@ -431,7 +451,8 @@ public class ControlBlockTest extends TestBase {
             + "FALSE,FALSE,,OpsManager (UserName | Phone),,,,"
             + "ReplaceThisByUserName | 510-555-1212,,,,,,,\n"
             + CONTROL_BLOCK_END_ROW;
-        WorkflowParser workflowParser = new WorkflowParser(WorkflowParser.Mode.DRIVER_ROUTE_REQUEST, workFlowData);
+        WorkflowParser workflowParser = new WorkflowParser(
+                WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, allRestaurants, workFlowData);
 
         Throwable thrown = catchThrowable(() ->
                 workflowParser.controlBlock().audit(users, allRestaurants, Collections.EMPTY_LIST));
@@ -446,7 +467,8 @@ public class ControlBlockTest extends TestBase {
                 + "FALSE,FALSE,,OpsManager (UserName | Phone),,,,"
                 + "FredZ | ReplaceThisByPhone#In510-555-1212Format,,,,,,,\n"
                 + CONTROL_BLOCK_END_ROW;
-        WorkflowParser workflowParser = new WorkflowParser(WorkflowParser.Mode.DRIVER_ROUTE_REQUEST, workFlowData);
+        WorkflowParser workflowParser = new WorkflowParser(
+                WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, allRestaurants, workFlowData);
 
         Throwable thrown = catchThrowable(() ->
                 workflowParser.controlBlock().audit(users, allRestaurants, Collections.EMPTY_LIST));
@@ -463,7 +485,8 @@ public class ControlBlockTest extends TestBase {
                 + "FALSE,FALSE,,OpsManager (UserName | Phone),,,,"
                 + "Fredrica | 510-555-1213,,,,,,,\n"
                 + CONTROL_BLOCK_END_ROW;
-        WorkflowParser workflowParser = new WorkflowParser(WorkflowParser.Mode.DRIVER_ROUTE_REQUEST, workFlowData);
+        WorkflowParser workflowParser = new WorkflowParser(
+                WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, allRestaurants, workFlowData);
 
         Throwable thrown = catchThrowable(() ->
                 workflowParser.controlBlock().audit(users, allRestaurants, Collections.EMPTY_LIST));
@@ -479,7 +502,8 @@ public class ControlBlockTest extends TestBase {
                 + "FALSE,FALSE,,SplitRestaurant (Name | CleanupDriverUserName)"
                 + ",,,,ReplaceThisBySplitRestaurantName | RalphKramden,,,,,,,\n"
                 + CONTROL_BLOCK_END_ROW;
-        WorkflowParser workflowParser = new WorkflowParser(WorkflowParser.Mode.DRIVER_ROUTE_REQUEST, workFlowData);
+        WorkflowParser workflowParser = new WorkflowParser(
+                WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, allRestaurants, workFlowData);
 
         Throwable thrown = catchThrowable(() ->
                 workflowParser.controlBlock().audit(users, allRestaurants, Collections.EMPTY_LIST));
@@ -496,7 +520,8 @@ public class ControlBlockTest extends TestBase {
                 + "FALSE,FALSE,,SplitRestaurant (Name | CleanupDriverUserName)"
                 + ",,,,White Castle| ReplaceThisByCleanupDriverUserName,,,,,,,\n"
                 + CONTROL_BLOCK_END_ROW;
-        WorkflowParser workflowParser = new WorkflowParser(WorkflowParser.Mode.DRIVER_ROUTE_REQUEST, workFlowData);
+        WorkflowParser workflowParser = new WorkflowParser(
+                WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, allRestaurants, workFlowData);
 
         Throwable thrown = catchThrowable(() ->
                 workflowParser.controlBlock().audit(users, allRestaurants, Collections.EMPTY_LIST));
@@ -512,7 +537,8 @@ public class ControlBlockTest extends TestBase {
                 + "JVol | 123-456-7890,,,,,,,\n"
                 + CONTROL_BLOCK_END_ROW;
 
-        WorkflowParser workflowParser = new WorkflowParser(WorkflowParser.Mode.DRIVER_ROUTE_REQUEST, workFlowData);
+        WorkflowParser workflowParser = new WorkflowParser(
+                WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, allRestaurants, workFlowData);
         ControlBlock controlBlock = workflowParser.controlBlock();
         controlBlock.audit(users, allRestaurants, Collections.EMPTY_LIST);
         assertThat(controlBlock.getWarnings()).contains("No BackupDriverUserName set in the control block.\n");
@@ -524,7 +550,8 @@ public class ControlBlockTest extends TestBase {
                 + "FALSE,FALSE,,Version,,,,ThisIsNotAVersionNumber,,,,,,,\n"
                 + CONTROL_BLOCK_END_ROW;
 
-        WorkflowParser workflowParser = new WorkflowParser(WorkflowParser.Mode.DRIVER_ROUTE_REQUEST, workFlowData);
+        WorkflowParser workflowParser = new WorkflowParser(
+                WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, allRestaurants, workFlowData);
         Throwable thrown = catchThrowable(workflowParser::controlBlock);
         assertThat(thrown).isInstanceOf(MemberDataException.class);
         assertThat(thrown).hasMessage("Version \"ThisIsNotAVersionNumber\" at line 3 is not valid version number.\n");
@@ -539,7 +566,8 @@ public class ControlBlockTest extends TestBase {
                 + ",,,,,,,\n"
                 + CONTROL_BLOCK_END_ROW;
 
-        WorkflowParser workflowParser = new WorkflowParser(WorkflowParser.Mode.DRIVER_ROUTE_REQUEST, workFlowData);
+        WorkflowParser workflowParser = new WorkflowParser(
+                WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, allRestaurants, workFlowData);
         ControlBlock controlBlock = workflowParser.controlBlock();
         Throwable thrown = catchThrowable(() -> controlBlock.audit(users, allRestaurants, Collections.EMPTY_LIST));
         assertThat(thrown).isInstanceOf(MemberDataException.class);
@@ -556,7 +584,8 @@ public class ControlBlockTest extends TestBase {
                 + "NotAMemberDude,,,,,,,\n"
                 + CONTROL_BLOCK_END_ROW;
 
-        WorkflowParser workflowParser = new WorkflowParser(WorkflowParser.Mode.DRIVER_ROUTE_REQUEST, workFlowData);
+        WorkflowParser workflowParser = new WorkflowParser(
+                WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, allRestaurants, workFlowData);
         ControlBlock controlBlock = workflowParser.controlBlock();
         Throwable thrown = catchThrowable(() -> controlBlock.audit(users, allRestaurants, Collections.EMPTY_LIST));
         assertThat(thrown).isInstanceOf(MemberDataException.class);
@@ -574,7 +603,8 @@ public class ControlBlockTest extends TestBase {
                 + "ZZZ,,,,,,,\n"
                 + CONTROL_BLOCK_END_ROW;
 
-        WorkflowParser workflowParser = new WorkflowParser(WorkflowParser.Mode.DRIVER_ROUTE_REQUEST, workFlowData);
+        WorkflowParser workflowParser = new WorkflowParser(
+                WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, allRestaurants, workFlowData);
         ControlBlock controlBlock = workflowParser.controlBlock();
         controlBlock.audit(users, allRestaurants, Collections.EMPTY_LIST);
         assertThat(controlBlock.getWarnings()).contains(
