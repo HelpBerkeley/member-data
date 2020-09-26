@@ -5,23 +5,35 @@
   "result_count": 20,
   "params": {},
   "columns": [
+    "post_number",
+    "deleted_at",
     "raw"
   ],
   "default_limit": 1000,
   "rows": [
     [
+      2,
+      null,
       "Here we post the completed daily spreadsheets for use by our database software."
     ],
     [
+      3,
+      null,
       "2020/03/28\n\n[HelpBerkeleyDeliveries - 3_28.csv|attachment](upload://deliveries-3_28.csv) (828 Bytes)"
     ],
     [
+      4,
+      null,
       "2020/03/31\n\n[HelpBerkeleyDeliveries - 3_31.csv|attachment](upload://deliveries-3_31.csv) (828 Bytes)"
     ],
     [
+      5,
+      null,
       "2020/03/29\n\n[HelpBerkeleyDeliveries - 3_29.csv|attachment](upload://deliveries-3_29.csv) (1.1 KB)"
     ],
     [
+      6,
+      null,
       "2020/04/01\n\n[HelpBerkeleyDeliveries - 4_1.csv|attachment](upload://deliveries-4_1.csv) (1.1 KB)"
     ]
   ]

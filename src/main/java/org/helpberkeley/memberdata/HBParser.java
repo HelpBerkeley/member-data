@@ -344,21 +344,17 @@ public class HBParser {
     }
 
     static List<DeliveryData> dailyDeliveryPosts(ApiQueryResult apiQueryResult) {
-        assert apiQueryResult.headers.length == 1 : apiQueryResult.headers.length;
-        assert apiQueryResult.headers[0].equals("raw");
+        assert apiQueryResult.headers.length == 3 : apiQueryResult.headers.length;
+        assert apiQueryResult.headers[2].equals("raw");
 
         List<DeliveryData> dailyDeliveries = new ArrayList<>();
 
         for (Object rowObj : apiQueryResult.rows) {
             Object[] columns = (Object[]) rowObj;
-            assert columns.length == 1 : columns.length;
+            assert columns.length == 3 : columns.length;
 
             //
-            String raw = ((String)columns[0]).trim();
-
-            if (raw.startsWith("Here we post the completed daily spreadsheets")) {
-                continue;
-            }
+            String raw = ((String)columns[2]).trim();
 
             // 2020/03/28
             //
