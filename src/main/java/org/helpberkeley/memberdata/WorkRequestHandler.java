@@ -157,12 +157,15 @@ public class WorkRequestHandler {
         final String date;
         final UploadFile uploadFile;
         final Long topic;
+        final String version;
 
-        WorkRequest(Reply reply, final String date, final UploadFile uploadFile, final Long topic) {
+        WorkRequest(Reply reply, final String date, final UploadFile uploadFile,
+                final Long topic, String version) {
             super(reply);
             this.date = date;
             this.uploadFile = uploadFile;
             this.topic = topic;
+            this.version = version;
         }
 
         // Generate a reply to the topic id
@@ -207,6 +210,7 @@ public class WorkRequestHandler {
 
             ListIterator<String> iterator = lines.listIterator(1);
             Long topic = null;
+            String version = null;
 
             while (iterator.hasNext()) {
                 String line = iterator.next();
@@ -214,13 +218,15 @@ public class WorkRequestHandler {
                 if (line.startsWith("Topic:")) {
                     // FIX THIS, DS: handle number format exception
                     topic = Long.parseLong(line.replaceAll("Topic:", "").trim());
+                } else if (line.startsWith("Version:")) {
+                    version = line.replaceAll("Version:", "").trim();
                 } else if (line.contains(Constants.UPLOAD_URI_PREFIX)) {
                     String shortURL =  HBParser.shortURLDiscoursePost(line);
                     String fileName = HBParser.downloadFileName(line);
 
                     UploadFile uploadFile = new UploadFile(fileName, shortURL);
 
-                    return new WorkRequest(lastReply, dateLine, uploadFile, topic);
+                    return new WorkRequest(lastReply, dateLine, uploadFile, topic, version);
                 }
             }
 
@@ -233,6 +239,7 @@ public class WorkRequestHandler {
                     + "WorkRequest\n"
                     + "Date: " + date + '\n'
                     + "Topic: " + topic + '\n'
+                    + "Version: " + version + '\n'
                     + "FileName: " + uploadFile.fileName + '\n';
         }
     }

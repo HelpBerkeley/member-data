@@ -49,7 +49,7 @@ class ControlBlock {
             "Control block does not contain a "
             + Constants.CONTROL_BLOCK_SPLIT_RESTAURANT + " entry for {0}\n";
 
-    private int version = Constants.CONTROL_BLOCK_VERSION_UNKNOWN;
+    private String version = Constants.CONTROL_BLOCK_VERSION_UNKNOWN;
     private final List<OpsManager> opsManagers = new ArrayList<>();
     private final Map<String, SplitRestaurant> splitRestaurantMap = new HashMap<>();
     private final List<String> backupDrivers = new ArrayList<>();
@@ -74,9 +74,13 @@ class ControlBlock {
     }
 
     private void auditVersion(StringBuilder errors) {
-        if (version > Constants.CONTROL_BLOCK_CURRENT_VERSION) {
-            errors.append("Control block version ").append(version).append(" is not supported.\n");
+        switch (version) {
+            case Constants.CONTROL_BLOCK_VERSION_UNKNOWN:
+            case Constants.CONTROL_BLOCK_VERSION_1:
+                return;
         }
+
+        errors.append("Control block version ").append(version).append(" is not supported.\n");
     }
 
     private void auditOpsManager(StringBuilder errors, Map<String, User> users) {
@@ -162,7 +166,7 @@ class ControlBlock {
         }
     }
 
-    int getVersion() {
+    String getVersion() {
         return version;
     }
 
@@ -266,12 +270,7 @@ class ControlBlock {
     }
 
     private void processVersion(String value, long lineNumber) {
-        try {
-            version = Integer.parseInt(value.trim());
-        } catch (NumberFormatException ex) {
-            throw new MemberDataException("Version \"" + value + "\" at line " + lineNumber
-                    + " is not valid version number.\n");
-        }
+        this.version = value;
     }
 
     //

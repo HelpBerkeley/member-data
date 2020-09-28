@@ -169,8 +169,14 @@ public class ApiClient {
     }
 
     String runQuery(int queryId) throws InterruptedException {
+        return doRunQuery(queryId);
+//        return runQueryWithParam(queryId, "limit", "100000");
+    }
+
+    private String doRunQuery(int queryId) throws InterruptedException {
 
         String endpoint = QUERY_BASE + queryId + "/run";
+
 
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(endpoint))
@@ -180,6 +186,8 @@ public class ApiClient {
                 .header("Content-Type", "multipart/form-data")
                 .POST(HttpRequest.BodyPublishers.ofString("limit=1000000"))
                 .build();
+
+
 
         HttpResponse<String> response = send(request);
 
@@ -191,39 +199,40 @@ public class ApiClient {
         return response.body();
     }
 
-    String runQueryWithParam(int queryId, String paramName, String paramValue) throws InterruptedException, URISyntaxException {
+    String runQueryWithParam(int queryId, String paramName, String paramValue) {
 
         String endpoint = QUERY_BASE + queryId + "/run";
 
-        // String body = "limit=1000000;" + paramName + '=' + paramValue;
-        // String body = "{params={\"" + paramName + "\":\"" + paramValue + "\"}";
-
-        String body = "params={\"" + paramName + "\":\"" + paramValue + "\"}";
-        String encodedBody = URLEncoder.encode(body, StandardCharsets.UTF_8);
-
-        String clientId = "1234b591bb4848dd899b6e6ee0feaff9";
+//        // {"paraName":"paramValue"}
+//        String params = "{\"" + paramName + "\":\"" + paramValue + "\"}";
+//
+//        MultiPartBodyPublisher publisher = new MultiPartBodyPublisher()
+//                .addParameterPart("params", new String(params.getBytes(Charset.defaultCharset()), StandardCharsets.UTF_8));
 
         MultiPartBodyPublisher publisher = new MultiPartBodyPublisher()
-                .addPart("client_id",
-                        new String(clientId.getBytes(Charset.defaultCharset()), StandardCharsets.UTF_8))
-                .addPart("params[]", encodedBody);
+                .addParamPart(paramName, paramValue);
+        try {
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(new URI(endpoint))
+                    .version(HttpClient.Version.HTTP_1_1)
+                    .setHeader("Content-Type", "multipart/form-data; charset=UTF-8; boundary=" + publisher.getBoundary())
+                    .setHeader("Api-Key", apiKey)
+                    .setHeader("Api-Username", apiUser)
+                    .header("Accept", "application/json")
+                    .POST(publisher.build())
+                    .build();
 
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(new URI(endpoint))
-                .setHeader("Content-Type", "multipart/form-data; charset=UTF-8; boundary=" + publisher.getBoundary())
-                .setHeader("Api-Key", apiKey)
-                .setHeader("Api-Username", apiUser)
-                .POST(publisher.build())
-                .build();
+            HttpResponse<String> response = send(request);
 
-        HttpResponse<String> response = send(request);
+            if (response.statusCode() != HTTP_OK) {
+                throw new MemberDataException(
+                        "runQuery(" + endpoint + " failed: " + response.statusCode() + ": " + response.body());
+            }
 
-        if (response.statusCode() != HTTP_OK) {
-            throw new MemberDataException(
-                    "runQuery(" + endpoint + " failed: " + response.statusCode() + ": " + response.body());
+            return response.body();
+        } catch (URISyntaxException | InterruptedException ex) {
+            throw new MemberDataException("Failed runQueryWithParameters: " + ex.getMessage());
         }
-
-        return response.body();
     }
 
     String getPost(long postId) throws InterruptedException {

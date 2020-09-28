@@ -28,7 +28,6 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.http.HttpResponse;
 import java.nio.file.Files;
@@ -92,6 +91,8 @@ public class Main {
 
         // Set up an HTTP client
         ApiClient apiClient = new ApiClient(memberDataProperties);
+
+        // testQuery(apiClient);
 
         switch (options.getCommand()) {
             case Options.COMMAND_FETCH:
@@ -533,6 +534,7 @@ public class Main {
         try {
             reply = requestHandler.getLastReply();
         } catch (MemberDataException ex) {
+            LOGGER.warn("getLastReply failed: " + ex + "\n" + ex.getMessage());
             requestHandler.postStatus(WorkRequestHandler.RequestStatus.Failed, ex.getMessage());
             return;
         }
@@ -627,6 +629,7 @@ public class Main {
         try {
             reply = requestHandler.getLastReply();
         } catch (MemberDataException ex) {
+            LOGGER.warn("getLastReply failed: " + ex + "\n" + ex.getMessage());
             requestHandler.postStatus(WorkRequestHandler.RequestStatus.Failed, ex.getMessage());
             return;
         }
@@ -646,13 +649,18 @@ public class Main {
 
         long topic = (request.topic != null) ? request.topic : DRIVERS_POST_STAGING_TOPIC_ID;
 
+        String version = request.version;
+        if (version == null) {
+            version = Constants.CONTROL_BLOCK_CURRENT_VERSION;
+        }
+
         // Download file
         String routedDeliveries = apiClient.downloadFile(request.uploadFile.fileName);
         request.postStatus(WorkRequestHandler.RequestStatus.Processing, "");
 
 
         try {
-            String statusMessage = generateDriverPosts(apiClient, users, routedDeliveries, topic);
+            String statusMessage = generateDriverPosts(apiClient, users, routedDeliveries, version, topic);
             request.postStatus(WorkRequestHandler.RequestStatus.Succeeded, statusMessage);
         } catch (MemberDataException ex) {
             String reason = ex.getCause() != null ? ex.getCause().getMessage() : ex.getMessage();
@@ -662,14 +670,14 @@ public class Main {
     }
 
     static String generateDriverPosts(ApiClient apiClient, Map<String,
-            User> users, String routedDeliveries, long topic) throws InterruptedException {
+            User> users, String routedDeliveries, String version, long topic) throws InterruptedException {
 
         StringBuilder statusMessages = new StringBuilder();
         List<String> postURLs = new ArrayList<>();
         String groupPostURL = null;
         String backupPostURL = null;
 
-        DriverPostFormat driverPostFormat = new DriverPostFormat(apiClient, users, routedDeliveries);
+        DriverPostFormat driverPostFormat = new DriverPostFormat(apiClient, users, version, routedDeliveries);
 
         List<String> posts = driverPostFormat.generateDriverPosts();
         Iterator<Driver> driverIterator = driverPostFormat.getDrivers().iterator();
@@ -800,13 +808,21 @@ public class Main {
     }
 
     static void testQuery(ApiClient apiClient) throws InterruptedException {
-        try {
-            String response = apiClient.runQueryWithParam(5, "limit", "10");
-            System.out.println("response");
-        } catch (URISyntaxException ex) {
-            throw new MemberDataException("runQueryWithParams failed", ex);
 
-        }
+//        String json = apiClient.runQuery(5);
+        String json = apiClient.runQueryWithParam(5, "limit", "100000");
+        ApiQueryResult apiQueryResult = HBParser.parseQueryResult(json);
+
+//        json = apiClient.runQuery(5);
+//        apiQueryResult = HBParser.parseQueryResult(json);
+
+//
+        System.exit(0);
+
+//        String json = apiClient.runQuery(Constants.QUERY_GET_GROUP_USERS_ID);
+//        ApiQueryResult apiQueryResult = HBParser.parseQueryResult(json);
+//        Map<String, List<Long>> groupUsers = HBParser.groupUsers(groupNames, apiQueryResult);
+
     }
 }
 

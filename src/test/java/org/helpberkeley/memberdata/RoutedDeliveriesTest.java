@@ -42,7 +42,8 @@ public class RoutedDeliveriesTest extends TestBase {
     public void parseRoutedTest() throws InterruptedException {
         String csvData = readResourceFile("routed-deliveries.csv");
 
-        DriverPostFormat driverPostFormat = new DriverPostFormat(createApiSimulator(), users, csvData);
+        DriverPostFormat driverPostFormat = new DriverPostFormat(createApiSimulator(),
+                users, Constants.CONTROL_BLOCK_CURRENT_VERSION, csvData);
         List<Driver> drivers = driverPostFormat.getDrivers();
 
         assertThat(drivers).hasSize(2);
@@ -187,7 +188,8 @@ public class RoutedDeliveriesTest extends TestBase {
     @Test
     public void parseRoutedWithSplitRestaurantTest() throws InterruptedException {
         String csvData = readResourceFile("routed-deliveries-with-split-restaurant.csv");
-        DriverPostFormat driverPostFormat = new DriverPostFormat(createApiSimulator(), users, csvData);
+        DriverPostFormat driverPostFormat = new DriverPostFormat(createApiSimulator(),
+                users, Constants.CONTROL_BLOCK_CURRENT_VERSION, csvData);
         List<Driver> drivers = driverPostFormat.getDrivers();
 
         assertThat(drivers).hasSize(4);

@@ -190,6 +190,9 @@ public class HttpClientSimulator extends HttpClient {
             case Constants.QUERY_GET_BACKUP_DRIVER_FORMAT_V12:
                 dataFile = "backup-driver-format-v12.json";
                 break;
+            case Constants.QUERY_GET_RESTAURANT_TEMPLATES:
+                dataFile = "restaurant-template-posts.json";
+                break;
             default:
                 throw new RuntimeException("FIX THIS: query " + queryId + " not supported by the simulator");
         }

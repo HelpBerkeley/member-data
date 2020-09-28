@@ -1,0 +1,276 @@
+{
+  "success": true,
+  "errors": [],
+  "duration": 0.8,
+  "result_count": 37,
+  "params": {},
+  "columns": [
+    "id",
+    "name",
+    "description",
+    "hidden",
+    "sql"
+  ],
+  "default_limit": 1000,
+  "rows": [
+    [
+      1,
+      "User Custom Fields",
+      "Get the users and the values of the custom user fields.",
+      false,
+      "SELECT\n  u.id AS user_id,\n  u.userName,\n  u.name,\n  MAX(CASE ucf.name WHEN 'user_field_1' THEN value END) AS address,\n  MAX(CASE ucf.name WHEN 'user_field_2' THEN value END) AS phone,\n  MAX(CASE ucf.name WHEN 'user_field_3' THEN value END) AS neighborhood,\n  MAX(CASE ucf.name WHEN 'user_field_6' THEN value END) AS city\nFROM user_custom_fields AS ucf\nRIGHT JOIN users AS u on ucf.user_id = u.id\nGROUP BY u.id"
+    ],
+    [
+      -1,
+      "Most Common Likers",
+      "Which users like particular other users the most?",
+      false,
+      "WITH pairs AS (\n    SELECT p.user_id liked, pa.user_id liker\n    FROM post_actions pa\n    LEFT JOIN posts p ON p.id = pa.post_id\n    WHERE post_action_type_id = 2\n)\nSELECT liker liker_user_id, liked liked_user_id, count(*)\nFROM pairs\nGROUP BY liked, liker\nORDER BY count DESC\n"
+    ],
+    [
+      10,
+      "User Query V1.3",
+      "Used by the remote member data fetcher. Do not modify or remove.",
+      false,
+      "SELECT\n  u.id AS user_id,\n  u.userName,\n  u.name,\n  MAX(CASE ucf.name WHEN 'user_field_1' THEN value END) AS address,\n  MAX(CASE ucf.name WHEN 'user_field_2' THEN value END) AS phone,\n  MAX(CASE ucf.name WHEN 'user_field_3' THEN value END) AS neighborhood,\n  MAX(CASE ucf.name WHEN 'user_field_6' THEN value END) AS city,\n  MAX(CASE ucf.name WHEN 'user_field_7' THEN value END) AS apartment,\n  MAX(CASE ucf.name WHEN 'user_field_9' THEN value END) AS consumer_request,\n  MAX(CASE ucf.name WHEN 'user_field_11' THEN value END) as volunteer_request,\n  u.created_at\nFROM user_custom_fields AS ucf\nRIGHT JOIN users AS u on ucf.user_id = u.id\nGROUP BY u.id"
+    ],
+    [
+      12,
+      "User Query V1.4",
+      "Used by the remote data fetcher. Do not modify or remove.",
+      false,
+      "SELECT\n  u.id AS user_id,\n  u.userName,\n  u.name,\n  MAX(CASE ucf.name WHEN 'user_field_1' THEN value END) AS address,\n  MAX(CASE ucf.name WHEN 'user_field_2' THEN value END) AS phone,\n  MAX(CASE ucf.name WHEN 'user_field_3' THEN value END) AS neighborhood,\n  MAX(CASE ucf.name WHEN 'user_field_6' THEN value END) AS city,\n  MAX(CASE ucf.name WHEN 'user_field_7' THEN value END) AS apartment,\n  MAX(CASE ucf.name WHEN 'user_field_9' THEN value END) AS consumer_request,\n  MAX(CASE ucf.name WHEN 'user_field_11' THEN value END) as volunteer_request,\n  MAX(CASE ucf.name WHEN 'user_field_12' THEN value END) as alt_phone,\n  u.created_at\nFROM user_custom_fields AS ucf\nRIGHT JOIN users AS u on ucf.user_id = u.id\nGROUP BY u.id"
+    ],
+    [
+      14,
+      "User Query V1.5",
+      "Used by the remote data fetcher. Do not modify or remove.",
+      false,
+      "SELECT\n  u.id AS user_id,\n  u.userName,\n  u.name,\n  MAX(CASE ucf.name WHEN 'user_field_1' THEN value END) AS address,\n  MAX(CASE ucf.name WHEN 'user_field_2' THEN value END) AS phone,\n  MAX(CASE ucf.name WHEN 'user_field_3' THEN value END) AS neighborhood,\n  MAX(CASE ucf.name WHEN 'user_field_6' THEN value END) AS city,\n  MAX(CASE ucf.name WHEN 'user_field_7' THEN value END) AS apartment,\n  MAX(CASE ucf.name WHEN 'user_field_9' THEN value END) AS consumer_request,\n  MAX(CASE ucf.name WHEN 'user_field_11' THEN value END) as volunteer_request,\n  MAX(CASE ucf.name WHEN 'user_field_12' THEN value END) as alt_phone,\n  MAX(CASE ucf.name WHEN 'user_field_13' THEN value END) as referral,\n  u.created_at\nFROM user_custom_fields AS ucf\nRIGHT JOIN users AS u on ucf.user_id = u.id\nGROUP BY u.id"
+    ],
+    [
+      16,
+      "User Query V1.6",
+      "Used by the remote data fetcher. Do not modify or remove.",
+      false,
+      "SELECT\n  u.id AS user_id,\n  u.userName,\n  u.name,\n  MAX(CASE ucf.name WHEN 'user_field_1' THEN value END) AS address,\n  MAX(CASE ucf.name WHEN 'user_field_2' THEN value END) AS phone,\n  MAX(CASE ucf.name WHEN 'user_field_3' THEN value END) AS neighborhood,\n  MAX(CASE ucf.name WHEN 'user_field_6' THEN value END) AS city,\n  MAX(CASE ucf.name WHEN 'user_field_7' THEN value END) AS condo,\n  MAX(CASE ucf.name WHEN 'user_field_9' THEN value END) AS consumer_request,\n  MAX(CASE ucf.name WHEN 'user_field_11' THEN value END) as volunteer_request,\n  MAX(CASE ucf.name WHEN 'user_field_12' THEN value END) as alt_phone,\n  MAX(CASE ucf.name WHEN 'user_field_13' THEN value END) as referral,\n  u.created_at\nFROM user_custom_fields AS ucf\nRIGHT JOIN users AS u on ucf.user_id = u.id\nGROUP BY u.id"
+    ],
+    [
+      -16,
+      "Poll results report",
+      "Details of a poll result, including details about each vote and voter, useful for analyzing results in external software.",
+      false,
+      "-- [params]\n-- string :poll_name\n-- int :post_id\n\nSELECT\n  poll_votes.updated_at AS vote_time,\n  poll_votes.poll_option_id AS vote_option,\n  users.id AS user_id,\n  users.username,\n  users.name,\n  users.trust_level,\n  poll_options.html AS vote_option_full\nFROM\n  poll_votes\nINNER JOIN\n  polls ON polls.id = poll_votes.poll_id\nINNER JOIN\n  users ON users.id = poll_votes.user_id\nINNER JOIN\n  poll_options ON poll_votes.poll_id = poll_options.poll_id AND poll_votes.poll_option_id = poll_options.id\nWHERE\n  polls.name = :poll_name AND\n  polls.post_id = :post_id\n"
+    ],
+    [
+      18,
+      "Anonymized Users",
+      "Find ids of users that have been anonymized. Used by the remote data fetcher. Do not modify or remove.",
+      false,
+      "SELECT\n  u.target_user_id\nFROM user_histories AS u\nWHERE (u.action = 24)"
+    ],
+    [
+      19,
+      "Get Driver Post Format",
+      "Get all of the posts in the Automated post formatting #1: Driver’s run topic\nDo not modify or remove.",
+      false,
+      "SELECT \n  p.post_number,\n  p.raw\nFROM posts AS p\nWHERE (p.topic_id = 1967)\nORDER BY (p.post_number)"
+    ],
+    [
+      20,
+      "Get Group Instructions Format",
+      "Get all of the posts in the Automated post formatting #2: Group instructions topic Do not modify or remove.",
+      false,
+      "SELECT \n  p.post_number,\n  p.raw\nFROM posts AS p\nWHERE (p.topic_id = 1972)\nORDER BY (p.post_number)"
+    ],
+    [
+      21,
+      "Get All Posts In Topic",
+      "Used by the remote data fetcher. Do not modify or remove.",
+      false,
+      "-- [params]\n-- int :topic_id = 422\nSELECT \n  p.post_number,\n  p.deleted_at,\n  p.raw\nFROM posts AS p\nWHERE (p.topic_id = :topic_id AND p.deleted_at IS NULL)\nORDER BY (p.post_number)"
+    ],
+    [
+      17,
+      "Get Delivery Details",
+      "Fetch the delivery details posts. Do not modify or remove. Used by the back-end processing.",
+      false,
+      "SELECT \n  p.post_number,\n  p.raw\nFROM posts AS p\nWHERE (p.topic_id = 1818)\nORDER BY (p.post_number)"
+    ],
+    [
+      15,
+      "Email confirmed",
+      "Used by the remote member data fetcher. Do not modify or remove.",
+      false,
+      "SELECT\n  e.user_id,\n  e.confirmed\nFROM email_tokens as e"
+    ],
+    [
+      11,
+      "User Email",
+      "Used by the remote member data fetcher. Do not modify or remove.",
+      false,
+      "SELECT\n  u.id AS user_id,\n  u.userName,\n  use.email\nFROM user_emails AS use\nRIGHT JOIN users AS u on use.user_id = u.id"
+    ],
+    [
+      24,
+      "Get last driver routing tags reply",
+      "",
+      false,
+      "SELECT \n  p.post_number,\n  p.deleted_at,\n  p.raw\nFROM posts AS p\nWHERE (p.topic_id = 438 AND p.deleted_at IS NULL)\nORDER BY (p.post_number) DESC\nLIMIT 1"
+    ],
+    [
+      26,
+      "Get Driver Post Format V1.2",
+      "Get all of the posts in the Automated post formatting #1: Driver’s run topic Do not modify or remove.",
+      false,
+      "SELECT \n  p.post_number,\n  p.raw,\n  p.deleted_at\nFROM posts AS p\nWHERE (p.topic_id = 3127 AND p.deleted_at IS NULL)\nORDER BY (p.post_number)"
+    ],
+    [
+      27,
+      "Get Group Instructions Format V1.2",
+      "Get version 1.2 of the driver group instructions format posts. Do not modify or remove.",
+      false,
+      "SELECT \n  p.post_number,\n  p.raw,\n  p.deleted_at\nFROM posts AS p\nWHERE (p.topic_id = 3198 AND p.deleted_at IS NULL)\nORDER BY (p.post_number)"
+    ],
+    [
+      29,
+      "Get Driver Post Format V2.1",
+      "Get all of the posts in the Driver Post Format V2.1 topic.  Do not modify or remove.",
+      false,
+      "SELECT \n  p.post_number,\n  p.raw,\n  p.deleted_at\nFROM posts AS p\nWHERE (p.topic_id = 3265 AND p.deleted_at IS NULL)\nORDER BY (p.post_number)"
+    ],
+    [
+      30,
+      "Get Group Instructions Format V2.1",
+      "Get version 2.1 of the driver group instructions format posts. Do not modify or remove.",
+      false,
+      "SELECT \n  p.post_number,\n  p.raw,\n  p.deleted_at\nFROM posts AS p\nWHERE (p.topic_id = 3289 AND p.deleted_at IS NULL)\nORDER BY (p.post_number)"
+    ],
+    [
+      31,
+      "Get Driver Post Format V2.2",
+      "Get all of the posts in the Driver Post Format V2.2 topic. Do not modify or remove.",
+      false,
+      "SELECT \n  p.post_number,\n  p.raw,\n  p.deleted_at\nFROM posts AS p\nWHERE (p.topic_id = 3292 AND p.deleted_at IS NULL)\nORDER BY (p.post_number)"
+    ],
+    [
+      -5,
+      "Top 100 Active Topics",
+      "based on the number of replies, it accepts a ‘months_ago’ parameter, defaults to 1 to give results for the last calendar month.",
+      false,
+      "-- [params]\n-- int :months_ago = 1\n\nWITH query_period AS\n(SELECT date_trunc('month', CURRENT_DATE) - INTERVAL ':months_ago months' AS period_start,\n                                                    date_trunc('month', CURRENT_DATE) - INTERVAL ':months_ago months' + INTERVAL '1 month' - INTERVAL '1 second' AS period_end)\nSELECT t.id AS topic_id,\n    t.category_id,\n    COUNT(p.id) AS reply_count\nFROM topics t\nJOIN posts p ON t.id = p.topic_id\nJOIN query_period qp ON p.created_at >= qp.period_start\nAND p.created_at <= qp.period_end\nWHERE t.archetype = 'regular'\nAND t.user_id > 0\nGROUP BY t.id\nORDER BY COUNT(p.id) DESC, t.score DESC\nLIMIT 100\n"
+    ],
+    [
+      6,
+      "Unknown in custom fields.",
+      "List users with unknown (or similar) in any of the custom fields.",
+      false,
+      "SELECT\n   ucf.id,\n   ucf.user_id,\n   ucf.value\nFROM user_custom_fields ucf\nLEFT JOIN users u ON ucf.user_id = u.id\nWHERE(ucf.value LIKE '%unk%')"
+    ],
+    [
+      -7,
+      "Top 50 Quality Users",
+      "based on post score calculated using reply count, likes, incoming links, bookmarks, time spent and read count.",
+      false,
+      "SELECT sum(p.score) / count(p) AS \"average score per post\",\n    count(p.id) AS post_count,\n    p.user_id\nFROM posts p\nJOIN users u ON u.id = p.user_id\nWHERE p.created_at >= CURRENT_DATE - INTERVAL '6 month'\nAND NOT u.admin\nAND u.active\nGROUP BY user_id,\n    u.views\nHAVING count(p.id) > 50\nORDER BY sum(p.score) / count(p) DESC\nLIMIT 50\n"
+    ],
+    [
+      8,
+      "User Query V1.1",
+      "Used by the remote member data fetcher. Do not modify or remove.",
+      false,
+      "SELECT\n  u.id AS user_id,\n  u.userName,\n  u.name,\n  MAX(CASE ucf.name WHEN 'user_field_1' THEN value END) AS address,\n  MAX(CASE ucf.name WHEN 'user_field_2' THEN value END) AS phone,\n  MAX(CASE ucf.name WHEN 'user_field_3' THEN value END) AS neighborhood,\n  MAX(CASE ucf.name WHEN 'user_field_6' THEN value END) AS city,\n  MAX(CASE ucf.name WHEN 'user_field_7' THEN value END) AS apartment,\n  u.created_at\nFROM user_custom_fields AS ucf\nRIGHT JOIN users AS u on ucf.user_id = u.id\nGROUP BY u.id"
+    ],
+    [
+      33,
+      "Get Driver Post Format V2.3",
+      "Get all of the posts in the Driver Post Format V2.3 topic. Do not modify or remove.",
+      false,
+      "SELECT \n  p.post_number,\n  p.raw,\n  p.deleted_at\nFROM posts AS p\nWHERE (p.topic_id = 3444 AND p.deleted_at IS NULL)\nORDER BY (p.post_number)"
+    ],
+    [
+      32,
+      "Get Group Instructions Format V2.2",
+      "Get version 2.2 of the driver group instructions format posts. Do not modify or remove.",
+      false,
+      "SELECT \n  p.post_number,\n  p.raw,\n  p.deleted_at\nFROM posts AS p\nWHERE (p.topic_id = 3443 AND p.deleted_at IS NULL)\nORDER BY (p.post_number)"
+    ],
+    [
+      28,
+      "Get Backup Driver Format V1.2",
+      "Get all of the posts in the Backup Driver Message V1.2 topic.\n Do not modify or remove.",
+      false,
+      "SELECT \n  p.post_number,\n  p.raw,\n  p.deleted_at\nFROM posts AS p\nWHERE (p.topic_id = 3202 AND p.deleted_at IS NULL)\nORDER BY (p.post_number)"
+    ],
+    [
+      3,
+      "Get Groups",
+      "Used by the remote member data fetcher. Do not modify or remove.",
+      false,
+      "SELECT\n    g.id,\n    g.name\nFROM groups g"
+    ],
+    [
+      5,
+      "Testing",
+      "Query testing",
+      false,
+      "--[params]\n-- integer :limit = 5000\nSELECT\n*\nFROM generate_series(1, 2000)\nLIMIT :limit\n\n\n"
+    ],
+    [
+      4,
+      "Get Group Users",
+      "Get all users within groups, sorted by group\nUsed by the remote member data fetcher. Do not modify or remove.",
+      false,
+      "SELECT\n    gu.group_id,\n    gu.user_id\nFROM group_users gu\nRIGHT JOIN users u On u.id = gu.user_id\nORDER BY gu.group_id"
+    ],
+    [
+      9,
+      "User Query V1.2",
+      "Used by the remote member data fetcher. Do not modify or remove.",
+      false,
+      "SELECT\n  u.id AS user_id,\n  u.userName,\n  u.name,\n  MAX(CASE ucf.name WHEN 'user_field_1' THEN value END) AS address,\n  MAX(CASE ucf.name WHEN 'user_field_2' THEN value END) AS phone,\n  MAX(CASE ucf.name WHEN 'user_field_3' THEN value END) AS neighborhood,\n  MAX(CASE ucf.name WHEN 'user_field_6' THEN value END) AS city,\n  MAX(CASE ucf.name WHEN 'user_field_7' THEN value END) AS apartment,\n  MAX(CASE ucf.name WHEN 'user_field_9' THEN value END) AS consumer_request,\n  u.created_at\nFROM user_custom_fields AS ucf\nRIGHT JOIN users AS u on ucf.user_id = u.id\nGROUP BY u.id"
+    ],
+    [
+      -9,
+      "Top 50 Largest Uploads",
+      "sorted by file size.",
+      false,
+      "SELECT posts.id AS post_id,\n    uploads.original_filename,\n    ROUND(uploads.filesize / 1000000.0, 2) AS size_in_mb,\n    uploads.extension,\n    uploads.created_at,\n    uploads.url\nFROM post_uploads\nJOIN uploads ON uploads.id = post_uploads.upload_id\nJOIN posts ON posts.id = post_uploads.post_id\nORDER BY uploads.filesize DESC\nLIMIT 50\n"
+    ],
+    [
+      25,
+      "Get last route request reply",
+      "Used by the remote data fetcher. Do not modify or remove.",
+      false,
+      "SELECT \n  p.post_number,\n  p.deleted_at,\n  p.raw\nFROM posts AS p\nWHERE (p.topic_id = 2844 AND p.deleted_at IS NULL)\nORDER BY (p.post_number) DESC\nLIMIT 1"
+    ],
+    [
+      22,
+      "Get last request driver messages reply",
+      "Used by the remote data fetcher. Do not modify or remove.",
+      false,
+      "SELECT \n  p.post_number,\n  p.deleted_at,\n  p.raw\nFROM posts AS p\nWHERE (p.topic_id = 2504 AND p.deleted_at IS NULL)\nORDER BY (p.post_number) DESC\nLIMIT 1"
+    ],
+    [
+      34,
+      "Get queries",
+      "Get all the defined data explorer plugin queries.",
+      false,
+      "SELECT\n    q.id,\n    q.name,\n    q.description,\n    q.hidden,\n    q.sql\nFROM data_explorer_queries as q\nWHERE (q.hidden = FALSE)"
+    ],
+    [
+      13,
+      "Completed Daily Deliveries",
+      "Fetch the completed deliveries posts.\nDo not modify or remove.  Used by the back-end processing.",
+      false,
+      "SELECT\n  p.post_number,\n  p.deleted_at,\n  p.raw\nFROM posts p\nWHERE (p.topic_id = 859\n  AND p.post_number != 1\n  AND p.deleted_at IS NULL)"
+    ],
+    [
+      23,
+      "User Query V1.7",
+      "Used by the remote data fetcher. Do not modify or remove.",
+      false,
+      "SELECT\n  u.id AS user_id,\n  u.userName,\n  u.name,\n  u.staged,\n  MAX(CASE ucf.name WHEN 'user_field_1' THEN value END) AS address,\n  MAX(CASE ucf.name WHEN 'user_field_2' THEN value END) AS phone,\n  MAX(CASE ucf.name WHEN 'user_field_3' THEN value END) AS neighborhood,\n  MAX(CASE ucf.name WHEN 'user_field_6' THEN value END) AS city,\n  MAX(CASE ucf.name WHEN 'user_field_7' THEN value END) AS condo,\n  MAX(CASE ucf.name WHEN 'user_field_9' THEN value END) AS consumer_request,\n  MAX(CASE ucf.name WHEN 'user_field_11' THEN value END) as volunteer_request,\n  MAX(CASE ucf.name WHEN 'user_field_12' THEN value END) as alt_phone,\n  MAX(CASE ucf.name WHEN 'user_field_13' THEN value END) as referral,\n  u.created_at\nFROM user_custom_fields AS ucf\nRIGHT JOIN users AS u on ucf.user_id = u.id\nGROUP BY u.id"
+    ]
+  ]
+}

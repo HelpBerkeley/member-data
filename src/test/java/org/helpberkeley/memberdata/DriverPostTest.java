@@ -41,13 +41,15 @@ public class DriverPostTest extends TestBase {
     @Test
     public void parseTest() throws InterruptedException {
         String routedDeliveries = readResourceFile("control-block.csv");
-        DriverPostFormat driverPostFormat = new DriverPostFormat(createApiSimulator(), users, routedDeliveries);
+        DriverPostFormat driverPostFormat = new DriverPostFormat(createApiSimulator(),
+                users, Constants.CONTROL_BLOCK_CURRENT_VERSION, routedDeliveries);
     }
 
     @Test
     public void singleDriverMessageTest() throws InterruptedException {
         String routedDeliveries = readResourceFile("routed-deliveries-single.csv");
-        DriverPostFormat driverPostFormat = new DriverPostFormat(createApiSimulator(), users, routedDeliveries);
+        DriverPostFormat driverPostFormat = new DriverPostFormat(createApiSimulator(),
+                users, Constants.CONTROL_BLOCK_CURRENT_VERSION, routedDeliveries);
         List<String> posts = driverPostFormat.generateDriverPosts();
         assertThat(posts).hasSize(1);
         String post = posts.get(0);
@@ -64,7 +66,8 @@ public class DriverPostTest extends TestBase {
     @Test
     public void multiDriverMessageTest() throws InterruptedException {
         String routedDeliveries = readResourceFile("routed-deliveries.csv");
-        DriverPostFormat driverPostFormat = new DriverPostFormat(createApiSimulator(), users, routedDeliveries);
+        DriverPostFormat driverPostFormat = new DriverPostFormat(createApiSimulator(),
+                users, Constants.CONTROL_BLOCK_CURRENT_VERSION, routedDeliveries);
 
         List<String> posts = driverPostFormat.generateDriverPosts();
         assertThat(posts).hasSize(2);
@@ -100,8 +103,8 @@ public class DriverPostTest extends TestBase {
 
     @Test public void multiDriverWithSplitMessageTest() throws InterruptedException {
         String routedDeliveries = readResourceFile("routed-deliveries-with-split-restaurant.csv");
-        DriverPostFormat driverPostFormat =
-                new DriverPostFormat(createApiSimulator(), users, routedDeliveries);
+        DriverPostFormat driverPostFormat = new DriverPostFormat(createApiSimulator(),
+                users, Constants.CONTROL_BLOCK_CURRENT_VERSION, routedDeliveries);
 
         List<String> posts = driverPostFormat.generateDriverPosts();
         assertThat(posts).hasSize(4);
@@ -114,8 +117,8 @@ public class DriverPostTest extends TestBase {
 
     @Test public void multiDriverWithMultiSplitsMessageTest() throws InterruptedException {
         String routedDeliveries = readResourceFile("routed-deliveries-with-split-restaurants.csv");
-        DriverPostFormat driverPostFormat =
-                new DriverPostFormat(createApiSimulator(), users, routedDeliveries);
+        DriverPostFormat driverPostFormat = new DriverPostFormat(createApiSimulator(),
+                users, Constants.CONTROL_BLOCK_CURRENT_VERSION, routedDeliveries);
 
         List<String> posts = driverPostFormat.generateDriverPosts();
         assertThat(posts).hasSize(2);
@@ -128,8 +131,8 @@ public class DriverPostTest extends TestBase {
     @Test
     public void generateGroupInstructionsNoSplitsPostTest() throws InterruptedException {
         String routedDeliveries = readResourceFile("routed-deliveries.csv");
-        DriverPostFormat driverPostFormat =
-                new DriverPostFormat(createApiSimulator(), users, routedDeliveries);
+        DriverPostFormat driverPostFormat = new DriverPostFormat(createApiSimulator(),
+                users, Constants.CONTROL_BLOCK_CURRENT_VERSION, routedDeliveries);
 
         String post = driverPostFormat.generateGroupInstructionsPost();
 //        System.out.println(post);
@@ -140,8 +143,8 @@ public class DriverPostTest extends TestBase {
     @Test
     public void generateGroupInstructionsWithSplitsPostTest() throws InterruptedException {
         String routedDeliveries = readResourceFile("routed-deliveries-with-split-restaurant.csv");
-        DriverPostFormat driverPostFormat =
-                new DriverPostFormat(createApiSimulator(), users, routedDeliveries);
+        DriverPostFormat driverPostFormat = new DriverPostFormat(createApiSimulator(),
+                users, Constants.CONTROL_BLOCK_CURRENT_VERSION, routedDeliveries);
 
         String post = driverPostFormat.generateGroupInstructionsPost();
 //        System.out.println(post);
@@ -154,8 +157,8 @@ public class DriverPostTest extends TestBase {
     @Test
     public void generateBackupDriverPostTest() throws InterruptedException {
         String routedDeliveries = readResourceFile("routed-deliveries.csv");
-        DriverPostFormat driverPostFormat =
-                new DriverPostFormat(createApiSimulator(), users, routedDeliveries);
+        DriverPostFormat driverPostFormat = new DriverPostFormat(createApiSimulator(),
+                users, Constants.CONTROL_BLOCK_CURRENT_VERSION, routedDeliveries);
 
         String post = driverPostFormat.generateBackupDriverPost();
 //        System.out.println(post);
@@ -164,8 +167,8 @@ public class DriverPostTest extends TestBase {
     @Test
     public void noDeliveriesTest() throws InterruptedException {
         String routedDeliveries = readResourceFile("routed-deliveries-pickup-only.csv");
-        DriverPostFormat driverPostFormat =
-                new DriverPostFormat(createApiSimulator(), users, routedDeliveries);
+        DriverPostFormat driverPostFormat = new DriverPostFormat(createApiSimulator(),
+                users, Constants.CONTROL_BLOCK_CURRENT_VERSION, routedDeliveries);
 
         assertThat(driverPostFormat.getDrivers()).hasSize(1);
         Driver driver = driverPostFormat.getDrivers().get(0);

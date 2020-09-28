@@ -92,6 +92,42 @@ public class MultiPartBodyPublisher {
      *            the value
      * @return the multi part body publisher
      */
+    public MultiPartBodyPublisher addParameterPart(String name, String value) {
+        PartsSpecification newPart = new PartsSpecification();
+        newPart.type = PartsSpecification.TYPE.PARAMETERS;
+        newPart.name = name;
+        newPart.value = value;
+        partsSpecificationList.add(newPart);
+        return this;
+    }
+
+    /**
+     * Adds the part.
+     *
+     * @param name
+     *            the name
+     * @param value
+     *            the value
+     * @return the multi part body publisher
+     */
+    public MultiPartBodyPublisher addParamPart(String name, String value) {
+        PartsSpecification newPart = new PartsSpecification();
+        newPart.type = PartsSpecification.TYPE.PARAM;
+        newPart.name = name;
+        newPart.value = value;
+        partsSpecificationList.add(newPart);
+        return this;
+    }
+
+    /**
+     * Adds the part.
+     *
+     * @param name
+     *            the name
+     * @param value
+     *            the value
+     * @return the multi part body publisher
+     */
     public MultiPartBodyPublisher addPart(String name, Path value) {
         PartsSpecification newPart = new PartsSpecification();
         newPart.type = PartsSpecification.TYPE.FILE;
@@ -132,7 +168,7 @@ public class MultiPartBodyPublisher {
     private void addFinalBoundaryPart() {
         PartsSpecification newPart = new PartsSpecification();
         newPart.type = PartsSpecification.TYPE.FINAL_BOUNDARY;
-        newPart.value = "--" + boundary + "--";
+        newPart.value = "--" + boundary + "--\r\n";
         partsSpecificationList.add(newPart);
     }
 
@@ -151,6 +187,10 @@ public class MultiPartBodyPublisher {
             FILE,
             /** The stream. */
             STREAM,
+            /** Query parameters */
+            PARAMETERS,
+            /** Single Query parameter */
+            PARAM,
             /** The final boundary. */
             FINAL_BOUNDARY
         }
@@ -256,10 +296,27 @@ public class MultiPartBodyPublisher {
                 }
                 PartsSpecification nextPart = iter.next();
                 if (PartsSpecification.TYPE.STRING.equals(nextPart.type)) {
-                    String part = "--" + boundary + "\r\n" +
+                    String part = "--" + boundary + "--\r\n" +
                             "Content-Disposition: form-data; name=\""
                             + nextPart.name + "\"\r\n" +
                             "Content-Type: text/plain; charset=UTF-8\r\n\r\n" +
+                            nextPart.value + "\r\n";
+                    return part.getBytes(StandardCharsets.UTF_8);
+                }
+                if (PartsSpecification.TYPE.PARAM.equals(nextPart.type)) {
+                    String part = "--" + boundary + "--\r\n" +
+                            "Content-Disposition: form-data; name=\""
+                            + nextPart.name + "\"\r\n" +
+                            "\r\n" +
+                            nextPart.value + "\r\n";
+                    return part.getBytes(StandardCharsets.UTF_8);
+                }
+                if (PartsSpecification.TYPE.PARAMETERS.equals(nextPart.type)) {
+                    String part = "--" + boundary + "--\r\n" +
+                            "Content-Disposition: form-data; name=\""
+                            + nextPart.name + "\"\r\n" +
+//                            "Content-Type: application/x-www-form-urlencoded; charset=UTF-8\r\n\r\n" +
+                            "\r\n" +
                             nextPart.value + "\r\n";
                     return part.getBytes(StandardCharsets.UTF_8);
                 }

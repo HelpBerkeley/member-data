@@ -40,7 +40,7 @@ public class RestaurantTemplateParser {
 
     private long lineNumber = 0;
     private final Iterator<RestaurantBean> iterator;
-    private int version = Constants.CONTROL_BLOCK_VERSION_UNKNOWN;
+    private String version = Constants.CONTROL_BLOCK_VERSION_UNKNOWN;
 
     RestaurantTemplateParser(final String csvData) {
 
@@ -120,7 +120,7 @@ public class RestaurantTemplateParser {
                 continue;
             }
 
-            if (version != Constants.CONTROL_BLOCK_CURRENT_VERSION) {
+            if (! version.equals(Constants.CONTROL_BLOCK_CURRENT_VERSION)) {
                 throw new MemberDataException(
                         "Unsupported control block version: " + version
                                 + "\nCurrent supported version is: " + Constants.CONTROL_BLOCK_CURRENT_VERSION + "\n");
@@ -140,6 +140,10 @@ public class RestaurantTemplateParser {
         }
 
         return restaurants;
+    }
+
+    String getVersion() {
+        return version;
     }
 
     /**
@@ -206,7 +210,7 @@ public class RestaurantTemplateParser {
 
         version = controlBlock.getVersion();
 
-        if (version != Constants.CONTROL_BLOCK_CURRENT_VERSION) {
+        if (! version.equals(Constants.CONTROL_BLOCK_CURRENT_VERSION)) {
             throw new MemberDataException(
                     "Unsupported control block version: " + version
                         + "\nCurrent supported version is: " + Constants.CONTROL_BLOCK_CURRENT_VERSION + "\n");

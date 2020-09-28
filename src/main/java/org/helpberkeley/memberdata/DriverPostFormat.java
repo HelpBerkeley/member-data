@@ -36,15 +36,17 @@ public class DriverPostFormat {
     private final List<MessageBlock> groupInstructionMessageBlocks = new ArrayList<>();
     private final List<MessageBlock> backupDriverMessageBlocks = new ArrayList<>();
     private final Map<String, User> users;
+    private final String expectedControlBlockVersion;
     private List<Driver> drivers;
     private ControlBlock controlBlock;
     private Map<String, Restaurant> restaurants;
     private final StringBuilder statusMessages = new StringBuilder();
 
-    DriverPostFormat(ApiClient apiClient,
-                     Map<String, User> users, String routedDeliveries) throws InterruptedException {
+    DriverPostFormat(ApiClient apiClient, Map<String, User> users,
+             String expectedControlBlockVersion, String routedDeliveries) throws InterruptedException {
         this.apiClient = apiClient;
         this.users = users;
+        this.expectedControlBlockVersion = expectedControlBlockVersion;
         loadRestaurantTemplate();
         loadDriverPostFormat();
         loadGroupPostFormat();
@@ -216,11 +218,26 @@ public class DriverPostFormat {
     }
 
     private void loadRestaurantTemplate() throws InterruptedException {
-        String rawPost = HBParser.postBody(apiClient.getPost(Main.RESTAURANT_TEMPLATE_POST_ID));
-        RestaurantTemplatePost restaurantTemplatePost = HBParser.restaurantTemplatePost(rawPost);
-        String restaurantTemplate = apiClient.downloadFile(restaurantTemplatePost.uploadFile.fileName);
-        RestaurantTemplateParser parser = new RestaurantTemplateParser(restaurantTemplate);
-        restaurants = parser.restaurants();
+        String  json = apiClient.runQuery(Constants.QUERY_GET_RESTAURANT_TEMPLATES);
+        ApiQueryResult apiQueryResult = HBParser.parseQueryResult(json);
+
+        for (Object rowObj : apiQueryResult.rows) {
+            Object[] columns = (Object[]) rowObj;
+            assert columns.length == 3 : columns.length;
+
+            String rawPost = (String)columns[2];
+            RestaurantTemplatePost restaurantTemplatePost = HBParser.restaurantTemplatePost(rawPost);
+            String restaurantTemplate = apiClient.downloadFile(restaurantTemplatePost.uploadFile.fileName);
+            RestaurantTemplateParser parser = new RestaurantTemplateParser(restaurantTemplate);
+            restaurants = parser.restaurants();
+
+            if (parser.getVersion().equals(expectedControlBlockVersion)) {
+                return;
+            }
+        }
+
+        throw new MemberDataException("Could not find a restaurant template with control block version "
+                + expectedControlBlockVersion);
     }
 
     private void loadDriverPostFormat() throws InterruptedException {

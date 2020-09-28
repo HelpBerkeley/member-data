@@ -82,4 +82,18 @@ public class WorkRequestHandlerTest extends TestBase {
         assertThat(thrown).isInstanceOf(MemberDataException.class);
         assertThat(thrown).hasMessageContaining("Invalid date in post #9");
     }
+
+    @Test
+    public void versionTest() throws InterruptedException {
+        HttpClientSimulator.setQueryResponseFile(
+                Constants.QUERY_GET_LAST_REQUEST_DRIVER_MESSAGES_REPLY, "v1-work-request.json");
+        Query query = new Query(
+                Constants.QUERY_GET_LAST_REQUEST_DRIVER_MESSAGES_REPLY, Constants.TOPIC_REQUEST_DRIVER_MESSAGES);
+        WorkRequestHandler requestHandler = new WorkRequestHandler(apiClient, query);
+
+        WorkRequestHandler.Reply reply = requestHandler.getLastReply();
+        assertThat(reply).isInstanceOf(WorkRequestHandler.WorkRequest.class);
+        WorkRequestHandler.WorkRequest workRequest = (WorkRequestHandler.WorkRequest)reply;
+        assertThat(workRequest.version).isEqualTo("1");
+    }
 }

@@ -400,6 +400,7 @@ public class ControlBlockTest extends TestBase {
     public void auditSplitRestaurantNotFoundTest() {
 
         Throwable thrown = catchThrowable(() -> new DriverPostFormat(createApiSimulator(), users,
+                Constants.CONTROL_BLOCK_CURRENT_VERSION,
                 readResourceFile("routed-deliveries-split-missing-cleanup.csv")));
         assertThat(thrown).isInstanceOf(MemberDataException.class);
         assertThat(thrown).hasMessageContaining(
@@ -411,6 +412,7 @@ public class ControlBlockTest extends TestBase {
     public void auditSplitRestaurantBadNameTest() {
 
         Throwable thrown = catchThrowable(() -> new DriverPostFormat(createApiSimulator(), users,
+                Constants.CONTROL_BLOCK_CURRENT_VERSION,
                 readResourceFile("routed-deliveries-split-restaurant-unknown.csv")));
         assertThat(thrown).isInstanceOf(MemberDataException.class);
         assertThat(thrown).hasMessageContaining(
@@ -425,6 +427,7 @@ public class ControlBlockTest extends TestBase {
     public void auditSplitRestaurantWrongDriverTest() {
 
         Throwable thrown = catchThrowable(() -> new DriverPostFormat(createApiSimulator(), users,
+                Constants.CONTROL_BLOCK_CURRENT_VERSION,
                 readResourceFile("routed-deliveries-split-wrong-cleanup.csv")));
         assertThat(thrown).isInstanceOf(MemberDataException.class);
         assertThat(thrown).hasMessageContaining(
@@ -439,6 +442,7 @@ public class ControlBlockTest extends TestBase {
     public void auditSplitRestaurantUnknownDriverTest() {
 
         Throwable thrown = catchThrowable(() -> new DriverPostFormat(createApiSimulator(), users,
+                Constants.CONTROL_BLOCK_CURRENT_VERSION,
                 readResourceFile("routed-deliveries-split-unknown-cleanup.csv")));
         assertThat(thrown).isInstanceOf(MemberDataException.class);
         assertThat(thrown).hasMessageContaining(
@@ -545,21 +549,8 @@ public class ControlBlockTest extends TestBase {
     }
 
     @Test
-    public void versionNotANumberTest() {
-        String workFlowData = HEADER + CONTROL_BLOCK_BEGIN_ROW
-                + "FALSE,FALSE,,Version,,,,ThisIsNotAVersionNumber,,,,,,,\n"
-                + CONTROL_BLOCK_END_ROW;
-
-        WorkflowParser workflowParser = new WorkflowParser(
-                WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, allRestaurants, workFlowData);
-        Throwable thrown = catchThrowable(workflowParser::controlBlock);
-        assertThat(thrown).isInstanceOf(MemberDataException.class);
-        assertThat(thrown).hasMessage("Version \"ThisIsNotAVersionNumber\" at line 3 is not valid version number.\n");
-    }
-
-    @Test
     public void unsupportedVersionTest() {
-        String unsupportedVersion = Integer.toString(Constants.CONTROL_BLOCK_CURRENT_VERSION + 1);
+        String unsupportedVersion = "42";
         String workFlowData = HEADER + CONTROL_BLOCK_BEGIN_ROW
                 + "FALSE,FALSE,,Version,,,,"
                 + unsupportedVersion
