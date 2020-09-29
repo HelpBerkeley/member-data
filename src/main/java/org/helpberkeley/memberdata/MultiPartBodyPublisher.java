@@ -296,7 +296,7 @@ public class MultiPartBodyPublisher {
                 }
                 PartsSpecification nextPart = iter.next();
                 if (PartsSpecification.TYPE.STRING.equals(nextPart.type)) {
-                    String part = "--" + boundary + "--\r\n" +
+                    String part = "--" + boundary + "\r\n" +
                             "Content-Disposition: form-data; name=\""
                             + nextPart.name + "\"\r\n" +
                             "Content-Type: text/plain; charset=UTF-8\r\n\r\n" +
