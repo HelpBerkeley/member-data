@@ -63,6 +63,7 @@ public class Constants {
     public static final int QUERY_GET_GROUP_INSTRUCTIONS_FORMAT_V22 = 32;
     public static final int QUERY_GET_DRIVERS_POST_FORMAT_V23 = 33;
     public static final int QUERY_GET_RESTAURANT_TEMPLATES = 35;
+    public static final int QUERY_GET_LAST_RESTAURANT_TEMPLATE_REPLY = 36;
 
     // Current spec version for these queries
     public static final int QUERY_GET_DRIVERS_POST_FORMAT = QUERY_GET_DRIVERS_POST_FORMAT_V23;
@@ -153,8 +154,9 @@ public class Constants {
     public static final String CONTROL_BLOCK_VALUE_DEFAULT_PREFIX = "ReplaceThisBy";
     public static final String CONTROL_BLOCK_VERSION_UNKNOWN = "0";
     public static final String CONTROL_BLOCK_VERSION_1 = "1";
+    public static final String CONTROL_BLOCK_VERSION_2_0_0 = "2_0_0";
 
-    public static final String CONTROL_BLOCK_CURRENT_VERSION = CONTROL_BLOCK_VERSION_1;
+    public static final String CONTROL_BLOCK_CURRENT_VERSION = CONTROL_BLOCK_VERSION_2_0_0;
 
 
     public static final long UNKNOWN_USER_ID = 852;

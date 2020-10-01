@@ -1,6 +1,6 @@
 Consumer,Driver,Name,User Name,Phone #,Phone2 #,Neighborhood,City,Address,Condo,Details,Restaurants,normal,veggie,#orders
 FALSE,FALSE,ControlBegin,,,,,,,,,,,,
-FALSE,FALSE,,Version,,,,1,,,,,,,
+FALSE,FALSE,,Version,,,,2_0_0,,,,,,,
 FALSE,FALSE,ControlEnd,,,,,,,,,,,,
 ,,,,,,,,,,,,,,
 FALSE,TRUE,,,,,,,,,,,,,
@@ -10,6 +10,6 @@ FALSE,TRUE,,,,,,,,,,,,,
 ,,,,,,,,,,,,,,
 ,,,,,,,,,,,,,,
 ,,,,,,,,,Pics,,,Emojis,Starting,Closing
-Solano Route,,,,,,,,,,,Cafe Raj,:open_umbrella:,5:10 PM,10:00 PM
+Solano Route,,,,,,,,,,TRUE,Cafe Raj,:open_umbrella:,5:10 PM,10:00 PM
 ,,,,,,,,,,,,,,
-Solano Route,,,,,,,,Closed Mondays,,,Kim's Cafe,:basketball:,5:10 PM,6:00 PM
+Solano Route,,,,,,,,Closed Mondays,,TRUE,Kim's Cafe,:basketball:,5:10 PM,6:00 PM

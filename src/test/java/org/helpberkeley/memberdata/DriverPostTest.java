@@ -42,7 +42,7 @@ public class DriverPostTest extends TestBase {
     public void parseTest() throws InterruptedException {
         String routedDeliveries = readResourceFile("control-block.csv");
         DriverPostFormat driverPostFormat = new DriverPostFormat(createApiSimulator(),
-                users, Constants.CONTROL_BLOCK_CURRENT_VERSION, routedDeliveries);
+                users, Constants.CONTROL_BLOCK_VERSION_1, routedDeliveries);
     }
 
     @Test

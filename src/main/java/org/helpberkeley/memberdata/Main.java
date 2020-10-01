@@ -501,13 +501,19 @@ public class Main {
         String csvData = Files.readString(Paths.get(usersFile));
         List<User> users = HBParser.users(csvData);
 
-        // Fetch/parse the restaurant template post
-        String rawPost = HBParser.postBody(apiClient.getPost(RESTAURANT_TEMPLATE_POST_ID));
+        // Fetch/parse the last restaurant template reply
+        String  json = apiClient.runQuery(Constants.QUERY_GET_LAST_RESTAURANT_TEMPLATE_REPLY);
+        ApiQueryResult apiQueryResult = HBParser.parseQueryResult(json);
+        assert apiQueryResult.rows.length == 1;
+
+        Object[] columns = (Object[])apiQueryResult.rows[0];
+        assert columns.length == 3 : columns.length;
+        String rawPost = (String)columns[2];
         RestaurantTemplatePost restaurantTemplatePost = HBParser.restaurantTemplatePost(rawPost);
 
         // Fetch/parse the delivery details
-        String json = apiClient.runQuery(Constants.QUERY_GET_DELIVERY_DETAILS);
-        ApiQueryResult apiQueryResult = HBParser.parseQueryResult(json);
+        json = apiClient.runQuery(Constants.QUERY_GET_DELIVERY_DETAILS);
+        apiQueryResult = HBParser.parseQueryResult(json);
         Map<String, String> deliveryDetails = HBParser.deliveryDetails(apiQueryResult);
 
         // Download the restaurant template file

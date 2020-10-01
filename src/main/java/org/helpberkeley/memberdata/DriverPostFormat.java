@@ -228,10 +228,11 @@ public class DriverPostFormat {
             String rawPost = (String)columns[2];
             RestaurantTemplatePost restaurantTemplatePost = HBParser.restaurantTemplatePost(rawPost);
             String restaurantTemplate = apiClient.downloadFile(restaurantTemplatePost.uploadFile.fileName);
-            RestaurantTemplateParser parser = new RestaurantTemplateParser(restaurantTemplate);
-            restaurants = parser.restaurants();
+            String version = RestaurantTemplateParser.getVersion(restaurantTemplate);
 
-            if (parser.getVersion().equals(expectedControlBlockVersion)) {
+            if (version.equals(expectedControlBlockVersion)) {
+                RestaurantTemplateParser parser = new RestaurantTemplateParser(restaurantTemplate);
+                restaurants = parser.restaurants();
                 return;
             }
         }

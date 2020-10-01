@@ -2,7 +2,7 @@
   "success": true,
   "errors": [],
   "duration": 0.7,
-  "result_count": 2,
+  "result_count": 1,
   "params": {},
   "columns": [
     "post_number",
@@ -11,11 +11,6 @@
   ],
   "default_limit": 1000,
   "rows": [
-    [
-      1,
-      null,
-      "Here we put updated restaurant templates for use by our software.\n\nLast updated 9/29. Do Not Modify!\n\n[HelpBerkeleyDeliveries - Template.csv|attachment](upload://restaurant-template-v1.csv) (5.5 KB)"
-    ],
     [
       3,
       null,

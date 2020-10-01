@@ -53,7 +53,7 @@ public class ControlBlockTest extends TestBase {
         users = new Tables(userList).mapByUserName();
 
         RestaurantTemplateParser parser =
-                new RestaurantTemplateParser(readResourceFile("restaurant-template-v1.csv"));
+                new RestaurantTemplateParser(readResourceFile("restaurant-template-v2-0-0.csv"));
         allRestaurants = parser.restaurants();
     }
 

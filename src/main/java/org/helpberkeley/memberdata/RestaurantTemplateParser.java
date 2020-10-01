@@ -58,6 +58,21 @@ public class RestaurantTemplateParser {
         iterator = restaurantBeans.iterator();
     }
 
+    static String getVersion(final String csvData) {
+        RestaurantTemplateParser parser = new RestaurantTemplateParser(csvData);
+        RestaurantBean bean;
+
+        while ((bean = parser.nextRow()) != null) {
+
+            if (parser.isControlBlockBeginRow(bean)) {
+                parser.processControlBlock();
+                return parser.getVersion();
+            }
+        }
+
+        throw new MemberDataException("Control block not found");
+    }
+
     /**
      * Return the bean representation of the next row.
      * Increments current line number
@@ -118,12 +133,6 @@ public class RestaurantTemplateParser {
             if (isControlBlockBeginRow(bean)) {
                 processControlBlock();
                 continue;
-            }
-
-            if (! version.equals(Constants.CONTROL_BLOCK_CURRENT_VERSION)) {
-                throw new MemberDataException(
-                        "Unsupported control block version: " + version
-                                + "\nCurrent supported version is: " + Constants.CONTROL_BLOCK_CURRENT_VERSION + "\n");
             }
 
             if (isAddressBlockMarker(bean)) {
@@ -210,8 +219,12 @@ public class RestaurantTemplateParser {
 
         version = controlBlock.getVersion();
 
-        if (! version.equals(Constants.CONTROL_BLOCK_CURRENT_VERSION)) {
-            throw new MemberDataException(
+        switch (version) {
+            case Constants.CONTROL_BLOCK_VERSION_1:
+            case Constants.CONTROL_BLOCK_VERSION_2_0_0:
+                break;
+            default:
+                throw new MemberDataException(
                     "Unsupported control block version: " + version
                         + "\nCurrent supported version is: " + Constants.CONTROL_BLOCK_CURRENT_VERSION + "\n");
         }
@@ -293,7 +306,6 @@ public class RestaurantTemplateParser {
             if (restaurants.containsKey(name)) {
                 throw new MemberDataException(name + " repeats in the restaurant template at line " + lineNumber);
             }
-
         }
     }
 
@@ -318,6 +330,15 @@ public class RestaurantTemplateParser {
             if (restaurantName.isEmpty()) {
                 throwMissingValue(bean.restaurantColumn());
             }
+
+            assert version.equals(Constants.CONTROL_BLOCK_VERSION_2_0_0) ||
+                    version.equals(Constants.CONTROL_BLOCK_VERSION_1) : version;
+
+            if ((version.equals(Constants.CONTROL_BLOCK_VERSION_2_0_0))
+                && (! Boolean.parseBoolean(bean.getActive()))) {
+                continue;
+            }
+
             String startTime = bean.getStartTime();
             if (startTime.isEmpty()) {
                 throwMissingValue(bean.startTimeColumn(), "start time");

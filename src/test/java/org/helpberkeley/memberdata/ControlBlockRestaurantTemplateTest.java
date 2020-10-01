@@ -177,7 +177,7 @@ public class ControlBlockRestaurantTemplateTest extends TestBase {
 
     @Test
     public void noPicsRestaurantTest() {
-        final String csvData = readResourceFile("restaurant-template-v1.csv");
+        final String csvData = readResourceFile("restaurant-template-v2-0-0.csv");
         RestaurantTemplateParser parser = new RestaurantTemplateParser(csvData);
 
         for (Restaurant restaurant : parser.restaurants().values()) {

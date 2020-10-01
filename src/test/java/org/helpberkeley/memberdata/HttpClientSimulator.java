@@ -193,6 +193,9 @@ public class HttpClientSimulator extends HttpClient {
             case Constants.QUERY_GET_RESTAURANT_TEMPLATES:
                 dataFile = "restaurant-template-posts.json";
                 break;
+            case Constants.QUERY_GET_LAST_RESTAURANT_TEMPLATE_REPLY:
+                dataFile = "restaurant-template-last-reply.json";
+                break;
             default:
                 throw new RuntimeException("FIX THIS: query " + queryId + " not supported by the simulator");
         }

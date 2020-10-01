@@ -4,7 +4,7 @@ FALSE,FALSE,Comment ,"This is a control block, where we can hand specific inform
 FALSE,FALSE,Comment ,"Each line starting with ""Comment"" in the Name column can be used for free-form comments",,,,,,,,,,,
 FALSE,FALSE,Comment ,Below is the version number for the specific version of this control block: it is important that it not be changed,,,,,,,,,,,
 FALSE,FALSE,,,,,,,,,,,,,
-FALSE,FALSE,,Version,,,,2.0.0.,,,,,,,
+FALSE,FALSE,,Version,,,,2_0_0,,,,,,,
 FALSE,FALSE,,,,,,,,,,,,,
 FALSE,FALSE,Comment ,"As you can see, we can leave lines mostly  blank, but, for each line in the control block, they MUST start with FALSE/ FALSE",,,,,,,,,,,
 FALSE,FALSE,Comment ,"In order to pass information to the software, we must define the type of information we want to share in the UserName column, and the actual value in the City column",,,,,,,,,,,

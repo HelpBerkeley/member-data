@@ -106,6 +106,16 @@ public class RestaurantBean {
     }
 
     /**
+     * In the restaurant template, in the route block, the
+     * details column is used for the status of the restaurant
+     *
+     * @return Restaurant active of retired
+     */
+    public String getActive() {
+        return getDetails().trim();
+    }
+
+    /**
      * In the restaurant template, V1 and later, in the route block,
      * the normal column is used for the restaurant emoji
      *

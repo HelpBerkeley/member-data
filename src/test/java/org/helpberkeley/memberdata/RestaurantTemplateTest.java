@@ -24,6 +24,8 @@ package org.helpberkeley.memberdata;
 
 import org.junit.Test;
 
+import java.util.Map;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
 
@@ -32,7 +34,7 @@ public class RestaurantTemplateTest extends TestBase {
     private static final String HEADER = "Consumer,Driver,Name,User Name,Phone #,Phone2 #,"
         + "Neighborhood,City,Address,Condo,Details,Restaurants,normal,veggie,#orders\n";
     private static final String CONTROL_BLOCK_BEGIN_ROW = "FALSE,FALSE,ControlBegin,,,,,,,,,,,,\n";
-    private static final String CONTROL_BLOCK_VERSION_ROW = "FALSE,FALSE,,Version,,,,1,,,,,,,\n";
+    private static final String CONTROL_BLOCK_VERSION_ROW = "FALSE,FALSE,,Version,,,,2_0_0,,,,,,,\n";
     private static final String CONTROL_BLOCK_END_ROW = "FALSE,FALSE,ControlEnd,,,,,,,,,,,,\n";
 
     private static final String CONTROL_BLOCK =
@@ -53,8 +55,8 @@ public class RestaurantTemplateTest extends TestBase {
     @Test
     public void missingEmojiTest() {
         String csvData = CONTROL_BLOCK
-                + "Solano Route,,,,,,,,,,,Cafe Raj,:open_umbrella:,5:10 PM,10:00 PM\n"
-                + "Shattuck Route,,,,,,,,,,,Jot Mahal,,5:10 PM,9:00 PM\n";
+                + "Solano Route,,,,,,,,,,TRUE,Cafe Raj,:open_umbrella:,5:10 PM,10:00 PM\n"
+                + "Shattuck Route,,,,,,,,,,TRUE,Jot Mahal,,5:10 PM,9:00 PM\n";
 
         RestaurantTemplateParser parser = new RestaurantTemplateParser(csvData);
 
@@ -62,5 +64,15 @@ public class RestaurantTemplateTest extends TestBase {
         assertThat(thrown).isInstanceOf(MemberDataException.class);
         assertThat(thrown).hasMessage(
                 "Restaurant Template Error: missing emoji value from column normal, line number 5");
+    }
+
+    @Test
+    public void inactiveRestaurantTest() {
+        String templateData = readResourceFile("restaurant-template-v2-0-0.csv");
+        RestaurantTemplateParser parser = new RestaurantTemplateParser(templateData);
+
+        Map<String, Restaurant> restaurants = parser.restaurants();
+        assertThat(parser.getVersion()).isEqualTo(Constants.CONTROL_BLOCK_VERSION_2_0_0);
+        assertThat(restaurants).doesNotContainKey("Kaze Ramen");
     }
 }
