@@ -77,6 +77,7 @@ class ControlBlock {
         switch (version) {
             case Constants.CONTROL_BLOCK_VERSION_UNKNOWN:
             case Constants.CONTROL_BLOCK_VERSION_1:
+            case Constants.CONTROL_BLOCK_VERSION_2_0_0:
                 return;
         }
 

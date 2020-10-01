@@ -34,7 +34,7 @@ public class RestaurantTemplateTest extends TestBase {
     private static final String HEADER = "Consumer,Driver,Name,User Name,Phone #,Phone2 #,"
         + "Neighborhood,City,Address,Condo,Details,Restaurants,normal,veggie,#orders\n";
     private static final String CONTROL_BLOCK_BEGIN_ROW = "FALSE,FALSE,ControlBegin,,,,,,,,,,,,\n";
-    private static final String CONTROL_BLOCK_VERSION_ROW = "FALSE,FALSE,,Version,,,,2_0_0,,,,,,,\n";
+    private static final String CONTROL_BLOCK_VERSION_ROW = "FALSE,FALSE,,Version,,,,2-0-0,,,,,,,\n";
     private static final String CONTROL_BLOCK_END_ROW = "FALSE,FALSE,ControlEnd,,,,,,,,,,,,\n";
 
     private static final String CONTROL_BLOCK =
