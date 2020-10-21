@@ -119,6 +119,10 @@ public class WorkflowParser {
      * @return Next bean, or null if at end.
      */
     private WorkflowBean peekNextRow() {
+        if (! iterator.hasNext()) {
+            return null;
+        }
+
         return iterator.peek();
     }
 
@@ -358,7 +362,11 @@ public class WorkflowParser {
         List<Delivery> deliveries = processDeliveries();
 
         WorkflowBean bean = nextRow();
-        // FIX THIS, DS: audit null here
+
+        if (bean == null) {
+            throw new MemberDataException(
+                    "Line " + lineNumber + " driver block for " + driverUserName + " missing closing driver row");
+        }
 
         if (! isDriverRow(bean)) {
             throw new MemberDataException("line " + lineNumber + " is not a driver row. "

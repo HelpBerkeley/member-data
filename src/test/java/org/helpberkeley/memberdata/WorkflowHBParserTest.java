@@ -202,4 +202,14 @@ public class WorkflowHBParserTest extends TestBase {
         assertThat(thrown).isInstanceOf(MemberDataException.class);
         assertThat(thrown).hasMessageContaining("Line 10 is not empty");
     }
+
+    @Test
+    public void unroutedWorkflowUnterminatedDriverTest() {
+        String unroutedDeliveries = readResourceFile("unrouted-deliveries-unterminated-driver.csv");
+        WorkflowParser workflowParser =
+                new WorkflowParser(WorkflowParser.Mode.DRIVER_ROUTE_REQUEST, unroutedDeliveries);
+        Throwable thrown = catchThrowable(workflowParser::drivers);
+        assertThat(thrown).isInstanceOf(MemberDataException.class);
+        assertThat(thrown).hasMessageContaining("Line 16 driver block for jsDriver missing closing driver row");
+    }
 }
