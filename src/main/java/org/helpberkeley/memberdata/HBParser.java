@@ -540,8 +540,12 @@ public class HBParser {
             Long userId = (Long)columns[0];
             String email = (String)columns[2];
 
-            assert ! emailAddresses.containsKey(userId) : userId + ":" + email;
-            emailAddresses.put(userId, email);
+            if (emailAddresses.containsKey(userId)) {
+                // FIX THIS, DS: update the query to just fetch the primary email address
+                LOGGER.warn("User id {} has multiple email addresses, skipping {}", userId, email);
+            } else {
+                emailAddresses.put(userId, email);
+            }
         }
 
         return emailAddresses;

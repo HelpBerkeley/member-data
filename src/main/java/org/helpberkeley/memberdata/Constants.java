@@ -46,7 +46,7 @@ public class Constants {
     public static final int QUERY_GET_USERS_V17_ID = 23;
     public static final int CURRENT_USERS_QUERY = QUERY_GET_USERS_V17_ID;
     public static final int QUERY_GET_DAILY_DELIVERIES = 13;
-    public static final int QUERY_EMAIL_CONFIRMATIONS = 15;
+    public static final int QUERY_EMAIL_CONFIRMATIONS_V1 = 15;
     public static final int QUERY_GET_EMAILS = 11;
     public static final int QUERY_GET_DELIVERY_DETAILS = 17;
     public static final int QUERY_GET_DRIVERS_POST_FORMAT_V1 = 19;
@@ -64,11 +64,13 @@ public class Constants {
     public static final int QUERY_GET_DRIVERS_POST_FORMAT_V23 = 33;
     public static final int QUERY_GET_RESTAURANT_TEMPLATES = 35;
     public static final int QUERY_GET_LAST_RESTAURANT_TEMPLATE_REPLY = 36;
+    public static final int QUERY_EMAIL_CONFIRMATIONS_V12 = 37;
 
     // Current spec version for these queries
     public static final int QUERY_GET_DRIVERS_POST_FORMAT = QUERY_GET_DRIVERS_POST_FORMAT_V23;
     public static final int QUERY_GET_GROUP_INSTRUCTIONS_FORMAT = QUERY_GET_GROUP_INSTRUCTIONS_FORMAT_V22;
     public static final int QUERY_GET_BACKUP_DRIVER_FORMAT = QUERY_GET_BACKUP_DRIVER_FORMAT_V12;
+    public static final int QUERY_EMAIL_CONFIRMATIONS = QUERY_EMAIL_CONFIRMATIONS_V1;
 
     public static final Topic TOPIC_REQUEST_DRIVER_MESSAGES = new Topic("Request Driver Messages", 2504);
     public static final Topic TOPIC_REQUEST_DRIVER_ROUTES = new Topic("Request Driver Routes", 2844);
