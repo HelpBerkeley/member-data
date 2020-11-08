@@ -42,13 +42,19 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import static java.net.HttpURLConnection.HTTP_NOT_FOUND;
 import static java.net.HttpURLConnection.HTTP_OK;
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 public class HttpClientSimulator extends HttpClient {
+
+    enum SendFailType {
+        GOAWAY_IOEXCEPTION,
+        TOO_MANY_TIMES_429_RESULT,
+    }
 
     private static final Map<Integer, String> queryResponseFiles = new HashMap<>();
     private static final Map<Integer, String> queryResponseData = new HashMap<>();
     private static final AtomicInteger sendFailCount = new AtomicInteger(0);
+    private static SendFailType sendFailType = null;
 
     static void setQueryResponseFile(int queryId, final String fileName) {
         queryResponseFiles.put(queryId, fileName);
@@ -57,7 +63,8 @@ public class HttpClientSimulator extends HttpClient {
         queryResponseData.put(queryId, queryData);
     }
 
-    static void setSendFailureCount(int numFailures) {
+    static void setSendFailure(SendFailType failureType, int numFailures) {
+        sendFailType = failureType;
         sendFailCount.set(numFailures);
     }
 
@@ -67,7 +74,14 @@ public class HttpClientSimulator extends HttpClient {
 
         if (sendFailCount.get() > 0) {
             sendFailCount.decrementAndGet();
-            throw new IOException("Simulated IOException: GOAWAY");
+
+            if (sendFailType == SendFailType.GOAWAY_IOEXCEPTION) {
+                throw new IOException("Simulated IOException: GOAWAY");
+            } else {
+                assertThat(sendFailType).isEqualTo(SendFailType.TOO_MANY_TIMES_429_RESULT);
+                return (HttpResponse<T>) new HttpResponseSimulator<>(
+                        "Too many times", Constants.HTTP_TOO_MANY_REQUESTS);
+            }
         }
 
         if (isQuery(request)) {

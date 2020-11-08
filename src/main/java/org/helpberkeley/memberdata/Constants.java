@@ -168,4 +168,6 @@ public class Constants {
     public static final String MEMBERDATA_PROPERTIES = "memberdata.properties";
     static final String API_USER_PROPERTY = "Api-Username";
     static final String API_KEY_PROPERTY = "Api-Key";
+
+    public static int HTTP_TOO_MANY_REQUESTS = 429;
 }

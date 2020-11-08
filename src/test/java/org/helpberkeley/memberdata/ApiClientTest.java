@@ -70,18 +70,38 @@ public class ApiClientTest extends TestBase {
     }
 
     @Test
-    public void retrySucceedTest() throws InterruptedException {
+    public void goawayRetrySucceedTest() throws InterruptedException {
         ApiClient.RETRY_NAP_MILLISECONDS = 0;
-        HttpClientSimulator.setSendFailureCount(1);
+        HttpClientSimulator.setSendFailure(HttpClientSimulator.SendFailType.GOAWAY_IOEXCEPTION, 1);
 
         ApiClient apiClient = createApiSimulator();
         apiClient.runQuery(Constants.QUERY_GET_EMAILS);
     }
 
     @Test
-    public void retryFailTest() {
+    public void goawayRetryFailTest() {
         ApiClient.RETRY_NAP_MILLISECONDS = 0;
-        HttpClientSimulator.setSendFailureCount(10);
+        HttpClientSimulator.setSendFailure(HttpClientSimulator.SendFailType.GOAWAY_IOEXCEPTION, 10);
+
+        ApiClient apiClient = createApiSimulator();
+        Throwable thrown = catchThrowable(() -> apiClient.runQuery(Constants.QUERY_GET_EMAILS));
+        assertThat(thrown).isInstanceOf(RuntimeException.class);
+        assertThat(thrown).hasMessageContaining("10 attempts to talk with Discourse failed");
+    }
+
+    @Test
+    public void tooManyTimesRetrySucceedTest() throws InterruptedException {
+        ApiClient.RETRY_NAP_MILLISECONDS = 0;
+        HttpClientSimulator.setSendFailure(HttpClientSimulator.SendFailType.TOO_MANY_TIMES_429_RESULT, 1);
+
+        ApiClient apiClient = createApiSimulator();
+        apiClient.runQuery(Constants.QUERY_GET_EMAILS);
+    }
+
+    @Test
+    public void tooManyTimesRetryFailTest() {
+        ApiClient.RETRY_NAP_MILLISECONDS = 0;
+        HttpClientSimulator.setSendFailure(HttpClientSimulator.SendFailType.TOO_MANY_TIMES_429_RESULT, 10);
 
         ApiClient apiClient = createApiSimulator();
         Throwable thrown = catchThrowable(() -> apiClient.runQuery(Constants.QUERY_GET_EMAILS));

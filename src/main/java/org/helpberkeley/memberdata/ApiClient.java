@@ -104,7 +104,16 @@ public class ApiClient {
 
         for (int retry = 0; retry < 10; retry++ ) {
             try {
-                return client.send(request, HttpResponse.BodyHandlers.ofString());
+                HttpResponse <String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+                if (response.statusCode() == Constants.HTTP_TOO_MANY_REQUESTS) {
+                    if (retry < 9) {
+                        LOGGER.warn("{} seen from Discourse, waiting 10 seconds and retrying",
+                                Constants.HTTP_TOO_MANY_REQUESTS);
+                        nap(RETRY_NAP_MILLISECONDS);
+                    }
+                } else {
+                    return response;
+                }
             } catch (IOException ex) {
                 if (ex.getMessage().contains("GOAWAY") ||
                         ((ex.getCause() != null) && ex.getCause().getMessage().contains("GOAWAY"))) {
@@ -119,7 +128,7 @@ public class ApiClient {
             }
         }
 
-        LOGGER.warn("10th GOAWAY seen from Discourse, exiting with a failure");
+        LOGGER.warn("10th retry failure seen from Discourse, exiting with a failure");
         throw new RuntimeException("10 attempts to talk with Discourse failed");
     }
 
