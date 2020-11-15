@@ -30,6 +30,7 @@ import static org.assertj.core.api.Assertions.catchThrowable;
 public class WorkRequestHandlerTest extends TestBase {
 
     private final ApiClient apiClient;
+    private final int queryId = Constants.QUERY_GET_LAST_REQUEST_DRIVER_MESSAGES_REPLY;
 
     public WorkRequestHandlerTest() {
         apiClient = createApiSimulator();
@@ -38,8 +39,17 @@ public class WorkRequestHandlerTest extends TestBase {
     @Test
     public void parseWorkRequestTest() throws InterruptedException {
 
-        Query query = new Query(
-                Constants.QUERY_GET_LAST_REQUEST_DRIVER_MESSAGES_REPLY, Constants.TOPIC_REQUEST_DRIVER_MESSAGES);
+        Query query = new Query(queryId, Constants.TOPIC_REQUEST_DRIVER_MESSAGES);
+        WorkRequestHandler requestHandler = new WorkRequestHandler(apiClient, query);
+        WorkRequestHandler.Reply reply = requestHandler.getLastReply();
+        assertThat(reply).isInstanceOf(WorkRequestHandler.WorkRequest.class);
+    }
+
+    @Test
+    public void parseWorkRequestWithoutDateTest() throws InterruptedException {
+
+        HttpClientSimulator.setQueryResponseFile(queryId, "workrequest-no-date.json");
+        Query query = new Query(queryId, Constants.TOPIC_REQUEST_DRIVER_MESSAGES);
         WorkRequestHandler requestHandler = new WorkRequestHandler(apiClient, query);
         WorkRequestHandler.Reply reply = requestHandler.getLastReply();
         assertThat(reply).isInstanceOf(WorkRequestHandler.WorkRequest.class);
@@ -50,8 +60,7 @@ public class WorkRequestHandlerTest extends TestBase {
         HttpClientSimulator.setQueryResponseFile(
                 Constants.QUERY_GET_LAST_REQUEST_DRIVER_MESSAGES_REPLY, "last-routed-workflow-status.json");
 
-        Query query = new Query(
-                Constants.QUERY_GET_LAST_REQUEST_DRIVER_MESSAGES_REPLY, Constants.TOPIC_REQUEST_DRIVER_MESSAGES);
+        Query query = new Query(queryId, Constants.TOPIC_REQUEST_DRIVER_MESSAGES);
         WorkRequestHandler requestHandler = new WorkRequestHandler(apiClient, query);
         WorkRequestHandler.Reply reply = requestHandler.getLastReply();
         assertThat(reply).isInstanceOf(WorkRequestHandler.Status.class);
@@ -59,8 +68,7 @@ public class WorkRequestHandlerTest extends TestBase {
 
     @Test
     public void postStatusTest() throws InterruptedException {
-        Query query = new Query(
-                Constants.QUERY_GET_LAST_REQUEST_DRIVER_MESSAGES_REPLY, Constants.TOPIC_REQUEST_DRIVER_MESSAGES);
+        Query query = new Query(queryId, Constants.TOPIC_REQUEST_DRIVER_MESSAGES);
         WorkRequestHandler requestHandler = new WorkRequestHandler(apiClient, query);
         WorkRequestHandler.Reply reply = requestHandler.getLastReply();
         assertThat(reply).isInstanceOf(WorkRequestHandler.WorkRequest.class);
@@ -75,20 +83,18 @@ public class WorkRequestHandlerTest extends TestBase {
         HttpClientSimulator.setQueryResponseFile(
                 Constants.QUERY_GET_LAST_REQUEST_DRIVER_MESSAGES_REPLY, "bad-work-request.json");
 
-        Query query = new Query(
-                Constants.QUERY_GET_LAST_REQUEST_DRIVER_MESSAGES_REPLY, Constants.TOPIC_REQUEST_DRIVER_MESSAGES);
+        Query query = new Query(queryId, Constants.TOPIC_REQUEST_DRIVER_MESSAGES);
         WorkRequestHandler requestHandler = new WorkRequestHandler(apiClient, query);
         Throwable thrown = catchThrowable(requestHandler::getLastReply);
         assertThat(thrown).isInstanceOf(MemberDataException.class);
-        assertThat(thrown).hasMessageContaining("Invalid date in post #9");
+        assertThat(thrown).hasMessageContaining("Post #9 is not a valid request");
     }
 
     @Test
     public void versionTest() throws InterruptedException {
         HttpClientSimulator.setQueryResponseFile(
                 Constants.QUERY_GET_LAST_REQUEST_DRIVER_MESSAGES_REPLY, "v1-work-request.json");
-        Query query = new Query(
-                Constants.QUERY_GET_LAST_REQUEST_DRIVER_MESSAGES_REPLY, Constants.TOPIC_REQUEST_DRIVER_MESSAGES);
+        Query query = new Query(queryId, Constants.TOPIC_REQUEST_DRIVER_MESSAGES);
         WorkRequestHandler requestHandler = new WorkRequestHandler(apiClient, query);
 
         WorkRequestHandler.Reply reply = requestHandler.getLastReply();

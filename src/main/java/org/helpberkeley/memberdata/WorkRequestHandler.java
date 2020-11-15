@@ -154,15 +154,12 @@ public class WorkRequestHandler {
 
     static class WorkRequest extends Reply {
 
-        final String date;
         final UploadFile uploadFile;
         final Long topic;
         final String version;
 
-        WorkRequest(Reply reply, final String date, final UploadFile uploadFile,
-                final Long topic, String version) {
+        WorkRequest(Reply reply, final UploadFile uploadFile, final Long topic, String version) {
             super(reply);
-            this.date = date;
             this.uploadFile = uploadFile;
             this.topic = topic;
             this.version = version;
@@ -196,24 +193,17 @@ public class WorkRequestHandler {
         static Reply parse(Reply lastReply, final List<String> lines) {
 
             assert ! lines.isEmpty();
-            String dateLine = lines.get(0);
 
-            // Validate date
-            String regex = "^202[0-9]/[01][0-9]/[0-3][0-9]$";
-
-            Pattern pattern = Pattern.compile(regex);
-            Matcher matcher = pattern.matcher(dateLine);
-
-            if (! matcher.find()) {
-                throw new MemberDataException("Invalid date in post #" + lastReply.postNumber + " : " + dateLine);
-            }
-
-            ListIterator<String> iterator = lines.listIterator(1);
+            ListIterator<String> iterator = lines.listIterator();
             Long topic = null;
             String version = null;
 
             while (iterator.hasNext()) {
                 String line = iterator.next();
+
+                if (line.startsWith("Status:")) {
+                    return null;
+                }
 
                 if (line.startsWith("Topic:")) {
                     // FIX THIS, DS: handle number format exception
@@ -226,18 +216,17 @@ public class WorkRequestHandler {
 
                     UploadFile uploadFile = new UploadFile(fileName, shortURL);
 
-                    return new WorkRequest(lastReply, dateLine, uploadFile, topic, version);
+                    return new WorkRequest(lastReply, uploadFile, topic, version);
                 }
             }
 
-            return null;
+            throw new MemberDataException("Post #" + lastReply.postNumber + " is not a valid request");
         }
 
         @Override
         public String toString() {
             return "Post: " + postNumber + '\n'
                     + "WorkRequest\n"
-                    + "Date: " + date + '\n'
                     + "Topic: " + topic + '\n'
                     + "Version: " + version + '\n'
                     + "FileName: " + uploadFile.fileName + '\n';
