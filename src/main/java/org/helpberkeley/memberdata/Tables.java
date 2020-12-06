@@ -74,35 +74,6 @@ public class Tables {
         return sorted;
     }
 
-//    List<User> sortByPhoneNumber() {
-//        List<User> sorted = new ArrayList<>(users);
-//        sorted.sort(Comparator.comparing(User::getPhoneNumber));
-//        return sorted;
-//    }
-//
-//    List<User> sortByNeighborHoodThenName() {
-//        List<User> sorted = new ArrayList<>(users);
-//
-//        Comparator<User> comparator = Comparator
-//                .comparing(User::getNeighborhood, String.CASE_INSENSITIVE_ORDER)
-//                .thenComparing(User::getName, String.CASE_INSENSITIVE_ORDER);
-//
-//        sorted.sort(comparator);
-//        return sorted;
-//    }
-//
-//    List<User> sortByNeighborThenByAddress() {
-//        List<User> sorted = new ArrayList<>(users);
-//
-//        Comparator<User> comparator = Comparator
-//                .comparing(User::getNeighborhood, String.CASE_INSENSITIVE_ORDER)
-//                .thenComparing(User::getAddress);
-//
-//        sorted.sort(comparator);
-//        return sorted;
-//    }
-
-
     /**
      * Get a list of members not in groups (consumer, dispatcher, driver)
      * @return List of recent non-group members.

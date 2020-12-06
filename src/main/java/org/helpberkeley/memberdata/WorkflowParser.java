@@ -289,11 +289,11 @@ public class WorkflowParser {
     private void auditControlBlockRow(WorkflowBean bean) {
         String errors = "";
 
-        if (! bean.getConsumer().toLowerCase().equals("false")) {
+        if (! bean.getConsumer().equalsIgnoreCase("false")) {
             errors += "Control block " + Constants.WORKFLOW_CONSUMER_COLUMN
                     + " column does not contain FALSE, at line " + lineNumber + ".\n";
         }
-        if (! bean.getDriver().toLowerCase().equals("false")) {
+        if (! bean.getDriver().equalsIgnoreCase("false")) {
             errors += "Control block " + Constants.WORKFLOW_DRIVER_COLUMN
                     + " column does not contain FALSE, at line " + lineNumber + ".\n";
         }
@@ -418,7 +418,7 @@ public class WorkflowParser {
 
         while ((bean = peekNextRow()) != null) {
 
-            if (! (bean.getConsumer().toUpperCase().equals("FALSE") && bean.getDriver().isEmpty())) {
+            if (! (bean.getConsumer().equalsIgnoreCase("FALSE") && bean.getDriver().isEmpty())) {
                 break;
             }
 
@@ -427,7 +427,7 @@ public class WorkflowParser {
             bean = nextRow();
             String errors = "";
 
-            String restaurantName = bean.getRestaurant();
+            String restaurantName = Objects.requireNonNull(bean).getRestaurant();
             if (restaurantName.isEmpty()) {
                 errors += "missing restaurant name\n";
             }
@@ -471,14 +471,14 @@ public class WorkflowParser {
         WorkflowBean bean;
 
         while ((bean = peekNextRow()) != null) {
-            if (! bean.getConsumer().toUpperCase().equals("TRUE")) {
+            if (! bean.getConsumer().equalsIgnoreCase("TRUE")) {
                 break;
             }
 
             bean = nextRow();
             String errors = "";
 
-            String consumerName = bean.getName();
+            String consumerName = Objects.requireNonNull(bean.getName());
             if (consumerName.isEmpty()) {
                 errors += "missing consumer name\n";
             }

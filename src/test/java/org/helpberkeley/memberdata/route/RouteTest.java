@@ -29,10 +29,7 @@ import org.helpberkeley.memberdata.WorkflowParser;
 import org.junit.Test;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
-import java.util.concurrent.TimeUnit;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -51,13 +48,7 @@ public class RouteTest extends TestBase {
             // Copy original delivery list
             List<Delivery> deliveries = new ArrayList<>(driver.getDeliveries());
 
-//            System.out.println("Before");
-//            driver.getDeliveries().forEach(d -> System.out.println(d.getAddress()));
-
             route.route(driver);
-
-//            System.out.println("After");
-//            driver.getDeliveries().forEach(d -> System.out.println(d.getAddress()));
 
             // Check that there are still all present, and not duplicated.
             assertThat(driver.getDeliveries()).containsExactlyInAnyOrderElementsOf(deliveries);

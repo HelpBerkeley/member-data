@@ -39,13 +39,6 @@ public class DriverPostTest extends TestBase {
     }
 
     @Test
-    public void parseTest() throws InterruptedException {
-        String routedDeliveries = readResourceFile("control-block.csv");
-        DriverPostFormat driverPostFormat = new DriverPostFormat(createApiSimulator(),
-                users, Constants.CONTROL_BLOCK_VERSION_1, routedDeliveries);
-    }
-
-    @Test
     public void singleDriverMessageTest() throws InterruptedException {
         String routedDeliveries = readResourceFile("routed-deliveries-single.csv");
         DriverPostFormat driverPostFormat = new DriverPostFormat(createApiSimulator(),
@@ -178,16 +171,4 @@ public class DriverPostTest extends TestBase {
         String post = posts.get(0);
 //        System.out.println(post);
     }
-//
-//    @Test
-//    public void scratchTest() throws InterruptedException, IOException, CsvException {
-//        String routedDeliveries = Files.readString(Path.of("deliveries.CSV"));
-//
-//        List<User> userList = HBParser.users(Files.readString(Path.of("member-data.CSV")));
-//        Map<String, User> userMap = new Tables(userList).mapByUserName();
-//
-//        DriverPostFormat driverPostFormat =
-//                new DriverPostFormat(createApiSimulator(), userMap, routedDeliveries);
-//
-//    }
 }

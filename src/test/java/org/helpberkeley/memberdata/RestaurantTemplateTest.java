@@ -75,4 +75,14 @@ public class RestaurantTemplateTest extends TestBase {
         assertThat(parser.getVersion()).isEqualTo(Constants.CONTROL_BLOCK_VERSION_2_0_0);
         assertThat(restaurants).doesNotContainKey("Kaze Ramen");
     }
+
+    @Test
+    public void turkeyTemplateTest() {
+        String templateData = readResourceFile("restaurant-template-turkey.csv");
+        RestaurantTemplateParser parser = new RestaurantTemplateParser(templateData);
+
+        Map<String, Restaurant> restaurants = parser.restaurants();
+        assertThat(parser.getVersion()).isEqualTo(Constants.CONTROL_BLOCK_VERSION_2_0_0);
+        assertThat(restaurants).containsKey("Nourish You!");
+    }
 }

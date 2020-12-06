@@ -43,12 +43,12 @@ public class WorkflowHBParserTest extends TestBase {
     public void splitRestaurantsTest() throws InterruptedException {
         String routedDeliveries = readResourceFile("routed-deliveries-with-split-restaurant.csv");
         DriverPostFormat driverPostFormat = new DriverPostFormat(createApiSimulator(),
-                users, Constants.CONTROL_BLOCK_VERSION_1, routedDeliveries);
+                users, Constants.CONTROL_BLOCK_CURRENT_VERSION, routedDeliveries);
 
         List<Driver> drivers = driverPostFormat.getDrivers();
 
         Map<String, Restaurant> restaurants = driverPostFormat.getRestaurants();
-        assertThat(restaurants).hasSize(13);
+        assertThat(restaurants).hasSize(11);
         assertThat(restaurants.get("Cafe Raj").getDrivers()).hasSize(2);
         assertThat(restaurants.get("Cafe Raj").getDrivers()).containsKey("jcDriver");
         assertThat(restaurants.get("Cafe Raj").getDrivers()).containsKey("jsDriver");

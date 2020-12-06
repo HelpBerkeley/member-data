@@ -709,11 +709,6 @@ public class HBParser {
         return (userId == -1) || (userId == -2) || (userId == 708) || (userId == 844);
     }
 
-//    static void prettyPrint(final String pageJson) {
-//        System.out.println(JsonWriter.formatJson(pageJson));
-//    }
-
-
     static class DeliveryColumns {
         private final int consumer;
         private final int name;

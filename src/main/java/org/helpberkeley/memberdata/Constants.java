@@ -169,5 +169,5 @@ public class Constants {
     static final String API_USER_PROPERTY = "Api-Username";
     static final String API_KEY_PROPERTY = "Api-Key";
 
-    public static int HTTP_TOO_MANY_REQUESTS = 429;
+    public static final int HTTP_TOO_MANY_REQUESTS = 429;
 }

@@ -364,7 +364,7 @@ public class RestaurantTemplateParser {
             restaurant.setEmoji(emoji);
 
             String noPics = bean.getNoPics();
-            if (noPics.toLowerCase().equals(Constants.WORKFLOW_NO_PICS)) {
+            if (noPics.equalsIgnoreCase(Constants.WORKFLOW_NO_PICS)) {
                 restaurant.setNoPics();
             }
         } while ((bean = nextRow()) != null);

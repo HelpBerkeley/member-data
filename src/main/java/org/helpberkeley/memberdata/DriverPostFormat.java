@@ -47,7 +47,7 @@ public class DriverPostFormat {
         this.apiClient = apiClient;
         this.users = users;
         this.expectedControlBlockVersion = expectedControlBlockVersion;
-        loadRestaurantTemplate();
+        loadLastRestaurantTemplate();
         loadDriverPostFormat();
         loadGroupPostFormat();
         loadBackupDriverPostFormat();
@@ -150,7 +150,7 @@ public class DriverPostFormat {
 
                 context.setMessageBlockContext(messageBlock.getPostNumber(), messageBlock.getName());
 
-                if (messageBlock.getName().toLowerCase().equals("comment")) {
+                if (messageBlock.getName().equalsIgnoreCase("comment")) {
                     continue;
                 }
 
@@ -173,7 +173,7 @@ public class DriverPostFormat {
 
             context.setMessageBlockContext(messageBlock.getPostNumber(), messageBlock.getName());
 
-            if (messageBlock.name.toLowerCase().equals("comment")) {
+            if (messageBlock.name.equalsIgnoreCase("comment")) {
                 continue;
             }
 
@@ -193,7 +193,7 @@ public class DriverPostFormat {
 
             context.setMessageBlockContext(messageBlock.getPostNumber(), messageBlock.getName());
 
-            if (messageBlock.name.toLowerCase().equals("comment")) {
+            if (messageBlock.name.equalsIgnoreCase("comment")) {
                 continue;
             }
 
@@ -217,24 +217,24 @@ public class DriverPostFormat {
         statusMessages.append(controlBlock.getWarnings());
     }
 
-    private void loadRestaurantTemplate() throws InterruptedException {
+    private void loadLastRestaurantTemplate() throws InterruptedException {
         String  json = apiClient.runQuery(Constants.QUERY_GET_RESTAURANT_TEMPLATES);
         ApiQueryResult apiQueryResult = HBParser.parseQueryResult(json);
 
-        for (Object rowObj : apiQueryResult.rows) {
-            Object[] columns = (Object[]) rowObj;
-            assert columns.length == 3 : columns.length;
+        int lastIndex = apiQueryResult.rows.length;
+        Object rowObj = apiQueryResult.rows[lastIndex - 1];
+        Object[] columns = (Object[]) rowObj;
+        assert columns.length == 3 : columns.length;
 
-            String rawPost = (String)columns[2];
-            RestaurantTemplatePost restaurantTemplatePost = HBParser.restaurantTemplatePost(rawPost);
-            String restaurantTemplate = apiClient.downloadFile(restaurantTemplatePost.uploadFile.fileName);
-            String version = RestaurantTemplateParser.getVersion(restaurantTemplate);
+        String rawPost = (String)columns[2];
+        RestaurantTemplatePost restaurantTemplatePost = HBParser.restaurantTemplatePost(rawPost);
+        String restaurantTemplate = apiClient.downloadFile(restaurantTemplatePost.uploadFile.fileName);
+        String version = RestaurantTemplateParser.getVersion(restaurantTemplate);
 
-            if (version.equals(expectedControlBlockVersion)) {
+        if (version.equals(expectedControlBlockVersion)) {
                 RestaurantTemplateParser parser = new RestaurantTemplateParser(restaurantTemplate);
                 restaurants = parser.restaurants();
                 return;
-            }
         }
 
         throw new MemberDataException("Could not find a restaurant template with control block version "
