@@ -142,6 +142,10 @@ public class User {
         return address == null ? NOT_PROVIDED : address;
     }
 
+    public String getFullAddress() {
+        return address == null ? NOT_PROVIDED : address + ", " + getCity() + ", CA";
+    }
+
     public String getCity() {
         return city == null ? NOT_PROVIDED : city;
     }

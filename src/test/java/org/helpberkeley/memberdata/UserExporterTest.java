@@ -21,10 +21,12 @@
 //
 package org.helpberkeley.memberdata;
 
+import com.opencsv.CSVReaderHeaderAware;
 import com.opencsv.exceptions.CsvException;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.io.StringReader;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -339,7 +341,6 @@ public class UserExporterTest extends TestBase {
         String header = rows[0];
         assertThat(header).isEqualTo(exporter.workflowHeaders().trim());
 
-        // FIX THIS, DS: use CSVReader
         String[] headerColumns = header.split(Constants.CSV_SEPARATOR, -1);
 
         // FIX THIS, DS: add a constant for number of columns expected
@@ -357,8 +358,9 @@ public class UserExporterTest extends TestBase {
         assertThat(headerColumns[10]).isEqualTo("Details");
 
 
-        // FIX THIS, DS: use CSVReader
-        String[] columns = rows[1].split(Constants.CSV_SEPARATOR, -1);
+        CSVReaderHeaderAware csvReaderHeaderAware = new CSVReaderHeaderAware(new StringReader(workflowRows));
+
+        String[] columns = csvReaderHeaderAware.readNext();
         assertThat(headerColumns).hasSameSizeAs(columns);
 
         assertThat(columns[0]).isEqualTo(String.valueOf(u1.isConsumer()));
@@ -369,7 +371,7 @@ public class UserExporterTest extends TestBase {
         assertThat(columns[5]).isEqualTo(u1.getAltPhoneNumber());
         assertThat(columns[6]).isEqualTo(u1.getNeighborhood());
         assertThat(columns[7]).isEqualTo(u1.getCity());
-        assertThat(columns[8]).isEqualTo(u1.getAddress());
+        assertThat(columns[8]).isEqualTo(u1.getFullAddress());
         assertThat(columns[9]).isEqualTo(String.valueOf(u1.isCondo()));
     }
 

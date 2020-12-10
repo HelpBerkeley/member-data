@@ -154,7 +154,7 @@ public class Driver {
             if (location.equals(prevLocation)) {
                 LOGGER.info("Skipping adding duplicate location {} to route", delivery.getFullAddress());
             } else {
-                address = delivery.getFullAddress()
+                address = delivery.getAddress()
                         .replaceAll("\\s+", " ")
                         .replaceAll(" ", "+")
                         .replaceAll("#", "%23");

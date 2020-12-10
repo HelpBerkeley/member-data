@@ -254,7 +254,7 @@ public class UserExporter extends Exporter {
             rows.append(separator);
             rows.append(escapeCommas(user.getCity()));
             rows.append(separator);
-            rows.append(escapeCommas(user.getAddress()));
+            rows.append(escapeCommas(user.getFullAddress()));
             rows.append(separator);
             rows.append(user.isCondo());
             rows.append(separator);
