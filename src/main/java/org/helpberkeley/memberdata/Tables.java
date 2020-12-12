@@ -82,7 +82,8 @@ public class Tables {
         List<User> noGroups = new ArrayList<>();
 
         for (User user : sortByUserName()) {
-            if (user.isConsumer() || user.isDispatcher() || user.isDriver() || user.isSpecialist()) {
+            if (user.isConsumer() || user.isDispatcher()
+                    || user.isDriver() || user.isSpecialist() || user.isPacker()) {
                 continue;
             }
 
@@ -157,7 +158,7 @@ public class Tables {
                 continue;
             }
 
-            if ((! user.isDriver()) && (!user.isDispatcher()) && (! user.isSpecialist())) {
+            if ((!user.isDriver()) && (!user.isDispatcher()) && (!user.isSpecialist()) && (!user.isPacker())) {
                 volunteerRequests.add(user);
             }
         }
@@ -213,7 +214,7 @@ public class Tables {
         for (User user : users) {
             if (user.isConsumer()) {
                 inreach.add(user);
-            } else if (! (user.isDriver() || user.isDispatcher())) {
+            } else if (! (user.isDriver() || user.isDispatcher() || user.isPacker())) {
                 inreach.add(user);
             }
         }

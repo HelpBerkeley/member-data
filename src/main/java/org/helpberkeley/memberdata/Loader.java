@@ -97,6 +97,7 @@ public class Loader {
                 case Constants.GROUP_ADVISOR:
                 case Constants.GROUP_COORDINATOR:
                 case Constants.GROUP_ADMIN:
+                case Constants.GROUP_PACKERS:
                     groups.put(entry.getKey(), Group.createGroup(entry.getKey(), entry.getValue()));
             }
         }

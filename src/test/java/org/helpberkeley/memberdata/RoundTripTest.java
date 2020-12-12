@@ -39,6 +39,7 @@ public class RoundTripTest extends TestBase {
                 Constants.GROUP_DRIVERS,
                 Constants.GROUP_DISPATCHERS,
                 Constants.GROUP_SPECIALISTS,
+                Constants.GROUP_PACKERS,
                 Constants.GROUP_BHS,
                 Constants.GROUP_HELPLINE,
                 Constants.GROUP_SITELINE,
@@ -54,7 +55,9 @@ public class RoundTripTest extends TestBase {
                 Constants.GROUP_COORDINATOR,
                 Constants.GROUP_ADMIN);
 
-        List<User> users = List.of(u1, createTestUser2(), createTestUser3());
+//        List<User> users = List.of(u1, createTestUser2(), createTestUser3());
+//        UserExporter exporter = new UserExporter(users);
+        List<User> users = List.of(u1);
         UserExporter exporter = new UserExporter(users);
 
         String csvData = exporter.allMembersRaw();

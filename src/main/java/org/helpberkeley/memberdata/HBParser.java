@@ -195,7 +195,7 @@ public class HBParser {
         assert ! lines.isEmpty();
         String[] headers = lines.get(0);
 
-        assert headers.length == 32 : headers.length;
+        assert headers.length == 33 : headers.length;
 
         int index = 0;
         assert headers[index].equals(User.ID_COLUMN) : headers[index];
@@ -217,6 +217,7 @@ public class HBParser {
         assert headers[++index].equals(User.CONSUMER_REQUEST_COLUMN) : headers[index];
         assert headers[++index].equals(User.VOLUNTEER_REQUEST_COLUMN) : headers[index];
         assert headers[++index].equals(User.SPECIALIST_COLUMN) : headers[index];
+        assert headers[++index].equals(User.PACKER_COLUMN) : headers[index];
         assert headers[++index].equals(User.BHS_COLUMN) : headers[index];
         assert headers[++index].equals(User.HELPLINE_COLUMN) : headers[index];
         assert headers[++index].equals(User.SITELINE_COLUMN) : headers[index];
@@ -276,6 +277,10 @@ public class HBParser {
 
             if (Boolean.parseBoolean(columns[index++])) {
                 groups.add(Constants.GROUP_SPECIALISTS);
+            }
+
+            if (Boolean.parseBoolean(columns[index++])) {
+                groups.add(Constants.GROUP_PACKERS);
             }
 
             if (Boolean.parseBoolean(columns[index++])) {

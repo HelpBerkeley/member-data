@@ -135,6 +135,7 @@ public class Constants {
     public static final String GROUP_ADVISOR = "advisor";
     public static final String GROUP_COORDINATOR = "coordinator";
     public static final String GROUP_ADMIN = "admin";
+    public static final String GROUP_PACKERS = "HB_Packers";
 
     public static final String BERKELEY = "Berkeley";
     public static final String ALBANY = "Albany";
