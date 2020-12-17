@@ -41,12 +41,33 @@ public class DriverPostFormat {
     private ControlBlock controlBlock;
     private Map<String, Restaurant> restaurants;
     private final StringBuilder statusMessages = new StringBuilder();
+    private final int driverTemplateQuery;
+    private final int groupTemplateQuery;
 
-    DriverPostFormat(ApiClient apiClient, Map<String, User> users,
-             String expectedControlBlockVersion, String routedDeliveries) throws InterruptedException {
+    DriverPostFormat(ApiClient apiClient, Map<String, User> users, String expectedControlBlockVersion,
+                     String routedDeliveries) throws InterruptedException {
         this.apiClient = apiClient;
         this.users = users;
         this.expectedControlBlockVersion = expectedControlBlockVersion;
+        this.driverTemplateQuery = Constants.QUERY_GET_DRIVERS_POST_FORMAT;
+        this.groupTemplateQuery = Constants.QUERY_GET_GROUP_INSTRUCTIONS_FORMAT;
+        loadLastRestaurantTemplate();
+        loadDriverPostFormat();
+        loadGroupPostFormat();
+        loadBackupDriverPostFormat();
+        loadRoutedDeliveries(routedDeliveries);
+        auditControlBlock();
+    }
+
+    // FIX THIS, DS: cleanup duplicated code in ctor
+    DriverPostFormat(ApiClient apiClient, Map<String, User> users, String expectedControlBlockVersion,
+             String routedDeliveries, int driverTemplateQuery, int groupTemplateQuery) throws InterruptedException {
+
+        this.apiClient = apiClient;
+        this.users = users;
+        this.expectedControlBlockVersion = expectedControlBlockVersion;
+        this.driverTemplateQuery = driverTemplateQuery;
+        this.groupTemplateQuery = groupTemplateQuery;
         loadLastRestaurantTemplate();
         loadDriverPostFormat();
         loadGroupPostFormat();
@@ -242,7 +263,7 @@ public class DriverPostFormat {
     }
 
     private void loadDriverPostFormat() throws InterruptedException {
-        String json = apiClient.runQuery(Constants.QUERY_GET_DRIVERS_POST_FORMAT);
+        String json = apiClient.runQuery(driverTemplateQuery);
         ApiQueryResult apiQueryResult = HBParser.parseQueryResult(json);
 
         for (Object rowObj : apiQueryResult.rows) {
@@ -257,7 +278,7 @@ public class DriverPostFormat {
     }
 
     private void loadGroupPostFormat() throws InterruptedException {
-        String json = apiClient.runQuery(Constants.QUERY_GET_GROUP_INSTRUCTIONS_FORMAT);
+        String json = apiClient.runQuery(groupTemplateQuery);
         ApiQueryResult apiQueryResult = HBParser.parseQueryResult(json);
 
         for (Object rowObj : apiQueryResult.rows) {

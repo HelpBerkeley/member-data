@@ -222,6 +222,13 @@ public class MainTest extends TestBase {
     }
 
     @Test
+    public void holdiayDriverMessagesTest() throws IOException, InterruptedException, CsvException {
+        String usersFile = findFile(Constants.MEMBERDATA_RAW_FILE, "csv");
+        String[] args = { Options.COMMAND_ONE_KITCHEN_DRIVER_MESSAGES, usersFile };
+        Main.main(args);
+    }
+
+    @Test
     public void getRoutedWorkflowStatusTest() throws IOException, InterruptedException, CsvException {
         String usersFile = findFile(Constants.MEMBERDATA_RAW_FILE, "csv");
         HttpClientSimulator.setQueryResponseFile(

@@ -44,6 +44,7 @@ public class Options {
     static final String COMMAND_EMAIL = "email";
     static final String COMMAND_WORKFLOW = "workflow";
     static final String COMMAND_DRIVER_MESSAGES = "driver-messages";
+    static final String COMMAND_ONE_KITCHEN_DRIVER_MESSAGES = "one-kitchen-driver-messages";
     static final String COMMAND_DRIVER_ROUTES = "driver-routes";
 
     static final String USAGE_ERROR = "Usage error for command ";
@@ -61,6 +62,7 @@ public class Options {
                     + "    | " + COMMAND_GET_DAILY_DELIVERIES + "\n"
                     + "    | " + COMMAND_GET_ORDER_HISTORY + "\n"
                     + "    | " + COMMAND_DRIVER_MESSAGES + " all-members-file\n"
+                    + "    | " + COMMAND_ONE_KITCHEN_DRIVER_MESSAGES + " all-members-file\n"
                     + "    | " + COMMAND_DRIVER_ROUTES + "\n"
                     + "    | " + COMMAND_MERGE_ORDER_HISTORY
                                 + " all-members-file order-history-file daily-deliveries-file\n"
@@ -116,6 +118,7 @@ public class Options {
             case COMMAND_UPDATE_ERRORS:
             case COMMAND_EMAIL:
             case COMMAND_DRIVER_MESSAGES:
+            case COMMAND_ONE_KITCHEN_DRIVER_MESSAGES:
             case COMMAND_WORKFLOW:
             case COMMAND_POST_ALL_MEMBERS:
             case COMMAND_POST_DRIVERS:

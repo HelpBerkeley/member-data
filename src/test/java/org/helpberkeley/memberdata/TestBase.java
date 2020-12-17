@@ -104,6 +104,7 @@ public class TestBase {
             Options.COMMAND_EMAIL,
             Options.COMMAND_WORKFLOW,
             Options.COMMAND_DRIVER_MESSAGES,
+            Options.COMMAND_ONE_KITCHEN_DRIVER_MESSAGES,
             Options.COMMAND_UPDATE_DISPATCHERS,
     };
 

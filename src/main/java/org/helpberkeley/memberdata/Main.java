@@ -104,6 +104,9 @@ public class Main {
             case Options.COMMAND_DRIVER_MESSAGES:
                 driverMessages(apiClient, options.getFileName());
                 break;
+            case Options.COMMAND_ONE_KITCHEN_DRIVER_MESSAGES:
+                oneKitchenDriverMessages(apiClient, options.getFileName());
+                break;
             case Options.COMMAND_DRIVER_ROUTES:
                 driverRoutes(apiClient);
                 break;
@@ -666,7 +669,9 @@ public class Main {
 
 
         try {
-            String statusMessage = generateDriverPosts(apiClient, users, routedDeliveries, version, topic);
+            String statusMessage = generateDriverPosts(apiClient, users, routedDeliveries, version, topic,
+                    Constants.QUERY_GET_ONE_KITCHEN_DRIVERS_POST_FORMAT_V1,
+                    Constants.QUERY_GET_ONE_KITCHEN_GROUP_POST_FORMAT_V1);
             request.postStatus(WorkRequestHandler.RequestStatus.Succeeded, statusMessage);
         } catch (MemberDataException ex) {
             String reason = ex.getCause() != null ? ex.getCause().getMessage() : ex.getMessage();
@@ -675,15 +680,79 @@ public class Main {
         }
     }
 
-    static String generateDriverPosts(ApiClient apiClient, Map<String,
-            User> users, String routedDeliveries, String version, long topic) throws InterruptedException {
+    /**
+     * Check the Request Driver Messages topic for a request.
+     * Generate driver messages if a request is present.
+     *
+     * @param apiClient Discourse API handling
+     * @param allMembersFile CSV file of all current members
+     * @throws InterruptedException unexpected
+     */
+    static void oneKitchenDriverMessages(ApiClient apiClient, String allMembersFile)
+            throws InterruptedException, IOException, CsvException {
+        Query query = new Query(
+                Constants.QUERY_GET_LAST_REQUEST_ONE_KITCHEN_DRIVER_MESSAGES_REPLY,
+                Constants.TOPIC_REQUEST_SINGLE_RESTAURANT_DRIVER_MESSAGES);
+        WorkRequestHandler requestHandler = new WorkRequestHandler(apiClient, query);
+
+        WorkRequestHandler.Reply reply;
+
+        try {
+            reply = requestHandler.getLastReply();
+        } catch (MemberDataException ex) {
+            LOGGER.warn("getLastReply failed: " + ex + "\n" + ex.getMessage());
+            requestHandler.postStatus(WorkRequestHandler.RequestStatus.Failed, ex.getMessage());
+            return;
+        }
+
+        // Nothing to do.
+        if (reply instanceof WorkRequestHandler.Status) {
+            return;
+        }
+
+        LOGGER.info("Holiday driver message request found:\n" + reply);
+
+        // Parse users files
+        String csvData = Files.readString(Paths.get(allMembersFile));
+        Map<String, User> users = new Tables(HBParser.users(csvData)).mapByUserName();
+
+        WorkRequestHandler.WorkRequest request = (WorkRequestHandler.WorkRequest) reply;
+
+        long topic = (request.topic != null) ? request.topic : DRIVERS_POST_STAGING_TOPIC_ID;
+
+        String version = request.version;
+        if (version == null) {
+            version = Constants.CONTROL_BLOCK_CURRENT_VERSION;
+        }
+
+        // Download file
+        String routedDeliveries = apiClient.downloadFile(request.uploadFile.fileName);
+        request.postStatus(WorkRequestHandler.RequestStatus.Processing, "");
+
+
+        try {
+            String statusMessage = generateDriverPosts(
+                    apiClient, users, routedDeliveries, version, topic,
+                    Constants.QUERY_GET_ONE_KITCHEN_DRIVERS_POST_FORMAT_V1,
+                    Constants.QUERY_GET_ONE_KITCHEN_GROUP_POST_FORMAT_V1);
+            request.postStatus(WorkRequestHandler.RequestStatus.Succeeded, statusMessage);
+        } catch (MemberDataException ex) {
+            String reason = ex.getCause() != null ? ex.getCause().getMessage() : ex.getMessage();
+            request.postStatus(WorkRequestHandler.RequestStatus.Failed, reason);
+
+        }
+    }
+
+    static String generateDriverPosts(ApiClient apiClient, Map<String, User> users, String routedDeliveries,
+            String version, long topic, int driverFormatQuery, int groupFormatQuery) throws InterruptedException {
 
         StringBuilder statusMessages = new StringBuilder();
         List<String> postURLs = new ArrayList<>();
         String groupPostURL = null;
         String backupPostURL = null;
 
-        DriverPostFormat driverPostFormat = new DriverPostFormat(apiClient, users, version, routedDeliveries);
+        DriverPostFormat driverPostFormat = new DriverPostFormat(
+                apiClient, users, version, routedDeliveries, driverFormatQuery, groupFormatQuery);
 
         List<String> posts = driverPostFormat.generateDriverPosts();
         Iterator<Driver> driverIterator = driverPostFormat.getDrivers().iterator();
