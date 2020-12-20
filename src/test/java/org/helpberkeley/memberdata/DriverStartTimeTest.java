@@ -122,6 +122,14 @@ public class DriverStartTimeTest extends TestBase {
         checkStartTime(testData, expectedWarnings);
     }
 
+    /** Put V&A in the wrong position, disable late start audit **/
+    @Test
+    public void mayBeReachedAfterClosingTimeDisableAuditTest() {
+
+        TestData testData = new TestData(List.of(new Pickup(THAI_DELIGHT, 0), new Pickup(V_AND_A, 0)), "5:00 PM");
+        checkStartTimeDisableAudit(testData);
+    }
+
     /**
      * Test 2 restaurant, same route run where no special limits are hit
      */
@@ -590,16 +598,23 @@ public class DriverStartTimeTest extends TestBase {
     }
 
     private void checkStartTime(TestData testData) {
-        Driver driver = buildDriver(testData);
+        Driver driver = buildDriver(testData, false);
         assertThat(driver.getStartTime())
                 .as(testData.toString())
                 .isEqualTo(testData.expectedStartTime);
         assertThat(driver.getWarningMessages()).as(testData.toString()).isEmpty();
+    }
 
+    private void checkStartTimeDisableAudit(TestData testData) {
+        Driver driver = buildDriver(testData, true);
+        assertThat(driver.getStartTime())
+                .as(testData.toString())
+                .isEqualTo(testData.expectedStartTime);
+        assertThat(driver.getWarningMessages()).as(testData.toString()).isEmpty();
     }
 
     private void checkStartTime(TestData testData, List<String> expectedWarnings) {
-        Driver driver = buildDriver(testData);
+        Driver driver = buildDriver(testData, false);
         assertThat(driver.getStartTime())
                 .as(testData.toString())
                 .isEqualTo(testData.expectedStartTime);
@@ -607,7 +622,7 @@ public class DriverStartTimeTest extends TestBase {
                 .as(testData.toString()).containsOnlyOnceElementsOf(expectedWarnings);
     }
 
-    private Driver buildDriver(TestData testData) {
+    private Driver buildDriver(TestData testData, boolean disableLateStartAudit) {
 
         List<Restaurant> pickupRestaurants = new ArrayList<>();
 
@@ -623,7 +638,7 @@ public class DriverStartTimeTest extends TestBase {
         WorkflowBean driverBean = new WorkflowBean();
         driverBean.setUserName("jb");
 
-        return new Driver(driverBean, pickupRestaurants, null, "https://something");
+        return new Driver(driverBean, pickupRestaurants, null, "https://something", disableLateStartAudit);
     }
 
     static class TestData {

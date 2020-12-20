@@ -53,6 +53,9 @@ class ControlBlock {
     private final List<OpsManager> opsManagers = new ArrayList<>();
     private final Map<String, SplitRestaurant> splitRestaurantMap = new HashMap<>();
     private final List<String> backupDrivers = new ArrayList<>();
+    private boolean disableLateArrivalAudit = false;
+    private boolean disableSplitRestaurantAudits = false;
+    private boolean disableRestaurantsAudit = false;
 
     private final StringBuilder warnings = new StringBuilder();
 
@@ -71,6 +74,18 @@ class ControlBlock {
         if (errors.length() != 0) {
             throw new MemberDataException(errors.toString());
         }
+    }
+
+    boolean lateArrivalAuditDisabled() {
+        return disableLateArrivalAudit;
+    }
+
+    boolean splitRestaurantAuditsDisabled() {
+        return disableSplitRestaurantAudits;
+    }
+
+    boolean restaurantsAuditDisabled() {
+        return disableRestaurantsAudit;
     }
 
     private void auditVersion(StringBuilder errors) {
@@ -120,6 +135,10 @@ class ControlBlock {
     //
     private void auditSplitRestaurants(StringBuilder errors, Map<String, User> users,
             Map<String, Restaurant> allRestaurants, List<Restaurant> splitRestaurants) {
+
+        if (disableSplitRestaurantAudits) {
+            return;
+        }
 
         for (SplitRestaurant splitRestaurant : splitRestaurantMap.values()) {
             if (!allRestaurants.containsKey(splitRestaurant.name)) {
@@ -229,6 +248,11 @@ class ControlBlock {
             case Constants.CONTROL_BLOCK_BACKUP_DRIVER:
                 processBackupDriver(value, lineNumber);
                 break;
+            case Constants.CONTROL_BLOCK_LATE_ARRIVAL_AUDIT:
+            case Constants.CONTROL_BLOCK_UNVISITED_RESTAURANTS_AUDIT:
+            case Constants.CONTROL_BLOCK_SPLIT_RESTAURANT_AUDITS:
+                processAuditControl(variable, value, lineNumber);
+                break;
             default:
                 warnings.append("Unknown key \"")
                         .append(variable)
@@ -252,6 +276,7 @@ class ControlBlock {
             case Constants.CONTROL_BLOCK_OPS_MANAGER:
             case Constants.CONTROL_BLOCK_SPLIT_RESTAURANT:
             case Constants.CONTROL_BLOCK_BACKUP_DRIVER:
+            case Constants.CONTROL_BLOCK_LATE_ARRIVAL_AUDIT:
                 // Skip.  Not relevant to restaurant template
                 break;
             default:
@@ -263,7 +288,6 @@ class ControlBlock {
                         .append(lineNumber)
                         .append(".\n");
         }
-
     }
 
     String getWarnings() {
@@ -272,6 +296,33 @@ class ControlBlock {
 
     private void processVersion(String value, long lineNumber) {
         this.version = value;
+    }
+
+    private void processAuditControl(String variable, String value, long lineNumber) {
+
+        boolean disableAudit;
+
+        if (value.equalsIgnoreCase("enable")) {
+            disableAudit = false;
+        } else if (value.equalsIgnoreCase("disable")) {
+            disableAudit = true;
+        } else {
+            throw new MemberDataException("Invalid setting \"" + value + "\" for " + variable
+                    + " at line " + lineNumber + ". Must be Enable or Disable.\n");
+        }
+
+        switch (variable) {
+            case Constants.CONTROL_BLOCK_LATE_ARRIVAL_AUDIT:
+                disableLateArrivalAudit = disableAudit;
+                break;
+            case Constants.CONTROL_BLOCK_SPLIT_RESTAURANT_AUDITS:
+                disableSplitRestaurantAudits = disableAudit;
+                break;
+            default:
+                assert variable.equals(Constants.CONTROL_BLOCK_UNVISITED_RESTAURANTS_AUDIT) : variable;
+                disableRestaurantsAudit = disableAudit;
+                break;
+        }
     }
 
     //

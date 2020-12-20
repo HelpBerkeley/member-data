@@ -195,8 +195,17 @@ public class HttpClientSimulator extends HttpClient {
             case Constants.QUERY_GET_GROUP_INSTRUCTIONS_FORMAT_V22:
                 dataFile = "group-instructions-post-v22.json";
                 break;
+            case Constants.QUERY_GET_ONE_KITCHEN_DRIVERS_POST_FORMAT_V1:
+                dataFile = "one-kitchen-driver-message-v10.json";
+                break;
+            case Constants.QUERY_GET_ONE_KITCHEN_GROUP_POST_FORMAT_V1:
+                dataFile = "one-kitchen-group-format-v10.json";
+                break;
             case Constants.QUERY_GET_LAST_REQUEST_DRIVER_MESSAGES_REPLY:
                 dataFile = "last-routed-workflow-reply.json";
+                break;
+            case Constants.QUERY_GET_LAST_REQUEST_ONE_KITCHEN_DRIVER_MESSAGES_REPLY:
+                dataFile = "last-request-one-kitchen-reply.json";
                 break;
             case Constants.QUERY_GET_LAST_ROUTE_REQUEST_REPLY:
                 dataFile = "last-request-driver-routes-reply.json";

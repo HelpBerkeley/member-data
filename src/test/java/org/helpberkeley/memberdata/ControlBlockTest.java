@@ -397,7 +397,7 @@ public class ControlBlockTest extends TestBase {
 
     /** Verify audit of a split restaurant not having a cleanup driver in the control block */
     @Test
-    public void auditSplitRestaurantNotFoundTest() {
+    public void auditSplitRestaurantNoCleanupTest() {
 
         Throwable thrown = catchThrowable(() -> new DriverPostFormat(createApiSimulator(), users,
                 Constants.CONTROL_BLOCK_CURRENT_VERSION,
@@ -405,6 +405,14 @@ public class ControlBlockTest extends TestBase {
         assertThat(thrown).isInstanceOf(MemberDataException.class);
         assertThat(thrown).hasMessageContaining(
                 MessageFormat.format(ControlBlock.MISSING_SPLIT_RESTAURANT, "Cafe Raj"));
+    }
+
+    /** Verify disabled audit of a split restaurant not having a cleanup driver in the control block */
+    @Test
+    public void disabledAuditSplitRestaurantNoCleanupTest() throws InterruptedException {
+        new DriverPostFormat(createApiSimulator(), users,
+                Constants.CONTROL_BLOCK_CURRENT_VERSION,
+                readResourceFile("routed-deliveries-split-missing-cleanup-audit-disabled.csv"));
     }
 
     /** Verify audit of a split restaurant with an unknown restaurant name */
@@ -600,5 +608,145 @@ public class ControlBlockTest extends TestBase {
         controlBlock.audit(users, allRestaurants, Collections.EMPTY_LIST);
         assertThat(controlBlock.getWarnings()).contains(
                 MessageFormat.format(ControlBlock.BACKUP_IS_NOT_A_DRIVER, "ZZZ"));
+    }
+
+    @Test
+    public void lateStartAuditBadValueTest() {
+        String workFlowData = HEADER + CONTROL_BLOCK_BEGIN_ROW
+                + "FALSE,FALSE,," + Constants.CONTROL_BLOCK_LATE_ARRIVAL_AUDIT + ",,,,TRUE,,,,,,,\n";
+
+        WorkflowParser workflowParser = new WorkflowParser(
+                WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, allRestaurants, workFlowData);
+
+        Throwable thrown = catchThrowable(workflowParser::drivers);
+        assertThat(thrown).isInstanceOf(MemberDataException.class);
+        assertThat(thrown).hasMessageContaining("Invalid setting");
+        assertThat(thrown).hasMessageContaining(Constants.CONTROL_BLOCK_LATE_ARRIVAL_AUDIT);
+    }
+
+    @Test
+    public void unvisitedResutaurantsAuditBadValueTest() {
+        String workFlowData = HEADER + CONTROL_BLOCK_BEGIN_ROW
+                + "FALSE,FALSE,," + Constants.CONTROL_BLOCK_UNVISITED_RESTAURANTS_AUDIT + ",,,,TRUE,,,,,,,\n";
+
+        WorkflowParser workflowParser = new WorkflowParser(
+                WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, allRestaurants, workFlowData);
+
+        Throwable thrown = catchThrowable(workflowParser::drivers);
+        assertThat(thrown).isInstanceOf(MemberDataException.class);
+        assertThat(thrown).hasMessageContaining("Invalid setting");
+        assertThat(thrown).hasMessageContaining(Constants.CONTROL_BLOCK_UNVISITED_RESTAURANTS_AUDIT);
+    }
+
+    @Test
+    public void splitRestaurantsAuditBadValueTest() {
+        String workFlowData = HEADER + CONTROL_BLOCK_BEGIN_ROW
+                + "FALSE,FALSE,," + Constants.CONTROL_BLOCK_SPLIT_RESTAURANT_AUDITS + ",,,,TRUE,,,,,,,\n";
+
+        WorkflowParser workflowParser = new WorkflowParser(
+                WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, allRestaurants, workFlowData);
+
+        Throwable thrown = catchThrowable(workflowParser::drivers);
+        assertThat(thrown).isInstanceOf(MemberDataException.class);
+        assertThat(thrown).hasMessageContaining("Invalid setting");
+        assertThat(thrown).hasMessageContaining(Constants.CONTROL_BLOCK_SPLIT_RESTAURANT_AUDITS);
+    }
+
+    @Test
+    public void lateStartAuditDisableTest() {
+        String workFlowData = HEADER + CONTROL_BLOCK_BEGIN_ROW
+                + "FALSE,FALSE,," + Constants.CONTROL_BLOCK_LATE_ARRIVAL_AUDIT + ",,,,disable,,,,,,,\n";
+
+        WorkflowParser workflowParser = new WorkflowParser(
+                WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, allRestaurants, workFlowData);
+
+        assertThat(workflowParser.controlBlock().lateArrivalAuditDisabled()).isTrue();
+        assertThat(workflowParser.controlBlock().splitRestaurantAuditsDisabled()).isFalse();
+        assertThat(workflowParser.controlBlock().restaurantsAuditDisabled()).isFalse();
+    }
+
+    @Test
+    public void splitRestaurantAuditsDisableTest() {
+        String workFlowData = HEADER + CONTROL_BLOCK_BEGIN_ROW
+                + "FALSE,FALSE,," + Constants.CONTROL_BLOCK_SPLIT_RESTAURANT_AUDITS + ",,,,disable,,,,,,,\n";
+
+        WorkflowParser workflowParser = new WorkflowParser(
+                WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, allRestaurants, workFlowData);
+
+        assertThat(workflowParser.controlBlock().splitRestaurantAuditsDisabled()).isTrue();
+        assertThat(workflowParser.controlBlock().lateArrivalAuditDisabled()).isFalse();
+        assertThat(workflowParser.controlBlock().restaurantsAuditDisabled()).isFalse();
+    }
+
+    @Test
+    public void unvisitedRestaurantsAuditDisableTest() {
+        String workFlowData = HEADER + CONTROL_BLOCK_BEGIN_ROW
+                + "FALSE,FALSE,," + Constants.CONTROL_BLOCK_UNVISITED_RESTAURANTS_AUDIT + ",,,,disable,,,,,,,\n";
+
+        WorkflowParser workflowParser = new WorkflowParser(
+                WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, allRestaurants, workFlowData);
+
+        assertThat(workflowParser.controlBlock().restaurantsAuditDisabled()).isTrue();
+        assertThat(workflowParser.controlBlock().splitRestaurantAuditsDisabled()).isFalse();
+        assertThat(workflowParser.controlBlock().lateArrivalAuditDisabled()).isFalse();
+    }
+
+    @Test
+    public void auditDefaultsTest() {
+
+        WorkflowParser workflowParser = new WorkflowParser(
+                WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, allRestaurants, HEADER);
+
+        assertThat(workflowParser.controlBlock().lateArrivalAuditDisabled()).isFalse();
+        assertThat(workflowParser.controlBlock().splitRestaurantAuditsDisabled()).isFalse();
+        assertThat(workflowParser.controlBlock().restaurantsAuditDisabled()).isFalse();
+    }
+
+    @Test
+    public void lateStartAuditEnableTest() {
+        String workFlowData = HEADER
+                + CONTROL_BLOCK_BEGIN_ROW
+                + "FALSE,FALSE,," + Constants.CONTROL_BLOCK_LATE_ARRIVAL_AUDIT + ",,,,enable,,,,,,,\n"
+                + "FALSE,FALSE,," + Constants.CONTROL_BLOCK_SPLIT_RESTAURANT_AUDITS + ",,,,disable,,,,,,,\n"
+                + "FALSE,FALSE,," + Constants.CONTROL_BLOCK_UNVISITED_RESTAURANTS_AUDIT + ",,,,disable,,,,,,,\n";
+
+        WorkflowParser workflowParser = new WorkflowParser(
+                WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, allRestaurants, workFlowData);
+
+        assertThat(workflowParser.controlBlock().lateArrivalAuditDisabled()).isFalse();
+        assertThat(workflowParser.controlBlock().splitRestaurantAuditsDisabled()).isTrue();
+        assertThat(workflowParser.controlBlock().restaurantsAuditDisabled()).isTrue();
+    }
+
+    @Test
+    public void splitRestaurantAuditsEnableTest() {
+        String workFlowData = HEADER
+                + CONTROL_BLOCK_BEGIN_ROW
+                + "FALSE,FALSE,," + Constants.CONTROL_BLOCK_SPLIT_RESTAURANT_AUDITS + ",,,,enable,,,,,,,\n"
+                + "FALSE,FALSE,," + Constants.CONTROL_BLOCK_LATE_ARRIVAL_AUDIT + ",,,,disable,,,,,,,\n"
+                + "FALSE,FALSE,," + Constants.CONTROL_BLOCK_UNVISITED_RESTAURANTS_AUDIT + ",,,,disable,,,,,,,\n";
+
+        WorkflowParser workflowParser = new WorkflowParser(
+                WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, allRestaurants, workFlowData);
+
+        assertThat(workflowParser.controlBlock().splitRestaurantAuditsDisabled()).isFalse();
+        assertThat(workflowParser.controlBlock().lateArrivalAuditDisabled()).isTrue();
+        assertThat(workflowParser.controlBlock().restaurantsAuditDisabled()).isTrue();
+    }
+
+    @Test
+    public void unvisitedRestaurantsAuditEnableTest() {
+        String workFlowData = HEADER
+                + CONTROL_BLOCK_BEGIN_ROW
+                + "FALSE,FALSE,," + Constants.CONTROL_BLOCK_UNVISITED_RESTAURANTS_AUDIT + ",,,,enable,,,,,,,\n"
+                + "FALSE,FALSE,," + Constants.CONTROL_BLOCK_SPLIT_RESTAURANT_AUDITS + ",,,,disable,,,,,,,\n"
+                + "FALSE,FALSE,," + Constants.CONTROL_BLOCK_LATE_ARRIVAL_AUDIT + ",,,,disable,,,,,,,\n";
+
+        WorkflowParser workflowParser = new WorkflowParser(
+                WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, allRestaurants, workFlowData);
+
+        assertThat(workflowParser.controlBlock().restaurantsAuditDisabled()).isFalse();
+        assertThat(workflowParser.controlBlock().splitRestaurantAuditsDisabled()).isTrue();
+        assertThat(workflowParser.controlBlock().lateArrivalAuditDisabled()).isTrue();
     }
 }

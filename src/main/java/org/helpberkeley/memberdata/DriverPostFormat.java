@@ -51,12 +51,7 @@ public class DriverPostFormat {
         this.expectedControlBlockVersion = expectedControlBlockVersion;
         this.driverTemplateQuery = Constants.QUERY_GET_DRIVERS_POST_FORMAT;
         this.groupTemplateQuery = Constants.QUERY_GET_GROUP_INSTRUCTIONS_FORMAT;
-        loadLastRestaurantTemplate();
-        loadDriverPostFormat();
-        loadGroupPostFormat();
-        loadBackupDriverPostFormat();
-        loadRoutedDeliveries(routedDeliveries);
-        auditControlBlock();
+        initialize(routedDeliveries);
     }
 
     // FIX THIS, DS: cleanup duplicated code in ctor
@@ -68,6 +63,10 @@ public class DriverPostFormat {
         this.expectedControlBlockVersion = expectedControlBlockVersion;
         this.driverTemplateQuery = driverTemplateQuery;
         this.groupTemplateQuery = groupTemplateQuery;
+        initialize(routedDeliveries);
+    }
+
+    private void initialize(String routedDeliveries) throws InterruptedException {
         loadLastRestaurantTemplate();
         loadDriverPostFormat();
         loadGroupPostFormat();
@@ -91,10 +90,12 @@ public class DriverPostFormat {
     String generateSummary() {
         StringBuilder summary = new StringBuilder();
 
-        // Restaurants with no drivers
-        for (Restaurant restaurant : restaurants.values()) {
-            if (restaurant.getDrivers().size() == 0) {
-                summary.append("No drivers going to ").append(restaurant.getName()).append("\n");
+        if (! controlBlock.restaurantsAuditDisabled()) {
+            // Restaurants with no drivers
+            for (Restaurant restaurant : restaurants.values()) {
+                if (restaurant.getDrivers().size() == 0) {
+                    summary.append("No drivers going to ").append(restaurant.getName()).append("\n");
+                }
             }
         }
         summary.append("\n");
@@ -133,20 +134,28 @@ public class DriverPostFormat {
                 continue;
             }
 
-            if (! headerAdded) {
-                summary.append("|Split Restaurants|Cleanup Driver|\n");
-                summary.append("|---|---|\n");
+            if (! controlBlock.splitRestaurantAuditsDisabled()) {
+                if (!headerAdded) {
+                    summary.append("|Split Restaurants|Cleanup Driver|\n");
+                    summary.append("|---|---|\n");
 
-                headerAdded = true;
+                    headerAdded = true;
+                }
             }
 
-            cleanupDriver = controlBlock.getSplitRestaurant(restaurant.getName()).getCleanupDriverUserName();
+            if (controlBlock.splitRestaurantAuditsDisabled()) {
+                cleanupDriver = "";
+            } else {
+                cleanupDriver = controlBlock.getSplitRestaurant(restaurant.getName()).getCleanupDriverUserName();
+            }
 
-            summary.append("|");
-            summary.append(restaurant.getName());
-            summary.append("|");
-            summary.append(cleanupDriver);
-            summary.append("|\n");
+            if (! controlBlock.splitRestaurantAuditsDisabled()) {
+                summary.append("|");
+                summary.append(restaurant.getName());
+                summary.append("|");
+                summary.append(cleanupDriver);
+                summary.append("|\n");
+            }
         }
 
         // Total

@@ -52,12 +52,16 @@ public class Driver {
     private String startTime;
     private long routeSeconds = 0;
     private final List<String> warningMessages = new ArrayList<>();
+    private final boolean disableLateArrivalAudit;
 
-    Driver(WorkflowBean driverBean, List<Restaurant> pickups, List<Delivery> deliveries, String gmapURL) {
+    Driver(WorkflowBean driverBean, List<Restaurant> pickups,
+           List<Delivery> deliveries, String gmapURL, boolean disableLateArrivalAudit) {
+
         this.bean = driverBean;
         this.pickups = pickups;
         this.deliveries = deliveries;
         this.gMapURL = gmapURL;
+        this.disableLateArrivalAudit = disableLateArrivalAudit;
         setStartTime();
     }
 
@@ -66,6 +70,7 @@ public class Driver {
         this.pickups = pickups;
         this.deliveries = deliveries;
         this.gMapURL = null;
+        this.disableLateArrivalAudit = false;
     }
 
     @Override
@@ -307,7 +312,10 @@ public class Driver {
 
         if (restaurant.getOrders() == 0) {
             startTime = calculateFirstRestaurantStartTime();
-            generateStartTimeWarnings();
+
+            if (! disableLateArrivalAudit) {
+                generateStartTimeWarnings();
+            }
         }
     }
 

@@ -1,8 +1,9 @@
 Consumer,Driver,Name,User Name,Phone #,Phone2 #,Neighborhood,City,Address,Condo,Details,Restaurants,normal,veggie,#orders
 FALSE,FALSE,ControlBegin,,,,,,,,,,,,
 FALSE,FALSE,,OpsManager (UserName | Phone),,,,JVol | 123-456-7890,,,,,,,
-FALSE,FALSE,,SplitRestaurant (Name | CleanupDriverUserName),,,,Nourish You! | jcDriver,,,,,,,
-FALSE,FALSE,,BackupDriverUserName,,,,JVol,,,,,,,
+FALSE,FALSE,Comment,SplitRestaurant (Name | CleanupDriverUserName),,,,Nourish You! | jcDriver,,,,,,,
+FALSE,FALSE,Comment,BackupDriverUserName,,,,JVol,,,,,,,
+FALSE,FALSE,,SplitRestaurantAudits,,,,Disable,,,,,,,
 FALSE,FALSE,ControlEnd,,,,,,,,,,,,
 FALSE,TRUE,Joe B. Driver,jbDriver,777-777-7777,none,Hills,Berkeley,77 77th Place,,,,,,
 FALSE,,,,,,,,"2701 8th St, Berkeley",FALSE,,Nourish You!,,,2

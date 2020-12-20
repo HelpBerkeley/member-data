@@ -119,6 +119,27 @@ public class DriverPostTest extends TestBase {
 //        System.out.println(post);
         post = posts.get(1);
         post = driverPostFormat.generateSummary();
+        assertThat(post).contains("No drivers going to Thai Delight");
+        assertThat(post).contains("No drivers going to V&A Cafe");
+        assertThat(post).contains("No drivers going to Tacos Sinaloa");
+        assertThat(post).contains("No drivers going to Talavera");
+        assertThat(post).contains("No drivers going to Gregoire");
+        assertThat(post).contains("No drivers going to Da Lian");
+        assertThat(post).contains("No drivers going to Sweet Basil");
+        assertThat(post).contains("No drivers going to Bopshop");
+        assertThat(post).contains("No drivers going to Crepevine");
+    }
+
+    @Test public void multiDriverWithMultiSplitsMessageDisableRestaurantAuditTest() throws InterruptedException {
+        String routedDeliveries =
+                readResourceFile("routed-deliveries-with-split-restaurants-audit-disabled.csv");
+        DriverPostFormat driverPostFormat = new DriverPostFormat(createApiSimulator(),
+                users, Constants.CONTROL_BLOCK_CURRENT_VERSION, routedDeliveries);
+
+        List<String> posts = driverPostFormat.generateDriverPosts();
+        assertThat(posts).hasSize(2);
+        String post = driverPostFormat.generateSummary();
+        assertThat(post).doesNotContain("No drivers going to ");
     }
 
     @Test

@@ -158,6 +158,9 @@ public class Constants {
     public static final String CONTROL_BLOCK_SPLIT_RESTAURANT = "SplitRestaurant(Name|CleanupDriverUserName)";
     public static final String CONTROL_BLOCK_BACKUP_DRIVER = "BackupDriverUserName";
     public static final String CONTROL_BLOCK_VERSION = "Version";
+    public static final String CONTROL_BLOCK_LATE_ARRIVAL_AUDIT = "LateArrivalAudit";
+    public static final String CONTROL_BLOCK_UNVISITED_RESTAURANTS_AUDIT = "UnvisitedRestaurantsAudit";
+    public static final String CONTROL_BLOCK_SPLIT_RESTAURANT_AUDITS = "SplitRestaurantAudits";
 
     public static final String CONTROL_BLOCK_VALUE_DEFAULT_PREFIX = "ReplaceThisBy";
     public static final String CONTROL_BLOCK_VERSION_UNKNOWN = "0";

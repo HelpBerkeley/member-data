@@ -394,7 +394,7 @@ public class WorkflowParser {
                 throw new MemberDataException("Driver " + driverUserName + " unrecognizable gmap URL");
             }
 
-            driver = new Driver(driverBean, restaurants, deliveries, gmapURL);
+            driver = new Driver(driverBean, restaurants, deliveries, gmapURL, controlBlock.lateArrivalAuditDisabled());
         } else {
             assert mode == Mode.DRIVER_ROUTE_REQUEST;
 
