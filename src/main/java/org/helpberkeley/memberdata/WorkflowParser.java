@@ -542,6 +542,12 @@ public class WorkflowParser {
         for (Delivery delivery : driver.getDeliveries()) {
             String restaurantName = delivery.getRestaurant();
 
+            // Support for 0 order delivery (e.g. donation drop-off)
+            if (delivery.getNormalRations().equals("0") &&
+                    delivery.getVeggieRations().equals("0")) {
+                continue;
+            }
+
             Long orders = deliveryOrders.getOrDefault(restaurantName, 0L);
             orders++;
             deliveryOrders.put(restaurantName, orders);

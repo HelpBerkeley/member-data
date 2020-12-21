@@ -57,4 +57,27 @@ public class RouteTest extends TestBase {
             // FIX THIS, DS: how to do this with assertj?
         }
     }
+
+    @Test
+    public void emptyDeliveryStopTest() {
+
+        String csvData = readResourceFile("unrouted-deliveries-empty-delivery.csv");
+        WorkflowParser workflowParser = new WorkflowParser(WorkflowParser.Mode.DRIVER_ROUTE_REQUEST, csvData);
+        List<Driver> drivers = workflowParser.drivers();
+        Route route = new Route();
+
+        for (Driver driver : drivers) {
+
+            // Copy original delivery list
+            List<Delivery> deliveries = new ArrayList<>(driver.getDeliveries());
+
+            route.route(driver);
+
+            // Check that there are still all present, and not duplicated.
+            assertThat(driver.getDeliveries()).containsExactlyInAnyOrderElementsOf(deliveries);
+
+            // Check that there they have been re-ordered by routing
+            // FIX THIS, DS: how to do this with assertj?
+        }
+    }
 }

@@ -1,0 +1,18 @@
+Consumer,Driver,Name,User Name,Phone #,Phone2 #,Neighborhood,City,Address,Condo,Details,Restaurants,normal,veggie,#orders
+FALSE,TRUE,Joe B. Driver,jbDriver,777-777-7777,none,Hills,Berkeley,77 77th Place,,,,,,
+FALSE,,,,,,,,"1561 Solano Ave, Berkeley",FALSE,,Talavera,,,0
+FALSE,,,,,,,,"1736 Solano Ave, Berkeley",FALSE,,Sweet Basil,,,1
+FALSE,,,,,,,,"1823 Solano Ave, Berkeley",FALSE,,Bopshop,,,1
+TRUE,FALSE,Cust Name 1,Cust1,555-555-1112,none,Hills,Berkeley,3004 Acton Street,FALSE,,Bopshop,1,0,
+TRUE,FALSE,Cust Name 2,Cust2,555-555-2222,none,Hills,Berkeley,2920 Fulton St.,FALSE,,Sweet Basil,1,1,
+TRUE,FALSE,Cust Name 3,Cust3,555-555-3333,none,Hills,Berkeley,1525 bonita avenue,FALSE,,Bopshop,0,0,
+FALSE,TRUE,Joe B. Driver,jbDriver,777-777-7777,none,Hills,Berkeley,77 77th Place,,,,,,
+,,,,,,,,,,,,,,
+FALSE,TRUE,Josephine B. Driver,jsDriver,888-888-8888,none,Hills,Berkeley,88 88th Place,,,,,,
+FALSE,,,,,,,,"1158 Solano Ave, Albany",FALSE,"One,Two,Three details",Cafe Raj,,,4
+TRUE,FALSE,Cust Name 4,Cust4,555-555-4444,none,Hills,Berkeley,60 Alamo Ave.,FALSE,,Cafe Raj,0,1,
+TRUE,FALSE,Cust Name 5,Cust5,555-555-5555,none,Hills,Berkeley,2550 Dana St. #9H,TRUE,listed as a condo but may not be.,Cafe Raj,1,0,
+TRUE,FALSE,Cust Name 6,Cust6,555-555-6666,none,Hills,Berkeley,2032 Del Norte Street,FALSE,,Cafe Raj,1,0,
+TRUE,FALSE,Cust Name 7,Cust7,555-555-7777,none,Hills,Kensington,245 Purdue Ave,FALSE,,Cafe Raj,1,0,
+TRUE,FALSE,Cust Name 3,Cust3,555-555-3333,none,Hills,Berkeley,1525 bonita avenue,FALSE,,Bopshop,0,0,
+FALSE,TRUE,Josephine B. Driver,jsDriver,888-888-8888,none,Hills,Berkeley,88 88th Place,,,,,,

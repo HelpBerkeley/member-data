@@ -170,6 +170,11 @@ public class GMapApiSimulator implements GMapApi {
             destinations.put(l1, TimeUnit.MINUTES.toSeconds(4));
             destinations.put(l3, TimeUnit.MINUTES.toSeconds(8));
             destinations.put(l4, TimeUnit.MINUTES.toSeconds(7));
+            destinations.put(l5, TimeUnit.MINUTES.toSeconds(15));
+            destinations.put(l6, TimeUnit.MINUTES.toSeconds(15));
+            destinations.put(l7, TimeUnit.MINUTES.toSeconds(15));
+            destinations.put(l8, TimeUnit.MINUTES.toSeconds(15));
+            destinations.put(l9, TimeUnit.MINUTES.toSeconds(15));
             travelSeconds.put(l2, destinations);
 
             // l3
@@ -192,6 +197,7 @@ public class GMapApiSimulator implements GMapApi {
             destinations.put(l7, TimeUnit.MINUTES.toSeconds(9));
             destinations.put(l8, TimeUnit.MINUTES.toSeconds(15));
             destinations.put(l9, TimeUnit.MINUTES.toSeconds(7));
+            destinations.put(l2, TimeUnit.MINUTES.toSeconds(4));
             travelSeconds.put(l5, destinations);
 
             // l6
@@ -200,6 +206,7 @@ public class GMapApiSimulator implements GMapApi {
             destinations.put(l7, TimeUnit.MINUTES.toSeconds(4));
             destinations.put(l8, TimeUnit.MINUTES.toSeconds(16));
             destinations.put(l9, TimeUnit.MINUTES.toSeconds(6));
+            destinations.put(l2, TimeUnit.MINUTES.toSeconds(4));
             travelSeconds.put(l6, destinations);
 
             // l7
@@ -208,6 +215,7 @@ public class GMapApiSimulator implements GMapApi {
             destinations.put(l6, TimeUnit.MINUTES.toSeconds(5));
             destinations.put(l8, TimeUnit.MINUTES.toSeconds(13));
             destinations.put(l9, TimeUnit.MINUTES.toSeconds(4));
+            destinations.put(l2, TimeUnit.MINUTES.toSeconds(4));
             travelSeconds.put(l7, destinations);
 
             // l8
@@ -216,6 +224,7 @@ public class GMapApiSimulator implements GMapApi {
             destinations.put(l6, TimeUnit.MINUTES.toSeconds(17));
             destinations.put(l7, TimeUnit.MINUTES.toSeconds(13));
             destinations.put(l9, TimeUnit.MINUTES.toSeconds(10));
+            destinations.put(l2, TimeUnit.MINUTES.toSeconds(4));
             travelSeconds.put(l8, destinations);
 
             // l9
@@ -224,6 +233,7 @@ public class GMapApiSimulator implements GMapApi {
             destinations.put(l6, TimeUnit.MINUTES.toSeconds(6));
             destinations.put(l7, TimeUnit.MINUTES.toSeconds(4));
             destinations.put(l8, TimeUnit.MINUTES.toSeconds(10));
+            destinations.put(l2, TimeUnit.MINUTES.toSeconds(4));
             travelSeconds.put(l9, destinations);
 
             // l10
@@ -241,6 +251,7 @@ public class GMapApiSimulator implements GMapApi {
             destinations.put(l7, TimeUnit.MINUTES.toSeconds(4));
             destinations.put(l8, TimeUnit.MINUTES.toSeconds(5));
             destinations.put(l9, TimeUnit.MINUTES.toSeconds(5));
+            destinations.put(l2, TimeUnit.MINUTES.toSeconds(4));
             travelSeconds.put(l11, destinations);
         }
     }

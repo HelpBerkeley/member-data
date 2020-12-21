@@ -186,6 +186,22 @@ public class WorkflowHBParserTest extends TestBase {
     }
 
     @Test
+    public void pickupsAndDeliveriesEmptyDeliveryMismatchTest() {
+        String routedDeliveries = readResourceFile("routed-deliveries-order-mismatch-empty-delivery.csv");
+        Throwable thrown = catchThrowable(() -> new DriverPostFormat(createApiSimulator(),
+                users, Constants.CONTROL_BLOCK_CURRENT_VERSION, routedDeliveries));
+        assertThat(thrown).isInstanceOf(MemberDataException.class);
+        assertThat(thrown).hasMessageContaining(
+                "orders for Talavera but no deliveries");
+        assertThat(thrown).hasMessageContaining(
+                "1 orders for Sweet Basil but 2 deliveries");
+        assertThat(thrown).hasMessageContaining(
+                "2 orders for Bopshop but 1 deliveries");
+        assertThat(thrown).hasMessageContaining(
+                "1 deliveries for Kim's Cafe but no orders");
+    }
+
+    @Test
     public void unroutedWorkflowTest() {
         String unroutedDeliveries = readResourceFile("unrouted-deliveries.csv");
         WorkflowParser workflowParser =
