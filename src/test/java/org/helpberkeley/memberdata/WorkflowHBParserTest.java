@@ -151,16 +151,16 @@ public class WorkflowHBParserTest extends TestBase {
         for (int columnNum = 0; columnNum < columnNames.size(); columnNum++) {
             // Build header with with columnNum column missing
 
-            String header = "";
+            StringBuilder header = new StringBuilder();
             for (int index = 0; index < columnNames.size(); index++) {
                 if (index == columnNum) {
                     continue;
                 }
-                header += columnNames.get(index) + ',';
+                header.append(columnNames.get(index)).append(',');
             }
-            header += '\n';
+            header.append('\n');
 
-            final String expected = header;
+            final String expected = header.toString();
 
             Throwable thrown = catchThrowable(() ->
                     new WorkflowParser(WorkflowParser.Mode.DRIVER_ROUTE_REQUEST, expected));
@@ -227,5 +227,14 @@ public class WorkflowHBParserTest extends TestBase {
         Throwable thrown = catchThrowable(workflowParser::drivers);
         assertThat(thrown).isInstanceOf(MemberDataException.class);
         assertThat(thrown).hasMessageContaining("Line 16 driver block for jsDriver missing closing driver row");
+    }
+
+    @Test
+    public void duplicateDriverDuplicateRestaurantsTest() throws InterruptedException {
+        String routedDeliveries = readResourceFile("routed-deliveries-duplicate-driver.csv");
+        Throwable thrown = catchThrowable(() -> new DriverPostFormat(
+                createApiSimulator(), users, Constants.CONTROL_BLOCK_CURRENT_VERSION, routedDeliveries));
+        assertThat(thrown).isInstanceOf(MemberDataException.class);
+        assertThat(thrown).hasMessageContaining("Duplicate driver \"jbDriver\" at line 33");
     }
 }

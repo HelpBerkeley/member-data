@@ -237,7 +237,7 @@ class ControlBlock {
 
         switch (variable) {
             case Constants.CONTROL_BLOCK_VERSION:
-                processVersion(value, lineNumber);
+                processVersion(value);
                 break;
             case Constants.CONTROL_BLOCK_OPS_MANAGER:
                 processOpsManager(value, lineNumber);
@@ -271,7 +271,7 @@ class ControlBlock {
 
         switch (variable) {
             case Constants.CONTROL_BLOCK_VERSION:
-                processVersion(value, lineNumber);
+                processVersion(value);
                 break;
             case Constants.CONTROL_BLOCK_OPS_MANAGER:
             case Constants.CONTROL_BLOCK_SPLIT_RESTAURANT:
@@ -294,7 +294,7 @@ class ControlBlock {
         return warnings.toString();
     }
 
-    private void processVersion(String value, long lineNumber) {
+    private void processVersion(String value) {
         this.version = value;
     }
 

@@ -110,7 +110,7 @@ public class ApiClientTest extends TestBase {
     }
 
     @Test
-    public void queryWithParamsTest() throws InterruptedException, URISyntaxException {
+    public void queryWithParamsTest() {
         ApiClient apiClient = createApiSimulator();
 
         String result = apiClient.runQueryWithParam(Constants.CURRENT_USERS_QUERY, "limit", "100");

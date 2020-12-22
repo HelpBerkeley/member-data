@@ -156,10 +156,10 @@ public class WorkflowParser {
         Set<String> set = new HashSet<>(Arrays.asList(columns));
 
         int numErrors = 0;
-        String errors = "";
+        StringBuilder errors = new StringBuilder();
         for (String columnName : columnNames) {
             if (! set.contains(columnName)) {
-                errors += "Missing column header: " + columnName + "\n";
+                errors.append("Missing column header: ").append(columnName).append("\n");
                 numErrors++;
             }
         }
@@ -167,14 +167,14 @@ public class WorkflowParser {
         if (numErrors == columnNames.size()) {
             throw new MemberDataException("All column names missing. Line 1 does not look like a header row");
         }
-        if (! errors.isEmpty()) {
-            throw new MemberDataException(errors);
+        if (errors.length() > 0) {
+            throw new MemberDataException(errors.toString());
         }
     }
 
     public List<Driver> drivers() {
 
-        List<Driver> drivers = new ArrayList<>();
+        LinkedHashMap<String, Driver> driverMap = new LinkedHashMap<>();
         WorkflowBean bean;
 
         while ((bean = nextRow()) != null) {
@@ -193,12 +193,16 @@ public class WorkflowParser {
                     + "Is this a driver who is also a consumer? If so, the consumer column must be set to false.");
             }
 
+            if (driverMap.containsKey(bean.getUserName())) {
+                throw new MemberDataException("Duplicate driver \"" + bean.getUserName() + "\" at line " + lineNumber);
+            }
+
             Driver driver = processDriver(bean);
             auditPickupDeliveryMismatch(driver);
-            drivers.add(driver);
+            driverMap.put(driver.getUserName(), driver);
         }
 
-        return drivers;
+        return new ArrayList<>(driverMap.values());
     }
 
     ControlBlock getControlBlock() {
@@ -476,9 +480,10 @@ public class WorkflowParser {
             }
 
             bean = nextRow();
+            assert bean != null;
             String errors = "";
 
-            String consumerName = Objects.requireNonNull(bean.getName());
+            String consumerName = bean.getName();
             if (consumerName.isEmpty()) {
                 errors += "missing consumer name\n";
             }
@@ -567,31 +572,30 @@ public class WorkflowParser {
             pickupOrders.put(restaurantName, restaurant.getOrders());
         }
 
-        String errors = "";
+        StringBuilder errors = new StringBuilder();
 
         // Now check that the pickups match the deliveries
         for (String restaurant : pickupOrders.keySet()) {
 
             if (pickupOrders.get(restaurant) == 0L) {
                 if (deliveryOrders.containsKey(restaurant)){
-                    errors += "deliveries for " + restaurant + ", but 0 orders\n";
+                    errors.append("deliveries for ").append(restaurant).append(", but 0 orders\n");
                 }
             } else if (! deliveryOrders.containsKey(restaurant)) {
-                errors += "orders for " + restaurant + " but no deliveries\n";
+                errors.append("orders for ").append(restaurant).append(" but no deliveries\n");
             } else if (! deliveryOrders.get(restaurant).equals(pickupOrders.get(restaurant))) {
-                errors += pickupOrders.get(restaurant) + " orders for " + restaurant
-                        + " but " + deliveryOrders.get(restaurant) + " deliveries\n";
+                errors.append(pickupOrders.get(restaurant)).append(" orders for ").append(restaurant).append(" but ").append(deliveryOrders.get(restaurant)).append(" deliveries\n");
             }
         }
 
         // And that each delivery order has a pickup
         for (String restaurant : deliveryOrders.keySet()) {
             if (! pickupOrders.containsKey(restaurant)) {
-                errors += deliveryOrders.get(restaurant) + " deliveries for " + restaurant + " but no orders\n";
+                errors.append(deliveryOrders.get(restaurant)).append(" deliveries for ").append(restaurant).append(" but no orders\n");
             }
         }
 
-        if (! errors.isEmpty()) {
+        if (errors.length() > 0) {
             throw new MemberDataException("Driver " + driver.getUserName() + ": " + errors);
         }
     }

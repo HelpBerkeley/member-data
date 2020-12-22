@@ -882,7 +882,7 @@ public class Main {
         assert response.statusCode() == HTTP_OK : "failed " + response.statusCode() + ": " + response.body();
     }
 
-    static void testQuery(ApiClient apiClient) throws InterruptedException {
+    static void testQuery(ApiClient apiClient) {
 
 //        String json = apiClient.runQuery(5);
         String json = apiClient.runQueryWithParam(5, "limit", "100000");

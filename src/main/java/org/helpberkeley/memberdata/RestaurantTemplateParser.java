@@ -106,10 +106,10 @@ public class RestaurantTemplateParser {
         Set<String> set = new HashSet<>(Arrays.asList(columns));
 
         int numErrors = 0;
-        String errors = "";
+        StringBuilder errors = new StringBuilder();
         for (String columnName : columnNames) {
             if (! set.contains(columnName)) {
-                errors += MISSING_COLUMN_ERROR + columnName + '\n';
+                errors.append(MISSING_COLUMN_ERROR).append(columnName).append('\n');
                 numErrors++;
             }
         }
@@ -118,8 +118,8 @@ public class RestaurantTemplateParser {
             throwTemplateError("All column names missing. Line 1 does not look like a header row");
         }
 
-        if (! errors.isEmpty()) {
-            throwTemplateError(errors);
+        if (errors.length() > 0) {
+            throwTemplateError(errors.toString());
         }
     }
 

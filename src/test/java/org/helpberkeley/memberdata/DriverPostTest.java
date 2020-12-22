@@ -101,11 +101,6 @@ public class DriverPostTest extends TestBase {
 
         List<String> posts = driverPostFormat.generateDriverPosts();
         assertThat(posts).hasSize(4);
-        String post = posts.get(0);
-        post = posts.get(1);
-        post = posts.get(2);
-//        System.out.println(post);
-        post = posts.get(3);
     }
 
     @Test public void multiDriverWithMultiSplitsMessageTest() throws InterruptedException {

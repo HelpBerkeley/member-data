@@ -333,6 +333,7 @@ public class DriverPostFormat {
                     throw new MemberDataException("Restaurant \"" + pickup.getName() + "\" from driver "
                             + driver.getUserName() + " not found.  Is it misspelled?");
                 }
+
                 restaurant.addDriver(driver);
                 restaurant.addOrders(pickup.getOrders());
             }
