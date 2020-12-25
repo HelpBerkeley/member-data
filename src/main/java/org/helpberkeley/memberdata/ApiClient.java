@@ -115,15 +115,10 @@ public class ApiClient {
                     return response;
                 }
             } catch (IOException ex) {
-                if (ex.getMessage().contains("GOAWAY") ||
-                        ((ex.getCause() != null) && ex.getCause().getMessage().contains("GOAWAY"))) {
-
-                    if (retry < 9) {
-                        LOGGER.warn("GOAWAY seen from Discourse, waiting 10 seconds and retrying");
-                        nap(RETRY_NAP_MILLISECONDS);
-                    }
-                } else {
-                    throw new MemberDataException("Send failed", ex);
+                LOGGER.warn("send {} failed: {}", request, ex);
+                if (retry < 9) {
+                    LOGGER.warn("Waiting 10 seconds and retrying");
+                    nap(RETRY_NAP_MILLISECONDS);
                 }
             }
         }
