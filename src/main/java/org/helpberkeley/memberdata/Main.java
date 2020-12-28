@@ -670,8 +670,8 @@ public class Main {
 
         try {
             String statusMessage = generateDriverPosts(apiClient, users, routedDeliveries, version, topic,
-                    Constants.QUERY_GET_ONE_KITCHEN_DRIVERS_POST_FORMAT_V1,
-                    Constants.QUERY_GET_ONE_KITCHEN_GROUP_POST_FORMAT_V1);
+                    Constants.QUERY_GET_DRIVERS_POST_FORMAT,
+                    Constants.QUERY_GET_GROUP_INSTRUCTIONS_FORMAT);
             request.postStatus(WorkRequestHandler.RequestStatus.Succeeded, statusMessage);
         } catch (MemberDataException ex) {
             String reason = ex.getCause() != null ? ex.getCause().getMessage() : ex.getMessage();
