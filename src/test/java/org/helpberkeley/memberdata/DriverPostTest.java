@@ -106,12 +106,15 @@ public class DriverPostTest extends TestBase {
     @Test public void multiDriverWithMultiSplitsMessageTest() throws InterruptedException {
         String routedDeliveries = readResourceFile("routed-deliveries-with-split-restaurants.csv");
         DriverPostFormat driverPostFormat = new DriverPostFormat(createApiSimulator(),
-                users, Constants.CONTROL_BLOCK_CURRENT_VERSION, routedDeliveries);
+                users, Constants.CONTROL_BLOCK_CURRENT_VERSION, routedDeliveries,
+                Constants.QUERY_GET_DRIVERS_POST_FORMAT,
+                Constants.QUERY_GET_GROUP_INSTRUCTIONS_FORMAT);
 
         List<String> posts = driverPostFormat.generateDriverPosts();
         assertThat(posts).hasSize(2);
         String post = posts.get(0);
-//        System.out.println(post);
+        System.out.println(post);
+        assertThat(post).contains("take pics");
         post = posts.get(1);
         post = driverPostFormat.generateSummary();
         assertThat(post).contains("No drivers going to Thai Delight");
