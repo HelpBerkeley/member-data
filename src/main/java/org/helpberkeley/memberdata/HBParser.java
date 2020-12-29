@@ -371,7 +371,6 @@ public class HBParser {
                 continue;
             }
             String date = raw.substring(0, index);
-
             dailyDeliveries.add(new DeliveryData(date, downloadFileName(raw), shortURLDiscoursePost(raw)));
         }
 

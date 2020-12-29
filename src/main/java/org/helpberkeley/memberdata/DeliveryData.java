@@ -24,8 +24,13 @@ package org.helpberkeley.memberdata;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class DeliveryData {
+
+    private static final String DATE_REGEX = "^202[0-9]/[01][0-9]/[0-3][0-9]$";
+    private static final Pattern DATE_PATTERN = Pattern.compile(DATE_REGEX);
 
     final String date;
     final UploadFile uploadFile;
@@ -33,6 +38,16 @@ public class DeliveryData {
     DeliveryData(String date, final String fileName, String shortURL) {
         this.date = date.trim();
         this.uploadFile = new UploadFile(fileName, shortURL);
+        audit();
+    }
+
+    // Validate the date string
+    private final void audit() {
+        Matcher matcher = DATE_PATTERN.matcher(date);
+
+        if (! matcher.find()) {
+            throw new MemberDataException("\"" + date + "\" is not a valid date. Must be of the form YYYY/MM/DD");
+        }
     }
 
     // Get daily delivery posts

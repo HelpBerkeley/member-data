@@ -42,6 +42,18 @@ public class DailyDeliveriesTest extends TestBase {
     }
 
     @Test
+    public void dailyDeliveriesBadDateTest() throws InterruptedException {
+        ApiClient apiClient = createApiSimulator();
+        HttpClientSimulator.setQueryResponseFile(
+                Constants.QUERY_GET_DAILY_DELIVERIES, "daily-deliveries-bad-date.json");
+        String jsonData = apiClient.runQuery(Constants.QUERY_GET_DAILY_DELIVERIES);
+        ApiQueryResult queryResult = HBParser.parseQueryResult(jsonData);
+        Throwable thrown = catchThrowable(() -> HBParser.dailyDeliveryPosts(queryResult));
+        assertThat(thrown).isInstanceOf(MemberDataException.class);
+        assertThat(thrown).hasMessageContaining("is not a valid date");
+    }
+
+    @Test
     public void expectedOrderColumnsTest() throws IOException, CsvException {
         String header = Constants.WORKFLOW_CONSUMER_COLUMN + Constants.CSV_SEPARATOR
                 + Constants.WORKFLOW_NAME_COLUMN + Constants.CSV_SEPARATOR
