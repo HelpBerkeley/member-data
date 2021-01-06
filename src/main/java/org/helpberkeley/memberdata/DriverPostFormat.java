@@ -100,6 +100,9 @@ public class DriverPostFormat {
         }
         summary.append("\n");
 
+        long numVeggie = 0;
+        long numNormal = 0;
+
         for (Driver driver : drivers) {
             String originalStartTime = driver.getOriginalStartTime();
             String startTime = driver.getStartTime();
@@ -115,6 +118,11 @@ public class DriverPostFormat {
             for (String warning : driver.getWarningMessages()) {
                 summary.append("Warning: driver ").append(driver.getUserName())
                         .append(" ").append(warning).append('\n');
+            }
+
+            for (Delivery delivery : driver.getDeliveries()) {
+                numNormal += Long.parseLong(delivery.getNormalRations());
+                numVeggie += Long.parseLong(delivery.getVeggieRations());
             }
         }
 
@@ -160,9 +168,26 @@ public class DriverPostFormat {
 
         // Total
 
-        summary.append("Total Orders: ");
+        // Total orders: 19    Meals: 56  Drivers on the road: 4  Normal rations: 24   Veggie rations: 4
+
+        // | Orders | Meals | Drivers | Normal rations| Veggie rations|
+        //|---|---|---|---|---|
+        //| 10 | 30 | 3 | 14 | 1 |
+
+        summary.append("\n");
+        summary.append("|Orders|Meals|Drivers|Normal rations|Veggie rations|\n");
+        summary.append("|---|---|---|---|---|\n");
+        summary.append("|");
         summary.append(totalOrders);
-        summary.append("\n\n");
+        summary.append("|");
+        summary.append((numNormal + numVeggie) * 2);
+        summary.append("|");
+        summary.append(drivers.size());
+        summary.append("|");
+        summary.append(numNormal);
+        summary.append("|");
+        summary.append(numVeggie);
+        summary.append("|\n");
 
         return summary.toString();
     }
