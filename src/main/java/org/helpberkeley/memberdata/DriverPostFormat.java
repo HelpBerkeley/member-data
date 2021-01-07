@@ -45,7 +45,7 @@ public class DriverPostFormat {
     private final int groupTemplateQuery;
 
     DriverPostFormat(ApiClient apiClient, Map<String, User> users, String expectedControlBlockVersion,
-                     String routedDeliveries) throws InterruptedException {
+                     String routedDeliveries) {
         this.apiClient = apiClient;
         this.users = users;
         this.expectedControlBlockVersion = expectedControlBlockVersion;
@@ -56,7 +56,7 @@ public class DriverPostFormat {
 
     // FIX THIS, DS: cleanup duplicated code in ctor
     DriverPostFormat(ApiClient apiClient, Map<String, User> users, String expectedControlBlockVersion,
-             String routedDeliveries, int driverTemplateQuery, int groupTemplateQuery) throws InterruptedException {
+             String routedDeliveries, int driverTemplateQuery, int groupTemplateQuery) {
 
         this.apiClient = apiClient;
         this.users = users;
@@ -66,7 +66,7 @@ public class DriverPostFormat {
         initialize(routedDeliveries);
     }
 
-    private void initialize(String routedDeliveries) throws InterruptedException {
+    private void initialize(String routedDeliveries) {
         loadLastRestaurantTemplate();
         loadDriverPostFormat();
         loadGroupPostFormat();
@@ -272,7 +272,7 @@ public class DriverPostFormat {
         statusMessages.append(controlBlock.getWarnings());
     }
 
-    private void loadLastRestaurantTemplate() throws InterruptedException {
+    private void loadLastRestaurantTemplate() {
         String  json = apiClient.runQuery(Constants.QUERY_GET_RESTAURANT_TEMPLATES);
         ApiQueryResult apiQueryResult = HBParser.parseQueryResult(json);
 
@@ -283,7 +283,7 @@ public class DriverPostFormat {
 
         String rawPost = (String)columns[2];
         RestaurantTemplatePost restaurantTemplatePost = HBParser.restaurantTemplatePost(rawPost);
-        String restaurantTemplate = apiClient.downloadFile(restaurantTemplatePost.uploadFile.fileName);
+        String restaurantTemplate = apiClient.downloadFile(restaurantTemplatePost.uploadFile.getFileName());
         String version = RestaurantTemplateParser.getVersion(restaurantTemplate);
 
         if (version.equals(expectedControlBlockVersion)) {
@@ -296,7 +296,7 @@ public class DriverPostFormat {
                 + expectedControlBlockVersion);
     }
 
-    private void loadDriverPostFormat() throws InterruptedException {
+    private void loadDriverPostFormat() {
         String json = apiClient.runQuery(driverTemplateQuery);
         ApiQueryResult apiQueryResult = HBParser.parseQueryResult(json);
 
@@ -311,7 +311,7 @@ public class DriverPostFormat {
         }
     }
 
-    private void loadGroupPostFormat() throws InterruptedException {
+    private void loadGroupPostFormat() {
         String json = apiClient.runQuery(groupTemplateQuery);
         ApiQueryResult apiQueryResult = HBParser.parseQueryResult(json);
 
@@ -326,7 +326,7 @@ public class DriverPostFormat {
         }
     }
 
-    private void loadBackupDriverPostFormat() throws InterruptedException {
+    private void loadBackupDriverPostFormat() {
         String json = apiClient.runQuery(Constants.QUERY_GET_BACKUP_DRIVER_FORMAT);
         ApiQueryResult apiQueryResult = HBParser.parseQueryResult(json);
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020. helpberkeley.org
+ * Copyright (c) 2021. helpberkeley.org
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,38 +22,24 @@
  */
 package org.helpberkeley.memberdata;
 
-import java.io.IOException;
-import java.util.List;
+import org.helpberkeley.memberdata.OrderHistoryData;
+import org.helpberkeley.memberdata.OrderHistoryDataPosts;
+import org.helpberkeley.memberdata.TestBase;
+import org.junit.Test;
 
-public class DeliveryDataExporter extends Exporter {
+import java.util.SortedMap;
 
-    private final List<DeliveryData> deliveryData;
+import static org.assertj.core.api.Assertions.assertThat;
 
-    DeliveryDataExporter(List<DeliveryData> deliveryData) {
-        this.deliveryData = deliveryData;
-    }
+public class OrderHistoryDataPostsTest extends TestBase {
 
-    void deliveryPostsToFile() throws IOException {
-        String outputFileName = generateFileName(Constants.DELIVERY_POSTS_FILE, "csv");
-        writeFile(outputFileName, deliveryPosts());
-    }
+    @Test
+    public void simpleTest() throws InterruptedException {
 
-    String deliveryPosts() {
-
-        StringBuilder output = new StringBuilder();
-        output.append(DeliveryData.deliveryPostsHeader());
-
-        for (DeliveryData item : deliveryData) {
-
-            UploadFile uploadFile = item.getUploadFile();
-            output.append(item.getDate());
-            output.append(Constants.CSV_SEPARATOR);
-            output.append(uploadFile.getOriginalFileName());
-            output.append(Constants.CSV_SEPARATOR);
-            output.append(uploadFile.getShortURL());
-            output.append('\n');
-        }
-
-        return output.toString();
+        OrderHistoryDataPosts orderHistoryDataPosts = new OrderHistoryDataPosts(createApiSimulator());
+        SortedMap<String, OrderHistoryData> newPosts = orderHistoryDataPosts.getNewPosts();
+        assertThat(newPosts).hasSize(3);
+        assertThat(newPosts.firstKey()).isEqualTo("2020/12/30");
+        assertThat(newPosts.lastKey()).isEqualTo("2021/01/01");
     }
 }

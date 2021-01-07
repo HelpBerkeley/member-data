@@ -33,9 +33,11 @@ import java.net.http.HttpResponse;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
@@ -76,7 +78,7 @@ public class Main {
 //    static final long DELIVERY_DETAILS_TOPIC_ID = 1818;
 //    static final long DRIVERS_POST_FORMAT_TOPIC_ID = 1967;
 
-    public static void main(String[] args) throws IOException, InterruptedException, CsvException {
+    public static void main(String[] args) throws IOException, CsvException {
 
         Options options = new Options(args);
         try {
@@ -98,9 +100,6 @@ public class Main {
             case Options.COMMAND_FETCH:
                 fetch(apiClient);
                 break;
-            case Options.COMMAND_GET_ORDER_HISTORY:
-                getOrderHistory(apiClient);
-                break;
             case Options.COMMAND_DRIVER_MESSAGES:
                 driverMessages(apiClient, options.getFileName());
                 break;
@@ -110,13 +109,8 @@ public class Main {
             case Options.COMMAND_DRIVER_ROUTES:
                 driverRoutes(apiClient);
                 break;
-            case Options.COMMAND_MERGE_ORDER_HISTORY:
-                mergeOrderHistory(apiClient, options.getFileName(),
-                        options.getSecondFileName(), options.getThirdFileName());
-                break;
-            case Options.COMMAND_UPDATE_ORDER_HISTORY:
-                updateFile(apiClient, options.getFileName(),
-                        options.getShortURL(), ORDER_HISTORY_TITLE, ORDER_HISTORY_POST_ID);
+            case Options.COMMAND_ORDER_HISTORY:
+                orderHistory(apiClient, options.getFileName());
                 break;
             case Options.COMMAND_GET_DAILY_DELIVERIES:
                 getDailyDeliveryPosts(apiClient);
@@ -136,10 +130,6 @@ public class Main {
             case Options.COMMAND_POST_ALL_MEMBERS:
                 postAllMembers(apiClient, options.getFileName());
                 break;
-            case Options.COMMAND_POST_INREACH:
-                postFile(apiClient, options.getFileName(),
-                        options.getShortURL(), INREACH_TITLE, INREACH_POST_TOPIC);
-                break;
             case Options.COMMAND_POST_DISPATCHERS:
                 postFile(apiClient, options.getFileName(),
                         options.getShortURL(), DISPATCHERS_TITLE, DISPATCHERS_POST_TOPIC);
@@ -148,13 +138,16 @@ public class Main {
                 updateDispatchers(apiClient, options.getFileName());
                 break;
             case Options.COMMAND_INREACH:
-                generateInreach(options.getFileName(), options.getSecondFileName());
+                generateInreach(apiClient, options.getFileName());
                 break;
             case Options.COMMAND_EMAIL:
                 generateEmail(apiClient, options.getFileName());
                 break;
             case Options.COMMAND_WORKFLOW:
                 generateWorkflow(apiClient, options.getFileName());
+                break;
+            case Options.COMMAND_COMPLETED_DAILY_ORDERS:
+                completedDailyOrders(apiClient, options.getFileName());
                 break;
             default:
                 assert options.getCommand().equals(Options.COMMAND_POST_DRIVERS) : options.getCommand();
@@ -186,7 +179,7 @@ public class Main {
         return properties;
     }
 
-    static void fetch(ApiClient apiClient) throws InterruptedException, IOException {
+    static void fetch(ApiClient apiClient) throws IOException {
         // Create a User loader
         Loader loader = new Loader(apiClient);
 
@@ -219,7 +212,7 @@ public class Main {
     }
 
     static void postConsumerRequests(ApiClient apiClient, final String fileName)
-            throws IOException, InterruptedException, CsvException {
+            throws IOException, CsvException {
 
         String csvData = Files.readString(Paths.get(fileName));
         List<User> users = HBParser.users(csvData);
@@ -266,7 +259,7 @@ public class Main {
     }
 
     static void postVolunteerRequests(ApiClient apiClient, final String fileName)
-            throws IOException, InterruptedException, CsvException {
+            throws IOException, CsvException {
 
         String csvData = Files.readString(Paths.get(fileName));
         List<User> users = HBParser.users(csvData);
@@ -312,7 +305,7 @@ public class Main {
                 "" : "failed " + response.statusCode() + ": " + response.body());
     }
 
-    static void postUserErrors(ApiClient apiClient, final String fileName) throws IOException, InterruptedException {
+    static void postUserErrors(ApiClient apiClient, final String fileName) throws IOException {
 
         StringBuilder postRaw = new StringBuilder();
 
@@ -334,7 +327,7 @@ public class Main {
                 "" : "failed " + response.statusCode() + ": " + response.body());
     }
 
-    static void updateUserErrors(ApiClient apiClient, final String fileName) throws IOException, InterruptedException {
+    static void updateUserErrors(ApiClient apiClient, final String fileName) throws IOException {
 
         String postRaw = "**" +
                 "Member data requiring attention -- " +
@@ -347,21 +340,21 @@ public class Main {
                 "" : "failed " + response.statusCode() + ": " + response.body());
     }
 
-    static void postAllMembers(ApiClient apiClient, final String fileName) throws InterruptedException {
+    static void postAllMembers(ApiClient apiClient, final String fileName) {
         // Upload it to Discourse
         Upload upload = new Upload(apiClient, fileName);
         // Post
         postFile(apiClient, fileName, upload.getShortURL(), Constants.ALL_MEMBERS_TITLE, ALL_MEMBERS_POST_TOPIC);
     }
 
-    static void postDrivers(ApiClient apiClient, final String fileName) throws InterruptedException {
+    static void postDrivers(ApiClient apiClient, final String fileName) {
         // Upload it to Discourse
         Upload upload = new Upload(apiClient, fileName);
         // Post
         postFile(apiClient, fileName, upload.getShortURL(), DRIVERS_TITLE, DRIVERS_POST_TOPIC);
     }
 
-    static void updateDispatchers(ApiClient apiClient, final String fileName) throws InterruptedException {
+    static void updateDispatchers(ApiClient apiClient, final String fileName) {
         // Upload it to Discourse
         Upload upload = new Upload(apiClient, fileName);
         // Post
@@ -369,7 +362,7 @@ public class Main {
     }
 
     static void postFile(ApiClient apiClient, final String fileName, final String shortUrl,
-                 final String title, long topicId) throws InterruptedException {
+                 final String title, long topicId) {
 
         String now = ZonedDateTime.now(ZoneId.systemDefault()).format(
                 DateTimeFormatter.ofPattern("uuuu.MM.dd HH:mm:ss"));
@@ -392,7 +385,7 @@ public class Main {
     }
 
     static void updateFile(ApiClient apiClient, final String fileName,
-                final String shortUrl, String title, long postId) throws InterruptedException {
+                final String shortUrl, String title, long postId) {
 
         String now = ZonedDateTime.now(ZoneId.systemDefault()).format(
                 DateTimeFormatter.ofPattern("uuuu.MM.dd HH:mm:ss"));
@@ -409,7 +402,7 @@ public class Main {
                 "" : "failed " + response.statusCode() + ": " + response.body());
     }
 
-    static void getOrderHistory(ApiClient apiClient) throws IOException, InterruptedException {
+    static void getOrderHistory(ApiClient apiClient) throws IOException {
 
         // Fetch the order history post
         String json = apiClient.getPost(ORDER_HISTORY_POST_ID);
@@ -419,21 +412,21 @@ public class Main {
         OrderHistoryPost orderHistoryPost = HBParser.orderHistoryPost(rawPost);
 
         // Download the order history data file
-        String orderHistoryData = apiClient.downloadFile(orderHistoryPost.uploadFile.fileName);
-        // Parse and load the order history into the OrderHistory object
-        OrderHistory orderHistory = HBParser.orderHistory(orderHistoryData);
+        String orderHistoryData = apiClient.downloadFile(orderHistoryPost.uploadFile.getFileName());
 
-        // Export the order history to a file
-        new OrderHistoryExporter(orderHistory).orderHistoryToFile();
+        // Write the order history data to a file
+        Exporter exporter = new Exporter();
+        String fileName = exporter.generateFileName(Constants.ORDER_HISTORY_FILE, "csv");
+        exporter.writeFile(fileName, orderHistoryData);
     }
 
-    static void getDailyDeliveryPosts(ApiClient apiClient) throws IOException, InterruptedException {
+    static void getDailyDeliveryPosts(ApiClient apiClient) throws IOException {
         List<DeliveryData> deliveryPosts = DeliveryData.deliveryPosts(apiClient);
         new DeliveryDataExporter(deliveryPosts).deliveryPostsToFile();
     }
 
-    static void mergeOrderHistory(ApiClient apiClient, final String usersFile,
-        final String orderHistoryFile, final String deliveryPostsFile) throws IOException, InterruptedException, CsvException {
+    static void mergeOrderHistory(ApiClient apiClient, final String usersFile, final String orderHistoryFile,
+          final String deliveryPostsFile) throws IOException, InterruptedException, CsvException {
 
         // Load order history
         String csvData = Files.readString(Paths.get(orderHistoryFile));
@@ -446,6 +439,8 @@ public class Main {
         // Load users
         csvData = Files.readString(Paths.get(usersFile));
         List<User> users = HBParser.users(csvData);
+        Tables tables = new Tables(users);
+        Map<String, User> usersByUserName = tables.mapByUserName();
 
         List<DeliveryData> filesToProcess = new ArrayList<>();
 
@@ -464,11 +459,12 @@ public class Main {
         for (DeliveryData deliveryData : filesToProcess) {
                 LOGGER.debug("processing " + deliveryData);
                 // Download the delivery file
-                String deliveries = apiClient.downloadFile(deliveryData.uploadFile.fileName);
+                String deliveries = apiClient.downloadFile(deliveryData.uploadFile.getFileName());
                 // Parse list of user restaurant orders
-                List<UserOrder> userOrders = HBParser.parseOrders(deliveryData.uploadFile.originalFileName, deliveries);
+                List<UserOrder> userOrders = HBParser.parseOrders(
+                        deliveryData.uploadFile.getOriginalFileName(), deliveries);
                 // Merge the data into the existing order history
-                orderHistory.merge(deliveryData.date, userOrders, users);
+                orderHistory.merge(deliveryData.date, userOrders, usersByUserName);
 
                 Thread.sleep(napTime);
         }
@@ -477,18 +473,25 @@ public class Main {
         new OrderHistoryExporter(orderHistory).orderHistoryToFile();
     }
 
-    static void generateInreach(final String usersFile, final String orderHistoryFile) throws IOException, CsvException {
+    static void generateInreach(ApiClient apiClient, String usersFile) throws IOException, CsvException {
         String csvData = Files.readString(Paths.get(usersFile));
         List<User> users = HBParser.users(csvData);
 
-        csvData = Files.readString(Paths.get(orderHistoryFile));
-        OrderHistory orderHistory = HBParser.orderHistory(csvData);
+        // Download order history file
+        OrderHistory orderHistory = OrderHistory.getOrderHistory(apiClient);
 
-        new UserExporter(users).inreachToFile(orderHistory);
+        // Generate the InReach file
+        String inreachFileName = new UserExporter(users).inreachToFile(orderHistory);
+
+        // Upload the InReach file
+        Upload upload = new Upload(apiClient, inreachFileName);
+
+        // Post the file
+        postFile(apiClient, upload.getFileName(), upload.getShortURL(), INREACH_TITLE, INREACH_POST_TOPIC);
     }
 
     static void generateEmail(ApiClient apiClient, final String usersFile)
-            throws IOException, InterruptedException, CsvException {
+            throws IOException, CsvException {
         String csvData = Files.readString(Paths.get(usersFile));
         List<User> users = HBParser.users(csvData);
 
@@ -498,7 +501,7 @@ public class Main {
     }
 
     static void generateWorkflow(ApiClient apiClient, final String usersFile)
-            throws IOException, InterruptedException, CsvException {
+            throws IOException, CsvException {
 
         // Read/parse the members data
         String csvData = Files.readString(Paths.get(usersFile));
@@ -520,7 +523,7 @@ public class Main {
         Map<String, String> deliveryDetails = HBParser.deliveryDetails(apiQueryResult);
 
         // Download the restaurant template file
-        String restaurantTemplate = apiClient.downloadFile(restaurantTemplatePost.uploadFile.fileName);
+        String restaurantTemplate = apiClient.downloadFile(restaurantTemplatePost.uploadFile.getFileName());
 
         // Generate the workflow file
         String workflowFileName =
@@ -533,7 +536,7 @@ public class Main {
         postFile(apiClient, workflowFileName, upload.getShortURL(), WORKFLOW_TITLE, WORKFLOW_DATA_TOPIC);
     }
 
-    static void driverRoutes(ApiClient apiClient) throws InterruptedException {
+    static void driverRoutes(ApiClient apiClient) {
         Query query = new Query(
                 Constants.QUERY_GET_LAST_ROUTE_REQUEST_REPLY, Constants.TOPIC_REQUEST_DRIVER_ROUTES);
         WorkRequestHandler requestHandler = new WorkRequestHandler(apiClient, query);
@@ -555,7 +558,7 @@ public class Main {
         WorkRequestHandler.WorkRequest request = (WorkRequestHandler.WorkRequest) reply;
 
         // Download file
-        String unroutedDeliveries = apiClient.downloadFile(request.uploadFile.fileName);
+        String unroutedDeliveries = apiClient.downloadFile(request.uploadFile.getFileName());
         request.postStatus(WorkRequestHandler.RequestStatus.Processing, "");
 
         Route route = new Route();
@@ -605,7 +608,7 @@ public class Main {
             }
 
             Exporter exporter = new Exporter();
-            String fileName = "routed-" + request.uploadFile.originalFileName;
+            String fileName = "routed-" + request.uploadFile.getOriginalFileName();
             exporter.writeFile(fileName, routedWorkflow.toString());
             Upload upload = new Upload(apiClient, fileName);
             postRequestDriverRoutesSucceeded(apiClient, fileName, upload.getShortURL(), statusMessage.toString());
@@ -625,10 +628,9 @@ public class Main {
      *
      * @param apiClient Discourse API handling
      * @param allMembersFile CSV file of all current members
-     * @throws InterruptedException unexpected
      */
     static void driverMessages(ApiClient apiClient, String allMembersFile)
-            throws InterruptedException, IOException, CsvException {
+            throws IOException, CsvException {
         Query query = new Query(
                 Constants.QUERY_GET_LAST_REQUEST_DRIVER_MESSAGES_REPLY, Constants.TOPIC_REQUEST_DRIVER_MESSAGES);
         WorkRequestHandler requestHandler = new WorkRequestHandler(apiClient, query);
@@ -664,7 +666,7 @@ public class Main {
         }
 
         // Download file
-        String routedDeliveries = apiClient.downloadFile(request.uploadFile.fileName);
+        String routedDeliveries = apiClient.downloadFile(request.uploadFile.getFileName());
         request.postStatus(WorkRequestHandler.RequestStatus.Processing, "");
 
 
@@ -676,7 +678,6 @@ public class Main {
         } catch (MemberDataException ex) {
             String reason = ex.getCause() != null ? ex.getCause().getMessage() : ex.getMessage();
             request.postStatus(WorkRequestHandler.RequestStatus.Failed, reason);
-
         }
     }
 
@@ -686,10 +687,9 @@ public class Main {
      *
      * @param apiClient Discourse API handling
      * @param allMembersFile CSV file of all current members
-     * @throws InterruptedException unexpected
      */
     static void oneKitchenDriverMessages(ApiClient apiClient, String allMembersFile)
-            throws InterruptedException, IOException, CsvException {
+            throws IOException, CsvException {
         Query query = new Query(
                 Constants.QUERY_GET_LAST_REQUEST_ONE_KITCHEN_DRIVER_MESSAGES_REPLY,
                 Constants.TOPIC_REQUEST_SINGLE_RESTAURANT_DRIVER_MESSAGES);
@@ -726,7 +726,7 @@ public class Main {
         }
 
         // Download file
-        String routedDeliveries = apiClient.downloadFile(request.uploadFile.fileName);
+        String routedDeliveries = apiClient.downloadFile(request.uploadFile.getFileName());
         request.postStatus(WorkRequestHandler.RequestStatus.Processing, "");
 
 
@@ -744,7 +744,7 @@ public class Main {
     }
 
     static String generateDriverPosts(ApiClient apiClient, Map<String, User> users, String routedDeliveries,
-            String version, long topic, int driverFormatQuery, int groupFormatQuery) throws InterruptedException {
+            String version, long topic, int driverFormatQuery, int groupFormatQuery) {
 
         StringBuilder statusMessages = new StringBuilder();
         List<String> postURLs = new ArrayList<>();
@@ -858,8 +858,10 @@ public class Main {
         return statusMessages.toString();
     }
 
+    // FIX THIS, DS: update WorkRequestHandler postStatus() to handle this.  Then we can do end to end tests
+    //               using WorkReqeustHandler.getLastStatusPost()
     static void postRequestDriverRoutesSucceeded(ApiClient apiClient, final String fileName,
-            final String shortURL, final String statusMessage) throws InterruptedException {
+            final String shortURL, final String statusMessage) {
 
         String timeStamp = ZonedDateTime.now(ZoneId.systemDefault())
                 .format(DateTimeFormatter.ofPattern("uuuu/MM/dd HH:mm:ss"));
@@ -872,7 +874,7 @@ public class Main {
 
         Post post = new Post();
         post.title = "Request Driver Route status response";
-        post.topic_id = Constants.TOPIC_REQUEST_DRIVER_ROUTES.id;
+        post.topic_id = Constants.TOPIC_REQUEST_DRIVER_ROUTES.getId();
         post.raw = rawPost;
         post.createdAt = timeStamp;
 
@@ -880,6 +882,129 @@ public class Main {
 
         // FIX THIS, DS: what to do with this error?
         assert response.statusCode() == HTTP_OK : "failed " + response.statusCode() + ": " + response.body();
+    }
+
+    // Process the last request in the Post completed daily orders topic
+    static void completedDailyOrders(ApiClient apiClient, String allMembersFile) {
+        Query query = new Query(
+                Constants.QUERY_GET_LAST_COMPLETED_DAILY_ORDERS_REPLY, Constants.TOPIC_POST_COMPLETED_DAILY_ORDERS);
+        WorkRequestHandler requestHandler = new WorkRequestHandler(apiClient, query);
+
+        WorkRequestHandler.Reply reply;
+
+        try {
+            reply = requestHandler.getLastReply();
+        } catch (MemberDataException ex) {
+            LOGGER.warn("getLastReply failed: " + ex + "\n" + ex.getMessage());
+            requestHandler.postStatus(WorkRequestHandler.RequestStatus.Failed, ex.getMessage());
+            return;
+        }
+
+        if (reply instanceof WorkRequestHandler.Status) {
+            return;
+        }
+
+        WorkRequestHandler.WorkRequest request = (WorkRequestHandler.WorkRequest) reply;
+
+        try {
+            if (! request.disableDateAudit) {
+                // Check that the date is recent
+                auditCompletedOrdersDate(request.date);
+            }
+
+            // Read users file
+            String csvData = Files.readString(Paths.get(allMembersFile));
+            // Parse users
+            List<User> userList = HBParser.users(csvData);
+            // Build a map of users by user name.
+            Map<String, User> users = new Tables(userList).mapByUserName();
+
+            // Download file
+            String completedDeliveries = apiClient.downloadFile(request.uploadFile.getFileName());
+
+            // Validate
+            new DriverPostFormat(
+                    apiClient, users, Constants.CONTROL_BLOCK_CURRENT_VERSION,
+                    completedDeliveries,
+                    Constants.QUERY_GET_DRIVERS_POST_FORMAT,
+                    Constants.QUERY_GET_GROUP_INSTRUCTIONS_FORMAT);
+
+        } catch (MemberDataException|IOException|CsvException ex) {
+            String reason = ex.getCause() != null ? ex.getCause().getMessage() : ex.getMessage();
+            request.postStatus(WorkRequestHandler.RequestStatus.Failed, reason);
+            return;
+        }
+
+        // Copy post to Order History Data
+
+        Post post = new Post();
+        post.title = request.date;
+        post.topic_id = Constants.TOPIC_ORDER_HISTORY_DATA.getId();
+        post.raw = request.raw;
+        post.createdAt = ZonedDateTime.now(ZoneId.systemDefault())
+                .format(DateTimeFormatter.ofPattern("uuuu.MM.dd.HH.mm.ss"));
+
+        HttpResponse<String> response = apiClient.post(post.toJson());
+
+        if (response.statusCode() != HTTP_OK) {
+            // Send status message
+            requestHandler.postStatus(WorkRequestHandler.RequestStatus.Failed,
+                    "Archive of " + request.uploadFile.getOriginalFileName() + " failed: " + response.body());
+        } else {
+            // Send status message
+            requestHandler.postStatus(WorkRequestHandler.RequestStatus.Succeeded,
+                    request.uploadFile.getOriginalFileName() + " validated and archived for " + request.date);
+        }
+    }
+
+    private static void auditCompletedOrdersDate(String date) {
+
+        LocalDate completedOrdersDate = LocalDate.parse(date.replaceAll("/", "-"));
+        LocalDate today = LocalDate.now();
+        long daysBetween = ChronoUnit.DAYS.between(completedOrdersDate, today);
+
+        String error = "";
+
+        if (daysBetween < 0) {
+            error = "Invalid date, " +  date + " is in the future.";
+        } else if (daysBetween > 7) {
+            error = "Invalid date, " +  date + " is more than one week ago.";
+        }
+
+        if (! error.isEmpty()) {
+            throw new MemberDataException(error);
+        }
+    }
+
+    static void orderHistory(ApiClient apiClient, String usersFile)
+            throws IOException, CsvException {
+
+        // Load users
+        String csvData = Files.readString(Paths.get(usersFile));
+        List<User> users = HBParser.users(csvData);
+        Tables tables = new Tables(users);
+        Map<String, User> usersByUserName = tables.mapByUserName();
+
+        // Get the last posted order history
+        OrderHistory orderHistory = OrderHistory.getOrderHistory(apiClient);
+
+        // Get the order history data posts
+        OrderHistoryDataPosts orderHistoryDataPosts = new OrderHistoryDataPosts(apiClient);
+
+        // Merge in the new data
+        orderHistory.merge(orderHistoryDataPosts, usersByUserName);
+
+        // Export updated order history
+        String fileName = new OrderHistoryExporter(orderHistory).orderHistoryToFile();
+
+        // Upload new order history
+        Upload upload = new Upload(apiClient, fileName);
+
+        // Update order history post
+        updateFile(apiClient, upload.getFileName(), upload.getShortURL(), ORDER_HISTORY_TITLE, ORDER_HISTORY_POST_ID);
+
+        // Update last processed order history data post number
+        orderHistoryDataPosts.updateLastProcessedPost();
     }
 
     static void testQuery(ApiClient apiClient) {
@@ -900,4 +1025,3 @@ public class Main {
 
     }
 }
-

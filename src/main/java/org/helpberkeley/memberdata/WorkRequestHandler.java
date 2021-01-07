@@ -36,16 +36,32 @@ import static java.net.HttpURLConnection.HTTP_OK;
 
 public class WorkRequestHandler {
 
+    public static final String ERROR_INVALID_DATE =
+            "Invalid date in post. The first line must contain only the date, formatted as: **YYYY/MM/DD**";
+
     private final ApiClient apiClient;
     private final Query query;
     private Reply lastReply;
+
+    // Support for end-to-end testing through main()
+    private static Post lastStatusPost;
 
     WorkRequestHandler(ApiClient apiClient, Query query) {
         this.apiClient = apiClient;
         this.query = query;
     }
 
-    Reply getLastReply() throws InterruptedException {
+    // Support for end-to-end testing through main()
+    static void clearLastStatusPost() {
+        lastStatusPost = null;
+    }
+
+    // Support for end-to-end testing through main()
+    static Post getLastStatusPost() {
+        return lastStatusPost;
+    }
+
+    Reply getLastReply() {
 
         lastReply = fetchLastReply();
 
@@ -81,7 +97,7 @@ public class WorkRequestHandler {
     }
 
     // Generate a reply to the topic id
-    void postStatus(RequestStatus status, final String statusMessage) throws InterruptedException {
+    void postStatus(RequestStatus status, final String statusMessage) {
 
         String timeStamp = ZonedDateTime.now(ZoneId.systemDefault())
                 .format(DateTimeFormatter.ofPattern("uuuu/MM/dd HH:mm:ss"));
@@ -94,9 +110,11 @@ public class WorkRequestHandler {
         Post post = new Post();
         post.title = "Status response to post " + lastReply.postNumber;
         assert query.topic != null;
-        post.topic_id = query.topic.id;
+        post.topic_id = query.topic.getId();
         post.raw = rawPost;
         post.createdAt = timeStamp;
+
+        lastStatusPost = post;
 
         HttpResponse<?> response = apiClient.post(post.toJson());
 
@@ -104,7 +122,7 @@ public class WorkRequestHandler {
         assert response.statusCode() == HTTP_OK : "failed " + response.statusCode() + ": " + response.body();
     }
 
-    private Reply fetchLastReply() throws InterruptedException {
+    private Reply fetchLastReply() {
 
         String json = apiClient.runQuery(query.id);
         ApiQueryResult apiQueryResult = HBParser.parseQueryResult(json);
@@ -154,19 +172,24 @@ public class WorkRequestHandler {
 
     static class WorkRequest extends Reply {
 
+        final String date;
         final UploadFile uploadFile;
         final Long topic;
         final String version;
+        final boolean disableDateAudit;
 
-        WorkRequest(Reply reply, final UploadFile uploadFile, final Long topic, String version) {
+        WorkRequest(Reply reply, String date, UploadFile uploadFile,
+                    Long topic, String version, boolean disableDateAudit) {
             super(reply);
+            this.date = date;
             this.uploadFile = uploadFile;
             this.topic = topic;
             this.version = version;
+            this.disableDateAudit = disableDateAudit;
         }
 
         // Generate a reply to the topic id
-        void postStatus(RequestStatus status, final String statusMessage) throws InterruptedException {
+        void postStatus(RequestStatus status, final String statusMessage) {
 
             String timeStamp = ZonedDateTime.now(ZoneId.systemDefault())
                     .format(DateTimeFormatter.ofPattern("uuuu/MM/dd HH:mm:ss"));
@@ -174,16 +197,18 @@ public class WorkRequestHandler {
             String rawPost = timeStamp + "\n"
                     + "\n"
                     + "Status: " + status + "\n"
-                    + "File: " + uploadFile.originalFileName + "\n"
+                    + "File: " + uploadFile.getOriginalFileName() + "\n"
                     + "\n"
                     + statusMessage + "\n";
 
             Post post = new Post();
             post.title = "Status response to post " + postNumber;
             assert query.topic != null;
-            post.topic_id = query.topic.id;
+            post.topic_id = query.topic.getId();
             post.raw = rawPost;
             post.createdAt = timeStamp;
+
+            lastStatusPost = post;
 
             HttpResponse<?> response = apiClient.post(post.toJson());
             // FIX THIS, DS: what to do with this error?
@@ -193,10 +218,22 @@ public class WorkRequestHandler {
         static Reply parse(Reply lastReply, final List<String> lines) {
 
             assert ! lines.isEmpty();
+            String dateLine = lines.get(0);
 
-            ListIterator<String> iterator = lines.listIterator();
+            // Validate date
+            String regex = "^202[0-9]/[01][0-9]/[0-3][0-9]$";
+
+            Pattern pattern = Pattern.compile(regex);
+            Matcher matcher = pattern.matcher(dateLine);
+
+            if (! matcher.find()) {
+                throw new MemberDataException(ERROR_INVALID_DATE);
+            }
+
+            ListIterator<String> iterator = lines.listIterator(1);
             Long topic = null;
             String version = null;
+            boolean disableDateAudit = false;
 
             while (iterator.hasNext()) {
                 String line = iterator.next();
@@ -210,13 +247,15 @@ public class WorkRequestHandler {
                     topic = Long.parseLong(line.replaceAll("Topic:", "").trim());
                 } else if (line.startsWith("Version:")) {
                     version = line.replaceAll("Version:", "").trim();
+                } else if (line.startsWith("Disable date audit")) {
+                    disableDateAudit = true;
                 } else if (line.contains(Constants.UPLOAD_URI_PREFIX)) {
                     String shortURL =  HBParser.shortURLDiscoursePost(line);
                     String fileName = HBParser.downloadFileName(line);
 
                     UploadFile uploadFile = new UploadFile(fileName, shortURL);
 
-                    return new WorkRequest(lastReply, uploadFile, topic, version);
+                    return new WorkRequest(lastReply, dateLine, uploadFile, topic, version, disableDateAudit);
                 }
             }
 
@@ -227,9 +266,10 @@ public class WorkRequestHandler {
         public String toString() {
             return "Post: " + postNumber + '\n'
                     + "WorkRequest\n"
+                    + "Date: " + date + '\n'
                     + "Topic: " + topic + '\n'
                     + "Version: " + version + '\n'
-                    + "FileName: " + uploadFile.fileName + '\n';
+                    + "FileName: " + uploadFile.getFileName() + '\n';
         }
     }
 

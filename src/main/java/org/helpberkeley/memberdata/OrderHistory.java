@@ -22,12 +22,13 @@
  */
 package org.helpberkeley.memberdata;
 
+import com.opencsv.exceptions.CsvException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
+import java.io.IOException;
+import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 public class OrderHistory {
     private static final Logger LOGGER = LoggerFactory.getLogger(OrderHistory.class);
@@ -44,6 +45,27 @@ public class OrderHistory {
         historyThroughDate = date;
     }
 
+    /**
+     * Create an OrderHistory populated with the latest posted spreadsheet in the Order History topic
+     *
+     * @param apiClient Discourse API client handle
+     * @return Current OrderHistory
+     */
+    public static OrderHistory getOrderHistory(ApiClient apiClient) {
+        // Fetch the order history post
+        String json = apiClient.getPost(Main.ORDER_HISTORY_POST_ID);
+
+        // Parse the order history post
+        String rawPost = HBParser.postBody(json);
+        OrderHistoryPost orderHistoryPost = HBParser.orderHistoryPost(rawPost);
+
+        // Download the order history file
+        String orderHistoryCSV = apiClient.downloadFile(orderHistoryPost.uploadFile.getFileName());
+
+        // Parse the order history data into an OrderHistory object
+        return HBParser.orderHistory(orderHistoryCSV);
+    }
+
     Row getRow(long userId) {
         return history.get(userId);
     }
@@ -55,16 +77,67 @@ public class OrderHistory {
         history.put(userId, new Row(userId, numOrders, firstOrderDate, lastOrderDate));
     }
 
-    void merge(String date, List<UserOrder> userOrders, List<User> users) {
+    /**
+     * Merge the spreadsheets from the new order history data posts.
+     * If any of the new posts contain older data, reprocess from the beginning.
+     *
+     * @param dataPosts Posts from the Order History Data topic
+     * @param usersByUserName All members
+     */
+    void merge(OrderHistoryDataPosts dataPosts, Map<String, User> usersByUserName) throws IOException, CsvException {
 
-        Tables tables = new Tables(users);
-        Map<String, User> usersByUserName = tables.mapByUserName();
+        SortedMap<String, OrderHistoryData> newPosts = dataPosts.getNewPosts();
+
+        // Nothing to merge
+        if (newPosts.size() == 0) {
+            return;
+        }
+
+        if (historyThroughDate.compareTo(newPosts.firstKey()) < 0) {
+            //merge
+            doMerge(dataPosts.getApiClient(), newPosts, usersByUserName);
+        } else {
+            LOGGER.info("Full order history merge");
+            // replace
+            history.clear();
+            doMerge(dataPosts.getApiClient(), dataPosts.getAllPosts(), usersByUserName);
+        }
+    }
+
+    private void doMerge(ApiClient apiClient, Map<String, OrderHistoryData> postsToProcess,
+                 Map<String, User> usersByUserName) throws IOException, CsvException {
+
+        // If a reset of the order history has been done, we are going to download
+        // all of the delivery files.  Avoid getting rate limited by Discourse, which
+        // occurs when there are more than 60 requests per minute on a connection.
+        long napTime = (postsToProcess.size() > 10) ? TimeUnit.SECONDS.toMillis(1) : 0;
+
+        for (OrderHistoryData orderHistoryData : postsToProcess.values()) {
+            LOGGER.debug("processing " + orderHistoryData);
+            // Download the delivery file
+            UploadFile uploadFile = orderHistoryData.getUploadFile();
+            String deliveries = apiClient.downloadFile(uploadFile.getFileName());
+            // Parse list of user restaurant orders
+            List<UserOrder> userOrders = HBParser.parseOrders(uploadFile.getOriginalFileName(), deliveries);
+
+            // Merge the data into the existing order history
+            merge(orderHistoryData.getDate(), userOrders, usersByUserName);
+
+            try {
+                Thread.sleep(napTime);
+            } catch (InterruptedException ignored) { }
+        }
+
+    }
+
+    // FIX THIS, DS: make this private and rename to mergeOrders
+    void merge(String date, List<UserOrder> userOrders, Map<String, User> usersByUserName) {
 
         for (UserOrder userOrder : userOrders) {
 
             User user = usersByUserName.get(userOrder.userName);
             if (user == null) {
-                user = findUserTheHardWay(userOrder, users);
+                user = findUserTheHardWay(userOrder, usersByUserName);
             }
 
             if (user == null) {
@@ -84,7 +157,7 @@ public class OrderHistory {
         historyThroughDate = date;
     }
 
-    private User findUserTheHardWay(UserOrder userOrder, List<User> users) {
+    private User findUserTheHardWay(UserOrder userOrder, Map<String, User> users) {
 
         // Iterate through users, checking by name, then phone, then alt phone
 
@@ -92,7 +165,7 @@ public class OrderHistory {
         String phone = userOrder.phone.trim().toLowerCase().replaceAll(" ", "");
         String altPhone = userOrder.altPhone.trim().toLowerCase().replaceAll(" ", "");
 
-        for (User theHardWay : users) {
+        for (User theHardWay : users.values()) {
             if ((! name.isEmpty() && name.equals(
                     theHardWay.getName().trim().toLowerCase().replaceAll(" ", "")))) {
                 return theHardWay;

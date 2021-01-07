@@ -37,7 +37,7 @@ public class HBParser {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(HBParser.class);
 
-    static ApiQueryResult parseQueryResult(final String queryResultJson) {
+    public static ApiQueryResult parseQueryResult(final String queryResultJson) {
         Map<String, Object> options = new HashMap<>();
         options.put(JsonReader.USE_MAPS, Boolean.TRUE);
 
@@ -470,7 +470,7 @@ public class HBParser {
         deliveryDetails.put(userName, details);
     }
 
-    static String shortURLDiscoursePost(final String line) {
+    public static String shortURLDiscoursePost(final String line) {
         int index = line.indexOf("upload://");
         assert index != -1 : line;
         String shortURL = line.substring(index);
@@ -490,7 +490,7 @@ public class HBParser {
         return shortURL;
     }
 
-    static String downloadFileName(final String line) {
+    public static String downloadFileName(final String line) {
         int index = line.indexOf('[');
         assert index != -1 : line;
         int end = line.indexOf('|');

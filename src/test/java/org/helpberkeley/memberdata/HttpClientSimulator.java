@@ -53,6 +53,7 @@ public class HttpClientSimulator extends HttpClient {
 
     private static final Map<Integer, String> queryResponseFiles = new HashMap<>();
     private static final Map<Integer, String> queryResponseData = new HashMap<>();
+    private static String getFileName = null;
     private static final AtomicInteger sendFailCount = new AtomicInteger(0);
     private static SendFailType sendFailType = null;
 
@@ -66,6 +67,10 @@ public class HttpClientSimulator extends HttpClient {
     static void setSendFailure(SendFailType failureType, int numFailures) {
         sendFailType = failureType;
         sendFailCount.set(numFailures);
+    }
+
+    static void setGetFileName(String fileName) {
+        getFileName = fileName;
     }
 
     @Override
@@ -219,6 +224,12 @@ public class HttpClientSimulator extends HttpClient {
             case Constants.QUERY_GET_LAST_RESTAURANT_TEMPLATE_REPLY:
                 dataFile = "restaurant-template-last-reply.json";
                 break;
+            case Constants.QUERY_GET_LAST_COMPLETED_DAILY_ORDERS_REPLY:
+                dataFile = "last-completed-daily-orders-reply.json";
+                break;
+            case Constants.QUERY_GET_ORDER_HISTORY_DATA_POSTS:
+                dataFile = "order-history-data.json";
+                break;
             default:
                 throw new RuntimeException("FIX THIS: query " + queryId + " not supported by the simulator");
         }
@@ -251,7 +262,10 @@ public class HttpClientSimulator extends HttpClient {
         assertThat(index).as(fileName).isNotEqualTo(-1);
         fileName = fileName.substring(index + 1);
 
-        if (fileName.endsWith(Main.ORDER_HISTORY_POST_ID + ".json")) {
+        if (getFileName != null) {
+            fileName = getFileName;
+            getFileName = null;
+        } else if (fileName.endsWith(Main.ORDER_HISTORY_POST_ID + ".json")) {
             fileName = "order-history.json";
         } else if (fileName.equals(Main.RESTAURANT_TEMPLATE_POST_ID + ".json")) {
             fileName = "restaurant-template-post.json";

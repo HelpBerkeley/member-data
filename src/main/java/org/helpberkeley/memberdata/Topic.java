@@ -23,11 +23,19 @@
 package org.helpberkeley.memberdata;
 
 public class Topic {
-    final String name;
-    final int id;
+    private final String name;
+    private final int id;
 
-    Topic(final String name, final int id) {
+    public Topic(final String name, final int id) {
         this.name = name;
         this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public int getId() {
+        return id;
     }
 }

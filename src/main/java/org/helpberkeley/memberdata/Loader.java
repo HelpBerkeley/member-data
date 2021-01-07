@@ -49,23 +49,22 @@ public class Loader {
      * Return a list of Users fetched from the website.
      *
      * @return User list.
-     * @throws InterruptedException Website interaction exception.
      */
-    public List<User> load() throws InterruptedException {
+    public List<User> load() {
         LOGGER.trace("load");
         loadGroups();
         loadEmailConfirmations();
         return loadUsers();
     }
 
-    Map<Long, String> loadEmailAddresses() throws InterruptedException {
+    Map<Long, String> loadEmailAddresses() {
         assert apiClient != null;
         String json = apiClient.runQuery(Constants.QUERY_GET_EMAILS);
         ApiQueryResult apiQueryResult = HBParser.parseQueryResult(json);
         return HBParser.emailAddresses(apiQueryResult);
     }
 
-    private void loadGroups() throws InterruptedException {
+    private void loadGroups() {
 
         assert apiClient != null;
         String json = apiClient.runQuery(Constants.QUERY_GET_GROUPS_ID);
@@ -103,7 +102,7 @@ public class Loader {
         }
     }
 
-    private void loadEmailConfirmations() throws InterruptedException {
+    private void loadEmailConfirmations() {
         assert apiClient != null;
         String json = apiClient.runQuery(Constants.QUERY_EMAIL_CONFIRMATIONS);
         ApiQueryResult apiQueryResult = HBParser.parseQueryResult(json);
@@ -111,7 +110,7 @@ public class Loader {
         emailConfirmations = HBParser.emailConfirmations(apiQueryResult);
     }
 
-    private List<User> loadUsers() throws InterruptedException {
+    private List<User> loadUsers() {
         LOGGER.trace("loadUsers");
 
         assert apiClient != null;

@@ -25,6 +25,7 @@ package org.helpberkeley.memberdata;
 import org.junit.Test;
 
 import java.util.List;
+import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.ThrowableAssert.catchThrowable;
@@ -34,21 +35,25 @@ public class OrderHistoryTest extends TestBase {
     @Test
     public void noUserNameTest() throws UserException {
         List<User> users = List.of(createTestUser2());
+        Tables tables = new Tables(users);
+        Map<String, User> usersByUserName = tables.mapByUserName();
         OrderHistory orderHistory = new OrderHistory(("2020/01/01"));
 
         UserOrder userOrder = new UserOrder(TEST_NAME_2, "", "", "", "");
-        orderHistory.merge("20202/01/02", List.of(userOrder), users);
+        orderHistory.merge("20202/01/02", List.of(userOrder), usersByUserName);
     }
 
     @Test
     public void nameMismatchNoUserNameTest() throws UserException {
         List<User> users = List.of(createTestUser2());
+        Tables tables = new Tables(users);
+        Map<String, User> usersByUserName = tables.mapByUserName();
         OrderHistory orderHistory = new OrderHistory(("2020/01/01"));
 
         UserOrder userOrder = new UserOrder(
                 TEST_NAME_2 + "qqq", "", TEST_PHONE_2, "", "someFile");
 
-        orderHistory.merge("20202/01/02", List.of(userOrder), users);
+        orderHistory.merge("20202/01/02", List.of(userOrder), usersByUserName);
     }
 
     @Test
@@ -62,8 +67,10 @@ public class OrderHistoryTest extends TestBase {
     public void unknownUserTest() throws InterruptedException {
         Loader loader = new Loader(createApiSimulator());
         List<User> users = loader.load();
+        Tables tables = new Tables(users);
+        Map<String, User> usersByUserName = tables.mapByUserName();
         OrderHistory orderHistory = new OrderHistory(("2020/01/01"));
         UserOrder userOrder = new UserOrder("unregisteredUser", "", "", "", "");
-        orderHistory.merge("20202/01/02", List.of(userOrder), users);
+        orderHistory.merge("20202/01/02", List.of(userOrder), usersByUserName);
     }
 }

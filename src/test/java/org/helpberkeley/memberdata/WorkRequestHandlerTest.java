@@ -51,8 +51,9 @@ public class WorkRequestHandlerTest extends TestBase {
         HttpClientSimulator.setQueryResponseFile(queryId, "workrequest-no-date.json");
         Query query = new Query(queryId, Constants.TOPIC_REQUEST_DRIVER_MESSAGES);
         WorkRequestHandler requestHandler = new WorkRequestHandler(apiClient, query);
-        WorkRequestHandler.Reply reply = requestHandler.getLastReply();
-        assertThat(reply).isInstanceOf(WorkRequestHandler.WorkRequest.class);
+        Throwable thrown = catchThrowable(() -> requestHandler.getLastReply());
+        assertThat(thrown).isInstanceOf(MemberDataException.class);
+        assertThat(thrown).hasMessageContaining(WorkRequestHandler.ERROR_INVALID_DATE);
     }
 
     @Test
@@ -76,18 +77,6 @@ public class WorkRequestHandlerTest extends TestBase {
         String statusMessage = "Somewhere the quick brown fox\nand the lazy dog\nare taking the day off\n";
         ((WorkRequestHandler.WorkRequest)reply).postStatus(
                 WorkRequestHandler.RequestStatus.Processing, statusMessage);
-    }
-
-    @Test
-    public void parseUnrecognizedPostTest() {
-        HttpClientSimulator.setQueryResponseFile(
-                Constants.QUERY_GET_LAST_REQUEST_DRIVER_MESSAGES_REPLY, "bad-work-request.json");
-
-        Query query = new Query(queryId, Constants.TOPIC_REQUEST_DRIVER_MESSAGES);
-        WorkRequestHandler requestHandler = new WorkRequestHandler(apiClient, query);
-        Throwable thrown = catchThrowable(requestHandler::getLastReply);
-        assertThat(thrown).isInstanceOf(MemberDataException.class);
-        assertThat(thrown).hasMessageContaining("Post #9 is not a valid request");
     }
 
     @Test

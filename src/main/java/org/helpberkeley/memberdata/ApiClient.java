@@ -100,7 +100,7 @@ public class ApiClient {
         }
     }
 
-    private HttpResponse<String> send(HttpRequest request) throws InterruptedException {
+    private HttpResponse<String> send(HttpRequest request) {
 
         for (int retry = 0; retry < 10; retry++ ) {
             try {
@@ -120,6 +120,8 @@ public class ApiClient {
                     LOGGER.warn("Waiting 10 seconds and retrying");
                     nap(RETRY_NAP_MILLISECONDS);
                 }
+            } catch (InterruptedException ex) {
+                throw new RuntimeException("send " + request + " was interrupted");
             }
         }
 
@@ -133,7 +135,7 @@ public class ApiClient {
         } catch (InterruptedException ignored) { }
     }
 
-    private HttpResponse<String> get(final String endpoint) throws InterruptedException {
+    private HttpResponse<String> get(final String endpoint) {
 
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(endpoint))
@@ -152,7 +154,7 @@ public class ApiClient {
         return response;
     }
 
-    HttpResponse<String> post(final String json) throws InterruptedException {
+    HttpResponse<String> post(final String json) {
 
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(POSTS_ENDPOINT))
@@ -172,12 +174,12 @@ public class ApiClient {
         return response;
     }
 
-    String runQuery(int queryId) throws InterruptedException {
+    public String runQuery(int queryId) {
         return doRunQuery(queryId);
 //        return runQueryWithParam(queryId, "limit", "100000");
     }
 
-    private String doRunQuery(int queryId) throws InterruptedException {
+    private String doRunQuery(int queryId) {
 
         String endpoint = QUERY_BASE + queryId + "/run";
 
@@ -234,18 +236,18 @@ public class ApiClient {
             }
 
             return response.body();
-        } catch (URISyntaxException | InterruptedException ex) {
+        } catch (URISyntaxException ex) {
             throw new MemberDataException("Failed runQueryWithParameters: " + ex.getMessage());
         }
     }
 
-    String getPost(long postId) throws InterruptedException {
+    String getPost(long postId) {
         String endpoint = POSTS_BASE + postId + ".json";
         // Normalize EOL
         return get(endpoint).body().replaceAll("\\r\\n?", "\n");
     }
 
-    HttpResponse<String> updatePost(long postId, final String body) throws InterruptedException {
+    public HttpResponse<String> updatePost(long postId, final String body) {
 
         String endpoint =  POSTS_BASE + postId;
         String postBody = "{ \"post\" : { \"raw\" : \"" + body + "\" } }";
@@ -261,7 +263,7 @@ public class ApiClient {
         return send(request);
     }
 
-    String downloadFile(final String shortURLFileName) throws InterruptedException {
+    String downloadFile(final String shortURLFileName) {
 
         String endpoint = DOWNLOAD_ENDPOINT + shortURLFileName;
 
@@ -290,7 +292,7 @@ public class ApiClient {
         return fileData;
     }
 
-    String upload(String fileName) throws URISyntaxException, InterruptedException {
+    String upload(String fileName) throws URISyntaxException {
         String clientId = "1234b591bb4848dd899b6e6ee0feaff9";
 
         MultiPartBodyPublisher publisher = new MultiPartBodyPublisher()

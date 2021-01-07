@@ -205,7 +205,7 @@ public class Tables {
      *   - consumers
      *   - members that are not consumers, drivers, or dispatchers
      * Primary sort first by consumer or not, secondary sort by create date
-     * @return List of increach users
+     * @return List of inreach users
      */
     List<User> inreach() {
 

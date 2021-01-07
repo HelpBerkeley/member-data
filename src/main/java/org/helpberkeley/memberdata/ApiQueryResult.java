@@ -26,8 +26,8 @@ import java.util.Map;
 
 public class ApiQueryResult {
 
-    final String[] headers;
-    final Object[] rows;
+    public final String[] headers;
+    public final Object[] rows;
 
     final Map<String, Integer> columnIndexes = new HashMap<>();
 

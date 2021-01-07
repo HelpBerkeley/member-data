@@ -1,0 +1,123 @@
+Order History Design
+Version 2.0.0
+
+Background
+==========
+
+The Customer Care InReach group requires historical consumer order data
+that is not available in the Discourse user record. This data is available
+in the completed daily dispatcher workflow spreadsheets.
+
+See InReach consumer data in schemas.txt.
+
+Requirements
+============
+
+Track additional consumer order information:
+    - Total number of orders made
+    - First order date
+    - Most recent order date
+
+Store data on Discourse (the general rule is that there should be
+no data stored outside of Discourse).
+
+Validate and accept or reject the workflow spreadsheets as they are posted by the workflow dispatchers.
+
+Provide the ability to easily redo historical data.
+
+Incoming data
+=============
+
+Workflow dispatchers submit a completed spreadsheet by replying to the "Post completed daily orders" topic.
+
+The first line of the reply must be the date for the spreadsheet, in the following form:
+
+    YYYY/MM/DD
+
+For example:
+
+    2021/01/23
+
+The remaining part of the reply must contain a link to the uploaded spreadsheet.
+The name of the spreadsheet does not matter.
+Other text in the reply is ignored.
+
+Example:
+
+    2020/01/23
+    [HelpBerkeleyDeliveries - 3_28.csv|attachment](upload://xyzzy.csv) (828 Bytes)
+
+If the date in the reply matches an existing date that was previously posted, the spreadsheet for
+that date will be replaced in the historical data.
+
+Validation of incoming data
+===========================
+
+After a spreadsheet is posted, the back-end software will see it within a minute or two, and post a
+status message stating either that the spreadsheet was accepted, or what it wasn't and what
+needs to be corrected.
+
+This message will be of the form:
+
+    Status: Accepted (or Rejected)
+    Date: YYYY/MM/DD
+
+If the spreadsheet was rejected there will be addition lines describing why
+and what needs to be fixed.
+
+The workflow dispatcher should wait for this status message to be posted,
+and if the spreadsheet was rejected, correct it and resubmit.
+
+Processing incoming data
+========================
+
+Audits will be performed for:
+  - Valid date line
+  - Valid file link
+  - Well-formed data within the spreadsheet
+
+After the audits are passed, a generated reply will be made to the "Order
+History Data" topic, consisting of a copy of the accepted post from the
+"Post completed daily orders" topic.
+
+Processing order history data
+=============================
+
+Once a day, new replies in the "Order History Data" topic will be
+processed and an order history spreadsheet will be created with the
+following columns:
+
+    ID,Orders,First Order Date,Last Order Date
+
+There is one row per consumer, which has a total of all orders ever made by that consumer.
+
+The first reply in the "Order History" topic is then updated with this spreadsheet.
+
+The first row of the spreadsheet is special, using the ID of 0, and
+the Last Order Data column to encode the date of the newest processed
+completed daily orders spreadsheet.
+
+Data coherency and processing optimizations
+===========================================
+
+It becomes linearly more expensive each day to process all of the historical data,
+downloading/parsing every completed daily workflow spreadsheet. To avoid/minimize
+this effect and to maintain data coherency, the "Order History Data" processing:
+
+  - Stores the post number of the last processed "Order History Data" reply
+    in the "Order History Data" topic post. This is used as a first filter
+    to limit the processing to newly posted spreadsheets.
+  - Always processes spreadsheets in date order; oldest to newest.
+  - Builds a sorted, unique list of all spreadsheets in the posts. With duplicates,
+    the latest post wins.
+  - Finds the oldest spreadsheet date for unprocessed "Order History Data" posts.
+  - If the oldest, unprocessed spreadsheet date is newer than the date in the
+    previous "Order History" spreadsheet, the unprocessed spreadsheets are merged
+    with the previous "Order History" spreadsheet, avoiding the need to download
+    any previously processed data.
+  - If the oldest, unprocessed spreadsheet date is older than the date in the
+    previous "Order History" spreadsheet, the "Order History" spreadsheet is
+    generated from the beginning.
+
+Note that this eliminates the need for the previously used manual reset mechanism
+described in the "Order History" topic post.

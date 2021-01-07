@@ -51,7 +51,7 @@ public class Upload {
 
         try {
             responseBody = client.upload(fileName);
-        } catch (URISyntaxException | InterruptedException ex) {
+        } catch (URISyntaxException ex) {
             throw new MemberDataException("Failed uploading " + fileName + ": " + ex.getMessage());
         }
 

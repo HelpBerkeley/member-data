@@ -89,9 +89,7 @@ public class TestBase {
     final List<String>  TEST_USER_3_GROUPS = List.of(Constants.GROUP_DRIVERS, Constants.GROUP_DISPATCHERS);
 
     static final String[] COMMANDS_WITH_URL = {
-            Options.COMMAND_POST_INREACH,
             Options.COMMAND_POST_DISPATCHERS,
-            Options.COMMAND_UPDATE_ORDER_HISTORY,
     };
 
     static final String[] COMMANDS_WITH_FILE = {
@@ -106,11 +104,13 @@ public class TestBase {
             Options.COMMAND_DRIVER_MESSAGES,
             Options.COMMAND_ONE_KITCHEN_DRIVER_MESSAGES,
             Options.COMMAND_UPDATE_DISPATCHERS,
+            Options.COMMAND_ORDER_HISTORY,
+            Options.COMMAND_INREACH,
+            Options.COMMAND_COMPLETED_DAILY_ORDERS,
     };
 
     static final String[] COMMANDS_WITH_NO_PARAMETERS = {
             Options.COMMAND_FETCH,
-            Options.COMMAND_GET_ORDER_HISTORY,
             Options.COMMAND_GET_DAILY_DELIVERIES,
             Options.COMMAND_DRIVER_ROUTES,
     };
@@ -126,7 +126,7 @@ public class TestBase {
         GMapApiClient.apiFactory = new GmapApiSimulatorFactory();
     }
 
-    ApiClient createApiSimulator() {
+    protected ApiClient createApiSimulator() {
         Properties properties = Main.loadProperties();
         HttpClientSimulator httpClientSimulator = new HttpClientSimulator();
         return new ApiClient(properties, httpClientSimulator);

@@ -32,10 +32,11 @@ public class OrderHistoryExporter extends Exporter {
         this.orderHistory = orderHistory;
     }
 
-    void orderHistoryToFile() throws IOException {
+    String orderHistoryToFile() throws IOException {
 
         String outputFileName = generateFileName(Constants.ORDER_HISTORY_FILE, "csv");
         writeFile(outputFileName, orderHistory());
+        return outputFileName;
     }
 
     String orderHistory() {

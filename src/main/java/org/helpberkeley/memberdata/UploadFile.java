@@ -23,14 +23,26 @@
 package org.helpberkeley.memberdata;
 
 public class UploadFile {
-    final String shortURL;
-    final String fileName;
-    final String originalFileName;
+    private final String shortURL;
+    private final String fileName;
+    private final String originalFileName;
 
-    UploadFile(final String fileName, final String shortURL) {
+    public UploadFile(final String fileName, final String shortURL) {
         this.originalFileName = fileName;
         this.shortURL = shortURL;
         this.fileName = HBParser.fileNameFromShortURL(shortURL);
+    }
+
+    public String getShortURL() {
+        return shortURL;
+    }
+
+    public String getFileName() {
+        return fileName;
+    }
+
+    public final String getOriginalFileName() {
+        return originalFileName;
     }
 
     @Override

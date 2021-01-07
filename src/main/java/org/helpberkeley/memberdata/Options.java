@@ -27,18 +27,15 @@ import java.util.Arrays;
 public class Options {
 
     static final String COMMAND_FETCH = "fetch";
-    static final String COMMAND_GET_ORDER_HISTORY = "get-order-history";
     static final String COMMAND_GET_DAILY_DELIVERIES = "get-daily-deliveries";
-    static final String COMMAND_MERGE_ORDER_HISTORY = "merge-order-history";
+    static final String COMMAND_ORDER_HISTORY = "order-history";
     static final String COMMAND_POST_ERRORS = "post-errors";
     static final String COMMAND_UPDATE_ERRORS = "update-errors";
     static final String COMMAND_UPDATE_DISPATCHERS = "update-dispatchers";
-    static final String COMMAND_UPDATE_ORDER_HISTORY = "update-order-history";
     static final String COMMAND_POST_VOLUNTEER_REQUESTS = "post-volunteer-requests";
     static final String COMMAND_POST_CONSUMER_REQUESTS = "post-consumer-requests";
     static final String COMMAND_POST_DRIVERS = "post-drivers";
     static final String COMMAND_POST_ALL_MEMBERS = "post-all-members";
-    static final String COMMAND_POST_INREACH = "post-inreach";
     static final String COMMAND_POST_DISPATCHERS = "post-dispatchers";
     static final String COMMAND_INREACH = "inreach";
     static final String COMMAND_EMAIL = "email";
@@ -46,6 +43,7 @@ public class Options {
     static final String COMMAND_DRIVER_MESSAGES = "driver-messages";
     static final String COMMAND_ONE_KITCHEN_DRIVER_MESSAGES = "one-kitchen-driver-messages";
     static final String COMMAND_DRIVER_ROUTES = "driver-routes";
+    static final String COMMAND_COMPLETED_DAILY_ORDERS = "completed-daily-orders";
 
     static final String USAGE_ERROR = "Usage error for command ";
     static final String UNKNOWN_COMMAND = USAGE_ERROR + ": unknown command: ";
@@ -60,13 +58,12 @@ public class Options {
     static final String USAGE =
             "Usage: " + COMMAND_FETCH + "\n"
                     + "    | " + COMMAND_GET_DAILY_DELIVERIES + "\n"
-                    + "    | " + COMMAND_GET_ORDER_HISTORY + "\n"
+                    + "    | " + COMMAND_COMPLETED_DAILY_ORDERS + "all-members-file\n"
                     + "    | " + COMMAND_DRIVER_MESSAGES + " all-members-file\n"
                     + "    | " + COMMAND_ONE_KITCHEN_DRIVER_MESSAGES + " all-members-file\n"
                     + "    | " + COMMAND_DRIVER_ROUTES + "\n"
-                    + "    | " + COMMAND_MERGE_ORDER_HISTORY
-                                + " all-members-file order-history-file daily-deliveries-file\n"
-                    + "    | " + COMMAND_INREACH + " all-members-file order-history-file\n"
+                    + "    | " + COMMAND_ORDER_HISTORY + " all-members-file\n"
+                    + "    | " + COMMAND_INREACH + " all-members-file\n"
                     + "    | " + COMMAND_EMAIL + " all-members-file\n"
                     + "    | " + COMMAND_WORKFLOW + " all-members-file\n"
                     + "    | " + COMMAND_POST_ERRORS + " errors-file-name\n"
@@ -74,11 +71,9 @@ public class Options {
                     + "    | " + COMMAND_POST_VOLUNTEER_REQUESTS + " volunteer-requests-file-name\n"
                     + "    | " + COMMAND_POST_DRIVERS + " drivers-file\n"
                     + "    | " + COMMAND_POST_ALL_MEMBERS + " all-members-file\n"
-                    + "    | " + COMMAND_POST_INREACH + " inreach-file upload://short-url-file-name\n"
                     + "    | " + COMMAND_POST_DISPATCHERS + " dispatchers-file upload://short-url-file-name\n"
                     + "    | " + COMMAND_UPDATE_ERRORS + " errors-file-name\n"
-                    + "    | " + COMMAND_UPDATE_DISPATCHERS + " dispatchers-file-name\n"
-                    + "    | " + COMMAND_UPDATE_ORDER_HISTORY + " order-history-file-name upload://short-url-file-name\n";
+                    + "    | " + COMMAND_UPDATE_DISPATCHERS + " dispatchers-file-name\n";
 
     private final String[] args;
     private String command;
@@ -107,7 +102,6 @@ public class Options {
 
         switch (arg) {
             case COMMAND_FETCH:
-            case COMMAND_GET_ORDER_HISTORY:
             case COMMAND_GET_DAILY_DELIVERIES:
             case COMMAND_DRIVER_ROUTES:
                 setCommand(arg);
@@ -123,15 +117,16 @@ public class Options {
             case COMMAND_POST_ALL_MEMBERS:
             case COMMAND_POST_DRIVERS:
             case COMMAND_UPDATE_DISPATCHERS:
+            case COMMAND_ORDER_HISTORY:
+            case COMMAND_COMPLETED_DAILY_ORDERS:
+            case COMMAND_INREACH:
                 setCommand(arg);
                 if (index == args.length) {
                     dieMessage(USAGE_ERROR + arg + COMMAND_REQUIRES_FILE_NAME);
                 }
                 fileName = args[index++];
                 break;
-            case COMMAND_POST_INREACH:
             case COMMAND_POST_DISPATCHERS:
-            case COMMAND_UPDATE_ORDER_HISTORY:
                 setCommand(arg);
                 if (index == args.length) {
                     dieMessage(USAGE_ERROR + arg + COMMAND_REQUIRES_FILE_NAME);
@@ -142,35 +137,6 @@ public class Options {
                     dieMessage(USAGE_ERROR + arg + COMMAND_REQUIRES_SHORT_URL);
                 }
                 shortURL = args[index++];
-                break;
-            case COMMAND_INREACH:
-                setCommand(arg);
-                if (index == args.length) {
-                    dieMessage(USAGE_ERROR + arg + COMMAND_REQUIRES_TWO_FILE_NAMES);
-                }
-                fileName = args[index++];
-
-                if (index == args.length) {
-                    dieMessage(USAGE_ERROR + arg + COMMAND_REQUIRES_TWO_FILE_NAMES);
-                }
-                secondFileName = args[index++];
-                break;
-            case COMMAND_MERGE_ORDER_HISTORY:
-                setCommand(arg);
-                if (index == args.length) {
-                    dieMessage(USAGE_ERROR + arg + COMMAND_REQUIRES_THREE_FILE_NAMES);
-                }
-                fileName = args[index++];
-
-                if (index == args.length) {
-                    dieMessage(USAGE_ERROR + arg + COMMAND_REQUIRES_THREE_FILE_NAMES);
-                }
-                secondFileName = args[index++];
-
-                if (index == args.length) {
-                    dieMessage(USAGE_ERROR + arg + COMMAND_REQUIRES_THREE_FILE_NAMES);
-                }
-                thirdFileName = args[index++];
                 break;
             default:
                 dieMessage(UNKNOWN_COMMAND + arg);

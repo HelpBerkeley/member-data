@@ -392,9 +392,10 @@ public class UserExporter extends Exporter {
 
     }
 
-    void inreachToFile(OrderHistory orderHistory) throws IOException {
+    String inreachToFile(OrderHistory orderHistory) throws IOException {
         String outputFileName = generateFileName(Constants.INREACH_FILE, "csv");
         writeFile(outputFileName, inreach(orderHistory));
+        return outputFileName;
     }
 
     String inreachHeaders() {

@@ -42,7 +42,7 @@ public class DeliveryData {
     }
 
     // Validate the date string
-    private final void audit() {
+    private void audit() {
         Matcher matcher = DATE_PATTERN.matcher(date);
 
         if (! matcher.find()) {
@@ -51,7 +51,7 @@ public class DeliveryData {
     }
 
     // Get daily delivery posts
-    static List<DeliveryData> deliveryPosts(ApiClient apiClient) throws InterruptedException {
+    static List<DeliveryData> deliveryPosts(ApiClient apiClient) {
         String json = apiClient.runQuery(Constants.QUERY_GET_DAILY_DELIVERIES);
         ApiQueryResult apiQueryResult = HBParser.parseQueryResult(json);
         List<DeliveryData> deliveryPosts = HBParser.dailyDeliveryPosts(apiQueryResult);

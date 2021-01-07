@@ -68,6 +68,8 @@ public class Constants {
     public static final int QUERY_GET_LAST_REQUEST_ONE_KITCHEN_DRIVER_MESSAGES_REPLY = 41;
     public static final int QUERY_GET_ONE_KITCHEN_DRIVERS_POST_FORMAT_V1 = 42;
     public static final int QUERY_GET_ONE_KITCHEN_GROUP_POST_FORMAT_V1 = 43;
+    public static final int QUERY_GET_LAST_COMPLETED_DAILY_ORDERS_REPLY = 44;
+    public static final int QUERY_GET_ORDER_HISTORY_DATA_POSTS = 45;
 
     // Current spec version for these queries
     public static final int QUERY_GET_DRIVERS_POST_FORMAT = QUERY_GET_DRIVERS_POST_FORMAT_V23;
@@ -80,6 +82,8 @@ public class Constants {
     public static final Topic TOPIC_RESTAURANT_TEMPLATES = new Topic("Post restaurant template", 1860);
     public static final Topic TOPIC_REQUEST_SINGLE_RESTAURANT_DRIVER_MESSAGES =
             new Topic("Request Single Restaurant Driver Messages", 4878);
+    public static final Topic TOPIC_ORDER_HISTORY_DATA = new Topic("Order History Data", 5234);
+    public static final Topic TOPIC_POST_COMPLETED_DAILY_ORDERS = new Topic("Post completed daily orders", 859);
 
     public static final String COLUMN_ID = "id";
     public static final String COLUMN_NAME = "name";
