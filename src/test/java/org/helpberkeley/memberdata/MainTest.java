@@ -204,6 +204,19 @@ public class MainTest extends TestBase {
     public void completedOrdersTest() throws InterruptedException, IOException, CsvException {
         String usersFile = findFile(Constants.MEMBERDATA_RAW_FILE, "csv");
         String[] args = { Options.COMMAND_COMPLETED_DAILY_ORDERS, usersFile };
+        LocalDate yesterday = LocalDate.now().minusDays(1);
+        DateTimeFormatter format = DateTimeFormatter.ofPattern("YYYY/MM/DD");
+        String yesterdayStr = yesterday.format(format);
+
+        String completedOrdersRequest =
+                "{ \"success\": true, \"columns\": [ \"post_number\", \"deleted_at\", \"raw\" ], "
+                        + "\"rows\": [ "
+                        + "[ 1, null, \""
+                        + yesterdayStr
+                        + "\n[xyzzy.csv|attachment](upload://routed-deliveries.csv) (5.8 KB)\" ] "
+                        + "] }";
+        HttpClientSimulator.setQueryResponseData(
+                Constants.QUERY_GET_LAST_COMPLETED_DAILY_ORDERS_REPLY, completedOrdersRequest);
         WorkRequestHandler.clearLastStatusPost();
         Main.main(args);
 
