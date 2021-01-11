@@ -41,7 +41,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class MainTest extends TestBase {
 
     @Before
-    public void initialize() throws IOException, InterruptedException, CsvException {
+    public void initialize() throws IOException, CsvException {
         cleanupGeneratedFiles();
 
         // Fetches files that will be used by the tests.
@@ -71,13 +71,13 @@ public class MainTest extends TestBase {
     }
 
     @Test
-    public void postUserErrorsTest() throws IOException, InterruptedException, CsvException {
+    public void postUserErrorsTest() throws IOException, CsvException {
         String[] args = { Options.COMMAND_POST_ERRORS, TEST_FILE_NAME };
         Main.main(args);
     }
 
     @Test
-    public void postMemberDataTest() throws IOException, InterruptedException, CsvException {
+    public void postMemberDataTest() throws IOException, CsvException {
         String memberDataFile = findFile(Main.MEMBERDATA_REPORT_FILE, "csv");
         assertThat(memberDataFile).isNotNull();
 
@@ -86,7 +86,7 @@ public class MainTest extends TestBase {
     }
 
     @Test
-    public void postDriversTest() throws IOException, InterruptedException, CsvException {
+    public void postDriversTest() throws IOException, CsvException {
         String file = findFile(Constants.DRIVERS_FILE, "csv");
         assertThat(file).isNotNull();
 
@@ -95,55 +95,55 @@ public class MainTest extends TestBase {
     }
 
     @Test
-    public void postConsumerRequestsTest() throws IOException, InterruptedException, CsvException {
+    public void postConsumerRequestsTest() throws IOException, CsvException {
         String consumerRequestsFile = findFile(Constants.CONSUMER_REQUESTS_FILE, "csv");
         String[] args = { Options.COMMAND_POST_CONSUMER_REQUESTS, consumerRequestsFile };
         Main.main(args);
     }
 
     @Test
-    public void postVolunteerRequestsTest() throws IOException, InterruptedException, CsvException {
+    public void postVolunteerRequestsTest() throws IOException, CsvException {
         String consumerRequestsFile = findFile(Constants.VOLUNTEER_REQUESTS_FILE, "csv");
         String[] args = { Options.COMMAND_POST_VOLUNTEER_REQUESTS, consumerRequestsFile };
         Main.main(args);
     }
 
     @Test
-    public void postDispatchersTest() throws IOException, InterruptedException, CsvException {
+    public void postDispatchersTest() throws IOException, CsvException {
         String file = findFile(Constants.DISPATCHERS_FILE, "csv");
         String[] args = { Options.COMMAND_POST_DISPATCHERS, file, TEST_SHORT_URL };
         Main.main(args);
     }
 
     @Test
-    public void updateDispatchersTest() throws IOException, InterruptedException, CsvException {
+    public void updateDispatchersTest() throws IOException, CsvException {
         String dispatchersFile = findFile(Constants.DISPATCHERS_FILE, "csv");
         String[] args = { Options.COMMAND_UPDATE_DISPATCHERS, dispatchersFile };
         Main.main(args);
     }
 
     @Test
-    public void updateUserErrorsTest() throws IOException, InterruptedException, CsvException {
+    public void updateUserErrorsTest() throws IOException, CsvException {
         String errorsFile = findFile(Main.MEMBERDATA_ERRORS_FILE, "txt");
         String[] args = { Options.COMMAND_UPDATE_ERRORS, errorsFile };
         Main.main(args);
     }
 
     @Test
-    public void getDailyDeliveriesTest() throws IOException, InterruptedException, CsvException {
+    public void getDailyDeliveriesTest() throws IOException, CsvException {
         String[] args = { Options.COMMAND_GET_DAILY_DELIVERIES };
         Main.main(args);
     }
 
     @Test
-    public void emailTest() throws IOException, InterruptedException, CsvException {
+    public void emailTest() throws IOException, CsvException {
         String file = findFile(Constants.MEMBERDATA_RAW_FILE, "csv");
         String[] args = { Options.COMMAND_EMAIL, file };
         Main.main(args);
     }
 
     @Test
-    public void inreachTest() throws IOException, InterruptedException, CsvException {
+    public void inreachTest() throws IOException, CsvException {
 
         String usersFile = findFile(Constants.MEMBERDATA_RAW_FILE, "csv");
 
@@ -155,28 +155,28 @@ public class MainTest extends TestBase {
     }
 
     @Test
-    public void workflowTest() throws IOException, InterruptedException, CsvException {
+    public void workflowTest() throws IOException, CsvException {
         String usersFile = findFile(Constants.MEMBERDATA_RAW_FILE, "csv");
         String[] args = { Options.COMMAND_WORKFLOW, usersFile };
         Main.main(args);
     }
 
     @Test
-    public void driverMessagesTest() throws IOException, InterruptedException, CsvException {
+    public void driverMessagesTest() throws IOException, CsvException {
         String usersFile = findFile(Constants.MEMBERDATA_RAW_FILE, "csv");
         String[] args = { Options.COMMAND_DRIVER_MESSAGES, usersFile };
         Main.main(args);
     }
 
     @Test
-    public void oneKitchenDriverMessagesTest() throws IOException, InterruptedException, CsvException {
+    public void oneKitchenDriverMessagesTest() throws IOException, CsvException {
         String usersFile = findFile(Constants.MEMBERDATA_RAW_FILE, "csv");
         String[] args = { Options.COMMAND_ONE_KITCHEN_DRIVER_MESSAGES, usersFile };
         Main.main(args);
     }
 
     @Test
-    public void getRoutedWorkflowStatusTest() throws IOException, InterruptedException, CsvException {
+    public void getRoutedWorkflowStatusTest() throws IOException, CsvException {
         String usersFile = findFile(Constants.MEMBERDATA_RAW_FILE, "csv");
         HttpClientSimulator.setQueryResponseFile(
                 Constants.QUERY_GET_LAST_REQUEST_DRIVER_MESSAGES_REPLY, "last-routed-workflow-status.json");
@@ -185,7 +185,7 @@ public class MainTest extends TestBase {
     }
 
     @Test
-    public void getRoutedWorkflowBadRequestTest() throws IOException, InterruptedException, CsvException {
+    public void getRoutedWorkflowBadRequestTest() throws IOException, CsvException {
         String usersFile = findFile(Constants.MEMBERDATA_RAW_FILE, "csv");
         HttpClientSimulator.setQueryResponseFile(
                 Constants.QUERY_GET_LAST_REQUEST_DRIVER_MESSAGES_REPLY, "last-routed-workflow-bad-request.json");
@@ -194,16 +194,14 @@ public class MainTest extends TestBase {
     }
 
     @Test
-    public void driverRoutesTest() throws InterruptedException, IOException, CsvException {
+    public void driverRoutesTest() throws IOException, CsvException {
         String[] args = { Options.COMMAND_DRIVER_ROUTES};
         WorkRequestHandler.clearLastStatusPost();
         Main.main(args);
     }
 
     @Test
-    public void completedOrdersTest() throws InterruptedException, IOException, CsvException {
-        String usersFile = findFile(Constants.MEMBERDATA_RAW_FILE, "csv");
-        String[] args = { Options.COMMAND_COMPLETED_DAILY_ORDERS, usersFile };
+    public void completedOrdersTest() throws IOException, CsvException {
         LocalDate yesterday = LocalDate.now().minusDays(1);
         DateTimeFormatter format = DateTimeFormatter.ofPattern("YYYY/MM/DD");
         String yesterdayStr = yesterday.format(format);
@@ -211,23 +209,24 @@ public class MainTest extends TestBase {
         String completedOrdersRequest =
                 "{ \"success\": true, \"columns\": [ \"post_number\", \"deleted_at\", \"raw\" ], "
                         + "\"rows\": [ "
-                        + "[ 1, null, \""
+                        + "[ 42, null, \""
                         + yesterdayStr
                         + "\n[xyzzy.csv|attachment](upload://routed-deliveries.csv) (5.8 KB)\" ] "
                         + "] }";
         HttpClientSimulator.setQueryResponseData(
                 Constants.QUERY_GET_LAST_COMPLETED_DAILY_ORDERS_REPLY, completedOrdersRequest);
+        String usersFile = findFile(Constants.MEMBERDATA_RAW_FILE, "csv");
+        String[] args = { Options.COMMAND_COMPLETED_DAILY_ORDERS, usersFile };
         WorkRequestHandler.clearLastStatusPost();
         Main.main(args);
 
         Post statusPost = WorkRequestHandler.getLastStatusPost();
         assertThat(statusPost).isNotNull();
-        assertThat(statusPost.raw).contains("Status: " + WorkRequestHandler.RequestStatus.Succeeded.toString());
-        assertThat(statusPost.topic_id).isEqualTo(Main.COMPLETED_DAILY_DELIVERIES_TOPIC);
+        assertThat(statusPost.raw).contains("Status: Succeeded");
     }
 
     @Test
-    public void completedOrdersInvalidDateTest() throws InterruptedException, IOException, CsvException {
+    public void completedOrdersInvalidDateTest() throws IOException, CsvException {
         HttpClientSimulator.setQueryResponseFile(
                 Constants.QUERY_GET_LAST_COMPLETED_DAILY_ORDERS_REPLY, "workrequest-no-date.json");
         String usersFile = findFile(Constants.MEMBERDATA_RAW_FILE, "csv");
@@ -243,7 +242,7 @@ public class MainTest extends TestBase {
     }
 
     @Test
-    public void completedOrdersFutureDateTest() throws InterruptedException, IOException, CsvException {
+    public void completedOrdersFutureDateTest() throws IOException, CsvException {
         LocalDate nextWeek = LocalDate.now().plusWeeks(1);
         DateTimeFormatter format = DateTimeFormatter.ofPattern("YYYY/MM/DD");
         String nextWeekStr = nextWeek.format(format);
@@ -271,7 +270,7 @@ public class MainTest extends TestBase {
     }
 
     @Test
-    public void completedOrdersDateTooOldTest() throws InterruptedException, IOException, CsvException {
+    public void completedOrdersDateTooOldTest() throws IOException, CsvException {
         LocalDate lastYear = LocalDate.now().minusYears(1);
         DateTimeFormatter format = DateTimeFormatter.ofPattern("YYYY/MM/DD");
         String lastYearStr = lastYear.format(format);
@@ -299,7 +298,7 @@ public class MainTest extends TestBase {
     }
 
     @Test
-    public void completedOrdersDisableDateAuditTest() throws InterruptedException, IOException, CsvException {
+    public void completedOrdersDisableDateAuditTest() throws IOException, CsvException {
         LocalDate lastYear = LocalDate.now().minusYears(1);
         DateTimeFormatter format = DateTimeFormatter.ofPattern("YYYY/MM/DD");
         String lastYearStr = lastYear.format(format);
@@ -325,7 +324,7 @@ public class MainTest extends TestBase {
     }
 
     @Test
-    public void orderHistoryTest() throws InterruptedException, IOException, CsvException {
+    public void orderHistoryTest() throws IOException, CsvException {
         String usersFile = findFile(Constants.MEMBERDATA_RAW_FILE, "csv");
         String[] args = { Options.COMMAND_ORDER_HISTORY, usersFile };
         Main.main(args);

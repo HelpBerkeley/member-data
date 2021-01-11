@@ -151,6 +151,7 @@ public class UserExporterTest extends TestBase {
         assertThat(headerColumns[index++]).isEqualTo(User.VOICEONLY_COLUMN);
         assertThat(headerColumns[index++]).isEqualTo(User.DISPATCHER_COLUMN);
         assertThat(headerColumns[index++]).isEqualTo(User.DRIVER_COLUMN);
+        assertThat(headerColumns[index++]).isEqualTo(User.TRAINED_DRIVER_COLUMN);
         assertThat(headerColumns[index++]).isEqualTo(User.CREATED_AT_COLUMN);
         assertThat(headerColumns[index++]).isEqualTo(User.CONDO_COLUMN);
         assertThat(headerColumns[index++]).isEqualTo(User.REFERRAL_COLUMN);
@@ -162,6 +163,8 @@ public class UserExporterTest extends TestBase {
         assertThat(headerColumns[index++]).isEqualTo(User.BHS_COLUMN);
         assertThat(headerColumns[index++]).isEqualTo(User.HELPLINE_COLUMN);
         assertThat(headerColumns[index++]).isEqualTo(User.SITELINE_COLUMN);
+        assertThat(headerColumns[index++]).isEqualTo(User.TRAINED_CUSTOMER_CARE_A_COLUMN);
+        assertThat(headerColumns[index++]).isEqualTo(User.TRAINED_CUSTOMER_CARE_B_COLUMN);
         assertThat(headerColumns[index++]).isEqualTo(User.INREACH_COLUMN);
         assertThat(headerColumns[index++]).isEqualTo(User.OUTREACH_COLUMN);
         assertThat(headerColumns[index++]).isEqualTo(User.MARKETING_COLUMN);
@@ -187,6 +190,7 @@ public class UserExporterTest extends TestBase {
         assertThat(columns[index++]).isEqualTo(String.valueOf(u1.isVoiceOnly()));
         assertThat(columns[index++]).isEqualTo(String.valueOf(u1.isDispatcher()));
         assertThat(columns[index++]).isEqualTo(String.valueOf(u1.isDriver()));
+        assertThat(columns[index++]).isEqualTo(String.valueOf(u1.isTrainedDriver()));
         assertThat(columns[index++]).isEqualTo(u1.getCreateTime());
         assertThat(columns[index++]).isEqualTo(String.valueOf(u1.isCondo()));
         assertThat(columns[index++]).isEqualTo(String.valueOf(u1.getReferral()));
@@ -198,6 +202,8 @@ public class UserExporterTest extends TestBase {
         assertThat(columns[index++]).isEqualTo(String.valueOf(u1.isBHS()));
         assertThat(columns[index++]).isEqualTo(String.valueOf(u1.isHelpLine()));
         assertThat(columns[index++]).isEqualTo(String.valueOf(u1.isSiteLine()));
+        assertThat(columns[index++]).isEqualTo(String.valueOf(u1.isTrainedCustomerCareA()));
+        assertThat(columns[index++]).isEqualTo(String.valueOf(u1.isTrainedCustomerCareB()));
         assertThat(columns[index++]).isEqualTo(String.valueOf(u1.isInReach()));
         assertThat(columns[index++]).isEqualTo(String.valueOf(u1.isOutReach()));
         assertThat(columns[index++]).isEqualTo(String.valueOf(u1.isMarketing()));
@@ -255,12 +261,15 @@ public class UserExporterTest extends TestBase {
         assertThat(headerColumns[index++]).isEqualTo(User.SHORT_CONSUMER_COLUMN);
         assertThat(headerColumns[index++]).isEqualTo(User.SHORT_VOICEONLY_COLUMN);
         assertThat(headerColumns[index++]).isEqualTo(User.SHORT_DRIVER_COLUMN);
+        assertThat(headerColumns[index++]).isEqualTo(User.SHORT_TRAINED_DRIVER_COLUMN);
         assertThat(headerColumns[index++]).isEqualTo(User.SHORT_DISPATCHER_COLUMN);
         assertThat(headerColumns[index++]).isEqualTo(User.SHORT_WORKFLOW_COLUMN);
         assertThat(headerColumns[index++]).isEqualTo(User.SHORT_INREACH_COLUMN);
         assertThat(headerColumns[index++]).isEqualTo(User.SHORT_OUTREACH_COLUMN);
         assertThat(headerColumns[index++]).isEqualTo(User.SHORT_HELPLINE_COLUMN);
         assertThat(headerColumns[index++]).isEqualTo(User.SHORT_SITELINE_COLUMN);
+        assertThat(headerColumns[index++]).isEqualTo(User.SHORT_TRAINED_CUSTOMER_CARE_A_COLUMN);
+        assertThat(headerColumns[index++]).isEqualTo(User.SHORT_TRAINED_CUSTOMER_CARE_B_COLUMN);
         assertThat(headerColumns[index++]).isEqualTo(User.SHORT_MARKETING_COLUMN);
         assertThat(headerColumns[index++]).isEqualTo(User.SHORT_MODERATORS_COLUMN);
         assertThat(headerColumns[index++]).isEqualTo(User.SHORT_TRUST_LEVEL_4_COLUMN);
@@ -269,7 +278,16 @@ public class UserExporterTest extends TestBase {
         assertThat(headerColumns[index++]).isEqualTo(User.SHORT_BHS_COLUMN);
         assertThat(headerColumns[index++]).isEqualTo(User.SHORT_CUSTOMER_INFO_COLUMN);
         assertThat(headerColumns[index++]).isEqualTo(User.SHORT_ADVISOR_COLUMN);
+        assertThat(headerColumns[index++]).isEqualTo(User.SHORT_BOARD_COLUMN);
         assertThat(headerColumns[index++]).isEqualTo(User.SHORT_COORDINATOR_COLUMN);
+        assertThat(headerColumns[index++]).isEqualTo(User.SHORT_LIMITED_RUNS_COLUMN);
+        assertThat(headerColumns[index++]).isEqualTo(User.SHORT_AT_RISK_COLUMN);
+        assertThat(headerColumns[index++]).isEqualTo(User.SHORT_BIKERS_COLUMN);
+        assertThat(headerColumns[index++]).isEqualTo(User.SHORT_OUT_COLUMN);
+        assertThat(headerColumns[index++]).isEqualTo(User.SHORT_EVENTS_ONLY_COLUMN);
+        assertThat(headerColumns[index++]).isEqualTo(User.SHORT_TRAINED_EVENT_DRIVER_COLUMN);
+        assertThat(headerColumns[index++]).isEqualTo(User.SHORT_GONE_COLUMN);
+        assertThat(headerColumns[index++]).isEqualTo(User.SHORT_OTHER_DRIVERS_COLUMN);
         assertThat(headerColumns[index++]).isEqualTo(User.SHORT_ADMIN_COLUMN);
         assertThat(headerColumns[index++]).isEqualTo(User.SHORT_CONSUMER_REQUEST_COLUMN);
         //noinspection UnusedAssignment
@@ -294,12 +312,15 @@ public class UserExporterTest extends TestBase {
         assertThat(columns[index++]).isEqualTo(String.valueOf(u1.isConsumer()));
         assertThat(columns[index++]).isEqualTo(String.valueOf(u1.isVoiceOnly()));
         assertThat(columns[index++]).isEqualTo(String.valueOf(u1.isDriver()));
+        assertThat(columns[index++]).isEqualTo(String.valueOf(u1.isTrainedDriver()));
         assertThat(columns[index++]).isEqualTo(String.valueOf(u1.isDispatcher()));
         assertThat(columns[index++]).isEqualTo(String.valueOf(u1.isWorkflow()));
         assertThat(columns[index++]).isEqualTo(String.valueOf(u1.isInReach()));
         assertThat(columns[index++]).isEqualTo(String.valueOf(u1.isOutReach()));
         assertThat(columns[index++]).isEqualTo(String.valueOf(u1.isHelpLine()));
         assertThat(columns[index++]).isEqualTo(String.valueOf(u1.isSiteLine()));
+        assertThat(columns[index++]).isEqualTo(String.valueOf(u1.isTrainedCustomerCareA()));
+        assertThat(columns[index++]).isEqualTo(String.valueOf(u1.isTrainedCustomerCareB()));
         assertThat(columns[index++]).isEqualTo(String.valueOf(u1.isMarketing()));
         assertThat(columns[index++]).isEqualTo(String.valueOf(u1.isModerator()));
         assertThat(columns[index++]).isEqualTo(String.valueOf(u1.isTrustLevel4()));
@@ -308,7 +329,16 @@ public class UserExporterTest extends TestBase {
         assertThat(columns[index++]).isEqualTo(String.valueOf(u1.isBHS()));
         assertThat(columns[index++]).isEqualTo(String.valueOf(u1.isCustomerInfo()));
         assertThat(columns[index++]).isEqualTo(String.valueOf(u1.isAdvisor()));
+        assertThat(columns[index++]).isEqualTo(String.valueOf(u1.isBoard()));
         assertThat(columns[index++]).isEqualTo(String.valueOf(u1.isCoordinator()));
+        assertThat(columns[index++]).isEqualTo(String.valueOf(u1.isLimitedRuns()));
+        assertThat(columns[index++]).isEqualTo(String.valueOf(u1.isAtRisk()));
+        assertThat(columns[index++]).isEqualTo(String.valueOf(u1.isBiker()));
+        assertThat(columns[index++]).isEqualTo(String.valueOf(u1.isOut()));
+        assertThat(columns[index++]).isEqualTo(String.valueOf(u1.isEventsOnly()));
+        assertThat(columns[index++]).isEqualTo(String.valueOf(u1.isTrainedEventDriver()));
+        assertThat(columns[index++]).isEqualTo(String.valueOf(u1.isGone()));
+        assertThat(columns[index++]).isEqualTo(String.valueOf(u1.isOtherDrivers()));
         assertThat(columns[index++]).isEqualTo(String.valueOf(u1.isAdmin()));
         assertThat(columns[index++]).isEqualTo(String.valueOf(u1.hasConsumerRequest()));
         //noinspection UnusedAssignment

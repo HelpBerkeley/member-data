@@ -195,7 +195,7 @@ public class HBParser {
         assert ! lines.isEmpty();
         String[] headers = lines.get(0);
 
-        assert headers.length == 33 : headers.length;
+        assert headers.length == 45 : headers.length;
 
         int index = 0;
         assert headers[index].equals(User.ID_COLUMN) : headers[index];
@@ -210,6 +210,7 @@ public class HBParser {
         assert headers[++index].equals(User.VOICEONLY_COLUMN) : headers[index];
         assert headers[++index].equals(User.DISPATCHER_COLUMN) : headers[index];
         assert headers[++index].equals(User.DRIVER_COLUMN) : headers[index];
+        assert headers[++index].equals(User.TRAINED_DRIVER_COLUMN) : headers[index];
         assert headers[++index].equals(User.CREATED_AT_COLUMN) : headers[index];
         assert headers[++index].equals(User.CONDO_COLUMN) : headers[index];
         assert headers[++index].equals(User.REFERRAL_COLUMN) : headers[index];
@@ -221,6 +222,8 @@ public class HBParser {
         assert headers[++index].equals(User.BHS_COLUMN) : headers[index];
         assert headers[++index].equals(User.HELPLINE_COLUMN) : headers[index];
         assert headers[++index].equals(User.SITELINE_COLUMN) : headers[index];
+        assert headers[++index].equals(User.TRAINED_CUSTOMER_CARE_A_COLUMN) : headers[index];
+        assert headers[++index].equals(User.TRAINED_CUSTOMER_CARE_B_COLUMN) : headers[index];
         assert headers[++index].equals(User.INREACH_COLUMN) : headers[index];
         assert headers[++index].equals(User.OUTREACH_COLUMN) : headers[index];
         assert headers[++index].equals(User.MARKETING_COLUMN) : headers[index];
@@ -229,7 +232,16 @@ public class HBParser {
         assert headers[++index].equals(User.WORKFLOW_COLUMN) : headers[index];
         assert headers[++index].equals(User.CUSTOMER_INFO_COLUMN) : headers[index];
         assert headers[++index].equals(User.ADVISOR_COLUMN) : headers[index];
+        assert headers[++index].equals(User.BOARD_COLUMN) : headers[index];
         assert headers[++index].equals(User.COORDINATOR_COLUMN) : headers[index];
+        assert headers[++index].equals(User.LIMITED_RUNS_COLUMN) : headers[index];
+        assert headers[++index].equals(User.AT_RISK_COLUMN) : headers[index];
+        assert headers[++index].equals(User.BIKERS_COLUMN) : headers[index];
+        assert headers[++index].equals(User.OUT_COLUMN) : headers[index];
+        assert headers[++index].equals(User.EVENTS_ONLY_COLUMN) : headers[index];
+        assert headers[++index].equals(User.TRAINED_EVENT_DRIVER_COLUMN) : headers[index];
+        assert headers[++index].equals(User.GONE_COLUMN) : headers[index];
+        assert headers[++index].equals(User.OTHER_DRIVERS_COLUMN) : headers[index];
         assert headers[++index].equals(User.ADMIN_COLUMN) : headers[index];
 
         List<User> users = new ArrayList<>();
@@ -267,6 +279,9 @@ public class HBParser {
             if (Boolean.parseBoolean(columns[index++])) {
                 groups.add(Constants.GROUP_DRIVERS);
             }
+            if (Boolean.parseBoolean(columns[index++])) {
+                groups.add(Constants.GROUP_TRAINED_DRIVERS);
+            }
 
             String createdAt = columns[index++];
             Boolean isCondo = Boolean.valueOf(columns[index++]);
@@ -293,6 +308,14 @@ public class HBParser {
 
             if (Boolean.parseBoolean(columns[index++])) {
                 groups.add(Constants.GROUP_SITELINE);
+            }
+
+            if (Boolean.parseBoolean(columns[index++])) {
+                groups.add(Constants.GROUP_TRAINED_CUSTOMER_CARE_A);
+            }
+
+            if (Boolean.parseBoolean(columns[index++])) {
+                groups.add(Constants.GROUP_TRAINED_CUSTOMER_CARE_B);
             }
 
             if (Boolean.parseBoolean(columns[index++])) {
@@ -328,7 +351,43 @@ public class HBParser {
             }
 
             if (Boolean.parseBoolean(columns[index++])) {
+                groups.add(Constants.GROUP_BOARD);
+            }
+
+            if (Boolean.parseBoolean(columns[index++])) {
                 groups.add(Constants.GROUP_COORDINATOR);
+            }
+
+            if (Boolean.parseBoolean(columns[index++])) {
+                groups.add(Constants.GROUP_LIMITED_RUNS);
+            }
+
+            if (Boolean.parseBoolean(columns[index++])) {
+                groups.add(Constants.GROUP_AT_RISK);
+            }
+
+            if (Boolean.parseBoolean(columns[index++])) {
+                groups.add(Constants.GROUP_BIKERS);
+            }
+
+            if (Boolean.parseBoolean(columns[index++])) {
+                groups.add(Constants.GROUP_OUT);
+            }
+
+            if (Boolean.parseBoolean(columns[index++])) {
+                groups.add(Constants.GROUP_EVENTS_ONLY);
+            }
+
+            if (Boolean.parseBoolean(columns[index++])) {
+                groups.add(Constants.GROUP_TRAINED_EVENT_DRIVERS);
+            }
+
+            if (Boolean.parseBoolean(columns[index++])) {
+                groups.add(Constants.GROUP_GONE);
+            }
+
+            if (Boolean.parseBoolean(columns[index++])) {
+                groups.add(Constants.GROUP_OTHER_DRIVERS);
             }
 
             //noinspection UnusedAssignment

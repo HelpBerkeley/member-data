@@ -37,12 +37,15 @@ public class RoundTripTest extends TestBase {
         User u1 = createUserWithGroups(
                 Constants.GROUP_CONSUMERS,
                 Constants.GROUP_DRIVERS,
+                Constants.GROUP_TRAINED_DRIVERS,
                 Constants.GROUP_DISPATCHERS,
                 Constants.GROUP_SPECIALISTS,
                 Constants.GROUP_PACKERS,
                 Constants.GROUP_BHS,
                 Constants.GROUP_HELPLINE,
                 Constants.GROUP_SITELINE,
+                Constants.GROUP_TRAINED_CUSTOMER_CARE_A,
+                Constants.GROUP_TRAINED_CUSTOMER_CARE_B,
                 Constants.GROUP_INREACH,
                 Constants.GROUP_OUTREACH,
                 Constants.GROUP_MARKETING,
@@ -52,11 +55,18 @@ public class RoundTripTest extends TestBase {
                 Constants.GROUP_TRUST_LEVEL_4,
                 Constants.GROUP_CUSTOMER_INFO,
                 Constants.GROUP_ADVISOR,
+                Constants.GROUP_BOARD,
                 Constants.GROUP_COORDINATOR,
+                Constants.GROUP_LIMITED_RUNS,
+                Constants.GROUP_AT_RISK,
+                Constants.GROUP_BIKERS,
+                Constants.GROUP_OUT,
+                Constants.GROUP_EVENTS_ONLY,
+                Constants.GROUP_TRAINED_EVENT_DRIVERS,
+                Constants.GROUP_GONE,
+                Constants.GROUP_OTHER_DRIVERS,
                 Constants.GROUP_ADMIN);
 
-//        List<User> users = List.of(u1, createTestUser2(), createTestUser3());
-//        UserExporter exporter = new UserExporter(users);
         List<User> users = List.of(u1);
         UserExporter exporter = new UserExporter(users);
 

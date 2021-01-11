@@ -71,45 +71,4 @@ public class OrderHistoryData {
         return date + " " + uploadFile;
 
     }
-
-//    // Get daily delivery posts
-//    static List<OrderHistoryData> deliveryPosts(ApiClient apiClient) throws InterruptedException {
-//        String json = apiClient.runQuery(Constants.QUERY_GET_DAILY_DELIVERIES);
-//        ApiQueryResult apiQueryResult = HBParser.parseQueryResult(json);
-//        List<OrderHistoryData> deliveryPosts = HBParser.dailyDeliveryPosts(apiQueryResult);
-//
-//        // Sort by date ascending
-//        deliveryPosts.sort(Comparator.comparing(OrderHistoryData::getDate));
-//        return deliveryPosts;
-//    }
-//
-//    // Get daily delivery posts
-//    static List<OrderHistoryData> deliveryPosts(final String csvData) {
-//        List<OrderHistoryData> deliveryPosts = HBParser.dailyDeliveryPosts(csvData);
-//
-//        // Sort by date ascending
-//        deliveryPosts.sort(Comparator.comparing(OrderHistoryData::getDate));
-//        return deliveryPosts;
-//    }
-//
-//    static String deliveryPostsHeader() {
-//        // FIX THIS, DS: constants
-//        return "Date" + Constants.CSV_SEPARATOR
-//                + "File" + Constants.CSV_SEPARATOR
-//                + "URL"
-//                + '\n';
-//    }
-//
-//    String getDate() {
-//        return date;
-//    }
-//
-//    UploadFile getUploadFile() {
-//        return uploadFile;
-//    }
-//
-//    @Override
-//    public String toString() {
-//        return date + " - " + uploadFile;
-//    }
 }

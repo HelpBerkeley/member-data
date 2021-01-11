@@ -85,6 +85,8 @@ public class Loader {
                 case Constants.GROUP_BHS:
                 case Constants.GROUP_HELPLINE:
                 case Constants.GROUP_SITELINE:
+                case Constants.GROUP_TRAINED_CUSTOMER_CARE_A:
+                case Constants.GROUP_TRAINED_CUSTOMER_CARE_B:
                 case Constants.GROUP_INREACH:
                 case Constants.GROUP_OUTREACH:
                 case Constants.GROUP_MARKETING:
@@ -97,7 +99,18 @@ public class Loader {
                 case Constants.GROUP_COORDINATOR:
                 case Constants.GROUP_ADMIN:
                 case Constants.GROUP_PACKERS:
+                case Constants.GROUP_BOARD:
+                case Constants.GROUP_LIMITED_RUNS:
+                case Constants.GROUP_AT_RISK:
+                case Constants.GROUP_BIKERS:
+                case Constants.GROUP_OUT:
+                case Constants.GROUP_TRAINED_DRIVERS:
+                case Constants.GROUP_EVENTS_ONLY:
+                case Constants.GROUP_GONE:
+                case Constants.GROUP_OTHER_DRIVERS:
                     groups.put(entry.getKey(), Group.createGroup(entry.getKey(), entry.getValue()));
+                default:
+                    break;
             }
         }
     }

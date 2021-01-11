@@ -402,24 +402,6 @@ public class Main {
                 "" : "failed " + response.statusCode() + ": " + response.body());
     }
 
-    static void getOrderHistory(ApiClient apiClient) throws IOException {
-
-        // Fetch the order history post
-        String json = apiClient.getPost(ORDER_HISTORY_POST_ID);
-
-        // Parse the order history post
-        String rawPost = HBParser.postBody(json);
-        OrderHistoryPost orderHistoryPost = HBParser.orderHistoryPost(rawPost);
-
-        // Download the order history data file
-        String orderHistoryData = apiClient.downloadFile(orderHistoryPost.uploadFile.getFileName());
-
-        // Write the order history data to a file
-        Exporter exporter = new Exporter();
-        String fileName = exporter.generateFileName(Constants.ORDER_HISTORY_FILE, "csv");
-        exporter.writeFile(fileName, orderHistoryData);
-    }
-
     static void getDailyDeliveryPosts(ApiClient apiClient) throws IOException {
         List<DeliveryData> deliveryPosts = DeliveryData.deliveryPosts(apiClient);
         new DeliveryDataExporter(deliveryPosts).deliveryPostsToFile();

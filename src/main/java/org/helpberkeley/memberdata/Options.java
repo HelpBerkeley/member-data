@@ -50,7 +50,6 @@ public class Options {
     static final String TOO_MANY_COMMANDS = USAGE_ERROR + ": too many commands";
     static final String COMMAND_REQUIRES_FILE_NAME = ": command requires a file name parameter";
     static final String COMMAND_REQUIRES_TWO_FILE_NAMES = ": command requires two file name parameters";
-    static final String COMMAND_REQUIRES_THREE_FILE_NAMES = ": command requires three file name parameters";
     static final String COMMAND_REQUIRES_SHORT_URL = ": command requires a short URL";
     static final String BAD_SHORT_URL = USAGE_ERROR + ": short url syntax error";
     static final String FILE_DOES_NOT_EXIST = USAGE_ERROR + ": file does not exist: ";
@@ -158,12 +157,6 @@ public class Options {
             }
         }
 
-        if (thirdFileName != null) {
-            if (! new File(thirdFileName).exists()) {
-                dieMessage(FILE_DOES_NOT_EXIST + thirdFileName);
-            }
-        }
-
         if ((shortURL != null) && (! shortURL.startsWith("upload://"))) {
                 dieMessage(BAD_SHORT_URL);
         }
@@ -179,10 +172,6 @@ public class Options {
 
     String getSecondFileName() {
         return secondFileName;
-    }
-
-    String getThirdFileName() {
-        return thirdFileName;
     }
 
     String getShortURL() {

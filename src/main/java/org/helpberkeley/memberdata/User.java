@@ -52,6 +52,8 @@ public class User {
     static final String BHS_COLUMN = "BHS";
     static final String HELPLINE_COLUMN = "HelpLine";
     static final String SITELINE_COLUMN = "SiteLine";
+    static final String TRAINED_CUSTOMER_CARE_A_COLUMN = "trained_customer_care_A";
+    static final String TRAINED_CUSTOMER_CARE_B_COLUMN = "trained_customer_care_B";
     static final String INREACH_COLUMN = "InReach";
     static final String OUTREACH_COLUMN = "OutReach";
     static final String MARKETING_COLUMN = "Marketing";
@@ -62,7 +64,17 @@ public class User {
     static final String TRUST_LEVEL_4_COLUMN = "TrustLevel4";
     static final String CUSTOMER_INFO_COLUMN = "CustomerInfo";
     static final String ADVISOR_COLUMN = "Advisor";
+    static final String BOARD_COLUMN = "Board";
     static final String COORDINATOR_COLUMN = "Coordinator";
+    static final String LIMITED_RUNS_COLUMN = "Limited";
+    static final String AT_RISK_COLUMN = "at-risk";
+    static final String BIKERS_COLUMN = "bikers";
+    static final String OUT_COLUMN = "out";
+    static final String TRAINED_DRIVER_COLUMN = "trained-driver";
+    static final String EVENTS_ONLY_COLUMN = "eventsonly";
+    static final String TRAINED_EVENT_DRIVER_COLUMN = "trained_event_driver";
+    static final String GONE_COLUMN = "gone";
+    static final String OTHER_DRIVERS_COLUMN = "other-drivers";
     static final String ADMIN_COLUMN = "Admin";
     static final String EMAIL_VERIFIED_COLUMN = "Verified";
 
@@ -87,6 +99,8 @@ public class User {
     static final String SHORT_OUTREACH_COLUMN = "Outreach";
     static final String SHORT_HELPLINE_COLUMN = "HelpLine";
     static final String SHORT_SITELINE_COLUMN = "SiteLine";
+    static final String SHORT_TRAINED_CUSTOMER_CARE_A_COLUMN = "trainedCCA";
+    static final String SHORT_TRAINED_CUSTOMER_CARE_B_COLUMN = "trainedCCB";
     static final String SHORT_MARKETING_COLUMN = "Marktg";
     static final String SHORT_MODERATORS_COLUMN = "Mods";
     static final String SHORT_TRUST_LEVEL_4_COLUMN = "Trust4";
@@ -95,7 +109,17 @@ public class User {
     static final String SHORT_BHS_COLUMN = "BHS";
     static final String SHORT_CUSTOMER_INFO_COLUMN = "CustInf";
     static final String SHORT_ADVISOR_COLUMN = "Advsr";
+    static final String SHORT_BOARD_COLUMN = "Board";
     static final String SHORT_COORDINATOR_COLUMN = "Coordtr";
+    static final String SHORT_LIMITED_RUNS_COLUMN = "limited";
+    static final String SHORT_AT_RISK_COLUMN = "at-risk";
+    static final String SHORT_BIKERS_COLUMN = "biker";
+    static final String SHORT_OUT_COLUMN = "out";
+    static final String SHORT_TRAINED_DRIVER_COLUMN = "trainedD";
+    static final String SHORT_EVENTS_ONLY_COLUMN = "events";
+    static final String SHORT_TRAINED_EVENT_DRIVER_COLUMN = "trainedED";
+    static final String SHORT_GONE_COLUMN = "gone";
+    static final String SHORT_OTHER_DRIVERS_COLUMN = "other";
     static final String SHORT_ADMIN_COLUMN = "Admin";
     static final String SHORT_CONSUMER_REQUEST_COLUMN = "ConsReq";
     static final String SHORT_VOLUNTEER_REQUEST_COLUMN = "Volunteer Request";
@@ -260,6 +284,14 @@ public class User {
         return groupMembership.contains(Constants.GROUP_SITELINE);
     }
 
+    Boolean isTrainedCustomerCareA() {
+        return groupMembership.contains(Constants.GROUP_TRAINED_CUSTOMER_CARE_A);
+    }
+
+    Boolean isTrainedCustomerCareB() {
+        return groupMembership.contains(Constants.GROUP_TRAINED_CUSTOMER_CARE_B);
+    }
+
     Boolean isInReach() {
         return groupMembership.contains(Constants.GROUP_INREACH);
     }
@@ -302,6 +334,46 @@ public class User {
 
     Boolean isAdmin() {
         return groupMembership.contains(Constants.GROUP_ADMIN);
+    }
+
+    Boolean isBoard() {
+        return groupMembership.contains(Constants.GROUP_BOARD);
+    }
+
+    Boolean isLimitedRuns() {
+        return groupMembership.contains(Constants.GROUP_LIMITED_RUNS);
+    }
+
+    Boolean isAtRisk() {
+        return groupMembership.contains(Constants.GROUP_AT_RISK);
+    }
+
+    Boolean isBiker() {
+        return groupMembership.contains(Constants.GROUP_BIKERS);
+    }
+
+    Boolean isOut() {
+        return groupMembership.contains(Constants.GROUP_OUT);
+    }
+
+    Boolean isTrainedDriver() {
+        return groupMembership.contains(Constants.GROUP_TRAINED_DRIVERS);
+    }
+
+    Boolean isEventsOnly() {
+        return groupMembership.contains(Constants.GROUP_EVENTS_ONLY);
+    }
+
+    Boolean isTrainedEventDriver() {
+        return groupMembership.contains(Constants.GROUP_TRAINED_EVENT_DRIVERS);
+    }
+
+    Boolean isGone() {
+        return groupMembership.contains(Constants.GROUP_GONE);
+    }
+
+    Boolean isOtherDrivers() {
+        return groupMembership.contains(Constants.GROUP_OTHER_DRIVERS);
     }
 
     @Override
@@ -351,6 +423,10 @@ public class User {
                 "=" +
                 isDriver() +
                 ':' +
+                Constants.GROUP_TRAINED_DRIVERS +
+                "=" +
+                isTrainedDriver() +
+                ':' +
                 CONDO_COLUMN +
                 "=" +
                 isCondo() +
@@ -395,6 +471,14 @@ public class User {
                 "=" +
                 isSiteLine() +
                 ':' +
+                Constants.GROUP_TRAINED_CUSTOMER_CARE_A +
+                "=" +
+                isTrainedCustomerCareA() +
+                ':' +
+                Constants.GROUP_TRAINED_CUSTOMER_CARE_B +
+                "=" +
+                isTrainedCustomerCareB() +
+                ':' +
                 Constants.GROUP_INREACH +
                 "=" +
                 isInReach() +
@@ -423,9 +507,45 @@ public class User {
                 "=" +
                 isAdvisor() +
                 ':' +
+                Constants.GROUP_BOARD +
+                "=" +
+                isBoard() +
+                ':' +
                 Constants.GROUP_COORDINATOR +
                 "=" +
                 isCoordinator() +
+                ':' +
+                Constants.GROUP_LIMITED_RUNS +
+                "=" +
+                isLimitedRuns() +
+                ':' +
+                Constants.GROUP_AT_RISK +
+                "=" +
+                isAtRisk() +
+                ':' +
+                Constants.GROUP_BIKERS +
+                "=" +
+                isBiker() +
+                ':' +
+                Constants.GROUP_OUT +
+                "=" +
+                isOut() +
+                ':' +
+                Constants.GROUP_EVENTS_ONLY +
+                "=" +
+                isEventsOnly() +
+                ':' +
+                Constants.GROUP_TRAINED_EVENT_DRIVERS +
+                "=" +
+                isTrainedEventDriver() +
+                ':' +
+                Constants.GROUP_GONE +
+                "=" +
+                isGone() +
+                ':' +
+                Constants.GROUP_OTHER_DRIVERS +
+                "=" +
+                isOtherDrivers() +
                 ':' +
                 Constants.GROUP_ADMIN +
                 "=" +
@@ -443,7 +563,7 @@ public class User {
 
     //
     // Originally these were all assertions, but we have seen:
-    //   - Discources support creating incomplete users
+    //   - Discourse supports creating incomplete users
     //   - Incomplete users created by some other means - unknown
     //
     private void auditNullFields() {
@@ -926,12 +1046,15 @@ public class User {
                 + SHORT_CONSUMER_COLUMN + Constants.CSV_SEPARATOR
                 + SHORT_VOICEONLY_COLUMN + Constants.CSV_SEPARATOR
                 + SHORT_DRIVER_COLUMN + Constants.CSV_SEPARATOR
+                + SHORT_TRAINED_DRIVER_COLUMN + Constants.CSV_SEPARATOR
                 + SHORT_DISPATCHER_COLUMN + Constants.CSV_SEPARATOR
                 + SHORT_WORKFLOW_COLUMN + Constants.CSV_SEPARATOR
                 + SHORT_INREACH_COLUMN + Constants.CSV_SEPARATOR
                 + SHORT_OUTREACH_COLUMN + Constants.CSV_SEPARATOR
                 + SHORT_HELPLINE_COLUMN + Constants.CSV_SEPARATOR
                 + SHORT_SITELINE_COLUMN + Constants.CSV_SEPARATOR
+                + SHORT_TRAINED_CUSTOMER_CARE_A_COLUMN + Constants.CSV_SEPARATOR
+                + SHORT_TRAINED_CUSTOMER_CARE_B_COLUMN + Constants.CSV_SEPARATOR
                 + SHORT_MARKETING_COLUMN + Constants.CSV_SEPARATOR
                 + SHORT_MODERATORS_COLUMN + Constants.CSV_SEPARATOR
                 + SHORT_TRUST_LEVEL_4_COLUMN + Constants.CSV_SEPARATOR
@@ -940,7 +1063,16 @@ public class User {
                 + SHORT_BHS_COLUMN + Constants.CSV_SEPARATOR
                 + SHORT_CUSTOMER_INFO_COLUMN + Constants.CSV_SEPARATOR
                 + SHORT_ADVISOR_COLUMN + Constants.CSV_SEPARATOR
+                + SHORT_BOARD_COLUMN + Constants.CSV_SEPARATOR
                 + SHORT_COORDINATOR_COLUMN + Constants.CSV_SEPARATOR
+                + SHORT_LIMITED_RUNS_COLUMN + Constants.CSV_SEPARATOR
+                + SHORT_AT_RISK_COLUMN + Constants.CSV_SEPARATOR
+                + SHORT_BIKERS_COLUMN + Constants.CSV_SEPARATOR
+                + SHORT_OUT_COLUMN + Constants.CSV_SEPARATOR
+                + SHORT_EVENTS_ONLY_COLUMN + Constants.CSV_SEPARATOR
+                + SHORT_TRAINED_EVENT_DRIVER_COLUMN + Constants.CSV_SEPARATOR
+                + SHORT_GONE_COLUMN + Constants.CSV_SEPARATOR
+                + SHORT_OTHER_DRIVERS_COLUMN + Constants.CSV_SEPARATOR
                 + SHORT_ADMIN_COLUMN + Constants.CSV_SEPARATOR
                 + SHORT_CONSUMER_REQUEST_COLUMN + Constants.CSV_SEPARATOR
                 + SHORT_VOLUNTEER_REQUEST_COLUMN
@@ -961,6 +1093,7 @@ public class User {
                 + VOICEONLY_COLUMN + Constants.CSV_SEPARATOR
                 + DISPATCHER_COLUMN + Constants.CSV_SEPARATOR
                 + DRIVER_COLUMN + Constants.CSV_SEPARATOR
+                + TRAINED_DRIVER_COLUMN + Constants.CSV_SEPARATOR
                 + CREATED_AT_COLUMN + Constants.CSV_SEPARATOR
                 + CONDO_COLUMN + Constants.CSV_SEPARATOR
                 + REFERRAL_COLUMN + Constants.CSV_SEPARATOR
@@ -972,6 +1105,8 @@ public class User {
                 + BHS_COLUMN + Constants.CSV_SEPARATOR
                 + HELPLINE_COLUMN + Constants.CSV_SEPARATOR
                 + SITELINE_COLUMN + Constants.CSV_SEPARATOR
+                + TRAINED_CUSTOMER_CARE_A_COLUMN + Constants.CSV_SEPARATOR
+                + TRAINED_CUSTOMER_CARE_B_COLUMN + Constants.CSV_SEPARATOR
                 + INREACH_COLUMN + Constants.CSV_SEPARATOR
                 + OUTREACH_COLUMN + Constants.CSV_SEPARATOR
                 + MARKETING_COLUMN + Constants.CSV_SEPARATOR
@@ -980,7 +1115,16 @@ public class User {
                 + WORKFLOW_COLUMN + Constants.CSV_SEPARATOR
                 + CUSTOMER_INFO_COLUMN + Constants.CSV_SEPARATOR
                 + ADVISOR_COLUMN + Constants.CSV_SEPARATOR
+                + BOARD_COLUMN + Constants.CSV_SEPARATOR
                 + COORDINATOR_COLUMN + Constants.CSV_SEPARATOR
+                + LIMITED_RUNS_COLUMN + Constants.CSV_SEPARATOR
+                + AT_RISK_COLUMN + Constants.CSV_SEPARATOR
+                + BIKERS_COLUMN + Constants.CSV_SEPARATOR
+                + OUT_COLUMN + Constants.CSV_SEPARATOR
+                + EVENTS_ONLY_COLUMN + Constants.CSV_SEPARATOR
+                + TRAINED_EVENT_DRIVER_COLUMN + Constants.CSV_SEPARATOR
+                + GONE_COLUMN + Constants.CSV_SEPARATOR
+                + OTHER_DRIVERS_COLUMN + Constants.CSV_SEPARATOR
                 + ADMIN_COLUMN
                 + "\n";
     }
@@ -999,6 +1143,7 @@ public class User {
                 isVoiceOnly() + Constants.CSV_SEPARATOR +
                 isDispatcher() + Constants.CSV_SEPARATOR +
                 isDriver() + Constants.CSV_SEPARATOR +
+                isTrainedDriver() + Constants.CSV_SEPARATOR +
                 getCreateTime() + Constants.CSV_SEPARATOR +
                 isCondo() + Constants.CSV_SEPARATOR +
                 escapeCommas(getReferral()) + Constants.CSV_SEPARATOR +
@@ -1010,6 +1155,8 @@ public class User {
                 isBHS() + Constants.CSV_SEPARATOR +
                 isHelpLine() + Constants.CSV_SEPARATOR +
                 isSiteLine() + Constants.CSV_SEPARATOR +
+                isTrainedCustomerCareA() + Constants.CSV_SEPARATOR +
+                isTrainedCustomerCareB() + Constants.CSV_SEPARATOR +
                 isInReach() + Constants.CSV_SEPARATOR +
                 isOutReach() + Constants.CSV_SEPARATOR +
                 isMarketing() + Constants.CSV_SEPARATOR +
@@ -1018,7 +1165,16 @@ public class User {
                 isWorkflow() + Constants.CSV_SEPARATOR +
                 isCustomerInfo() + Constants.CSV_SEPARATOR +
                 isAdvisor() + Constants.CSV_SEPARATOR +
+                isBoard() + Constants.CSV_SEPARATOR +
                 isCoordinator() + Constants.CSV_SEPARATOR +
+                isLimitedRuns() + Constants.CSV_SEPARATOR +
+                isAtRisk() + Constants.CSV_SEPARATOR +
+                isBiker() + Constants.CSV_SEPARATOR +
+                isOut() + Constants.CSV_SEPARATOR +
+                isEventsOnly() + Constants.CSV_SEPARATOR +
+                isTrainedEventDriver() + Constants.CSV_SEPARATOR +
+                isGone() + Constants.CSV_SEPARATOR +
+                isOtherDrivers() + Constants.CSV_SEPARATOR +
                 isAdmin() +
                 '\n';
     }
@@ -1047,12 +1203,15 @@ public class User {
                 isConsumer() + Constants.CSV_SEPARATOR +
                 isVoiceOnly() + Constants.CSV_SEPARATOR +
                 isDriver() + Constants.CSV_SEPARATOR +
+                isTrainedDriver() + Constants.CSV_SEPARATOR +
                 isDispatcher() + Constants.CSV_SEPARATOR +
                 isWorkflow() + Constants.CSV_SEPARATOR +
                 isInReach() + Constants.CSV_SEPARATOR +
                 isOutReach() + Constants.CSV_SEPARATOR +
                 isHelpLine() + Constants.CSV_SEPARATOR +
                 isSiteLine() + Constants.CSV_SEPARATOR +
+                isTrainedCustomerCareA() + Constants.CSV_SEPARATOR +
+                isTrainedCustomerCareB() + Constants.CSV_SEPARATOR +
                 isMarketing() + Constants.CSV_SEPARATOR +
                 isModerator() + Constants.CSV_SEPARATOR +
                 isTrustLevel4() + Constants.CSV_SEPARATOR +
@@ -1061,7 +1220,16 @@ public class User {
                 isBHS() + Constants.CSV_SEPARATOR +
                 isCustomerInfo() + Constants.CSV_SEPARATOR +
                 isAdvisor() + Constants.CSV_SEPARATOR +
+                isBoard() + Constants.CSV_SEPARATOR +
                 isCoordinator() + Constants.CSV_SEPARATOR +
+                isLimitedRuns() + Constants.CSV_SEPARATOR +
+                isAtRisk() + Constants.CSV_SEPARATOR +
+                isBiker() + Constants.CSV_SEPARATOR +
+                isOut() + Constants.CSV_SEPARATOR +
+                isEventsOnly() + Constants.CSV_SEPARATOR +
+                isTrainedEventDriver() + Constants.CSV_SEPARATOR +
+                isGone() + Constants.CSV_SEPARATOR +
+                isOtherDrivers() + Constants.CSV_SEPARATOR +
                 isAdmin() + Constants.CSV_SEPARATOR +
                 hasConsumerRequest() + Constants.CSV_SEPARATOR +
                 getVolunteerRequest() +
@@ -1074,6 +1242,10 @@ public class User {
         // It would look nicer to the eye to group all of this as a single return statement
         // with a bunch of && clauses. But debugging why a match is failing becomes
         // a PITA with that structure.
+
+        if (obj == this){
+            return true;
+        }
 
         if (!(obj instanceof User)) {
             return false;

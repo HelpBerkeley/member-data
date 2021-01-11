@@ -133,6 +133,8 @@ public class Constants {
     public static final String GROUP_BHS = "BHS";
     public static final String GROUP_HELPLINE = "helpline";
     public static final String GROUP_SITELINE = "siteline";
+    public static final String GROUP_TRAINED_CUSTOMER_CARE_A = "trained_customer_care_A";
+    public static final String GROUP_TRAINED_CUSTOMER_CARE_B = "trained_customer_care_B";
     public static final String GROUP_INREACH = "inreach";
     public static final String GROUP_OUTREACH = "outreach";
     public static final String GROUP_MARKETING = "marketing";
@@ -145,6 +147,16 @@ public class Constants {
     public static final String GROUP_COORDINATOR = "coordinator";
     public static final String GROUP_ADMIN = "admin";
     public static final String GROUP_PACKERS = "HB_Packers";
+    public static final String GROUP_BOARD = "Board";
+    public static final String GROUP_LIMITED_RUNS = "limited_runs";
+    public static final String GROUP_AT_RISK = "at-risk";
+    public static final String GROUP_BIKERS = "bikers";
+    public static final String GROUP_OUT = "out";
+    public static final String GROUP_TRAINED_DRIVERS = "trained_drivers";
+    public static final String GROUP_EVENTS_ONLY = "eventsonly";
+    public static final String GROUP_TRAINED_EVENT_DRIVERS = "trained_event_drivers";
+    public static final String GROUP_GONE = "gone";
+    public static final String GROUP_OTHER_DRIVERS = "other-drivers";
 
     public static final String BERKELEY = "Berkeley";
     public static final String ALBANY = "Albany";

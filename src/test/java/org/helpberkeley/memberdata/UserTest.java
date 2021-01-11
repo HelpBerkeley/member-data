@@ -469,6 +469,30 @@ public class UserTest extends TestBase {
     }
 
     @Test
+    public void groupTrainedCustomerCareA() throws UserException {
+        User u1 = createUserWithGroup("u1", Constants.GROUP_TRAINED_CUSTOMER_CARE_A);
+        User u2 = createUserWithGroup("u1", Constants.GROUP_TRAINED_CUSTOMER_CARE_A);
+        User u3 = createUser();
+
+        assertThat(u1.isTrainedCustomerCareA()).isTrue();
+        assertThat(u1).isEqualTo(u2);
+        assertThat(u1).isNotEqualTo(u3);
+        assertThat(u3.isTrainedCustomerCareA()).isFalse();
+    }
+
+    @Test
+    public void groupTrainedCustomerCareB() throws UserException {
+        User u1 = createUserWithGroup("u1", Constants.GROUP_TRAINED_CUSTOMER_CARE_B);
+        User u2 = createUserWithGroup("u1", Constants.GROUP_TRAINED_CUSTOMER_CARE_B);
+        User u3 = createUser();
+
+        assertThat(u1.isTrainedCustomerCareB()).isTrue();
+        assertThat(u1).isEqualTo(u2);
+        assertThat(u1).isNotEqualTo(u3);
+        assertThat(u3.isTrainedCustomerCareB()).isFalse();
+    }
+
+    @Test
     public void groupInReach() throws UserException {
         User u1 = createUserWithGroup("u1", Constants.GROUP_INREACH);
         User u2 = createUserWithGroup("u1", Constants.GROUP_INREACH);
@@ -586,6 +610,138 @@ public class UserTest extends TestBase {
         assertThat(u1).isEqualTo(u2);
         assertThat(u1).isNotEqualTo(u3);
         assertThat(u3.isAdmin()).isFalse();
+    }
+
+    @Test
+    public void groupBoard() throws UserException {
+        User u1 = createUserWithGroup("u1", Constants.GROUP_BOARD);
+        User u2 = createUserWithGroup("u1", Constants.GROUP_BOARD);
+        User u3 = createUser();
+
+        assertThat(u1.isBoard()).isTrue();
+        assertThat(u1).isEqualTo(u2);
+        assertThat(u1).isNotEqualTo(u3);
+        assertThat(u3.isBoard()).isFalse();
+    }
+
+    @Test
+    public void groupLimitedRuns() throws UserException {
+        User u1 = createUserWithGroup("u1", Constants.GROUP_LIMITED_RUNS);
+        User u2 = createUserWithGroup("u1", Constants.GROUP_LIMITED_RUNS);
+        User u3 = createUser();
+
+        assertThat(u1.isLimitedRuns()).isTrue();
+        assertThat(u1).isEqualTo(u2);
+        assertThat(u1).isNotEqualTo(u3);
+        assertThat(u3.isLimitedRuns()).isFalse();
+    }
+
+    @Test
+    public void groupAtRisk() throws UserException {
+        User u1 = createUserWithGroup("u1", Constants.GROUP_AT_RISK);
+        User u2 = createUserWithGroup("u1", Constants.GROUP_AT_RISK);
+        User u3 = createUser();
+
+        assertThat(u1.isAtRisk()).isTrue();
+        assertThat(u1).isEqualTo(u2);
+        assertThat(u1).isNotEqualTo(u3);
+        assertThat(u3.isAtRisk()).isFalse();
+    }
+
+    @Test
+    public void groupBikers() throws UserException {
+        User u1 = createUserWithGroup("u1", Constants.GROUP_BIKERS);
+        User u2 = createUserWithGroup("u1", Constants.GROUP_BIKERS);
+        User u3 = createUser();
+
+        assertThat(u1.isBiker()).isTrue();
+        assertThat(u1).isEqualTo(u2);
+        assertThat(u1).isNotEqualTo(u3);
+        assertThat(u3.isBiker()).isFalse();
+    }
+
+    @Test
+    public void groupOut() throws UserException {
+        User u1 = createUserWithGroup("u1", Constants.GROUP_OUT);
+        User u2 = createUserWithGroup("u1", Constants.GROUP_OUT);
+        User u3 = createUser();
+
+        assertThat(u1.isOut()).isTrue();
+        assertThat(u1).isEqualTo(u2);
+        assertThat(u1).isNotEqualTo(u3);
+        assertThat(u3.isOut()).isFalse();
+    }
+
+    @Test
+    public void groupTrainedDrivers() throws UserException {
+        User u1 = createUserWithGroup("u1", Constants.GROUP_TRAINED_DRIVERS);
+        User u2 = createUserWithGroup("u1", Constants.GROUP_TRAINED_DRIVERS);
+        User u3 = createUser();
+
+        assertThat(u1.isTrainedDriver()).isTrue();
+        assertThat(u1).isEqualTo(u2);
+        assertThat(u1).isNotEqualTo(u3);
+        assertThat(u3.isTrainedDriver()).isFalse();
+    }
+
+    @Test
+    public void groupEventsOnly() throws UserException {
+        User u1 = createUserWithGroup("u1", Constants.GROUP_EVENTS_ONLY);
+        User u2 = createUserWithGroup("u1", Constants.GROUP_EVENTS_ONLY);
+        User u3 = createUser();
+
+        assertThat(u1.isEventsOnly()).isTrue();
+        assertThat(u1).isEqualTo(u2);
+        assertThat(u1).isNotEqualTo(u3);
+        assertThat(u3.isEventsOnly()).isFalse();
+    }
+
+    @Test
+    public void groupTrainedEventsDriver() throws UserException {
+        User u1 = createUserWithGroup("u1", Constants.GROUP_TRAINED_EVENT_DRIVERS);
+        User u2 = createUserWithGroup("u1", Constants.GROUP_TRAINED_EVENT_DRIVERS);
+        User u3 = createUser();
+
+        assertThat(u1.isTrainedEventDriver()).isTrue();
+        assertThat(u1).isEqualTo(u2);
+        assertThat(u1).isNotEqualTo(u3);
+        assertThat(u3.isTrainedEventDriver()).isFalse();
+    }
+
+    @Test
+    public void groupGone() throws UserException {
+        User u1 = createUserWithGroup("u1", Constants.GROUP_GONE);
+        User u2 = createUserWithGroup("u1", Constants.GROUP_GONE);
+        User u3 = createUser();
+
+        assertThat(u1.isGone()).isTrue();
+        assertThat(u1).isEqualTo(u2);
+        assertThat(u1).isNotEqualTo(u3);
+        assertThat(u3.isGone()).isFalse();
+    }
+
+    @Test
+    public void groupPackers() throws UserException {
+        User u1 = createUserWithGroup("u1", Constants.GROUP_PACKERS);
+        User u2 = createUserWithGroup("u1", Constants.GROUP_PACKERS);
+        User u3 = createUser();
+
+        assertThat(u1.isPacker()).isTrue();
+        assertThat(u1).isEqualTo(u2);
+        assertThat(u1).isNotEqualTo(u3);
+        assertThat(u3.isPacker()).isFalse();
+    }
+
+    @Test
+    public void groupOtherDrivers() throws UserException {
+        User u1 = createUserWithGroup("u1", Constants.GROUP_OTHER_DRIVERS);
+        User u2 = createUserWithGroup("u1", Constants.GROUP_OTHER_DRIVERS);
+        User u3 = createUser();
+
+        assertThat(u1.isOtherDrivers()).isTrue();
+        assertThat(u1).isEqualTo(u2);
+        assertThat(u1).isNotEqualTo(u3);
+        assertThat(u3.isOtherDrivers()).isFalse();
     }
 
     @Test
