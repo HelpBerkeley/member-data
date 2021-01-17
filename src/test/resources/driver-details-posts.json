@@ -1,0 +1,50 @@
+{
+  "success": true,
+  "errors": [],
+  "duration": 0.8,
+  "result_count": 7,
+  "params": {},
+  "columns": [
+    "post_number",
+    "deleted_at",
+    "raw"
+  ],
+  "default_limit": 1000,
+  "rows": [
+    [
+      2,
+      null,
+      "@user1\n\nOne of our very first drivers. Test sample from driver status."
+    ],
+    [
+      3,
+      null,
+      "@user2\n\nalso one of our very first drivers. Test sample from driver status."
+    ],
+    [
+      4,
+      null,
+      "@user3\n\nOur first driver, but also comes with a lot of luggage. Keep a good eye on the guy.\n\nTest sample from driver status."
+    ],
+    [
+      5,
+      null,
+      "@user2\n\nUnavailable on 12/7. Test sample from driver status."
+    ],
+    [
+      6,
+      null,
+      "@user2\n\nAvailable on 12/6 for backup. Test sample from driver status."
+    ],
+    [
+      7,
+      null,
+      "@user3\n\nTry to avoid using him since he is backing up a lot of other processes at HB. Test sample from driver status."
+    ],
+    [
+      8,
+      null,
+      "@fred \n\nDoes not have a cellphone & can be hard to reach. Typically delivers by bike regardless of location. Very reliable! Better not use as backup driver, but great for last-minute replace."
+    ]
+  ]
+}

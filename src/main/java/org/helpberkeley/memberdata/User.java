@@ -71,8 +71,8 @@ public class User {
     static final String BIKERS_COLUMN = "bikers";
     static final String OUT_COLUMN = "out";
     static final String TRAINED_DRIVER_COLUMN = "trained-driver";
-    static final String EVENTS_ONLY_COLUMN = "eventsonly";
-    static final String TRAINED_EVENT_DRIVER_COLUMN = "trained_event_driver";
+    static final String EVENTS_DRIVER_COLUMN = "events_driver";
+    static final String TRAINED_EVENT_DRIVER_COLUMN = "trained_events_driver";
     static final String GONE_COLUMN = "gone";
     static final String OTHER_DRIVERS_COLUMN = "other-drivers";
     static final String ADMIN_COLUMN = "Admin";
@@ -116,13 +116,14 @@ public class User {
     static final String SHORT_BIKERS_COLUMN = "biker";
     static final String SHORT_OUT_COLUMN = "out";
     static final String SHORT_TRAINED_DRIVER_COLUMN = "trainedD";
-    static final String SHORT_EVENTS_ONLY_COLUMN = "events";
+    static final String SHORT_EVENTS_DRIVER_COLUMN = "eventsD";
     static final String SHORT_TRAINED_EVENT_DRIVER_COLUMN = "trainedED";
     static final String SHORT_GONE_COLUMN = "gone";
     static final String SHORT_OTHER_DRIVERS_COLUMN = "other";
     static final String SHORT_ADMIN_COLUMN = "Admin";
     static final String SHORT_CONSUMER_REQUEST_COLUMN = "ConsReq";
     static final String SHORT_VOLUNTEER_REQUEST_COLUMN = "Volunteer Request";
+    static final String SHORT_DRIVER_DETAILS_COLUMN = "details";
 
     static final String ERROR_PRIMARY_PHONE_MISSING_AREA_CODE = "Primary phone missing area code, assuming 510";
     static final String ERROR_PRIMARY_PHONE_CANNOT_PARSE_PHONE = "Cannot parse primary phone number";
@@ -329,7 +330,7 @@ public class User {
     }
 
     Boolean isCoordinator() {
-        return groupMembership.contains(Constants.GROUP_COORDINATOR);
+        return groupMembership.contains(Constants.GROUP_COORDINATORS);
     }
 
     Boolean isAdmin() {
@@ -337,11 +338,11 @@ public class User {
     }
 
     Boolean isBoard() {
-        return groupMembership.contains(Constants.GROUP_BOARD);
+        return groupMembership.contains(Constants.GROUP_BOARDMEMBERS);
     }
 
     Boolean isLimitedRuns() {
-        return groupMembership.contains(Constants.GROUP_LIMITED_RUNS);
+        return groupMembership.contains(Constants.GROUP_LIMITED);
     }
 
     Boolean isAtRisk() {
@@ -357,15 +358,15 @@ public class User {
     }
 
     Boolean isTrainedDriver() {
-        return groupMembership.contains(Constants.GROUP_TRAINED_DRIVERS);
+        return groupMembership.contains(Constants.TRAINED_DRIVERS);
     }
 
-    Boolean isEventsOnly() {
-        return groupMembership.contains(Constants.GROUP_EVENTS_ONLY);
+    Boolean isEventDriver() {
+        return groupMembership.contains(Constants.GROUP_EVENT_DRIVERS);
     }
 
     Boolean isTrainedEventDriver() {
-        return groupMembership.contains(Constants.GROUP_TRAINED_EVENT_DRIVERS);
+        return groupMembership.contains(Constants.TRAINED_EVENT_DRIVERS);
     }
 
     Boolean isGone() {
@@ -423,7 +424,7 @@ public class User {
                 "=" +
                 isDriver() +
                 ':' +
-                Constants.GROUP_TRAINED_DRIVERS +
+                Constants.TRAINED_DRIVERS +
                 "=" +
                 isTrainedDriver() +
                 ':' +
@@ -507,15 +508,15 @@ public class User {
                 "=" +
                 isAdvisor() +
                 ':' +
-                Constants.GROUP_BOARD +
+                Constants.GROUP_BOARDMEMBERS +
                 "=" +
                 isBoard() +
                 ':' +
-                Constants.GROUP_COORDINATOR +
+                Constants.GROUP_COORDINATORS +
                 "=" +
                 isCoordinator() +
                 ':' +
-                Constants.GROUP_LIMITED_RUNS +
+                Constants.GROUP_LIMITED +
                 "=" +
                 isLimitedRuns() +
                 ':' +
@@ -531,11 +532,11 @@ public class User {
                 "=" +
                 isOut() +
                 ':' +
-                Constants.GROUP_EVENTS_ONLY +
+                Constants.GROUP_EVENT_DRIVERS +
                 "=" +
-                isEventsOnly() +
+                isEventDriver() +
                 ':' +
-                Constants.GROUP_TRAINED_EVENT_DRIVERS +
+                Constants.TRAINED_EVENT_DRIVERS +
                 "=" +
                 isTrainedEventDriver() +
                 ':' +
@@ -1069,7 +1070,7 @@ public class User {
                 + SHORT_AT_RISK_COLUMN + Constants.CSV_SEPARATOR
                 + SHORT_BIKERS_COLUMN + Constants.CSV_SEPARATOR
                 + SHORT_OUT_COLUMN + Constants.CSV_SEPARATOR
-                + SHORT_EVENTS_ONLY_COLUMN + Constants.CSV_SEPARATOR
+                + SHORT_EVENTS_DRIVER_COLUMN + Constants.CSV_SEPARATOR
                 + SHORT_TRAINED_EVENT_DRIVER_COLUMN + Constants.CSV_SEPARATOR
                 + SHORT_GONE_COLUMN + Constants.CSV_SEPARATOR
                 + SHORT_OTHER_DRIVERS_COLUMN + Constants.CSV_SEPARATOR
@@ -1121,7 +1122,7 @@ public class User {
                 + AT_RISK_COLUMN + Constants.CSV_SEPARATOR
                 + BIKERS_COLUMN + Constants.CSV_SEPARATOR
                 + OUT_COLUMN + Constants.CSV_SEPARATOR
-                + EVENTS_ONLY_COLUMN + Constants.CSV_SEPARATOR
+                + EVENTS_DRIVER_COLUMN + Constants.CSV_SEPARATOR
                 + TRAINED_EVENT_DRIVER_COLUMN + Constants.CSV_SEPARATOR
                 + GONE_COLUMN + Constants.CSV_SEPARATOR
                 + OTHER_DRIVERS_COLUMN + Constants.CSV_SEPARATOR
@@ -1171,7 +1172,7 @@ public class User {
                 isAtRisk() + Constants.CSV_SEPARATOR +
                 isBiker() + Constants.CSV_SEPARATOR +
                 isOut() + Constants.CSV_SEPARATOR +
-                isEventsOnly() + Constants.CSV_SEPARATOR +
+                isEventDriver() + Constants.CSV_SEPARATOR +
                 isTrainedEventDriver() + Constants.CSV_SEPARATOR +
                 isGone() + Constants.CSV_SEPARATOR +
                 isOtherDrivers() + Constants.CSV_SEPARATOR +
@@ -1226,7 +1227,7 @@ public class User {
                 isAtRisk() + Constants.CSV_SEPARATOR +
                 isBiker() + Constants.CSV_SEPARATOR +
                 isOut() + Constants.CSV_SEPARATOR +
-                isEventsOnly() + Constants.CSV_SEPARATOR +
+                isEventDriver() + Constants.CSV_SEPARATOR +
                 isTrainedEventDriver() + Constants.CSV_SEPARATOR +
                 isGone() + Constants.CSV_SEPARATOR +
                 isOtherDrivers() + Constants.CSV_SEPARATOR +

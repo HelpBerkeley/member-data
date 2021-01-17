@@ -238,7 +238,7 @@ public class HBParser {
         assert headers[++index].equals(User.AT_RISK_COLUMN) : headers[index];
         assert headers[++index].equals(User.BIKERS_COLUMN) : headers[index];
         assert headers[++index].equals(User.OUT_COLUMN) : headers[index];
-        assert headers[++index].equals(User.EVENTS_ONLY_COLUMN) : headers[index];
+        assert headers[++index].equals(User.EVENTS_DRIVER_COLUMN) : headers[index];
         assert headers[++index].equals(User.TRAINED_EVENT_DRIVER_COLUMN) : headers[index];
         assert headers[++index].equals(User.GONE_COLUMN) : headers[index];
         assert headers[++index].equals(User.OTHER_DRIVERS_COLUMN) : headers[index];
@@ -280,7 +280,7 @@ public class HBParser {
                 groups.add(Constants.GROUP_DRIVERS);
             }
             if (Boolean.parseBoolean(columns[index++])) {
-                groups.add(Constants.GROUP_TRAINED_DRIVERS);
+                groups.add(Constants.TRAINED_DRIVERS);
             }
 
             String createdAt = columns[index++];
@@ -351,15 +351,15 @@ public class HBParser {
             }
 
             if (Boolean.parseBoolean(columns[index++])) {
-                groups.add(Constants.GROUP_BOARD);
+                groups.add(Constants.GROUP_BOARDMEMBERS);
             }
 
             if (Boolean.parseBoolean(columns[index++])) {
-                groups.add(Constants.GROUP_COORDINATOR);
+                groups.add(Constants.GROUP_COORDINATORS);
             }
 
             if (Boolean.parseBoolean(columns[index++])) {
-                groups.add(Constants.GROUP_LIMITED_RUNS);
+                groups.add(Constants.GROUP_LIMITED);
             }
 
             if (Boolean.parseBoolean(columns[index++])) {
@@ -375,11 +375,11 @@ public class HBParser {
             }
 
             if (Boolean.parseBoolean(columns[index++])) {
-                groups.add(Constants.GROUP_EVENTS_ONLY);
+                groups.add(Constants.GROUP_EVENT_DRIVERS);
             }
 
             if (Boolean.parseBoolean(columns[index++])) {
-                groups.add(Constants.GROUP_TRAINED_EVENT_DRIVERS);
+                groups.add(Constants.TRAINED_EVENT_DRIVERS);
             }
 
             if (Boolean.parseBoolean(columns[index++])) {
@@ -476,21 +476,45 @@ public class HBParser {
                 continue;
             }
 
-            parseDeliveryDetails(id, raw, deliveryDetails);
+            parseDetails(id, raw, deliveryDetails);
         }
 
         return deliveryDetails;
+    }
+
+    static Map<String, String> driverDetails(ApiQueryResult apiQueryResult) {
+        assert apiQueryResult.headers.length == 3 : apiQueryResult.headers.length;
+        assert apiQueryResult.headers[0].equals("post_number");
+        assert apiQueryResult.headers[1].equals("deleted_at");
+        assert apiQueryResult.headers[2].equals("raw");
+
+        Map<String, String> driverDetails = new HashMap<>();
+
+        for (Object rowObj : apiQueryResult.rows) {
+            Object[] columns = (Object[]) rowObj;
+            assert columns.length == 3 : columns.length;
+
+            // FIX THIS, DS: make this a common routine with delivery details
+
+            //
+            Long postNumber = ((Long)columns[0]);
+            String raw = ((String)columns[2]).trim();
+
+            parseDetails(postNumber, raw, driverDetails);
+        }
+
+        return driverDetails;
     }
 
     /**
      * Find first occurrence of @username, and take everything after it as the details.
      * Replace all newlines with spaces. Multiple spaces are collapsed.
      *
-     * @param id post number
+     * @param postNumber post number
      * @param rawPost post text
-     * @param deliveryDetails map, keyed by user name, to update with delivery details.
+     * @param detailsMap map, keyed by user name, to update with details.
      */
-    static void parseDeliveryDetails(long id, final String rawPost, Map<String, String> deliveryDetails) {
+    static void parseDetails(long postNumber, final String rawPost, Map<String, String> detailsMap) {
 
         // Normalize EOL
         String raw = rawPost.replaceAll("\\r\\n?", "\n");
@@ -498,7 +522,7 @@ public class HBParser {
         int index = raw.indexOf("@");
 
         if (index == -1) {
-            LOGGER.warn("Skipping post {}. Cannot parse user name in {}", id, raw);
+            LOGGER.warn("Skipping post {}. Cannot parse user name in {}", postNumber, raw);
             return;
         }
 
@@ -509,7 +533,7 @@ public class HBParser {
         index = raw.indexOf('\n');
 
         if (index == -1) {
-            LOGGER.warn("Skipping post {}. No details found {}", id, raw);
+            LOGGER.warn("Skipping post {}. No details found {}", postNumber, raw);
             return;
         }
 
@@ -520,13 +544,13 @@ public class HBParser {
         Pattern pattern = Pattern.compile(regex);
         Matcher matcher = pattern.matcher(userName);
         if (! matcher.find()) {
-            LOGGER.warn("Skipping post {}. No @user not found in post: {}", id, raw);
+            LOGGER.warn("Skipping post {}. No @user not found in post: {}", postNumber, raw);
         }
 
         userName = matcher.group(1);
         String details = raw.replaceAll("\n", " ").replaceAll("\\s+", " ").trim();
 
-        deliveryDetails.put(userName, details);
+        detailsMap.put(userName, details);
     }
 
     public static String shortURLDiscoursePost(final String line) {

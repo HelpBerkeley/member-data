@@ -96,19 +96,20 @@ public class Loader {
                 case Constants.GROUP_TRUST_LEVEL_4:
                 case Constants.GROUP_CUSTOMER_INFO:
                 case Constants.GROUP_ADVISOR:
-                case Constants.GROUP_COORDINATOR:
+                case Constants.GROUP_COORDINATORS:
                 case Constants.GROUP_ADMIN:
                 case Constants.GROUP_PACKERS:
-                case Constants.GROUP_BOARD:
-                case Constants.GROUP_LIMITED_RUNS:
+                case Constants.GROUP_BOARDMEMBERS:
+                case Constants.GROUP_LIMITED:
                 case Constants.GROUP_AT_RISK:
                 case Constants.GROUP_BIKERS:
                 case Constants.GROUP_OUT:
-                case Constants.GROUP_TRAINED_DRIVERS:
-                case Constants.GROUP_EVENTS_ONLY:
+                case Constants.TRAINED_DRIVERS:
+                case Constants.GROUP_EVENT_DRIVERS:
                 case Constants.GROUP_GONE:
                 case Constants.GROUP_OTHER_DRIVERS:
                     groups.put(entry.getKey(), Group.createGroup(entry.getKey(), entry.getValue()));
+                    break;
                 default:
                     break;
             }

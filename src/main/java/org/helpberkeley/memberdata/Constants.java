@@ -70,6 +70,7 @@ public class Constants {
     public static final int QUERY_GET_ONE_KITCHEN_GROUP_POST_FORMAT_V1 = 43;
     public static final int QUERY_GET_LAST_COMPLETED_DAILY_ORDERS_REPLY = 44;
     public static final int QUERY_GET_ORDER_HISTORY_DATA_POSTS = 45;
+    public static final int QUERY_GET_DRIVER_DETAILS = 46;
 
     // Current spec version for these queries
     public static final int QUERY_GET_DRIVERS_POST_FORMAT = QUERY_GET_DRIVERS_POST_FORMAT_V23;
@@ -133,8 +134,8 @@ public class Constants {
     public static final String GROUP_BHS = "BHS";
     public static final String GROUP_HELPLINE = "helpline";
     public static final String GROUP_SITELINE = "siteline";
-    public static final String GROUP_TRAINED_CUSTOMER_CARE_A = "trained_customer_care_A";
-    public static final String GROUP_TRAINED_CUSTOMER_CARE_B = "trained_customer_care_B";
+    public static final String GROUP_TRAINED_CUSTOMER_CARE_A = "trained_CCA";
+    public static final String GROUP_TRAINED_CUSTOMER_CARE_B = "trained_CCB";
     public static final String GROUP_INREACH = "inreach";
     public static final String GROUP_OUTREACH = "outreach";
     public static final String GROUP_MARKETING = "marketing";
@@ -143,20 +144,20 @@ public class Constants {
     public static final String GROUP_VOICEONLY = "voiceonly";
     public static final String GROUP_TRUST_LEVEL_4 = "trust_level_4";
     public static final String GROUP_CUSTOMER_INFO = "customerinfo";
-    public static final String GROUP_ADVISOR = "advisor";
-    public static final String GROUP_COORDINATOR = "coordinator";
+    public static final String GROUP_ADVISOR = "advisors";
+    public static final String GROUP_COORDINATORS = "coordinators";
     public static final String GROUP_ADMIN = "admin";
     public static final String GROUP_PACKERS = "HB_Packers";
-    public static final String GROUP_BOARD = "Board";
-    public static final String GROUP_LIMITED_RUNS = "limited_runs";
+    public static final String GROUP_BOARDMEMBERS = "boardmembers";
+    public static final String GROUP_LIMITED = "limited";
     public static final String GROUP_AT_RISK = "at-risk";
     public static final String GROUP_BIKERS = "bikers";
     public static final String GROUP_OUT = "out";
-    public static final String GROUP_TRAINED_DRIVERS = "trained_drivers";
-    public static final String GROUP_EVENTS_ONLY = "eventsonly";
-    public static final String GROUP_TRAINED_EVENT_DRIVERS = "trained_event_drivers";
+    public static final String TRAINED_DRIVERS = "trained_drivers";
+    public static final String GROUP_EVENT_DRIVERS = "event_drivers";
+    public static final String TRAINED_EVENT_DRIVERS = "trained_edrivers";
     public static final String GROUP_GONE = "gone";
-    public static final String GROUP_OTHER_DRIVERS = "other-drivers";
+    public static final String GROUP_OTHER_DRIVERS = "other_drivers";
 
     public static final String BERKELEY = "Berkeley";
     public static final String ALBANY = "Albany";

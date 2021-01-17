@@ -1,7 +1,7 @@
 Help Berkeley Schemas
 =====================
 
-Version: 2.0.0
+Version: 2.0.5
 
 Full Member Record
 ------------------
@@ -23,26 +23,39 @@ City,String,,
 Address,String,,
 Condo,Boolean,In non-single family dwelling,
 Refer,String,where did you hear from us?,
-Consumer,Boolean,In consumer group,
+Consumer,Boolean,In consumers group,
 Voiceonly,Boolean,In voiceonly group,
-Driver,Boolean,In driver group,
-Dispatcher,Boolean,In dispatcher group,
+Driver,Boolean,In drivers group,
+trainedD, Boolean, In trained_drivers,
+Dispatcher,Boolean,In dispatchers group,
 Workflow,Boolean,In workflow group,
 Inreach,Boolean,In inreach group,
 Outreach,Boolean,In outreach group,
 Helpline,Boolean,In helpline group,
 Siteline,Boolean,In siteline group,
+trainedCCA, Boolean, In trained_CCA
+trainedCCB, Boolean, In trained_CCB
 Marktg,Boolean,In Marketing group,
 Mods,Boolean,In mod group,
 Trust4,Boolean,In trust_level_4 group,
 Specs,Boolean,In specialist group,
+Packer,Boolean,In HB_Packers group,
 BHS,Boolean,In Berkeley High School Students group,
 CustInf,Boolean,In customerinfo group,
-Advsr,Boolean,In advisor group,
-Coordtr,Boolean,In coordinator group,
+Advsr,Boolean,In advisors group,
+Board, Boolean, In boardmembers group,
+Coordtr,Boolean,In coordinators group,
+limited, Boolean, In limited,
+at-risk, Boolean, In at-risk,
+biker, Boolean, In bikers,
+out, Boolean, In out_volunteers,
+eventsD, Boolean, In events_only,
+trainedED, Boolean, In trained_edrivers
+gone, Boolean, In gone_volunteers,
+other, Boolean, In other_drivers,
 Admin,Boolean,In admin group,
-ConsReq,Boolean,Made request for meals and not yet in consumer group,
-Volunteer Request,String,Volunteer request type and not yet in a driver dispatcher or specialist group,
+ConsReq,Boolean,Made request for meals and not yet in consumers group,
+Volunteer Request,String,Volunteer request type and not yet in a drivers dispatchers or specialists group,
 
 Full Member Record with Email
 -----------------------------
@@ -64,26 +77,39 @@ City,String,,
 Address,String,,
 Condo,Boolean,In non-single family dwelling,
 Refer,String,where did you hear from us?,
-Consumer,Boolean,In consumer group,
+Consumer,Boolean,In consumers group,
 Voiceonly,Boolean,In voiceonly group,
-Driver,Boolean,In driver group,
-Dispatcher,Boolean,In dispatcher group,
+Driver,Boolean,In drivers group,
+trainedD, Boolean, In trained_drivers,
+Dispatcher,Boolean,In dispatchers group,
 Workflow,Boolean,In workflow group,
 Inreach,Boolean,In inreach group,
 Outreach,Boolean,In outreach group,
 Helpline,Boolean,In helpline group,
 Siteline,Boolean,In siteline group,
+trainedCCA, Boolean, In trained_CCA
+trainedCCB, Boolean, In trained_CCB
 Marktg,Boolean,In Marketing group,
 Mods,Boolean,In mod group,
 Trust4,Boolean,In trust_level_4 group,
-Specs,Boolean,In specialist group,
+Packer,Boolean,In HB_Packers group,
 BHS,Boolean,In Berkeley High School Students group,
+Packer,Boolean,In HB_Packers group,
 CustInf,Boolean,In customerinfo group,
-Advsr,Boolean,In advisor group,
-Coordtr,Boolean,In coordinator group,
+Advsr,Boolean,In advisors group,
+Board, Boolean, In boardmembers group,
+Coordtr,Boolean,In coordinators group,
+limited, Boolean, In limited,
+at-risk, Boolean, In at-risk,
+biker, Boolean, In bikers,
+out, Boolean, In out_volunteers,
+events, Boolean, In events_only,
+trainedED, Boolean, In trained_edrivers
+gone, Boolean, In gone_volunteers,
+other, Boolean, In other_drivers,
 Admin,Boolean,In admin group,
-ConsReq,Boolean,Made request for meals and not yet in consumer group,
-Volunteer Request,String,Volunteer request type and not yet in a driver dispatcher or specialist group,
+ConsReq,Boolean,Made request for meals and not yet in consumers group,
+Volunteer Request,String,Volunteer request type and not yet in a drivers, dispatchers or specialists group,
 
 Workflow data
 ------------------
@@ -96,8 +122,8 @@ When:          Daily at 6:30pm and 8:30pm.
 Sorted by Consumer True->False, then by driver True->False..
 
 Column Name,Usage
-Consumer,Boolean,In consumer group,
-Driver,Boolean,In driver group,
+Consumer,Boolean,In consumers group,
+Driver,Boolean,In drivers group,
 Name,String,Full name
 User Name,String,Discourse user name,
 Phone #,String,,
@@ -171,9 +197,9 @@ OrderStatus,Boolean,have they ordered from HelpBerkeley,
 OrderNumber,integer,total number of orders,
 First order date, String,YYYY/MM/DD (date of first order),
 Last order date, String,YYYY/MM/DD (date of last order),
-Consumer,Boolean,In consumer group,
+Consumer,Boolean,In consumers group,
 Dispatcher,Boolean,In dispatcher group,
-Driver,Boolean,In driver group,
+Driver,Boolean,In drivers group,
 
 In the future, the following would be great:
 
@@ -187,22 +213,51 @@ Posting type:  Update, containing attached CSV file
 Sort type:     Create time.
 Where:         https://go.helpberkeley.org/t/drivers/638/3
 When:          Whenever any change to any data in the full user record
-               of someone in the drivers group is detected.
+               of someone in the drivers group is detected, 
+               and once per day at midnight.
 
 Same fields as the full member record.
 Select only Drivers == TRUE
 
+All boolean variables should display Y for TRUE, N for FALSE
+
 Column Name,Type,Description,
-Created,String,YYYY/MM/DD HH:MM:SS (HH is 0-23)
+Created,String,YYYY/MM/DD 
 Name,String,Full name
 User Name,String,Discourse user name,
+trainedD, Boolean, In trained_drivers,
+Runs, Integer, total # of runs,
+6w, X or empty, 6 weeks before this week starting on Mondays: had a run?
+5w, X or empty, 5 weeks before this week starting on Mondays: had a run?
+4w, X or empty, 4 weeks before this week starting on Mondays: had a run?
+3w, X or empty, 3 weeks before this week starting on Mondays: had a run?
+2w, X or empty, 2 weeks before this week starting on Mondays: had a run?
+1w, X or empty, last week starting on Mondays: had a run?
+0w, X or empty, this week starting on Mondays: had a run?
 Phone #,String,,
-Neighborhood,String,,
+Phone2 #,String,,
 City,String,,
 Address,String,,
-Condo,Boolean,In non-single family dwelling,
-Consumer,Boolean,In consumer group,
-Dispatcher,Boolean,In dispatcher group,
+limited, Boolean, In limited,
+at-risk, Boolean, In at-risk,
+biker, Boolean, In bikers,
+out, Boolean, In out_volunteers,
+events, Boolean, In events_only,
+trainedED, Boolean, In trained_edrivers
+gone, Boolean, In gone_volunteers,
+other, Boolean, In other_drivers,
+details: string concatenated from https://go.helpberkeley.org/t/driver-details/5259
+
+Sort order:
+trained Yes/No
+gone No/Yes
+out No/Yes
+Other No/Yes
+events No/Yes
+limited No/Yes
+Biker No/Yes
+at-risk No/Yes
+Created Last -> First
 
 Dispatchers
 -------
@@ -224,8 +279,8 @@ Neighborhood,String,,
 City,String,,
 Address,String,,
 Condo,Boolean,In non-single family dwelling,
-Driver,Boolean,In driver group,
-Consumer,Boolean,In consumer group,
+Driver,Boolean,In drivers group,
+Consumer,Boolean,In consumers group,
 BHS,Boolean,In BHS group,
 helpline,Boolean,In helpline group,
 siteline,Boolean,In siteline group,
@@ -239,9 +294,9 @@ workflow,Boolean,In workflow group,
 Suggested additional columns:
 contacted,Boolean,In contacted group,
 replied,Boolean,In replied group,
-trainedx1,Boolean,In trainedx1 group,
-trainedx2,Boolean,In trainedx2 group,
-trainedx3,Boolean,In trainedx3 group,
+trainedCCA, Boolean, In trained_CCA
+trainedCCB, Boolean, In trained_CCB
+
 
 Consumer Requests
 -----------------
@@ -250,7 +305,7 @@ Posting type:  Reply, containing markdown table
 Sort type:     Member creation time.
 Where:         https://go.helpberkeley.org/t/these-users-requested-meals/444
 When:          Whenever a new user signs up requesting meals, or a new
-               user requesting meals is promoted to the consumer group.
+               user requesting meals is promoted to the consumers group.
 
 Column Name,Type,Description,
 User Name,String,Discourse user name,
@@ -268,7 +323,7 @@ Sort type:     Member creation time.
 Where:         https://go.helpberkeley.org/t/these-users-volunteered/445
 When:          Whenever a new user signs up requesting to volunteer,
                or a new user requesting to volunteer is added to
-	       either the driver, dispatcher, or specialist groups.
+	       either the drivers, dispatchers, or specialists groups.
 
 Column Name,Type,Description,
 User Name,String,Discourse user name,
@@ -276,7 +331,7 @@ Email Verified,Boolean,,
 Name,String,Full name
 Phone #,String,,
 City,String,,
-Volunteer Request,String,Volunteer request type and not yet in a driver dispatcher or specialist group,
+Volunteer Request,String,Volunteer request type and not yet in a drivers, dispatchers, HB_packers, or specialists group,
 
 Member data requiring attention
 -------------------------------
@@ -290,3 +345,129 @@ When:          Whenever a change in a new error is detected
 Column Name,Type,Description,
 User Name,String,Discourse user name,
 Error type,String,Description of problem
+
+Request driver messages
+----------------------
+
+Posting type: reply, containing diagnostic message
+Sort type: none
+Where: https://go.helpberkeley.org/t/request-driver-messages/2504/
+When: upon request, in reply to a post submitting a properly formatted worfkflow spreadsheet
+
+Table: 
+
+Order  Meals Drivers  Normal rations  Veggie rations
+[example]
+[19    56    4        24              4
+
+
+
+Note: "drivers" means those that actually drove.
+
+Driver training table: these drivers need training
+---------------------------
+
+Posting type:  Reply, containing markdown table
+Sort type:     Member creation time.
+Where:         https://go.helpberkeley.org/t/driver-training-table-these-drivers-need-training/5355
+When:          Whenever a user is added to the drivers group (and is not a member of the event_drivers group)
+               but is not a member of the trained_drivers group, or 
+			   a driver is added to the event_drivers group but is not a member of the trained_edrivers group.
+
+But, in reality, the condition would be to list if:
+ [(drivers == TRUE) AND (event_drivers == FALSE) AND (trained_drivers == FALSE)] 
+ OR 
+ [(drivers == true) AND (event_drivers == TRUE) AND (trained_edrivers == FALSE)]
+
+Column Name,Type,Description,
+User Name,String,Discourse user name,
+Name,String,Full name
+Phone #,String,,
+Wait, Integer, # days since account creation  [optional column if time consuming to do]
+Event, Boolean, events_only                   [ideally, blank if NOT event_driver, otherwise :gift: emoji]
+Details, string, concatenate all strings from https://go.helpberkeley.org/t/post-driver-details/4524/
+
+Driver table [long]
+------------
+
+Posting type:  Update, containing markdown table
+Sort type:     reverse chronological from driver details thread, then alphabetical by UserName
+Where:         https://go.helpberkeley.org/t/driver-table-long/5375
+When:          Whenever there is a change to any driver state, but at least once per day (midnight default).
+Who:           Driver is listed if:
+                 (drivers == TRUE) AND (trained_drivers == TRUE) 
+                 AND (event_drivers == FALSE) AND (GONE == FALSE) AND (OUT == FALSE) AND (OTHER ==FALSE)
+
+Note: this driver table will be difficult to keep very compact but needs to display many columns,
+         and be readable at a glance. 
+      To this purpose we will need to use emojis instead of regular Booleans.
+	  
+Possible legend (to be revisited later):
+Li m td = Limited, true if 
+at ri sk = at-risk, true if
+bi ke = biker, true if 
+32 = had a run 3 and 2 weeks ago (top = 3, bottom = 2)
+10 = had a run last week and this week (top = 1, bottom = 0)
+
+
+Column Name,Type,Description,
+UserName,String,Discourse user name,
+phn .#,String,,
+l i m t d, (Boolean) L or empty (1), In limited,
+a t - r i s k, (Boolean) A or empty (2), In at-risk,
+b i k e, (Boolean) B or empty (3), In bikers,
+r u n s, Integer, total # of runs,
+3 2, (Boolean) XX XY YX or YY (4), 3 and 2 weeks before this week starting on Mondays: had a run?
+1 0, (Boolean) XX XY YX or YY, last week and this week starting on Mondays: had a run?
+details, string, concatenate {Full name, City, all strings from https://go.helpberkeley.org/t/post-driver-details/4524/}
+
+(1): L is really the emoji :no_entry_sign:
+(2): A is really the emoji :warning:
+(3): B is really the emoji :bike:
+(4): X is really the emoji :green_circle:, while Y is really the emoji :red_circle:
+
+A mockup can be found here: https://go.helpberkeley.org/t/driver-table-mockups/5356/8
+
+
+Driver table [short]
+------------
+
+Posting type:  Update, containing markdown table
+Sort type:     reverse chronological from driver details thread, then alphabetical by UserName
+Where:         https://go.helpberkeley.org/t/driver-table-short/5374
+When:          Whenever there is a change to any driver state, but at least once per day (midnight default).
+Who:           Driver is listed if:
+                 (drivers == TRUE) AND (trained_drivers == TRUE) 
+                 AND (event_drivers == FALSE) AND (GONE == FALSE) AND (OUT == FALSE) AND (OTHER ==FALSE)
+
+Note: this driver table will be difficult to keep very compact but needs to display many columns,
+         and be readable at a glance. 
+      To this purpose we will need to use emojis instead of regular Booleans.
+	  
+Possible legend (to be revisited later):
+lt = Limited, true if 
+ar = at-risk, true if
+bk = biker, true if 
+3 2 1 0 = had a run 3, 2, 1 week ago and this week 
+
+Column Name,Type,Description,
+UserName,String,Discourse user name,
+phn .#,String,,
+li m td, (Boolean) L or empty (1), In limited,
+at ri sk, (Boolean) A or empty (2), In at-risk,
+bi ke, (Boolean) B or empty (3), In bikers,
+run, Integer, total # of runs,
+3 2 1 0, (Boolean) XXXX or YYYY or etc. (4), 3, 2, 1 0 weeks before this week starting on Mondays: had a run?
+details, string, concatenate {Full name, City, all strings from https://go.helpberkeley.org/t/post-driver-details/4524/}
+
+(1): L is really the emoji :no_entry_sign:
+(2): A is really the emoji :warning:
+(3): B is really the emoji :bike:
+(4): X is really the emoji :green_circle:, while Y is really the emoji :red_circle:
+
+A mockup can be found here: https://go.helpberkeley.org/t/driver-table-mockups/5356/9
+
+
+	
+
+

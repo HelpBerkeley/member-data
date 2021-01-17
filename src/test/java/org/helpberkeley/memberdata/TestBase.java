@@ -107,6 +107,7 @@ public class TestBase {
             Options.COMMAND_ORDER_HISTORY,
             Options.COMMAND_INREACH,
             Options.COMMAND_COMPLETED_DAILY_ORDERS,
+            Options.COMMAND_DRIVERS,
     };
 
     static final String[] COMMANDS_WITH_NO_PARAMETERS = {
@@ -151,6 +152,27 @@ public class TestBase {
                 Constants.BERKELEY, TEST_PHONE_3, TEST_ALT_PHONE_3, TEST_NEIGHBORHOOD_3, TEST_CREATED_3,
                 TEST_CONDO_3, TEST_CONSUMER_REQUEST_3, TEST_VOLUNTEER_REQUEST_3,
                 TEST_REFERRAL_3, TEST_VERIFIED_3, TEST_USER_3_GROUPS);
+    }
+
+    protected User createTestUser1WithGroups(String... groups) throws UserException {
+        return User.createUser(TEST_NAME_1, TEST_USER_NAME_1, TEST_ID_1, TEST_ADDRESS_1,
+                Constants.BERKELEY, TEST_PHONE_1, TEST_ALT_PHONE_1, TEST_NEIGHBORHOOD_1, TEST_CREATED_1,
+                TEST_CONDO_1, TEST_CONSUMER_REQUEST_1, TEST_VOLUNTEER_REQUEST_1,
+                TEST_REFERRAL_1, TEST_VERIFIED_1, groups);
+    }
+
+    protected User createTestUser2WithGroups(String... groups) throws UserException {
+        return User.createUser(TEST_NAME_2, TEST_USER_NAME_2, TEST_ID_2, TEST_ADDRESS_2,
+                Constants.BERKELEY, TEST_PHONE_2, TEST_ALT_PHONE_2, TEST_NEIGHBORHOOD_2, TEST_CREATED_2,
+                TEST_CONDO_2, TEST_CONSUMER_REQUEST_2, TEST_VOLUNTEER_REQUEST_2,
+                TEST_REFERRAL_2, TEST_VERIFIED_2, groups);
+    }
+
+    protected User createTestUser3WithGroups(String... groups) throws UserException {
+        return User.createUser(TEST_NAME_3, TEST_USER_NAME_3, TEST_ID_3, TEST_ADDRESS_3,
+                Constants.BERKELEY, TEST_PHONE_3, TEST_ALT_PHONE_3, TEST_NEIGHBORHOOD_3, TEST_CREATED_3,
+                TEST_CONDO_3, TEST_CONSUMER_REQUEST_3, TEST_VOLUNTEER_REQUEST_3,
+                TEST_REFERRAL_3, TEST_VERIFIED_3, groups);
     }
 
     // no groups
@@ -389,5 +411,9 @@ public class TestBase {
         }
 
         return url.getFile();
+    }
+
+    String shortBoolean(boolean value) {
+        return value ? "Y" : "N";
     }
 }

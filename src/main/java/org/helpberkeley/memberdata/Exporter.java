@@ -60,4 +60,8 @@ public class Exporter {
 
         return "\"" + value + "\"";
     }
+
+    public String shortBoolean(boolean value) {
+        return value ? "Y" : "N";
+    }
 }

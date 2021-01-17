@@ -590,8 +590,8 @@ public class UserTest extends TestBase {
 
     @Test
     public void groupCoordinator() throws UserException {
-        User u1 = createUserWithGroup("u1", Constants.GROUP_COORDINATOR);
-        User u2 = createUserWithGroup("u1", Constants.GROUP_COORDINATOR);
+        User u1 = createUserWithGroup("u1", Constants.GROUP_COORDINATORS);
+        User u2 = createUserWithGroup("u1", Constants.GROUP_COORDINATORS);
         User u3 = createUser();
 
         assertThat(u1.isCoordinator()).isTrue();
@@ -614,8 +614,8 @@ public class UserTest extends TestBase {
 
     @Test
     public void groupBoard() throws UserException {
-        User u1 = createUserWithGroup("u1", Constants.GROUP_BOARD);
-        User u2 = createUserWithGroup("u1", Constants.GROUP_BOARD);
+        User u1 = createUserWithGroup("u1", Constants.GROUP_BOARDMEMBERS);
+        User u2 = createUserWithGroup("u1", Constants.GROUP_BOARDMEMBERS);
         User u3 = createUser();
 
         assertThat(u1.isBoard()).isTrue();
@@ -626,8 +626,8 @@ public class UserTest extends TestBase {
 
     @Test
     public void groupLimitedRuns() throws UserException {
-        User u1 = createUserWithGroup("u1", Constants.GROUP_LIMITED_RUNS);
-        User u2 = createUserWithGroup("u1", Constants.GROUP_LIMITED_RUNS);
+        User u1 = createUserWithGroup("u1", Constants.GROUP_LIMITED);
+        User u2 = createUserWithGroup("u1", Constants.GROUP_LIMITED);
         User u3 = createUser();
 
         assertThat(u1.isLimitedRuns()).isTrue();
@@ -674,8 +674,8 @@ public class UserTest extends TestBase {
 
     @Test
     public void groupTrainedDrivers() throws UserException {
-        User u1 = createUserWithGroup("u1", Constants.GROUP_TRAINED_DRIVERS);
-        User u2 = createUserWithGroup("u1", Constants.GROUP_TRAINED_DRIVERS);
+        User u1 = createUserWithGroup("u1", Constants.TRAINED_DRIVERS);
+        User u2 = createUserWithGroup("u1", Constants.TRAINED_DRIVERS);
         User u3 = createUser();
 
         assertThat(u1.isTrainedDriver()).isTrue();
@@ -685,21 +685,21 @@ public class UserTest extends TestBase {
     }
 
     @Test
-    public void groupEventsOnly() throws UserException {
-        User u1 = createUserWithGroup("u1", Constants.GROUP_EVENTS_ONLY);
-        User u2 = createUserWithGroup("u1", Constants.GROUP_EVENTS_ONLY);
+    public void groupEventDrivers() throws UserException {
+        User u1 = createUserWithGroup("u1", Constants.GROUP_EVENT_DRIVERS);
+        User u2 = createUserWithGroup("u1", Constants.GROUP_EVENT_DRIVERS);
         User u3 = createUser();
 
-        assertThat(u1.isEventsOnly()).isTrue();
+        assertThat(u1.isEventDriver()).isTrue();
         assertThat(u1).isEqualTo(u2);
         assertThat(u1).isNotEqualTo(u3);
-        assertThat(u3.isEventsOnly()).isFalse();
+        assertThat(u3.isEventDriver()).isFalse();
     }
 
     @Test
     public void groupTrainedEventsDriver() throws UserException {
-        User u1 = createUserWithGroup("u1", Constants.GROUP_TRAINED_EVENT_DRIVERS);
-        User u2 = createUserWithGroup("u1", Constants.GROUP_TRAINED_EVENT_DRIVERS);
+        User u1 = createUserWithGroup("u1", Constants.TRAINED_EVENT_DRIVERS);
+        User u2 = createUserWithGroup("u1", Constants.TRAINED_EVENT_DRIVERS);
         User u3 = createUser();
 
         assertThat(u1.isTrainedEventDriver()).isTrue();

@@ -105,24 +105,6 @@ public class UserExporterTest extends TestBase {
     }
 
     @Test
-    public void driversToFileTest() throws UserException, IOException {
-
-        User u1 = createUserWithGroup(TEST_USER_NAME_1, Constants.GROUP_CONSUMERS);
-        User u2 = createUserWithGroup(TEST_USER_NAME_2, Constants.GROUP_DRIVERS);
-        User u3 = createUserWithGroup(TEST_USER_NAME_3, Constants.GROUP_DRIVERS);
-
-        UserExporter exporter = new UserExporter(List.of(u1, u2, u3));
-        String fileName = exporter.driversToFile("driverRequests");
-
-        String fileData = readFile(fileName);
-        assertThat(fileData).doesNotContain(TEST_USER_NAME_1);
-        assertThat(fileData).contains(TEST_USER_NAME_2);
-        assertThat(fileData).contains(TEST_USER_NAME_3);
-
-        Files.delete(Paths.get(fileName));
-    }
-
-    @Test
     public void allMembersRawColumnsTest() throws UserException {
         User u1 = createTestUser1();
         UserExporter exporter = new UserExporter(List.of(u1));
@@ -284,7 +266,7 @@ public class UserExporterTest extends TestBase {
         assertThat(headerColumns[index++]).isEqualTo(User.SHORT_AT_RISK_COLUMN);
         assertThat(headerColumns[index++]).isEqualTo(User.SHORT_BIKERS_COLUMN);
         assertThat(headerColumns[index++]).isEqualTo(User.SHORT_OUT_COLUMN);
-        assertThat(headerColumns[index++]).isEqualTo(User.SHORT_EVENTS_ONLY_COLUMN);
+        assertThat(headerColumns[index++]).isEqualTo(User.SHORT_EVENTS_DRIVER_COLUMN);
         assertThat(headerColumns[index++]).isEqualTo(User.SHORT_TRAINED_EVENT_DRIVER_COLUMN);
         assertThat(headerColumns[index++]).isEqualTo(User.SHORT_GONE_COLUMN);
         assertThat(headerColumns[index++]).isEqualTo(User.SHORT_OTHER_DRIVERS_COLUMN);
@@ -335,7 +317,7 @@ public class UserExporterTest extends TestBase {
         assertThat(columns[index++]).isEqualTo(String.valueOf(u1.isAtRisk()));
         assertThat(columns[index++]).isEqualTo(String.valueOf(u1.isBiker()));
         assertThat(columns[index++]).isEqualTo(String.valueOf(u1.isOut()));
-        assertThat(columns[index++]).isEqualTo(String.valueOf(u1.isEventsOnly()));
+        assertThat(columns[index++]).isEqualTo(String.valueOf(u1.isEventDriver()));
         assertThat(columns[index++]).isEqualTo(String.valueOf(u1.isTrainedEventDriver()));
         assertThat(columns[index++]).isEqualTo(String.valueOf(u1.isGone()));
         assertThat(columns[index++]).isEqualTo(String.valueOf(u1.isOtherDrivers()));

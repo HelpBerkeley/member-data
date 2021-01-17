@@ -29,6 +29,7 @@ public class Options {
     static final String COMMAND_FETCH = "fetch";
     static final String COMMAND_GET_DAILY_DELIVERIES = "get-daily-deliveries";
     static final String COMMAND_ORDER_HISTORY = "order-history";
+    static final String COMMAND_DRIVERS = "drivers";
     static final String COMMAND_POST_ERRORS = "post-errors";
     static final String COMMAND_UPDATE_ERRORS = "update-errors";
     static final String COMMAND_UPDATE_DISPATCHERS = "update-dispatchers";
@@ -49,7 +50,6 @@ public class Options {
     static final String UNKNOWN_COMMAND = USAGE_ERROR + ": unknown command: ";
     static final String TOO_MANY_COMMANDS = USAGE_ERROR + ": too many commands";
     static final String COMMAND_REQUIRES_FILE_NAME = ": command requires a file name parameter";
-    static final String COMMAND_REQUIRES_TWO_FILE_NAMES = ": command requires two file name parameters";
     static final String COMMAND_REQUIRES_SHORT_URL = ": command requires a short URL";
     static final String BAD_SHORT_URL = USAGE_ERROR + ": short url syntax error";
     static final String FILE_DOES_NOT_EXIST = USAGE_ERROR + ": file does not exist: ";
@@ -62,6 +62,7 @@ public class Options {
                     + "    | " + COMMAND_ONE_KITCHEN_DRIVER_MESSAGES + " all-members-file\n"
                     + "    | " + COMMAND_DRIVER_ROUTES + "\n"
                     + "    | " + COMMAND_ORDER_HISTORY + " all-members-file\n"
+                    + "    | " + COMMAND_DRIVERS + " all-members-file\n"
                     + "    | " + COMMAND_INREACH + " all-members-file\n"
                     + "    | " + COMMAND_EMAIL + " all-members-file\n"
                     + "    | " + COMMAND_WORKFLOW + " all-members-file\n"
@@ -77,8 +78,6 @@ public class Options {
     private final String[] args;
     private String command;
     private String fileName;
-    private String secondFileName;
-    private String thirdFileName;
     private String shortURL;
 
 
@@ -119,6 +118,7 @@ public class Options {
             case COMMAND_ORDER_HISTORY:
             case COMMAND_COMPLETED_DAILY_ORDERS:
             case COMMAND_INREACH:
+            case COMMAND_DRIVERS:
                 setCommand(arg);
                 if (index == args.length) {
                     dieMessage(USAGE_ERROR + arg + COMMAND_REQUIRES_FILE_NAME);
@@ -151,12 +151,6 @@ public class Options {
             }
         }
 
-        if (secondFileName != null) {
-            if (! new File(secondFileName).exists()) {
-                dieMessage(FILE_DOES_NOT_EXIST + secondFileName);
-            }
-        }
-
         if ((shortURL != null) && (! shortURL.startsWith("upload://"))) {
                 dieMessage(BAD_SHORT_URL);
         }
@@ -168,10 +162,6 @@ public class Options {
 
     String getFileName() {
         return fileName;
-    }
-
-    String getSecondFileName() {
-        return secondFileName;
     }
 
     String getShortURL() {

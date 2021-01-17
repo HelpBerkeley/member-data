@@ -426,8 +426,6 @@ public class WorkflowParser {
                 break;
             }
 
-            isDriverRow(bean);
-
             bean = nextRow();
             String errors = "";
 

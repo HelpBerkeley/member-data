@@ -330,6 +330,13 @@ public class MainTest extends TestBase {
         Main.main(args);
     }
 
+    @Test
+    public void driversTest() throws IOException, CsvException {
+        String usersFile = findFile(Constants.MEMBERDATA_RAW_FILE, "csv");
+        String[] args = { Options.COMMAND_DRIVERS, usersFile };
+        Main.main(args);
+    }
+
     private String findFile(final String prefix, final String suffix) {
 
         File dir = new File(".");

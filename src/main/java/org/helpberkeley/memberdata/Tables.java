@@ -25,6 +25,7 @@ import java.time.ZonedDateTime;
 import java.util.*;
 
 import static java.time.temporal.ChronoUnit.DAYS;
+import static java.util.Comparator.reverseOrder;
 
 public class Tables {
 
@@ -179,7 +180,16 @@ public class Tables {
             }
         }
 
-        drivers.sort(Comparator.comparing(User::getCreateTime));
+        drivers.sort(Comparator.comparing(User::isTrainedDriver, reverseOrder())
+                .thenComparing(User::isGone)
+                .thenComparing(User::isOut)
+                .thenComparing(User::isOtherDrivers)
+                .thenComparing(User::isEventDriver)
+                .thenComparing(User::isLimitedRuns)
+                .thenComparing(User::isBiker)
+                .thenComparing(User::isAtRisk)
+                .thenComparing(User::getSimpleCreateTime, reverseOrder()));
+
         return drivers;
     }
 
