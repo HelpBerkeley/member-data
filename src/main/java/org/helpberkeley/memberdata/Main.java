@@ -111,9 +111,6 @@ public class Main {
             case Options.COMMAND_ORDER_HISTORY:
                 orderHistory(apiClient, options.getFileName());
                 break;
-            case Options.COMMAND_DRIVERS:
-                drivers(apiClient, options.getFileName());
-                break;
             case Options.COMMAND_GET_DAILY_DELIVERIES:
                 getDailyDeliveryPosts(apiClient);
                 break;
@@ -945,23 +942,6 @@ public class Main {
 
         // Update last processed order history data post number
         orderHistoryDataPosts.updateLastProcessedPost();
-    }
-
-    private static void drivers(ApiClient apiClient, String usersFile) throws IOException, CsvException {
-        // Load users
-        String csvData = Files.readString(Paths.get(usersFile));
-        List<User> users = HBParser.users(csvData);
-
-        // Fetch driver details
-        String json = apiClient.runQuery(Constants.QUERY_GET_DRIVER_DETAILS);
-        ApiQueryResult apiQueryResult = HBParser.parseQueryResult(json);
-        Map<String, String> driverDetails = HBParser.driverDetails(apiQueryResult);
-
-        // Generate driver spreadsheet
-        DriverExporter driverExporter = new DriverExporter(users, driverDetails);
-        String fileName = driverExporter.driversToFile();
-
-        // Generate/post site version of driver spreadsheet
     }
 
     private static void testQuery(ApiClient apiClient) {

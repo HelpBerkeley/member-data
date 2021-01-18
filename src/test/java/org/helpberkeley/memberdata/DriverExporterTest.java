@@ -87,6 +87,7 @@ public class DriverExporterTest extends TestBase {
         Map<String, String> details = new HashMap<>();
         String u1Details = "twas brillig and the slithy toves";
         String u2Details = "all mimsy were the borogroves";
+        String u3Details = "";
         details.put(u1.getUserName(), u1Details);
         details.put(u2.getUserName(), u2Details);
 
@@ -107,25 +108,26 @@ public class DriverExporterTest extends TestBase {
 
         // FIX THIS, DS: use CSVReader
         String[] headerColumns = header.split(Constants.CSV_SEPARATOR, -1);
-        assertThat(headerColumns).hasSize(17);
+        assertThat(headerColumns).hasSize(18);
 
         int index = 0;
         assertThat(headerColumns[index++]).isEqualTo(User.CREATED_AT_COLUMN);
         assertThat(headerColumns[index++]).isEqualTo(User.NAME_COLUMN);
         assertThat(headerColumns[index++]).isEqualTo(User.USERNAME_COLUMN);
+        assertThat(headerColumns[index++]).isEqualTo(DriverExporter.IN_COLUMN);
         assertThat(headerColumns[index++]).isEqualTo(User.SHORT_TRAINED_DRIVER_COLUMN);
+        assertThat(headerColumns[index++]).isEqualTo(User.SHORT_BIKERS_COLUMN);
+        assertThat(headerColumns[index++]).isEqualTo(User.SHORT_LIMITED_RUNS_COLUMN);
         assertThat(headerColumns[index++]).isEqualTo(User.SHORT_PHONE_NUMBER_COLUMN);
         assertThat(headerColumns[index++]).isEqualTo(User.SHORT_ALT_PHONE_NUMBER_COLUMN);
         assertThat(headerColumns[index++]).isEqualTo(User.SHORT_CITY_COLUMN);
         assertThat(headerColumns[index++]).isEqualTo(User.SHORT_ADDRESS_COLUMN);
-        assertThat(headerColumns[index++]).isEqualTo(User.SHORT_LIMITED_RUNS_COLUMN);
         assertThat(headerColumns[index++]).isEqualTo(User.SHORT_AT_RISK_COLUMN);
-        assertThat(headerColumns[index++]).isEqualTo(User.SHORT_BIKERS_COLUMN);
+        assertThat(headerColumns[index++]).isEqualTo(User.SHORT_GONE_COLUMN);
         assertThat(headerColumns[index++]).isEqualTo(User.SHORT_OUT_COLUMN);
+        assertThat(headerColumns[index++]).isEqualTo(User.SHORT_OTHER_DRIVERS_COLUMN);
         assertThat(headerColumns[index++]).isEqualTo(User.SHORT_EVENTS_DRIVER_COLUMN);
         assertThat(headerColumns[index++]).isEqualTo(User.SHORT_TRAINED_EVENT_DRIVER_COLUMN);
-        assertThat(headerColumns[index++]).isEqualTo(User.SHORT_GONE_COLUMN);
-        assertThat(headerColumns[index++]).isEqualTo(User.SHORT_OTHER_DRIVERS_COLUMN);
         assertThat(headerColumns[index++]).isEqualTo(User.SHORT_DRIVER_DETAILS_COLUMN);
 
         CSVReaderHeaderAware csvReaderHeaderAware = new CSVReaderHeaderAware(new StringReader(csvData));
@@ -136,66 +138,73 @@ public class DriverExporterTest extends TestBase {
         assertThat(headerColumns).hasSameSizeAs(columns);
 
         index = 0;
-        assertThat(columns[index++]).isEqualTo(String.valueOf(u3.getSimpleCreateTime()));
+        assertThat(columns[index++]).isEqualTo(String.valueOf(u3.getCreateDate()));
         assertThat(columns[index++]).isEqualTo(u3.getName());
         assertThat(columns[index++]).isEqualTo(u3.getUserName());
+        assertThat(columns[index++]).isEqualTo(shortBoolean(u3.isAvailableDriver()));
         assertThat(columns[index++]).isEqualTo(shortBoolean(u3.isTrainedDriver()));
+        assertThat(columns[index++]).isEqualTo(shortBoolean(u3.isBiker()));
+        assertThat(columns[index++]).isEqualTo(shortBoolean(u3.isLimitedRuns()));
         assertThat(columns[index++]).isEqualTo(u3.getPhoneNumber());
         assertThat(columns[index++]).isEqualTo(u3.getAltPhoneNumber());
         assertThat(columns[index++]).isEqualTo(u3.getCity());
         assertThat(columns[index++]).isEqualTo(u3.getAddress());
-        assertThat(columns[index++]).isEqualTo(shortBoolean(u3.isLimitedRuns()));
         assertThat(columns[index++]).isEqualTo(shortBoolean(u3.isAtRisk()));
-        assertThat(columns[index++]).isEqualTo(shortBoolean(u3.isBiker()));
+        assertThat(columns[index++]).isEqualTo(shortBoolean(u3.isGone()));
         assertThat(columns[index++]).isEqualTo(shortBoolean(u3.isOut()));
+        assertThat(columns[index++]).isEqualTo(shortBoolean(u3.isOtherDrivers()));
         assertThat(columns[index++]).isEqualTo(shortBoolean(u3.isEventDriver()));
         assertThat(columns[index++]).isEqualTo(shortBoolean(u3.isTrainedEventDriver()));
-        assertThat(columns[index++]).isEqualTo(shortBoolean(u3.isGone()));
-        assertThat(columns[index++]).isEqualTo(shortBoolean(u3.isOtherDrivers()));
-        assertThat(columns[index++]).isEqualTo("");
+        assertThat(columns[index++]).isEqualTo(u3Details);
 
         columns = csvReaderHeaderAware.readNext();
         assertThat(headerColumns).hasSameSizeAs(columns);
 
         index = 0;
-        assertThat(columns[index++]).isEqualTo(String.valueOf(u1.getSimpleCreateTime()));
+
+
+        assertThat(headerColumns).hasSameSizeAs(columns);
+        assertThat(columns[index++]).isEqualTo(String.valueOf(u1.getCreateDate()));
         assertThat(columns[index++]).isEqualTo(u1.getName());
         assertThat(columns[index++]).isEqualTo(u1.getUserName());
+        assertThat(columns[index++]).isEqualTo(shortBoolean(u1.isAvailableDriver()));
         assertThat(columns[index++]).isEqualTo(shortBoolean(u1.isTrainedDriver()));
+        assertThat(columns[index++]).isEqualTo(shortBoolean(u1.isBiker()));
+        assertThat(columns[index++]).isEqualTo(shortBoolean(u1.isLimitedRuns()));
         assertThat(columns[index++]).isEqualTo(u1.getPhoneNumber());
         assertThat(columns[index++]).isEqualTo(u1.getAltPhoneNumber());
         assertThat(columns[index++]).isEqualTo(u1.getCity());
         assertThat(columns[index++]).isEqualTo(u1.getAddress());
-        assertThat(columns[index++]).isEqualTo(shortBoolean(u1.isLimitedRuns()));
         assertThat(columns[index++]).isEqualTo(shortBoolean(u1.isAtRisk()));
-        assertThat(columns[index++]).isEqualTo(shortBoolean(u1.isBiker()));
+        assertThat(columns[index++]).isEqualTo(shortBoolean(u1.isGone()));
         assertThat(columns[index++]).isEqualTo(shortBoolean(u1.isOut()));
+        assertThat(columns[index++]).isEqualTo(shortBoolean(u1.isOtherDrivers()));
         assertThat(columns[index++]).isEqualTo(shortBoolean(u1.isEventDriver()));
         assertThat(columns[index++]).isEqualTo(shortBoolean(u1.isTrainedEventDriver()));
-        assertThat(columns[index++]).isEqualTo(shortBoolean(u1.isGone()));
-        assertThat(columns[index++]).isEqualTo(shortBoolean(u1.isOtherDrivers()));
         assertThat(columns[index++]).isEqualTo(u1Details);
 
         columns = csvReaderHeaderAware.readNext();
         assertThat(headerColumns).hasSameSizeAs(columns);
 
         index = 0;
-        assertThat(columns[index++]).isEqualTo(String.valueOf(u2.getSimpleCreateTime()));
+
+        assertThat(columns[index++]).isEqualTo(String.valueOf(u2.getCreateDate()));
         assertThat(columns[index++]).isEqualTo(u2.getName());
         assertThat(columns[index++]).isEqualTo(u2.getUserName());
+        assertThat(columns[index++]).isEqualTo(shortBoolean(u2.isAvailableDriver()));
         assertThat(columns[index++]).isEqualTo(shortBoolean(u2.isTrainedDriver()));
+        assertThat(columns[index++]).isEqualTo(shortBoolean(u2.isBiker()));
+        assertThat(columns[index++]).isEqualTo(shortBoolean(u2.isLimitedRuns()));
         assertThat(columns[index++]).isEqualTo(u2.getPhoneNumber());
         assertThat(columns[index++]).isEqualTo(u2.getAltPhoneNumber());
         assertThat(columns[index++]).isEqualTo(u2.getCity());
         assertThat(columns[index++]).isEqualTo(u2.getAddress());
-        assertThat(columns[index++]).isEqualTo(shortBoolean(u2.isLimitedRuns()));
         assertThat(columns[index++]).isEqualTo(shortBoolean(u2.isAtRisk()));
-        assertThat(columns[index++]).isEqualTo(shortBoolean(u2.isBiker()));
+        assertThat(columns[index++]).isEqualTo(shortBoolean(u2.isGone()));
         assertThat(columns[index++]).isEqualTo(shortBoolean(u2.isOut()));
+        assertThat(columns[index++]).isEqualTo(shortBoolean(u2.isOtherDrivers()));
         assertThat(columns[index++]).isEqualTo(shortBoolean(u2.isEventDriver()));
         assertThat(columns[index++]).isEqualTo(shortBoolean(u2.isTrainedEventDriver()));
-        assertThat(columns[index++]).isEqualTo(shortBoolean(u2.isGone()));
-        assertThat(columns[index++]).isEqualTo(shortBoolean(u2.isOtherDrivers()));
         assertThat(columns[index++]).isEqualTo(u2Details);
 
         Files.delete(Paths.get(fileName));

@@ -107,7 +107,6 @@ public class TestBase {
             Options.COMMAND_ORDER_HISTORY,
             Options.COMMAND_INREACH,
             Options.COMMAND_COMPLETED_DAILY_ORDERS,
-            Options.COMMAND_DRIVERS,
     };
 
     static final String[] COMMANDS_WITH_NO_PARAMETERS = {

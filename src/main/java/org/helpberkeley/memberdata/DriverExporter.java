@@ -28,6 +28,8 @@ import java.util.Map;
 
 public class DriverExporter extends Exporter {
 
+    public static final String IN_COLUMN = "In";
+
     private final Tables tables;
     private final Map<String, String> driverDetails;
 
@@ -44,13 +46,19 @@ public class DriverExporter extends Exporter {
 
             String details = driverDetails.getOrDefault(user.getUserName(), "");
 
-            rows.append(user.getSimpleCreateTime());
+            rows.append(user.getCreateDate());
             rows.append(separator);
             rows.append(escapeCommas(user.getName()));
             rows.append(separator);
             rows.append(user.getUserName());
             rows.append(separator);
+            rows.append(shortBoolean(user.isAvailableDriver()));
+            rows.append(separator);
             rows.append(shortBoolean(user.isTrainedDriver()));
+            rows.append(separator);
+            rows.append(shortBoolean(user.isBiker()));
+            rows.append(separator);
+            rows.append(shortBoolean(user.isLimitedRuns()));
             rows.append(separator);
             rows.append(user.getPhoneNumber());
             rows.append(separator);
@@ -60,21 +68,17 @@ public class DriverExporter extends Exporter {
             rows.append(separator);
             rows.append(escapeCommas(user.getAddress()));
             rows.append(separator);
-            rows.append(shortBoolean(user.isLimitedRuns()));
-            rows.append(separator);
             rows.append(shortBoolean(user.isAtRisk()));
             rows.append(separator);
-            rows.append(shortBoolean(user.isBiker()));
+            rows.append(shortBoolean(user.isGone()));
             rows.append(separator);
             rows.append(shortBoolean(user.isOut()));
+            rows.append(separator);
+            rows.append(shortBoolean(user.isOtherDrivers()));
             rows.append(separator);
             rows.append(shortBoolean(user.isEventDriver()));
             rows.append(separator);
             rows.append(shortBoolean(user.isTrainedEventDriver()));
-            rows.append(separator);
-            rows.append(shortBoolean(user.isGone()));
-            rows.append(separator);
-            rows.append(shortBoolean(user.isOtherDrivers()));
             rows.append(separator);
             rows.append(escapeCommas(details));
             rows.append('\n');
@@ -90,7 +94,13 @@ public class DriverExporter extends Exporter {
                 + separator
                 + User.USERNAME_COLUMN
                 + separator
+                + IN_COLUMN
+                + separator
                 + User.SHORT_TRAINED_DRIVER_COLUMN
+                + separator
+                + User.SHORT_BIKERS_COLUMN
+                + separator
+                + User.SHORT_LIMITED_RUNS_COLUMN
                 + separator
                 + User.PHONE_NUMBER_COLUMN
                 + separator
@@ -100,21 +110,17 @@ public class DriverExporter extends Exporter {
                 + separator
                 + User.ADDRESS_COLUMN
                 + separator
-                + User.SHORT_LIMITED_RUNS_COLUMN
-                + separator
                 + User.SHORT_AT_RISK_COLUMN
                 + separator
-                + User.SHORT_BIKERS_COLUMN
+                + User.SHORT_GONE_COLUMN
                 + separator
                 + User.SHORT_OUT_COLUMN
+                + separator
+                + User.SHORT_OTHER_DRIVERS_COLUMN
                 + separator
                 + User.SHORT_EVENTS_DRIVER_COLUMN
                 + separator
                 + User.SHORT_TRAINED_EVENT_DRIVER_COLUMN
-                + separator
-                + User.SHORT_GONE_COLUMN
-                + separator
-                + User.SHORT_OTHER_DRIVERS_COLUMN
                 + separator
                 + User.SHORT_DRIVER_DETAILS_COLUMN
                 + '\n';

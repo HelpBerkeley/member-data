@@ -1,7 +1,7 @@
 Help Berkeley Schemas
 =====================
 
-Version: 2.0.5
+Version: 2.0.6
 
 Full Member Record
 ------------------
@@ -213,19 +213,21 @@ Posting type:  Update, containing attached CSV file
 Sort type:     Create time.
 Where:         https://go.helpberkeley.org/t/drivers/638/3
 When:          Whenever any change to any data in the full user record
-               of someone in the drivers group is detected, 
-               and once per day at midnight.
+               of someone in the drivers group is detected (including group membership),
+			   or addition to drivers group. Polling every 10 minutes.
 
-Same fields as the full member record.
 Select only Drivers == TRUE
 
 All boolean variables should display Y for TRUE, N for FALSE
 
 Column Name,Type,Description,
-Created,String,YYYY/MM/DD 
+Created,String,YY/MM/DD   (no YYYY, and no HH/MM/SS)
 Name,String,Full name
 User Name,String,Discourse user name,
-trainedD, Boolean, In trained_drivers,
+In, Boolean, NOT(gone) AND NOT(out) AND NOT(other) AND NOT(event)
+Dtrain'd, Boolean, In trained_drivers,
+bike, Boolean, In bikers,
+limited, Boolean, In limited,
 Runs, Integer, total # of runs,
 6w, X or empty, 6 weeks before this week starting on Mondays: had a run?
 5w, X or empty, 5 weeks before this week starting on Mondays: had a run?
@@ -238,24 +240,22 @@ Phone #,String,,
 Phone2 #,String,,
 City,String,,
 Address,String,,
-limited, Boolean, In limited,
 at-risk, Boolean, In at-risk,
-biker, Boolean, In bikers,
-out, Boolean, In out_volunteers,
-events, Boolean, In events_only,
-trainedED, Boolean, In trained_edrivers
 gone, Boolean, In gone_volunteers,
+out, Boolean, In out_volunteers,
 other, Boolean, In other_drivers,
+event, Boolean, In event_drivers,
+Etrain'd, Boolean, In trained_edrivers
 details: string concatenated from https://go.helpberkeley.org/t/driver-details/5259
 
 Sort order:
-trained Yes/No
+Dtrain'd Yes/No
 gone No/Yes
 out No/Yes
-Other No/Yes
-events No/Yes
+other No/Yes
+event No/Yes
 limited No/Yes
-Biker No/Yes
+bike No/Yes
 at-risk No/Yes
 Created Last -> First
 

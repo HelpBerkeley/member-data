@@ -29,7 +29,6 @@ public class Options {
     static final String COMMAND_FETCH = "fetch";
     static final String COMMAND_GET_DAILY_DELIVERIES = "get-daily-deliveries";
     static final String COMMAND_ORDER_HISTORY = "order-history";
-    static final String COMMAND_DRIVERS = "drivers";
     static final String COMMAND_POST_ERRORS = "post-errors";
     static final String COMMAND_UPDATE_ERRORS = "update-errors";
     static final String COMMAND_UPDATE_DISPATCHERS = "update-dispatchers";
@@ -62,7 +61,6 @@ public class Options {
                     + "    | " + COMMAND_ONE_KITCHEN_DRIVER_MESSAGES + " all-members-file\n"
                     + "    | " + COMMAND_DRIVER_ROUTES + "\n"
                     + "    | " + COMMAND_ORDER_HISTORY + " all-members-file\n"
-                    + "    | " + COMMAND_DRIVERS + " all-members-file\n"
                     + "    | " + COMMAND_INREACH + " all-members-file\n"
                     + "    | " + COMMAND_EMAIL + " all-members-file\n"
                     + "    | " + COMMAND_WORKFLOW + " all-members-file\n"
@@ -118,7 +116,6 @@ public class Options {
             case COMMAND_ORDER_HISTORY:
             case COMMAND_COMPLETED_DAILY_ORDERS:
             case COMMAND_INREACH:
-            case COMMAND_DRIVERS:
                 setCommand(arg);
                 if (index == args.length) {
                     dieMessage(USAGE_ERROR + arg + COMMAND_REQUIRES_FILE_NAME);

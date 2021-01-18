@@ -113,11 +113,11 @@ public class User {
     static final String SHORT_COORDINATOR_COLUMN = "Coordtr";
     static final String SHORT_LIMITED_RUNS_COLUMN = "limited";
     static final String SHORT_AT_RISK_COLUMN = "at-risk";
-    static final String SHORT_BIKERS_COLUMN = "biker";
+    static final String SHORT_BIKERS_COLUMN = "bike";
     static final String SHORT_OUT_COLUMN = "out";
-    static final String SHORT_TRAINED_DRIVER_COLUMN = "trainedD";
-    static final String SHORT_EVENTS_DRIVER_COLUMN = "eventsD";
-    static final String SHORT_TRAINED_EVENT_DRIVER_COLUMN = "trainedED";
+    static final String SHORT_TRAINED_DRIVER_COLUMN = "Dtrain'd";
+    static final String SHORT_EVENTS_DRIVER_COLUMN = "event";
+    static final String SHORT_TRAINED_EVENT_DRIVER_COLUMN = "Etrain'd";
     static final String SHORT_GONE_COLUMN = "gone";
     static final String SHORT_OTHER_DRIVERS_COLUMN = "other";
     static final String SHORT_ADMIN_COLUMN = "Admin";
@@ -133,6 +133,7 @@ public class User {
     static final String NOT_PROVIDED = "none";
 
     static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
+    static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yy/MM/dd");
 
     private String name;
     private String userName;
@@ -211,6 +212,10 @@ public class User {
 
     public String getSimpleCreateTime() {
         return ZonedDateTime.parse(createTime).format(TIME_FORMATTER);
+    }
+
+    public String getCreateDate() {
+        return ZonedDateTime.parse(createTime).format(DATE_FORMATTER);
     }
 
     public List<String> getDataErrors() {
@@ -375,6 +380,10 @@ public class User {
 
     Boolean isOtherDrivers() {
         return groupMembership.contains(Constants.GROUP_OTHER_DRIVERS);
+    }
+
+    Boolean isAvailableDriver() {
+        return ! (isGone() || isOut() || isOtherDrivers() || isEventDriver());
     }
 
     @Override
