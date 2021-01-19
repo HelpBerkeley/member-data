@@ -85,6 +85,8 @@ public class Constants {
             new Topic("Request Single Restaurant Driver Messages", 4878);
     public static final Topic TOPIC_ORDER_HISTORY_DATA = new Topic("Order History Data", 5234);
     public static final Topic TOPIC_POST_COMPLETED_DAILY_ORDERS = new Topic("Post completed daily orders", 859);
+    public static final Topic TOPIC_DRIVER_TABLE_SHORT = new Topic("Post completed daily orders", 5374);
+    public static final Topic TOPIC_DRIVER_TABLE_LONG = new Topic("Post completed daily orders", 5375);
 
     public static final String COLUMN_ID = "id";
     public static final String COLUMN_NAME = "name";
@@ -153,9 +155,9 @@ public class Constants {
     public static final String GROUP_AT_RISK = "at-risk";
     public static final String GROUP_BIKERS = "bikers";
     public static final String GROUP_OUT = "out";
-    public static final String TRAINED_DRIVERS = "trained_drivers";
+    public static final String GROUP_TRAINED_DRIVERS = "trained_drivers";
     public static final String GROUP_EVENT_DRIVERS = "event_drivers";
-    public static final String TRAINED_EVENT_DRIVERS = "trained_edrivers";
+    public static final String GROUP_TRAINED_EVENT_DRIVERS = "trained_edrivers";
     public static final String GROUP_GONE = "gone";
     public static final String GROUP_OTHER_DRIVERS = "other_drivers";
 
@@ -196,4 +198,8 @@ public class Constants {
     static final String API_KEY_PROPERTY = "Api-Key";
 
     public static final int HTTP_TOO_MANY_REQUESTS = 429;
+
+    public static final String BIKE_EMOJI = ":bike:";
+    public static final String AT_RISK_EMOJI = ":warning:";
+    public static final String LIMITED_RUNS_EMOJI = ":red_circle:";
 }

@@ -214,7 +214,7 @@ Sort type:     Create time.
 Where:         https://go.helpberkeley.org/t/drivers/638/3
 When:          Whenever any change to any data in the full user record
                of someone in the drivers group is detected (including group membership),
-			   or addition to drivers group. Polling every 10 minutes.
+               or addition to drivers group, driver details. Polling every 10 minutes.
 
 Select only Drivers == TRUE
 
@@ -393,7 +393,9 @@ Driver table [long]
 Posting type:  Update, containing markdown table
 Sort type:     reverse chronological from driver details thread, then alphabetical by UserName
 Where:         https://go.helpberkeley.org/t/driver-table-long/5375
-When:          Whenever there is a change to any driver state, but at least once per day (midnight default).
+When:          Whenever any change to any data in the full user record
+               of someone in the drivers group is detected (including group membership),
+               or addition to drivers group, driver details. Polling every 10 minutes.
 Who:           Driver is listed if:
                  (drivers == TRUE) AND (trained_drivers == TRUE) 
                  AND (event_drivers == FALSE) AND (GONE == FALSE) AND (OUT == FALSE) AND (OTHER ==FALSE)
@@ -435,7 +437,9 @@ Driver table [short]
 Posting type:  Update, containing markdown table
 Sort type:     reverse chronological from driver details thread, then alphabetical by UserName
 Where:         https://go.helpberkeley.org/t/driver-table-short/5374
-When:          Whenever there is a change to any driver state, but at least once per day (midnight default).
+When:          Whenever any change to any data in the full user record
+               of someone in the drivers group is detected (including group membership),
+               or addition to drivers group, driver details. Polling every 10 minutes.
 Who:           Driver is listed if:
                  (drivers == TRUE) AND (trained_drivers == TRUE) 
                  AND (event_drivers == FALSE) AND (GONE == FALSE) AND (OUT == FALSE) AND (OTHER ==FALSE)
@@ -456,7 +460,7 @@ phn .#,String,,
 li m td, (Boolean) L or empty (1), In limited,
 at ri sk, (Boolean) A or empty (2), In at-risk,
 bi ke, (Boolean) B or empty (3), In bikers,
-run, Integer, total # of runs,
+rn, Integer, total # of runs,
 3 2 1 0, (Boolean) XXXX or YYYY or etc. (4), 3, 2, 1 0 weeks before this week starting on Mondays: had a run?
 details, string, concatenate {Full name, City, all strings from https://go.helpberkeley.org/t/post-driver-details/4524/}
 
@@ -466,8 +470,3 @@ details, string, concatenate {Full name, City, all strings from https://go.helpb
 (4): X is really the emoji :green_circle:, while Y is really the emoji :red_circle:
 
 A mockup can be found here: https://go.helpberkeley.org/t/driver-table-mockups/5356/9
-
-
-	
-
-

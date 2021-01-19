@@ -36,7 +36,9 @@ import java.time.format.DateTimeFormatter;
 public class Exporter {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Exporter.class);
+
     protected final String separator = Constants.CSV_SEPARATOR;
+    protected final String TABLE_CELL_SEPARATOR = "|";
 
     public String generateFileName(String fileName, String suffix) {
         String timestamp = ZonedDateTime.now(ZoneId.systemDefault()).

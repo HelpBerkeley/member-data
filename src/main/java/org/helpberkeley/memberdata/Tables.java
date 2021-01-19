@@ -194,6 +194,21 @@ public class Tables {
     }
 
     /**
+     * Get a list of available drivers
+     * @return List of drivers.
+     */
+    List<User> availableDrivers() {
+        List<User> drivers = new ArrayList<>();
+
+        for (User user : users) {
+            if (user.isAvailableDriver() && user.isTrainedDriver()) {
+                drivers.add(user);
+            }
+        }
+        return drivers;
+    }
+
+    /**
      * Get a list of dispatchers, sorted by create time
      * @return List of dispatchers
      */

@@ -37,7 +37,7 @@ public class RoundTripTest extends TestBase {
         User u1 = createUserWithGroups(
                 Constants.GROUP_CONSUMERS,
                 Constants.GROUP_DRIVERS,
-                Constants.TRAINED_DRIVERS,
+                Constants.GROUP_TRAINED_DRIVERS,
                 Constants.GROUP_DISPATCHERS,
                 Constants.GROUP_SPECIALISTS,
                 Constants.GROUP_PACKERS,
@@ -62,7 +62,7 @@ public class RoundTripTest extends TestBase {
                 Constants.GROUP_BIKERS,
                 Constants.GROUP_OUT,
                 Constants.GROUP_EVENT_DRIVERS,
-                Constants.TRAINED_EVENT_DRIVERS,
+                Constants.GROUP_TRAINED_EVENT_DRIVERS,
                 Constants.GROUP_GONE,
                 Constants.GROUP_OTHER_DRIVERS,
                 Constants.GROUP_ADMIN);

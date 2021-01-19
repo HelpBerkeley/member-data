@@ -111,6 +111,9 @@ public class Main {
             case Options.COMMAND_ORDER_HISTORY:
                 orderHistory(apiClient, options.getFileName());
                 break;
+            case Options.COMMAND_DRIVERS:
+                drivers(apiClient, options.getFileName());
+                break;
             case Options.COMMAND_GET_DAILY_DELIVERIES:
                 getDailyDeliveryPosts(apiClient);
                 break;
@@ -209,7 +212,7 @@ public class Main {
         // Fetch driver details
         String json = apiClient.runQuery(Constants.QUERY_GET_DRIVER_DETAILS);
         ApiQueryResult apiQueryResult = HBParser.parseQueryResult(json);
-        Map<String, String> driverDetails = HBParser.driverDetails(apiQueryResult);
+        Map<String, DetailsPost> driverDetails = HBParser.driverDetails(apiQueryResult);
 
         // Export drivers
         new DriverExporter(users, driverDetails).driversToFile();
@@ -352,7 +355,7 @@ public class Main {
     }
 
     private static void postDrivers(ApiClient apiClient, final String fileName) {
-        // Upload it to Discourse
+       // Upload it to Discourse
         Upload upload = new Upload(apiClient, fileName);
         // Post
         postFile(apiClient, fileName, upload.getShortURL(), DRIVERS_TITLE, DRIVERS_POST_TOPIC);
@@ -458,7 +461,7 @@ public class Main {
         // Fetch/parse the delivery details
         json = apiClient.runQuery(Constants.QUERY_GET_DELIVERY_DETAILS);
         apiQueryResult = HBParser.parseQueryResult(json);
-        Map<String, String> deliveryDetails = HBParser.deliveryDetails(apiQueryResult);
+        Map<String, DetailsPost> deliveryDetails = HBParser.deliveryDetails(apiQueryResult);
 
         // Download the restaurant template file
         String restaurantTemplate = apiClient.downloadFile(restaurantTemplatePost.uploadFile.getFileName());
@@ -944,21 +947,57 @@ public class Main {
         orderHistoryDataPosts.updateLastProcessedPost();
     }
 
-    private static void testQuery(ApiClient apiClient) {
+    private static void drivers(ApiClient apiClient, String usersFile) throws IOException, CsvException {
+        // Load users
+        String csvData = Files.readString(Paths.get(usersFile));
+        List<User> users = HBParser.users(csvData);
+        Tables tables = new Tables(users);
 
-//        String json = apiClient.runQuery(5);
-        String json = apiClient.runQueryWithParam(5, "limit", "100000");
+        // Fetch driver details
+        String json = apiClient.runQuery(Constants.QUERY_GET_DRIVER_DETAILS);
         ApiQueryResult apiQueryResult = HBParser.parseQueryResult(json);
+        Map<String, DetailsPost> driverDetails = HBParser.driverDetails(apiQueryResult);
 
-//        json = apiClient.runQuery(5);
-//        apiQueryResult = HBParser.parseQueryResult(json);
+        DriverExporter driverExporter = new DriverExporter(users, driverDetails);
 
-//
-        System.exit(0);
+        // Export drivers
+        String fileName = driverExporter.driversToFile();
 
-//        String json = apiClient.runQuery(Constants.QUERY_GET_GROUP_USERS_ID);
-//        ApiQueryResult apiQueryResult = HBParser.parseQueryResult(json);
-//        Map<String, List<Long>> groupUsers = HBParser.groupUsers(groupNames, apiQueryResult);
+        // Upload it to Discourse
+        Upload upload = new Upload(apiClient, fileName);
+        // Post
+        postFile(apiClient, fileName, upload.getShortURL(), DRIVERS_TITLE, DRIVERS_POST_TOPIC);
 
+        // Generate short table post
+        Post post = driverExporter.shortPost();
+        // post it
+        HttpResponse<?> response = apiClient.post(post.toJson());
+        // FIX THIS, DS: what to do with this error?
+        assert response.statusCode() == HTTP_OK : "failed " + response.statusCode() + ": " + response.body();
+
+        // Generate long table post
+        post = driverExporter.longPost();
+        // post it
+        response = apiClient.post(post.toJson());
+        // FIX THIS, DS: what to do with this error?
+        assert response.statusCode() == HTTP_OK : "failed " + response.statusCode() + ": " + response.body();
     }
+
+//    private static void testQuery(ApiClient apiClient) {
+//
+////        String json = apiClient.runQuery(5);
+//        String json = apiClient.runQueryWithParam(5, "limit", "100000");
+//        ApiQueryResult apiQueryResult = HBParser.parseQueryResult(json);
+//
+////        json = apiClient.runQuery(5);
+////        apiQueryResult = HBParser.parseQueryResult(json);
+//
+////
+//        System.exit(0);
+//
+////        String json = apiClient.runQuery(Constants.QUERY_GET_GROUP_USERS_ID);
+////        ApiQueryResult apiQueryResult = HBParser.parseQueryResult(json);
+////        Map<String, List<Long>> groupUsers = HBParser.groupUsers(groupNames, apiQueryResult);
+//
+//    }
 }

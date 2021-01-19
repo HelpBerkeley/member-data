@@ -62,35 +62,37 @@ public class DeliveryDetailsTest extends TestBase {
                 "\n @testUser : \n"
         );
 
-        Map<String, String> deliveryDetails = new HashMap<>();
+        Map<String, DetailsPost> deliveryDetails = new HashMap<>();
         String details = "Out round back";
 
         for (String userSpec : userNameLines) {
             deliveryDetails.clear();
 
-            HBParser.parseDetails(1, userSpec + details, deliveryDetails);
+            HBParser.parseDetails(1, userSpec + details, HBParser.DetailsHandling.LAST_POST_WINS, deliveryDetails);
             assertThat(deliveryDetails).as(userSpec).containsOnlyKeys("testUser");
-            assertThat(deliveryDetails).as(userSpec).containsValue(details);
+            DetailsPost detailsPost = deliveryDetails.get("testUser");
+            assertThat(detailsPost.getDetails()).isEqualTo(details);
         }
     }
 
     @Test
     public void detailsTest() {
 
-        Map<String, String> deliveryDetails = new HashMap<>();
+        Map<String, DetailsPost> deliveryDetails = new HashMap<>();
 
         String userSpec = "@testUser\n";
         String details = "simple";
 
-        HBParser.parseDetails(1, userSpec + details, deliveryDetails);
+        HBParser.parseDetails(1, userSpec + details, HBParser.DetailsHandling.LAST_POST_WINS, deliveryDetails);
         assertThat(deliveryDetails).containsKey("testUser");
-        assertThat(deliveryDetails.get("testUser")).isEqualTo(details);
+        DetailsPost detailsPost = deliveryDetails.get("testUser");
+        assertThat(detailsPost.getDetails()).isEqualTo(details);
 
         details = "\n\n\n and this is \n\n something else.\n ";
         String expected = "and this is something else.";
 
-        HBParser.parseDetails(1, userSpec + details, deliveryDetails);
-        assertThat(deliveryDetails).containsKey("testUser");
-        assertThat(deliveryDetails.get("testUser")).isEqualTo(expected);
+        HBParser.parseDetails(1, userSpec + details, HBParser.DetailsHandling.LAST_POST_WINS, deliveryDetails);
+        detailsPost = deliveryDetails.get("testUser");
+        assertThat(detailsPost.getDetails()).isEqualTo(expected);
     }
 }

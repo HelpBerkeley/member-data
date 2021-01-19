@@ -158,7 +158,7 @@ public class UserExporter extends Exporter {
     }
 
     String workflow(final String restaurantBlock,
-        Map<String, String> deliveryDetails) throws IOException, CsvException {
+        Map<String, DetailsPost> deliveryDetails) throws IOException, CsvException {
 
         StringBuilder rows = new StringBuilder();
 
@@ -171,7 +171,7 @@ public class UserExporter extends Exporter {
 
         for (User user : tables.sortByConsumerThenDriverThenName()) {
 
-            String details = deliveryDetails.get(user.getUserName());
+            DetailsPost details = deliveryDetails.get(user.getUserName());
 
             rows.append(user.isConsumer());
             rows.append(separator);
@@ -193,7 +193,7 @@ public class UserExporter extends Exporter {
             rows.append(separator);
             rows.append(user.isCondo());
             rows.append(separator);
-            rows.append(details == null ? "" : escapeCommas(details));
+            rows.append(details == null ? "" : escapeCommas(details.getDetails()));
             rows.append(separator);
             rows.append(separator);
             rows.append(separator);
@@ -239,7 +239,7 @@ public class UserExporter extends Exporter {
         }
     }
 
-    String workflowToFile(final String restaurantBlock, Map<String, String> deliveryDetails,
+    String workflowToFile(final String restaurantBlock, Map<String, DetailsPost> deliveryDetails,
         final String fileName) throws IOException, CsvException {
 
         String outputFileName = generateFileName(fileName, "csv");

@@ -674,8 +674,8 @@ public class UserTest extends TestBase {
 
     @Test
     public void groupTrainedDrivers() throws UserException {
-        User u1 = createUserWithGroup("u1", Constants.TRAINED_DRIVERS);
-        User u2 = createUserWithGroup("u1", Constants.TRAINED_DRIVERS);
+        User u1 = createUserWithGroup("u1", Constants.GROUP_TRAINED_DRIVERS);
+        User u2 = createUserWithGroup("u1", Constants.GROUP_TRAINED_DRIVERS);
         User u3 = createUser();
 
         assertThat(u1.isTrainedDriver()).isTrue();
@@ -698,8 +698,8 @@ public class UserTest extends TestBase {
 
     @Test
     public void groupTrainedEventsDriver() throws UserException {
-        User u1 = createUserWithGroup("u1", Constants.TRAINED_EVENT_DRIVERS);
-        User u2 = createUserWithGroup("u1", Constants.TRAINED_EVENT_DRIVERS);
+        User u1 = createUserWithGroup("u1", Constants.GROUP_TRAINED_EVENT_DRIVERS);
+        User u2 = createUserWithGroup("u1", Constants.GROUP_TRAINED_EVENT_DRIVERS);
         User u3 = createUser();
 
         assertThat(u1.isTrainedEventDriver()).isTrue();

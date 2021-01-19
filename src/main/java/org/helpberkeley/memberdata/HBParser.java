@@ -35,6 +35,11 @@ import java.util.regex.Pattern;
 
 public class HBParser {
 
+    public enum DetailsHandling {
+        LAST_POST_WINS,
+        CONCATENTATE_MULTIPLE_POSTS
+    }
+
     private static final Logger LOGGER = LoggerFactory.getLogger(HBParser.class);
 
     public static ApiQueryResult parseQueryResult(final String queryResultJson) {
@@ -280,7 +285,7 @@ public class HBParser {
                 groups.add(Constants.GROUP_DRIVERS);
             }
             if (Boolean.parseBoolean(columns[index++])) {
-                groups.add(Constants.TRAINED_DRIVERS);
+                groups.add(Constants.GROUP_TRAINED_DRIVERS);
             }
 
             String createdAt = columns[index++];
@@ -379,7 +384,7 @@ public class HBParser {
             }
 
             if (Boolean.parseBoolean(columns[index++])) {
-                groups.add(Constants.TRAINED_EVENT_DRIVERS);
+                groups.add(Constants.GROUP_TRAINED_EVENT_DRIVERS);
             }
 
             if (Boolean.parseBoolean(columns[index++])) {
@@ -456,12 +461,12 @@ public class HBParser {
         return dailyDeliveries;
     }
 
-    static Map<String, String> deliveryDetails(ApiQueryResult apiQueryResult) {
+    static Map<String, DetailsPost> deliveryDetails(ApiQueryResult apiQueryResult) {
         assert apiQueryResult.headers.length == 2 : apiQueryResult.headers.length;
         assert apiQueryResult.headers[0].equals("post_number");
         assert apiQueryResult.headers[1].equals("raw");
 
-        Map<String, String> deliveryDetails = new HashMap<>();
+        Map<String, DetailsPost> deliveryDetails = new HashMap<>();
 
         for (Object rowObj : apiQueryResult.rows) {
             Object[] columns = (Object[]) rowObj;
@@ -476,19 +481,19 @@ public class HBParser {
                 continue;
             }
 
-            parseDetails(id, raw, deliveryDetails);
+            parseDetails(id, raw, DetailsHandling.LAST_POST_WINS, deliveryDetails);
         }
 
         return deliveryDetails;
     }
 
-    static Map<String, String> driverDetails(ApiQueryResult apiQueryResult) {
+    static Map<String, DetailsPost> driverDetails(ApiQueryResult apiQueryResult) {
         assert apiQueryResult.headers.length == 3 : apiQueryResult.headers.length;
         assert apiQueryResult.headers[0].equals("post_number");
         assert apiQueryResult.headers[1].equals("deleted_at");
         assert apiQueryResult.headers[2].equals("raw");
 
-        Map<String, String> driverDetails = new HashMap<>();
+        Map<String, DetailsPost> driverDetails = new HashMap<>();
 
         for (Object rowObj : apiQueryResult.rows) {
             Object[] columns = (Object[]) rowObj;
@@ -500,7 +505,7 @@ public class HBParser {
             Long postNumber = ((Long)columns[0]);
             String raw = ((String)columns[2]).trim();
 
-            parseDetails(postNumber, raw, driverDetails);
+            parseDetails(postNumber, raw, DetailsHandling.CONCATENTATE_MULTIPLE_POSTS, driverDetails);
         }
 
         return driverDetails;
@@ -512,9 +517,11 @@ public class HBParser {
      *
      * @param postNumber post number
      * @param rawPost post text
+     * @param handling handling for multiple posts for same user name
      * @param detailsMap map, keyed by user name, to update with details.
      */
-    static void parseDetails(long postNumber, final String rawPost, Map<String, String> detailsMap) {
+    static void parseDetails(long postNumber, final String rawPost,
+             DetailsHandling handling, Map<String, DetailsPost> detailsMap) {
 
         // Normalize EOL
         String raw = rawPost.replaceAll("\\r\\n?", "\n");
@@ -550,7 +557,15 @@ public class HBParser {
         userName = matcher.group(1);
         String details = raw.replaceAll("\n", " ").replaceAll("\\s+", " ").trim();
 
-        detailsMap.put(userName, details);
+        detailsMap.computeIfAbsent(userName, DetailsPost::new);
+        DetailsPost detailsPost = detailsMap.get(userName);
+
+        if (handling == DetailsHandling.LAST_POST_WINS) {
+            detailsPost.setDetails(postNumber, details);
+        } else {
+            assert handling == DetailsHandling.CONCATENTATE_MULTIPLE_POSTS : handling;
+            detailsPost.appendDetails(postNumber, details);
+        }
     }
 
     public static String shortURLDiscoursePost(final String line) {

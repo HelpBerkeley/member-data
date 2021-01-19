@@ -222,7 +222,7 @@ public class User {
         return dataErrors;
     }
 
-    private User(
+    protected User(
         final String name,
         final String userName,
         final long id,
@@ -363,7 +363,7 @@ public class User {
     }
 
     Boolean isTrainedDriver() {
-        return groupMembership.contains(Constants.TRAINED_DRIVERS);
+        return groupMembership.contains(Constants.GROUP_TRAINED_DRIVERS);
     }
 
     Boolean isEventDriver() {
@@ -371,7 +371,7 @@ public class User {
     }
 
     Boolean isTrainedEventDriver() {
-        return groupMembership.contains(Constants.TRAINED_EVENT_DRIVERS);
+        return groupMembership.contains(Constants.GROUP_TRAINED_EVENT_DRIVERS);
     }
 
     Boolean isGone() {
@@ -383,7 +383,8 @@ public class User {
     }
 
     Boolean isAvailableDriver() {
-        return ! (isGone() || isOut() || isOtherDrivers() || isEventDriver());
+
+        return isDriver() && ! (isGone() || isOut() || isOtherDrivers() || isEventDriver());
     }
 
     @Override
@@ -433,7 +434,7 @@ public class User {
                 "=" +
                 isDriver() +
                 ':' +
-                Constants.TRAINED_DRIVERS +
+                Constants.GROUP_TRAINED_DRIVERS +
                 "=" +
                 isTrainedDriver() +
                 ':' +
@@ -545,7 +546,7 @@ public class User {
                 "=" +
                 isEventDriver() +
                 ':' +
-                Constants.TRAINED_EVENT_DRIVERS +
+                Constants.GROUP_TRAINED_EVENT_DRIVERS +
                 "=" +
                 isTrainedEventDriver() +
                 ':' +

@@ -59,13 +59,13 @@ public class DriverExporterTest extends TestBase {
     public void wellFormedCSVTest() throws UserException, IOException, CsvValidationException {
         User u1 = createTestUser1WithGroups(
                 Constants.GROUP_DRIVERS,
-                Constants.TRAINED_DRIVERS,
+                Constants.GROUP_TRAINED_DRIVERS,
                 Constants.GROUP_LIMITED,
                 Constants.GROUP_AT_RISK,
                 Constants.GROUP_BIKERS,
                 Constants.GROUP_OUT,
                 Constants.GROUP_EVENT_DRIVERS,
-                Constants.TRAINED_EVENT_DRIVERS,
+                Constants.GROUP_TRAINED_EVENT_DRIVERS,
                 Constants.GROUP_GONE,
                 Constants.GROUP_OTHER_DRIVERS);
 
@@ -78,18 +78,24 @@ public class DriverExporterTest extends TestBase {
 
         User u3 = createTestUser3WithGroups(
                 Constants.GROUP_DRIVERS,
-                Constants.TRAINED_DRIVERS,
+                Constants.GROUP_TRAINED_DRIVERS,
                 Constants.GROUP_AT_RISK,
                 Constants.GROUP_OUT,
-                Constants.TRAINED_EVENT_DRIVERS,
+                Constants.GROUP_TRAINED_EVENT_DRIVERS,
                 Constants.GROUP_OTHER_DRIVERS);
 
-        Map<String, String> details = new HashMap<>();
+        Map<String, DetailsPost> details = new HashMap<>();
         String u1Details = "twas brillig and the slithy toves";
         String u2Details = "all mimsy were the borogroves";
         String u3Details = "";
-        details.put(u1.getUserName(), u1Details);
-        details.put(u2.getUserName(), u2Details);
+
+        DetailsPost detailsPost = new DetailsPost(u1.getUserName());
+        detailsPost.setDetails(1, u1Details);
+        details.put(u1.getUserName(), detailsPost);
+
+        detailsPost = new DetailsPost(u2.getUserName());
+        detailsPost.setDetails(2, u2Details);
+        details.put(u2.getUserName(), detailsPost);
 
         DriverExporter exporter = new DriverExporter(List.of(u1, u2, u3), details);
 
@@ -208,5 +214,148 @@ public class DriverExporterTest extends TestBase {
         assertThat(columns[index++]).isEqualTo(u2Details);
 
         Files.delete(Paths.get(fileName));
+    }
+
+    @Test
+    public void shortPostNoAvailableDriversTest() throws UserException {
+
+        User u1 = createTestUser1WithGroups(Constants.GROUP_DRIVERS);
+        Tables tables = new Tables(List.of(u1));
+        assertThat(tables.availableDrivers()).isEmpty();
+
+        u1 = createTestUser1WithGroups(Constants.GROUP_DRIVERS, Constants.GROUP_TRAINED_DRIVERS);
+        tables = new Tables(List.of(u1));
+        assertThat(tables.availableDrivers()).containsExactly(u1);
+
+        u1 = createTestUser1WithGroups(Constants.GROUP_DRIVERS, Constants.GROUP_TRAINED_DRIVERS, Constants.GROUP_BIKERS);
+        tables = new Tables(List.of(u1));
+        assertThat(tables.availableDrivers()).containsExactly(u1);
+
+        u1 = createTestUser1WithGroups(Constants.GROUP_DRIVERS, Constants.GROUP_TRAINED_DRIVERS,
+                Constants.GROUP_BIKERS, Constants.GROUP_AT_RISK);
+        tables = new Tables(List.of(u1));
+        assertThat(tables.availableDrivers()).containsExactly(u1);
+
+        u1 = createTestUser1WithGroups(Constants.GROUP_DRIVERS, Constants.GROUP_TRAINED_DRIVERS,
+                Constants.GROUP_BIKERS, Constants.GROUP_AT_RISK, Constants.GROUP_LIMITED);
+        tables = new Tables(List.of(u1));
+        assertThat(tables.availableDrivers()).containsExactly(u1);
+
+        u1 = createTestUser1WithGroups(Constants.GROUP_DRIVERS, Constants.GROUP_TRAINED_DRIVERS, Constants.GROUP_OUT);
+        tables = new Tables(List.of(u1));
+        assertThat(tables.availableDrivers()).isEmpty();
+
+        u1 = createTestUser1WithGroups(Constants.GROUP_DRIVERS, Constants.GROUP_TRAINED_DRIVERS,
+                Constants.GROUP_EVENT_DRIVERS);
+        tables = new Tables(List.of(u1));
+        assertThat(tables.availableDrivers()).isEmpty();
+
+        u1 = createTestUser1WithGroups(Constants.GROUP_DRIVERS, Constants.GROUP_TRAINED_DRIVERS, Constants.GROUP_GONE);
+        tables = new Tables(List.of(u1));
+        assertThat(tables.availableDrivers()).isEmpty();
+    }
+
+    @Test
+    public void detailedDriverNoDetailsSortTest() throws UserException {
+
+        User u1 = createTestUser1WithGroups(Constants.GROUP_DRIVERS, Constants.GROUP_TRAINED_DRIVERS);
+        User u2 = createTestUser2WithGroups(Constants.GROUP_DRIVERS, Constants.GROUP_TRAINED_DRIVERS);
+        User u3 = createTestUser3WithGroups(Constants.GROUP_DRIVERS, Constants.GROUP_TRAINED_DRIVERS);
+
+        List<User> drivers = List.of(u3, u1, u2);
+        DriverExporter driverExporter = new DriverExporter(drivers, Map.of());
+
+        List<DetailedDriver> detailedDrivers = driverExporter.availableDetailedDrivers();
+        assertThat(detailedDrivers).hasSameSizeAs(drivers);
+
+        assertThat(detailedDrivers.get(0).getUserName()).isEqualTo(u1.getUserName());
+        assertThat(detailedDrivers.get(0).getLatestDetailsPostNumber()).isEqualTo(0L);
+        assertThat(detailedDrivers.get(0).getDetails()).isEmpty();
+        assertThat(detailedDrivers.get(1).getUserName()).isEqualTo(u2.getUserName());
+        assertThat(detailedDrivers.get(1).getLatestDetailsPostNumber()).isEqualTo(0L);
+        assertThat(detailedDrivers.get(1).getDetails()).isEmpty();
+        assertThat(detailedDrivers.get(2).getUserName()).isEqualTo(u3.getUserName());
+        assertThat(detailedDrivers.get(2).getLatestDetailsPostNumber()).isEqualTo(0L);
+        assertThat(detailedDrivers.get(2).getDetails()).isEmpty();
+    }
+
+    @Test
+    public void detailedDriverAllDetailsSortTest() throws UserException {
+
+        User u1 = createTestUser1WithGroups(Constants.GROUP_DRIVERS, Constants.GROUP_TRAINED_DRIVERS);
+        User u2 = createTestUser2WithGroups(Constants.GROUP_DRIVERS, Constants.GROUP_TRAINED_DRIVERS);
+        User u3 = createTestUser3WithGroups(Constants.GROUP_DRIVERS, Constants.GROUP_TRAINED_DRIVERS);
+
+        List<User> drivers = List.of(u1, u2, u3);
+
+        Map<String, DetailsPost> details = new HashMap<>();
+        String u1Details = "twas brillig and the slithy toves";
+        String u2Details = "all mimsy were the borogroves";
+        String u3Details = "did gyre and gimble in the wabe";
+
+        DetailsPost detailsPost = new DetailsPost(u1.getUserName());
+        detailsPost.setDetails(1, u1Details);
+        details.put(u1.getUserName(), detailsPost);
+
+        detailsPost = new DetailsPost(u2.getUserName());
+        detailsPost.setDetails(3, u2Details);
+        details.put(u2.getUserName(), detailsPost);
+
+        detailsPost = new DetailsPost(u3.getUserName());
+        detailsPost.setDetails(2, u3Details);
+        details.put(u3.getUserName(), detailsPost);
+
+        DriverExporter driverExporter = new DriverExporter(drivers, details);
+        List<DetailedDriver> detailedDrivers = driverExporter.availableDetailedDrivers();
+
+        assertThat(detailedDrivers).hasSameSizeAs(drivers);
+
+        assertThat(detailedDrivers.get(0).getUserName()).isEqualTo(u2.getUserName());
+        assertThat(detailedDrivers.get(0).getLatestDetailsPostNumber()).isEqualTo(3);
+        assertThat(detailedDrivers.get(0).getDetails()).isEqualTo(u2Details);
+        assertThat(detailedDrivers.get(1).getUserName()).isEqualTo(u3.getUserName());
+        assertThat(detailedDrivers.get(1).getLatestDetailsPostNumber()).isEqualTo(2);
+        assertThat(detailedDrivers.get(1).getDetails()).isEqualTo(u3Details);
+        assertThat(detailedDrivers.get(2).getUserName()).isEqualTo(u1.getUserName());
+        assertThat(detailedDrivers.get(2).getLatestDetailsPostNumber()).isEqualTo(1);
+        assertThat(detailedDrivers.get(2).getDetails()).isEqualTo(u1Details);
+    }
+
+    @Test
+    public void detailedDriverMixedSortTest() throws UserException {
+
+        User u1 = createTestUser1WithGroups(Constants.GROUP_DRIVERS, Constants.GROUP_TRAINED_DRIVERS);
+        User u2 = createTestUser2WithGroups(Constants.GROUP_DRIVERS, Constants.GROUP_TRAINED_DRIVERS);
+        User u3 = createTestUser3WithGroups(Constants.GROUP_DRIVERS, Constants.GROUP_TRAINED_DRIVERS);
+
+        List<User> drivers = List.of(u1, u2, u3);
+
+        Map<String, DetailsPost> details = new HashMap<>();
+        String u1Details = "twas brillig and the slithy toves";
+        String u2Details = "all mimsy were the borogroves";
+        String u3Details = "did gyre and gimble in the wabe";
+
+        DetailsPost detailsPost = new DetailsPost(u1.getUserName());
+        detailsPost.setDetails(1, u1Details);
+        details.put(u1.getUserName(), detailsPost);
+
+        detailsPost = new DetailsPost(u2.getUserName());
+        detailsPost.setDetails(3, u2Details);
+        details.put(u2.getUserName(), detailsPost);
+
+        DriverExporter driverExporter = new DriverExporter(drivers, details);
+        List<DetailedDriver> detailedDrivers = driverExporter.availableDetailedDrivers();
+
+        assertThat(detailedDrivers).hasSameSizeAs(drivers);
+
+        assertThat(detailedDrivers.get(0).getUserName()).isEqualTo(u2.getUserName());
+        assertThat(detailedDrivers.get(0).getLatestDetailsPostNumber()).isEqualTo(3);
+        assertThat(detailedDrivers.get(0).getDetails()).isEqualTo(u2Details);
+        assertThat(detailedDrivers.get(1).getUserName()).isEqualTo(u1.getUserName());
+        assertThat(detailedDrivers.get(1).getLatestDetailsPostNumber()).isEqualTo(1);
+        assertThat(detailedDrivers.get(1).getDetails()).isEqualTo(u1Details);
+        assertThat(detailedDrivers.get(2).getUserName()).isEqualTo(u3.getUserName());
+        assertThat(detailedDrivers.get(2).getLatestDetailsPostNumber()).isEqualTo(0);
+        assertThat(detailedDrivers.get(2).getDetails()).isEmpty();
     }
 }

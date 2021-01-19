@@ -104,7 +104,7 @@ public class Loader {
                 case Constants.GROUP_AT_RISK:
                 case Constants.GROUP_BIKERS:
                 case Constants.GROUP_OUT:
-                case Constants.TRAINED_DRIVERS:
+                case Constants.GROUP_TRAINED_DRIVERS:
                 case Constants.GROUP_EVENT_DRIVERS:
                 case Constants.GROUP_GONE:
                 case Constants.GROUP_OTHER_DRIVERS:
