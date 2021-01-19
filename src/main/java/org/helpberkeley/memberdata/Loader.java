@@ -106,6 +106,7 @@ public class Loader {
                 case Constants.GROUP_OUT:
                 case Constants.GROUP_TRAINED_DRIVERS:
                 case Constants.GROUP_EVENT_DRIVERS:
+                case Constants.GROUP_TRAINED_EVENT_DRIVERS:
                 case Constants.GROUP_GONE:
                 case Constants.GROUP_OTHER_DRIVERS:
                     groups.put(entry.getKey(), Group.createGroup(entry.getKey(), entry.getValue()));

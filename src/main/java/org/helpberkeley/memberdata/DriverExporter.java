@@ -26,10 +26,8 @@ import java.io.IOException;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
+import java.time.temporal.ChronoUnit;
+import java.util.*;
 
 public class DriverExporter extends Exporter {
 
@@ -231,5 +229,74 @@ public class DriverExporter extends Exporter {
         post.createdAt = timeStamp;
 
         return post;
+    }
+
+    List<DetailedDriver> needsTrainingDetailedDrivers() {
+
+        // Create a list of available DetailedDrivers
+        List<DetailedDriver> detailedDrivers = new ArrayList<>();
+        for (User driver : tables.drivers()) {
+
+            boolean trainedDriver = driver.isTrainedDriver();
+            boolean trainedEventDriver = driver.isTrainedEventDriver();
+            boolean eventDriver = driver.isEventDriver();
+
+            if (eventDriver) {
+                if (! trainedEventDriver) {
+                    detailedDrivers.add(new DetailedDriver(driver, driverDetails.get(driver.getUserName())));
+                }
+            } else if (! trainedDriver) {
+                detailedDrivers.add(new DetailedDriver(driver, driverDetails.get(driver.getUserName())));
+            }
+        }
+
+        // Sort by creation data, oldest to newest.
+        detailedDrivers.sort(Comparator.comparing(DetailedDriver::getCreateDate));
+
+        return detailedDrivers;
+    }
+
+    Optional<Post> needsTraining() {
+
+        List<DetailedDriver> detailedDrivers = needsTrainingDetailedDrivers();
+
+        if (detailedDrivers.isEmpty()) {
+            return Optional.empty();
+        }
+
+        StringBuilder output = new StringBuilder();
+        output.append("|User Name|Name|Phone #|Wait|Event|Details|\n");
+        output.append("|---|---|---|---|---|---|\n");
+
+        ZonedDateTime now = ZonedDateTime.now();
+
+        for (DetailedDriver detailedDriver : detailedDrivers) {
+
+            ZonedDateTime createTime = ZonedDateTime.parse(detailedDriver.getCreateTime());
+
+            output.append(detailedDriver.getUserName());
+            output.append('|');
+            output.append(detailedDriver.getName());
+            output.append('|');
+            output.append(detailedDriver.getPhoneNumber());
+            output.append('|');
+            output.append(Math.abs(ChronoUnit.DAYS.between(now, createTime)));
+            output.append('|');
+            output.append(detailedDriver.isEventDriver() ? Constants.GIFT_EMOJI : "");
+            output.append('|');
+            output.append(detailedDriver.getDetails());
+            output.append("|\n");
+        }
+
+        String timeStamp = ZonedDateTime.now(ZoneId.systemDefault())
+                .format(DateTimeFormatter.ofPattern("uuuu/MM/dd HH:mm:ss"));
+
+        Post post = new Post();
+        post.title = "Driver Post [long]";
+        post.topic_id = Constants.TOPIC_DRIVER_TRAINING_TABLE.getId();
+        post.raw = output.toString();
+        post.createdAt = timeStamp;
+
+        return Optional.of(post);
     }
 }

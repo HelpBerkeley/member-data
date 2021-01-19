@@ -40,6 +40,18 @@ public class DetailedDriver {
         return user.getUserName();
     }
 
+    public String getName() {
+        return user.getName();
+    }
+
+    public String getCreateDate() {
+        return user.getCreateDate();
+    }
+
+    public String getCreateTime() {
+        return user.getCreateTime();
+    }
+
     public long getLatestDetailsPostNumber() {
         return (details == null) ? 0 : details.getLatestPostNumber();
     }
@@ -62,5 +74,9 @@ public class DetailedDriver {
 
     public Boolean isAtRisk() {
         return user.isAtRisk();
+    }
+
+    public Boolean isEventDriver() {
+        return user.isEventDriver();
     }
 }

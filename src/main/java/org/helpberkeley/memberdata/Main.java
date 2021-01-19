@@ -981,6 +981,14 @@ public class Main {
         response = apiClient.post(post.toJson());
         // FIX THIS, DS: what to do with this error?
         assert response.statusCode() == HTTP_OK : "failed " + response.statusCode() + ": " + response.body();
+
+        Optional<Post> value = driverExporter.needsTraining();
+        if (value.isPresent()) {
+            // post it
+            response = apiClient.post(value.get().toJson());
+            // FIX THIS, DS: what to do with this error?
+            assert response.statusCode() == HTTP_OK : "failed " + response.statusCode() + ": " + response.body();
+        }
     }
 
 //    private static void testQuery(ApiClient apiClient) {

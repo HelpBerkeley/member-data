@@ -87,6 +87,7 @@ public class Constants {
     public static final Topic TOPIC_POST_COMPLETED_DAILY_ORDERS = new Topic("Post completed daily orders", 859);
     public static final Topic TOPIC_DRIVER_TABLE_SHORT = new Topic("Post completed daily orders", 5374);
     public static final Topic TOPIC_DRIVER_TABLE_LONG = new Topic("Post completed daily orders", 5375);
+    public static final Topic TOPIC_DRIVER_TRAINING_TABLE = new Topic("Post completed daily orders", 5355);
 
     public static final String COLUMN_ID = "id";
     public static final String COLUMN_NAME = "name";
@@ -202,4 +203,5 @@ public class Constants {
     public static final String BIKE_EMOJI = ":bike:";
     public static final String AT_RISK_EMOJI = ":warning:";
     public static final String LIMITED_RUNS_EMOJI = ":red_circle:";
+    public static final String GIFT_EMOJI = ":gift:";
 }
