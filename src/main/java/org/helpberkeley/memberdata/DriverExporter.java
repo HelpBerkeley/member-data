@@ -168,6 +168,7 @@ public class DriverExporter extends Exporter {
         output.append("|---|---|---|---|---|---|---|---|---|---|---|---|\n");
 
         for (DetailedDriver detailedDriver : detailedDrivers) {
+            output.append('@');
             output.append(detailedDriver.getUserName());
             output.append('|');
             output.append(detailedDriver.getPhoneNumber());
@@ -202,6 +203,7 @@ public class DriverExporter extends Exporter {
         output.append("|---|---|---|---|---|---|---|---|---|\n");
 
         for (DetailedDriver detailedDriver : detailedDrivers) {
+            output.append('@');
             output.append(detailedDriver.getUserName());
             output.append('|');
             output.append(detailedDriver.getPhoneNumber());
@@ -274,6 +276,7 @@ public class DriverExporter extends Exporter {
 
             ZonedDateTime createTime = ZonedDateTime.parse(detailedDriver.getCreateTime());
 
+            output.append('@');
             output.append(detailedDriver.getUserName());
             output.append('|');
             output.append(detailedDriver.getName());
