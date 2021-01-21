@@ -239,6 +239,10 @@ public class DriverExporter extends Exporter {
         List<DetailedDriver> detailedDrivers = new ArrayList<>();
         for (User driver : tables.drivers()) {
 
+            if (driver.isGone() || driver.isOut() || driver.isOtherDrivers()) {
+                continue;
+            }
+
             boolean trainedDriver = driver.isTrainedDriver();
             boolean trainedEventDriver = driver.isTrainedEventDriver();
             boolean eventDriver = driver.isEventDriver();

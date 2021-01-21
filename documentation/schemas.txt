@@ -1,7 +1,7 @@
 Help Berkeley Schemas
 =====================
 
-Version: 2.0.6
+Version: 2.0.8
 
 Full Member Record
 ------------------
@@ -210,7 +210,7 @@ Drivers
 -------
 
 Posting type:  Update, containing attached CSV file
-Sort type:     Create time.
+Sort type:     See sort order at the end
 Where:         https://go.helpberkeley.org/t/drivers/638/3
 When:          Whenever any change to any data in the full user record
                of someone in the drivers group is detected (including group membership),
@@ -247,6 +247,16 @@ other, Boolean, In other_drivers,
 event, Boolean, In event_drivers,
 Etrain'd, Boolean, In trained_edrivers
 details: string concatenated from https://go.helpberkeley.org/t/driver-details/5259
+
+Corrections for group owners, in this order:
+If a helpline dispatcher is a group owner for driver, she should be N for driver
+If a driver is a group owner for gone, she should be N for gone
+If a driver is a group owner for out, she should be N for out
+If a driver is a group owner for other, she should be N for other
+If a driver is a group owner for event, she should be N for event
+If a driver is a group owner for limited, she should be N for limited
+If a driver is a group owner for at-risk, she should be N for at-risk
+If a driver is a group owner for Etrain'd, she should be N for Etrain'd
 
 Sort order:
 Dtrain'd Yes/No
@@ -372,19 +382,15 @@ Sort type:     Member creation time.
 Where:         https://go.helpberkeley.org/t/driver-training-table-these-drivers-need-training/5355
 When:          Whenever a user is added to the drivers group (and is not a member of the event_drivers group)
                but is not a member of the trained_drivers group, or 
-			   a driver is added to the event_drivers group but is not a member of the trained_edrivers group.
-
-But, in reality, the condition would be to list if:
- [(drivers == TRUE) AND (event_drivers == FALSE) AND (trained_drivers == FALSE)] 
- OR 
- [(drivers == true) AND (event_drivers == TRUE) AND (trained_edrivers == FALSE)]
+               a driver is added to the event_drivers group but is not a member of the trained_edrivers group,
+               as long as, in either case, the driver is not gone, out or other.
 
 Column Name,Type,Description,
 User Name,String,Discourse user name,
 Name,String,Full name
 Phone #,String,,
 Wait, Integer, # days since account creation  [optional column if time consuming to do]
-Event, Boolean, events_only                   [ideally, blank if NOT event_driver, otherwise :gift: emoji]
+Event, Boolean, event_drivers                   [ideally, blank if NOT event_driver, otherwise :gift: emoji]
 Details, string, concatenate all strings from https://go.helpberkeley.org/t/post-driver-details/4524/
 
 Driver table [long]
@@ -397,12 +403,12 @@ When:          Whenever any change to any data in the full user record
                of someone in the drivers group is detected (including group membership),
                or addition to drivers group, driver details. Polling every 10 minutes.
 Who:           Driver is listed if:
-                 (drivers == TRUE) AND (trained_drivers == TRUE) 
-                 AND (event_drivers == FALSE) AND (GONE == FALSE) AND (OUT == FALSE) AND (OTHER ==FALSE)
+              (drivers == TRUE) AND (trained_drivers == TRUE) 
+              AND (event_drivers == FALSE) AND (GONE == FALSE) AND (OUT == FALSE) AND (OTHER ==FALSE)
 
 Note: this driver table will be difficult to keep very compact but needs to display many columns,
-         and be readable at a glance. 
-      To this purpose we will need to use emojis instead of regular Booleans.
+              and be readable at a glance. 
+              To this purpose we will need to use emojis instead of regular Booleans.
 	  
 Possible legend (to be revisited later):
 Li m td = Limited, true if 
@@ -430,6 +436,14 @@ details, string, concatenate {Full name, City, all strings from https://go.helpb
 
 A mockup can be found here: https://go.helpberkeley.org/t/driver-table-mockups/5356/8
 
+Corrections for group owners, in this order:
+If a helpline dispatcher is a group owner for driver, she should be N for driver
+If a driver is a group owner for gone, she should be N for gone
+If a driver is a group owner for out, she should be N for out
+If a driver is a group owner for other, she should be N for other
+If a driver is a group owner for event, she should be N for event
+If a driver is a group owner for limited, she should be N for limited
+If a driver is a group owner for at-risk, she should be N for at-risk
 
 Driver table [short]
 ------------
@@ -470,3 +484,12 @@ details, string, concatenate {Full name, City, all strings from https://go.helpb
 (4): X is really the emoji :green_circle:, while Y is really the emoji :red_circle:
 
 A mockup can be found here: https://go.helpberkeley.org/t/driver-table-mockups/5356/9
+
+Corrections for group owners, in this order:
+If a helpline dispatcher is a group owner for driver, she should be N for driver
+If a driver is a group owner for gone, she should be N for gone
+If a driver is a group owner for out, she should be N for out
+If a driver is a group owner for other, she should be N for other
+If a driver is a group owner for event, she should be N for event
+If a driver is a group owner for limited, she should be N for limited
+If a driver is a group owner for at-risk, she should be N for at-risk
