@@ -256,7 +256,7 @@ public class DriverExporterTest extends TestBase {
     }
 
     @Test
-    public void detailedDriverNoDetailsSortTest() throws UserException {
+    public void detailedDriverNoDetailsTest() throws UserException {
 
         User u1 = createTestUser1WithGroups(Constants.GROUP_DRIVERS, Constants.GROUP_TRAINED_DRIVERS);
         User u2 = createTestUser2WithGroups(Constants.GROUP_DRIVERS, Constants.GROUP_TRAINED_DRIVERS);
@@ -265,16 +265,17 @@ public class DriverExporterTest extends TestBase {
         List<User> drivers = List.of(u3, u1, u2);
         DriverExporter driverExporter = new DriverExporter(drivers, Map.of());
 
-        List<DetailedDriver> detailedDrivers = driverExporter.availableDetailedDrivers();
-        assertThat(detailedDrivers).hasSameSizeAs(drivers);
+        assertThat(driverExporter.availableDriversWithDetailsPosts()).isEmpty();
 
-        assertThat(detailedDrivers.get(0).getUserName()).isEqualTo(u1.getUserName());
+        List<DetailedDriver> detailedDrivers = driverExporter.availableDetailedDriversByReverseCreationDate();
+
+        assertThat(detailedDrivers.get(0).getUserName()).isEqualTo(u2.getUserName());
         assertThat(detailedDrivers.get(0).getLatestDetailsPostNumber()).isEqualTo(0L);
         assertThat(detailedDrivers.get(0).getDetails()).isEmpty();
-        assertThat(detailedDrivers.get(1).getUserName()).isEqualTo(u2.getUserName());
+        assertThat(detailedDrivers.get(1).getUserName()).isEqualTo(u3.getUserName());
         assertThat(detailedDrivers.get(1).getLatestDetailsPostNumber()).isEqualTo(0L);
         assertThat(detailedDrivers.get(1).getDetails()).isEmpty();
-        assertThat(detailedDrivers.get(2).getUserName()).isEqualTo(u3.getUserName());
+        assertThat(detailedDrivers.get(2).getUserName()).isEqualTo(u1.getUserName());
         assertThat(detailedDrivers.get(2).getLatestDetailsPostNumber()).isEqualTo(0L);
         assertThat(detailedDrivers.get(2).getDetails()).isEmpty();
     }
@@ -306,7 +307,7 @@ public class DriverExporterTest extends TestBase {
         details.put(u3.getUserName(), detailsPost);
 
         DriverExporter driverExporter = new DriverExporter(drivers, details);
-        List<DetailedDriver> detailedDrivers = driverExporter.availableDetailedDrivers();
+        List<DetailedDriver> detailedDrivers = driverExporter.availableDriversWithDetailsPosts();
 
         assertThat(detailedDrivers).hasSameSizeAs(drivers);
 
@@ -319,43 +320,5 @@ public class DriverExporterTest extends TestBase {
         assertThat(detailedDrivers.get(2).getUserName()).isEqualTo(u1.getUserName());
         assertThat(detailedDrivers.get(2).getLatestDetailsPostNumber()).isEqualTo(1);
         assertThat(detailedDrivers.get(2).getDetails()).isEqualTo(u1Details);
-    }
-
-    @Test
-    public void detailedDriverMixedSortTest() throws UserException {
-
-        User u1 = createTestUser1WithGroups(Constants.GROUP_DRIVERS, Constants.GROUP_TRAINED_DRIVERS);
-        User u2 = createTestUser2WithGroups(Constants.GROUP_DRIVERS, Constants.GROUP_TRAINED_DRIVERS);
-        User u3 = createTestUser3WithGroups(Constants.GROUP_DRIVERS, Constants.GROUP_TRAINED_DRIVERS);
-
-        List<User> drivers = List.of(u1, u2, u3);
-
-        Map<String, DetailsPost> details = new HashMap<>();
-        String u1Details = "twas brillig and the slithy toves";
-        String u2Details = "all mimsy were the borogroves";
-        String u3Details = "did gyre and gimble in the wabe";
-
-        DetailsPost detailsPost = new DetailsPost(u1.getUserName());
-        detailsPost.setDetails(1, u1Details);
-        details.put(u1.getUserName(), detailsPost);
-
-        detailsPost = new DetailsPost(u2.getUserName());
-        detailsPost.setDetails(3, u2Details);
-        details.put(u2.getUserName(), detailsPost);
-
-        DriverExporter driverExporter = new DriverExporter(drivers, details);
-        List<DetailedDriver> detailedDrivers = driverExporter.availableDetailedDrivers();
-
-        assertThat(detailedDrivers).hasSameSizeAs(drivers);
-
-        assertThat(detailedDrivers.get(0).getUserName()).isEqualTo(u2.getUserName());
-        assertThat(detailedDrivers.get(0).getLatestDetailsPostNumber()).isEqualTo(3);
-        assertThat(detailedDrivers.get(0).getDetails()).isEqualTo(u2Details);
-        assertThat(detailedDrivers.get(1).getUserName()).isEqualTo(u1.getUserName());
-        assertThat(detailedDrivers.get(1).getLatestDetailsPostNumber()).isEqualTo(1);
-        assertThat(detailedDrivers.get(1).getDetails()).isEqualTo(u1Details);
-        assertThat(detailedDrivers.get(2).getUserName()).isEqualTo(u3.getUserName());
-        assertThat(detailedDrivers.get(2).getLatestDetailsPostNumber()).isEqualTo(0);
-        assertThat(detailedDrivers.get(2).getDetails()).isEmpty();
     }
 }

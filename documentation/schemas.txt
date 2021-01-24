@@ -1,7 +1,7 @@
 Help Berkeley Schemas
 =====================
 
-Version: 2.0.8
+Version: 2.0.9
 
 Full Member Record
 ------------------
@@ -397,14 +397,15 @@ Driver table [long]
 ------------
 
 Posting type:  Update, containing markdown table
-Sort type:     reverse chronological from driver details thread, then alphabetical by UserName
+Sort type:     reverse chronological from driver details thread
 Where:         https://go.helpberkeley.org/t/driver-table-long/5375
 When:          Whenever any change to any data in the full user record
                of someone in the drivers group is detected (including group membership),
                or addition to drivers group, driver details. Polling every 10 minutes.
-Who:           Driver is listed if:
-              (drivers == TRUE) AND (trained_drivers == TRUE) 
-              AND (event_drivers == FALSE) AND (GONE == FALSE) AND (OUT == FALSE) AND (OTHER ==FALSE)
+Who:           Driver is listed if driver has any details posts
+	       AND
+               (drivers == TRUE) AND (trained_drivers == TRUE) 
+               AND (event_drivers == FALSE) AND (GONE == FALSE) AND (OUT == FALSE) AND (OTHER ==FALSE)
 
 Note: this driver table will be difficult to keep very compact but needs to display many columns,
               and be readable at a glance. 
@@ -449,7 +450,7 @@ Driver table [short]
 ------------
 
 Posting type:  Update, containing markdown table
-Sort type:     reverse chronological from driver details thread, then alphabetical by UserName
+Sort type:     reverse chronological from driver creation time
 Where:         https://go.helpberkeley.org/t/driver-table-short/5374
 When:          Whenever any change to any data in the full user record
                of someone in the drivers group is detected (including group membership),

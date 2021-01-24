@@ -137,12 +137,17 @@ public class DriverExporter extends Exporter {
         return outputFileName;
     }
 
-    List<DetailedDriver> availableDetailedDrivers() {
+    List<DetailedDriver> availableDriversWithDetailsPosts() {
 
-        // Create a list of available DetailedDrivers
+        // Create a list of available DetailedDrivers with details posts
         List<DetailedDriver> detailedDrivers = new ArrayList<>();
         for (User driver : tables.availableDrivers()) {
-            detailedDrivers.add(new DetailedDriver(driver, driverDetails.get(driver.getUserName())));
+
+            DetailsPost detailsPost = driverDetails.get(driver.getUserName());
+
+            if (detailsPost != null) {
+                detailedDrivers.add(new DetailedDriver(driver, detailsPost));
+            }
         }
 
         // Sort by those with details, then alphabetically by user name
@@ -153,17 +158,32 @@ public class DriverExporter extends Exporter {
         return detailedDrivers;
     }
 
-    Post shortPost() {
+    List<DetailedDriver> availableDetailedDriversByReverseCreationDate() {
+
+        // Create a list of available DetailedDrivers
+        List<DetailedDriver> detailedDrivers = new ArrayList<>();
+        for (User driver : tables.availableDrivers()) {
+            detailedDrivers.add(new DetailedDriver(driver, driverDetails.get(driver.getUserName())));
+
+        }
+
+        // Sort by those with details, then alphabetically by user name
+        detailedDrivers.sort(Comparator.comparing(DetailedDriver::getCreateDate, Comparator.reverseOrder()));
+
+        return detailedDrivers;
+    }
+
+    String shortPost() {
 
         // get available  DetailedDrivers
-        List<DetailedDriver> detailedDrivers = availableDetailedDrivers();
-
-
-        //|MichelThouati|262-434-0554|:no_entry_sign:|:warning:|:bike:|26|:green_circle::red_circle::red_circle::green_circle:|
-        //|MPFarrell|262-303-6233||:warning:||17|:red_circle::red_circle::red_circle::green_circle:|
-        //|Crestonia|510-555-1212||:warning:||9|:red_circle::green_circle::red_circle::green_circle:|
+        List<DetailedDriver> detailedDrivers = availableDetailedDriversByReverseCreationDate();
 
         StringBuilder output = new StringBuilder();
+
+        String timeStamp = ZonedDateTime.now(ZoneId.systemDefault())
+                .format(DateTimeFormatter.ofPattern("uuuu/MM/dd HH:mm:ss"));
+        output.append("Updated: ").append(timeStamp).append("\n");
+
         output.append("|UserName|phn .#|lt|ar|bk|rn|3. 2. 1. 0|\n");
         output.append("|---|---|---|---|---|---|---|---|---|---|---|---|\n");
 
@@ -181,24 +201,20 @@ public class DriverExporter extends Exporter {
             output.append("|\n");
         }
 
-        String timeStamp = ZonedDateTime.now(ZoneId.systemDefault())
-                .format(DateTimeFormatter.ofPattern("uuuu/MM/dd HH:mm:ss"));
-
-        Post post = new Post();
-        post.title = "Driver Post [short]";
-        post.topic_id = Constants.TOPIC_DRIVER_TABLE_SHORT.getId();
-        post.raw = output.toString();
-        post.createdAt = timeStamp;
-
-        return post;
+        return output.toString();
     }
 
-    Post longPost() {
+    String longPost() {
 
         // get available  DetailedDrivers
-        List<DetailedDriver> detailedDrivers = availableDetailedDrivers();
+        List<DetailedDriver> detailedDrivers = availableDriversWithDetailsPosts();
 
         StringBuilder output = new StringBuilder();
+
+        String timeStamp = ZonedDateTime.now(ZoneId.systemDefault())
+                .format(DateTimeFormatter.ofPattern("uuuu/MM/dd HH:mm:ss"));
+        output.append("Updated: ").append(timeStamp).append("\n");
+
         output.append("|UserName|phn .#|l i m i t e d|a t - r i s k|b i k e|r u n s|3 2|1 0|details|\n");
         output.append("|---|---|---|---|---|---|---|---|---|\n");
 
@@ -221,16 +237,7 @@ public class DriverExporter extends Exporter {
             output.append("|\n");
         }
 
-        String timeStamp = ZonedDateTime.now(ZoneId.systemDefault())
-                .format(DateTimeFormatter.ofPattern("uuuu/MM/dd HH:mm:ss"));
-
-        Post post = new Post();
-        post.title = "Driver Post [long]";
-        post.topic_id = Constants.TOPIC_DRIVER_TABLE_LONG.getId();
-        post.raw = output.toString();
-        post.createdAt = timeStamp;
-
-        return post;
+        return output.toString();
     }
 
     List<DetailedDriver> needsTrainingDetailedDrivers() {

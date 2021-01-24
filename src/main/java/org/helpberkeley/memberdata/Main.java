@@ -71,6 +71,8 @@ public class Main {
     static final long ORDER_HISTORY_POST_ID = 6433;
     static final long RESTAURANT_TEMPLATE_POST_ID = 8664;
     static final long DRIVERS_POST_STAGING_TOPIC_ID = 2123;
+    static final long DRIVERS_TABLE_SHORT_POST_ID = 44847;
+    static final long DRIVERS_TABLE_LONG_POST_ID = 44959;
 
     // FIX THIS, DS: uncomment when we can past parameters to queries
 //    static final long ORDER_HISTORY_TOPIC = 1440;
@@ -969,16 +971,16 @@ public class Main {
         postFile(apiClient, fileName, upload.getShortURL(), DRIVERS_TITLE, DRIVERS_POST_TOPIC);
 
         // Generate short table post
-        Post post = driverExporter.shortPost();
-        // post it
-        HttpResponse<?> response = apiClient.post(post.toJson());
+        String post = driverExporter.shortPost();
+        // update the posting
+        HttpResponse<?> response = apiClient.updatePost(DRIVERS_TABLE_SHORT_POST_ID, post);
         // FIX THIS, DS: what to do with this error?
         assert response.statusCode() == HTTP_OK : "failed " + response.statusCode() + ": " + response.body();
 
         // Generate long table post
         post = driverExporter.longPost();
-        // post it
-        response = apiClient.post(post.toJson());
+        // update the posting
+        response = apiClient.updatePost(DRIVERS_TABLE_LONG_POST_ID, post);
         // FIX THIS, DS: what to do with this error?
         assert response.statusCode() == HTTP_OK : "failed " + response.statusCode() + ": " + response.body();
 

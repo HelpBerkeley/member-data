@@ -806,10 +806,6 @@ public class HBParser {
         return userOrders;
     }
 
-    static void drivers(String fileName) {
-
-    }
-
     // Skip Discourse system users. Not fully formed.
     private static boolean skipUserId(long userId) {
         return (userId == -1) || (userId == -2) || (userId == 708) || (userId == 844);
