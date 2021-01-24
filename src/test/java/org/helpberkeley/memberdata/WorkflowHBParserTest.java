@@ -80,7 +80,7 @@ public class WorkflowHBParserTest extends TestBase {
         assertThat(thrown).isInstanceOf(MemberDataException.class);
         assertThat(thrown).hasMessageContainingAll("missing consumer name",
                 "missing user name", "missing phone", "missing city", "missing address",
-                "missing restaurant name", "no rations detected");
+                "missing restaurant name", "normal and/or veggie rations column is empty");
     }
 
     @Test

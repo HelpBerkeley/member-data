@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.catchThrowable;
 
 public class DriverPostTest extends TestBase {
 
@@ -194,8 +195,9 @@ public class DriverPostTest extends TestBase {
     @Test
     public void missingRationTypeCountTest() {
         String routedDeliveries = readResourceFile("routed-deliveries-missing-ration-type-count.csv");
-        DriverPostFormat driverPostFormat = new DriverPostFormat(createApiSimulator(),
-                users, Constants.CONTROL_BLOCK_CURRENT_VERSION, routedDeliveries);
-        driverPostFormat.generateSummary();
+        Throwable thrown = catchThrowable(() -> new DriverPostFormat(createApiSimulator(),
+                users, Constants.CONTROL_BLOCK_CURRENT_VERSION, routedDeliveries));
+        assertThat(thrown).isInstanceOf(MemberDataException.class);
+        assertThat(thrown).hasMessageContaining("normal and/or veggie rations column is empty");
     }
 }

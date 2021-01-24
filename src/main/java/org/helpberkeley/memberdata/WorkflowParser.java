@@ -512,8 +512,9 @@ public class WorkflowParser {
             String normalRations = bean.getNormal();
             String veggieRations = bean.getVeggie();
 
-            if (normalRations.isEmpty() && veggieRations.isEmpty()) {
-                errors += "no rations detected\n";
+            if (normalRations.isEmpty() || veggieRations.isEmpty()) {
+                errors += "normal and/or veggie rations column is empty. "
+                        + "Please insert the the correct number(s) (e.g. 0). ";
             }
 
             if (! errors.isEmpty()) {
