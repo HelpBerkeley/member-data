@@ -511,6 +511,7 @@ public class WorkflowParser {
             }
             String normalRations = bean.getNormal();
             String veggieRations = bean.getVeggie();
+
             if (normalRations.isEmpty() && veggieRations.isEmpty()) {
                 errors += "no rations detected\n";
             }
@@ -529,8 +530,8 @@ public class WorkflowParser {
             delivery.setIsCondo(isCondo);
             delivery.setDetails(details);
             delivery.setRestaurant(restaurantName);
-            delivery.setNormalRations(normalRations);
-            delivery.setVeggieRations(veggieRations);
+            delivery.setNormalRations(normalRations.isEmpty() ? "0" : normalRations);
+            delivery.setVeggieRations(veggieRations.isEmpty() ? "0" : veggieRations);
 
             deliveries.add(delivery);
         }

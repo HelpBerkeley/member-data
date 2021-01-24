@@ -190,4 +190,12 @@ public class DriverPostTest extends TestBase {
         String post = posts.get(0);
 //        System.out.println(post);
     }
+
+    @Test
+    public void missingRationTypeCountTest() {
+        String routedDeliveries = readResourceFile("routed-deliveries-missing-ration-type-count.csv");
+        DriverPostFormat driverPostFormat = new DriverPostFormat(createApiSimulator(),
+                users, Constants.CONTROL_BLOCK_CURRENT_VERSION, routedDeliveries);
+        driverPostFormat.generateSummary();
+    }
 }
