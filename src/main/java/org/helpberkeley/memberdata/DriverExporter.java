@@ -184,12 +184,14 @@ public class DriverExporter extends Exporter {
                 .format(DateTimeFormatter.ofPattern("uuuu/MM/dd HH:mm:ss"));
         output.append("Updated: ").append(timeStamp).append("\n");
 
-        output.append("|UserName|phn .#|lt|ar|bk|rn|3. 2. 1. 0|\n");
-        output.append("|---|---|---|---|---|---|---|---|---|---|---|---|\n");
+        output.append("|UserName|Full Name|phn .#|lt|ar|bk|rn|3. 2. 1. 0|\n");
+        output.append("|---|---|---|---|---|---|---|---|---|---|---|---|---|\n");
 
         for (DetailedDriver detailedDriver : detailedDrivers) {
             output.append('@');
             output.append(detailedDriver.getUserName());
+            output.append('|');
+            output.append(detailedDriver.getName());
             output.append('|');
             output.append(detailedDriver.getPhoneNumber());
             output.append('|');
