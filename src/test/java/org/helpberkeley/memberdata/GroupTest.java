@@ -37,7 +37,7 @@ public class GroupTest extends TestBase {
         assertThat(group.toString()).contains(groupName);
 
         for (Long id : userIDs) {
-            assertThat(group.hasUserId(id)).isTrue();
+            assertThat(group.hasMember(id)).isTrue();
             assertThat(group.toString()).contains(String.valueOf(id));
         }
     }

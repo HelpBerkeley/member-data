@@ -88,6 +88,11 @@ public class TestBase {
     final List<String>  TEST_USER_2_GROUPS = List.of(Constants.GROUP_CONSUMERS, Constants.GROUP_DRIVERS);
     final List<String>  TEST_USER_3_GROUPS = List.of(Constants.GROUP_DRIVERS, Constants.GROUP_DISPATCHERS);
 
+    final List<String> NO_GROUP_OWNERSHIPS = List.of();
+    final List<String> TEST_USER_1_GROUP_OWNERSHIPS = NO_GROUP_OWNERSHIPS;
+    final List<String> TEST_USER_2_GROUP_OWNERSHIPS = NO_GROUP_OWNERSHIPS;
+    final List<String> TEST_USER_3_GROUP_OWNERSHIPS = NO_GROUP_OWNERSHIPS;
+
     static final String[] COMMANDS_WITH_URL = {
             Options.COMMAND_POST_DISPATCHERS,
     };
@@ -137,21 +142,24 @@ public class TestBase {
         return User.createUser(TEST_NAME_1, TEST_USER_NAME_1, TEST_ID_1, TEST_ADDRESS_1,
                 Constants.BERKELEY, TEST_PHONE_1, TEST_ALT_PHONE_1, TEST_NEIGHBORHOOD_1, TEST_CREATED_1,
                 TEST_CONDO_1, TEST_CONSUMER_REQUEST_1, TEST_VOLUNTEER_REQUEST_1,
-                TEST_REFERRAL_1, TEST_VERIFIED_1, TEST_USER_1_GROUPS);
+                TEST_REFERRAL_1, TEST_VERIFIED_1,
+                TEST_USER_1_GROUPS, TEST_USER_1_GROUP_OWNERSHIPS);
     }
 
     protected User createTestUser2() throws UserException {
         return User.createUser(TEST_NAME_2, TEST_USER_NAME_2, TEST_ID_2, TEST_ADDRESS_2,
                 Constants.BERKELEY, TEST_PHONE_2, TEST_ALT_PHONE_2, TEST_NEIGHBORHOOD_2, TEST_CREATED_2,
                 TEST_CONDO_2, TEST_CONSUMER_REQUEST_2, TEST_VOLUNTEER_REQUEST_2,
-                TEST_REFERRAL_2, TEST_VERIFIED_2, TEST_USER_2_GROUPS);
+                TEST_REFERRAL_2, TEST_VERIFIED_2,
+                TEST_USER_2_GROUPS, TEST_USER_2_GROUP_OWNERSHIPS);
     }
 
     protected User createTestUser3() throws UserException {
         return User.createUser(TEST_NAME_3, TEST_USER_NAME_3, TEST_ID_3, TEST_ADDRESS_3,
                 Constants.BERKELEY, TEST_PHONE_3, TEST_ALT_PHONE_3, TEST_NEIGHBORHOOD_3, TEST_CREATED_3,
                 TEST_CONDO_3, TEST_CONSUMER_REQUEST_3, TEST_VOLUNTEER_REQUEST_3,
-                TEST_REFERRAL_3, TEST_VERIFIED_3, TEST_USER_3_GROUPS);
+                TEST_REFERRAL_3, TEST_VERIFIED_3,
+                TEST_USER_3_GROUPS, TEST_USER_3_GROUP_OWNERSHIPS);
     }
 
     protected User createTestUser1WithGroups(String... groups) throws UserException {
@@ -258,6 +266,15 @@ public class TestBase {
                 TEST_ID_1, TEST_ADDRESS_1, Constants.BERKELEY, TEST_PHONE_1, TEST_ALT_PHONE_1, TEST_NEIGHBORHOOD_1,
                 TEST_CREATED_1, TEST_CONDO_1, TEST_CONSUMER_REQUEST_1, TEST_VOLUNTEER_REQUEST_1,
                 TEST_REFERRAL_1, TEST_VERIFIED_1, group);
+    }
+
+    protected User createUserWithGroupAndGroupOwner(final String userName, final String group,
+            final String groupOwner) throws UserException {
+
+        return User.createUser(TEST_NAME_1, userName,
+                TEST_ID_1, TEST_ADDRESS_1, Constants.BERKELEY, TEST_PHONE_1, TEST_ALT_PHONE_1, TEST_NEIGHBORHOOD_1,
+                TEST_CREATED_1, TEST_CONDO_1, TEST_CONSUMER_REQUEST_1, TEST_VOLUNTEER_REQUEST_1,
+                TEST_REFERRAL_1, TEST_VERIFIED_1, List.of(group), List.of(groupOwner));
     }
 
     protected User createUserWithNeighborhood(final String neighborhood) throws UserException {
@@ -378,7 +395,7 @@ public class TestBase {
         return User.createUser(name, name, TEST_ID_1, TEST_ADDRESS_1,
                 TEST_CITY_1, TEST_PHONE_1, TEST_ALT_PHONE_1, TEST_NEIGHBORHOOD_1, TEST_CREATED_1,
                 TEST_CONDO_1, TEST_CONSUMER_REQUEST_1, TEST_VOLUNTEER_REQUEST_1,
-                TEST_REFERRAL_1, TEST_VERIFIED_1, groups);
+                TEST_REFERRAL_1, TEST_VERIFIED_1, groups, NO_GROUP_OWNERSHIPS);
     }
 
     public String readResourceFile(final String fileName) {

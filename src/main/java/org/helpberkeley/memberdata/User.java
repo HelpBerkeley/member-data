@@ -77,6 +77,7 @@ public class User {
     static final String OTHER_DRIVERS_COLUMN = "other-drivers";
     static final String ADMIN_COLUMN = "Admin";
     static final String EMAIL_VERIFIED_COLUMN = "Verified";
+    static final String GROUPS_OWNED_COLUMN = "groups-owned";
 
     static final String SHORT_ID_COLUMN = "ID";
     static final String SHORT_CREATED_AT_COLUMN = "Created";
@@ -150,6 +151,7 @@ public class User {
     private String referral;
     private final Boolean emailVerified;
     private final Set<String> groupMembership = new HashSet<>();
+    private final Set<String> groupOwnerships = new TreeSet<>();
     private final List<String> dataErrors = new ArrayList<>();
 
 
@@ -385,6 +387,14 @@ public class User {
     Boolean isAvailableDriver() {
 
         return isDriver() && ! (isGone() || isOut() || isOtherDrivers() || isEventDriver());
+    }
+
+    Boolean groupOwner(String groupName) {
+        return groupOwnerships.contains(groupName);
+    }
+
+    String groupsOwned() {
+        return groupOwnerships.isEmpty() ? "" : "\"" + String.join(Constants.CSV_SEPARATOR, groupOwnerships) + "\"";
     }
 
     @Override
@@ -1012,14 +1022,19 @@ public class User {
             final String volunteerRequest,
             final String referral,
             final Boolean emailVerified,
-            final List<String> groups) throws UserException {
+            final List<String> groupMemberships,
+            final List<String> groupOwnerships) throws UserException {
 
 
         User user = new User(name, userName, id, address, city, phoneNumber, altPhoneNumber,
                 neighborhood, createdAt, condo, consumerRequest, volunteerRequest, referral, emailVerified);
-        for (String group : groups) {
+        for (String group : groupMemberships) {
             assert ! user.groupMembership.contains(group) : group;
             user.groupMembership.add(group);
+        }
+        for (String group : groupOwnerships) {
+            assert ! user.groupOwnerships.contains(group) : group;
+            user.groupOwnerships.add(group);
         }
 
         user.auditNullFields();
@@ -1136,7 +1151,8 @@ public class User {
                 + TRAINED_EVENT_DRIVER_COLUMN + Constants.CSV_SEPARATOR
                 + GONE_COLUMN + Constants.CSV_SEPARATOR
                 + OTHER_DRIVERS_COLUMN + Constants.CSV_SEPARATOR
-                + ADMIN_COLUMN
+                + ADMIN_COLUMN + Constants.CSV_SEPARATOR
+                + GROUPS_OWNED_COLUMN
                 + "\n";
     }
 
@@ -1186,7 +1202,8 @@ public class User {
                 isTrainedEventDriver() + Constants.CSV_SEPARATOR +
                 isGone() + Constants.CSV_SEPARATOR +
                 isOtherDrivers() + Constants.CSV_SEPARATOR +
-                isAdmin() +
+                isAdmin() + Constants.CSV_SEPARATOR +
+                groupsOwned() +
                 '\n';
     }
 

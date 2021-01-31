@@ -244,7 +244,7 @@ public class MainTest extends TestBase {
     @Test
     public void completedOrdersFutureDateTest() throws IOException, CsvException {
         LocalDate nextWeek = LocalDate.now().plusWeeks(1);
-        DateTimeFormatter format = DateTimeFormatter.ofPattern("YYYY/MM/DD");
+        DateTimeFormatter format = DateTimeFormatter.ofPattern("YYYY/MM/dd");
         String nextWeekStr = nextWeek.format(format);
 
         String completedOrdersRequest =
@@ -272,7 +272,7 @@ public class MainTest extends TestBase {
     @Test
     public void completedOrdersDateTooOldTest() throws IOException, CsvException {
         LocalDate lastYear = LocalDate.now().minusYears(1);
-        DateTimeFormatter format = DateTimeFormatter.ofPattern("YYYY/MM/DD");
+        DateTimeFormatter format = DateTimeFormatter.ofPattern("YYYY/MM/dd");
         String lastYearStr = lastYear.format(format);
 
         String completedOrdersRequest =
@@ -300,7 +300,7 @@ public class MainTest extends TestBase {
     @Test
     public void completedOrdersDisableDateAuditTest() throws IOException, CsvException {
         LocalDate lastYear = LocalDate.now().minusYears(1);
-        DateTimeFormatter format = DateTimeFormatter.ofPattern("YYYY/MM/DD");
+        DateTimeFormatter format = DateTimeFormatter.ofPattern("YYYY/MM/dd");
         String lastYearStr = lastYear.format(format);
 
         String completedOrdersRequest =

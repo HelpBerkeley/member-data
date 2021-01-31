@@ -4,29 +4,35 @@
   "params": {},
   "columns": [
     "group_id",
-    "user_id"
+    "user_id",
+    "owner"
   ],
   "default_limit": 1000,
   "rows": [
     [
       41,
-      33
+      33,
+      true
     ],
     [
       42,
-      33
+      33,
+      false
     ],
     [
       43,
-      33
+      33,
+      false
     ],
     [
       47,
-      33
+      33,
+      true
     ],
     [
       166,
-      null
+      null,
+      false
     ]
   ]
 }

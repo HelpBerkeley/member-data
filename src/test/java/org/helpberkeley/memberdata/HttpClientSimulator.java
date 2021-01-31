@@ -155,7 +155,7 @@ public class HttpClientSimulator extends HttpClient {
             case Constants.QUERY_GET_GROUPS_ID:
                 dataFile = "groups.json";
                 break;
-            case Constants.QUERY_GET_GROUP_USERS_ID:
+            case Constants.CURRENT_GET_GROUP_USERS_QUERY:
                 dataFile = "group-users.json";
                 break;
             case Constants.CURRENT_USERS_QUERY:

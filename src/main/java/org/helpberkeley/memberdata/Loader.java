@@ -37,7 +37,7 @@ public class Loader {
     private static final Logger LOGGER = LoggerFactory.getLogger(Loader.class);
 
     private final ApiClient apiClient;
-    private final Map<String, Group> groups = new HashMap<>();
+    private Map<String, Group> groups;
     private Set<Long> emailConfirmations;
 
     // FIX THIS, DS: refactor these two ctors and the load methods
@@ -71,50 +71,10 @@ public class Loader {
         ApiQueryResult apiQueryResult = HBParser.parseQueryResult(json);
         Map<Long, String> groupNames = HBParser.groupNames(apiQueryResult);
 
-        json = apiClient.runQuery(Constants.QUERY_GET_GROUP_USERS_ID);
+        json = apiClient.runQuery(Constants.CURRENT_GET_GROUP_USERS_QUERY);
         apiQueryResult = HBParser.parseQueryResult(json);
-        Map<String, List<Long>> groupUsers = HBParser.groupUsers(groupNames, apiQueryResult);
 
-        for (Map.Entry<String, List<Long>> entry : groupUsers.entrySet()) {
-
-            switch (entry.getKey()) {
-                case Constants.GROUP_CONSUMERS:
-                case Constants.GROUP_DRIVERS:
-                case Constants.GROUP_DISPATCHERS:
-                case Constants.GROUP_SPECIALISTS:
-                case Constants.GROUP_BHS:
-                case Constants.GROUP_HELPLINE:
-                case Constants.GROUP_SITELINE:
-                case Constants.GROUP_TRAINED_CUSTOMER_CARE_A:
-                case Constants.GROUP_TRAINED_CUSTOMER_CARE_B:
-                case Constants.GROUP_INREACH:
-                case Constants.GROUP_OUTREACH:
-                case Constants.GROUP_MARKETING:
-                case Constants.GROUP_MODERATORS:
-                case Constants.GROUP_WORKFLOW:
-                case Constants.GROUP_VOICEONLY:
-                case Constants.GROUP_TRUST_LEVEL_4:
-                case Constants.GROUP_CUSTOMER_INFO:
-                case Constants.GROUP_ADVISOR:
-                case Constants.GROUP_COORDINATORS:
-                case Constants.GROUP_ADMIN:
-                case Constants.GROUP_PACKERS:
-                case Constants.GROUP_BOARDMEMBERS:
-                case Constants.GROUP_LIMITED:
-                case Constants.GROUP_AT_RISK:
-                case Constants.GROUP_BIKERS:
-                case Constants.GROUP_OUT:
-                case Constants.GROUP_TRAINED_DRIVERS:
-                case Constants.GROUP_EVENT_DRIVERS:
-                case Constants.GROUP_TRAINED_EVENT_DRIVERS:
-                case Constants.GROUP_GONE:
-                case Constants.GROUP_OTHER_DRIVERS:
-                    groups.put(entry.getKey(), Group.createGroup(entry.getKey(), entry.getValue()));
-                    break;
-                default:
-                    break;
-            }
-        }
+        groups = HBParser.groupUsers(groupNames, apiQueryResult);
     }
 
     private void loadEmailConfirmations() {

@@ -21,6 +21,7 @@
 //
 package org.helpberkeley.memberdata;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.time.ZonedDateTime;
@@ -146,6 +147,18 @@ public class TablesTest extends TestBase {
 
         Tables tables = new Tables(List.of(u1, u2, u3, u4));
         assertThat(tables.drivers()).containsExactlyInAnyOrder(u2, u3);
+    }
+
+    // FIX THIS, DS: turn on with driver filter changes
+    @Test
+    @Ignore
+    public void driversHelpLineGroupOwnerTest() throws UserException {
+        User u1 = createUserWithGroupAndGroupOwner("u1", Constants.GROUP_DRIVERS, Constants.GROUP_HELPLINE);
+        User u2 = createUserWithGroup("u1", Constants.GROUP_DRIVERS);
+
+        Tables tables = new Tables(List.of(u1, u2));
+        assertThat(tables.drivers()).containsExactly(u2);
+
     }
 
     @Test

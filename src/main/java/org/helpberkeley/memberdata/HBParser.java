@@ -58,8 +58,6 @@ public class HBParser {
     static List<User> users(final Map<String, Group> groups,
         final Set<Long> emailVerified, final ApiQueryResult queryResult) {
 
-        LOGGER.trace("users");
-
         List<User> users = new ArrayList<>();
 
         assert queryResult.headers.length == 14 :
@@ -81,6 +79,7 @@ public class HBParser {
         assert queryResult.headers[13].equals(Constants.COLUMN_CREATE_TIME) : queryResult.headers[13];
 
         List<String> groupMemberships = new ArrayList<>();
+        List<String> groupOwnerships = new ArrayList<>();
 
         for (Object rowObj : queryResult.rows) {
 
@@ -111,10 +110,14 @@ public class HBParser {
             String createdAt = (String)columns[13];
 
             groupMemberships.clear();
+            groupOwnerships.clear();
 
             for (Group group : groups.values()) {
-                if (group.hasUserId(userId)) {
+                if (group.hasMember(userId)) {
                     groupMemberships.add(group.name);
+                }
+                if (group.hasOwner(userId)) {
+                    groupOwnerships.add(group.name);
                 }
             }
 
@@ -123,7 +126,7 @@ public class HBParser {
             try {
                 users.add(User.createUser(name, userName, userId, address, city, phone, altPhone, neighborhood,
                         createdAt, isCondo, hasConsumerRequest, volunteerRequest, referral, verified,
-                        groupMemberships));
+                        groupMemberships, groupOwnerships));
             } catch (UserException ex) {
                 // FIX THIS, DS: get rid of UserException?
                 users.add(ex.user);
@@ -134,8 +137,6 @@ public class HBParser {
     }
 
     static Map<Long, String> groupNames(ApiQueryResult queryResult) {
-        LOGGER.trace("groupNames");
-
         Map<Long, String> results = new HashMap<>();
 
         assert queryResult.headers.length == 2 :
@@ -149,47 +150,46 @@ public class HBParser {
             Long groupId = (Long)columns[0];
             String groupName = (String)columns[1];
 
-            // FIX THIS, DS: was this just a hack for 429 errors?
-            if ((groupId == null) || (groupName == null)) {
-                LOGGER.trace("getGroupNames skipping id: {}, groupName: {}", groupId, groupName);
-                continue;
+            // Skip groups that don't have any software processing
+            if (Group.supportedGroup(groupId, groupName)) {
+                results.put(groupId, groupName);
             }
-            results.put(groupId, groupName);
         }
 
         return results;
     }
 
-    static Map<String, List<Long>> groupUsers(final Map<Long, String> groupNames, final ApiQueryResult queryResult) {
-        LOGGER.trace("groupUsers");
-        Map<String, List<Long>> results = new HashMap<>();
+    static Map<String, Group> groupUsers(final Map<Long, String> groupNames, final ApiQueryResult queryResult) {
+        Map<String, Group> groups = new HashMap<>();
 
-        assert queryResult.headers.length == 2 :
+        assert queryResult.headers.length == 3 :
                 "Unexpected number of columns for groupUsers query result: " + queryResult;
         assert queryResult.headers[0].equals(Constants.COLUMN_GROUP_ID) : queryResult.headers[0];
         assert queryResult.headers[1].equals(Constants.COLUMN_USER_ID) : queryResult.headers[1];
+        assert queryResult.headers[2].equals(Constants.COLUMN_GROUP_OWNER) : queryResult.headers[2];
 
         for (Object rowObj : queryResult.rows) {
             Object[] columns = (Object[]) rowObj;
-            assert columns.length == 2 : columns.length;
+            assert columns.length == 3 : columns.length;
 
             Long groupId = (Long)columns[0];
             Long userId = (Long)columns[1];
+            Boolean owner = (Boolean)columns[2];
 
-            // FIX THIS, DS: was this just a hack for 429 errors?
-            if ((groupId == null) || (userId == null)){
-                LOGGER.trace("groupUsers: skipping null data: {}:{}", groupId, userId);
+            String groupName = groupNames.get(groupId);
+
+            if (! Group.supportedGroup(groupId, groupName)) {
                 continue;
             }
 
-            String groupName = groupNames.get(groupId);
-            assert groupName != null : "No group name found for group id " + groupId;
-
-            List<Long> userIds = results.computeIfAbsent(groupName, v -> new ArrayList<>());
-            userIds.add(userId);
+            Group group = groups.computeIfAbsent(groupName, k -> new Group(k));
+            group.addUser(userId);
+            if (owner) {
+                group.addOwner(userId);
+            }
         }
 
-        return results;
+        return groups;
     }
 
     // From raw form
@@ -200,7 +200,7 @@ public class HBParser {
         assert ! lines.isEmpty();
         String[] headers = lines.get(0);
 
-        assert headers.length == 45 : headers.length;
+        assert headers.length == 46 : headers.length;
 
         int index = 0;
         assert headers[index].equals(User.ID_COLUMN) : headers[index];
@@ -248,6 +248,7 @@ public class HBParser {
         assert headers[++index].equals(User.GONE_COLUMN) : headers[index];
         assert headers[++index].equals(User.OTHER_DRIVERS_COLUMN) : headers[index];
         assert headers[++index].equals(User.ADMIN_COLUMN) : headers[index];
+        assert headers[++index].equals(User.GROUPS_OWNED_COLUMN) : headers[index];
 
         List<User> users = new ArrayList<>();
         List<String> groups = new ArrayList<>();
@@ -395,15 +396,17 @@ public class HBParser {
                 groups.add(Constants.GROUP_OTHER_DRIVERS);
             }
 
-            //noinspection UnusedAssignment
             if (Boolean.parseBoolean(columns[index++])) {
                 groups.add(Constants.GROUP_ADMIN);
             }
 
+            String groupsOwned = columns[index++];
+            List<String> groupsOwnedList = Arrays.asList(groupsOwned.split(Constants.CSV_SEPARATOR));
+
             try {
                 users.add(User.createUser(name, userName, id, address, city, phone, altPhone,
                         neighborhood, createdAt, isCondo, hasConsumerRequest,
-                        volunteerRequest, referral, emailVerified, groups));
+                        volunteerRequest, referral, emailVerified, groups, groupsOwnedList));
             } catch (UserException ex) {
                 users.add(ex.user);
             }
