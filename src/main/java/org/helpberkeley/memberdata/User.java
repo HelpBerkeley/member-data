@@ -397,6 +397,10 @@ public class User {
         return groupOwnerships.isEmpty() ? "" : "\"" + String.join(Constants.CSV_SEPARATOR, groupOwnerships) + "\"";
     }
 
+    void leaveGroup(String groupName) {
+        groupMembership.remove(groupName);
+    }
+
     @Override
     public String toString() {
 

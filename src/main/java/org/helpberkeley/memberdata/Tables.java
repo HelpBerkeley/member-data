@@ -175,10 +175,12 @@ public class Tables {
         List<User> drivers = new ArrayList<>();
 
         for (User user : users) {
-            if (user.isDriver()) {
+            if (user.isDriver() && (! user.groupOwner(Constants.GROUP_HELPLINE))) {
                 drivers.add(user);
             }
         }
+
+        applyDriverCorrections(drivers);
 
         drivers.sort(Comparator.comparing(User::isTrainedDriver, reverseOrder())
                 .thenComparing(User::isGone)
@@ -191,6 +193,31 @@ public class Tables {
                 .thenComparing(User::getSimpleCreateTime, reverseOrder()));
 
         return drivers;
+    }
+
+    /**
+     * Remove drivers from the groups which they own.
+     *
+     * @param drivers
+     */
+    private void applyDriverCorrections(final List<User> drivers) {
+
+        List<String> groupsToCorrect = List.of(
+                Constants.GROUP_GONE,
+                Constants.GROUP_OUT,
+                Constants.GROUP_OTHER_DRIVERS,
+                Constants.GROUP_EVENT_DRIVERS,
+                Constants.GROUP_LIMITED,
+                Constants.GROUP_AT_RISK,
+                Constants.GROUP_TRAINED_EVENT_DRIVERS);
+
+        for (User driver : drivers) {
+            for (String group : groupsToCorrect) {
+                if (driver.groupOwner(group)) {
+                    driver.leaveGroup(group);
+                }
+            }
+        }
     }
 
     /**

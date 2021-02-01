@@ -149,16 +149,131 @@ public class TablesTest extends TestBase {
         assertThat(tables.drivers()).containsExactlyInAnyOrder(u2, u3);
     }
 
-    // FIX THIS, DS: turn on with driver filter changes
     @Test
-    @Ignore
     public void driversHelpLineGroupOwnerTest() throws UserException {
         User u1 = createUserWithGroupAndGroupOwner("u1", Constants.GROUP_DRIVERS, Constants.GROUP_HELPLINE);
         User u2 = createUserWithGroup("u1", Constants.GROUP_DRIVERS);
 
         Tables tables = new Tables(List.of(u1, u2));
+        assertThat(tables.sortByUserId()).containsExactlyInAnyOrder(u1, u2);
         assertThat(tables.drivers()).containsExactly(u2);
+    }
 
+    @Test
+    public void driversGoneGroupOnwerTest() throws UserException {
+        User u1 = createUserWithGroupsAndGroupsOwned("u1",
+                List.of(Constants.GROUP_DRIVERS, Constants.GROUP_TRAINED_DRIVERS, Constants.GROUP_GONE),
+                List.of(Constants.GROUP_GONE));
+        assertThat(u1.isAvailableDriver()).isFalse();
+        assertThat(u1.isGone()).isTrue();
+
+        Tables tables = new Tables(List.of(u1));
+        assertThat(tables.drivers()).containsExactly(u1);
+        assertThat(tables.drivers()).hasSize(1);
+        User driver = tables.drivers().get(0);
+        assertThat(driver.groupOwner(Constants.GROUP_GONE));
+        assertThat(driver.isGone()).isFalse();
+        assertThat(u1.isAvailableDriver()).isTrue();
+    }
+
+    @Test
+    public void driversOutGroupOwnerTest() throws UserException {
+        User u1 = createUserWithGroupsAndGroupsOwned("u1",
+                List.of(Constants.GROUP_DRIVERS, Constants.GROUP_TRAINED_DRIVERS, Constants.GROUP_OUT),
+                List.of(Constants.GROUP_OUT));
+        assertThat(u1.isAvailableDriver()).isFalse();
+        assertThat(u1.isOut()).isTrue();
+
+        Tables tables = new Tables(List.of(u1));
+        assertThat(tables.drivers()).containsExactly(u1);
+        assertThat(tables.drivers()).hasSize(1);
+        User driver = tables.drivers().get(0);
+        assertThat(driver.groupOwner(Constants.GROUP_OUT));
+        assertThat(driver.isOut()).isFalse();
+        assertThat(u1.isAvailableDriver()).isTrue();
+    }
+
+    @Test
+    public void driversOtherDriversGroupOwnerTest() throws UserException {
+        User u1 = createUserWithGroupsAndGroupsOwned("u1",
+                List.of(Constants.GROUP_DRIVERS, Constants.GROUP_TRAINED_DRIVERS, Constants.GROUP_OTHER_DRIVERS),
+                List.of(Constants.GROUP_OTHER_DRIVERS));
+        assertThat(u1.isAvailableDriver()).isFalse();
+        assertThat(u1.isOtherDrivers()).isTrue();
+
+        Tables tables = new Tables(List.of(u1));
+        assertThat(tables.drivers()).containsExactly(u1);
+        assertThat(tables.drivers()).hasSize(1);
+        User driver = tables.drivers().get(0);
+        assertThat(driver.groupOwner(Constants.GROUP_OTHER_DRIVERS));
+        assertThat(driver.isOtherDrivers()).isFalse();
+        assertThat(u1.isAvailableDriver()).isTrue();
+    }
+
+    @Test
+    public void driversEventDriverGroupOwnerTest() throws UserException {
+        User u1 = createUserWithGroupsAndGroupsOwned("u1",
+                List.of(Constants.GROUP_DRIVERS, Constants.GROUP_TRAINED_DRIVERS,
+                        Constants.GROUP_TRAINED_EVENT_DRIVERS, Constants.GROUP_EVENT_DRIVERS),
+                List.of(Constants.GROUP_EVENT_DRIVERS));
+        assertThat(u1.isAvailableDriver()).isFalse();
+        assertThat(u1.isEventDriver()).isTrue();
+
+        Tables tables = new Tables(List.of(u1));
+        assertThat(tables.drivers()).containsExactly(u1);
+        assertThat(tables.drivers()).hasSize(1);
+        User driver = tables.drivers().get(0);
+        assertThat(driver.groupOwner(Constants.GROUP_EVENT_DRIVERS));
+        assertThat(u1.isAvailableDriver()).isTrue();
+        assertThat(u1.isEventDriver()).isFalse();
+    }
+
+    @Test
+    public void driversLimitedRunsGroupOwnerTest() throws UserException {
+        User u1 = createUserWithGroupsAndGroupsOwned("u1",
+                List.of(Constants.GROUP_DRIVERS, Constants.GROUP_TRAINED_DRIVERS, Constants.GROUP_LIMITED),
+                List.of(Constants.GROUP_LIMITED));
+        assertThat(u1.isAvailableDriver()).isTrue();
+
+        Tables tables = new Tables(List.of(u1));
+        assertThat(tables.drivers()).containsExactly(u1);
+        assertThat(tables.drivers()).hasSize(1);
+        User driver = tables.drivers().get(0);
+        assertThat(driver.groupOwner(Constants.GROUP_LIMITED));
+        assertThat(driver.isLimitedRuns()).isFalse();
+        assertThat(u1.isAvailableDriver()).isTrue();
+    }
+
+    @Test
+    public void driversAtRiskGroupOwnerTest() throws UserException {
+        User u1 = createUserWithGroupsAndGroupsOwned("u1",
+                List.of(Constants.GROUP_DRIVERS, Constants.GROUP_TRAINED_DRIVERS, Constants.GROUP_AT_RISK),
+                List.of(Constants.GROUP_AT_RISK));
+        assertThat(u1.isAvailableDriver()).isTrue();
+
+        Tables tables = new Tables(List.of(u1));
+        assertThat(tables.drivers()).containsExactly(u1);
+        assertThat(tables.drivers()).hasSize(1);
+        User driver = tables.drivers().get(0);
+        assertThat(driver.groupOwner(Constants.GROUP_AT_RISK));
+        assertThat(driver.isAtRisk()).isFalse();
+        assertThat(u1.isAvailableDriver()).isTrue();
+    }
+
+    @Test
+    public void driversTrainedEventDriverGroupOwnerTest() throws UserException {
+        User u1 = createUserWithGroupsAndGroupsOwned("u1",
+                List.of(Constants.GROUP_DRIVERS, Constants.GROUP_TRAINED_EVENT_DRIVERS),
+                List.of(Constants.GROUP_TRAINED_EVENT_DRIVERS));
+        assertThat(u1.isAvailableDriver()).isTrue();
+
+        Tables tables = new Tables(List.of(u1));
+        assertThat(tables.drivers()).containsExactly(u1);
+        assertThat(tables.drivers()).hasSize(1);
+        User driver = tables.drivers().get(0);
+        assertThat(driver.groupOwner(Constants.GROUP_TRAINED_EVENT_DRIVERS));
+        assertThat(driver.isTrainedEventDriver()).isFalse();
+        assertThat(u1.isAvailableDriver()).isTrue();
     }
 
     @Test

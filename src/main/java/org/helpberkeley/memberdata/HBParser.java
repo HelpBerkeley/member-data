@@ -182,7 +182,7 @@ public class HBParser {
                 continue;
             }
 
-            Group group = groups.computeIfAbsent(groupName, k -> new Group(k));
+            Group group = groups.computeIfAbsent(groupName, Group::new);
             group.addUser(userId);
             if (owner) {
                 group.addOwner(userId);

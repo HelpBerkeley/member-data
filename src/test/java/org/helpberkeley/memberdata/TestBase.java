@@ -276,6 +276,14 @@ public class TestBase {
                 TEST_CREATED_1, TEST_CONDO_1, TEST_CONSUMER_REQUEST_1, TEST_VOLUNTEER_REQUEST_1,
                 TEST_REFERRAL_1, TEST_VERIFIED_1, List.of(group), List.of(groupOwner));
     }
+    protected User createUserWithGroupsAndGroupsOwned(final String userName, final List<String> groups,
+            final List<String> groupsOwned) throws UserException {
+
+        return User.createUser(TEST_NAME_1, userName,
+                TEST_ID_1, TEST_ADDRESS_1, Constants.BERKELEY, TEST_PHONE_1, TEST_ALT_PHONE_1, TEST_NEIGHBORHOOD_1,
+                TEST_CREATED_1, TEST_CONDO_1, TEST_CONSUMER_REQUEST_1, TEST_VOLUNTEER_REQUEST_1,
+                TEST_REFERRAL_1, TEST_VERIFIED_1, groups, groupsOwned);
+    }
 
     protected User createUserWithNeighborhood(final String neighborhood) throws UserException {
         return User.createUser(TEST_NAME_1, TEST_USER_NAME_1,

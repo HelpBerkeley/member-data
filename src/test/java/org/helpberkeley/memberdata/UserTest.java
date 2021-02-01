@@ -805,4 +805,14 @@ public class UserTest extends TestBase {
             assertThat(u1.getAltPhoneNumber()).isEqualTo(User.NOT_PROVIDED);
         }
     }
+
+    @Test
+    public void leaveGroupTest() throws UserException {
+        User u1 = createTestUser1WithGroups(Constants.GROUP_CONSUMERS, Constants.GROUP_DRIVERS);
+        assertThat(u1.isConsumer()).isTrue();
+        assertThat(u1.isDriver()).isTrue();
+        u1.leaveGroup(Constants.GROUP_DRIVERS);
+        assertThat(u1.isConsumer()).isTrue();
+        assertThat(u1.isDriver()).isFalse();
+    }
 }
