@@ -120,7 +120,7 @@ public class DriverHistory {
             if (isBlacklisted(uploadFile.getOriginalFileName())) {
                 LOGGER.info("Skipping blacklisted {}", uploadFile.getOriginalFileName());
             } else {
-                LOGGER.info("Processing drivers from " + orderHistoryData.getDate());
+                LOGGER.debug("Processing drivers from " + orderHistoryData.getDate());
 
                 Collection<String> drivers =
                         HBParser.parseDeliveryDrivers(uploadFile.getOriginalFileName(), deliveries);

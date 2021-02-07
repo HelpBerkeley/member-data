@@ -80,7 +80,7 @@ public class DriverExporter extends Exporter {
             rows.append(separator);
             rows.append(history != null ? history.totalRuns() : 0);
             rows.append(separator);
-            // Unicode Green Circle
+            // Unicode Green Circle - FIX THIS, DS: use readable Unicode representation
             rows.append(weeklyHistory.get(6) != 0 ? "🟢" : "");
             rows.append(separator);
             rows.append(weeklyHistory.get(5) != 0 ? "🟢" : "");
