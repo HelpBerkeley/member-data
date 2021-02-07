@@ -39,6 +39,7 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 import static java.net.HttpURLConnection.HTTP_OK;
 
@@ -53,6 +54,7 @@ public class Main {
     static final String INREACH_TITLE = "Customer Info";
     static final String DRIVERS_TITLE = "Volunteer Drivers";
     static final String ORDER_HISTORY_TITLE = "Order History";
+    static final String DRIVER_HISTORY_TITLE = "Driver History";
 
     // FIX THIS, DS: make this less fragile
     static final long MEMBER_DATA_REQUIRING_ATTENTION_TOPIC_ID = 129;
@@ -73,6 +75,7 @@ public class Main {
     static final long DRIVERS_POST_STAGING_TOPIC_ID = 2123;
     static final long DRIVERS_TABLE_SHORT_POST_ID = 44847;
     static final long DRIVERS_TABLE_LONG_POST_ID = 44959;
+    static final long DRIVER_HISTORY_POST_ID = 48019;
 
     // FIX THIS, DS: uncomment when we can past parameters to queries
 //    static final long ORDER_HISTORY_TOPIC = 1440;
@@ -115,6 +118,9 @@ public class Main {
                 break;
             case Options.COMMAND_DRIVERS:
                 drivers(apiClient, options.getFileName());
+                break;
+            case Options.COMMAND_DRIVER_HISTORY:
+                driverHistory(apiClient);
                 break;
             case Options.COMMAND_GET_DAILY_DELIVERIES:
                 getDailyDeliveryPosts(apiClient);
@@ -183,7 +189,7 @@ public class Main {
         return properties;
     }
 
-    private static void fetch(ApiClient apiClient) throws IOException {
+    private static void fetch(ApiClient apiClient) throws IOException, CsvException {
         // Create a User loader
         Loader loader = new Loader(apiClient);
 
@@ -216,8 +222,11 @@ public class Main {
         ApiQueryResult apiQueryResult = HBParser.parseQueryResult(json);
         Map<String, DetailsPost> driverDetails = HBParser.driverDetails(apiQueryResult);
 
+        // Fetch driver history
+        Map<String, DriverHistory> driverHistory = DriverHistory.getDriverHistory(apiClient);
+
         // Export drivers
-        new DriverExporter(users, driverDetails).driversToFile();
+        new DriverExporter(users, driverHistory, driverDetails).driversToFile();
     }
 
     private static void postConsumerRequests(ApiClient apiClient, final String fileName)
@@ -902,7 +911,7 @@ public class Main {
     private static void auditCompletedOrdersDate(String date) {
 
         LocalDate completedOrdersDate = LocalDate.parse(date.replaceAll("/", "-"));
-        LocalDate today = LocalDate.now();
+        LocalDate today = LocalDate.now(Constants.TIMEZONE);
         long daysBetween = ChronoUnit.DAYS.between(completedOrdersDate, today);
 
         String error = "";
@@ -960,7 +969,10 @@ public class Main {
         ApiQueryResult apiQueryResult = HBParser.parseQueryResult(json);
         Map<String, DetailsPost> driverDetails = HBParser.driverDetails(apiQueryResult);
 
-        DriverExporter driverExporter = new DriverExporter(users, driverDetails);
+        // Fetch driver history
+        Map<String, DriverHistory> driverHistory = DriverHistory.getDriverHistory(apiClient);
+
+        DriverExporter driverExporter = new DriverExporter(users, driverHistory, driverDetails);
 
         // Export drivers
         String fileName = driverExporter.driversToFile();
@@ -991,6 +1003,21 @@ public class Main {
             // FIX THIS, DS: what to do with this error?
             assert response.statusCode() == HTTP_OK : "failed " + response.statusCode() + ": " + response.body();
         }
+    }
+
+    private static void driverHistory(ApiClient apiClient) throws IOException, CsvException {
+        // Generate the driver history table
+        String driverHistoryTable = DriverHistory.generateDriverHistory(apiClient);
+
+        // Export updated order history
+        String fileName = new DriverHistoryExporter(driverHistoryTable).driverHistoryToFile();
+
+        // Upload new driver history
+        Upload upload = new Upload(apiClient, fileName);
+
+        // Update order history post
+        updateFile(apiClient, upload.getFileName(), upload.getShortURL(),
+                DRIVER_HISTORY_TITLE, DRIVER_HISTORY_POST_ID);
     }
 
 //    private static void testQuery(ApiClient apiClient) {

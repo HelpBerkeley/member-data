@@ -43,7 +43,7 @@ public class DriverExporterTest extends TestBase {
         User u2 = createUserWithGroup(TEST_USER_NAME_2, Constants.GROUP_DRIVERS);
         User u3 = createUserWithGroup(TEST_USER_NAME_3, Constants.GROUP_DRIVERS);
 
-        DriverExporter exporter = new DriverExporter(List.of(u1, u2, u3), Map.of());
+        DriverExporter exporter = new DriverExporter(List.of(u1, u2, u3), Map.of(), Map.of());
 
         String fileName = exporter.driversToFile();
 
@@ -97,7 +97,7 @@ public class DriverExporterTest extends TestBase {
         detailsPost.setDetails(2, u2Details);
         details.put(u2.getUserName(), detailsPost);
 
-        DriverExporter exporter = new DriverExporter(List.of(u1, u2, u3), details);
+        DriverExporter exporter = new DriverExporter(List.of(u1, u2, u3), Map.of(), details);
 
         String fileName = exporter.driversToFile();
 
@@ -114,7 +114,7 @@ public class DriverExporterTest extends TestBase {
 
         // FIX THIS, DS: use CSVReader
         String[] headerColumns = header.split(Constants.CSV_SEPARATOR, -1);
-        assertThat(headerColumns).hasSize(18);
+        assertThat(headerColumns).hasSize(26);
 
         int index = 0;
         assertThat(headerColumns[index++]).isEqualTo(User.CREATED_AT_COLUMN);
@@ -124,6 +124,14 @@ public class DriverExporterTest extends TestBase {
         assertThat(headerColumns[index++]).isEqualTo(User.SHORT_TRAINED_DRIVER_COLUMN);
         assertThat(headerColumns[index++]).isEqualTo(User.SHORT_BIKERS_COLUMN);
         assertThat(headerColumns[index++]).isEqualTo(User.SHORT_LIMITED_RUNS_COLUMN);
+        assertThat(headerColumns[index++]).isEqualTo(DriverExporter.TOTAL_RUNS_COLUMNS);
+        assertThat(headerColumns[index++]).isEqualTo(DriverExporter.SIX_WEEKS_AGO_COLUMN);
+        assertThat(headerColumns[index++]).isEqualTo(DriverExporter.FIVE_WEEKS_AGO_COLUMN);
+        assertThat(headerColumns[index++]).isEqualTo(DriverExporter.FOUR_WEEKS_AGO_COLUMN);
+        assertThat(headerColumns[index++]).isEqualTo(DriverExporter.THREE_WEEKS_AGO_COLUMN);
+        assertThat(headerColumns[index++]).isEqualTo(DriverExporter.TWO_WEEKS_AGO_COLUMN);
+        assertThat(headerColumns[index++]).isEqualTo(DriverExporter.ONE_WEEK_AGO_COLUMN);
+        assertThat(headerColumns[index++]).isEqualTo(DriverExporter.THIS_WEEK_COLUMN);
         assertThat(headerColumns[index++]).isEqualTo(User.SHORT_PHONE_NUMBER_COLUMN);
         assertThat(headerColumns[index++]).isEqualTo(User.SHORT_ALT_PHONE_NUMBER_COLUMN);
         assertThat(headerColumns[index++]).isEqualTo(User.SHORT_CITY_COLUMN);
@@ -151,6 +159,14 @@ public class DriverExporterTest extends TestBase {
         assertThat(columns[index++]).isEqualTo(shortBoolean(u3.isTrainedDriver()));
         assertThat(columns[index++]).isEqualTo(shortBoolean(u3.isBiker()));
         assertThat(columns[index++]).isEqualTo(shortBoolean(u3.isLimitedRuns()));
+        assertThat(columns[index++]).isEqualTo("0");
+        assertThat(columns[index++]).isEmpty();
+        assertThat(columns[index++]).isEmpty();
+        assertThat(columns[index++]).isEmpty();
+        assertThat(columns[index++]).isEmpty();
+        assertThat(columns[index++]).isEmpty();
+        assertThat(columns[index++]).isEmpty();
+        assertThat(columns[index++]).isEmpty();
         assertThat(columns[index++]).isEqualTo(u3.getPhoneNumber());
         assertThat(columns[index++]).isEqualTo(u3.getAltPhoneNumber());
         assertThat(columns[index++]).isEqualTo(u3.getCity());
@@ -177,6 +193,14 @@ public class DriverExporterTest extends TestBase {
         assertThat(columns[index++]).isEqualTo(shortBoolean(u1.isTrainedDriver()));
         assertThat(columns[index++]).isEqualTo(shortBoolean(u1.isBiker()));
         assertThat(columns[index++]).isEqualTo(shortBoolean(u1.isLimitedRuns()));
+        assertThat(columns[index++]).isEqualTo("0");
+        assertThat(columns[index++]).isEmpty();
+        assertThat(columns[index++]).isEmpty();
+        assertThat(columns[index++]).isEmpty();
+        assertThat(columns[index++]).isEmpty();
+        assertThat(columns[index++]).isEmpty();
+        assertThat(columns[index++]).isEmpty();
+        assertThat(columns[index++]).isEmpty();
         assertThat(columns[index++]).isEqualTo(u1.getPhoneNumber());
         assertThat(columns[index++]).isEqualTo(u1.getAltPhoneNumber());
         assertThat(columns[index++]).isEqualTo(u1.getCity());
@@ -201,6 +225,14 @@ public class DriverExporterTest extends TestBase {
         assertThat(columns[index++]).isEqualTo(shortBoolean(u2.isTrainedDriver()));
         assertThat(columns[index++]).isEqualTo(shortBoolean(u2.isBiker()));
         assertThat(columns[index++]).isEqualTo(shortBoolean(u2.isLimitedRuns()));
+        assertThat(columns[index++]).isEqualTo("0");
+        assertThat(columns[index++]).isEmpty();
+        assertThat(columns[index++]).isEmpty();
+        assertThat(columns[index++]).isEmpty();
+        assertThat(columns[index++]).isEmpty();
+        assertThat(columns[index++]).isEmpty();
+        assertThat(columns[index++]).isEmpty();
+        assertThat(columns[index++]).isEmpty();
         assertThat(columns[index++]).isEqualTo(u2.getPhoneNumber());
         assertThat(columns[index++]).isEqualTo(u2.getAltPhoneNumber());
         assertThat(columns[index++]).isEqualTo(u2.getCity());
@@ -263,7 +295,7 @@ public class DriverExporterTest extends TestBase {
         User u3 = createTestUser3WithGroups(Constants.GROUP_DRIVERS, Constants.GROUP_TRAINED_DRIVERS);
 
         List<User> drivers = List.of(u3, u1, u2);
-        DriverExporter driverExporter = new DriverExporter(drivers, Map.of());
+        DriverExporter driverExporter = new DriverExporter(drivers, Map.of(), Map.of());
 
         assertThat(driverExporter.availableDriversWithDetailsPosts()).isEmpty();
 
@@ -306,7 +338,7 @@ public class DriverExporterTest extends TestBase {
         detailsPost.setDetails(2, u3Details);
         details.put(u3.getUserName(), detailsPost);
 
-        DriverExporter driverExporter = new DriverExporter(drivers, details);
+        DriverExporter driverExporter = new DriverExporter(drivers, Map.of(), details);
         List<DetailedDriver> detailedDrivers = driverExporter.availableDriversWithDetailsPosts();
 
         assertThat(detailedDrivers).hasSameSizeAs(drivers);

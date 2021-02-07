@@ -572,7 +572,7 @@ public class HBParser {
     }
 
     public static String shortURLDiscoursePost(final String line) {
-        int index = line.indexOf("upload://");
+        int index = line.indexOf(Constants.UPLOAD_URI_PREFIX);
         assert index != -1 : line;
         String shortURL = line.substring(index);
         index = shortURL.indexOf(')');
@@ -582,7 +582,7 @@ public class HBParser {
     }
 
     static String shortURLUploadResponse(final String line) {
-        int index = line.indexOf("upload://");
+        int index = line.indexOf(Constants.UPLOAD_URI_PREFIX);
         assert index != -1 : line;
         String shortURL = line.substring(index);
         index = shortURL.indexOf('"');
@@ -690,6 +690,20 @@ public class HBParser {
         }
 
         throw new Error("Restaurant template upload link not found in " + rawPost);
+    }
+
+    static UploadFile parseFileFromPost(String rawPost) {
+
+        for (String line : rawPost.split("\n")) {
+            if (line.contains(Constants.UPLOAD_URI_PREFIX)) {
+                String shortURL =  shortURLDiscoursePost(line);
+                String fileName = downloadFileName(line);
+
+                return new UploadFile(fileName, shortURL);
+            }
+        }
+
+        throw new Error("No downloadable link not found in " + rawPost);
     }
 
     // FIX THIS, DS: use CSVReader
@@ -809,6 +823,31 @@ public class HBParser {
         return userOrders;
     }
 
+    static Collection<String> parseDeliveryDrivers(String fileName, String deliveryData) throws IOException, CsvException {
+        Set<String> drivers = new HashSet<>();
+
+        // Normalize EOL
+        String csvData = deliveryData.replaceAll("\\r\\n?", "\n");
+
+        CSVReader csvReader = new CSVReader(new StringReader(csvData));
+        List<String[]> rows = csvReader.readAll();
+        assert ! rows.isEmpty() : "parseOrders empty delivery data from " + fileName;
+
+        DeliveryColumns indexes = new DeliveryColumns(fileName, rows.get(0));
+
+        for (int rowIndex = 1; rowIndex < rows.size(); rowIndex++) {
+
+            String[] columns = rows.get(rowIndex);
+
+            if (Boolean.parseBoolean(columns[indexes.driver])
+                && (! Boolean.parseBoolean(columns[indexes.consumer]))) {
+                drivers.add(columns[indexes.userName]);
+            }
+        }
+
+        return drivers;
+    }
+
     // Skip Discourse system users. Not fully formed.
     private static boolean skipUserId(long userId) {
         return (userId == -1) || (userId == -2) || (userId == 708) || (userId == 844);
@@ -816,6 +855,7 @@ public class HBParser {
 
     static class DeliveryColumns {
         private final int consumer;
+        private final int driver;
         private final int name;
         private final int userName;
         private final int phoneNumber;
@@ -826,6 +866,7 @@ public class HBParser {
         DeliveryColumns(final String fileName, final String[] columns) {
 
             consumer = findOrderColumn(Constants.WORKFLOW_CONSUMER_COLUMN, columns);
+            driver = findOrderColumn(Constants.WORKFLOW_DRIVER_COLUMN, columns);
             name = findOrderColumn(Constants.WORKFLOW_NAME_COLUMN, columns);
             userName = findOrderColumn(Constants.WORKFLOW_USER_NAME_COLUMN, columns);
             phoneNumber = findOrderColumn(Constants.WORKFLOW_PHONE_COLUMN, columns);
@@ -836,6 +877,9 @@ public class HBParser {
             String errors = "";
             if (consumer == -1) {
                 errors += "Cannot find column " + Constants.WORKFLOW_CONSUMER_COLUMN + "\n";
+            }
+            if (driver == -1) {
+                errors += "Cannot find column " + Constants.WORKFLOW_DRIVER_COLUMN + "\n";
             }
             if ((userName == -1) && (name == -1)) {
                 errors += "Cannot find either " + Constants.WORKFLOW_NAME_COLUMN

@@ -127,7 +127,6 @@ public class OrderHistory {
                 Thread.sleep(napTime);
             } catch (InterruptedException ignored) { }
         }
-
     }
 
     // FIX THIS, DS: make this private and rename to mergeOrders

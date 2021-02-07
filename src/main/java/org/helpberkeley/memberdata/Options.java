@@ -45,6 +45,7 @@ public class Options {
     static final String COMMAND_DRIVER_ROUTES = "driver-routes";
     static final String COMMAND_COMPLETED_DAILY_ORDERS = "completed-daily-orders";
     static final String COMMAND_DRIVERS = "drivers";
+    static final String COMMAND_DRIVER_HISTORY = "driver-history";
 
     static final String USAGE_ERROR = "Usage error for command ";
     static final String UNKNOWN_COMMAND = USAGE_ERROR + ": unknown command: ";
@@ -63,6 +64,7 @@ public class Options {
                     + "    | " + COMMAND_DRIVER_ROUTES + "\n"
                     + "    | " + COMMAND_ORDER_HISTORY + " all-members-file\n"
                     + "    | " + COMMAND_DRIVERS + " all-members-file\n"
+                    + "    | " + COMMAND_DRIVER_HISTORY + "\n"
                     + "    | " + COMMAND_INREACH + " all-members-file\n"
                     + "    | " + COMMAND_EMAIL + " all-members-file\n"
                     + "    | " + COMMAND_WORKFLOW + " all-members-file\n"
@@ -102,6 +104,7 @@ public class Options {
             case COMMAND_FETCH:
             case COMMAND_GET_DAILY_DELIVERIES:
             case COMMAND_DRIVER_ROUTES:
+            case COMMAND_DRIVER_HISTORY:
                 setCommand(arg);
                 break;
             case COMMAND_POST_ERRORS:
@@ -151,7 +154,7 @@ public class Options {
             }
         }
 
-        if ((shortURL != null) && (! shortURL.startsWith("upload://"))) {
+        if ((shortURL != null) && (! shortURL.startsWith(Constants.UPLOAD_URI_PREFIX))) {
                 dieMessage(BAD_SHORT_URL);
         }
     }

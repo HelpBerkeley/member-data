@@ -21,7 +21,10 @@
 //
 package org.helpberkeley.memberdata;
 
+import java.time.ZoneId;
+
 public class Constants {
+    static final ZoneId TIMEZONE = ZoneId.of("America/Los_Angeles");
     static final String MEMBERDATA_WITH_EMAIL_REPORT_FILE = "member-data-with-email";
     static final String MEMBERDATA_RAW_FILE = "member-data-raw";
     static final String CONSUMER_REQUESTS_FILE = "consumer-requests";
@@ -32,6 +35,7 @@ public class Constants {
     static final String DISPATCHERS_FILE = "dispatchers";
     static final String ORDER_HISTORY_FILE = "order-history";
     static final String DELIVERY_POSTS_FILE = "delivery-posts";
+    static final String DRIVER_HISTORY_FILE = "driver-history";
     static final String ALL_MEMBERS_TITLE = "All Members";
 
     public static final int QUERY_GET_GROUPS_ID = 3;
@@ -108,6 +112,7 @@ public class Constants {
     public static final String COLUMN_ALT_PHONE = "alt_phone";
     public static final String COLUMN_REFERRAL = "referral";
     public static final String COLUMN_GROUP_OWNER = "owner";
+    public static final String COLUMN_DELIVERY_DATE = "delivery_date";
 
     public static final String ORDER_STATUS_COLUMN = "OrderStatus";
     public static final String ORDER_NUMBER_COLUMN = "OrderNumber";

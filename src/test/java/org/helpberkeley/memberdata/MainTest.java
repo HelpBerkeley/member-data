@@ -202,8 +202,8 @@ public class MainTest extends TestBase {
 
     @Test
     public void completedOrdersTest() throws IOException, CsvException {
-        LocalDate yesterday = LocalDate.now().minusDays(1);
-        DateTimeFormatter format = DateTimeFormatter.ofPattern("YYYY/MM/DD");
+        LocalDate yesterday = LocalDate.now(Constants.TIMEZONE).minusDays(1);
+        DateTimeFormatter format = DateTimeFormatter.ofPattern("YYYY/MM/dd");
         String yesterdayStr = yesterday.format(format);
 
         String completedOrdersRequest =
@@ -243,7 +243,7 @@ public class MainTest extends TestBase {
 
     @Test
     public void completedOrdersFutureDateTest() throws IOException, CsvException {
-        LocalDate nextWeek = LocalDate.now().plusWeeks(1);
+        LocalDate nextWeek = LocalDate.now(Constants.TIMEZONE).plusWeeks(1);
         DateTimeFormatter format = DateTimeFormatter.ofPattern("YYYY/MM/dd");
         String nextWeekStr = nextWeek.format(format);
 
@@ -271,7 +271,7 @@ public class MainTest extends TestBase {
 
     @Test
     public void completedOrdersDateTooOldTest() throws IOException, CsvException {
-        LocalDate lastYear = LocalDate.now().minusYears(1);
+        LocalDate lastYear = LocalDate.now(Constants.TIMEZONE).minusYears(1);
         DateTimeFormatter format = DateTimeFormatter.ofPattern("YYYY/MM/dd");
         String lastYearStr = lastYear.format(format);
 
@@ -299,7 +299,7 @@ public class MainTest extends TestBase {
 
     @Test
     public void completedOrdersDisableDateAuditTest() throws IOException, CsvException {
-        LocalDate lastYear = LocalDate.now().minusYears(1);
+        LocalDate lastYear = LocalDate.now(Constants.TIMEZONE).minusYears(1);
         DateTimeFormatter format = DateTimeFormatter.ofPattern("YYYY/MM/dd");
         String lastYearStr = lastYear.format(format);
 
@@ -329,11 +329,18 @@ public class MainTest extends TestBase {
         String[] args = { Options.COMMAND_ORDER_HISTORY, usersFile };
         Main.main(args);
     }
+    
 
     @Test
-    public void drivers() throws IOException, CsvException {
+    public void driversTest() throws IOException, CsvException {
         String usersFile = findFile(Constants.MEMBERDATA_RAW_FILE, "csv");
         String[] args = { Options.COMMAND_DRIVERS, usersFile };
+        Main.main(args);
+    }
+
+    @Test
+    public void driverHistoryTest() throws IOException, CsvException {
+        String[] args = { Options.COMMAND_DRIVER_HISTORY };
         Main.main(args);
     }
 

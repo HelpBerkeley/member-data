@@ -22,18 +22,20 @@
  */
 package org.helpberkeley.memberdata;
 
-import org.junit.Test;
+import java.io.IOException;
 
-import static org.assertj.core.api.Assertions.assertThat;
+public class DriverHistoryExporter extends Exporter {
 
-public class UploadTest extends TestBase {
-    @Test
-    public void uploadTest() {
-        ApiClient apiClient = createApiSimulator();
-        String fileName = "x.csv";
+    private final String driverHistory;
 
-        Upload upload = new Upload(apiClient, fileName);
-        assertThat(upload.getFileName()).isEqualTo(fileName);
-        assertThat(upload.getShortURL()).isEqualTo(Constants.UPLOAD_URI_PREFIX + "6Gf8gG4nGnC7HiiEi6ZX79PFfX5.csv");
+    DriverHistoryExporter(String driverHistory) {
+        this.driverHistory = driverHistory;
+    }
+
+    String driverHistoryToFile() throws IOException {
+
+        String outputFileName = generateFileName(Constants.DRIVER_HISTORY_FILE, "csv");
+        writeFile(outputFileName, driverHistory);
+        return outputFileName;
     }
 }

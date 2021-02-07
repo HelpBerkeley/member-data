@@ -32,13 +32,24 @@ import java.util.*;
 public class DriverExporter extends Exporter {
 
     public static final String IN_COLUMN = "In";
+    public static final String TOTAL_RUNS_COLUMNS = "Runs";
+    public static final String THIS_WEEK_COLUMN = "0w";
+    public static final String ONE_WEEK_AGO_COLUMN = "1w";
+    public static final String TWO_WEEKS_AGO_COLUMN = "2w";
+    public static final String THREE_WEEKS_AGO_COLUMN = "3w";
+    public static final String FOUR_WEEKS_AGO_COLUMN = "4w";
+    public static final String FIVE_WEEKS_AGO_COLUMN = "5w";
+    public static final String SIX_WEEKS_AGO_COLUMN = "6w";
 
     private final Tables tables;
     private final Map<String, DetailsPost> driverDetails;
+    private final Map<String, DriverHistory> driverHistory;
 
-    public DriverExporter(List<User> users, Map<String, DetailsPost> driverDetails) {
+    public DriverExporter(List<User> users, Map<String,
+            DriverHistory> driverHistory, Map<String, DetailsPost> driverDetails) {
         this.tables = new Tables(users);
         this.driverDetails = driverDetails;
+        this.driverHistory = driverHistory;
     }
 
     String drivers() {
@@ -49,6 +60,9 @@ public class DriverExporter extends Exporter {
 
             DetailsPost detailsPost = driverDetails.get(user.getUserName());
             String details = (detailsPost == null) ? "" : detailsPost.getDetails();
+            DriverHistory history = driverHistory.get(user.getUserName());
+            List<Integer> weeklyHistory =
+                    (history != null) ? history.getWeeklyRunTotals() : List.of(0, 0, 0, 0, 0, 0, 0);
 
             rows.append(user.getCreateDate());
             rows.append(separator);
@@ -63,6 +77,23 @@ public class DriverExporter extends Exporter {
             rows.append(shortBoolean(user.isBiker()));
             rows.append(separator);
             rows.append(shortBoolean(user.isLimitedRuns()));
+            rows.append(separator);
+            rows.append(history != null ? history.totalRuns() : 0);
+            rows.append(separator);
+            // Unicode Green Circle
+            rows.append(weeklyHistory.get(6) != 0 ? "🟢" : "");
+            rows.append(separator);
+            rows.append(weeklyHistory.get(5) != 0 ? "🟢" : "");
+            rows.append(separator);
+            rows.append(weeklyHistory.get(4) != 0 ? "🟢" : "");
+            rows.append(separator);
+            rows.append(weeklyHistory.get(3) != 0 ? "🟢" : "");
+            rows.append(separator);
+            rows.append(weeklyHistory.get(2) != 0 ? "🟢" : "");
+            rows.append(separator);
+            rows.append(weeklyHistory.get(1) != 0 ? "🟢" : "");
+            rows.append(separator);
+            rows.append(weeklyHistory.get(0) != 0 ? "🟢" : "");
             rows.append(separator);
             rows.append(user.getPhoneNumber());
             rows.append(separator);
@@ -105,6 +136,22 @@ public class DriverExporter extends Exporter {
                 + User.SHORT_BIKERS_COLUMN
                 + separator
                 + User.SHORT_LIMITED_RUNS_COLUMN
+                + separator
+                + TOTAL_RUNS_COLUMNS
+                + separator
+                + SIX_WEEKS_AGO_COLUMN
+                + separator
+                + FIVE_WEEKS_AGO_COLUMN
+                + separator
+                + FOUR_WEEKS_AGO_COLUMN
+                + separator
+                + THREE_WEEKS_AGO_COLUMN
+                + separator
+                + TWO_WEEKS_AGO_COLUMN
+                + separator
+                + ONE_WEEK_AGO_COLUMN
+                + separator
+                + THIS_WEEK_COLUMN
                 + separator
                 + User.PHONE_NUMBER_COLUMN
                 + separator
@@ -188,10 +235,34 @@ public class DriverExporter extends Exporter {
         output.append("|---|---|---|---|---|---|---|---|---|---|---|---|---|\n");
 
         for (DetailedDriver detailedDriver : detailedDrivers) {
+
+            DriverHistory history = driverHistory.get(detailedDriver.getUserName());
+
+            String recentRuns = "";
+            String totalRuns = "0";
+
+            if (history != null) {
+                List<Integer> weeklyRuns = history.getWeeklyRunTotals();
+
+                recentRuns = (weeklyRuns.get(3) > 0 ? ":green_circle:" : ":red_circle:")
+                    + (weeklyRuns.get(2) > 0 ? ":green_circle:" : ":red_circle:")
+                    + (weeklyRuns.get(1) > 0 ? ":green_circle:" : ":red_circle:")
+                    + (weeklyRuns.get(0) > 0 ? ":green_circle:" : ":red_circle:");
+                totalRuns = Long.toString(history.totalRuns());
+            } else {
+                recentRuns = ":red_circle::red_circle::red_circle::red_circle:";
+            }
+
+            String name = detailedDriver.getName();
+            if (name.length() > 19) {
+                name = name.substring(0, 18);
+                name += '.';
+            }
+
             output.append('@');
             output.append(detailedDriver.getUserName());
             output.append('|');
-            output.append(detailedDriver.getName());
+            output.append(name);
             output.append('|');
             output.append(detailedDriver.getPhoneNumber());
             output.append('|');
@@ -200,6 +271,10 @@ public class DriverExporter extends Exporter {
             output.append(detailedDriver.isAtRisk() ? Constants.AT_RISK_EMOJI : "");
             output.append('|');
             output.append(detailedDriver.isBiker() ? Constants.BIKE_EMOJI : "");
+            output.append('|');
+            output.append(totalRuns);
+            output.append('|');
+            output.append(recentRuns);
             output.append("|\n");
         }
 
@@ -221,6 +296,27 @@ public class DriverExporter extends Exporter {
         output.append("|---|---|---|---|---|---|---|---|---|\n");
 
         for (DetailedDriver detailedDriver : detailedDrivers) {
+
+            DriverHistory history = driverHistory.get(detailedDriver.getUserName());
+
+            String recentRuns32 = "";
+            String recentRuns10 = "";
+            String totalRuns = "0";
+
+            if (history != null) {
+                List<Integer> weeklyRuns = history.getWeeklyRunTotals();
+
+                recentRuns32 = (weeklyRuns.get(3) > 0 ? ":green_circle:" : ":red_circle:")
+                        + (weeklyRuns.get(2) > 0 ? ":green_circle:" : ":red_circle:");
+                recentRuns10 = (weeklyRuns.get(1) > 0 ? ":green_circle:" : ":red_circle:")
+                        + (weeklyRuns.get(0) > 0 ? ":green_circle:" : ":red_circle:");
+
+                totalRuns = Long.toString(history.totalRuns());
+            } else {
+                recentRuns32 = ":red_circle::red_circle:";
+                recentRuns10 = ":red_circle::red_circle:";
+            }
+
             output.append('@');
             output.append(detailedDriver.getUserName());
             output.append('|');
@@ -232,8 +328,11 @@ public class DriverExporter extends Exporter {
             output.append('|');
             output.append(detailedDriver.isBiker() ? Constants.BIKE_EMOJI : "");
             output.append('|');
+            output.append(totalRuns);
             output.append('|');
+            output.append(recentRuns32);
             output.append('|');
+            output.append(recentRuns10);
             output.append('|');
             output.append(detailedDriver.getDetails());
             output.append("|\n");

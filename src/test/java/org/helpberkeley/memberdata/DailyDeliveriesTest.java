@@ -56,6 +56,7 @@ public class DailyDeliveriesTest extends TestBase {
     @Test
     public void expectedOrderColumnsTest() throws IOException, CsvException {
         String header = Constants.WORKFLOW_CONSUMER_COLUMN + Constants.CSV_SEPARATOR
+                + Constants.WORKFLOW_DRIVER_COLUMN + Constants.CSV_SEPARATOR
                 + Constants.WORKFLOW_NAME_COLUMN + Constants.CSV_SEPARATOR
                 + Constants.WORKFLOW_USER_NAME_COLUMN + Constants.CSV_SEPARATOR
                 + Constants.WORKFLOW_NORMAL_COLUMN + Constants.CSV_SEPARATOR
@@ -71,6 +72,7 @@ public class DailyDeliveriesTest extends TestBase {
                 + Constants.WORKFLOW_NORMAL_COLUMN + Constants.CSV_SEPARATOR
                 + Constants.WORKFLOW_USER_NAME_COLUMN + Constants.CSV_SEPARATOR
                 + Constants.WORKFLOW_VEGGIE_COLUMN + Constants.CSV_SEPARATOR
+                + Constants.WORKFLOW_DRIVER_COLUMN + Constants.CSV_SEPARATOR
                 + Constants.WORKFLOW_NAME_COLUMN
                 + "\n";
 
@@ -80,6 +82,7 @@ public class DailyDeliveriesTest extends TestBase {
     @Test
     public void spaceyColumnNamesTest() throws IOException, CsvException {
         String header = " " + Constants.WORKFLOW_CONSUMER_COLUMN + " " + Constants.CSV_SEPARATOR
+                + " " + Constants.WORKFLOW_DRIVER_COLUMN + " " + Constants.CSV_SEPARATOR
                 + " " + Constants.WORKFLOW_NORMAL_COLUMN + " " + Constants.CSV_SEPARATOR
                 + " " + Constants.WORKFLOW_USER_NAME_COLUMN + " " + Constants.CSV_SEPARATOR
                 + " " + Constants.WORKFLOW_VEGGIE_COLUMN + " " + Constants.CSV_SEPARATOR
@@ -92,6 +95,7 @@ public class DailyDeliveriesTest extends TestBase {
     @Test
     public void missingUserNameColumnTest() throws IOException, CsvException {
         String header = Constants.WORKFLOW_CONSUMER_COLUMN + Constants.CSV_SEPARATOR
+                + Constants.WORKFLOW_DRIVER_COLUMN + Constants.CSV_SEPARATOR
                 + Constants.WORKFLOW_NAME_COLUMN + Constants.CSV_SEPARATOR
                 + Constants.WORKFLOW_NORMAL_COLUMN + Constants.CSV_SEPARATOR
                 + Constants.WORKFLOW_VEGGIE_COLUMN
@@ -103,6 +107,7 @@ public class DailyDeliveriesTest extends TestBase {
     @Test
     public void missingNameColumnTest() throws IOException, CsvException {
         String header = Constants.WORKFLOW_CONSUMER_COLUMN + Constants.CSV_SEPARATOR
+                + Constants.WORKFLOW_DRIVER_COLUMN + Constants.CSV_SEPARATOR
                 + Constants.WORKFLOW_USER_NAME_COLUMN + Constants.CSV_SEPARATOR
                 + Constants.WORKFLOW_NORMAL_COLUMN + Constants.CSV_SEPARATOR
                 + Constants.WORKFLOW_VEGGIE_COLUMN
@@ -115,6 +120,7 @@ public class DailyDeliveriesTest extends TestBase {
     public void missingConsumerColumnTest() {
         String fileName = "missing-consumer-column";
         String header = Constants.WORKFLOW_NAME_COLUMN + Constants.CSV_SEPARATOR
+                + Constants.WORKFLOW_DRIVER_COLUMN + Constants.CSV_SEPARATOR
                 + Constants.WORKFLOW_USER_NAME_COLUMN + Constants.CSV_SEPARATOR
                 + Constants.WORKFLOW_NORMAL_COLUMN + Constants.CSV_SEPARATOR
                 + Constants.WORKFLOW_VEGGIE_COLUMN
@@ -124,6 +130,22 @@ public class DailyDeliveriesTest extends TestBase {
         assertThat(thrown).isInstanceOf(Error.class);
         assertThat(thrown).hasMessageContaining(fileName);
         assertThat(thrown).hasMessageContaining(Constants.WORKFLOW_CONSUMER_COLUMN);
+    }
+
+    @Test
+    public void missingDriverColumnTest() {
+        String fileName = "missing-driver-column";
+        String header = Constants.WORKFLOW_NAME_COLUMN + Constants.CSV_SEPARATOR
+                + Constants.WORKFLOW_CONSUMER_COLUMN + Constants.CSV_SEPARATOR
+                + Constants.WORKFLOW_USER_NAME_COLUMN + Constants.CSV_SEPARATOR
+                + Constants.WORKFLOW_NORMAL_COLUMN + Constants.CSV_SEPARATOR
+                + Constants.WORKFLOW_VEGGIE_COLUMN
+                + "\n";
+
+        Throwable thrown = catchThrowable(() -> HBParser.parseOrders(fileName, header));
+        assertThat(thrown).isInstanceOf(Error.class);
+        assertThat(thrown).hasMessageContaining(fileName);
+        assertThat(thrown).hasMessageContaining(Constants.WORKFLOW_DRIVER_COLUMN);
     }
 
     @Test
