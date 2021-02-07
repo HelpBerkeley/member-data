@@ -44,7 +44,7 @@ public class DriverHistory {
     private static final Logger LOGGER = LoggerFactory.getLogger(DriverHistory.class);
 
     static final int WEEKS_OF_HISTORY = 7;
-    private static final int DAYS_IN_A_WEEK = DayOfWeek.values().length;
+    private static final long DAYS_IN_A_WEEK = DayOfWeek.values().length;
     private static final String DRIVER_HISTORY_HEADER =
         Constants.COLUMN_USERNAME + Constants.CSV_SEPARATOR + Constants.COLUMN_DELIVERY_DATE + '\n';
 
@@ -52,7 +52,7 @@ public class DriverHistory {
     private final Week[] weeks = new Week[WEEKS_OF_HISTORY];
 
     private final String userName;
-    Set<String> runDates = new HashSet<>();
+    final Set<String> runDates = new HashSet<>();
 
     public DriverHistory(String userName) {
         this.userName = userName;
@@ -177,7 +177,7 @@ public class DriverHistory {
         for (String[] columns : lines) {
             assert columns.length == 2 : columns.length;
 
-            DriverHistory driver = driverHistory.computeIfAbsent(columns[0], k -> new DriverHistory(k));
+            DriverHistory driver = driverHistory.computeIfAbsent(columns[0], DriverHistory::new);
             driver.addRun(columns[1]);
         }
 

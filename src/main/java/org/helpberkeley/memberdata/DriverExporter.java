@@ -238,7 +238,7 @@ public class DriverExporter extends Exporter {
 
             DriverHistory history = driverHistory.get(detailedDriver.getUserName());
 
-            String recentRuns = "";
+            String recentRuns;
             String totalRuns = "0";
 
             if (history != null) {
@@ -299,8 +299,8 @@ public class DriverExporter extends Exporter {
 
             DriverHistory history = driverHistory.get(detailedDriver.getUserName());
 
-            String recentRuns32 = "";
-            String recentRuns10 = "";
+            String recentRuns32;
+            String recentRuns10;
             String totalRuns = "0";
 
             if (history != null) {

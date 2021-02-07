@@ -34,7 +34,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class OrderHistoryDataPostsTest extends TestBase {
 
     @Test
-    public void simpleTest() throws InterruptedException {
+    public void simpleTest() {
 
         OrderHistoryDataPosts orderHistoryDataPosts = new OrderHistoryDataPosts(createApiSimulator());
         SortedMap<String, OrderHistoryData> newPosts = orderHistoryDataPosts.getNewPosts();

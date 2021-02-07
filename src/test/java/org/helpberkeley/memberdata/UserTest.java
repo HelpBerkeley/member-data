@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2020 helpberkeley.org
+// Copyright (c) 2020-2021 helpberkeley.org
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -389,6 +389,7 @@ public class UserTest extends TestBase {
     @Test
     public void mismatchObjectInequalityTest() throws UserException {
         User user1 = createUser();
+        //noinspection AssertBetweenInconvertibleTypes
         assertThat(user1).isNotEqualTo(this);
     }
 

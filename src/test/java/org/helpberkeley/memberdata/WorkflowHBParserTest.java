@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020. helpberkeley.org
+ * Copyright (c) 2020-2021 helpberkeley.org
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -34,13 +34,13 @@ public class WorkflowHBParserTest extends TestBase {
 
     private final Map<String, User> users;
 
-    public WorkflowHBParserTest() throws InterruptedException {
+    public WorkflowHBParserTest() {
         Loader loader = new Loader(createApiSimulator());
         users = new Tables(loader.load()).mapByUserName();
     }
 
     @Test
-    public void splitRestaurantsTest() throws InterruptedException {
+    public void splitRestaurantsTest() {
         String routedDeliveries = readResourceFile("routed-deliveries-with-split-restaurant.csv");
         DriverPostFormat driverPostFormat = new DriverPostFormat(createApiSimulator(),
                 users, Constants.CONTROL_BLOCK_CURRENT_VERSION, routedDeliveries);
@@ -230,7 +230,7 @@ public class WorkflowHBParserTest extends TestBase {
     }
 
     @Test
-    public void duplicateDriverDuplicateRestaurantsTest() throws InterruptedException {
+    public void duplicateDriverDuplicateRestaurantsTest() {
         String routedDeliveries = readResourceFile("routed-deliveries-duplicate-driver.csv");
         Throwable thrown = catchThrowable(() -> new DriverPostFormat(
                 createApiSimulator(), users, Constants.CONTROL_BLOCK_CURRENT_VERSION, routedDeliveries));

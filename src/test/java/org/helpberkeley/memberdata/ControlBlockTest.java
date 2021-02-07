@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020. helpberkeley.org
+ * Copyright (c) 2020-2021 helpberkeley.org
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -47,7 +47,7 @@ public class ControlBlockTest extends TestBase {
     private static final String  CONTROL_BLOCK_END_ROW =
             "FALSE,FALSE," + Constants.CONTROL_BLOCK_END + ",,,,,,,,,,,,\n";
 
-    public ControlBlockTest() throws InterruptedException {
+    public ControlBlockTest() {
         controlBlockData = readResourceFile("control-block.csv");
         List<User> userList = new Loader(createApiSimulator()).load();
         users = new Tables(userList).mapByUserName();
@@ -409,7 +409,7 @@ public class ControlBlockTest extends TestBase {
 
     /** Verify disabled audit of a split restaurant not having a cleanup driver in the control block */
     @Test
-    public void disabledAuditSplitRestaurantNoCleanupTest() throws InterruptedException {
+    public void disabledAuditSplitRestaurantNoCleanupTest() {
         new DriverPostFormat(createApiSimulator(), users,
                 Constants.CONTROL_BLOCK_CURRENT_VERSION,
                 readResourceFile("routed-deliveries-split-missing-cleanup-audit-disabled.csv"));

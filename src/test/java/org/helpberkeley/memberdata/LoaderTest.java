@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2020 helpberkeley.org
+// Copyright (c) 2020-2021 helpberkeley.org
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -42,7 +42,7 @@ public class LoaderTest extends TestBase {
     }
 
     @Test
-    public void loadTest() throws IOException, InterruptedException, CsvException {
+    public void loadTest() throws IOException, CsvException {
         Loader loader = new Loader(apiClient);
 
         List<User> users = loader.load();
@@ -55,7 +55,7 @@ public class LoaderTest extends TestBase {
     }
 
     @Test
-    public void emailAddressTest() throws InterruptedException {
+    public void emailAddressTest() {
         Loader loader = new Loader(apiClient);
 
         Map<Long, String> emailAddresses = loader.loadEmailAddresses();
@@ -100,7 +100,7 @@ public class LoaderTest extends TestBase {
     }
 
     @Test
-    public void stagedUserTest() throws InterruptedException {
+    public void stagedUserTest() {
         HttpClientSimulator.setQueryResponseFile(Constants.CURRENT_USERS_QUERY, "null-user.json");
         Loader loader = new Loader(apiClient);
         List<User> users = loader.load();

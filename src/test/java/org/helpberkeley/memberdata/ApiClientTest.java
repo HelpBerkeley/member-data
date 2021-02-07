@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2020 helpberkeley.org
+// Copyright (c) 2020-2021 helpberkeley.org
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -23,7 +23,6 @@ package org.helpberkeley.memberdata;
 
 import org.junit.Test;
 
-import java.net.URISyntaxException;
 import java.util.Properties;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -42,19 +41,19 @@ public class ApiClientTest extends TestBase {
     }
 
     @Test
-    public void getGroupsQueryTest() throws InterruptedException {
+    public void getGroupsQueryTest() {
         ApiClient apiClient = createApiSimulator();
         apiClient.runQuery(Constants.QUERY_GET_GROUPS_ID);
     }
 
     @Test
-    public void groupsQueryTest() throws InterruptedException {
+    public void groupsQueryTest() {
         ApiClient apiClient = createApiSimulator();
         apiClient.runQuery(Constants.QUERY_GET_GROUPS_ID);
     }
 
     @Test
-    public void usersQueryTest() throws InterruptedException {
+    public void usersQueryTest() {
         ApiClient apiClient = createApiSimulator();
         apiClient.runQuery(Constants.CURRENT_USERS_QUERY);
     }
@@ -70,7 +69,7 @@ public class ApiClientTest extends TestBase {
     }
 
     @Test
-    public void goawayRetrySucceedTest() throws InterruptedException {
+    public void goawayRetrySucceedTest() {
         ApiClient.RETRY_NAP_MILLISECONDS = 0;
         HttpClientSimulator.setSendFailure(HttpClientSimulator.SendFailType.GOAWAY_IOEXCEPTION, 1);
 
@@ -90,7 +89,7 @@ public class ApiClientTest extends TestBase {
     }
 
     @Test
-    public void tooManyTimesRetrySucceedTest() throws InterruptedException {
+    public void tooManyTimesRetrySucceedTest() {
         ApiClient.RETRY_NAP_MILLISECONDS = 0;
         HttpClientSimulator.setSendFailure(HttpClientSimulator.SendFailType.TOO_MANY_TIMES_429_RESULT, 1);
 

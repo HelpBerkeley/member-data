@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020. helpberkeley.org
+ * Copyright (c) 2020-2021 helpberkeley.org
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -203,7 +203,7 @@ public class MainTest extends TestBase {
     @Test
     public void completedOrdersTest() throws IOException, CsvException {
         LocalDate yesterday = LocalDate.now(Constants.TIMEZONE).minusDays(1);
-        DateTimeFormatter format = DateTimeFormatter.ofPattern("YYYY/MM/dd");
+        DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy/MM/dd");
         String yesterdayStr = yesterday.format(format);
 
         String completedOrdersRequest =
@@ -244,7 +244,7 @@ public class MainTest extends TestBase {
     @Test
     public void completedOrdersFutureDateTest() throws IOException, CsvException {
         LocalDate nextWeek = LocalDate.now(Constants.TIMEZONE).plusWeeks(1);
-        DateTimeFormatter format = DateTimeFormatter.ofPattern("YYYY/MM/dd");
+        DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy/MM/dd");
         String nextWeekStr = nextWeek.format(format);
 
         String completedOrdersRequest =
@@ -272,7 +272,7 @@ public class MainTest extends TestBase {
     @Test
     public void completedOrdersDateTooOldTest() throws IOException, CsvException {
         LocalDate lastYear = LocalDate.now(Constants.TIMEZONE).minusYears(1);
-        DateTimeFormatter format = DateTimeFormatter.ofPattern("YYYY/MM/dd");
+        DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy/MM/dd");
         String lastYearStr = lastYear.format(format);
 
         String completedOrdersRequest =
@@ -300,7 +300,7 @@ public class MainTest extends TestBase {
     @Test
     public void completedOrdersDisableDateAuditTest() throws IOException, CsvException {
         LocalDate lastYear = LocalDate.now(Constants.TIMEZONE).minusYears(1);
-        DateTimeFormatter format = DateTimeFormatter.ofPattern("YYYY/MM/dd");
+        DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy/MM/dd");
         String lastYearStr = lastYear.format(format);
 
         String completedOrdersRequest =

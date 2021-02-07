@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020. helpberkeley.org
+// Copyright (c) 2020-2021 helpberkeley.org
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -37,7 +37,7 @@ public class WorkRequestHandlerTest extends TestBase {
     }
 
     @Test
-    public void parseWorkRequestTest() throws InterruptedException {
+    public void parseWorkRequestTest() {
 
         Query query = new Query(queryId, Constants.TOPIC_REQUEST_DRIVER_MESSAGES);
         WorkRequestHandler requestHandler = new WorkRequestHandler(apiClient, query);
@@ -46,18 +46,18 @@ public class WorkRequestHandlerTest extends TestBase {
     }
 
     @Test
-    public void parseWorkRequestWithoutDateTest() throws InterruptedException {
+    public void parseWorkRequestWithoutDateTest() {
 
         HttpClientSimulator.setQueryResponseFile(queryId, "workrequest-no-date.json");
         Query query = new Query(queryId, Constants.TOPIC_REQUEST_DRIVER_MESSAGES);
         WorkRequestHandler requestHandler = new WorkRequestHandler(apiClient, query);
-        Throwable thrown = catchThrowable(() -> requestHandler.getLastReply());
+        Throwable thrown = catchThrowable(requestHandler::getLastReply);
         assertThat(thrown).isInstanceOf(MemberDataException.class);
         assertThat(thrown).hasMessageContaining(WorkRequestHandler.ERROR_INVALID_DATE);
     }
 
     @Test
-    public void parseStatusTest() throws InterruptedException {
+    public void parseStatusTest() {
         HttpClientSimulator.setQueryResponseFile(
                 Constants.QUERY_GET_LAST_REQUEST_DRIVER_MESSAGES_REPLY, "last-routed-workflow-status.json");
 
@@ -68,7 +68,7 @@ public class WorkRequestHandlerTest extends TestBase {
     }
 
     @Test
-    public void postStatusTest() throws InterruptedException {
+    public void postStatusTest() {
         Query query = new Query(queryId, Constants.TOPIC_REQUEST_DRIVER_MESSAGES);
         WorkRequestHandler requestHandler = new WorkRequestHandler(apiClient, query);
         WorkRequestHandler.Reply reply = requestHandler.getLastReply();
@@ -80,7 +80,7 @@ public class WorkRequestHandlerTest extends TestBase {
     }
 
     @Test
-    public void versionTest() throws InterruptedException {
+    public void versionTest() {
         HttpClientSimulator.setQueryResponseFile(
                 Constants.QUERY_GET_LAST_REQUEST_DRIVER_MESSAGES_REPLY, "v1-work-request.json");
         Query query = new Query(queryId, Constants.TOPIC_REQUEST_DRIVER_MESSAGES);

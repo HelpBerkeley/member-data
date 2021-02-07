@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2020 helpberkeley.org
+// Copyright (c) 2020-2021 helpberkeley.org
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -50,7 +50,7 @@ public class PostTest extends TestBase {
     }
 
     @Test
-    public void postResponseTest() throws InterruptedException {
+    public void postResponseTest() {
         ApiClient apiClient = createApiSimulator();
 
         Post post = new Post();

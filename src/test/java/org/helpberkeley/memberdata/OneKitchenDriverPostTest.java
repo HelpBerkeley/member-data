@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020. helpberkeley.org
+ * Copyright (c) 2020-2021 helpberkeley.org
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -33,12 +33,12 @@ public class OneKitchenDriverPostTest extends TestBase {
 
     private final Map<String, User> users;
 
-    public OneKitchenDriverPostTest() throws InterruptedException {
+    public OneKitchenDriverPostTest() {
         Loader loader = new Loader(createApiSimulator());
         users = new Tables(loader.load()).mapByUserName();
     }
     @Test
-    public void multiDriverMessageTest() throws InterruptedException {
+    public void multiDriverMessageTest() {
         String routedDeliveries = readResourceFile("routed-deliveries-turkey.csv");
         HttpClientSimulator.setQueryResponseFile(
                 Constants.QUERY_GET_RESTAURANT_TEMPLATES, "restaurant-template-turkey.json");
@@ -101,7 +101,7 @@ public class OneKitchenDriverPostTest extends TestBase {
     }
 
     @Test
-    public void multiDriverGroupMessageTest() throws InterruptedException {
+    public void multiDriverGroupMessageTest() {
         String routedDeliveries = readResourceFile("routed-deliveries-turkey.csv");
         HttpClientSimulator.setQueryResponseFile(
                 Constants.QUERY_GET_RESTAURANT_TEMPLATES, "restaurant-template-turkey.json");

@@ -22,14 +22,10 @@
  */
 package org.helpberkeley.memberdata;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.util.*;
 
 public class OrderHistoryDataPosts {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(OrderHistoryData.class);
     private static final String LAST_POST_PROCESSED = "Last post processed: ";
 
     private static final String TOP_POST  = "This is where the back-end software keeps "

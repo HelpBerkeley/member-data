@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020. helpberkeley.org
+ * Copyright (c) 2020-2021 helpberkeley.org
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -33,13 +33,13 @@ public class RoutedDeliveriesTest extends TestBase {
 
     private final Map<String, User> users;
 
-    public RoutedDeliveriesTest() throws InterruptedException {
+    public RoutedDeliveriesTest() {
         Loader loader = new Loader(createApiSimulator());
         users = new Tables(loader.load()).mapByUserName();
     }
 
     @Test
-    public void parseRoutedTest() throws InterruptedException {
+    public void parseRoutedTest() {
         String csvData = readResourceFile("routed-deliveries.csv");
 
         DriverPostFormat driverPostFormat = new DriverPostFormat(createApiSimulator(),
@@ -186,7 +186,7 @@ public class RoutedDeliveriesTest extends TestBase {
     }
 
     @Test
-    public void parseRoutedWithSplitRestaurantTest() throws InterruptedException {
+    public void parseRoutedWithSplitRestaurantTest() {
         String csvData = readResourceFile("routed-deliveries-with-split-restaurant.csv");
         DriverPostFormat driverPostFormat = new DriverPostFormat(createApiSimulator(),
                 users, Constants.CONTROL_BLOCK_CURRENT_VERSION, csvData);
@@ -412,7 +412,7 @@ public class RoutedDeliveriesTest extends TestBase {
     }
 
     @Test
-    public void parseRoutedWithSplitTurkeyTest() throws InterruptedException {
+    public void parseRoutedWithSplitTurkeyTest() {
         String csvData = readResourceFile("routed-deliveries-turkey.csv");
         HttpClientSimulator.setQueryResponseFile(
                 Constants.QUERY_GET_RESTAURANT_TEMPLATES, "restaurant-template-turkey.json");
@@ -565,7 +565,7 @@ public class RoutedDeliveriesTest extends TestBase {
     }
 
     @Test
-    public void parseRoutedEmptyDeliveryTest() throws InterruptedException {
+    public void parseRoutedEmptyDeliveryTest() {
         String csvData = readResourceFile("routed-deliveries-empty-delivery.csv");
 
         DriverPostFormat driverPostFormat = new DriverPostFormat(createApiSimulator(),

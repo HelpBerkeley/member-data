@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2020 helpberkeley.org
+// Copyright (c) 2020-2021 helpberkeley.org
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -21,7 +21,6 @@
 //
 package org.helpberkeley.memberdata;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.time.ZonedDateTime;
@@ -171,7 +170,7 @@ public class TablesTest extends TestBase {
         assertThat(tables.drivers()).containsExactly(u1);
         assertThat(tables.drivers()).hasSize(1);
         User driver = tables.drivers().get(0);
-        assertThat(driver.groupOwner(Constants.GROUP_GONE));
+        assertThat(driver.groupOwner(Constants.GROUP_GONE)).isTrue();
         assertThat(driver.isGone()).isFalse();
         assertThat(u1.isAvailableDriver()).isTrue();
     }
@@ -188,7 +187,7 @@ public class TablesTest extends TestBase {
         assertThat(tables.drivers()).containsExactly(u1);
         assertThat(tables.drivers()).hasSize(1);
         User driver = tables.drivers().get(0);
-        assertThat(driver.groupOwner(Constants.GROUP_OUT));
+        assertThat(driver.groupOwner(Constants.GROUP_OUT)).isTrue();
         assertThat(driver.isOut()).isFalse();
         assertThat(u1.isAvailableDriver()).isTrue();
     }
@@ -205,7 +204,7 @@ public class TablesTest extends TestBase {
         assertThat(tables.drivers()).containsExactly(u1);
         assertThat(tables.drivers()).hasSize(1);
         User driver = tables.drivers().get(0);
-        assertThat(driver.groupOwner(Constants.GROUP_OTHER_DRIVERS));
+        assertThat(driver.groupOwner(Constants.GROUP_OTHER_DRIVERS)).isTrue();
         assertThat(driver.isOtherDrivers()).isFalse();
         assertThat(u1.isAvailableDriver()).isTrue();
     }
@@ -223,7 +222,7 @@ public class TablesTest extends TestBase {
         assertThat(tables.drivers()).containsExactly(u1);
         assertThat(tables.drivers()).hasSize(1);
         User driver = tables.drivers().get(0);
-        assertThat(driver.groupOwner(Constants.GROUP_EVENT_DRIVERS));
+        assertThat(driver.groupOwner(Constants.GROUP_EVENT_DRIVERS)).isTrue();
         assertThat(u1.isAvailableDriver()).isTrue();
         assertThat(u1.isEventDriver()).isFalse();
     }
@@ -239,7 +238,7 @@ public class TablesTest extends TestBase {
         assertThat(tables.drivers()).containsExactly(u1);
         assertThat(tables.drivers()).hasSize(1);
         User driver = tables.drivers().get(0);
-        assertThat(driver.groupOwner(Constants.GROUP_LIMITED));
+        assertThat(driver.groupOwner(Constants.GROUP_LIMITED)).isTrue();
         assertThat(driver.isLimitedRuns()).isFalse();
         assertThat(u1.isAvailableDriver()).isTrue();
     }
@@ -255,7 +254,7 @@ public class TablesTest extends TestBase {
         assertThat(tables.drivers()).containsExactly(u1);
         assertThat(tables.drivers()).hasSize(1);
         User driver = tables.drivers().get(0);
-        assertThat(driver.groupOwner(Constants.GROUP_AT_RISK));
+        assertThat(driver.groupOwner(Constants.GROUP_AT_RISK)).isTrue();
         assertThat(driver.isAtRisk()).isFalse();
         assertThat(u1.isAvailableDriver()).isTrue();
     }
@@ -271,7 +270,7 @@ public class TablesTest extends TestBase {
         assertThat(tables.drivers()).containsExactly(u1);
         assertThat(tables.drivers()).hasSize(1);
         User driver = tables.drivers().get(0);
-        assertThat(driver.groupOwner(Constants.GROUP_TRAINED_EVENT_DRIVERS));
+        assertThat(driver.groupOwner(Constants.GROUP_TRAINED_EVENT_DRIVERS)).isTrue();
         assertThat(driver.isTrainedEventDriver()).isFalse();
         assertThat(u1.isAvailableDriver()).isTrue();
     }

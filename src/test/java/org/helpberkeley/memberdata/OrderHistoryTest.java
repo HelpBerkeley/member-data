@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020. helpberkeley.org
+ * Copyright (c) 2020-2021 helpberkeley.org
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -64,7 +64,7 @@ public class OrderHistoryTest extends TestBase {
     }
 
     @Test
-    public void unknownUserTest() throws InterruptedException {
+    public void unknownUserTest() {
         Loader loader = new Loader(createApiSimulator());
         List<User> users = loader.load();
         Tables tables = new Tables(users);

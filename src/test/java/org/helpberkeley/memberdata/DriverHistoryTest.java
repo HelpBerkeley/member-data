@@ -32,7 +32,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class DriverHistoryTest extends TestBase {
 
     private static final String DRIVER_NAME = "fred";
-    private final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("YYYY/MM/dd");
+    private final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy/MM/dd");
     private final LocalDate today = LocalDate.now(Constants.TIMEZONE);
     private final String todaysDateStr = today.format(dateTimeFormatter);
 
@@ -57,7 +57,7 @@ public class DriverHistoryTest extends TestBase {
     public void historyTooOldTest() {
         DriverHistory driverHistory = new DriverHistory(DRIVER_NAME);
         LocalDate tooOld = today.minusWeeks(DriverHistory.WEEKS_OF_HISTORY + 1);
-        DateTimeFormatter format = DateTimeFormatter.ofPattern("YYYY/MM/dd");
+        DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy/MM/dd");
         driverHistory.addRun(tooOld.format(dateTimeFormatter));
         assertThat(driverHistory.totalRuns()).isEqualTo(1);
         assertThat(driverHistory.getWeeklyRunTotals()).containsExactly(0, 0, 0, 0, 0, 0, 0);

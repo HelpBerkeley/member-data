@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020. helpberkeley.org
+ * Copyright (c) 2020-2021 helpberkeley.org
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -33,7 +33,7 @@ import static org.assertj.core.api.Assertions.catchThrowable;
 
 public class DailyDeliveriesTest extends TestBase {
     @Test
-    public void parseDailyDeliveriesQueryTest() throws InterruptedException {
+    public void parseDailyDeliveriesQueryTest() {
         ApiClient apiClient = createApiSimulator();
         String jsonData = apiClient.runQuery(Constants.QUERY_GET_DAILY_DELIVERIES);
         ApiQueryResult queryResult = HBParser.parseQueryResult(jsonData);
@@ -42,7 +42,7 @@ public class DailyDeliveriesTest extends TestBase {
     }
 
     @Test
-    public void dailyDeliveriesBadDateTest() throws InterruptedException {
+    public void dailyDeliveriesBadDateTest() {
         ApiClient apiClient = createApiSimulator();
         HttpClientSimulator.setQueryResponseFile(
                 Constants.QUERY_GET_DAILY_DELIVERIES, "daily-deliveries-bad-date.json");

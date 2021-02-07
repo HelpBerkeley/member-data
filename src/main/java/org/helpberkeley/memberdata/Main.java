@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2020 helpberkeley.org
+// Copyright (c) 2020-2021 helpberkeley.org
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -39,7 +39,6 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
-import java.util.concurrent.TimeUnit;
 
 import static java.net.HttpURLConnection.HTTP_OK;
 
@@ -962,7 +961,6 @@ public class Main {
         // Load users
         String csvData = Files.readString(Paths.get(usersFile));
         List<User> users = HBParser.users(csvData);
-        Tables tables = new Tables(users);
 
         // Fetch driver details
         String json = apiClient.runQuery(Constants.QUERY_GET_DRIVER_DETAILS);
