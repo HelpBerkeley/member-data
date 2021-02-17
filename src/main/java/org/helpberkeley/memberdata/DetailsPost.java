@@ -50,8 +50,12 @@ public class DetailsPost {
 
         if (this.details == null) {
             this.details = details;
-        } else if (! this.details.endsWith(".")) {
-            this.details += ". ";
+        } else {
+            if (! this.details.endsWith(".")) {
+                this.details += ".";
+            }
+
+            this.details += ' ';
             this.details += details;
         }
     }
