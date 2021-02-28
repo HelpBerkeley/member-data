@@ -30,3 +30,10 @@ Detect controlBlockRestaurant name misspellings in workflow data.
 
  Update error strings to use a message catalog.
  Update testing to removed duplicate expected strings.
+
+Turn the "member data requiring attention" postings back on.
+
+Add a generic request handler that can be used to run various
+cron-ish jobs on demand.
+
+Add checking for restaurant template.

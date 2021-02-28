@@ -1,8 +1,8 @@
 {
   "success": true,
   "errors": [],
-  "duration": 0.8,
-  "result_count": 37,
+  "duration": 0.5,
+  "result_count": 48,
   "params": {},
   "columns": [
     "id",
@@ -14,11 +14,11 @@
   "default_limit": 1000,
   "rows": [
     [
-      1,
-      "User Custom Fields",
-      "Get the users and the values of the custom user fields.",
+      11,
+      "User Email",
+      "Used by the remote member data fetcher. Do not modify or remove.",
       false,
-      "SELECT\n  u.id AS user_id,\n  u.userName,\n  u.name,\n  MAX(CASE ucf.name WHEN 'user_field_1' THEN value END) AS address,\n  MAX(CASE ucf.name WHEN 'user_field_2' THEN value END) AS phone,\n  MAX(CASE ucf.name WHEN 'user_field_3' THEN value END) AS neighborhood,\n  MAX(CASE ucf.name WHEN 'user_field_6' THEN value END) AS city\nFROM user_custom_fields AS ucf\nRIGHT JOIN users AS u on ucf.user_id = u.id\nGROUP BY u.id"
+      "SELECT\n  u.id AS user_id,\n  u.userName,\n  use.email\nFROM user_emails AS use\nRIGHT JOIN users AS u on use.user_id = u.id"
     ],
     [
       -1,
@@ -98,18 +98,18 @@
       "SELECT \n  p.post_number,\n  p.raw\nFROM posts AS p\nWHERE (p.topic_id = 1818)\nORDER BY (p.post_number)"
     ],
     [
-      15,
-      "Email confirmed",
-      "Used by the remote member data fetcher. Do not modify or remove.",
+      39,
+      "Get driver status posts",
+      "",
       false,
-      "SELECT\n  e.user_id,\n  e.confirmed\nFROM email_tokens as e"
+      "SELECT \n  p.post_number,\n  p.deleted_at,\n  p.raw\nFROM posts AS p\nWHERE (p.topic_id = 4524 AND p.deleted_at IS NULL)\nORDER BY (p.post_number)"
     ],
     [
-      11,
-      "User Email",
-      "Used by the remote member data fetcher. Do not modify or remove.",
+      33,
+      "Get Driver Post Format V2.3",
+      "Get all of the posts in the Driver Post Format V2.3 topic. Do not modify or remove.",
       false,
-      "SELECT\n  u.id AS user_id,\n  u.userName,\n  use.email\nFROM user_emails AS use\nRIGHT JOIN users AS u on use.user_id = u.id"
+      "SELECT \n  p.post_number,\n  p.raw,\n  p.deleted_at\nFROM posts AS p\nWHERE (p.topic_id = 3444 AND p.deleted_at IS NULL)\nORDER BY (p.post_number)"
     ],
     [
       24,
@@ -117,6 +117,13 @@
       "",
       false,
       "SELECT \n  p.post_number,\n  p.deleted_at,\n  p.raw\nFROM posts AS p\nWHERE (p.topic_id = 438 AND p.deleted_at IS NULL)\nORDER BY (p.post_number) DESC\nLIMIT 1"
+    ],
+    [
+      32,
+      "Get Group Instructions Format V2.2",
+      "Get version 2.2 of the driver group instructions format posts. Do not modify or remove.",
+      false,
+      "SELECT \n  p.post_number,\n  p.raw,\n  p.deleted_at\nFROM posts AS p\nWHERE (p.topic_id = 3443 AND p.deleted_at IS NULL)\nORDER BY (p.post_number)"
     ],
     [
       26,
@@ -182,39 +189,18 @@
       "SELECT\n  u.id AS user_id,\n  u.userName,\n  u.name,\n  MAX(CASE ucf.name WHEN 'user_field_1' THEN value END) AS address,\n  MAX(CASE ucf.name WHEN 'user_field_2' THEN value END) AS phone,\n  MAX(CASE ucf.name WHEN 'user_field_3' THEN value END) AS neighborhood,\n  MAX(CASE ucf.name WHEN 'user_field_6' THEN value END) AS city,\n  MAX(CASE ucf.name WHEN 'user_field_7' THEN value END) AS apartment,\n  u.created_at\nFROM user_custom_fields AS ucf\nRIGHT JOIN users AS u on ucf.user_id = u.id\nGROUP BY u.id"
     ],
     [
-      33,
-      "Get Driver Post Format V2.3",
-      "Get all of the posts in the Driver Post Format V2.3 topic. Do not modify or remove.",
+      40,
+      "Get dispatcher status posts",
+      "",
       false,
-      "SELECT \n  p.post_number,\n  p.raw,\n  p.deleted_at\nFROM posts AS p\nWHERE (p.topic_id = 3444 AND p.deleted_at IS NULL)\nORDER BY (p.post_number)"
+      "SELECT \n  p.post_number,\n  p.deleted_at,\n  p.raw\nFROM posts AS p\nWHERE (p.topic_id = 4526\n  AND p.post_number > 1 \n  AND p.deleted_at IS NULL)\nORDER BY (p.post_number)"
     ],
     [
-      32,
-      "Get Group Instructions Format V2.2",
-      "Get version 2.2 of the driver group instructions format posts. Do not modify or remove.",
+      37,
+      "Email Confirmed V1.2",
+      "",
       false,
-      "SELECT \n  p.post_number,\n  p.raw,\n  p.deleted_at\nFROM posts AS p\nWHERE (p.topic_id = 3443 AND p.deleted_at IS NULL)\nORDER BY (p.post_number)"
-    ],
-    [
-      28,
-      "Get Backup Driver Format V1.2",
-      "Get all of the posts in the Backup Driver Message V1.2 topic.\n Do not modify or remove.",
-      false,
-      "SELECT \n  p.post_number,\n  p.raw,\n  p.deleted_at\nFROM posts AS p\nWHERE (p.topic_id = 3202 AND p.deleted_at IS NULL)\nORDER BY (p.post_number)"
-    ],
-    [
-      3,
-      "Get Groups",
-      "Used by the remote member data fetcher. Do not modify or remove.",
-      false,
-      "SELECT\n    g.id,\n    g.name\nFROM groups g"
-    ],
-    [
-      5,
-      "Testing",
-      "Query testing",
-      false,
-      "--[params]\n-- integer :limit = 5000\nSELECT\n*\nFROM generate_series(1, 2000)\nLIMIT :limit\n\n\n"
+      "SELECT\n  e.user_id,\n  e.confirmed,\n  e.expired\nFROM email_tokens as e\nWHERE e.expired = false\nORDER BY e.user_id"
     ],
     [
       4,
@@ -222,6 +208,13 @@
       "Get all users within groups, sorted by group\nUsed by the remote member data fetcher. Do not modify or remove.",
       false,
       "SELECT\n    gu.group_id,\n    gu.user_id\nFROM group_users gu\nRIGHT JOIN users u On u.id = gu.user_id\nORDER BY gu.group_id"
+    ],
+    [
+      5,
+      "Testing",
+      "Query testing",
+      false,
+      "SELECT  * from groups\n"
     ],
     [
       9,
@@ -238,6 +231,90 @@
       "SELECT posts.id AS post_id,\n    uploads.original_filename,\n    ROUND(uploads.filesize / 1000000.0, 2) AS size_in_mb,\n    uploads.extension,\n    uploads.created_at,\n    uploads.url\nFROM post_uploads\nJOIN uploads ON uploads.id = post_uploads.upload_id\nJOIN posts ON posts.id = post_uploads.post_id\nORDER BY uploads.filesize DESC\nLIMIT 50\n"
     ],
     [
+      45,
+      "Get Order History Data",
+      "Get all of the non-deleted Order History Data posts",
+      false,
+      "SELECT\n  p.post_number,\n  p.deleted_at,\n  p.raw\nFROM posts p\nWHERE (p.topic_id = 5234\n  AND p.deleted_at IS NULL)"
+    ],
+    [
+      3,
+      "Get Groups",
+      "Used by the remote member data fetcher. Do not modify or remove.",
+      false,
+      "SELECT\n    g.id,\n    g.name\nFROM groups g"
+    ],
+    [
+      47,
+      "Get Group Users V2",
+      "Get group members and owners.  Used by back-end. Do not modify or remove.",
+      false,
+      "SELECT\n    gu.group_id,\n    gu.user_id,\n    gu.owner\nFROM group_users gu\nRIGHT JOIN users u On u.id = gu.user_id\nORDER BY gu.group_id"
+    ],
+    [
+      43,
+      "Get One Kitchen Group Post Format V1.0",
+      "",
+      false,
+      "SELECT \n  p.post_number,\n  p.raw,\n  p.deleted_at\nFROM posts AS p\nWHERE (p.topic_id = 4880 AND p.deleted_at IS NULL)\nORDER BY (p.post_number)"
+    ],
+    [
+      15,
+      "Email confirmed",
+      "Used by the remote member data fetcher. Do not modify or remove.",
+      false,
+      "SELECT\n  e.user_id,\n  e.confirmed\nFROM email_tokens as e"
+    ],
+    [
+      23,
+      "User Query V1.7",
+      "Used by the remote data fetcher. Do not modify or remove.",
+      false,
+      "SELECT\n  u.id AS user_id,\n  u.userName,\n  u.name,\n  u.staged,\n  MAX(CASE ucf.name WHEN 'user_field_1' THEN value END) AS address,\n  MAX(CASE ucf.name WHEN 'user_field_2' THEN value END) AS phone,\n  MAX(CASE ucf.name WHEN 'user_field_3' THEN value END) AS neighborhood,\n  MAX(CASE ucf.name WHEN 'user_field_6' THEN value END) AS city,\n  MAX(CASE ucf.name WHEN 'user_field_7' THEN value END) AS condo,\n  MAX(CASE ucf.name WHEN 'user_field_9' THEN value END) AS consumer_request,\n  MAX(CASE ucf.name WHEN 'user_field_11' THEN value END) as volunteer_request,\n  MAX(CASE ucf.name WHEN 'user_field_12' THEN value END) as alt_phone,\n  MAX(CASE ucf.name WHEN 'user_field_13' THEN value END) as referral,\n  u.created_at\nFROM user_custom_fields AS ucf\nRIGHT JOIN users AS u on ucf.user_id = u.id\nGROUP BY u.id"
+    ],
+    [
+      41,
+      "Get last request single restaurant driver messages reply",
+      "",
+      false,
+      "SELECT \n  p.post_number,\n  p.deleted_at,\n  p.raw\nFROM posts AS p\nWHERE (p.topic_id = 4878 AND p.deleted_at IS NULL)\nORDER BY (p.post_number) DESC\nLIMIT 1\n\n"
+    ],
+    [
+      13,
+      "Completed Daily Deliveries",
+      "Fetch the completed deliveries posts.\nDo not modify or remove.  Used by the back-end processing.",
+      false,
+      "SELECT\n  p.post_number,\n  p.deleted_at,\n  p.raw\nFROM posts p\nWHERE (p.topic_id = 859\n  AND p.post_number != 1\n  AND p.deleted_at IS NULL)"
+    ],
+    [
+      35,
+      "Get restaurant templates",
+      "Used by the remote data fetcher. Do not modify or remove.",
+      false,
+      "SELECT \n  p.post_number,\n  p.deleted_at,\n  p.raw\nFROM posts AS p\nWHERE (p.topic_id = 1860 AND p.deleted_at IS NULL)\nORDER BY (p.post_number)\n"
+    ],
+    [
+      42,
+      "Get One Kitchen Driver Post Format V1.0",
+      "",
+      false,
+      "SELECT \n  p.post_number,\n  p.raw,\n  p.deleted_at\nFROM posts AS p\nWHERE (p.topic_id = 4875 AND p.deleted_at IS NULL)\nORDER BY (p.post_number)"
+    ],
+    [
+      34,
+      "Get queries",
+      "Get all the defined data explorer plugin queries.",
+      false,
+      "SELECT\n    q.id,\n    q.name,\n    q.description,\n    q.hidden,\n    q.sql\nFROM data_explorer_queries as q\nWHERE (q.hidden = FALSE)"
+    ],
+    [
+      28,
+      "Get Backup Driver Format V1.2",
+      "Get all of the posts in the Backup Driver Message V1.2 topic.\n Do not modify or remove.",
+      false,
+      "SELECT \n  p.post_number,\n  p.raw,\n  p.deleted_at\nFROM posts AS p\nWHERE (p.topic_id = 3202 AND p.deleted_at IS NULL)\nORDER BY (p.post_number)"
+    ],
+    [
       25,
       "Get last route request reply",
       "Used by the remote data fetcher. Do not modify or remove.",
@@ -252,25 +329,25 @@
       "SELECT \n  p.post_number,\n  p.deleted_at,\n  p.raw\nFROM posts AS p\nWHERE (p.topic_id = 2504 AND p.deleted_at IS NULL)\nORDER BY (p.post_number) DESC\nLIMIT 1"
     ],
     [
-      34,
-      "Get queries",
-      "Get all the defined data explorer plugin queries.",
+      46,
+      "Get Driver Details",
+      "Fetch all of the driver details posts.  Used by the back-end software.  Do not modify or remove.",
       false,
-      "SELECT\n    q.id,\n    q.name,\n    q.description,\n    q.hidden,\n    q.sql\nFROM data_explorer_queries as q\nWHERE (q.hidden = FALSE)"
+      "SELECT \n  p.post_number,\n  p.deleted_at,\n  p.raw\nFROM posts AS p\nWHERE (p.topic_id = 4524)\n    AND (p.post_number > 1)\n    AND (p.deleted_at is NULL)\nORDER BY (p.post_number)"
     ],
     [
-      13,
-      "Completed Daily Deliveries",
-      "Fetch the completed deliveries posts.\nDo not modify or remove.  Used by the back-end processing.",
-      false,
-      "SELECT\n  p.post_number,\n  p.deleted_at,\n  p.raw\nFROM posts p\nWHERE (p.topic_id = 859\n  AND p.post_number != 1\n  AND p.deleted_at IS NULL)"
-    ],
-    [
-      23,
-      "User Query V1.7",
+      36,
+      "Get last restaurant template",
       "Used by the remote data fetcher. Do not modify or remove.",
       false,
-      "SELECT\n  u.id AS user_id,\n  u.userName,\n  u.name,\n  u.staged,\n  MAX(CASE ucf.name WHEN 'user_field_1' THEN value END) AS address,\n  MAX(CASE ucf.name WHEN 'user_field_2' THEN value END) AS phone,\n  MAX(CASE ucf.name WHEN 'user_field_3' THEN value END) AS neighborhood,\n  MAX(CASE ucf.name WHEN 'user_field_6' THEN value END) AS city,\n  MAX(CASE ucf.name WHEN 'user_field_7' THEN value END) AS condo,\n  MAX(CASE ucf.name WHEN 'user_field_9' THEN value END) AS consumer_request,\n  MAX(CASE ucf.name WHEN 'user_field_11' THEN value END) as volunteer_request,\n  MAX(CASE ucf.name WHEN 'user_field_12' THEN value END) as alt_phone,\n  MAX(CASE ucf.name WHEN 'user_field_13' THEN value END) as referral,\n  u.created_at\nFROM user_custom_fields AS ucf\nRIGHT JOIN users AS u on ucf.user_id = u.id\nGROUP BY u.id"
+      "SELECT \n  p.post_number,\n  p.deleted_at,\n  p.raw\nFROM posts AS p\nWHERE (p.topic_id = 1860 AND p.deleted_at IS NULL)\nORDER BY (p.post_number) DESC\nLIMIT 1"
+    ],
+    [
+      44,
+      "Get last completed daily orders reply",
+      "Fetch the last reply in the post completed daily orders topic",
+      false,
+      "SELECT \n  p.post_number,\n  p.deleted_at,\n  p.raw\nFROM posts AS p\nWHERE (p.topic_id = 859 AND p.deleted_at IS NULL)\nORDER BY (p.post_number) DESC\nLIMIT 1"
     ]
   ]
 }
