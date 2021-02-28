@@ -124,6 +124,9 @@ public class Main {
             case Options.COMMAND_GET_DAILY_DELIVERIES:
                 getDailyDeliveryPosts(apiClient);
                 break;
+            case Options.COMMAND_RESTAURANT_TEMPLATE:
+                restaurantTemplate(apiClient);
+                break;
             case Options.COMMAND_POST_ERRORS:
                 postUserErrors(apiClient, options.getFileName());
                 break;
@@ -1016,6 +1019,10 @@ public class Main {
         // Update order history post
         updateFile(apiClient, upload.getFileName(), upload.getShortURL(),
                 DRIVER_HISTORY_TITLE, DRIVER_HISTORY_POST_ID);
+    }
+
+    private static void restaurantTemplate(ApiClient apiClient) {
+
     }
 
 //    private static void testQuery(ApiClient apiClient) {

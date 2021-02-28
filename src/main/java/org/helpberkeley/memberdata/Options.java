@@ -46,6 +46,7 @@ public class Options {
     static final String COMMAND_COMPLETED_DAILY_ORDERS = "completed-daily-orders";
     static final String COMMAND_DRIVERS = "drivers";
     static final String COMMAND_DRIVER_HISTORY = "driver-history";
+    static final String COMMAND_RESTAURANT_TEMPLATE = "restaurant-template";
 
     static final String USAGE_ERROR = "Usage error for command ";
     static final String UNKNOWN_COMMAND = USAGE_ERROR + ": unknown command: ";
@@ -75,7 +76,8 @@ public class Options {
                     + "    | " + COMMAND_POST_ALL_MEMBERS + " all-members-file\n"
                     + "    | " + COMMAND_POST_DISPATCHERS + " dispatchers-file upload://short-url-file-name\n"
                     + "    | " + COMMAND_UPDATE_ERRORS + " errors-file-name\n"
-                    + "    | " + COMMAND_UPDATE_DISPATCHERS + " dispatchers-file-name\n";
+                    + "    | " + COMMAND_UPDATE_DISPATCHERS + " dispatchers-file-name\n"
+                    + "    | " + COMMAND_RESTAURANT_TEMPLATE + "\n";
 
     private final String[] args;
     private String command;
@@ -105,6 +107,7 @@ public class Options {
             case COMMAND_GET_DAILY_DELIVERIES:
             case COMMAND_DRIVER_ROUTES:
             case COMMAND_DRIVER_HISTORY:
+            case COMMAND_RESTAURANT_TEMPLATE:
                 setCommand(arg);
                 break;
             case COMMAND_POST_ERRORS:

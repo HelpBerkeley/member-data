@@ -344,6 +344,12 @@ public class MainTest extends TestBase {
         Main.main(args);
     }
 
+    @Test
+    public void restaurantTemplateTest() throws IOException, CsvException {
+        String[] args = { Options.COMMAND_RESTAURANT_TEMPLATE };
+        Main.main(args);
+    }
+
     private String findFile(final String prefix, final String suffix) {
 
         File dir = new File(".");
