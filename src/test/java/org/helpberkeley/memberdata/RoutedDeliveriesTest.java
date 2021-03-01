@@ -415,7 +415,7 @@ public class RoutedDeliveriesTest extends TestBase {
     public void parseRoutedWithSplitTurkeyTest() {
         String csvData = readResourceFile("routed-deliveries-turkey.csv");
         HttpClientSimulator.setQueryResponseFile(
-                Constants.QUERY_GET_RESTAURANT_TEMPLATES, "restaurant-template-turkey.json");
+                Constants.QUERY_GET_CURRENT_VALIDATED_RESTAURANT_TEMPLATE, "restaurant-template-turkey.json");
         DriverPostFormat driverPostFormat = new DriverPostFormat(createApiSimulator(),
                 users, Constants.CONTROL_BLOCK_CURRENT_VERSION, csvData);
         List<Driver> drivers = driverPostFormat.getDrivers();

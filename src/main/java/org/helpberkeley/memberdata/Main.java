@@ -462,7 +462,7 @@ public class Main {
         List<User> users = HBParser.users(csvData);
 
         // Fetch/parse the last restaurant template reply
-        String  json = apiClient.runQuery(Constants.QUERY_GET_LAST_RESTAURANT_TEMPLATE_REPLY);
+        String  json = apiClient.runQuery(Constants.QUERY_GET_CURRENT_VALIDATED_RESTAURANT_TEMPLATE);
         ApiQueryResult apiQueryResult = HBParser.parseQueryResult(json);
         assert apiQueryResult.rows.length == 1;
 
@@ -1023,6 +1023,58 @@ public class Main {
 
     private static void restaurantTemplate(ApiClient apiClient) {
 
+        Query query = new Query(
+                Constants.QUERY_GET_LAST_RESTAURANT_TEMPLATE_REPLY,
+                Constants.TOPIC_POST_RESTAURANT_TEMPLATE);
+        WorkRequestHandler requestHandler = new WorkRequestHandler(apiClient, query);
+
+        WorkRequestHandler.Reply reply;
+
+        try {
+            reply = requestHandler.getLastReply();
+        } catch (MemberDataException ex) {
+            LOGGER.warn("getLastReply failed: " + ex + "\n" + ex.getMessage());
+            requestHandler.postStatus(WorkRequestHandler.RequestStatus.Failed, ex.getMessage());
+            return;
+        }
+
+        if (reply instanceof WorkRequestHandler.Status) {
+            return;
+        }
+
+        WorkRequestHandler.WorkRequest request = (WorkRequestHandler.WorkRequest) reply;
+
+        try {
+            // Download file
+            String restaurantTemplate = apiClient.downloadFile(request.uploadFile.getFileName());
+            new RestaurantTemplateParser(restaurantTemplate).restaurants();
+
+        } catch (MemberDataException ex) {
+            String reason = ex.getCause() != null ? ex.getCause().getMessage() : ex.getMessage();
+            request.postStatus(WorkRequestHandler.RequestStatus.Failed, reason);
+            return;
+        }
+
+        // Copy post to Restaurant Template Storage
+
+        Post post = new Post();
+        post.title = request.date;
+        post.topic_id = Constants.TOPIC_RESTAURANT_TEMPLATE_STORAGE.getId();
+        post.raw = request.raw;
+        post.createdAt = ZonedDateTime.now(ZoneId.systemDefault())
+                .format(DateTimeFormatter.ofPattern("uuuu.MM.dd.HH.mm.ss"));
+
+        HttpResponse<String> response = apiClient.post(post.toJson());
+
+        if (response.statusCode() != HTTP_OK) {
+            // Send status message
+            requestHandler.postStatus(WorkRequestHandler.RequestStatus.Failed,
+                    "Archive of " + request.uploadFile.getOriginalFileName() + " failed: " + response.body());
+        } else {
+            // Send status message
+            requestHandler.postStatus(WorkRequestHandler.RequestStatus.Succeeded,
+                    request.uploadFile.getOriginalFileName() + " validated and archived for " + request.date);
+        }
     }
 
 //    private static void testQuery(ApiClient apiClient) {

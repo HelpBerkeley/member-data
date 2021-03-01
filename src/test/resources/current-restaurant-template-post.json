@@ -1,0 +1,20 @@
+{
+  "success": true,
+  "errors": [],
+  "duration": 0.5,
+  "result_count": 1,
+  "params": {},
+  "columns": [
+    "post_number",
+    "deleted_at",
+    "raw"
+  ],
+  "default_limit": 1000,
+  "rows": [
+    [
+      2,
+      null,
+      "2021/02/26 \nchanged V&A opening days to exclude Sat and Sun\n\n[HelpBerkeleyDeliveries - TemplateV2-0-0.csv|attachment](upload://restaurant-template-v2-0-0.csv) (6.5 KB)"
+    ]
+  ]
+}

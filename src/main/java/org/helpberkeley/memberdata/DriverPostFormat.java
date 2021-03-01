@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020. helpberkeley.org
+ * Copyright (c) 2020-2021. helpberkeley.org
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -273,14 +273,12 @@ public class DriverPostFormat {
     }
 
     private void loadLastRestaurantTemplate() {
-        String  json = apiClient.runQuery(Constants.QUERY_GET_RESTAURANT_TEMPLATES);
+        String  json = apiClient.runQuery(Constants.QUERY_GET_CURRENT_VALIDATED_RESTAURANT_TEMPLATE);
         ApiQueryResult apiQueryResult = HBParser.parseQueryResult(json);
+        assert apiQueryResult.rows.length == 1;
 
-        int lastIndex = apiQueryResult.rows.length;
-        Object rowObj = apiQueryResult.rows[lastIndex - 1];
-        Object[] columns = (Object[]) rowObj;
+        Object[] columns = (Object[])apiQueryResult.rows[0];
         assert columns.length == 3 : columns.length;
-
         String rawPost = (String)columns[2];
         RestaurantTemplatePost restaurantTemplatePost = HBParser.restaurantTemplatePost(rawPost);
         String restaurantTemplate = apiClient.downloadFile(restaurantTemplatePost.uploadFile.getFileName());

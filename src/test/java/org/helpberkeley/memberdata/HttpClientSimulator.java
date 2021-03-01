@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2020 helpberkeley.org
+// Copyright (c) 2020-2021 helpberkeley.org
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -197,11 +197,11 @@ public class HttpClientSimulator extends HttpClient {
             case Constants.QUERY_GET_BACKUP_DRIVER_FORMAT_V12:
                 dataFile = "backup-driver-format-v12.json";
                 break;
-            case Constants.QUERY_GET_RESTAURANT_TEMPLATES:
-                dataFile = "restaurant-template-posts.json";
-                break;
             case Constants.QUERY_GET_LAST_RESTAURANT_TEMPLATE_REPLY:
                 dataFile = "restaurant-template-last-reply.json";
+                break;
+            case Constants.QUERY_GET_CURRENT_VALIDATED_RESTAURANT_TEMPLATE:
+                dataFile = "current-restaurant-template-post.json";
                 break;
             case Constants.QUERY_GET_LAST_COMPLETED_DAILY_ORDERS_REPLY:
                 dataFile = "last-completed-daily-orders-reply.json";
