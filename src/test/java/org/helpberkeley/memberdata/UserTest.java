@@ -128,6 +128,7 @@ public class UserTest extends TestBase {
         testCities.add(new City("berkly", Constants.BERKELEY));
         testCities.add(new City("berekly", Constants.BERKELEY));
         testCities.add(new City("berkley", Constants.BERKELEY));
+        testCities.add(new City("berkey", Constants.BERKELEY));
 
         testCities.add(new City(Constants.ALBANY, Constants.ALBANY));
         testCities.add(new City("albany", Constants.ALBANY));
