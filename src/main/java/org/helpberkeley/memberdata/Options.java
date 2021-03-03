@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2020 helpberkeley.org
+// Copyright (c) 2020-2021 helpberkeley.org
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -47,6 +47,7 @@ public class Options {
     static final String COMMAND_DRIVERS = "drivers";
     static final String COMMAND_DRIVER_HISTORY = "driver-history";
     static final String COMMAND_RESTAURANT_TEMPLATE = "restaurant-template";
+    static final String COMMAND_CUSTOMER_CARE_POST = "customer-care";
 
     static final String USAGE_ERROR = "Usage error for command ";
     static final String UNKNOWN_COMMAND = USAGE_ERROR + ": unknown command: ";
@@ -77,6 +78,7 @@ public class Options {
                     + "    | " + COMMAND_POST_DISPATCHERS + " dispatchers-file upload://short-url-file-name\n"
                     + "    | " + COMMAND_UPDATE_ERRORS + " errors-file-name\n"
                     + "    | " + COMMAND_UPDATE_DISPATCHERS + " dispatchers-file-name\n"
+                    + "    | " + COMMAND_CUSTOMER_CARE_POST + " all-members-file\n"
                     + "    | " + COMMAND_RESTAURANT_TEMPLATE + "\n";
 
     private final String[] args;
@@ -124,6 +126,7 @@ public class Options {
             case COMMAND_ORDER_HISTORY:
             case COMMAND_COMPLETED_DAILY_ORDERS:
             case COMMAND_INREACH:
+            case COMMAND_CUSTOMER_CARE_POST:
             case COMMAND_DRIVERS:
                 setCommand(arg);
                 if (index == args.length) {

@@ -330,7 +330,6 @@ public class MainTest extends TestBase {
         Main.main(args);
     }
     
-
     @Test
     public void driversTest() throws IOException, CsvException {
         String usersFile = findFile(Constants.MEMBERDATA_RAW_FILE, "csv");
@@ -347,6 +346,13 @@ public class MainTest extends TestBase {
     @Test
     public void restaurantTemplateTest() throws IOException, CsvException {
         String[] args = { Options.COMMAND_RESTAURANT_TEMPLATE };
+        Main.main(args);
+    }
+
+    @Test
+    public void customerCareMemberPostTest() throws IOException, CsvException {
+        String usersFile = findFile(Constants.MEMBERDATA_RAW_FILE, "csv");
+        String[] args = { Options.COMMAND_CUSTOMER_CARE_POST, usersFile };
         Main.main(args);
     }
 

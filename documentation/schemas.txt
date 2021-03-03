@@ -1,7 +1,7 @@
 Help Berkeley Schemas
 =====================
 
-Version: 2.0.9
+Version: 2.0.10
 
 Full Member Record
 ------------------
@@ -494,3 +494,14 @@ If a driver is a group owner for other, she should be N for other
 If a driver is a group owner for event, she should be N for event
 If a driver is a group owner for limited, she should be N for limited
 If a driver is a group owner for at-risk, she should be N for at-risk
+
+Customer Care Member Data
+-------------------------
+
+Posting type:  Update, table of all members
+Sort type:     User name, alphabetical
+Where:         https://go.helpberkeley.org/t/customercare-confidential-member-information/6088
+Post ID:       52234
+When:          Daily at midnight
+
+User Name|Full Name|C|Phone|Alt. Phone|

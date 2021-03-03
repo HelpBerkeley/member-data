@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2020 helpberkeley.org
+// Copyright (c) 2020-2021 helpberkeley.org
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -26,6 +26,9 @@ import com.opencsv.exceptions.CsvException;
 
 import java.io.IOException;
 import java.io.StringReader;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 
@@ -468,5 +471,35 @@ public class UserExporter extends Exporter {
                 + separator
                 + User.WORKFLOW_COLUMN
                 + '\n';
+    }
+
+    String customerCareMemberDataPost() {
+
+        StringBuilder output = new StringBuilder();
+
+        String timeStamp = ZonedDateTime.now(ZoneId.systemDefault())
+                .format(DateTimeFormatter.ofPattern("uuuu/MM/dd HH:mm:ss"));
+
+        output.append("Updated: ").append(timeStamp).append("\n");
+
+        output.append("|UserName|Full Name|C|Phone|Alt. Phone|\n");
+        output.append("|---|---|---|---|---|\n");
+
+        for (User user : tables.sortByUserName()) {
+
+            output.append('@');
+            output.append(user.getUserName());
+            output.append('|');
+            output.append(user.getName());
+            output.append('|');
+            output.append(user.isConsumer() ? "Y" : "");
+            output.append('|');
+            output.append(user.getPhoneNumber());
+            output.append('|');
+            output.append(user.getAltPhoneNumber());
+            output.append("|\n");
+        }
+
+        return output.toString();
     }
 }

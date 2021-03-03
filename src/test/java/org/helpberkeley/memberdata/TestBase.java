@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2020 helpberkeley.org
+// Copyright (c) 2020-2021 helpberkeley.org
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -113,6 +113,7 @@ public class TestBase {
             Options.COMMAND_INREACH,
             Options.COMMAND_COMPLETED_DAILY_ORDERS,
             Options.COMMAND_DRIVERS,
+            Options.COMMAND_CUSTOMER_CARE_POST,
     };
 
     static final String[] COMMANDS_WITH_NO_PARAMETERS = {
