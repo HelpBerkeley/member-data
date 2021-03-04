@@ -259,7 +259,6 @@ public class DriverExporter extends Exporter {
                 name += '.';
             }
 
-            output.append('@');
             output.append(detailedDriver.getUserName());
             output.append('|');
             output.append(name);
@@ -317,7 +316,6 @@ public class DriverExporter extends Exporter {
                 recentRuns10 = ":red_circle::red_circle:";
             }
 
-            output.append('@');
             output.append(detailedDriver.getUserName());
             output.append('|');
             output.append(detailedDriver.getPhoneNumber());

@@ -76,6 +76,7 @@ public class Main {
     static final long DRIVERS_TABLE_LONG_POST_ID = 44959;
     static final long DRIVER_HISTORY_POST_ID = 48019;
     static final long CUSTOMER_CARE_MEMBER_DATA_POST_ID = 52234;
+    static final long FRREG_POST_ID = 52427;
 
     // FIX THIS, DS: uncomment when we can past parameters to queries
 //    static final long ORDER_HISTORY_TOPIC = 1440;
@@ -155,6 +156,9 @@ public class Main {
                 break;
             case Options.COMMAND_CUSTOMER_CARE_POST:
                 customerCarePost(apiClient, options.getFileName());
+                break;
+            case Options.COMMAND_FRREG:
+                frreg(apiClient, options.getFileName());
                 break;
             case Options.COMMAND_EMAIL:
                 generateEmail(apiClient, options.getFileName());
@@ -255,7 +259,6 @@ public class Main {
         Tables tables = new Tables(users);
         for (User user : tables.sortByCreateTime()) {
             postRaw.append('|');
-            postRaw.append('@');
             postRaw.append(user.getUserName());
             postRaw.append('|');
             postRaw.append(user.getEmailVerified());
@@ -302,7 +305,6 @@ public class Main {
         Tables tables = new Tables(users);
         for (User user : new Tables(tables.volunteerRequests()).sortByCreateTime()) {
             postRaw.append('|');
-            postRaw.append('@');
             postRaw.append(user.getUserName());
             postRaw.append('|');
             postRaw.append(user.getEmailVerified());
@@ -1093,6 +1095,22 @@ public class Main {
         String post = userExporter.customerCareMemberDataPost();
         // update the posting
         HttpResponse<?> response = apiClient.updatePost(CUSTOMER_CARE_MEMBER_DATA_POST_ID, post);
+        // FIX THIS, DS: what to do with this error?
+        assert response.statusCode() == HTTP_OK : "failed " + response.statusCode() + ": " + response.body();
+    }
+
+    private static void frreg(
+            ApiClient apiClient, String usersFile) throws IOException, CsvException {
+        // Load users
+        String csvData = Files.readString(Paths.get(usersFile));
+        List<User> users = HBParser.users(csvData);
+
+        UserExporter userExporter = new UserExporter(users);
+
+        // Generate customer care member data table
+        String post = userExporter.freegPost();
+        // update the posting
+        HttpResponse<?> response = apiClient.updatePost(FRREG_POST_ID, post);
         // FIX THIS, DS: what to do with this error?
         assert response.statusCode() == HTTP_OK : "failed " + response.statusCode() + ": " + response.body();
     }

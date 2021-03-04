@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2020 helpberkeley.org
+// Copyright (c) 2020-2021 helpberkeley.org
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -200,7 +200,7 @@ public class HBParser {
         assert ! lines.isEmpty();
         String[] headers = lines.get(0);
 
-        assert headers.length == 46 : headers.length;
+        assert headers.length == 47 : headers.length;
 
         int index = 0;
         assert headers[index].equals(User.ID_COLUMN) : headers[index];
@@ -249,6 +249,7 @@ public class HBParser {
         assert headers[++index].equals(User.OTHER_DRIVERS_COLUMN) : headers[index];
         assert headers[++index].equals(User.ADMIN_COLUMN) : headers[index];
         assert headers[++index].equals(User.GROUPS_OWNED_COLUMN) : headers[index];
+        assert headers[++index].equals(User.FRREG_COLUMN) : headers[index];
 
         List<User> users = new ArrayList<>();
         List<String> groups = new ArrayList<>();
@@ -402,6 +403,10 @@ public class HBParser {
 
             String groupsOwned = columns[index++];
             List<String> groupsOwnedList = Arrays.asList(groupsOwned.split(Constants.CSV_SEPARATOR));
+
+            if (Boolean.parseBoolean(columns[index++])) {
+                groups.add(Constants.GROUP_FRREG);
+            }
 
             try {
                 users.add(User.createUser(name, userName, id, address, city, phone, altPhone,

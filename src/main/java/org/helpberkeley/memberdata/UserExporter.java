@@ -487,7 +487,6 @@ public class UserExporter extends Exporter {
 
         for (User user : tables.sortByUserName()) {
 
-            output.append('@');
             output.append(user.getUserName());
             output.append('|');
             output.append(user.getName());
@@ -498,6 +497,35 @@ public class UserExporter extends Exporter {
             output.append('|');
             output.append(user.getAltPhoneNumber());
             output.append("|\n");
+        }
+
+        return output.toString();
+    }
+
+    String freegPost() {
+
+        StringBuilder output = new StringBuilder();
+
+        String timeStamp = ZonedDateTime.now(ZoneId.systemDefault())
+                .format(DateTimeFormatter.ofPattern("uuuu/MM/dd HH:mm:ss"));
+
+        output.append("Updated: ").append(timeStamp).append("\n");
+
+        output.append("|UserName|Full Name|Phone|Alt. Phone|\n");
+        output.append("|---|---|---|---|\n");
+
+        for (User user : tables.sortByUserName()) {
+
+            if (user.isFrreg()) {
+                output.append(user.getUserName());
+                output.append('|');
+                output.append(user.getName());
+                output.append('|');
+                output.append(user.getPhoneNumber());
+                output.append('|');
+                output.append(user.getAltPhoneNumber());
+                output.append("|\n");
+            }
         }
 
         return output.toString();

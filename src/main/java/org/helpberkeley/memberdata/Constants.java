@@ -164,6 +164,7 @@ public class Constants {
     public static final String GROUP_TRAINED_EVENT_DRIVERS = "trained_edrivers";
     public static final String GROUP_GONE = "gone";
     public static final String GROUP_OTHER_DRIVERS = "other_drivers";
+    public static final String GROUP_FRREG = "frreg";
 
     public static final String BERKELEY = "Berkeley";
     public static final String ALBANY = "Albany";

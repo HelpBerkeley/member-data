@@ -78,6 +78,7 @@ public class User {
     static final String ADMIN_COLUMN = "Admin";
     static final String EMAIL_VERIFIED_COLUMN = "Verified";
     static final String GROUPS_OWNED_COLUMN = "groups-owned";
+    static final String FRREG_COLUMN = "frreg";
 
     static final String SHORT_ID_COLUMN = "ID";
     static final String SHORT_CREATED_AT_COLUMN = "Created";
@@ -370,6 +371,10 @@ public class User {
 
     Boolean isEventDriver() {
         return groupMembership.contains(Constants.GROUP_EVENT_DRIVERS);
+    }
+
+    Boolean isFrreg() {
+        return groupMembership.contains(Constants.GROUP_FRREG);
     }
 
     Boolean isTrainedEventDriver() {
@@ -1157,7 +1162,8 @@ public class User {
                 + GONE_COLUMN + Constants.CSV_SEPARATOR
                 + OTHER_DRIVERS_COLUMN + Constants.CSV_SEPARATOR
                 + ADMIN_COLUMN + Constants.CSV_SEPARATOR
-                + GROUPS_OWNED_COLUMN
+                + GROUPS_OWNED_COLUMN + Constants.CSV_SEPARATOR
+                + FRREG_COLUMN
                 + "\n";
     }
 
@@ -1208,7 +1214,8 @@ public class User {
                 isGone() + Constants.CSV_SEPARATOR +
                 isOtherDrivers() + Constants.CSV_SEPARATOR +
                 isAdmin() + Constants.CSV_SEPARATOR +
-                groupsOwned() +
+                groupsOwned() + Constants.CSV_SEPARATOR +
+                isFrreg() +
                 '\n';
     }
 

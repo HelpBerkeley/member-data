@@ -48,6 +48,7 @@ public class Options {
     static final String COMMAND_DRIVER_HISTORY = "driver-history";
     static final String COMMAND_RESTAURANT_TEMPLATE = "restaurant-template";
     static final String COMMAND_CUSTOMER_CARE_POST = "customer-care";
+    static final String COMMAND_FRREG = "frreg";
 
     static final String USAGE_ERROR = "Usage error for command ";
     static final String UNKNOWN_COMMAND = USAGE_ERROR + ": unknown command: ";
@@ -79,6 +80,7 @@ public class Options {
                     + "    | " + COMMAND_UPDATE_ERRORS + " errors-file-name\n"
                     + "    | " + COMMAND_UPDATE_DISPATCHERS + " dispatchers-file-name\n"
                     + "    | " + COMMAND_CUSTOMER_CARE_POST + " all-members-file\n"
+                    + "    | " + COMMAND_FRREG + " all-members-file\n"
                     + "    | " + COMMAND_RESTAURANT_TEMPLATE + "\n";
 
     private final String[] args;
@@ -127,6 +129,7 @@ public class Options {
             case COMMAND_COMPLETED_DAILY_ORDERS:
             case COMMAND_INREACH:
             case COMMAND_CUSTOMER_CARE_POST:
+            case COMMAND_FRREG:
             case COMMAND_DRIVERS:
                 setCommand(arg);
                 if (index == args.length) {
