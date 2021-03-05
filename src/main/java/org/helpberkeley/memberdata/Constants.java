@@ -53,7 +53,6 @@ public class Constants {
     public static final int QUERY_GET_USERS_V17_ID = 23;
     public static final int CURRENT_USERS_QUERY = QUERY_GET_USERS_V17_ID;
 
-    public static final int QUERY_GET_DAILY_DELIVERIES = 13;
     public static final int QUERY_EMAIL_CONFIRMATIONS_V1 = 15;
     public static final int QUERY_GET_EMAILS = 11;
     public static final int QUERY_GET_DELIVERY_DETAILS = 17;

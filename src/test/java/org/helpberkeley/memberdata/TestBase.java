@@ -119,7 +119,6 @@ public class TestBase {
 
     static final String[] COMMANDS_WITH_NO_PARAMETERS = {
             Options.COMMAND_FETCH,
-            Options.COMMAND_GET_DAILY_DELIVERIES,
             Options.COMMAND_DRIVER_ROUTES,
             Options.COMMAND_DRIVER_HISTORY,
             Options.COMMAND_RESTAURANT_TEMPLATE,

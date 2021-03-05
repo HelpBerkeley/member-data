@@ -130,12 +130,6 @@ public class MainTest extends TestBase {
     }
 
     @Test
-    public void getDailyDeliveriesTest() throws IOException, CsvException {
-        String[] args = { Options.COMMAND_GET_DAILY_DELIVERIES };
-        Main.main(args);
-    }
-
-    @Test
     public void emailTest() throws IOException, CsvException {
         String file = findFile(Constants.MEMBERDATA_RAW_FILE, "csv");
         String[] args = { Options.COMMAND_EMAIL, file };

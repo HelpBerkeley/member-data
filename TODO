@@ -37,3 +37,7 @@ Add a generic request handler that can be used to run various
 cron-ish jobs on demand.
 
 Add checking for restaurant template.
+
+
+Audit where posts are going to and that category access
+is as expected.

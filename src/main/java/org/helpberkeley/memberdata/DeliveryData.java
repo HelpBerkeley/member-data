@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020. helpberkeley.org
+ * Copyright (c) 2020-2021 helpberkeley.org
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,8 +22,6 @@
  */
 package org.helpberkeley.memberdata;
 
-import java.util.Comparator;
-import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -48,26 +46,6 @@ public class DeliveryData {
         if (! matcher.find()) {
             throw new MemberDataException("\"" + date + "\" is not a valid date. Must be of the form YYYY/MM/DD");
         }
-    }
-
-    // Get daily delivery posts
-    static List<DeliveryData> deliveryPosts(ApiClient apiClient) {
-        String json = apiClient.runQuery(Constants.QUERY_GET_DAILY_DELIVERIES);
-        ApiQueryResult apiQueryResult = HBParser.parseQueryResult(json);
-        List<DeliveryData> deliveryPosts = HBParser.dailyDeliveryPosts(apiQueryResult);
-
-        // Sort by date ascending
-        deliveryPosts.sort(Comparator.comparing(DeliveryData::getDate));
-        return deliveryPosts;
-    }
-
-    // Get daily delivery posts
-    static List<DeliveryData> deliveryPosts(final String csvData) {
-        List<DeliveryData> deliveryPosts = HBParser.dailyDeliveryPosts(csvData);
-
-        // Sort by date ascending
-        deliveryPosts.sort(Comparator.comparing(DeliveryData::getDate));
-        return deliveryPosts;
     }
 
     static String deliveryPostsHeader() {

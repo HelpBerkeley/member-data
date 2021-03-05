@@ -32,26 +32,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
 
 public class DailyDeliveriesTest extends TestBase {
-    @Test
-    public void parseDailyDeliveriesQueryTest() {
-        ApiClient apiClient = createApiSimulator();
-        String jsonData = apiClient.runQuery(Constants.QUERY_GET_DAILY_DELIVERIES);
-        ApiQueryResult queryResult = HBParser.parseQueryResult(jsonData);
-        List<DeliveryData> deliveries = HBParser.dailyDeliveryPosts(queryResult);
-        // FIX THIS, DS: deliveries validation
-    }
-
-    @Test
-    public void dailyDeliveriesBadDateTest() {
-        ApiClient apiClient = createApiSimulator();
-        HttpClientSimulator.setQueryResponseFile(
-                Constants.QUERY_GET_DAILY_DELIVERIES, "daily-deliveries-bad-date.json");
-        String jsonData = apiClient.runQuery(Constants.QUERY_GET_DAILY_DELIVERIES);
-        ApiQueryResult queryResult = HBParser.parseQueryResult(jsonData);
-        Throwable thrown = catchThrowable(() -> HBParser.dailyDeliveryPosts(queryResult));
-        assertThat(thrown).isInstanceOf(MemberDataException.class);
-        assertThat(thrown).hasMessageContaining("is not a valid date");
-    }
 
     @Test
     public void expectedOrderColumnsTest() throws IOException, CsvException {

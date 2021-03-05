@@ -123,9 +123,6 @@ public class Main {
             case Options.COMMAND_DRIVER_HISTORY:
                 driverHistory(apiClient);
                 break;
-            case Options.COMMAND_GET_DAILY_DELIVERIES:
-                getDailyDeliveryPosts(apiClient);
-                break;
             case Options.COMMAND_RESTAURANT_TEMPLATE:
                 restaurantTemplate(apiClient);
                 break;
@@ -426,11 +423,6 @@ public class Main {
         HttpResponse<?> response = apiClient.updatePost(postId, postRaw);
         LOGGER.info("updateFile {} {}", fileName, response.statusCode() == HTTP_OK ?
                 "" : "failed " + response.statusCode() + ": " + response.body());
-    }
-
-    private static void getDailyDeliveryPosts(ApiClient apiClient) throws IOException {
-        List<DeliveryData> deliveryPosts = DeliveryData.deliveryPosts(apiClient);
-        new DeliveryDataExporter(deliveryPosts).deliveryPostsToFile();
     }
 
     private static void generateInreach(ApiClient apiClient, String usersFile) throws IOException, CsvException {
