@@ -91,4 +91,26 @@ public class WorkRequestHandlerTest extends TestBase {
         WorkRequestHandler.WorkRequest workRequest = (WorkRequestHandler.WorkRequest)reply;
         assertThat(workRequest.version).isEqualTo("1");
     }
+
+    @Test
+    public void topicDirectiveTest() {
+        String driverMessagesRequest =
+                "{ \"success\": true, \"columns\": [ \"post_number\", \"deleted_at\", \"raw\" ], "
+                        + "\"rows\": [ "
+                        + "[ 1, null, \""
+                        + "2021/01/01"
+                        + "\nTopic: 543\n"
+                        + "[xyzzy.csv|attachment](upload://routed-deliveries.csv) (5.8 KB)\" ] "
+                        + "] }";
+        HttpClientSimulator.setQueryResponseData(
+                Constants.QUERY_GET_LAST_REQUEST_DRIVER_MESSAGES_REPLY, driverMessagesRequest);
+
+        Query query = new Query(queryId, Constants.TOPIC_REQUEST_DRIVER_MESSAGES);
+        WorkRequestHandler requestHandler = new WorkRequestHandler(apiClient, query);
+
+        Throwable thrown = catchThrowable(() -> requestHandler.getLastReply());
+        assertThat(thrown).isInstanceOf(MemberDataException.class);
+        assertThat(thrown).hasMessageContaining(WorkRequestHandler.TOPIC_DIRECTIVE_NOT_SUPPORTED);
+
+    }
 }

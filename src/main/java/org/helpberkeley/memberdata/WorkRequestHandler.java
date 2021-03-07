@@ -38,6 +38,8 @@ public class WorkRequestHandler {
 
     public static final String ERROR_INVALID_DATE =
             "Invalid date in post. The first line must contain only the date, formatted as: **YYYY/MM/DD**";
+    public static final String TOPIC_DIRECTIVE_NOT_SUPPORTED =
+            "Topic: no longer supported as directive. Use \"Test topic\" instead.";
 
     private final ApiClient apiClient;
     private final Query query;
@@ -253,8 +255,12 @@ public class WorkRequestHandler {
                 }
 
                 if (line.startsWith("Topic:")) {
-                    // FIX THIS, DS: handle number format exception
-                    topic = Long.parseLong(line.replaceAll("Topic:", "").trim());
+                    throw new MemberDataException(
+                            "Post #" + lastReply.postNumber + " is not a valid request\n"
+                                    + TOPIC_DIRECTIVE_NOT_SUPPORTED);
+                }
+                else if (line.equalsIgnoreCase("test topic")) {
+                    topic = Main.STONE_TEST_TOPIC;
                 } else if (line.startsWith("Version:")) {
                     version = line.replaceAll("Version:", "").trim();
                 } else if (line.startsWith("Disable date audit")) {
