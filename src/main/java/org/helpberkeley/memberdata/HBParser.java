@@ -422,7 +422,7 @@ public class HBParser {
 
     static List<DeliveryData> dailyDeliveryPosts(ApiQueryResult apiQueryResult) {
         assert apiQueryResult.headers.length == 3 : apiQueryResult.headers.length;
-        assert apiQueryResult.headers[2].equals("raw");
+        assert apiQueryResult.headers[2].equals(Constants.DISCOURSE_COLUMN_RAW);
 
         List<DeliveryData> dailyDeliveries = new ArrayList<>();
 
@@ -471,8 +471,8 @@ public class HBParser {
 
     static Map<String, DetailsPost> deliveryDetails(ApiQueryResult apiQueryResult) {
         assert apiQueryResult.headers.length == 2 : apiQueryResult.headers.length;
-        assert apiQueryResult.headers[0].equals("post_number");
-        assert apiQueryResult.headers[1].equals("raw");
+        assert apiQueryResult.headers[0].equals(Constants.DISCOURSE_COLUMN_POST_NUMBER);
+        assert apiQueryResult.headers[1].equals(Constants.DISCOURSE_COLUMN_RAW);
 
         Map<String, DetailsPost> deliveryDetails = new HashMap<>();
 
@@ -497,9 +497,9 @@ public class HBParser {
 
     static Map<String, DetailsPost> driverDetails(ApiQueryResult apiQueryResult) {
         assert apiQueryResult.headers.length == 3 : apiQueryResult.headers.length;
-        assert apiQueryResult.headers[0].equals("post_number");
+        assert apiQueryResult.headers[0].equals(Constants.DISCOURSE_COLUMN_POST_NUMBER);
         assert apiQueryResult.headers[1].equals("deleted_at");
-        assert apiQueryResult.headers[2].equals("raw");
+        assert apiQueryResult.headers[2].equals(Constants.DISCOURSE_COLUMN_RAW);
 
         Map<String, DetailsPost> driverDetails = new HashMap<>();
 
@@ -613,8 +613,8 @@ public class HBParser {
         Map<String, Object> map = (Map<String, Object>)
                 JsonReader.jsonToJava(json, options);
 
-        assert map.containsKey("raw") : json;
-        return (String)map.get("raw");
+        assert map.containsKey(Constants.DISCOURSE_COLUMN_RAW) : json;
+        return (String)map.get(Constants.DISCOURSE_COLUMN_RAW);
     }
 
     static PostResponse postResponse(final String json) {
@@ -627,8 +627,8 @@ public class HBParser {
 
         assert map.containsKey("topic_id") : json;
         long topic_id = (long)map.get("topic_id");
-        assert map.containsKey("post_number") : json;
-        long post_number = (long)map.get("post_number");
+        assert map.containsKey(Constants.DISCOURSE_COLUMN_POST_NUMBER);
+        long post_number = (long)map.get(Constants.DISCOURSE_COLUMN_POST_NUMBER);
         assert map.containsKey("topic_slug") : json;
         String topicSlug = (String)map.get("topic_slug");
 

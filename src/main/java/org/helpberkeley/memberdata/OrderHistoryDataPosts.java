@@ -80,7 +80,7 @@ public class OrderHistoryDataPosts {
      */
     private long parseLastProcessedPost(ApiQueryResult apiQueryResult) {
         assert apiQueryResult.headers.length == 3 : apiQueryResult.headers.length;
-        assert apiQueryResult.headers[2].equals("raw");
+        assert apiQueryResult.headers[2].equals(Constants.DISCOURSE_COLUMN_RAW);
         assert apiQueryResult.rows.length != 0 : "No rows returned";
         Object rowObj = apiQueryResult.rows[0];
         Object[] columns = (Object[]) rowObj;
@@ -105,8 +105,8 @@ public class OrderHistoryDataPosts {
      */
     private long loadPosts(ApiQueryResult apiQueryResult) {
         assert apiQueryResult.headers.length == 3 : apiQueryResult.headers.length;
-        assert apiQueryResult.headers[0].equals("post_number");
-        assert apiQueryResult.headers[2].equals("raw");
+        assert apiQueryResult.headers[0].equals(Constants.DISCOURSE_COLUMN_POST_NUMBER);
+        assert apiQueryResult.headers[2].equals(Constants.DISCOURSE_COLUMN_RAW);
 
         long postNumber = 0;
 

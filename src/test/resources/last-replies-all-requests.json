@@ -1,0 +1,52 @@
+{
+  "success": true,
+  "errors": [],
+  "duration": 7.9,
+  "result_count": 5,
+  "params": {
+    "request_driver_routes": "2844",
+    "request_driver_messages": "2504",
+    "request_one_kitchen_driver_messages": "4878",
+    "post_restaurant_template": "1860",
+    "post_completed_daily_orders": "859"
+  },
+  "columns": [
+    "topic_id",
+    "post_number",
+    "deleted_at",
+    "raw"
+  ],
+  "default_limit": 1000,
+  "rows": [
+    [
+      2504,
+      1810,
+      null,
+      "2020/12/25\n[routed deliveries|attachement](upload://routed-deliveries.csv)\n"
+    ],
+    [
+      2844,
+      911,
+      null,
+      "2020/12/25\n[unrouted deliveries|attachement](upload://unrouted-deliveries.csv)\n"
+    ],
+    [
+      4878,
+      151,
+      null,
+      "2020/12/16\n\n[HelpBerkeleyDeliveries - 7_3.csv|attachment](upload://routed-deliveries-turkey.csv)"
+    ],
+    [
+      1860,
+      30,
+      null,
+      "2020/09/28\n\n[HelpBerkeleyDeliveries - TemplateV2-0-0.csv|attachment](upload://restaurant-template-v2-0-0.csv) (5.6 KB)"
+    ],
+    [
+      859,
+      460,
+      null,
+      "2020/12/31\n\n[HelpBerkeleyDeliveries - 12_31.csv|attachment](upload://routed-deliveries.csv) (8.2 KB)"
+    ]
+  ]
+}

@@ -34,30 +34,20 @@ public class Constants {
     static final String INREACH_FILE = "inreach";
     static final String DISPATCHERS_FILE = "dispatchers";
     static final String ORDER_HISTORY_FILE = "order-history";
-    static final String DELIVERY_POSTS_FILE = "delivery-posts";
     static final String DRIVER_HISTORY_FILE = "driver-history";
     static final String ALL_MEMBERS_TITLE = "All Members";
 
     public static final int QUERY_GET_GROUPS_ID = 3;
 
-//    public static final int QUERY_GET_GROUP_USERS_ID = 4;
     public static final int QUERY_GET_GROUP_USERS_V2 = 47;
     public static final int CURRENT_GET_GROUP_USERS_QUERY = QUERY_GET_GROUP_USERS_V2;
 
-//    public static final int QUERY_GET_USERS_V11_ID = 8;
-//    public static final int QUERY_GET_USERS_V12_ID = 9;
-//    public static final int QUERY_GET_USERS_V13_ID = 10;
-//    public static final int QUERY_GET_USERS_V14_ID = 12;
-//    public static final int QUERY_GET_USERS_V15_ID = 14;
-//    public static final int QUERY_GET_USERS_V16_ID = 16;
     public static final int QUERY_GET_USERS_V17_ID = 23;
     public static final int CURRENT_USERS_QUERY = QUERY_GET_USERS_V17_ID;
 
     public static final int QUERY_EMAIL_CONFIRMATIONS_V1 = 15;
     public static final int QUERY_GET_EMAILS = 11;
     public static final int QUERY_GET_DELIVERY_DETAILS = 17;
-//    public static final int QUERY_GET_DRIVERS_POST_FORMAT_V1 = 19;
-    public static final int QUERY_GET_ALL_POSTS_IN_TOPICS = 21;
     public static final int QUERY_GET_LAST_REQUEST_DRIVER_MESSAGES_REPLY = 22;
     public static final int QUERY_GET_LAST_ROUTE_REQUEST_REPLY = 25;
     public static final int QUERY_GET_BACKUP_DRIVER_FORMAT_V12 = 28;
@@ -72,6 +62,7 @@ public class Constants {
     public static final int QUERY_GET_ORDER_HISTORY_DATA_POSTS = 45;
     public static final int QUERY_GET_DRIVER_DETAILS = 46;
     public static final int QUERY_GET_CURRENT_VALIDATED_RESTAURANT_TEMPLATE = 49;
+    public static final int QUERY_GET_LAST_REPLY_FROM_REQUEST_TOPICS = 50;
 
     // Current spec version for these queries
     public static final int QUERY_GET_DRIVERS_POST_FORMAT = QUERY_GET_DRIVERS_POST_FORMAT_V23;
@@ -207,4 +198,8 @@ public class Constants {
     public static final String AT_RISK_EMOJI = ":warning:";
     public static final String LIMITED_RUNS_EMOJI = ":red_circle:";
     public static final String GIFT_EMOJI = ":gift:";
+
+    public static final String DISCOURSE_COLUMN_POST_NUMBER = "post_number";
+    public static final String DISCOURSE_COLUMN_RAW = "raw";
+    public static final String DISCOURSE_COLUMN_TOPIC_ID = "topic_id";
 }

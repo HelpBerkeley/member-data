@@ -115,6 +115,7 @@ public class TestBase {
             Options.COMMAND_DRIVERS,
             Options.COMMAND_CUSTOMER_CARE_POST,
             Options.COMMAND_FRREG,
+            Options.COMMAND_WORK_REQUESTS,
     };
 
     static final String[] COMMANDS_WITH_NO_PARAMETERS = {

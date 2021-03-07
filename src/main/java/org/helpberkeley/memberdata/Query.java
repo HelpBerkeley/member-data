@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020. helpberkeley.org
+ * Copyright (c) 2020-2021. helpberkeley.org
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,13 +23,19 @@
 package org.helpberkeley.memberdata;
 
 public class Query {
-    final int id;
-    final String description;
-    final Topic topic;
+    private final int id;
+    private final Topic topic;
 
-    Query(int id, Topic topic) {
+    public Query(int id, Topic topic) {
         this.id = id;
-        this.description = null;
         this.topic = topic;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public Topic getTopic() {
+        return topic;
     }
 }

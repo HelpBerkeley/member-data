@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020. helpberkeley.org
+ * Copyright (c) 2020-2021. helpberkeley.org
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -51,6 +51,14 @@ public class WorkRequestHandler {
         this.query = query;
     }
 
+    WorkRequestHandler(ApiClient apiClient, long topicId, long postNumber, String raw) {
+        this.apiClient = apiClient;
+        this.query = null;
+
+        // Normalize EOL
+        this.lastReply = new Reply(apiClient, topicId, postNumber, raw.replaceAll("\\r\\n?", "\n"));
+    }
+
     // Support for end-to-end testing through main()
     static void clearLastStatusPost() {
         lastStatusPost = null;
@@ -63,7 +71,11 @@ public class WorkRequestHandler {
 
     Reply getLastReply() {
 
-        lastReply = fetchLastReply();
+        if (lastReply != null) {
+            assert query == null;
+        } else {
+            lastReply = fetchLastReply();
+        }
 
         List<String> lines = new ArrayList<>();
 
@@ -78,7 +90,7 @@ public class WorkRequestHandler {
         if (lines.isEmpty()) {
             // FIX THIS, DS: make this a generic can't parse error?  Use constant, for testability
             throw new MemberDataException(
-                    "Last post (#" + lastReply.postNumber + ") in " + query.topic + " is empty");
+                    "Last post (#" + lastReply.postNumber + ") in " + query.getTopic() + " is empty");
         }
 
         Reply reply = Status.parse(lastReply, lines);
@@ -89,7 +101,7 @@ public class WorkRequestHandler {
 
         if (reply == null) {
            throw new MemberDataException(
-                    "Post #" + lastReply.postNumber + " in " + query.topic
+                    "Post #" + lastReply.postNumber + " in " + query.getTopic()
                     + " is not recognizable as either a work request or a status message.");
         }
 
@@ -109,8 +121,8 @@ public class WorkRequestHandler {
 
         Post post = new Post();
         post.title = "Status response to post " + lastReply.postNumber;
-        assert query.topic != null;
-        post.topic_id = query.topic.getId();
+        assert query.getTopic() != null;
+        post.topic_id = query.getTopic().getId();
         post.raw = rawPost;
         post.createdAt = timeStamp;
 
@@ -124,17 +136,16 @@ public class WorkRequestHandler {
 
     private Reply fetchLastReply() {
 
-        String json = apiClient.runQuery(query.id);
+        String json = apiClient.runQuery(query.getId());
         ApiQueryResult apiQueryResult = HBParser.parseQueryResult(json);
 
-        // FIX THIS, DS: constant
-        Integer postNumberIndex = apiQueryResult.getColumnIndex("post_number");
+        Integer postNumberIndex = apiQueryResult.getColumnIndex(Constants.DISCOURSE_COLUMN_POST_NUMBER);
         assert postNumberIndex != null;
-        Integer rawIndex = apiQueryResult.getColumnIndex("raw");
+        Integer rawIndex = apiQueryResult.getColumnIndex(Constants.DISCOURSE_COLUMN_RAW);
         assert rawIndex != null;
 
         if (apiQueryResult.rows.length == 0) {
-            throw new MemberDataException("Topic not found: " + query.id + ":" + query.topic);
+            throw new MemberDataException("Topic not found: " + query.getId() + ":" + query.getTopic());
         }
 
         assert apiQueryResult.rows.length == 1 : apiQueryResult.rows.length;
@@ -146,32 +157,31 @@ public class WorkRequestHandler {
         // Normalize EOL
         lastReplyRaw = lastReplyRaw.replaceAll("\\r\\n?", "\n");
 
-        return new Reply(apiClient, query, postNumber, lastReplyRaw);
+        return new Reply(apiClient, query.getTopic().getId(), postNumber, lastReplyRaw);
     }
 
     static class Reply {
         final ApiClient apiClient;
-        final Query query;
+        final long topicId;
         final long postNumber;
         final String raw;
 
-        Reply(final ApiClient apiClient, final Query query, long postNumber, final String raw) {
+        Reply(final ApiClient apiClient, long topicId, long postNumber, final String raw) {
             this.apiClient = apiClient;
-            this.query = query;
+            this.topicId = topicId;
             this.postNumber = postNumber;
             this.raw = raw;
         }
 
         Reply(Reply reply) {
             this.apiClient = reply.apiClient;
-            this.query = reply.query;
+            this.topicId = reply.topicId;
             this.postNumber = reply.postNumber;
             this.raw = reply.raw;
         }
     }
 
     static class WorkRequest extends Reply {
-
         final String date;
         final UploadFile uploadFile;
         final Long topic;
@@ -203,8 +213,8 @@ public class WorkRequestHandler {
 
             Post post = new Post();
             post.title = "Status response to post " + postNumber;
-            assert query.topic != null;
-            post.topic_id = query.topic.getId();
+            assert topicId != 0;
+            post.topic_id = topicId;
             post.raw = rawPost;
             post.createdAt = timeStamp;
 

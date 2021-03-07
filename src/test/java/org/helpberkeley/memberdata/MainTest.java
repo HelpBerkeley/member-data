@@ -357,6 +357,22 @@ public class MainTest extends TestBase {
         Main.main(args);
     }
 
+    @Test
+    public void workRequestsNoRequestsTest() throws IOException, CsvException {
+        String usersFile = findFile(Constants.MEMBERDATA_RAW_FILE, "csv");
+        String[] args = { Options.COMMAND_WORK_REQUESTS, usersFile };
+        Main.main(args);
+    }
+
+    @Test
+    public void workRequestsAllRequestsTest() throws IOException, CsvException {
+        HttpClientSimulator.setQueryResponseFile(
+                Constants.QUERY_GET_LAST_REPLY_FROM_REQUEST_TOPICS, "last-replies-all-requests.json");
+        String usersFile = findFile(Constants.MEMBERDATA_RAW_FILE, "csv");
+        String[] args = { Options.COMMAND_WORK_REQUESTS, usersFile };
+        Main.main(args);
+    }
+
     private String findFile(final String prefix, final String suffix) {
 
         File dir = new File(".");

@@ -102,6 +102,9 @@ public class Main {
         // testQuery(apiClient);
 
         switch (options.getCommand()) {
+            case Options.COMMAND_WORK_REQUESTS:
+                workRequests(apiClient, options.getFileName());
+                break;
             case Options.COMMAND_FETCH:
                 fetch(apiClient);
                 break;
@@ -508,6 +511,10 @@ public class Main {
         }
 
         WorkRequestHandler.WorkRequest request = (WorkRequestHandler.WorkRequest) reply;
+        doDriverRoutes(apiClient, request);
+    }
+
+    private static void doDriverRoutes(ApiClient apiClient, WorkRequestHandler.WorkRequest request) {
 
         // Download file
         String unroutedDeliveries = apiClient.downloadFile(request.uploadFile.getFileName());
@@ -601,13 +608,18 @@ public class Main {
             return;
         }
 
-        LOGGER.info("Driver message request found:\n" + reply);
-
         // Parse users files
         String csvData = Files.readString(Paths.get(allMembersFile));
         Map<String, User> users = new Tables(HBParser.users(csvData)).mapByUserName();
 
         WorkRequestHandler.WorkRequest request = (WorkRequestHandler.WorkRequest) reply;
+        doDriverMessages(apiClient, request, users);
+    }
+
+    private static void doDriverMessages(
+            ApiClient apiClient, WorkRequestHandler.WorkRequest request, Map<String, User> users) {
+
+        LOGGER.info("Driver message request found:\n" + request);
 
         long topic = (request.topic != null) ? request.topic : DRIVERS_POST_STAGING_TOPIC_ID;
 
@@ -619,7 +631,6 @@ public class Main {
         // Download file
         String routedDeliveries = apiClient.downloadFile(request.uploadFile.getFileName());
         request.postStatus(WorkRequestHandler.RequestStatus.Processing, "");
-
 
         try {
             String statusMessage = generateDriverPosts(apiClient, users, routedDeliveries, version, topic,
@@ -663,11 +674,17 @@ public class Main {
 
         LOGGER.info("Holiday driver message request found:\n" + reply);
 
+        WorkRequestHandler.WorkRequest request = (WorkRequestHandler.WorkRequest) reply;
+
         // Parse users files
         String csvData = Files.readString(Paths.get(allMembersFile));
         Map<String, User> users = new Tables(HBParser.users(csvData)).mapByUserName();
 
-        WorkRequestHandler.WorkRequest request = (WorkRequestHandler.WorkRequest) reply;
+        doOneKitchenDriverMessages(apiClient, request, users);
+    }
+
+    private static void doOneKitchenDriverMessages(
+            ApiClient apiClient, WorkRequestHandler.WorkRequest request, Map<String, User> users) {
 
         long topic = (request.topic != null) ? request.topic : DRIVERS_POST_STAGING_TOPIC_ID;
 
@@ -679,7 +696,6 @@ public class Main {
         // Download file
         String routedDeliveries = apiClient.downloadFile(request.uploadFile.getFileName());
         request.postStatus(WorkRequestHandler.RequestStatus.Processing, "");
-
 
         try {
             String statusMessage = generateDriverPosts(
@@ -836,7 +852,8 @@ public class Main {
     }
 
     // Process the last request in the Post completed daily orders topic
-    private static void completedDailyOrders(ApiClient apiClient, String allMembersFile) {
+    private static void completedDailyOrders(
+            ApiClient apiClient, String allMembersFile) throws IOException, CsvException {
         Query query = new Query(
                 Constants.QUERY_GET_LAST_COMPLETED_DAILY_ORDERS_REPLY, Constants.TOPIC_POST_COMPLETED_DAILY_ORDERS);
         WorkRequestHandler requestHandler = new WorkRequestHandler(apiClient, query);
@@ -857,18 +874,24 @@ public class Main {
 
         WorkRequestHandler.WorkRequest request = (WorkRequestHandler.WorkRequest) reply;
 
+        // Read users file
+        String csvData = Files.readString(Paths.get(allMembersFile));
+        // Parse users
+        List<User> userList = HBParser.users(csvData);
+        // Build a map of users by user name.
+        Map<String, User> users = new Tables(userList).mapByUserName();
+
+        doCompletedDailyOrders(apiClient, request, users);
+    }
+
+    private static void doCompletedDailyOrders(
+            ApiClient apiClient, WorkRequestHandler.WorkRequest request, Map<String, User> users) {
+
         try {
             if (! request.disableDateAudit) {
                 // Check that the date is recent
                 auditCompletedOrdersDate(request.date);
             }
-
-            // Read users file
-            String csvData = Files.readString(Paths.get(allMembersFile));
-            // Parse users
-            List<User> userList = HBParser.users(csvData);
-            // Build a map of users by user name.
-            Map<String, User> users = new Tables(userList).mapByUserName();
 
             // Download file
             String completedDeliveries = apiClient.downloadFile(request.uploadFile.getFileName());
@@ -880,7 +903,7 @@ public class Main {
                     Constants.QUERY_GET_DRIVERS_POST_FORMAT,
                     Constants.QUERY_GET_GROUP_INSTRUCTIONS_FORMAT);
 
-        } catch (MemberDataException|IOException|CsvException ex) {
+        } catch (MemberDataException ex) {
             String reason = ex.getCause() != null ? ex.getCause().getMessage() : ex.getMessage();
             request.postStatus(WorkRequestHandler.RequestStatus.Failed, reason);
             return;
@@ -899,11 +922,11 @@ public class Main {
 
         if (response.statusCode() != HTTP_OK) {
             // Send status message
-            requestHandler.postStatus(WorkRequestHandler.RequestStatus.Failed,
+            request.postStatus(WorkRequestHandler.RequestStatus.Failed,
                     "Archive of " + request.uploadFile.getOriginalFileName() + " failed: " + response.body());
         } else {
             // Send status message
-            requestHandler.postStatus(WorkRequestHandler.RequestStatus.Succeeded,
+            request.postStatus(WorkRequestHandler.RequestStatus.Succeeded,
                     request.uploadFile.getOriginalFileName() + " validated and archived for " + request.date);
         }
     }
@@ -1041,6 +1064,11 @@ public class Main {
         }
 
         WorkRequestHandler.WorkRequest request = (WorkRequestHandler.WorkRequest) reply;
+        doRestaurantTemplate(apiClient, request);
+    }
+
+    private static void doRestaurantTemplate(
+            ApiClient apiClient, WorkRequestHandler.WorkRequest request) {
 
         try {
             // Download file
@@ -1066,11 +1094,11 @@ public class Main {
 
         if (response.statusCode() != HTTP_OK) {
             // Send status message
-            requestHandler.postStatus(WorkRequestHandler.RequestStatus.Failed,
+            request.postStatus(WorkRequestHandler.RequestStatus.Failed,
                     "Archive of " + request.uploadFile.getOriginalFileName() + " failed: " + response.body());
         } else {
             // Send status message
-            requestHandler.postStatus(WorkRequestHandler.RequestStatus.Succeeded,
+            request.postStatus(WorkRequestHandler.RequestStatus.Succeeded,
                     request.uploadFile.getOriginalFileName() + " validated and archived for " + request.date);
         }
     }
@@ -1105,6 +1133,63 @@ public class Main {
         HttpResponse<?> response = apiClient.updatePost(FRREG_POST_ID, post);
         // FIX THIS, DS: what to do with this error?
         assert response.statusCode() == HTTP_OK : "failed " + response.statusCode() + ": " + response.body();
+    }
+
+    private static void workRequests(ApiClient apiClient, String usersFile) throws IOException, CsvException {
+        String json = apiClient.runQuery(Constants.QUERY_GET_LAST_REPLY_FROM_REQUEST_TOPICS);
+        ApiQueryResult apiQueryResult = HBParser.parseQueryResult(json);
+
+        assert apiQueryResult.rows.length == 5 : apiQueryResult.rows.length;
+        Integer postNumberIndex = apiQueryResult.getColumnIndex(Constants.DISCOURSE_COLUMN_POST_NUMBER);
+        assert postNumberIndex != null;
+        Integer rawIndex = apiQueryResult.getColumnIndex(Constants.DISCOURSE_COLUMN_RAW);
+        assert rawIndex != null;
+        Integer topicIdIndex = apiQueryResult.getColumnIndex(Constants.DISCOURSE_COLUMN_TOPIC_ID);
+        assert topicIdIndex != null;
+
+        for (Object rowObj : apiQueryResult.rows) {
+            Object[] columns = (Object[]) rowObj;
+            assert columns.length == 4 : columns.length;
+
+            Long topicId = (Long)columns[topicIdIndex];
+            Long postNumber = (Long)columns[postNumberIndex];
+            String raw = (String)columns[rawIndex];
+
+            WorkRequestHandler requestHandler = new WorkRequestHandler(apiClient, topicId, postNumber, raw);
+            WorkRequestHandler.Reply reply;
+
+            try {
+                reply = requestHandler.getLastReply();
+            } catch (MemberDataException ex) {
+                LOGGER.warn("getLastReply failed: " + ex + "\n" + ex.getMessage());
+                requestHandler.postStatus(WorkRequestHandler.RequestStatus.Failed, ex.getMessage());
+                continue;
+            }
+
+            // Nothing to do.
+            if (reply instanceof WorkRequestHandler.Status) {
+                continue;
+            }
+
+            // Parse users files
+            String csvData = Files.readString(Paths.get(usersFile));
+            Map<String, User> users = new Tables(HBParser.users(csvData)).mapByUserName();
+
+            WorkRequestHandler.WorkRequest request = (WorkRequestHandler.WorkRequest) reply;
+
+            if (topicId == Constants.TOPIC_REQUEST_DRIVER_MESSAGES.getId()) {
+                doDriverMessages(apiClient, request, users);
+            } else if (topicId == Constants.TOPIC_POST_COMPLETED_DAILY_ORDERS.getId()) {
+                doCompletedDailyOrders(apiClient, request, users);
+            } else if (topicId == Constants.TOPIC_REQUEST_SINGLE_RESTAURANT_DRIVER_MESSAGES.getId()) {
+                doOneKitchenDriverMessages(apiClient, request, users);
+            } else if (topicId == Constants.TOPIC_POST_RESTAURANT_TEMPLATE.getId()) {
+                doRestaurantTemplate(apiClient, request);
+            } else {
+                assert topicId == Constants.TOPIC_REQUEST_DRIVER_ROUTES.getId() : topicId;
+                doDriverRoutes(apiClient, request);
+            }
+        }
     }
 
 //    private static void testQuery(ApiClient apiClient) {
