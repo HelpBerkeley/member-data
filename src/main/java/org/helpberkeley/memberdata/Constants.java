@@ -193,6 +193,7 @@ public class Constants {
     static final String API_KEY_PROPERTY = "Api-Key";
 
     public static final int HTTP_TOO_MANY_REQUESTS = 429;
+    public static final int HTTP_SERVICE_UNAVAILABLE = 503;
 
     public static final String BIKE_EMOJI = ":bike:";
     public static final String AT_RISK_EMOJI = ":warning:";

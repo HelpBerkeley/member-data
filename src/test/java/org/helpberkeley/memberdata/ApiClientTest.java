@@ -109,6 +109,26 @@ public class ApiClientTest extends TestBase {
     }
 
     @Test
+    public void serviceUnavailableRetrySucceedTest() {
+        ApiClient.RETRY_NAP_MILLISECONDS = 0;
+        HttpClientSimulator.setSendFailure(HttpClientSimulator.SendFailType.SERVICE_UNAVAILABLE, 1);
+
+        ApiClient apiClient = createApiSimulator();
+        apiClient.runQuery(Constants.QUERY_GET_EMAILS);
+    }
+
+    @Test
+    public void serviceUnavailableRetryFailTest() {
+        ApiClient.RETRY_NAP_MILLISECONDS = 0;
+        HttpClientSimulator.setSendFailure(HttpClientSimulator.SendFailType.SERVICE_UNAVAILABLE, 10);
+
+        ApiClient apiClient = createApiSimulator();
+        Throwable thrown = catchThrowable(() -> apiClient.runQuery(Constants.QUERY_GET_EMAILS));
+        assertThat(thrown).isInstanceOf(RuntimeException.class);
+        assertThat(thrown).hasMessageContaining("10 attempts to talk with Discourse failed");
+    }
+
+    @Test
     public void queryWithParamsTest() {
         ApiClient apiClient = createApiSimulator();
 

@@ -49,6 +49,7 @@ public class HttpClientSimulator extends HttpClient {
     enum SendFailType {
         GOAWAY_IOEXCEPTION,
         TOO_MANY_TIMES_429_RESULT,
+        SERVICE_UNAVAILABLE,
     }
 
     private static final Map<Integer, String> queryResponseFiles = new HashMap<>();
@@ -82,6 +83,9 @@ public class HttpClientSimulator extends HttpClient {
 
             if (sendFailType == SendFailType.GOAWAY_IOEXCEPTION) {
                 throw new IOException("Simulated IOException: GOAWAY");
+            } else if (sendFailType == SendFailType.SERVICE_UNAVAILABLE) {
+                return (HttpResponse<T>) new HttpResponseSimulator<>(
+                        "We are having technical difficulties", Constants.HTTP_SERVICE_UNAVAILABLE);
             } else {
                 assertThat(sendFailType).isEqualTo(SendFailType.TOO_MANY_TIMES_429_RESULT);
                 return (HttpResponse<T>) new HttpResponseSimulator<>(

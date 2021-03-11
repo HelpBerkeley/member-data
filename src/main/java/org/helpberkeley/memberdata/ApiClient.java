@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2020 helpberkeley.org
+// Copyright (c) 2020-2021 helpberkeley.org
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -105,23 +105,23 @@ public class ApiClient {
         for (int retry = 0; retry < 10; retry++ ) {
             try {
                 HttpResponse <String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-                if (response.statusCode() == Constants.HTTP_TOO_MANY_REQUESTS) {
-                    if (retry < 9) {
-                        LOGGER.warn("{} seen from Discourse, waiting 10 seconds and retrying",
-                                Constants.HTTP_TOO_MANY_REQUESTS);
-                        nap(RETRY_NAP_MILLISECONDS);
-                    }
-                } else {
-                    return response;
+                switch (response.statusCode()) {
+                    case Constants.HTTP_TOO_MANY_REQUESTS:
+                    case Constants.HTTP_SERVICE_UNAVAILABLE:
+                        LOGGER.warn("send {} failed: {}", request, response.body());
+                        break;
+                    default:
+                        return response;
                 }
             } catch (IOException ex) {
-                LOGGER.warn("send {} failed: {}", request, ex);
-                if (retry < 9) {
-                    LOGGER.warn("Waiting 10 seconds and retrying");
-                    nap(RETRY_NAP_MILLISECONDS);
-                }
+                LOGGER.warn("send {} failed: {}", request, ex.getMessage());
             } catch (InterruptedException ex) {
                 throw new RuntimeException("send " + request + " was interrupted");
+            }
+
+            if (retry < 9) {
+                LOGGER.warn("Failure talking to Discourse, waiting 10 seconds and retrying.");
+                nap(RETRY_NAP_MILLISECONDS);
             }
         }
 
