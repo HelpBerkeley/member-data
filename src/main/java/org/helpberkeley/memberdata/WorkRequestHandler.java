@@ -123,8 +123,7 @@ public class WorkRequestHandler {
 
         Post post = new Post();
         post.title = "Status response to post " + lastReply.postNumber;
-        assert query.getTopic() != null;
-        post.topic_id = query.getTopic().getId();
+        post.topic_id = getTopicId();
         post.raw = rawPost;
         post.createdAt = timeStamp;
 
@@ -160,6 +159,20 @@ public class WorkRequestHandler {
         lastReplyRaw = lastReplyRaw.replaceAll("\\r\\n?", "\n");
 
         return new Reply(apiClient, query.getTopic().getId(), postNumber, lastReplyRaw);
+    }
+
+    long getTopicId() {
+        long topicId;
+
+        if (lastReply != null) {
+            topicId = lastReply.topicId;
+        } else {
+            assert query != null;
+            assert query.getTopic() != null;
+            topicId = query.getTopic().getId();
+        }
+
+        return topicId;
     }
 
     static class Reply {

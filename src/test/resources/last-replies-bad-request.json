@@ -1,0 +1,52 @@
+{
+  "success": true,
+  "errors": [],
+  "duration": 7.9,
+  "result_count": 5,
+  "params": {
+    "request_driver_routes": "2844",
+    "request_driver_messages": "2504",
+    "request_one_kitchen_driver_messages": "4878",
+    "post_restaurant_template": "1860",
+    "post_completed_daily_orders": "859"
+  },
+  "columns": [
+    "topic_id",
+    "post_number",
+    "deleted_at",
+    "raw"
+  ],
+  "default_limit": 1000,
+  "rows": [
+    [
+      859,
+      460,
+      null,
+      "2020/12/25T30:03:03\n[routed deliveries|attachement](upload://routed-deliveries.csv)\n"
+    ],
+    [
+      2504,
+      1810,
+      null,
+      "2021/03/04 21:09:17\n\nStatus: Failed\nSome error message\n"
+    ],
+    [
+      2844,
+      911,
+      null,
+      "2020/12/25 21:31:18\nStatus: Succeeded\nFile: [routed-HelpBerkeleyDeliveries - Copy of 12_26.csv](upload://xyzzy.csv)\n\n|Maps API|Number of Calls|Cost|\n|---|---|---|\n|Location|6|$0.030|\n|Directions|2|$0.010|\n|Total||$0.040|"
+    ],
+    [
+      4878,
+      151,
+      null,
+      "2021/02/28 16:42:27\n\nStatus: Succeeded\nFile: something\n"
+    ],
+    [
+      1860,
+      30,
+      null,
+      "2021/03/04 20:16:40\nStatus: Succeeded\n\nHelpBerkeleyDeliveries - TemplateV2-0-0.csv validated and archived for 2021/03/04"
+    ]
+  ]
+}
