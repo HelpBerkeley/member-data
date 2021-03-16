@@ -42,3 +42,6 @@ Audit where posts are going to and that category access
 is as expected.
 
 When displaying, adjust post number to take deleted posts into account
+
+Restaurant template auditing.  Validate that the restaurants
+are present in both sections.

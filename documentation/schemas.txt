@@ -1,7 +1,7 @@
 Help Berkeley Schemas
 =====================
 
-Version: 2.0.10
+Version: 2.0.11
 
 Full Member Record
 ------------------
@@ -319,7 +319,8 @@ When:          Whenever a new user signs up requesting meals, or a new
 
 Column Name,Type,Description,
 User Name,String,Discourse user name,
-Email Verified,Boolean,,
+:email:verified,Boolean,,
+Pre-reg, :fire: (if true) nothing if false, member of frreg group,
 City,String,,
 Address,String,,
 Condo,Boolean,In non-single family dwelling,

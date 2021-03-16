@@ -253,8 +253,8 @@ public class Main {
         postRaw.append(label);
         postRaw.append("**\n\n");
 
-        postRaw.append("| User Name | Email Verified | City | Address | Condo | Phone |\n");
-        postRaw.append("|---|---|---|---|---|---|\n");
+        postRaw.append("| User Name | Email Verified | Pre-reg | City | Address | Condo | Phone |\n");
+        postRaw.append("|---|---|---|---|---|---|---|\n");
 
         Tables tables = new Tables(users);
         for (User user : tables.sortByCreateTime()) {
@@ -262,6 +262,8 @@ public class Main {
             postRaw.append(user.getUserName());
             postRaw.append('|');
             postRaw.append(user.getEmailVerified());
+            postRaw.append('|');
+            postRaw.append(user.isFrreg() ? ":fire:" : "");
             postRaw.append('|');
             postRaw.append(user.getCity());
             postRaw.append('|');
