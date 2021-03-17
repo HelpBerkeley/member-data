@@ -13,6 +13,9 @@ Set large limit for all queries.
 Update all queries to ignore deleted posts
 
 Store queries in git (in addition to in the site).
+	- Done, but a manual proces that needs
+	to be repeated when queries are changed
+	on the site.
 
 Replace all assertions with MemberDataException
 
@@ -28,15 +31,13 @@ Add more flexibility to command line auditing
 Detect controlBlockRestaurant name misspellings in workflow data.
  - If detected, correct and warn?  Or audit fail?
 
- Update error strings to use a message catalog.
- Update testing to removed duplicate expected strings.
+Update error strings to use a message catalog.
+Update testing to removed duplicate expected strings.
 
 Turn the "member data requiring attention" postings back on.
 
 Add a generic request handler that can be used to run various
 cron-ish jobs on demand.
-
-Add checking for restaurant template.
 
 Audit where posts are going to and that category access
 is as expected.
@@ -45,3 +46,6 @@ When displaying, adjust post number to take deleted posts into account
 
 Restaurant template auditing.  Validate that the restaurants
 are present in both sections.
+
+Use Discourse ids to identify groups, to insulate against
+changes to group names.
