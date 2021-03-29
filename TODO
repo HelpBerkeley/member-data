@@ -49,3 +49,7 @@ are present in both sections.
 
 Use Discourse ids to identify groups, to insulate against
 changes to group names.
+
+Double quotes in a full user name will cause HTTP 400 errors
+when used in a generated message/table.  Example: a full user
+name of Joe "Billy Bob" Thorton

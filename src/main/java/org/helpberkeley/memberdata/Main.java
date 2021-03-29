@@ -1115,6 +1115,8 @@ public class Main {
 
         // Generate customer care member data table
         String post = userExporter.customerCareMemberDataPost();
+
+        new Exporter().writeFile("post", post);
         // update the posting
         HttpResponse<?> response = apiClient.updatePost(CUSTOMER_CARE_MEMBER_DATA_POST_ID, post);
         // FIX THIS, DS: what to do with this error?

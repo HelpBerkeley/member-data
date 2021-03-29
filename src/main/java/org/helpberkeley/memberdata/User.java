@@ -633,6 +633,8 @@ public class User {
     private void normalizeData() {
         removeNewlines();
         removeLeadingTrailingWhitespace();
+        // FIX THIS, DS: can we escape them?
+        removeDoubleQuotes();
         auditAndNormalizePhoneNumber();
         auditAndNormalizeAltPhoneNumber();
         auditAndNormalizeCity();
@@ -698,6 +700,14 @@ public class User {
         }
         if (referral != null) {
             referral = referral.strip();
+        }
+    }
+
+    // Must be insensitive to null data
+    private void removeDoubleQuotes() {
+
+        if (name != null) {
+            name = name.replace("\"", "");
         }
     }
 
