@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020. helpberkeley.org
+ * Copyright (c) 2020-2021. helpberkeley.org
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -32,6 +32,7 @@ public class RestaurantTemplateParser {
 
     static final String TEMPLATE_ERROR = "Restaurant Template Error: ";
     static final String ERROR_NO_DATA = "empty file";
+    static final String ERROR_MISSING_OR_UNSUPPORTED_VERSION = "Missing or unsupported version: ";
     static final String MISSING_COLUMN_ERROR = "missing column: ";
     static final String MISSING_EMPTY_ROW = "did not find empty row at line ";
     static final String MISSING_VALUE_ERROR = "missing value from column ";
@@ -41,36 +42,27 @@ public class RestaurantTemplateParser {
     private long lineNumber = 0;
     private final Iterator<RestaurantBean> iterator;
     private String version = Constants.CONTROL_BLOCK_VERSION_UNKNOWN;
+    private final ControlBlock controlBlock;
 
     RestaurantTemplateParser(final String csvData) {
 
         // Normalize EOL
-        String normalizedData = csvData.replaceAll("\\r\\n?", "\n");
+        String normalizedCSV = csvData.replaceAll("\\r\\n?", "\n");
 
-        if (normalizedData.isEmpty()) {
+        if (normalizedCSV.isEmpty()) {
             throwTemplateError(ERROR_NO_DATA);
         }
 
-        auditColumns(normalizedData);
-
-        List<RestaurantBean> restaurantBeans = new CsvToBeanBuilder<RestaurantBean>(new StringReader(normalizedData))
-                .withType(RestaurantBean.class).build().parse();
-        iterator = restaurantBeans.iterator();
-    }
-
-    static String getVersion(final String csvData) {
-        RestaurantTemplateParser parser = new RestaurantTemplateParser(csvData);
-        RestaurantBean bean;
-
-        while ((bean = parser.nextRow()) != null) {
-
-            if (parser.isControlBlockBeginRow(bean)) {
-                parser.processControlBlock();
-                return parser.getVersion();
-            }
+        try {
+            controlBlock = ControlBlock.createControlBlock(normalizedCSV);
+        } catch (MemberDataException ex) {
+            throw new MemberDataException(TEMPLATE_ERROR + "\n" + ex.getMessage());
         }
+        auditColumns(normalizedCSV);
 
-        throw new MemberDataException("Control block not found");
+        List<RestaurantBean> restaurantBeans = new CsvToBeanBuilder<RestaurantBean>(
+                new StringReader(normalizedCSV)).withType(RestaurantBean.class).build().parse();
+        iterator = restaurantBeans.iterator();
     }
 
     /**
@@ -112,10 +104,6 @@ public class RestaurantTemplateParser {
                 errors.append(MISSING_COLUMN_ERROR).append(columnName).append('\n');
                 numErrors++;
             }
-        }
-
-        if (numErrors == columnNames.size()) {
-            throwTemplateError("All column names missing. Line 1 does not look like a header row");
         }
 
         if (errors.length() > 0) {
@@ -204,7 +192,6 @@ public class RestaurantTemplateParser {
 
     private void processControlBlock() {
         RestaurantBean bean;
-        ControlBlock controlBlock = new ControlBlock();
 
         while ((bean = nextRow()) != null) {
 
@@ -225,8 +212,7 @@ public class RestaurantTemplateParser {
                 break;
             default:
                 throw new MemberDataException(
-                    "Unsupported control block version: " + version
-                        + "\nCurrent supported version is: " + Constants.CONTROL_BLOCK_CURRENT_VERSION + "\n");
+                        TEMPLATE_ERROR + "\n" + ERROR_MISSING_OR_UNSUPPORTED_VERSION + "\n");
         }
     }
 

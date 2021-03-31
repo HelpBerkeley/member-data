@@ -1,3 +1,25 @@
+/*
+ * Copyright (c) 2020-2021 helpberkeley.org
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ *
+ */
 package org.helpberkeley.memberdata;
 
 import org.junit.Test;
@@ -23,7 +45,7 @@ public class ControlBlockRestaurantTemplateTest extends TestBase {
         Throwable thrown = catchThrowable(() -> new RestaurantTemplateParser(badCSV).restaurants());
         assertThat(thrown).isInstanceOf(MemberDataException.class);
         assertThat(thrown).hasMessageContaining(RestaurantTemplateParser.TEMPLATE_ERROR);
-        assertThat(thrown).hasMessageContaining("All column names missing. Line 1 does not look like a header row");
+        assertThat(thrown).hasMessageContaining(ControlBlock.BAD_HEADER_ROW);
     }
 
     @Test
@@ -33,7 +55,8 @@ public class ControlBlockRestaurantTemplateTest extends TestBase {
                 Constants.WORKFLOW_RESTAURANTS_COLUMN,
                 Constants.WORKFLOW_ORDERS_COLUMN,
                 Constants.WORKFLOW_DETAILS_COLUMN))
-                + "\n";
+                + "\n"
+                + MINIMUM_CONTROL_BLOCK;
 
         Throwable thrown = catchThrowable(() -> new RestaurantTemplateParser(template));
         assertThat(thrown).isInstanceOf(MemberDataException.class);
@@ -44,12 +67,13 @@ public class ControlBlockRestaurantTemplateTest extends TestBase {
 
     @Test
     public void missingDriverColumnTest() {
-        final String template = String.join(",", List.of(
+        String template = String.join(",", List.of(
                 Constants.WORKFLOW_CONSUMER_COLUMN,
                 Constants.WORKFLOW_RESTAURANTS_COLUMN,
                 Constants.WORKFLOW_ORDERS_COLUMN,
                 Constants.WORKFLOW_DETAILS_COLUMN))
-                + "\n";
+                + "\n"
+                + MINIMUM_CONTROL_BLOCK;
 
         Throwable thrown = catchThrowable(() -> new RestaurantTemplateParser(template));
         assertThat(thrown).isInstanceOf(MemberDataException.class);
@@ -65,7 +89,8 @@ public class ControlBlockRestaurantTemplateTest extends TestBase {
                 Constants.WORKFLOW_DRIVER_COLUMN,
                 Constants.WORKFLOW_ORDERS_COLUMN,
                 Constants.WORKFLOW_DETAILS_COLUMN))
-                + "\n";
+                + "\n"
+                + MINIMUM_CONTROL_BLOCK;
 
         Throwable thrown = catchThrowable(() -> new RestaurantTemplateParser(template));
         assertThat(thrown).isInstanceOf(MemberDataException.class);
@@ -81,7 +106,8 @@ public class ControlBlockRestaurantTemplateTest extends TestBase {
                 Constants.WORKFLOW_DRIVER_COLUMN,
                 Constants.WORKFLOW_RESTAURANTS_COLUMN,
                 Constants.WORKFLOW_DETAILS_COLUMN))
-                + "\n";
+                + "\n"
+                + MINIMUM_CONTROL_BLOCK;
 
         Throwable thrown = catchThrowable(() -> new RestaurantTemplateParser(template));
         assertThat(thrown).isInstanceOf(MemberDataException.class);
@@ -97,7 +123,8 @@ public class ControlBlockRestaurantTemplateTest extends TestBase {
                 Constants.WORKFLOW_DRIVER_COLUMN,
                 Constants.WORKFLOW_RESTAURANTS_COLUMN,
                 Constants.WORKFLOW_DETAILS_COLUMN))
-                + "\n";
+                + "\n"
+                + MINIMUM_CONTROL_BLOCK;
 
         Throwable thrown = catchThrowable(() -> new RestaurantTemplateParser(template));
         assertThat(thrown).isInstanceOf(MemberDataException.class);
@@ -113,7 +140,8 @@ public class ControlBlockRestaurantTemplateTest extends TestBase {
                 Constants.WORKFLOW_DRIVER_COLUMN,
                 Constants.WORKFLOW_RESTAURANTS_COLUMN,
                 Constants.WORKFLOW_ORDERS_COLUMN))
-                + "\n";
+                + "\n"
+                + MINIMUM_CONTROL_BLOCK;
 
         Throwable thrown = catchThrowable(() -> new RestaurantTemplateParser(template));
         assertThat(thrown).isInstanceOf(MemberDataException.class);

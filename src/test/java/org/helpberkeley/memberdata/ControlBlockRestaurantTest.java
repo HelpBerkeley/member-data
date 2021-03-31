@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020. helpberkeley.org
+ * Copyright (c) 2020-2021. helpberkeley.org
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -39,9 +39,8 @@ public class ControlBlockRestaurantTest extends TestBase {
 
         Throwable thrown = catchThrowable(parser::restaurants);
         assertThat(thrown).isInstanceOf(MemberDataException.class);
-        assertThat(thrown).hasMessageContaining("Unsupported control block version: 0");
-        assertThat(thrown).hasMessageContaining(
-                "Current supported version is: " + Constants.CONTROL_BLOCK_CURRENT_VERSION);
+        assertThat(thrown).hasMessageContaining(RestaurantTemplateParser.TEMPLATE_ERROR);
+        assertThat(thrown).hasMessageContaining(RestaurantTemplateParser.ERROR_MISSING_OR_UNSUPPORTED_VERSION);
     }
 
     @Test

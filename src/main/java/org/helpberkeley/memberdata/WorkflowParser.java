@@ -1,5 +1,5 @@
 /*
-// Copyright (c) 2020-2021 helpberkeley.org
+ * Copyright (c) 2020-2021 helpberkeley.org
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -39,23 +39,29 @@ public class WorkflowParser {
     }
 
     private final Mode mode;
-    private final ControlBlock controlBlock = new ControlBlock();
+    private final ControlBlock controlBlock;
     private long lineNumber = 1;
     private final PeekingIterator<WorkflowBean> iterator;
     private final Map<String, Restaurant> globalRestaurants;
-    private String normalizedCSVData;
+    private final String normalizedCSVData;
 
     WorkflowParser(Mode mode, Map<String, Restaurant> globalRestaurants, final String csvData) {
         this.mode = mode;
         assert mode == Mode.DRIVER_MESSAGE_REQUEST : mode;
         this.globalRestaurants = globalRestaurants;
-        iterator = initializeIterator(csvData);
+        // Normalize EOL
+        normalizedCSVData = csvData.replaceAll("\\r\\n?", "\n");
+        controlBlock = ControlBlock.createControlBlock(normalizedCSVData);
+        iterator = initializeIterator(normalizedCSVData);
     }
 
     public WorkflowParser(Mode mode, final String csvData) {
         this.mode = mode;
         assert mode == Mode.DRIVER_ROUTE_REQUEST : mode;
         this.globalRestaurants = null;
+        // Normalize EOL
+        normalizedCSVData = csvData.replaceAll("\\r\\n?", "\n");
+        controlBlock = ControlBlock.createControlBlock(normalizedCSVData);
         iterator = initializeIterator(csvData);
     }
 
@@ -89,13 +95,11 @@ public class WorkflowParser {
     }
 
     private PeekingIterator<WorkflowBean> initializeIterator(final String csvData) {
-        // Normalize EOL
-        normalizedCSVData = csvData.replaceAll("\\r\\n?", "\n");
-        assert ! normalizedCSVData.isEmpty() : "empty workflow";
-        auditColumnNames(normalizedCSVData);
+        assert ! csvData.isEmpty() : "empty workflow";
+        auditColumnNames(csvData);
 
-        List<WorkflowBean> workflowBeans = new CsvToBeanBuilder<WorkflowBean>(new StringReader(normalizedCSVData))
-                .withType(WorkflowBean.class).build().parse();
+        List<WorkflowBean> workflowBeans = new CsvToBeanBuilder<WorkflowBean>(
+                new StringReader(csvData)).withType(WorkflowBean.class).build().parse();
 
         return Iterators.peekingIterator(workflowBeans.iterator());
     }
@@ -164,9 +168,6 @@ public class WorkflowParser {
             }
         }
 
-        if (numErrors == columnNames.size()) {
-            throw new MemberDataException("All column names missing. Line 1 does not look like a header row");
-        }
         if (errors.length() > 0) {
             throw new MemberDataException(errors.toString());
         }
@@ -210,8 +211,6 @@ public class WorkflowParser {
     }
 
     ControlBlock controlBlock() {
-
-        controlBlock.clear();
 
         WorkflowBean bean;
 

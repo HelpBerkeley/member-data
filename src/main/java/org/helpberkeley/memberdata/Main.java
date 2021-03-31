@@ -625,17 +625,12 @@ public class Main {
 
         long topic = (request.topic != null) ? request.topic : DRIVERS_POST_STAGING_TOPIC_ID;
 
-        String version = request.version;
-        if (version == null) {
-            version = Constants.CONTROL_BLOCK_CURRENT_VERSION;
-        }
-
         // Download file
         String routedDeliveries = apiClient.downloadFile(request.uploadFile.getFileName());
         request.postStatus(WorkRequestHandler.RequestStatus.Processing, "");
 
         try {
-            String statusMessage = generateDriverPosts(apiClient, users, routedDeliveries, version, topic,
+            String statusMessage = generateDriverPosts(apiClient, users, routedDeliveries, topic,
                     Constants.QUERY_GET_DRIVERS_POST_FORMAT,
                     Constants.QUERY_GET_GROUP_INSTRUCTIONS_FORMAT);
             request.postStatus(WorkRequestHandler.RequestStatus.Succeeded, statusMessage);
@@ -690,18 +685,13 @@ public class Main {
 
         long topic = (request.topic != null) ? request.topic : DRIVERS_POST_STAGING_TOPIC_ID;
 
-        String version = request.version;
-        if (version == null) {
-            version = Constants.CONTROL_BLOCK_CURRENT_VERSION;
-        }
-
         // Download file
         String routedDeliveries = apiClient.downloadFile(request.uploadFile.getFileName());
         request.postStatus(WorkRequestHandler.RequestStatus.Processing, "");
 
         try {
             String statusMessage = generateDriverPosts(
-                    apiClient, users, routedDeliveries, version, topic,
+                    apiClient, users, routedDeliveries, topic,
                     Constants.QUERY_GET_ONE_KITCHEN_DRIVERS_POST_FORMAT_V1,
                     Constants.QUERY_GET_ONE_KITCHEN_GROUP_POST_FORMAT_V1);
             request.postStatus(WorkRequestHandler.RequestStatus.Succeeded, statusMessage);
@@ -713,7 +703,7 @@ public class Main {
     }
 
     private static String generateDriverPosts(ApiClient apiClient, Map<String, User> users, String routedDeliveries,
-            String version, long topic, int driverFormatQuery, int groupFormatQuery) {
+            long topic, int driverFormatQuery, int groupFormatQuery) {
 
         StringBuilder statusMessages = new StringBuilder();
         List<String> postURLs = new ArrayList<>();
@@ -721,7 +711,7 @@ public class Main {
         String backupPostURL = null;
 
         DriverPostFormat driverPostFormat = new DriverPostFormat(
-                apiClient, users, version, routedDeliveries, driverFormatQuery, groupFormatQuery);
+                apiClient, users, routedDeliveries, driverFormatQuery, groupFormatQuery);
 
         List<String> posts = driverPostFormat.generateDriverPosts();
         Iterator<Driver> driverIterator = driverPostFormat.getDrivers().iterator();
@@ -899,11 +889,8 @@ public class Main {
             String completedDeliveries = apiClient.downloadFile(request.uploadFile.getFileName());
 
             // Validate
-            new DriverPostFormat(
-                    apiClient, users, Constants.CONTROL_BLOCK_CURRENT_VERSION,
-                    completedDeliveries,
-                    Constants.QUERY_GET_DRIVERS_POST_FORMAT,
-                    Constants.QUERY_GET_GROUP_INSTRUCTIONS_FORMAT);
+            new DriverPostFormat(apiClient, users, completedDeliveries,
+                    Constants.QUERY_GET_DRIVERS_POST_FORMAT, Constants.QUERY_GET_GROUP_INSTRUCTIONS_FORMAT);
 
         } catch (MemberDataException ex) {
             String reason = ex.getCause() != null ? ex.getCause().getMessage() : ex.getMessage();

@@ -181,9 +181,6 @@ public class Constants {
     public static final String CONTROL_BLOCK_VERSION_1 = "1";
     public static final String CONTROL_BLOCK_VERSION_2_0_0 = "2-0-0";
 
-    public static final String CONTROL_BLOCK_CURRENT_VERSION = CONTROL_BLOCK_VERSION_2_0_0;
-
-
     public static final long UNKNOWN_USER_ID = 852;
     public static final String UNKNOWN_USER = "unknown-user";
 

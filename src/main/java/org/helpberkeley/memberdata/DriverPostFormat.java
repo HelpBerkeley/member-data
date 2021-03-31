@@ -36,31 +36,28 @@ public class DriverPostFormat {
     private final List<MessageBlock> groupInstructionMessageBlocks = new ArrayList<>();
     private final List<MessageBlock> backupDriverMessageBlocks = new ArrayList<>();
     private final Map<String, User> users;
-    private final String expectedControlBlockVersion;
     private List<Driver> drivers;
     private ControlBlock controlBlock;
     private Map<String, Restaurant> restaurants;
+    private String restaurantTemplateVersion;
     private final StringBuilder statusMessages = new StringBuilder();
     private final int driverTemplateQuery;
     private final int groupTemplateQuery;
 
-    DriverPostFormat(ApiClient apiClient, Map<String, User> users, String expectedControlBlockVersion,
-                     String routedDeliveries) {
+    DriverPostFormat(ApiClient apiClient, Map<String, User> users, String routedDeliveries) {
         this.apiClient = apiClient;
         this.users = users;
-        this.expectedControlBlockVersion = expectedControlBlockVersion;
         this.driverTemplateQuery = Constants.QUERY_GET_DRIVERS_POST_FORMAT;
         this.groupTemplateQuery = Constants.QUERY_GET_GROUP_INSTRUCTIONS_FORMAT;
         initialize(routedDeliveries);
     }
 
     // FIX THIS, DS: cleanup duplicated code in ctor
-    DriverPostFormat(ApiClient apiClient, Map<String, User> users, String expectedControlBlockVersion,
+    DriverPostFormat(ApiClient apiClient, Map<String, User> users,
              String routedDeliveries, int driverTemplateQuery, int groupTemplateQuery) {
 
         this.apiClient = apiClient;
         this.users = users;
-        this.expectedControlBlockVersion = expectedControlBlockVersion;
         this.driverTemplateQuery = driverTemplateQuery;
         this.groupTemplateQuery = groupTemplateQuery;
         initialize(routedDeliveries);
@@ -282,16 +279,9 @@ public class DriverPostFormat {
         String rawPost = (String)columns[2];
         RestaurantTemplatePost restaurantTemplatePost = HBParser.restaurantTemplatePost(rawPost);
         String restaurantTemplate = apiClient.downloadFile(restaurantTemplatePost.uploadFile.getFileName());
-        String version = RestaurantTemplateParser.getVersion(restaurantTemplate);
-
-        if (version.equals(expectedControlBlockVersion)) {
-                RestaurantTemplateParser parser = new RestaurantTemplateParser(restaurantTemplate);
-                restaurants = parser.restaurants();
-                return;
-        }
-
-        throw new MemberDataException("Could not find a restaurant template with control block version "
-                + expectedControlBlockVersion);
+        RestaurantTemplateParser parser = new RestaurantTemplateParser(restaurantTemplate);
+        restaurantTemplateVersion = parser.getVersion();
+        restaurants = parser.restaurants();
     }
 
     private void loadDriverPostFormat() {

@@ -42,8 +42,7 @@ public class RoutedDeliveriesTest extends TestBase {
     public void parseRoutedTest() {
         String csvData = readResourceFile("routed-deliveries.csv");
 
-        DriverPostFormat driverPostFormat = new DriverPostFormat(createApiSimulator(),
-                users, Constants.CONTROL_BLOCK_CURRENT_VERSION, csvData);
+        DriverPostFormat driverPostFormat = new DriverPostFormat(createApiSimulator(), users, csvData);
         List<Driver> drivers = driverPostFormat.getDrivers();
 
         assertThat(drivers).hasSize(2);
@@ -188,8 +187,7 @@ public class RoutedDeliveriesTest extends TestBase {
     @Test
     public void parseRoutedWithSplitRestaurantTest() {
         String csvData = readResourceFile("routed-deliveries-with-split-restaurant.csv");
-        DriverPostFormat driverPostFormat = new DriverPostFormat(createApiSimulator(),
-                users, Constants.CONTROL_BLOCK_CURRENT_VERSION, csvData);
+        DriverPostFormat driverPostFormat = new DriverPostFormat(createApiSimulator(), users, csvData);
         List<Driver> drivers = driverPostFormat.getDrivers();
 
         assertThat(drivers).hasSize(4);
@@ -416,8 +414,7 @@ public class RoutedDeliveriesTest extends TestBase {
         String csvData = readResourceFile("routed-deliveries-turkey.csv");
         HttpClientSimulator.setQueryResponseFile(
                 Constants.QUERY_GET_CURRENT_VALIDATED_RESTAURANT_TEMPLATE, "restaurant-template-turkey.json");
-        DriverPostFormat driverPostFormat = new DriverPostFormat(createApiSimulator(),
-                users, Constants.CONTROL_BLOCK_CURRENT_VERSION, csvData);
+        DriverPostFormat driverPostFormat = new DriverPostFormat(createApiSimulator(), users, csvData);
         List<Driver> drivers = driverPostFormat.getDrivers();
 
         assertThat(drivers).hasSize(3);
@@ -568,8 +565,7 @@ public class RoutedDeliveriesTest extends TestBase {
     public void parseRoutedEmptyDeliveryTest() {
         String csvData = readResourceFile("routed-deliveries-empty-delivery.csv");
 
-        DriverPostFormat driverPostFormat = new DriverPostFormat(createApiSimulator(),
-                users, Constants.CONTROL_BLOCK_CURRENT_VERSION, csvData);
+        DriverPostFormat driverPostFormat = new DriverPostFormat(createApiSimulator(), users, csvData);
         List<Driver> drivers = driverPostFormat.getDrivers();
 
         assertThat(drivers).hasSize(2);

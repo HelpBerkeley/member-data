@@ -33,17 +33,17 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.ThrowableAssert.catchThrowable;
 
 @SuppressWarnings("unchecked")
-public class ControlBlockTest extends TestBase {
+public class ControlBlockV300Test extends TestBase {
 
     private final String controlBlockData;
     private final Map<String, User> users;
     private final Map<String, Restaurant> allRestaurants;
 
-    private static final String HEADER =
-        "Consumer,Driver,Name,User Name,Phone #,Phone2 #,Neighborhood,City,"
-        + "Address,Condo,Details,Restaurants,normal,veggie,#orders\n";
+    private static final String HEADER = "Consumer,Driver,Name,User Name,Phone #,Phone2 #,"
+            + "Neighborhood,City,Address,Condo,Details,Restaurants,std meals,alt meals,"
+            + "type meal,std grocery,alt grocery,type grocery,#orders\n";
 
-    public ControlBlockTest() {
+    public ControlBlockV300Test() {
         controlBlockData = readResourceFile("control-block.csv");
         List<User> userList = new Loader(createApiSimulator()).load();
         users = new Tables(userList).mapByUserName();

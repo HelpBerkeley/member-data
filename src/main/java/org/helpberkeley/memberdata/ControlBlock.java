@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020. helpberkeley.org
+ * Copyright (c) 2020-2021. helpberkeley.org
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,11 +25,17 @@ package org.helpberkeley.memberdata;
 import java.text.MessageFormat;
 import java.util.*;
 
-class ControlBlock {
+public abstract class ControlBlock {
 
     static final String INTRA_FIELD_SEPARATOR = "|";
     static final String ERROR_MISSING_OPS_MANAGER =
             "Control block missing a " + Constants.CONTROL_BLOCK_OPS_MANAGER + " entry.\n";
+
+    static final String BAD_HEADER_ROW = "Column names missing. Line 1 does not look like a header row";
+    static final String ERROR_WRONG_NUMBER_OF_VERSION_KEYS =
+            "Control block Version key must appear once and only once";
+    static final String ERROR_WRONG_NUMBER_OF_VERSION_VALUES =
+            "Too many non-empty columns. Control block Version value must appear once and only once";
 
     static final String UNKNOWN_BACKUP_DRIVER =
             Constants.CONTROL_BLOCK_BACKUP_DRIVER + " {0} is not a member. Misspelling?\n";
@@ -49,7 +55,8 @@ class ControlBlock {
             "Control block does not contain a "
             + Constants.CONTROL_BLOCK_SPLIT_RESTAURANT + " entry for {0}\n";
 
-    private String version = Constants.CONTROL_BLOCK_VERSION_UNKNOWN;
+    private final String header;
+    private final Set<String> columnNames;
     private final List<OpsManager> opsManagers = new ArrayList<>();
     private final Map<String, SplitRestaurant> splitRestaurantMap = new HashMap<>();
     private final List<String> backupDrivers = new ArrayList<>();
@@ -59,22 +66,52 @@ class ControlBlock {
 
     private final StringBuilder warnings = new StringBuilder();
 
-    ControlBlock() {
-
+    protected ControlBlock(String header) {
+        this.header = header;
+        columnNames = Set.of(header.split(Constants.CSV_SEPARATOR));
+        auditColumnNames();
     }
 
-    void audit(Map<String, User> users, Map<String, Restaurant> restaurants, List<Restaurant> splitRestaurants) {
-        StringBuilder errors = new StringBuilder();
-
-        auditVersion(errors);
-        auditOpsManager(errors, users);
-        auditSplitRestaurants(errors, users, restaurants, splitRestaurants);
-        auditBackupDrivers(errors, users);
-
-        if (errors.length() != 0) {
-            throw new MemberDataException(errors.toString());
+    private void auditColumnNames() {
+        if ((! columnNames.contains(Constants.WORKFLOW_CONSUMER_COLUMN))
+                && (! columnNames.contains(Constants.WORKFLOW_DRIVER_COLUMN))
+                && (! columnNames.contains(Constants.WORKFLOW_USER_NAME_COLUMN))
+                && (! columnNames.contains(Constants.WORKFLOW_NAME_COLUMN))
+                && (! columnNames.contains(Constants.WORKFLOW_CITY_COLUMN))) {
+            throw new MemberDataException(BAD_HEADER_ROW);
         }
     }
+
+    public static ControlBlock createControlBlock(String csvData) {
+
+        // Normalize lines
+        String normalized = csvData.replaceAll("\\r\\n?", "\n");
+        // Break into lines
+        String[] lines = normalized.split("\n");
+
+        String header = lines[0];
+
+        if (! header.contains(Constants.CSV_SEPARATOR)) {
+            throw new MemberDataException(BAD_HEADER_ROW + ": " + header + "\n");
+        }
+
+        String version = new VersionParser(lines).version();
+
+        switch (version) {
+            case Constants.CONTROL_BLOCK_VERSION_UNKNOWN:
+                return new ControlBlockV0(header);
+            case Constants.CONTROL_BLOCK_VERSION_1:
+                return new ControlBlockV1(header);
+            case Constants.CONTROL_BLOCK_VERSION_2_0_0:
+                return new ControlBlockV200(header);
+            default:
+                throw new MemberDataException(
+                        "Control block version " + version + " is not supported.\n");
+        }
+    }
+
+    abstract void audit(Map<String, User> users,
+            Map<String, Restaurant> restaurants, List<Restaurant> splitRestaurants);
 
     boolean lateArrivalAuditDisabled() {
         return disableLateArrivalAudit;
@@ -88,18 +125,7 @@ class ControlBlock {
         return disableRestaurantsAudit;
     }
 
-    private void auditVersion(StringBuilder errors) {
-        switch (version) {
-            case Constants.CONTROL_BLOCK_VERSION_UNKNOWN:
-            case Constants.CONTROL_BLOCK_VERSION_1:
-            case Constants.CONTROL_BLOCK_VERSION_2_0_0:
-                return;
-        }
-
-        errors.append("Control block version ").append(version).append(" is not supported.\n");
-    }
-
-    private void auditOpsManager(StringBuilder errors, Map<String, User> users) {
+    protected void auditOpsManager(StringBuilder errors, Map<String, User> users) {
         if (opsManagers.isEmpty()) {
             errors.append(ERROR_MISSING_OPS_MANAGER);
         }
@@ -133,8 +159,8 @@ class ControlBlock {
     //  - cleanup driver is a valid user name
     //  - cleanup driver is picking up at that restaurant
     //
-    private void auditSplitRestaurants(StringBuilder errors, Map<String, User> users,
-            Map<String, Restaurant> allRestaurants, List<Restaurant> splitRestaurants) {
+    protected void auditSplitRestaurants(StringBuilder errors, Map<String, User> users,
+                   Map<String, Restaurant> allRestaurants, List<Restaurant> splitRestaurants) {
 
         if (disableSplitRestaurantAudits) {
             return;
@@ -170,7 +196,7 @@ class ControlBlock {
         }
     }
 
-    private void auditBackupDrivers(StringBuilder errors, Map<String, User> users) {
+    protected void auditBackupDrivers(StringBuilder errors, Map<String, User> users) {
         if (backupDrivers.isEmpty()) {
             warnings.append("No " + Constants.CONTROL_BLOCK_BACKUP_DRIVER + " set in the control block.\n");
         }
@@ -186,9 +212,7 @@ class ControlBlock {
         }
     }
 
-    String getVersion() {
-        return version;
-    }
+    public abstract String getVersion();
 
     List<OpsManager> getOpsManagers() {
         return opsManagers;
@@ -220,14 +244,6 @@ class ControlBlock {
 
     List<String> getBackupDrivers() {
         return backupDrivers;
-    }
-
-    void clear()
-    {
-        version = Constants.CONTROL_BLOCK_VERSION_UNKNOWN;
-        opsManagers.clear();
-        splitRestaurantMap.clear();
-        backupDrivers.clear();
     }
 
     void processRow(WorkflowBean bean, long lineNumber) {
@@ -295,7 +311,9 @@ class ControlBlock {
     }
 
     private void processVersion(String value) {
-        this.version = value;
+        if (! value.equals(getVersion())) {
+            throw new MemberDataException("Control block version mismatch: " + value + " and " + getVersion());
+        }
     }
 
     private void processAuditControl(String variable, String value, long lineNumber) {
@@ -549,6 +567,91 @@ class ControlBlock {
         @Override
         public int hashCode() {
             return Objects.hash(userName, phone);
+        }
+    }
+
+    private static class VersionParser {
+
+        final String[] lines;
+
+        VersionParser(String[] lines) {
+            this.lines = lines;
+        }
+
+        String version() {
+
+            boolean lookingForControlBlock = true;
+
+            int lineNumber = 0;
+            for (String line : lines) {
+
+                lineNumber++;
+
+                if (! line.startsWith("FALSE,FALSE,")) {
+                    continue;
+                }
+
+                if (lookingForControlBlock && line.contains(Constants.CONTROL_BLOCK_BEGIN)) {
+                    lookingForControlBlock = false;
+                    continue;
+                }
+
+                if (line.contains(Constants.CONTROL_BLOCK_COMMENT)) {
+                    continue;
+                }
+
+                if (line.contains(Constants.CONTROL_BLOCK_END)) {
+                    break;
+                }
+
+                if (line.contains(Constants.CONTROL_BLOCK_VERSION)) {
+                    return parseVersion(line, lineNumber);
+                }
+            }
+
+            return Constants.CONTROL_BLOCK_VERSION_UNKNOWN;
+        }
+
+        private String parseVersion(String line, int lineNumber) {
+            // remove whitespace and split into columns
+            String[] columns = line.replaceAll(" ", "").split(",");
+            String value = null;
+            int versionTags = 0;
+            int values = 0;
+
+            assert columns.length > 1 : lineNumber + ": " + line;
+            assert columns[0].equalsIgnoreCase("FALSE") : lineNumber + ": " + line;
+            assert columns[1].equalsIgnoreCase("FALSE") : lineNumber + ": " + line;
+
+            int columnNumber = 0;
+            for (String column : columns) {
+
+                columnNumber++;
+
+                if ((columnNumber == 1) || (columnNumber == 2) || column.isEmpty()) {
+                    continue;
+                }
+
+                if (column.equals(Constants.CONTROL_BLOCK_VERSION)) {
+                    versionTags++;
+                } else {
+                    values++;
+                    value = column;
+                }
+            }
+
+            if (versionTags != 1) {
+                raiseException(ERROR_WRONG_NUMBER_OF_VERSION_KEYS, line, lineNumber);
+            } else if (values != 1) {
+                raiseException(ERROR_WRONG_NUMBER_OF_VERSION_VALUES, line, lineNumber);
+            }
+
+            return value;
+        }
+
+        private void raiseException(String error, String line, int lineNumber) {
+            throw new MemberDataException("Line " + lineNumber + ": "
+                    + error + ":\n" + line + "\n");
         }
     }
 }
