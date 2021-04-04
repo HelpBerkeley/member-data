@@ -23,6 +23,8 @@
 
 package org.helpberkeley.memberdata;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -48,5 +50,34 @@ class ControlBlockV300 extends ControlBlock {
     @Override
     public String getVersion() {
         return Constants.CONTROL_BLOCK_VERSION_300;
+    }
+
+    @Override
+    List<String> processAltMealOptions(String value, long lineNumber) {
+        // FIX THIS, DS: is there auditing to do here?
+         return processList(value, lineNumber);
+    }
+
+    @Override
+    List<String> processAltGroceryOptions(String value, long lineNumber) {
+        // FIX THIS, DS: is there auditing to do here?
+        return processList(value, lineNumber);
+    }
+
+    @Override
+    List<String> processStartTimes(String value, long lineNumber) {
+        // FIX THIS, DS: is there auditing to do here?
+        return processList(value, lineNumber);
+    }
+
+    @Override
+    List<String> processPickupManagers(String value, long lineNumber) {
+        // FIX THIS, DS: is there auditing to do here?
+        return processList(value, lineNumber);
+    }
+
+    private List<String> processList(String value, long lineNumber) {
+        // FIX THIS, DS: is there auditing to do here?
+         return Arrays.asList(value.split("\\s*,\\s*"));
     }
 }

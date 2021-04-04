@@ -181,6 +181,10 @@ public class Constants {
     public static final String CONTROL_BLOCK_LATE_ARRIVAL_AUDIT = "LateArrivalAudit";
     public static final String CONTROL_BLOCK_UNVISITED_RESTAURANTS_AUDIT = "UnvisitedRestaurantsAudit";
     public static final String CONTROL_BLOCK_SPLIT_RESTAURANT_AUDITS = "SplitRestaurantAudits";
+    public static final String CONTROL_BLOCK_ALT_MEAL_OPTIONS = "AltMealOptions()";
+    public static final String CONTROL_BLOCK_ALT_GROCERY_OPTIONS = "AltGroceryOptions()";
+    public static final String CONTROL_BLOCK_START_TIMES = "StartTimes()";
+    public static final String CONTROL_BLOCK_PICKUP_MANAGERS = "PickupManagers()";
 
     public static final String CONTROL_BLOCK_VALUE_DEFAULT_PREFIX = "ReplaceThisBy";
     public static final String CONTROL_BLOCK_VERSION_UNKNOWN = "0";

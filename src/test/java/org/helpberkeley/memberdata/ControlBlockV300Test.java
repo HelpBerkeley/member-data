@@ -22,8 +22,14 @@
  */
 package org.helpberkeley.memberdata;
 
+import org.junit.Test;
+
+import java.text.MessageFormat;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class ControlBlockV300Test extends ControlBlockTestBase{
 
@@ -91,5 +97,89 @@ public class ControlBlockV300Test extends ControlBlockTestBase{
     @Override
     protected Map<String, Restaurant> getAllRestaurants() {
         return allRestaurants;
+    }
+
+    @Test
+    public void altMealOptionsTest() {
+        String key = Constants.CONTROL_BLOCK_ALT_MEAL_OPTIONS;
+        String value = "\"none, veggie , noRed,noPork \"";
+
+        String workFlowData = HEADER
+                + CONTROL_BLOCK_BEGIN_ROW
+                + CONTROL_BLOCK_VERSION_ROW
+                + getKeyValueRow(key, value)
+                + CONTROL_BLOCK_END_ROW;
+
+        WorkflowParser workflowParser = WorkflowParser.create(
+                WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, Collections.EMPTY_MAP, workFlowData);
+        ControlBlock controlBlock = workflowParser.controlBlock();
+        assertThat(controlBlock.getWarnings()).isEmpty();
+        assertThat(controlBlock.getAltMealOptions()).containsExactly("none", "veggie", "noRed", "noPork");
+        assertThat(controlBlock.getAltGroceryOptions()).isEmpty();
+        assertThat(controlBlock.getStartTimes()).isEmpty();
+        assertThat(controlBlock.getPickupManagers()).isEmpty();
+    }
+
+    @Test
+    public void altGroceryOptionsTest() {
+        String key = Constants.CONTROL_BLOCK_ALT_GROCERY_OPTIONS;
+        String value = "\"none, veg, custom pick\"";
+
+        String workFlowData = HEADER
+                + CONTROL_BLOCK_BEGIN_ROW
+                + CONTROL_BLOCK_VERSION_ROW
+                + getKeyValueRow(key, value)
+                + CONTROL_BLOCK_END_ROW;
+
+        WorkflowParser workflowParser = WorkflowParser.create(
+                WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, Collections.EMPTY_MAP, workFlowData);
+        ControlBlock controlBlock = workflowParser.controlBlock();
+        assertThat(controlBlock.getWarnings()).isEmpty();
+        assertThat(controlBlock.getAltGroceryOptions()).containsExactly("none", "veg", "custom pick");
+        assertThat(controlBlock.getAltMealOptions()).isEmpty();
+        assertThat(controlBlock.getStartTimes()).isEmpty();
+        assertThat(controlBlock.getPickupManagers()).isEmpty();
+    }
+
+    @Test
+    public void startTimesTest() {
+        String key = Constants.CONTROL_BLOCK_START_TIMES;
+        String value = "\"3:00, 3:10, 3:15\"";
+
+        String workFlowData = HEADER
+                + CONTROL_BLOCK_BEGIN_ROW
+                + CONTROL_BLOCK_VERSION_ROW
+                + getKeyValueRow(key, value)
+                + CONTROL_BLOCK_END_ROW;
+
+        WorkflowParser workflowParser = WorkflowParser.create(
+                WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, Collections.EMPTY_MAP, workFlowData);
+        ControlBlock controlBlock = workflowParser.controlBlock();
+        assertThat(controlBlock.getWarnings()).isEmpty();
+        assertThat(controlBlock.getStartTimes()).containsExactly("3:00", "3:10", "3:15");
+        assertThat(controlBlock.getAltMealOptions()).isEmpty();
+        assertThat(controlBlock.getAltGroceryOptions()).isEmpty();
+        assertThat(controlBlock.getPickupManagers()).isEmpty();
+    }
+
+    @Test
+    public void pickupManagersTest() {
+        String key = Constants.CONTROL_BLOCK_PICKUP_MANAGERS;
+        String value = "\"John, Jacob, Jingleheimer\"";
+
+        String workFlowData = HEADER
+                + CONTROL_BLOCK_BEGIN_ROW
+                + CONTROL_BLOCK_VERSION_ROW
+                + getKeyValueRow(key, value)
+                + CONTROL_BLOCK_END_ROW;
+
+        WorkflowParser workflowParser = WorkflowParser.create(
+                WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, Collections.EMPTY_MAP, workFlowData);
+        ControlBlock controlBlock = workflowParser.controlBlock();
+        assertThat(controlBlock.getWarnings()).isEmpty();
+        assertThat(controlBlock.getPickupManagers()).containsExactly("John", "Jacob", "Jingleheimer");
+        assertThat(controlBlock.getStartTimes()).isEmpty();
+        assertThat(controlBlock.getAltMealOptions()).isEmpty();
+        assertThat(controlBlock.getAltGroceryOptions()).isEmpty();
     }
 }

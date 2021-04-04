@@ -55,21 +55,32 @@ public abstract class ControlBlock {
             "Control block does not contain a "
             + Constants.CONTROL_BLOCK_SPLIT_RESTAURANT + " entry for {0}\n";
 
+    static final String UNSUPPORTED =
+            "{0} (line {1}) is not supported in control block version {2}\n";
+
     private final String header;
     private final Set<String> columnNames;
     private final List<OpsManager> opsManagers = new ArrayList<>();
     private final Map<String, SplitRestaurant> splitRestaurantMap = new HashMap<>();
     private final List<String> backupDrivers = new ArrayList<>();
+    private final List<String> altMealOptions = new ArrayList<>();
+    private final List<String> altGroceryOptions = new ArrayList<>();
+    private final List<String> startTimes = new ArrayList<>();
+    private final List<String> pickupManagers = new ArrayList<>();
     private boolean disableLateArrivalAudit = false;
     private boolean disableSplitRestaurantAudits = false;
     private boolean disableRestaurantsAudit = false;
 
-    private final StringBuilder warnings = new StringBuilder();
+    final StringBuilder warnings = new StringBuilder();
 
     protected ControlBlock(String header) {
         this.header = header;
         columnNames = Set.of(header.split(Constants.CSV_SEPARATOR));
         auditColumnNames();
+    }
+
+    protected void unsupported(long lineNumber, String feature) {
+        warnings.append(MessageFormat.format(UNSUPPORTED, feature, lineNumber, getVersion()));
     }
 
     private void auditColumnNames() {
@@ -248,6 +259,26 @@ public abstract class ControlBlock {
         return backupDrivers;
     }
 
+    List<String> getAltMealOptions() {
+        // FIX THIS, DS: audit that the current version supports thist?
+        return altMealOptions;
+    }
+
+    List<String> getAltGroceryOptions() {
+        // FIX THIS, DS: audit that the current version supports thist?
+        return altGroceryOptions;
+    }
+
+    List<String> getStartTimes() {
+        // FIX THIS, DS: audit that the current version supports thist?
+        return startTimes;
+    }
+
+    List<String> getPickupManagers() {
+        // FIX THIS, DS: audit that the current version supports thist?
+        return pickupManagers;
+    }
+
     void processRow(WorkflowBean bean, long lineNumber) {
 
         String variable = bean.getControlBlockKey().replaceAll(" ", "");
@@ -270,6 +301,18 @@ public abstract class ControlBlock {
             case Constants.CONTROL_BLOCK_UNVISITED_RESTAURANTS_AUDIT:
             case Constants.CONTROL_BLOCK_SPLIT_RESTAURANT_AUDITS:
                 processAuditControl(variable, value, lineNumber);
+                break;
+            case Constants.CONTROL_BLOCK_ALT_MEAL_OPTIONS:
+                altMealOptions.addAll(processAltMealOptions(value, lineNumber));
+                break;
+            case Constants.CONTROL_BLOCK_ALT_GROCERY_OPTIONS:
+                altGroceryOptions.addAll(processAltGroceryOptions(value, lineNumber));
+                break;
+            case Constants.CONTROL_BLOCK_START_TIMES:
+                startTimes.addAll(processStartTimes(value, lineNumber));
+                break;
+            case Constants.CONTROL_BLOCK_PICKUP_MANAGERS:
+                pickupManagers.addAll(processPickupManagers(value, lineNumber));
                 break;
             default:
                 warnings.append("Unknown key \"")
@@ -502,6 +545,30 @@ public abstract class ControlBlock {
         }
 
         backupDrivers.add(backupDriver);
+    }
+
+    List<String> processAltMealOptions(String value, long lineNumber) {
+        unsupported(lineNumber, Constants.CONTROL_BLOCK_ALT_MEAL_OPTIONS);
+
+        return Collections.EMPTY_LIST;
+    }
+
+    List<String> processAltGroceryOptions(String value, long lineNumber) {
+        unsupported(lineNumber, Constants.CONTROL_BLOCK_ALT_GROCERY_OPTIONS);
+
+        return Collections.EMPTY_LIST;
+    }
+
+    List<String> processStartTimes(String value, long lineNumber) {
+        unsupported(lineNumber, Constants.CONTROL_BLOCK_START_TIMES);
+
+        return Collections.EMPTY_LIST;
+    }
+
+    List<String> processPickupManagers(String value, long lineNumber) {
+        unsupported(lineNumber, Constants.CONTROL_BLOCK_PICKUP_MANAGERS);
+
+        return Collections.EMPTY_LIST;
     }
 
     static class SplitRestaurant {

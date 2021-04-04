@@ -107,6 +107,78 @@ public class ControlBlockV200Test extends ControlBlockTestBase {
         return EMPTY_ROW.replaceFirst(",,,,,,,", "FALSE,FALSE,," + key + ",,,," + value);
     }
 
+    @Test
+    public void altMealOptionsTest() {
+        String key = Constants.CONTROL_BLOCK_ALT_MEAL_OPTIONS;
+        String value = "\"none, veggie, noRed,noPork \"";
+
+        String workFlowData = HEADER
+                + CONTROL_BLOCK_BEGIN_ROW
+                + CONTROL_BLOCK_VERSION_ROW
+                + getKeyValueRow(key, value)
+                + CONTROL_BLOCK_END_ROW;
+
+        WorkflowParser workflowParser = WorkflowParser.create(
+                WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, Collections.EMPTY_MAP, workFlowData);
+        ControlBlock controlBlock = workflowParser.controlBlock();
+        assertThat(controlBlock.getWarnings()).contains(
+                MessageFormat.format(ControlBlock.UNSUPPORTED, key, 4, Constants.CONTROL_BLOCK_VERSION_200));
+    }
+
+    @Test
+    public void altGroceryOptionsTest() {
+        String key = Constants.CONTROL_BLOCK_ALT_GROCERY_OPTIONS;
+        String value = "\"none, veg, custom pick\"";
+
+        String workFlowData = HEADER
+                + CONTROL_BLOCK_BEGIN_ROW
+                + CONTROL_BLOCK_VERSION_ROW
+                + getKeyValueRow(key, value)
+                + CONTROL_BLOCK_END_ROW;
+
+        WorkflowParser workflowParser = WorkflowParser.create(
+                WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, Collections.EMPTY_MAP, workFlowData);
+        ControlBlock controlBlock = workflowParser.controlBlock();
+        assertThat(controlBlock.getWarnings()).contains(
+                MessageFormat.format(ControlBlock.UNSUPPORTED, key, 4, Constants.CONTROL_BLOCK_VERSION_200));
+    }
+
+    @Test
+    public void startTimesTest() {
+        String key = Constants.CONTROL_BLOCK_START_TIMES;
+        String value = "\"3:00, 3:10, 3:15\"";
+
+        String workFlowData = HEADER
+                + CONTROL_BLOCK_BEGIN_ROW
+                + CONTROL_BLOCK_VERSION_ROW
+                + getKeyValueRow(key, value)
+                + CONTROL_BLOCK_END_ROW;
+
+        WorkflowParser workflowParser = WorkflowParser.create(
+                WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, Collections.EMPTY_MAP, workFlowData);
+        ControlBlock controlBlock = workflowParser.controlBlock();
+        assertThat(controlBlock.getWarnings()).contains(
+                MessageFormat.format(ControlBlock.UNSUPPORTED, key, 4, Constants.CONTROL_BLOCK_VERSION_200));
+    }
+
+    @Test
+    public void pickupManagersTest() {
+        String key = Constants.CONTROL_BLOCK_PICKUP_MANAGERS;
+        String value = "\"John, Jacob, Jingleheimer\"";
+
+        String workFlowData = HEADER
+                + CONTROL_BLOCK_BEGIN_ROW
+                + CONTROL_BLOCK_VERSION_ROW
+                + getKeyValueRow(key, value)
+                + CONTROL_BLOCK_END_ROW;
+
+        WorkflowParser workflowParser = WorkflowParser.create(
+                WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, Collections.EMPTY_MAP, workFlowData);
+        ControlBlock controlBlock = workflowParser.controlBlock();
+        assertThat(controlBlock.getWarnings()).contains(
+                MessageFormat.format(ControlBlock.UNSUPPORTED, key, 4, Constants.CONTROL_BLOCK_VERSION_200));
+    }
+
     /** Verify audit of a split restaurant not having a cleanup driver in the control block */
     @Test
     public void auditSplitRestaurantNoCleanupTest() {
