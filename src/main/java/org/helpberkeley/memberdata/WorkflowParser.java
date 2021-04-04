@@ -24,12 +24,10 @@ package org.helpberkeley.memberdata;
 
 import com.google.common.collect.Iterators;
 import com.google.common.collect.PeekingIterator;
-import com.opencsv.bean.CsvToBeanBuilder;
 
-import java.io.StringReader;
 import java.util.*;
 
-public class WorkflowParser {
+public abstract class WorkflowParser {
 
     public enum Mode {
         /** The CSV data is for passing to the routing software */
@@ -38,32 +36,56 @@ public class WorkflowParser {
         DRIVER_MESSAGE_REQUEST,
     }
 
-    private final Mode mode;
-    private final ControlBlock controlBlock;
-    private long lineNumber = 1;
-    private final PeekingIterator<WorkflowBean> iterator;
-    private final Map<String, Restaurant> globalRestaurants;
-    private final String normalizedCSVData;
+    protected final Mode mode;
+    protected final ControlBlock controlBlock;
+    protected long lineNumber = 1;
+    protected final PeekingIterator<WorkflowBean> iterator;
+    protected Map<String, Restaurant> globalRestaurants;
+    protected final String normalizedCSVData;
 
-    WorkflowParser(Mode mode, Map<String, Restaurant> globalRestaurants, final String csvData) {
+    protected WorkflowParser(Mode mode, final String csvData) {
         this.mode = mode;
-        assert mode == Mode.DRIVER_MESSAGE_REQUEST : mode;
-        this.globalRestaurants = globalRestaurants;
         // Normalize EOL
         normalizedCSVData = csvData.replaceAll("\\r\\n?", "\n");
-        controlBlock = ControlBlock.createControlBlock(normalizedCSVData);
-        iterator = initializeIterator(normalizedCSVData);
-    }
-
-    public WorkflowParser(Mode mode, final String csvData) {
-        this.mode = mode;
-        assert mode == Mode.DRIVER_ROUTE_REQUEST : mode;
-        this.globalRestaurants = null;
-        // Normalize EOL
-        normalizedCSVData = csvData.replaceAll("\\r\\n?", "\n");
-        controlBlock = ControlBlock.createControlBlock(normalizedCSVData);
+        controlBlock = ControlBlock.create(normalizedCSVData);
         iterator = initializeIterator(csvData);
     }
+
+    public static WorkflowParser create(
+            Mode mode, Map<String, Restaurant> globalRestaurants, String csvData) {
+
+        ControlBlock controlBlock = ControlBlock.create(csvData);
+        WorkflowParser workflowParser;
+
+        switch (controlBlock.getVersion()) {
+            case Constants.CONTROL_BLOCK_VERSION_UNKNOWN:
+                throw new MemberDataException("Control block not found");
+            case Constants.CONTROL_BLOCK_VERSION_1:
+                throw new MemberDataException(
+                        "Control block version " + controlBlock.getVersion() + " is not supported.\n");
+            case Constants.CONTROL_BLOCK_VERSION_200:
+                workflowParser = new WorkflowParserV200(mode, csvData);
+                break;
+            case Constants.CONTROL_BLOCK_VERSION_300:
+                workflowParser = new WorkflowParserV300(mode, csvData);
+                break;
+            default:
+                throw new MemberDataException(
+                        "Control block version " + controlBlock.getVersion() + " is not supported.\n");
+        }
+
+        workflowParser.globalRestaurants = globalRestaurants;
+        return workflowParser;
+    }
+
+    protected abstract List<WorkflowBean> parse(String csvData);
+    /**
+     * Check for missing columns.
+     * @param csvData Normalized workflow spreadsheet data
+     * @throws MemberDataException If there are any missing columns.
+     */
+    protected abstract void auditColumnNames(final String csvData);
+
 
     public String rawControlBlock() {
 
@@ -98,9 +120,7 @@ public class WorkflowParser {
         assert ! csvData.isEmpty() : "empty workflow";
         auditColumnNames(csvData);
 
-        List<WorkflowBean> workflowBeans = new CsvToBeanBuilder<WorkflowBean>(
-                new StringReader(csvData)).withType(WorkflowBean.class).build().parse();
-
+        List<WorkflowBean> workflowBeans = parse(csvData);
         return Iterators.peekingIterator(workflowBeans.iterator());
     }
 
@@ -109,7 +129,7 @@ public class WorkflowParser {
      * Increments current line number
      * @return Next bean, or null if at end.
      */
-    private WorkflowBean nextRow() {
+    protected final WorkflowBean nextRow() {
         if (iterator.hasNext()) {
             lineNumber++;
             return iterator.next();
@@ -122,55 +142,12 @@ public class WorkflowParser {
      * Does not increment current line number
      * @return Next bean, or null if at end.
      */
-    private WorkflowBean peekNextRow() {
+    protected final WorkflowBean peekNextRow() {
         if (! iterator.hasNext()) {
             return null;
         }
 
         return iterator.peek();
-    }
-
-    /**
-     * Check for missing columns.
-     * @param csvData Normalized workflow spreadsheet data
-     * @throws MemberDataException If there are any missing columns.
-     */
-    private void auditColumnNames(final String csvData) {
-        List<String> columnNames = List.of(
-                Constants.WORKFLOW_ADDRESS_COLUMN,
-                Constants.WORKFLOW_ALT_PHONE_COLUMN,
-                Constants.WORKFLOW_CITY_COLUMN,
-                Constants.WORKFLOW_CONDO_COLUMN,
-                Constants.WORKFLOW_CONSUMER_COLUMN,
-                Constants.WORKFLOW_DETAILS_COLUMN,
-                Constants.WORKFLOW_DRIVER_COLUMN,
-                Constants.WORKFLOW_NAME_COLUMN,
-                Constants.WORKFLOW_NEIGHBORHOOD_COLUMN,
-                Constants.WORKFLOW_NORMAL_COLUMN,
-                Constants.WORKFLOW_ORDERS_COLUMN,
-                Constants.WORKFLOW_PHONE_COLUMN,
-                Constants.WORKFLOW_RESTAURANTS_COLUMN,
-                Constants.WORKFLOW_USER_NAME_COLUMN,
-                Constants.WORKFLOW_VEGGIE_COLUMN);
-
-        // get the header line
-        String header = csvData.substring(0, csvData.indexOf('\n'));
-
-        String[] columns = header.split(",");
-        Set<String> set = new HashSet<>(Arrays.asList(columns));
-
-        int numErrors = 0;
-        StringBuilder errors = new StringBuilder();
-        for (String columnName : columnNames) {
-            if (! set.contains(columnName)) {
-                errors.append("Missing column header: ").append(columnName).append("\n");
-                numErrors++;
-            }
-        }
-
-        if (errors.length() > 0) {
-            throw new MemberDataException(errors.toString());
-        }
     }
 
     public List<Driver> drivers() {
@@ -453,7 +430,7 @@ public class WorkflowParser {
             restaurant.setOrders(orders);
 
             // FIX THIS, DS: refactor to a single map of restaurants
-            if (globalRestaurants != null) {
+            if (mode == Mode.DRIVER_MESSAGE_REQUEST) {
                 Restaurant globalRestaurant = globalRestaurants.get(restaurantName);
                 if (globalRestaurant == null) {
                     throw new MemberDataException("Restaurant " + restaurantName + ", line number " + lineNumber

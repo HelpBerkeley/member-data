@@ -39,15 +39,6 @@ import static java.time.temporal.ChronoUnit.*;
 
 public class TestBase {
 
-    static final String  CONTROL_BLOCK_BEGIN_ROW =
-            "FALSE,FALSE," + Constants.CONTROL_BLOCK_BEGIN + ",,,,,,,,,,,,\n";
-    static final String  CONTROL_BLOCK_END_ROW =
-            "FALSE,FALSE," + Constants.CONTROL_BLOCK_END + ",,,,,,,,,,,,\n";
-    static final String  CONTROL_BLOCK_VERSION_2_0_0_ROW =
-            "FALSE,FALSE,,Version,,,,2-0-0,,,,,,,\n";
-    static final String MINIMUM_CONTROL_BLOCK =
-            CONTROL_BLOCK_BEGIN_ROW + CONTROL_BLOCK_VERSION_2_0_0_ROW + CONTROL_BLOCK_END_ROW;
-
     static final String TEST_NAME_1 = "name 1";
     static final long TEST_ID_1 = 1;
     static final String TEST_USER_NAME_1 = "userName1";

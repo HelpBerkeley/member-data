@@ -279,7 +279,7 @@ public class DriverPostFormat {
         String rawPost = (String)columns[2];
         RestaurantTemplatePost restaurantTemplatePost = HBParser.restaurantTemplatePost(rawPost);
         String restaurantTemplate = apiClient.downloadFile(restaurantTemplatePost.uploadFile.getFileName());
-        RestaurantTemplateParser parser = new RestaurantTemplateParser(restaurantTemplate);
+        RestaurantTemplateParser parser = RestaurantTemplateParser.create(restaurantTemplate);
         restaurantTemplateVersion = parser.getVersion();
         restaurants = parser.restaurants();
     }
@@ -330,8 +330,8 @@ public class DriverPostFormat {
     }
 
     private void loadRoutedDeliveries(final String routedDeliveries) {
-        WorkflowParser parser =
-                new WorkflowParser(WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, restaurants, routedDeliveries);
+        WorkflowParser parser = WorkflowParser.create(
+                WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, restaurants, routedDeliveries);
         drivers = parser.drivers();
         controlBlock = parser.getControlBlock();
 

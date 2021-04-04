@@ -31,9 +31,16 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
 
 public class ControlBlockRestaurantTemplateTest extends TestBase {
+
+    // FIX THIS, DS; abstract and make multi-version
+    private final static String MINIMUM_CONTROL_BLOCK =
+            "FALSE,FALSE," + Constants.CONTROL_BLOCK_BEGIN + ",,,,,,,,,,,,\n" +
+            "FALSE,FALSE,,Version,,,,2-0-0,,,,,,,\n" +
+            "FALSE,FALSE," + Constants.CONTROL_BLOCK_END + ",,,,,,,,,,,,\n";
+
     @Test
     public void emptyDataTest() {
-        Throwable thrown = catchThrowable(() -> new RestaurantTemplateParser(""));
+        Throwable thrown = catchThrowable(() -> RestaurantTemplateParser.create(""));
         assertThat(thrown).isInstanceOf(MemberDataException.class);
         assertThat(thrown).hasMessage(RestaurantTemplateParser.TEMPLATE_ERROR
                 + RestaurantTemplateParser.ERROR_NO_DATA);
@@ -42,7 +49,7 @@ public class ControlBlockRestaurantTemplateTest extends TestBase {
     @Test
     public void csvParseErrorTest() {
         final String badCSV = "This is neither poetry nor CSV data.\n1,2,3,4\n";
-        Throwable thrown = catchThrowable(() -> new RestaurantTemplateParser(badCSV).restaurants());
+        Throwable thrown = catchThrowable(() -> RestaurantTemplateParser.create(badCSV).restaurants());
         assertThat(thrown).isInstanceOf(MemberDataException.class);
         assertThat(thrown).hasMessageContaining(RestaurantTemplateParser.TEMPLATE_ERROR);
         assertThat(thrown).hasMessageContaining(ControlBlock.BAD_HEADER_ROW);
@@ -58,7 +65,7 @@ public class ControlBlockRestaurantTemplateTest extends TestBase {
                 + "\n"
                 + MINIMUM_CONTROL_BLOCK;
 
-        Throwable thrown = catchThrowable(() -> new RestaurantTemplateParser(template));
+        Throwable thrown = catchThrowable(() -> RestaurantTemplateParser.create(template));
         assertThat(thrown).isInstanceOf(MemberDataException.class);
         assertThat(thrown).hasMessageContaining(RestaurantTemplateParser.TEMPLATE_ERROR);
         assertThat(thrown).hasMessageContaining(
@@ -75,7 +82,7 @@ public class ControlBlockRestaurantTemplateTest extends TestBase {
                 + "\n"
                 + MINIMUM_CONTROL_BLOCK;
 
-        Throwable thrown = catchThrowable(() -> new RestaurantTemplateParser(template));
+        Throwable thrown = catchThrowable(() -> RestaurantTemplateParser.create(template));
         assertThat(thrown).isInstanceOf(MemberDataException.class);
         assertThat(thrown).hasMessageContaining(RestaurantTemplateParser.TEMPLATE_ERROR);
         assertThat(thrown).hasMessageContaining(
@@ -92,7 +99,7 @@ public class ControlBlockRestaurantTemplateTest extends TestBase {
                 + "\n"
                 + MINIMUM_CONTROL_BLOCK;
 
-        Throwable thrown = catchThrowable(() -> new RestaurantTemplateParser(template));
+        Throwable thrown = catchThrowable(() -> RestaurantTemplateParser.create(template));
         assertThat(thrown).isInstanceOf(MemberDataException.class);
         assertThat(thrown).hasMessageContaining(RestaurantTemplateParser.TEMPLATE_ERROR);
         assertThat(thrown).hasMessageContaining(
@@ -109,7 +116,7 @@ public class ControlBlockRestaurantTemplateTest extends TestBase {
                 + "\n"
                 + MINIMUM_CONTROL_BLOCK;
 
-        Throwable thrown = catchThrowable(() -> new RestaurantTemplateParser(template));
+        Throwable thrown = catchThrowable(() -> RestaurantTemplateParser.create(template));
         assertThat(thrown).isInstanceOf(MemberDataException.class);
         assertThat(thrown).hasMessageContaining(RestaurantTemplateParser.TEMPLATE_ERROR);
         assertThat(thrown).hasMessageContaining(
@@ -126,7 +133,7 @@ public class ControlBlockRestaurantTemplateTest extends TestBase {
                 + "\n"
                 + MINIMUM_CONTROL_BLOCK;
 
-        Throwable thrown = catchThrowable(() -> new RestaurantTemplateParser(template));
+        Throwable thrown = catchThrowable(() -> RestaurantTemplateParser.create(template));
         assertThat(thrown).isInstanceOf(MemberDataException.class);
         assertThat(thrown).hasMessageContaining(RestaurantTemplateParser.TEMPLATE_ERROR);
         assertThat(thrown).hasMessageContaining(
@@ -143,7 +150,7 @@ public class ControlBlockRestaurantTemplateTest extends TestBase {
                 + "\n"
                 + MINIMUM_CONTROL_BLOCK;
 
-        Throwable thrown = catchThrowable(() -> new RestaurantTemplateParser(template));
+        Throwable thrown = catchThrowable(() -> RestaurantTemplateParser.create(template));
         assertThat(thrown).isInstanceOf(MemberDataException.class);
         assertThat(thrown).hasMessageContaining(RestaurantTemplateParser.TEMPLATE_ERROR);
         assertThat(thrown).hasMessageContaining(
@@ -156,7 +163,7 @@ public class ControlBlockRestaurantTemplateTest extends TestBase {
         final String badTemplate = readResourceFile("restaurant-template-missing-name.csv");
 
         Throwable thrown = catchThrowable(()
-                -> new RestaurantTemplateParser(badTemplate).restaurants());
+                -> RestaurantTemplateParser.create(badTemplate).restaurants());
         assertThat(thrown).isInstanceOf(MemberDataException.class);
 
         assertThat(thrown).isInstanceOf(MemberDataException.class);
@@ -171,7 +178,7 @@ public class ControlBlockRestaurantTemplateTest extends TestBase {
         final String badTemplate = readResourceFile("restaurant-template-name-repeated.csv");
 
         Throwable thrown = catchThrowable(()
-                -> new RestaurantTemplateParser(badTemplate).restaurants());
+                -> RestaurantTemplateParser.create(badTemplate).restaurants());
         assertThat(thrown).isInstanceOf(MemberDataException.class);
         assertThat(thrown).hasMessageContaining(RestaurantTemplateParser.TEMPLATE_ERROR);
 
@@ -186,7 +193,7 @@ public class ControlBlockRestaurantTemplateTest extends TestBase {
 
         final String csvData = readResourceFile("restaurant-template-empty-route-row.csv");
 
-        Map<String, Restaurant> restaurants = new RestaurantTemplateParser(csvData).restaurants();
+        Map<String, Restaurant> restaurants = RestaurantTemplateParser.create(csvData).restaurants();
         assertThat(restaurants).hasSize(2);
         assertThat(restaurants).containsKeys("Cafe Raj", "Kim's Cafe");
     }
@@ -197,7 +204,7 @@ public class ControlBlockRestaurantTemplateTest extends TestBase {
         final String csvData = readResourceFile("restaurant-template-missing-route.csv");
 
         Throwable thrown = catchThrowable(() ->
-            new RestaurantTemplateParser(csvData).restaurants());
+            RestaurantTemplateParser.create(csvData).restaurants());
         assertThat(thrown).isInstanceOf(MemberDataException.class);
         assertThat(thrown).hasMessageContaining(RestaurantTemplateParser.TEMPLATE_ERROR);
         assertThat(thrown).hasMessageContaining("missing route name value from column Consumer");
@@ -205,8 +212,8 @@ public class ControlBlockRestaurantTemplateTest extends TestBase {
 
     @Test
     public void noPicsRestaurantTest() {
-        final String csvData = readResourceFile("restaurant-template-v2-0-0.csv");
-        RestaurantTemplateParser parser = new RestaurantTemplateParser(csvData);
+        final String csvData = readResourceFile("restaurant-template-v200.csv");
+        RestaurantTemplateParser parser = RestaurantTemplateParser.create(csvData);
 
         for (Restaurant restaurant : parser.restaurants().values()) {
 

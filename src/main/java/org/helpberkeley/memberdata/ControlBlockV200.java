@@ -47,6 +47,6 @@ class ControlBlockV200 extends ControlBlock {
 
     @Override
     public String getVersion() {
-        return Constants.CONTROL_BLOCK_VERSION_2_0_0;
+        return Constants.CONTROL_BLOCK_VERSION_200;
     }
 }

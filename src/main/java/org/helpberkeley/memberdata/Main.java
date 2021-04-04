@@ -525,8 +525,8 @@ public class Main {
         Route route = new Route();
 
         try {
-            WorkflowParser workflowParser =
-                    new WorkflowParser(WorkflowParser.Mode.DRIVER_ROUTE_REQUEST, unroutedDeliveries);
+            WorkflowParser workflowParser = WorkflowParser.create(
+                    WorkflowParser.Mode.DRIVER_ROUTE_REQUEST, Collections.emptyMap(), unroutedDeliveries);
             List<Driver> drivers = workflowParser.drivers();
 
             for (Driver driver : drivers) {
@@ -1062,7 +1062,7 @@ public class Main {
         try {
             // Download file
             String restaurantTemplate = apiClient.downloadFile(request.uploadFile.getFileName());
-            new RestaurantTemplateParser(restaurantTemplate).restaurants();
+            RestaurantTemplateParser.create(restaurantTemplate).restaurants();
 
         } catch (MemberDataException ex) {
             String reason = ex.getCause() != null ? ex.getCause().getMessage() : ex.getMessage();

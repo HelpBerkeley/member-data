@@ -23,12 +23,9 @@
 package org.helpberkeley.memberdata;
 
 
-import com.opencsv.bean.CsvToBeanBuilder;
-
-import java.io.StringReader;
 import java.util.*;
 
-public class RestaurantTemplateParser {
+public abstract class RestaurantTemplateParser {
 
     static final String TEMPLATE_ERROR = "Restaurant Template Error: ";
     static final String ERROR_NO_DATA = "empty file";
@@ -44,25 +41,42 @@ public class RestaurantTemplateParser {
     private String version = Constants.CONTROL_BLOCK_VERSION_UNKNOWN;
     private final ControlBlock controlBlock;
 
-    RestaurantTemplateParser(final String csvData) {
+    protected RestaurantTemplateParser(ControlBlock controlBlock, String csvData) {
+
+        this.controlBlock = controlBlock;
+        auditColumns(csvData);
+
+        List<RestaurantBean> restaurantBeans = parse(csvData);
+        iterator = restaurantBeans.iterator();
+    }
+
+    public static RestaurantTemplateParser create(String csvData) {
 
         // Normalize EOL
         String normalizedCSV = csvData.replaceAll("\\r\\n?", "\n");
+        ControlBlock controlBlock;
 
-        if (normalizedCSV.isEmpty()) {
-            throwTemplateError(ERROR_NO_DATA);
+        if (csvData.isEmpty()) {
+            throw new MemberDataException(TEMPLATE_ERROR + ERROR_NO_DATA);
         }
 
         try {
-            controlBlock = ControlBlock.createControlBlock(normalizedCSV);
+            controlBlock = ControlBlock.create(normalizedCSV);
         } catch (MemberDataException ex) {
             throw new MemberDataException(TEMPLATE_ERROR + "\n" + ex.getMessage());
         }
-        auditColumns(normalizedCSV);
 
-        List<RestaurantBean> restaurantBeans = new CsvToBeanBuilder<RestaurantBean>(
-                new StringReader(normalizedCSV)).withType(RestaurantBean.class).build().parse();
-        iterator = restaurantBeans.iterator();
+        switch (controlBlock.getVersion()) {
+            case Constants.CONTROL_BLOCK_VERSION_UNKNOWN:
+                throw new MemberDataException("Restaurant template is missing the control block");
+            case Constants.CONTROL_BLOCK_VERSION_200:
+                return new RestaurantTemplateParserV200(controlBlock, normalizedCSV);
+            case Constants.CONTROL_BLOCK_VERSION_300:
+                return new RestaurantTemplateParserV300(controlBlock, normalizedCSV);
+            default:
+                throw new MemberDataException("Control block version " + controlBlock.getVersion()
+                        + " is not supported for restaurant templates");
+        }
     }
 
     /**
@@ -79,37 +93,8 @@ public class RestaurantTemplateParser {
         return null;
     }
 
-    private void auditColumns(final String csvData) {
-
-        List<String> columnNames =  List.of(
-            Constants.WORKFLOW_CONSUMER_COLUMN,
-            Constants.WORKFLOW_DRIVER_COLUMN,
-            Constants.WORKFLOW_RESTAURANTS_COLUMN,
-            Constants.WORKFLOW_VEGGIE_COLUMN,
-            Constants.WORKFLOW_NORMAL_COLUMN,
-            Constants.WORKFLOW_ORDERS_COLUMN,
-            Constants.WORKFLOW_DETAILS_COLUMN,
-            Constants.WORKFLOW_CONDO_COLUMN);
-
-        // get the header line
-        String header = csvData.substring(0, csvData.indexOf('\n'));
-
-        String[] columns = header.split(",");
-        Set<String> set = new HashSet<>(Arrays.asList(columns));
-
-        int numErrors = 0;
-        StringBuilder errors = new StringBuilder();
-        for (String columnName : columnNames) {
-            if (! set.contains(columnName)) {
-                errors.append(MISSING_COLUMN_ERROR).append(columnName).append('\n');
-                numErrors++;
-            }
-        }
-
-        if (errors.length() > 0) {
-            throwTemplateError(errors.toString());
-        }
-    }
+    protected abstract void auditColumns(String csvData);
+    protected abstract List<RestaurantBean> parse(String csvData);
 
     Map<String, Restaurant> restaurants() {
         Map<String, Restaurant> restaurants = new HashMap<>();
@@ -208,7 +193,8 @@ public class RestaurantTemplateParser {
 
         switch (version) {
             case Constants.CONTROL_BLOCK_VERSION_1:
-            case Constants.CONTROL_BLOCK_VERSION_2_0_0:
+            case Constants.CONTROL_BLOCK_VERSION_200:
+            case Constants.CONTROL_BLOCK_VERSION_300:
                 break;
             default:
                 throw new MemberDataException(
@@ -317,11 +303,9 @@ public class RestaurantTemplateParser {
                 throwMissingValue(bean.restaurantColumn());
             }
 
-            assert version.equals(Constants.CONTROL_BLOCK_VERSION_2_0_0) ||
-                    version.equals(Constants.CONTROL_BLOCK_VERSION_1) : version;
+            assert ! version.equals(Constants.CONTROL_BLOCK_VERSION_1);
 
-            if ((version.equals(Constants.CONTROL_BLOCK_VERSION_2_0_0))
-                && (! Boolean.parseBoolean(bean.getActive()))) {
+            if (! Boolean.parseBoolean(bean.getActive())) {
                 continue;
             }
 
@@ -356,7 +340,7 @@ public class RestaurantTemplateParser {
         } while ((bean = nextRow()) != null);
     }
 
-    private void throwTemplateError(final String message) {
+    protected void throwTemplateError(final String message) {
         throw new MemberDataException(TEMPLATE_ERROR + message);
     }
 

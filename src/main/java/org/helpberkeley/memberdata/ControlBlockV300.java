@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-2021. helpberkeley.org
+ * Copyright (c) 2021. helpberkeley.org
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -20,37 +20,33 @@
  * SOFTWARE.
  *
  */
+
 package org.helpberkeley.memberdata;
 
-public interface WorkflowBean {
-    String getVersion();
+import java.util.List;
+import java.util.Map;
 
-    String getConsumer();
-    String getDriver();
-    String getName();
-    String getUserName();
-    String getPhone();
-    String getAltPhone();
-    String getNeighborhood();
-    String getCity();
-    String getAddress();
-    String getCondo();
-    String getDetails();
-    String getRestaurant();
-    String getNormal();
-    String getVeggie();
-    String getOrders();
+class ControlBlockV300 extends ControlBlock {
 
-    boolean isEmpty();
-
-    String getControlBlockDirective();
-    String getControlBlockKey();
-    String getControlBlockValue();
-    String getGMapURL();
-
-    default String unsupported(String columnName) {
-        throw new MemberDataException("Column heading \""
-                + columnName + "\" is not supported in control block version " + getVersion());
+     ControlBlockV300(String header) {
+         super(header);
     }
 
+    @Override
+    void audit(Map<String, User> users, Map<String, Restaurant> restaurants, List<Restaurant> splitRestaurants) {
+        StringBuilder errors = new StringBuilder();
+
+        auditOpsManager(errors, users);
+        auditSplitRestaurants(errors, users, restaurants, splitRestaurants);
+        auditBackupDrivers(errors, users);
+
+        if (errors.length() != 0) {
+            throw new MemberDataException(errors.toString());
+        }
+    }
+
+    @Override
+    public String getVersion() {
+        return Constants.CONTROL_BLOCK_VERSION_300;
+    }
 }

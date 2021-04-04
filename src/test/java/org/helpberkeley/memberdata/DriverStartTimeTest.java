@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020. helpberkeley.org
+ * Copyright (c) 2020-2021. helpberkeley.org
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -57,7 +57,7 @@ public class DriverStartTimeTest extends TestBase {
 
     public DriverStartTimeTest() {
         String csvData = readResourceFile("restaurant-template-route-test.csv");
-        restaurants = new RestaurantTemplateParser(csvData).restaurants();
+        restaurants = RestaurantTemplateParser.create(csvData).restaurants();
     }
 
     /**
@@ -635,7 +635,8 @@ public class DriverStartTimeTest extends TestBase {
             pickupRestaurants.add(restaurant);
         }
 
-        WorkflowBean driverBean = new WorkflowBean();
+        // FIX THIS, DS; use WorkflowBean
+        WorkflowBeanV200 driverBean = new WorkflowBeanV200();
         driverBean.setUserName("jb");
 
         return new Driver(driverBean, pickupRestaurants, null, "https://something", disableLateStartAudit);

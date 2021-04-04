@@ -82,7 +82,7 @@ public abstract class ControlBlock {
         }
     }
 
-    public static ControlBlock createControlBlock(String csvData) {
+    public static ControlBlock create(String csvData) {
 
         // Normalize lines
         String normalized = csvData.replaceAll("\\r\\n?", "\n");
@@ -102,8 +102,10 @@ public abstract class ControlBlock {
                 return new ControlBlockV0(header);
             case Constants.CONTROL_BLOCK_VERSION_1:
                 return new ControlBlockV1(header);
-            case Constants.CONTROL_BLOCK_VERSION_2_0_0:
+            case Constants.CONTROL_BLOCK_VERSION_200:
                 return new ControlBlockV200(header);
+            case Constants.CONTROL_BLOCK_VERSION_300:
+                return new ControlBlockV300(header);
             default:
                 throw new MemberDataException(
                         "Control block version " + version + " is not supported.\n");

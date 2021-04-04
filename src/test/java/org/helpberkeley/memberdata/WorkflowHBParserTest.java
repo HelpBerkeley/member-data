@@ -24,6 +24,7 @@ package org.helpberkeley.memberdata;
 
 import org.junit.Test;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -153,10 +154,17 @@ public class WorkflowHBParserTest extends TestBase {
             }
             header.append('\n');
 
+            // FIX THIS, DS; abstract and make multi-version
+            String minimumControlBlock =
+                    "FALSE,FALSE," + Constants.CONTROL_BLOCK_BEGIN + ",,,,,,,,,,,,\n" +
+                    "FALSE,FALSE,,Version,,,,2-0-0,,,,,,,\n" +
+                    "FALSE,FALSE," + Constants.CONTROL_BLOCK_END + ",,,,,,,,,,,,\n";
+            header.append(minimumControlBlock);
+
             final String expected = header.toString();
 
-            Throwable thrown = catchThrowable(() ->
-                    new WorkflowParser(WorkflowParser.Mode.DRIVER_ROUTE_REQUEST, expected));
+            Throwable thrown = catchThrowable(() -> WorkflowParser.create(
+                            WorkflowParser.Mode.DRIVER_ROUTE_REQUEST, Collections.emptyMap(), expected));
             assertThat(thrown).isInstanceOf(MemberDataException.class);
             assertThat(thrown).hasMessageContaining(columnNames.get(columnNum));
         }
@@ -195,29 +203,29 @@ public class WorkflowHBParserTest extends TestBase {
     @Test
     public void unroutedWorkflowTest() {
         String unroutedDeliveries = readResourceFile("unrouted-deliveries.csv");
-        WorkflowParser workflowParser =
-                new WorkflowParser(WorkflowParser.Mode.DRIVER_ROUTE_REQUEST, unroutedDeliveries);
+        WorkflowParser workflowParser = WorkflowParser.create(
+                WorkflowParser.Mode.DRIVER_ROUTE_REQUEST, Collections.emptyMap(), unroutedDeliveries);
         workflowParser.drivers();
     }
 
     @Test
     public void unroutedWorkflowMissingEmptyRowTest() {
         String unroutedDeliveries = readResourceFile("unrouted-deliveries-missing-empty.csv");
-        WorkflowParser workflowParser =
-                new WorkflowParser(WorkflowParser.Mode.DRIVER_ROUTE_REQUEST, unroutedDeliveries);
+        WorkflowParser workflowParser = WorkflowParser.create(
+                WorkflowParser.Mode.DRIVER_ROUTE_REQUEST, Collections.emptyMap(), unroutedDeliveries);
         Throwable thrown = catchThrowable(workflowParser::drivers);
         assertThat(thrown).isInstanceOf(MemberDataException.class);
-        assertThat(thrown).hasMessageContaining("Line 10 is not empty");
+        assertThat(thrown).hasMessageContaining("Line 13 is not empty");
     }
 
     @Test
     public void unroutedWorkflowUnterminatedDriverTest() {
         String unroutedDeliveries = readResourceFile("unrouted-deliveries-unterminated-driver.csv");
-        WorkflowParser workflowParser =
-                new WorkflowParser(WorkflowParser.Mode.DRIVER_ROUTE_REQUEST, unroutedDeliveries);
+        WorkflowParser workflowParser = WorkflowParser.create(
+                WorkflowParser.Mode.DRIVER_ROUTE_REQUEST, Collections.emptyMap(), unroutedDeliveries);
         Throwable thrown = catchThrowable(workflowParser::drivers);
         assertThat(thrown).isInstanceOf(MemberDataException.class);
-        assertThat(thrown).hasMessageContaining("Line 16 driver block for jsDriver missing closing driver row");
+        assertThat(thrown).hasMessageContaining("Line 19 driver block for jsDriver missing closing driver row");
     }
 
     @Test

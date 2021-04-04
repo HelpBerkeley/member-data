@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020. helpberkeley.org
+ * Copyright (c) 2020-2021. helpberkeley.org
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -29,6 +29,7 @@ import org.helpberkeley.memberdata.WorkflowParser;
 import org.junit.Test;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -39,7 +40,8 @@ public class RouteTest extends TestBase {
     public void routeTest() {
 
         String csvData = readResourceFile("unrouted-deliveries.csv");
-        WorkflowParser workflowParser = new WorkflowParser(WorkflowParser.Mode.DRIVER_ROUTE_REQUEST, csvData);
+        WorkflowParser workflowParser = WorkflowParser.create(
+                WorkflowParser.Mode.DRIVER_ROUTE_REQUEST, Collections.emptyMap(), csvData);
         List<Driver> drivers = workflowParser.drivers();
         Route route = new Route();
 
@@ -62,7 +64,8 @@ public class RouteTest extends TestBase {
     public void emptyDeliveryStopTest() {
 
         String csvData = readResourceFile("unrouted-deliveries-empty-delivery.csv");
-        WorkflowParser workflowParser = new WorkflowParser(WorkflowParser.Mode.DRIVER_ROUTE_REQUEST, csvData);
+        WorkflowParser workflowParser = WorkflowParser.create(
+                WorkflowParser.Mode.DRIVER_ROUTE_REQUEST, Collections.emptyMap(), csvData);
         List<Driver> drivers = workflowParser.drivers();
         Route route = new Route();
 

@@ -119,6 +119,12 @@ public class Constants {
     public static final String WORKFLOW_NORMAL_COLUMN = "normal";
     public static final String WORKFLOW_RESTAURANTS_COLUMN = "Restaurants";
     public static final String WORKFLOW_ORDERS_COLUMN = "#orders";
+    public static final String WORKFLOW_STD_MEALS_COLUMN = "std meals";
+    public static final String WORKFLOW_ALT_MEALS_COLUMN = "alt meals";
+    public static final String WORKFLOW_TYPE_MEAL_COLUMN = "type meal";
+    public static final String WORKFLOW_STD_GROCERY_COLUMN = "std grocery";
+    public static final String WORKFLOW_ALT_GROCERY_COLUMN = "alt grocery";
+    public static final String WORKFLOW_TYPE_GROCERY_COLUMN = "type grocery";
 
     public static final String WORKFLOW_NO_PICS = "no pics";
 
@@ -179,7 +185,8 @@ public class Constants {
     public static final String CONTROL_BLOCK_VALUE_DEFAULT_PREFIX = "ReplaceThisBy";
     public static final String CONTROL_BLOCK_VERSION_UNKNOWN = "0";
     public static final String CONTROL_BLOCK_VERSION_1 = "1";
-    public static final String CONTROL_BLOCK_VERSION_2_0_0 = "2-0-0";
+    public static final String CONTROL_BLOCK_VERSION_200 = "2-0-0";
+    public static final String CONTROL_BLOCK_VERSION_300 = "3-0-0";
 
     public static final long UNKNOWN_USER_ID = 852;
     public static final String UNKNOWN_USER = "unknown-user";
