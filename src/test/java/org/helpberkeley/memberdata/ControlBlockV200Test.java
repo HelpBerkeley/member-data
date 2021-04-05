@@ -183,7 +183,7 @@ public class ControlBlockV200Test extends ControlBlockTestBase {
     @Test
     public void auditSplitRestaurantNoCleanupTest() {
 
-        Throwable thrown = catchThrowable(() -> new DriverPostFormat(createApiSimulator(), users,
+        Throwable thrown = catchThrowable(() -> DriverPostFormat.create(createApiSimulator(), users,
                 readResourceFile("routed-deliveries-split-missing-cleanup.csv")));
         assertThat(thrown).isInstanceOf(MemberDataException.class);
         assertThat(thrown).hasMessageContaining(
@@ -193,7 +193,7 @@ public class ControlBlockV200Test extends ControlBlockTestBase {
     /** Verify disabled audit of a split restaurant not having a cleanup driver in the control block */
     @Test
     public void disabledAuditSplitRestaurantNoCleanupTest() {
-        new DriverPostFormat(createApiSimulator(), users,
+        DriverPostFormat.create(createApiSimulator(), users,
                 readResourceFile("routed-deliveries-split-missing-cleanup-audit-disabled.csv"));
     }
 
@@ -201,7 +201,7 @@ public class ControlBlockV200Test extends ControlBlockTestBase {
     @Test
     public void auditSplitRestaurantBadNameTest() {
 
-        Throwable thrown = catchThrowable(() -> new DriverPostFormat(createApiSimulator(), users,
+        Throwable thrown = catchThrowable(() -> DriverPostFormat.create(createApiSimulator(), users,
                 readResourceFile("routed-deliveries-split-restaurant-unknown.csv")));
         assertThat(thrown).isInstanceOf(MemberDataException.class);
         assertThat(thrown).hasMessageContaining(
@@ -215,7 +215,7 @@ public class ControlBlockV200Test extends ControlBlockTestBase {
     @Test
     public void auditSplitRestaurantWrongDriverTest() {
 
-        Throwable thrown = catchThrowable(() -> new DriverPostFormat(createApiSimulator(), users,
+        Throwable thrown = catchThrowable(() -> DriverPostFormat.create(createApiSimulator(), users,
                 readResourceFile("routed-deliveries-split-wrong-cleanup.csv")));
         assertThat(thrown).isInstanceOf(MemberDataException.class);
         assertThat(thrown).hasMessageContaining(
@@ -229,7 +229,7 @@ public class ControlBlockV200Test extends ControlBlockTestBase {
     @Test
     public void auditSplitRestaurantUnknownDriverTest() {
 
-        Throwable thrown = catchThrowable(() -> new DriverPostFormat(createApiSimulator(), users,
+        Throwable thrown = catchThrowable(() -> DriverPostFormat.create(createApiSimulator(), users,
                 readResourceFile("routed-deliveries-split-unknown-cleanup.csv")));
         assertThat(thrown).isInstanceOf(MemberDataException.class);
         assertThat(thrown).hasMessageContaining(

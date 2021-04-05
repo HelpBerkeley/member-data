@@ -100,7 +100,7 @@ public class WorkRequestHandlerTest extends TestBase {
                         + "[ 1, null, \""
                         + "2021/01/01"
                         + "\nTopic: 543\n"
-                        + "[xyzzy.csv|attachment](upload://routed-deliveries.csv) (5.8 KB)\" ] "
+                        + "[xyzzy.csv|attachment](upload://routed-deliveries-v200.csv) (5.8 KB)\" ] "
                         + "] }";
         HttpClientSimulator.setQueryResponseData(
                 Constants.QUERY_GET_LAST_REQUEST_DRIVER_MESSAGES_REPLY, driverMessagesRequest);

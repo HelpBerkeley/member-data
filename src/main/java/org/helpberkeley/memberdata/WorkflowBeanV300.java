@@ -26,8 +26,6 @@ import com.opencsv.bean.CsvBindByName;
 
 public class WorkflowBeanV300 implements WorkflowBean {
 
-    // Consumer,Driver,Name,User Name,Phone #,Phone2 #,Neighborhood,City,Address,Condo,Details,Restaurants,normal,veggie,#orders
-
     @CsvBindByName(column = Constants.WORKFLOW_CONSUMER_COLUMN)
     private String consumer;
     @CsvBindByName(column = Constants.WORKFLOW_DRIVER_COLUMN)
@@ -273,7 +271,7 @@ public class WorkflowBeanV300 implements WorkflowBean {
     }
 
     public void setStdGrocery(String stdGrocery) {
-        this.stdMeals = stdMeals;
+        this.stdGrocery = stdGrocery;
     }
 
     public String getAltGrocery() {

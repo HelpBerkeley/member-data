@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020. helpberkeley.org
+ * Copyright (c) 2020-2021. helpberkeley.org
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,29 +24,19 @@ package org.helpberkeley.memberdata;
 
 import org.helpberkeley.memberdata.route.Location;
 
-public class Delivery {
+public abstract class Delivery {
 
-    private final String name;
-    private String userName;
-    private String phone;
-    private String altPhone;
-    private String neighborhood;
-    private String city;
-    private String address;
-    private Boolean isCondo;
-    private String details;
-    private String restaurant;
-    private String normalRations;
-    private String veggieRations;
-    private Location location;
-
-    @Override
-    public String toString() {
-        return getUserName()
-                + ", condo:" + isCondo
-                + ", restaurant: " + getRestaurant()
-                + ", rations:" + getNormalRations() + ':' + getVeggieRations();
-    }
+    protected final String name;
+    protected String userName;
+    protected String phone;
+    protected String altPhone;
+    protected String neighborhood;
+    protected String city;
+    protected String address;
+    protected Boolean isCondo;
+    protected String details;
+    protected String restaurant;
+    protected Location location;
 
     public Delivery(final String name) {
         this.name = name;
@@ -88,14 +78,6 @@ public class Delivery {
         this.restaurant = restaurant;
     }
 
-    public void setNormalRations(String normalRations) {
-        this.normalRations = normalRations;
-    }
-
-    public void setVeggieRations(String veggieRations) {
-        this.veggieRations = veggieRations;
-    }
-
     public void setLocation(Location location) {
         this.location = location;
     }
@@ -135,14 +117,6 @@ public class Delivery {
         return restaurant;
     }
 
-    public String getNormalRations() {
-        return normalRations;
-    }
-
-    public String getVeggieRations() {
-        return veggieRations;
-    }
-
     public String getFullAddress() {
         return address + ", " + city + ", " + "CA";
     }
@@ -151,83 +125,5 @@ public class Delivery {
         return location;
     }
 
-    // FIX THIS, DS: columns are hard wired
-    //
-    public String deliveryRow() {
-        StringBuilder row = new StringBuilder();
-        String value;
-
-        // Consumer
-        row.append("TRUE,");
-
-        // Driver
-        row.append("FALSE,");
-
-        // Name
-        value = name;
-        if (value.contains(",")) {
-            value = "\"" + value + "\"";
-        }
-        row.append(value).append(",");
-
-        // User Name
-        row.append(userName).append(',');
-
-        // Phone
-        row.append(phone).append(',');
-
-        // Alt phone
-        row.append(altPhone).append(',');
-
-        // Neighborhood
-        value = neighborhood;
-        if (value.contains(",")) {
-            value = "\"" + value + "\"";
-        }
-        row.append(value).append(",");
-
-        // City
-        value = city;
-        if (value.contains(",")) {
-            value = "\"" + value + "\"";
-        }
-        row.append(value).append(",");
-
-
-        // Address
-        value = address;
-        if (value.contains(",")) {
-            value = "\"" + value + "\"";
-        }
-        row.append(value).append(",");
-
-        // Condo
-        row.append(isCondo).append(",");
-
-        // Details
-        value = details;
-        if (value.contains(",")) {
-            value = "\"" + value + "\"";
-        }
-        row.append(value).append(",");
-
-        // Restaurant
-        value = restaurant;
-        if (value.contains(",")) {
-            value = "\"" + value + "\"";
-        }
-        row.append(value).append(",");
-
-        // normal
-        row.append(normalRations).append(",");
-
-        // veggie
-        row.append(veggieRations).append(",");
-
-        // Orders - empty last column
-
-        row.append('\n');
-
-        return row.toString();
-    }
+    public abstract String deliveryRow();
 }

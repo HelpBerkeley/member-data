@@ -31,14 +31,6 @@ public class WorkflowParserV200 extends WorkflowParser {
 
     public WorkflowParserV200(Mode mode, final String csvData) {
         super(mode, csvData);
-
-//        this.mode = mode;
-//        assert mode == Mode.DRIVER_ROUTE_REQUEST : mode;
-//        this.globalRestaurants = null;
-//        // Normalize EOL
-//        normalizedCSVData = csvData.replaceAll("\\r\\n?", "\n");
-//        controlBlock = ControlBlock.createControlBlock(normalizedCSVData);
-//        iterator = initializeIterator(csvData);
     }
 
     @Override
@@ -47,45 +39,6 @@ public class WorkflowParserV200 extends WorkflowParser {
                 new StringReader(csvData)).withType(WorkflowBeanV200.class).build().parse();
     }
 
-//    public String rawControlBlock() {
-//
-//        StringBuilder lines = new StringBuilder();
-//
-//        // Copy all lines up to the first driver block
-//        for (String line : normalizedCSVData.split("\n")) {
-//
-//            if (line.startsWith("FALSE,TRUE,")) {
-//                break;
-//            }
-//
-//            lines.append(line).append('\n');
-//        }
-//
-//        return lines.toString();
-//    }
-//
-//    /**
-//     * Based upon the header row, return an empty row.
-//     * @return Empty row
-//     */
-//    public String emptyRow() {
-//
-//        int endOfFirstLine = normalizedCSVData.indexOf('\n');
-//        String row = normalizedCSVData.substring(0, endOfFirstLine);
-//
-//        return row.replaceAll("[^,]", "") + "\n";
-//    }
-//
-//    private PeekingIterator<WorkflowBean> initializeIterator(final String csvData) {
-//        assert ! csvData.isEmpty() : "empty workflow";
-//        auditColumnNames(csvData);
-//
-//        List<WorkflowBean> workflowBeans = new CsvToBeanBuilder<WorkflowBean>(
-//                new StringReader(csvData)).withType(WorkflowBean.class).build().parse();
-//
-//        return Iterators.peekingIterator(workflowBeans.iterator());
-//    }
-//
     /**
      * Check for missing columns.
      * @param csvData Normalized workflow spreadsheet data
@@ -128,6 +81,80 @@ public class WorkflowParserV200 extends WorkflowParser {
         if (errors.length() > 0) {
             throw new MemberDataException(errors.toString());
         }
+
+    }
+
+    @Override
+    List<Delivery> processDeliveries() {
+        List<Delivery> deliveries = new ArrayList<>();
+        WorkflowBean bean;
+
+        while ((bean = peekNextRow()) != null) {
+            if (! bean.getConsumer().equalsIgnoreCase("TRUE")) {
+                break;
+            }
+
+            bean = nextRow();
+            assert bean != null;
+            String errors = "";
+
+            String consumerName = bean.getName();
+            if (consumerName.isEmpty()) {
+                errors += "missing consumer name\n";
+            }
+            String userName = bean.getUserName();
+            if (userName.isEmpty()) {
+                errors += "missing user name\n";
+            }
+            String phone = bean.getPhone();
+            if (phone.isEmpty()) {
+                errors += "missing phone\n";
+            }
+            String altPhone = bean.getAltPhone();
+            String neighborhood = bean.getNeighborhood();
+            String city = bean.getCity();
+            if (city.isEmpty()) {
+                errors += "missing city\n";
+            }
+            String address = bean.getAddress();
+            if (address.isEmpty()) {
+                errors += "missing address\n";
+            }
+            boolean isCondo = Boolean.parseBoolean(bean.getCondo());
+            String details = bean.getDetails();
+            String restaurantName = bean.getRestaurant();
+            if (restaurantName.isEmpty()) {
+                errors += "missing restaurant name\n";
+            }
+            String normalRations = bean.getNormal();
+            String veggieRations = bean.getVeggie();
+
+            if (normalRations.isEmpty() || veggieRations.isEmpty()) {
+                errors += "normal and/or veggie rations column is empty. "
+                        + "Please insert the the correct number(s) (e.g. 0). ";
+            }
+
+            if (! errors.isEmpty()) {
+                throw new MemberDataException("line " + lineNumber + " " + errors);
+            }
+
+            DeliveryV200 delivery = new DeliveryV200(consumerName);
+            delivery.setUserName(userName);
+            delivery.setPhone(phone);
+            delivery.setAltPhone(altPhone);
+            delivery.setNeighborhood(neighborhood);
+            delivery.setCity(city);
+            delivery.setAddress(address);
+            delivery.setIsCondo(isCondo);
+            delivery.setDetails(details);
+            delivery.setRestaurant(restaurantName);
+            delivery.setNormalRations(normalRations.isEmpty() ? "0" : normalRations);
+            delivery.setVeggieRations(veggieRations.isEmpty() ? "0" : veggieRations);
+
+            deliveries.add(delivery);
+        }
+
+        return deliveries;
     }
 
 //    public List<Driver> drivers() {
@@ -425,139 +452,65 @@ public class WorkflowParserV200 extends WorkflowParser {
 //        return restaurants;
 //    }
 //
-//    private List<Delivery> processDeliveries() {
-//        List<Delivery> deliveries = new ArrayList<>();
-//        WorkflowBean bean;
 //
-//        while ((bean = peekNextRow()) != null) {
-//            if (! bean.getConsumer().equalsIgnoreCase("TRUE")) {
-//                break;
-//            }
-//
-//            bean = nextRow();
-//            assert bean != null;
-//            String errors = "";
-//
-//            String consumerName = bean.getName();
-//            if (consumerName.isEmpty()) {
-//                errors += "missing consumer name\n";
-//            }
-//            String userName = bean.getUserName();
-//            if (userName.isEmpty()) {
-//                errors += "missing user name\n";
-//            }
-//            String phone = bean.getPhone();
-//            if (phone.isEmpty()) {
-//                errors += "missing phone\n";
-//            }
-//            String altPhone = bean.getAltPhone();
-//            String neighborhood = bean.getNeighborhood();
-//            String city = bean.getCity();
-//            if (city.isEmpty()) {
-//                errors += "missing city\n";
-//            }
-//            String address = bean.getAddress();
-//            if (address.isEmpty()) {
-//                errors += "missing address\n";
-//            }
-//            boolean isCondo = Boolean.parseBoolean(bean.getCondo());
-//            String details = bean.getDetails();
-//            String restaurantName = bean.getRestaurant();
-//            if (restaurantName.isEmpty()) {
-//                errors += "missing restaurant name\n";
-//            }
-//            String normalRations = bean.getNormal();
-//            String veggieRations = bean.getVeggie();
-//
-//            if (normalRations.isEmpty() || veggieRations.isEmpty()) {
-//                errors += "normal and/or veggie rations column is empty. "
-//                        + "Please insert the the correct number(s) (e.g. 0). ";
-//            }
-//
-//            if (! errors.isEmpty()) {
-//                throw new MemberDataException("line " + lineNumber + " " + errors);
-//            }
-//
-//            Delivery delivery = new Delivery(consumerName);
-//            delivery.setUserName(userName);
-//            delivery.setPhone(phone);
-//            delivery.setAltPhone(altPhone);
-//            delivery.setNeighborhood(neighborhood);
-//            delivery.setCity(city);
-//            delivery.setAddress(address);
-//            delivery.setIsCondo(isCondo);
-//            delivery.setDetails(details);
-//            delivery.setRestaurant(restaurantName);
-//            delivery.setNormalRations(normalRations.isEmpty() ? "0" : normalRations);
-//            delivery.setVeggieRations(veggieRations.isEmpty() ? "0" : veggieRations);
-//
-//            deliveries.add(delivery);
-//        }
-//
-//        return deliveries;
-//    }
-//
-//    private void auditPickupDeliveryMismatch(Driver driver) {
-//
-//        // First build of map of deliveries (orders) per restaurant
-//        Map<String, Long> deliveryOrders = new HashMap<>();
-//        for (Delivery delivery : driver.getDeliveries()) {
-//            String restaurantName = delivery.getRestaurant();
-//
-//            // Support for 0 order delivery (e.g. donation drop-off)
-//            if (delivery.getNormalRations().equals("0") &&
-//                    delivery.getVeggieRations().equals("0")) {
-//                continue;
-//            }
-//
-//            Long orders = deliveryOrders.getOrDefault(restaurantName, 0L);
-//            orders++;
-//            deliveryOrders.put(restaurantName, orders);
-//        }
-//
-//        // Now build a map of orders to pickup per restaurant
-//        Map<String, Long> pickupOrders = new HashMap<>();
-//        for (Restaurant restaurant : driver.getPickups()) {
-//            String restaurantName = restaurant.getName();
-//
-//            // FIX THIS, DS: too late to audit this here?
-//            if (pickupOrders.containsKey(restaurantName)) {
-//                throw new MemberDataException("Restaurant " + restaurantName
-//                        + " appears more than once for driver " + driver.getUserName());
-//            }
-//
-//            pickupOrders.put(restaurantName, restaurant.getOrders());
-//        }
-//
-//        StringBuilder errors = new StringBuilder();
-//
-//        // Now check that the pickups match the deliveries
-//        for (String restaurant : pickupOrders.keySet()) {
-//
-//            if (pickupOrders.get(restaurant) == 0L) {
-//                if (deliveryOrders.containsKey(restaurant)){
-//                    errors.append("deliveries for ").append(restaurant).append(", but 0 orders\n");
-//                }
-//            } else if (! deliveryOrders.containsKey(restaurant)) {
-//                errors.append("orders for ").append(restaurant).append(" but no deliveries\n");
-//            } else if (! deliveryOrders.get(restaurant).equals(pickupOrders.get(restaurant))) {
-//                errors.append(pickupOrders.get(restaurant)).append(" orders for ").append(restaurant).append(" but ").append(deliveryOrders.get(restaurant)).append(" deliveries\n");
-//            }
-//        }
-//
-//        // And that each delivery order has a pickup
-//        for (String restaurant : deliveryOrders.keySet()) {
-//            if (! pickupOrders.containsKey(restaurant)) {
-//                errors.append(deliveryOrders.get(restaurant)).append(" deliveries for ").append(restaurant).append(" but no orders\n");
-//            }
-//        }
-//
-//        if (errors.length() > 0) {
-//            throw new MemberDataException("Driver " + driver.getUserName() + ": " + errors);
-//        }
-//    }
-//
-//    private boolean emptyRow(WorkflowBean bean) {
-//        return bean.isEmpty();
-//    }
+    @Override
+    void auditPickupDeliveryMismatch(Driver driver) {
+
+        // First build of map of deliveries (orders) per restaurant
+        Map<String, Long> deliveryOrders = new HashMap<>();
+        for (Delivery delivery : driver.getDeliveries()) {
+            String restaurantName = delivery.getRestaurant();
+
+            // Support for 0 order delivery (e.g. donation drop-off)
+            if (((DeliveryV200)delivery).getNormalRations().equals("0") &&
+                    ((DeliveryV200)delivery).getVeggieRations().equals("0")) {
+                continue;
+            }
+
+            Long orders = deliveryOrders.getOrDefault(restaurantName, 0L);
+            orders++;
+            deliveryOrders.put(restaurantName, orders);
+        }
+
+        // Now build a map of orders to pickup per restaurant
+        Map<String, Long> pickupOrders = new HashMap<>();
+        for (Restaurant restaurant : driver.getPickups()) {
+            String restaurantName = restaurant.getName();
+
+            // FIX THIS, DS: too late to audit this here?
+            if (pickupOrders.containsKey(restaurantName)) {
+                throw new MemberDataException("Restaurant " + restaurantName
+                        + " appears more than once for driver " + driver.getUserName());
+            }
+
+            pickupOrders.put(restaurantName, restaurant.getOrders());
+        }
+
+        StringBuilder errors = new StringBuilder();
+
+        // Now check that the pickups match the deliveries
+        for (String restaurant : pickupOrders.keySet()) {
+
+            if (pickupOrders.get(restaurant) == 0L) {
+                if (deliveryOrders.containsKey(restaurant)){
+                    errors.append("deliveries for ").append(restaurant).append(", but 0 orders\n");
+                }
+            } else if (! deliveryOrders.containsKey(restaurant)) {
+                errors.append("orders for ").append(restaurant).append(" but no deliveries\n");
+            } else if (! deliveryOrders.get(restaurant).equals(pickupOrders.get(restaurant))) {
+                errors.append(pickupOrders.get(restaurant)).append(" orders for ").append(restaurant).append(" but ").append(deliveryOrders.get(restaurant)).append(" deliveries\n");
+            }
+        }
+
+        // And that each delivery order has a pickup
+        for (String restaurant : deliveryOrders.keySet()) {
+            if (! pickupOrders.containsKey(restaurant)) {
+                errors.append(deliveryOrders.get(restaurant)).append(" deliveries for ").append(restaurant).append(" but no orders\n");
+            }
+        }
+
+        if (errors.length() > 0) {
+            throw new MemberDataException("Driver " + driver.getUserName() + ": " + errors);
+        }
+    }
 }

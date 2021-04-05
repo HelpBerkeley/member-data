@@ -710,7 +710,7 @@ public class Main {
         String groupPostURL = null;
         String backupPostURL = null;
 
-        DriverPostFormat driverPostFormat = new DriverPostFormat(
+        DriverPostFormat driverPostFormat = DriverPostFormat.create(
                 apiClient, users, routedDeliveries, driverFormatQuery, groupFormatQuery);
 
         List<String> posts = driverPostFormat.generateDriverPosts();
@@ -889,7 +889,7 @@ public class Main {
             String completedDeliveries = apiClient.downloadFile(request.uploadFile.getFileName());
 
             // Validate
-            new DriverPostFormat(apiClient, users, completedDeliveries,
+            DriverPostFormat.create(apiClient, users, completedDeliveries,
                     Constants.QUERY_GET_DRIVERS_POST_FORMAT, Constants.QUERY_GET_GROUP_INSTRUCTIONS_FORMAT);
 
         } catch (MemberDataException ex) {

@@ -205,7 +205,7 @@ public class MainTest extends TestBase {
                         + "\"rows\": [ "
                         + "[ 42, null, \""
                         + yesterdayStr
-                        + "\n[xyzzy.csv|attachment](upload://routed-deliveries.csv) (5.8 KB)\" ] "
+                        + "\n[xyzzy.csv|attachment](upload://routed-deliveries-v200.csv) (5.8 KB)\" ] "
                         + "] }";
         HttpClientSimulator.setQueryResponseData(
                 Constants.QUERY_GET_LAST_COMPLETED_DAILY_ORDERS_REPLY, completedOrdersRequest);
@@ -246,7 +246,7 @@ public class MainTest extends TestBase {
             + "\"rows\": [ "
             + "[ 1, null, \""
             + nextWeekStr
-            + "\n[xyzzy.csv|attachment](upload://routed-deliveries.csv) (5.8 KB)\" ] "
+            + "\n[xyzzy.csv|attachment](upload://routed-deliveries-v200.csv) (5.8 KB)\" ] "
             + "] }";
         HttpClientSimulator.setQueryResponseData(
             Constants.QUERY_GET_LAST_COMPLETED_DAILY_ORDERS_REPLY, completedOrdersRequest);
@@ -274,7 +274,7 @@ public class MainTest extends TestBase {
                         + "\"rows\": [ "
                         + "[ 1, null, \""
                         + lastYearStr
-                        + "\n[xyzzy.csv|attachment](upload://routed-deliveries.csv) (5.8 KB)\" ] "
+                        + "\n[xyzzy.csv|attachment](upload://routed-deliveries-v200.csv) (5.8 KB)\" ] "
                         + "] }";
         HttpClientSimulator.setQueryResponseData(
                 Constants.QUERY_GET_LAST_COMPLETED_DAILY_ORDERS_REPLY, completedOrdersRequest);
@@ -302,7 +302,7 @@ public class MainTest extends TestBase {
                         + "\"rows\": [ "
                         + "[ 1, null, \""
                         + lastYearStr
-                        + "\nDisable date audit\n[xyzzy.csv|attachment](upload://routed-deliveries.csv) (5.8 KB)\" ] "
+                        + "\nDisable date audit\n[xyzzy.csv|attachment](upload://routed-deliveries-v200.csv) (5.8 KB)\" ] "
                         + "] }";
         HttpClientSimulator.setQueryResponseData(
                 Constants.QUERY_GET_LAST_COMPLETED_DAILY_ORDERS_REPLY, completedOrdersRequest);
