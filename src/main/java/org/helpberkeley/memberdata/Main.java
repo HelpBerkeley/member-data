@@ -719,6 +719,7 @@ public class Main {
         List<String> postURLs = new ArrayList<>();
         String groupPostURL = null;
         String backupPostURL = null;
+        String comboPostURL = null;
 
         DriverPostFormat driverPostFormat = new DriverPostFormat(
                 apiClient, users, version, routedDeliveries, driverFormatQuery, groupFormatQuery);
@@ -804,6 +805,37 @@ public class Main {
                     + postResponse.postNumber);
         }
 
+        // Generate combination post
+        StringBuilder comboPost = new StringBuilder();
+        for (String rawPost : posts) {
+            comboPost.append(rawPost).append("\n \n \n");
+        }
+
+        post = new Post();
+        post.title = "All drivers post";
+        post.topic_id = topic;
+        post.raw = comboPost.toString();
+        post.createdAt = ZonedDateTime.now(ZoneId.systemDefault())
+                .format(DateTimeFormatter.ofPattern("uuuu.MM.dd.HH.mm.ss"));
+
+        response = apiClient.post(post.toJson());
+        LOGGER.info("generate combination post {}", response.statusCode() == HTTP_OK ?
+                "" : "failed " + response.statusCode() + ": " + response.body());
+
+        if (response.statusCode() != HTTP_OK) {
+            statusMessages.append("Failed posting combination all drivers message: ")
+                    .append(response.statusCode()).append(": ").append(response.body()).append("\n");
+        } else {
+            PostResponse postResponse = HBParser.postResponse((String)response.body());
+            comboPostURL = ("https://go.helpberkeley.org/t/"
+                    + postResponse.topicSlug
+                    + '/'
+                    + postResponse.topicId
+                    + '/'
+                    + postResponse.postNumber);
+        }
+
+
         statusMessages.append(driverPostFormat.statusMessages());
         statusMessages.append("\n\n");
 
@@ -822,6 +854,10 @@ public class Main {
 
         if (backupPostURL != null) {
             statusMessages.append("\n[Backup Driver](").append(backupPostURL).append(")");
+        }
+
+        if (comboPostURL != null) {
+            statusMessages.append("\n[Combination all drivers posts](").append(comboPostURL).append(")");
         }
 
         return statusMessages.toString();
