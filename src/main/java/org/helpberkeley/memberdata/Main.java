@@ -83,6 +83,11 @@ public class Main {
 //    static final long DELIVERY_DETAILS_TOPIC_ID = 1818;
 //    static final long DRIVERS_POST_FORMAT_TOPIC_ID = 1967;
 
+    enum CombinationDriverPost {
+        GENERATE_COMBINATION_POST,
+        SKIP_COMBINATION_POST
+    };
+
     public static void main(String[] args) throws IOException, CsvException {
 
         Options options = new Options(args);
@@ -637,7 +642,8 @@ public class Main {
         try {
             String statusMessage = generateDriverPosts(apiClient, users, routedDeliveries, version, topic,
                     Constants.QUERY_GET_DRIVERS_POST_FORMAT,
-                    Constants.QUERY_GET_GROUP_INSTRUCTIONS_FORMAT);
+                    Constants.QUERY_GET_GROUP_INSTRUCTIONS_FORMAT,
+                    CombinationDriverPost.SKIP_COMBINATION_POST);
             request.postStatus(WorkRequestHandler.RequestStatus.Succeeded, statusMessage);
         } catch (MemberDataException ex) {
             String reason = ex.getCause() != null ? ex.getCause().getMessage() : ex.getMessage();
@@ -703,7 +709,8 @@ public class Main {
             String statusMessage = generateDriverPosts(
                     apiClient, users, routedDeliveries, version, topic,
                     Constants.QUERY_GET_ONE_KITCHEN_DRIVERS_POST_FORMAT_V1,
-                    Constants.QUERY_GET_ONE_KITCHEN_GROUP_POST_FORMAT_V1);
+                    Constants.QUERY_GET_ONE_KITCHEN_GROUP_POST_FORMAT_V1,
+                    CombinationDriverPost.GENERATE_COMBINATION_POST);
             request.postStatus(WorkRequestHandler.RequestStatus.Succeeded, statusMessage);
         } catch (MemberDataException ex) {
             String reason = ex.getCause() != null ? ex.getCause().getMessage() : ex.getMessage();
@@ -712,8 +719,9 @@ public class Main {
         }
     }
 
-    private static String generateDriverPosts(ApiClient apiClient, Map<String, User> users, String routedDeliveries,
-            String version, long topic, int driverFormatQuery, int groupFormatQuery) {
+    private static String generateDriverPosts(ApiClient apiClient,
+          Map<String, User> users, String routedDeliveries, String version, long topic,
+          int driverFormatQuery, int groupFormatQuery, CombinationDriverPost combinationDriverPost) {
 
         StringBuilder statusMessages = new StringBuilder();
         List<String> postURLs = new ArrayList<>();
@@ -806,35 +814,36 @@ public class Main {
         }
 
         // Generate combination post
-        StringBuilder comboPost = new StringBuilder();
-        for (String rawPost : posts) {
-            comboPost.append(rawPost).append("\n \n \n");
+        if (combinationDriverPost == CombinationDriverPost.GENERATE_COMBINATION_POST) {
+            StringBuilder comboPost = new StringBuilder();
+            for (String rawPost : posts) {
+                comboPost.append(rawPost).append("\n \n \n");
+            }
+
+            post = new Post();
+            post.title = "All drivers post";
+            post.topic_id = topic;
+            post.raw = comboPost.toString();
+            post.createdAt = ZonedDateTime.now(ZoneId.systemDefault())
+                    .format(DateTimeFormatter.ofPattern("uuuu.MM.dd.HH.mm.ss"));
+
+            response = apiClient.post(post.toJson());
+            LOGGER.info("generate combination post {}", response.statusCode() == HTTP_OK ?
+                    "" : "failed " + response.statusCode() + ": " + response.body());
+
+            if (response.statusCode() != HTTP_OK) {
+                statusMessages.append("Failed posting combination all drivers message: ")
+                        .append(response.statusCode()).append(": ").append(response.body()).append("\n");
+            } else {
+                PostResponse postResponse = HBParser.postResponse((String) response.body());
+                comboPostURL = ("https://go.helpberkeley.org/t/"
+                        + postResponse.topicSlug
+                        + '/'
+                        + postResponse.topicId
+                        + '/'
+                        + postResponse.postNumber);
+            }
         }
-
-        post = new Post();
-        post.title = "All drivers post";
-        post.topic_id = topic;
-        post.raw = comboPost.toString();
-        post.createdAt = ZonedDateTime.now(ZoneId.systemDefault())
-                .format(DateTimeFormatter.ofPattern("uuuu.MM.dd.HH.mm.ss"));
-
-        response = apiClient.post(post.toJson());
-        LOGGER.info("generate combination post {}", response.statusCode() == HTTP_OK ?
-                "" : "failed " + response.statusCode() + ": " + response.body());
-
-        if (response.statusCode() != HTTP_OK) {
-            statusMessages.append("Failed posting combination all drivers message: ")
-                    .append(response.statusCode()).append(": ").append(response.body()).append("\n");
-        } else {
-            PostResponse postResponse = HBParser.postResponse((String)response.body());
-            comboPostURL = ("https://go.helpberkeley.org/t/"
-                    + postResponse.topicSlug
-                    + '/'
-                    + postResponse.topicId
-                    + '/'
-                    + postResponse.postNumber);
-        }
-
 
         statusMessages.append(driverPostFormat.statusMessages());
         statusMessages.append("\n\n");
