@@ -41,8 +41,9 @@ public class OneKitchenDriverPostTest extends TestBase {
     public void multiDriverMessageTest() {
         String routedDeliveries = readResourceFile("routed-deliveries-turkey.csv");
         HttpClientSimulator.setQueryResponseFile(
-                Constants.QUERY_GET_CURRENT_VALIDATED_RESTAURANT_TEMPLATE, "restaurant-template-turkey.json");
+                Constants.QUERY_GET_CURRENT_VALIDATED_ONE_KITCHEN_RESTAURANT_TEMPLATE, "restaurant-template-turkey.json");
         DriverPostFormat driverPostFormat = DriverPostFormat.create(createApiSimulator(), users, routedDeliveries,
+                Constants.QUERY_GET_CURRENT_VALIDATED_ONE_KITCHEN_RESTAURANT_TEMPLATE,
                 Constants.QUERY_GET_ONE_KITCHEN_DRIVERS_POST_FORMAT_V1,
                 Constants.QUERY_GET_ONE_KITCHEN_GROUP_POST_FORMAT_V1);
 
@@ -103,9 +104,10 @@ public class OneKitchenDriverPostTest extends TestBase {
     public void multiDriverGroupMessageTest() {
         String routedDeliveries = readResourceFile("routed-deliveries-turkey.csv");
         HttpClientSimulator.setQueryResponseFile(
-                Constants.QUERY_GET_CURRENT_VALIDATED_RESTAURANT_TEMPLATE, "restaurant-template-turkey.json");
+                Constants.QUERY_GET_CURRENT_VALIDATED_ONE_KITCHEN_RESTAURANT_TEMPLATE, "restaurant-template-turkey.json");
         DriverPostFormat driverPostFormat = DriverPostFormat.create(createApiSimulator(),
                 users, routedDeliveries,
+                Constants.QUERY_GET_CURRENT_VALIDATED_ONE_KITCHEN_RESTAURANT_TEMPLATE,
                 Constants.QUERY_GET_ONE_KITCHEN_DRIVERS_POST_FORMAT_V1,
                 Constants.QUERY_GET_ONE_KITCHEN_GROUP_POST_FORMAT_V1);
 

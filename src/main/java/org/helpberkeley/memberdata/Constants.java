@@ -61,8 +61,9 @@ public class Constants {
     public static final int QUERY_GET_LAST_COMPLETED_DAILY_ORDERS_REPLY = 44;
     public static final int QUERY_GET_ORDER_HISTORY_DATA_POSTS = 45;
     public static final int QUERY_GET_DRIVER_DETAILS = 46;
-    public static final int QUERY_GET_CURRENT_VALIDATED_RESTAURANT_TEMPLATE = 49;
+    public static final int QUERY_GET_CURRENT_VALIDATED_DRIVER_MESSAGE_RESTAURANT_TEMPLATE = 49;
     public static final int QUERY_GET_LAST_REPLY_FROM_REQUEST_TOPICS = 50;
+    public static final int QUERY_GET_CURRENT_VALIDATED_ONE_KITCHEN_RESTAURANT_TEMPLATE = 51;
 
     // Current spec version for these queries
     public static final int QUERY_GET_DRIVERS_POST_FORMAT = QUERY_GET_DRIVERS_POST_FORMAT_V23;
@@ -161,6 +162,8 @@ public class Constants {
     public static final String GROUP_GONE = "gone";
     public static final String GROUP_OTHER_DRIVERS = "other_drivers";
     public static final String GROUP_FRREG = "frreg";
+
+    public static final String ALT_TYPE_NONE = "none";
 
     public static final String BERKELEY = "Berkeley";
     public static final String ALBANY = "Albany";

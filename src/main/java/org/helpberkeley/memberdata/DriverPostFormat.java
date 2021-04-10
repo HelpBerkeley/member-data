@@ -78,7 +78,8 @@ public abstract class DriverPostFormat {
 
     // FIX THIS, DS: cleanup duplicated code in ctor
     public static DriverPostFormat create(ApiClient apiClient, Map<String, User> users,
-            String routedDeliveries, int driverTemplateQuery, int groupTemplateQuery) {
+            String routedDeliveries, int restaurantTemplateQuery,
+            int driverTemplateQuery, int groupTemplateQuery) {
 
         // Normalize lines
         String normalized = routedDeliveries.replaceAll("\\r\\n?", "\n");
@@ -97,11 +98,11 @@ public abstract class DriverPostFormat {
                         "Control block version " + controlBlock.getVersion() + " is not supported.\n");
             case Constants.CONTROL_BLOCK_VERSION_200:
                 driverPostFormat = new DriverPostFormatV200(apiClient, users, normalized,
-                        driverTemplateQuery, groupTemplateQuery);
+                        restaurantTemplateQuery, driverTemplateQuery, groupTemplateQuery);
                 break;
             case Constants.CONTROL_BLOCK_VERSION_300:
                 driverPostFormat = new DriverPostFormatV300(apiClient, users, normalized,
-                        driverTemplateQuery, groupTemplateQuery);
+                        restaurantTemplateQuery, driverTemplateQuery, groupTemplateQuery);
                 break;
             default:
                 throw new MemberDataException(

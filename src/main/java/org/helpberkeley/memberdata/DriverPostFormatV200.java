@@ -45,25 +45,31 @@ public class DriverPostFormatV200 extends DriverPostFormat {
     private final StringBuilder statusMessages = new StringBuilder();
     private final int driverTemplateQuery;
     private final int groupTemplateQuery;
+    private final int restaurantTemplateQuery;
 
     DriverPostFormatV200(ApiClient apiClient, Map<String, User> users, String routedDeliveries) {
         super(apiClient, users, routedDeliveries);
         this.apiClient = apiClient;
         this.users = users;
-        this.driverTemplateQuery = Constants.QUERY_GET_DRIVERS_POST_FORMAT;
-        this.groupTemplateQuery = Constants.QUERY_GET_GROUP_INSTRUCTIONS_FORMAT;
+
+        // FIX THIS, DS: set up invalid query id?
+        this.driverTemplateQuery = 0;
+        this.groupTemplateQuery = 0;
+        this.restaurantTemplateQuery = 0;
+
         initialize(routedDeliveries);
     }
 
     // FIX THIS, DS: cleanup duplicated code in ctor
-    DriverPostFormatV200(ApiClient apiClient, Map<String, User> users,
-                         String routedDeliveries, int driverTemplateQuery, int groupTemplateQuery) {
+    DriverPostFormatV200(ApiClient apiClient, Map<String, User> users, String routedDeliveries,
+                     int restaurantTemplateQuery, int driverTemplateQuery, int groupTemplateQuery) {
 
         super(apiClient, users, routedDeliveries, driverTemplateQuery, groupTemplateQuery);
         this.apiClient = apiClient;
         this.users = users;
         this.driverTemplateQuery = driverTemplateQuery;
         this.groupTemplateQuery = groupTemplateQuery;
+        this.restaurantTemplateQuery = restaurantTemplateQuery;
         initialize(routedDeliveries);
     }
 
@@ -282,7 +288,7 @@ public class DriverPostFormatV200 extends DriverPostFormat {
     }
 
     private void loadLastRestaurantTemplate() {
-        String  json = apiClient.runQuery(Constants.QUERY_GET_CURRENT_VALIDATED_RESTAURANT_TEMPLATE);
+        String  json = apiClient.runQuery(restaurantTemplateQuery);
         ApiQueryResult apiQueryResult = HBParser.parseQueryResult(json);
         assert apiQueryResult.rows.length == 1;
 

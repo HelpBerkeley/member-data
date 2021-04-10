@@ -42,7 +42,10 @@ public class RoutedDeliveriesTest extends TestBase {
     public void parseRoutedTest() {
         String csvData = readResourceFile("routed-deliveries-v200.csv");
 
-        DriverPostFormat driverPostFormat = DriverPostFormat.create(createApiSimulator(), users, csvData);
+        DriverPostFormat driverPostFormat = DriverPostFormat.create(createApiSimulator(), users, csvData,
+                Constants.QUERY_GET_CURRENT_VALIDATED_DRIVER_MESSAGE_RESTAURANT_TEMPLATE,
+                Constants.QUERY_GET_DRIVERS_POST_FORMAT_V23,
+                Constants.QUERY_GET_GROUP_INSTRUCTIONS_FORMAT_V22);
         List<Driver> drivers = driverPostFormat.getDrivers();
 
         assertThat(drivers).hasSize(2);
@@ -187,7 +190,10 @@ public class RoutedDeliveriesTest extends TestBase {
     @Test
     public void parseRoutedWithSplitRestaurantTest() {
         String csvData = readResourceFile("routed-deliveries-with-split-restaurant.csv");
-        DriverPostFormat driverPostFormat = DriverPostFormat.create(createApiSimulator(), users, csvData);
+        DriverPostFormat driverPostFormat = DriverPostFormat.create(createApiSimulator(), users, csvData,
+                Constants.QUERY_GET_CURRENT_VALIDATED_DRIVER_MESSAGE_RESTAURANT_TEMPLATE,
+                Constants.QUERY_GET_DRIVERS_POST_FORMAT_V23,
+                Constants.QUERY_GET_GROUP_INSTRUCTIONS_FORMAT_V22);
         List<Driver> drivers = driverPostFormat.getDrivers();
 
         assertThat(drivers).hasSize(4);
@@ -413,8 +419,11 @@ public class RoutedDeliveriesTest extends TestBase {
     public void parseRoutedWithSplitTurkeyTest() {
         String csvData = readResourceFile("routed-deliveries-turkey.csv");
         HttpClientSimulator.setQueryResponseFile(
-                Constants.QUERY_GET_CURRENT_VALIDATED_RESTAURANT_TEMPLATE, "restaurant-template-turkey.json");
-        DriverPostFormat driverPostFormat = DriverPostFormat.create(createApiSimulator(), users, csvData);
+                Constants.QUERY_GET_CURRENT_VALIDATED_DRIVER_MESSAGE_RESTAURANT_TEMPLATE, "restaurant-template-turkey.json");
+        DriverPostFormat driverPostFormat = DriverPostFormat.create(createApiSimulator(), users, csvData,
+                Constants.QUERY_GET_CURRENT_VALIDATED_DRIVER_MESSAGE_RESTAURANT_TEMPLATE,
+                Constants.QUERY_GET_DRIVERS_POST_FORMAT_V23,
+                Constants.QUERY_GET_GROUP_INSTRUCTIONS_FORMAT_V22);
         List<Driver> drivers = driverPostFormat.getDrivers();
 
         assertThat(drivers).hasSize(3);
@@ -565,7 +574,10 @@ public class RoutedDeliveriesTest extends TestBase {
     public void parseRoutedEmptyDeliveryTest() {
         String csvData = readResourceFile("routed-deliveries-empty-delivery.csv");
 
-        DriverPostFormat driverPostFormat = DriverPostFormat.create(createApiSimulator(), users, csvData);
+        DriverPostFormat driverPostFormat = DriverPostFormat.create(createApiSimulator(), users, csvData,
+                Constants.QUERY_GET_CURRENT_VALIDATED_DRIVER_MESSAGE_RESTAURANT_TEMPLATE,
+                Constants.QUERY_GET_DRIVERS_POST_FORMAT_V23,
+                Constants.QUERY_GET_GROUP_INSTRUCTIONS_FORMAT_V22);
         List<Driver> drivers = driverPostFormat.getDrivers();
 
         assertThat(drivers).hasSize(2);

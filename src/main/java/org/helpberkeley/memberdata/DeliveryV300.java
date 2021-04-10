@@ -78,12 +78,20 @@ public class DeliveryV300 extends Delivery {
         return altMeals;
     }
 
+    public String getTypeMeal() {
+        return typeMeal;
+    }
+
     public String getStdGrocery() {
         return stdGrocery;
     }
 
     public String getAltGrocery() {
-        return altMeals;
+        return altGrocery;
+    }
+
+    public String getTypeGrocery() {
+        return typeGrocery;
     }
 
     public String deliveryRow() {

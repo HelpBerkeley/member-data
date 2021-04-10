@@ -93,11 +93,11 @@ public class WorkflowParserV300 extends WorkflowParser {
         WorkflowBeanV300 bean;
 
         while ((bean = (WorkflowBeanV300)peekNextRow()) != null) {
-            if (! bean.getConsumer().equalsIgnoreCase("TRUE")) {
+            if (!bean.getConsumer().equalsIgnoreCase("TRUE")) {
                 break;
             }
 
-            bean = (WorkflowBeanV300)nextRow();
+            bean = (WorkflowBeanV300) nextRow();
             assert bean != null;
             String errors = "";
 
@@ -129,10 +129,12 @@ public class WorkflowParserV300 extends WorkflowParser {
             if (restaurantName.isEmpty()) {
                 errors += "missing restaurant name\n";
             }
-            String stdMeals = bean.getStdMeals();
-            String altMeals = bean.getAltMeals();
-            String stdGrocery = bean.getStdGrocery();
-            String altGrocery = bean.getAltGrocery();
+            String stdMeals = bean.getStdMeals().trim();
+            String altMeals = bean.getAltMeals().trim();
+            String typeMeal = bean.getTypeMeal().trim();
+            String stdGrocery = bean.getStdGrocery().trim();
+            String altGrocery = bean.getAltGrocery().trim();
+            String typeGrocery = bean.getTypeGrocery().trim();
 
             if (stdMeals.isEmpty()) {
                 errors += Constants.WORKFLOW_STD_MEALS_COLUMN + " column is empty. ";
@@ -141,6 +143,16 @@ public class WorkflowParserV300 extends WorkflowParser {
             if (altMeals.isEmpty()) {
                 errors += Constants.WORKFLOW_ALT_MEALS_COLUMN + " column is empty. ";
                 errors += "Please insert the the correct number(s) (e.g. 0).\n";
+            } else if (! altMeals.equals("0")) {
+                if (typeMeal.isEmpty()) {
+                    errors += Constants.WORKFLOW_TYPE_MEAL_COLUMN + " column is empty. ";
+                    errors += "Please insert the the correct alternate grocery type (e.g. veg).\n";
+                } else if (typeMeal.equals(Constants.ALT_TYPE_NONE)) {
+                    errors += Constants.ALT_TYPE_NONE + " is invalid for the ";
+                    errors += Constants.WORKFLOW_TYPE_MEAL_COLUMN + " column when ";
+                    errors += Constants.WORKFLOW_ALT_MEALS_COLUMN + " is not 0. ";
+                    errors += "Please insert a valid alt meal type.\n";
+                }
             }
             if (stdGrocery.isEmpty()) {
                 errors += Constants.WORKFLOW_STD_GROCERY_COLUMN + " column is empty. ";
@@ -149,6 +161,16 @@ public class WorkflowParserV300 extends WorkflowParser {
             if (altGrocery.isEmpty()) {
                 errors += Constants.WORKFLOW_ALT_GROCERY_COLUMN + " column is empty. ";
                 errors += "Please insert the the correct number(s) (e.g. 0).\n";
+            } else if (! altGrocery.equals("0")) {
+                if (typeGrocery.isEmpty()) {
+                    errors += Constants.WORKFLOW_TYPE_GROCERY_COLUMN + " column is empty. ";
+                    errors += "Please insert the the correct alternate grocery type (e.g. veg).\n";
+                } else if (typeGrocery.equals(Constants.ALT_TYPE_NONE)) {
+                    errors += Constants.ALT_TYPE_NONE + " is invalid for the ";
+                    errors += Constants.WORKFLOW_TYPE_GROCERY_COLUMN + " column when ";
+                    errors += Constants.WORKFLOW_ALT_GROCERY_COLUMN + " is not 0. ";
+                    errors += "Please insert a valid alt grocery type.\n";
+                }
             }
 
             if (! errors.isEmpty()) {
@@ -167,8 +189,10 @@ public class WorkflowParserV300 extends WorkflowParser {
             delivery.setRestaurant(restaurantName);
             delivery.setStdMeals(stdMeals.isEmpty() ? "0" : stdMeals);
             delivery.setAltMeals(altMeals.isEmpty() ? "0" : altMeals);
+            delivery.setTypeMeal(typeMeal.isEmpty() ? "none" : typeMeal);
             delivery.setStdGrocery(stdGrocery.isEmpty() ? "0" : stdGrocery);
             delivery.setAltGrocery(altGrocery.isEmpty() ? "0" : altGrocery);
+            delivery.setTypeGrocery(typeGrocery.isEmpty() ? "none" : typeGrocery);
 
             deliveries.add(delivery);
         }

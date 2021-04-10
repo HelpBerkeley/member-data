@@ -184,7 +184,10 @@ public class ControlBlockV200Test extends ControlBlockTestBase {
     public void auditSplitRestaurantNoCleanupTest() {
 
         Throwable thrown = catchThrowable(() -> DriverPostFormat.create(createApiSimulator(), users,
-                readResourceFile("routed-deliveries-split-missing-cleanup.csv")));
+                readResourceFile("routed-deliveries-split-missing-cleanup.csv"),
+                Constants.QUERY_GET_CURRENT_VALIDATED_DRIVER_MESSAGE_RESTAURANT_TEMPLATE,
+                Constants.QUERY_GET_DRIVERS_POST_FORMAT_V23,
+                Constants.QUERY_GET_GROUP_INSTRUCTIONS_FORMAT_V22));
         assertThat(thrown).isInstanceOf(MemberDataException.class);
         assertThat(thrown).hasMessageContaining(
                 MessageFormat.format(ControlBlock.MISSING_SPLIT_RESTAURANT, "Cafe Raj"));
@@ -194,7 +197,10 @@ public class ControlBlockV200Test extends ControlBlockTestBase {
     @Test
     public void disabledAuditSplitRestaurantNoCleanupTest() {
         DriverPostFormat.create(createApiSimulator(), users,
-                readResourceFile("routed-deliveries-split-missing-cleanup-audit-disabled.csv"));
+                readResourceFile("routed-deliveries-split-missing-cleanup-audit-disabled.csv"),
+                Constants.QUERY_GET_CURRENT_VALIDATED_DRIVER_MESSAGE_RESTAURANT_TEMPLATE,
+                Constants.QUERY_GET_DRIVERS_POST_FORMAT_V23,
+                Constants.QUERY_GET_GROUP_INSTRUCTIONS_FORMAT_V22);
     }
 
     /** Verify audit of a split restaurant with an unknown restaurant name */
@@ -202,7 +208,10 @@ public class ControlBlockV200Test extends ControlBlockTestBase {
     public void auditSplitRestaurantBadNameTest() {
 
         Throwable thrown = catchThrowable(() -> DriverPostFormat.create(createApiSimulator(), users,
-                readResourceFile("routed-deliveries-split-restaurant-unknown.csv")));
+                readResourceFile("routed-deliveries-split-restaurant-unknown.csv"),
+                Constants.QUERY_GET_CURRENT_VALIDATED_DRIVER_MESSAGE_RESTAURANT_TEMPLATE,
+                Constants.QUERY_GET_DRIVERS_POST_FORMAT_V23,
+                Constants.QUERY_GET_GROUP_INSTRUCTIONS_FORMAT_V22));
         assertThat(thrown).isInstanceOf(MemberDataException.class);
         assertThat(thrown).hasMessageContaining(
                 MessageFormat.format(ControlBlock.MISSING_SPLIT_RESTAURANT, "Cafe Raj"));
@@ -216,7 +225,10 @@ public class ControlBlockV200Test extends ControlBlockTestBase {
     public void auditSplitRestaurantWrongDriverTest() {
 
         Throwable thrown = catchThrowable(() -> DriverPostFormat.create(createApiSimulator(), users,
-                readResourceFile("routed-deliveries-split-wrong-cleanup.csv")));
+                readResourceFile("routed-deliveries-split-wrong-cleanup.csv"),
+                Constants.QUERY_GET_CURRENT_VALIDATED_DRIVER_MESSAGE_RESTAURANT_TEMPLATE,
+                Constants.QUERY_GET_DRIVERS_POST_FORMAT_V23,
+                Constants.QUERY_GET_GROUP_INSTRUCTIONS_FORMAT_V22));
         assertThat(thrown).isInstanceOf(MemberDataException.class);
         assertThat(thrown).hasMessageContaining(
                 MessageFormat.format(ControlBlock.WRONG_CLEANUP_DRIVER, "JVol", "Cafe Raj"));
@@ -230,7 +242,10 @@ public class ControlBlockV200Test extends ControlBlockTestBase {
     public void auditSplitRestaurantUnknownDriverTest() {
 
         Throwable thrown = catchThrowable(() -> DriverPostFormat.create(createApiSimulator(), users,
-                readResourceFile("routed-deliveries-split-unknown-cleanup.csv")));
+                readResourceFile("routed-deliveries-split-unknown-cleanup.csv"),
+                Constants.QUERY_GET_CURRENT_VALIDATED_DRIVER_MESSAGE_RESTAURANT_TEMPLATE,
+                Constants.QUERY_GET_DRIVERS_POST_FORMAT_V23,
+                Constants.QUERY_GET_GROUP_INSTRUCTIONS_FORMAT_V22));
         assertThat(thrown).isInstanceOf(MemberDataException.class);
         assertThat(thrown).hasMessageContaining(
                 MessageFormat.format(ControlBlock.UNKNOWN_CLEANUP_DRIVER, "Sparkles", "Cafe Raj"));

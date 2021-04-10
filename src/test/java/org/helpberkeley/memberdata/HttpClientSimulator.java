@@ -201,8 +201,11 @@ public class HttpClientSimulator extends HttpClient {
             case Constants.QUERY_GET_LAST_RESTAURANT_TEMPLATE_REPLY:
                 dataFile = "restaurant-template-last-reply.json";
                 break;
-            case Constants.QUERY_GET_CURRENT_VALIDATED_RESTAURANT_TEMPLATE:
+            case Constants.QUERY_GET_CURRENT_VALIDATED_DRIVER_MESSAGE_RESTAURANT_TEMPLATE:
                 dataFile = "current-restaurant-template-post.json";
+                break;
+            case Constants.QUERY_GET_CURRENT_VALIDATED_ONE_KITCHEN_RESTAURANT_TEMPLATE:
+                dataFile = "current-one-kitchen-restaurant-template-post.json";
                 break;
             case Constants.QUERY_GET_LAST_COMPLETED_DAILY_ORDERS_REPLY:
                 dataFile = "last-completed-daily-orders-reply.json";
