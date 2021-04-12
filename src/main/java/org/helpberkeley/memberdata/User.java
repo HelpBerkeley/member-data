@@ -137,6 +137,27 @@ public class User {
     static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
     static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yy/MM/dd");
 
+    private static final String[] BERKLEY_BERKELEY_STREETS = {
+            // Berkeley Square
+            "brkly sqr",
+            "brkly sq.",
+            // Berkeley Way
+            "brkly wy",
+    };
+
+    private static final String[] ALBANY_ALBANY_STREETS = {
+            // Albany Terrace
+            "lbny trc",
+            "lbny tr",
+    };
+
+    private static final String[] KENSINGTON_KENSINGTON_STREETS = {
+            // Kensington Park Road
+            "nsngtn prk rd",
+            "nsngtn pk rd",
+            "nsngtn pk",
+    };
+
     private String name;
     private String userName;
     private final long id;
@@ -827,22 +848,77 @@ public class User {
             return;
         }
 
-        String lowerCase = address.toLowerCase();
+        // Remove leading trailing whitespace
+        String addr = address.trim();
 
-        // Berkeley Way is a street in Berkeley
-        if (lowerCase.contains("berkeley way")) {
+        // Lower case
+        addr = addr.toLowerCase();
+
+        // Remove all vowels but y
+        String compressed = addr.replaceAll("[aeiou]", "");
+
+        // Replace all repeating characters with single characters - e.g. bkkllyy -> bkly
+        compressed = compressed.replaceAll("(.)\\1+","$1");
+
+        if ((city.equals(Constants.BERKELEY) && streetContainsBerkeley(compressed))
+            || (city.equals(Constants.ALBANY) && streetContainsAlbany(compressed))
+            || (city.equals(Constants.KENSINGTON) && streetContainsKensington(compressed))) {
+
             return;
         }
 
-        int index = lowerCase.indexOf(" berkeley");
-        if (index == -1) {
-            return;
+        int cityIndex;
+
+        switch (city) {
+            case Constants.BERKELEY:
+                cityIndex = addr.indexOf(" berkeley");
+                break;
+            case Constants.ALBANY:
+                cityIndex = addr.indexOf(" albany");
+                break;
+            case Constants.KENSINGTON:
+                cityIndex = addr.indexOf(" kensington");
+                break;
+            default:
+                return;
         }
 
         // FIX THIS, DS: what kind of validation can be done here
         //               to prevent chopping off street address info?
 
-        address = address.substring(0, index);
+        if (cityIndex != -1) {
+            address = address.substring(0, cityIndex);
+        }
+    }
+
+    private boolean streetContainsBerkeley(String compressedAddress) {
+        for (String street : BERKLEY_BERKELEY_STREETS) {
+            if (compressedAddress.contains(street)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private boolean streetContainsAlbany(String compressedAddress) {
+        for (String street : ALBANY_ALBANY_STREETS) {
+            if (compressedAddress.contains(street)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private boolean streetContainsKensington(String compressedAddress) {
+        for (String street : KENSINGTON_KENSINGTON_STREETS) {
+            if (compressedAddress.contains(street)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     // can arrive either as null, "", or a value
@@ -878,7 +954,7 @@ public class User {
         // Remove leading trailing whitespace
         cityName = cityName.trim();
 
-        // Remove all vowels by y
+        // Remove all vowels but y
         cityName = cityName.replaceAll("[aeiou]", "");
 
         // Replace all repeating characters with single characters - e.g. bkkllyy -> bkly
@@ -930,7 +1006,7 @@ public class User {
             return false;
         }
 
-        // Remove all vowels by y
+        // Remove all vowels but y
         cityName = cityName.replaceAll("[aeiou]", "");
 
         // Replace all repeating characters with single characters - e.g. bkkllyy -> bkly
@@ -968,7 +1044,7 @@ public class User {
             return false;
         }
 
-        // Remove all vowels by y
+        // Remove all vowels but y
         cityName = cityName.replaceAll("[aeiouy]", "");
 
         // Replace all repeating characters with single characters - e.g. bkkllxx -> bklx

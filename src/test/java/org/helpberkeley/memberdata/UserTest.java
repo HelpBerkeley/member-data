@@ -817,4 +817,50 @@ public class UserTest extends TestBase {
         assertThat(u1.isConsumer()).isTrue();
         assertThat(u1.isDriver()).isFalse();
     }
+
+    @Test
+    public void streetNameContainsBerkeleyTest() throws UserException {
+
+        String[] addresses = {
+                "123 Berkeley Way",
+                "123 Berkeley Wy",
+                "123 Berkeley Sq.",
+                "123 Berkeley Square",
+        };
+
+        for (String address : addresses) {
+            User u1 = createUserWithAddressAndCity(address, Constants.BERKELEY);
+            assertThat(u1.getAddress()).isEqualTo(address);
+        }
+    }
+
+    @Test
+    public void streetNameContainsAlbanyTest() throws UserException {
+
+        String[] addresses = {
+                "123 Albany Terrace",
+                "123 Albany Terr.",
+        };
+
+        for (String address : addresses) {
+            User u1 = createUserWithAddressAndCity(address, Constants.ALBANY);
+            assertThat(u1.getAddress()).isEqualTo(address);
+        }
+    }
+
+    @Test
+    public void streetNameContainsKensingtonTest() throws UserException {
+
+        String[] addresses = {
+                "123 Kensington Park Road",
+                "123 Kensington Park Rd",
+                "123 Kensington Park Rd.",
+                "123 Kensington Pk Rd.",
+        };
+
+        for (String address : addresses) {
+            User u1 = createUserWithAddressAndCity(address, Constants.KENSINGTON);
+            assertThat(u1.getAddress()).isEqualTo(address);
+        }
+    }
 }

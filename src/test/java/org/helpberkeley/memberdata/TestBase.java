@@ -230,6 +230,13 @@ public class TestBase {
                 TEST_REFERRAL_1, TEST_VERIFIED_1);
     }
 
+    protected User createUserWithAddressAndCity(String address, String city) throws UserException {
+        return User.createUser(TEST_NAME_1, TEST_USER_NAME_1,
+                TEST_ID_1, address, city, TEST_PHONE_1, TEST_ALT_PHONE_1, TEST_NEIGHBORHOOD_1,
+                TEST_CREATED_1, TEST_CONDO_1, TEST_CONSUMER_REQUEST_1, TEST_VOLUNTEER_REQUEST_1,
+                TEST_REFERRAL_1, TEST_VERIFIED_1);
+    }
+
     protected User createUserWithCity(final String city) throws UserException {
         return User.createUser(TEST_NAME_1, TEST_USER_NAME_1,
                 TEST_ID_1, TEST_ADDRESS_1, city, TEST_PHONE_1, TEST_ALT_PHONE_1, TEST_NEIGHBORHOOD_1,
