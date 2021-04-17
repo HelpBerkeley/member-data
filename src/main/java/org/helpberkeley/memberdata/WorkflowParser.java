@@ -418,6 +418,7 @@ public abstract class WorkflowParser {
                 errors += "missing address\n";
             }
             String details = bean.getDetails();
+            // FIX THIS, DS: orders is V200 specific
             String orders = bean.getOrders();
             if (orders.isEmpty()) {
                 errors += "missing orders";

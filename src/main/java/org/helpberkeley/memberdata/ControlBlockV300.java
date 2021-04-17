@@ -38,7 +38,6 @@ class ControlBlockV300 extends ControlBlock {
         StringBuilder errors = new StringBuilder();
 
         auditOpsManager(errors, users);
-        auditSplitRestaurants(errors, users, restaurants, splitRestaurants);
         auditBackupDrivers(errors, users);
 
         if (errors.length() != 0) {

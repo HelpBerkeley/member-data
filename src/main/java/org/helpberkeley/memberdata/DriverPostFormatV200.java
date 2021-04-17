@@ -392,6 +392,140 @@ public class DriverPostFormatV200 extends DriverPostFormat {
     }
 
     @Override
+    ProcessingReturnValue processListRef(MessageBlockListRef listRef, MessageBlockContext context) {
+        String listName = listRef.getListName();
+        String refName = listRef.getName();
+        ProcessingReturnValue returnValue;
+
+        switch (listName) {
+            case "ThisDriverRestaurant":
+                returnValue = processPickupsListRef(listRef, context);
+                break;
+            case "Consumer":
+                returnValue = processDeliveriesListRef(listRef, context);
+                break;
+            case "Driver":
+                returnValue = processDriverListRef(listRef, context);
+                break;
+            case "SplitRestaurant":
+                returnValue = processSplitRestaurantListRef(listRef, context);
+                break;
+            case "Pickup":
+                returnValue = processThisRestaurantPickupListRef(listRef, context);
+                break;
+            default:
+                throw new MemberDataException(context.formatException(
+                        "unknown list name &{" + listName + "} in " + "&{" + refName + "}"));
+        }
+
+        LOGGER.trace("&{{}} = \"{}\"", refName, returnValue.output);
+        return returnValue;
+    }
+
+    private ProcessingReturnValue processPickupsListRef(MessageBlockListRef listRef, MessageBlockContext context) {
+        String refName = listRef.getName();
+        String value;
+
+        // FIX THIS, DS: unify Restaurant so that there are not multiple copies
+        Restaurant pickupRestaurant = context.getPickupRestaurant();
+        Restaurant globalRestaurant = restaurants.get(pickupRestaurant.getName());
+
+        switch (refName) {
+            case "ThisDriverRestaurant.Name":
+                value = pickupRestaurant.getName();
+                break;
+            case "ThisDriverRestaurant.Emoji":
+                value = globalRestaurant.getEmoji();
+                break;
+            case "ThisDriverRestaurant.Address":
+                value = pickupRestaurant.getAddress();
+                break;
+            case "ThisDriverRestaurant.Details":
+                value = pickupRestaurant.getDetails();
+                break;
+            case "ThisDriverRestaurant.ThisDriverOrders":
+                value = Long.toString(pickupRestaurant.getOrders());
+                break;
+            case "ThisDriverRestaurant.TotalOrders":
+                value = Long.toString(globalRestaurant.getOrders());
+                break;
+            case "ThisDriverRestaurant.TotalDrivers":
+                value = Long.toString(globalRestaurant.getDrivers().size());
+                break;
+            default:
+                throw new MemberDataException(context.formatException("unknown list variable &{" + refName + "}"));
+        }
+
+        LOGGER.trace("${{}} = \"{}\"", refName, value);
+        return new ProcessingReturnValue(ProcessingStatus.COMPLETE, value);
+    }
+
+    private ProcessingReturnValue processDriverListRef(MessageBlockListRef listRef, MessageBlockContext context) {
+
+        String refName = listRef.getName();
+        String value;
+
+        Driver driver = context.getDriver();
+        String firstRestaurantName = driver.getFirstRestaurantName();
+        Restaurant restaurant = restaurants.get(firstRestaurantName);
+        assert restaurant != null : firstRestaurantName + " was not found the in restaurant template post";
+
+        switch (refName) {
+            case "Driver.UserName":
+                value = driver.getUserName();
+                break;
+            case "Driver.FirstRestaurantName":
+                value = firstRestaurantName;
+                break;
+            case "Driver.FirstRestaurantStartTime":
+                value = driver.getStartTime();
+                break;
+            case "Driver.FirstRestaurantClosingTime":
+                value = restaurant.getClosingTime();
+                break;
+            case "Driver.SplitRestaurantOrders":
+                Restaurant splitRestaurant = context.getSplitRestaurant();
+                value = Long.toString(driver.getOrders(splitRestaurant.getName()));
+                break;
+            case "Driver.CompactPhone":
+                value = compactPhone(driver.getPhoneNumber());
+                break;
+            default:
+                throw new MemberDataException(context.formatException("unknown list variable &{" + refName + "}"));
+        }
+
+        LOGGER.trace("${{}} = \"{}\"", refName, value);
+        return new ProcessingReturnValue(ProcessingStatus.COMPLETE, value);
+    }
+
+    private ProcessingReturnValue processSplitRestaurantListRef(
+            MessageBlockListRef listRef, MessageBlockContext context) {
+
+        String refName = listRef.getName();
+        String value;
+
+        Restaurant splitRestaurant = context.getSplitRestaurant();
+        String name = splitRestaurant.getName();
+
+        switch (refName) {
+            case "SplitRestaurant.Name":
+                value = name;
+                break;
+            case "SplitRestaurant.Emoji":
+                value = splitRestaurant.getEmoji();
+                break;
+            case "SplitRestaurant.TotalOrders":
+                value = Long.toString(splitRestaurant.getOrders());
+                break;
+            default:
+                throw new MemberDataException(context.formatException("unknown list variable &{" + refName + "}"));
+        }
+
+        LOGGER.trace("${{}} = \"{}\"", refName, value);
+        return new ProcessingReturnValue(ProcessingStatus.COMPLETE, value);
+    }
+
+    @Override
     ProcessingReturnValue processDeliveriesListRef(MessageBlockListRef listRef, MessageBlockContext context) {
         String refName = listRef.getName();
         String value;
@@ -474,6 +608,84 @@ public class DriverPostFormatV200 extends DriverPostFormat {
     }
 
     @Override
+    ProcessingReturnValue processLoopListRef(
+            MessageBlockLoop loop, MessageBlockListRef listRef, MessageBlockContext context) {
+
+        String refName = listRef.getName();
+        ProcessingReturnValue returnValue;
+
+        // FIX THIS, DS generalize this nested loop handling
+
+        switch (refName) {
+            case "SplitRestaurant.Driver":
+                returnValue = processSplitRestaurantDrivers(loop, context);
+                break;
+            case "ThisDriverRestaurant.Pickup":
+                returnValue = processRestaurantPickups(loop, context);
+                break;
+            default:
+                throw new MemberDataException(context.formatException("unknown loop list ref &{" + listRef + "}"));
+        }
+
+        LOGGER.trace("${{}} = \"{}\"", refName, returnValue.output);
+        return returnValue;
+    }
+
+    private ProcessingReturnValue processSplitRestaurantDrivers(MessageBlockLoop loop, MessageBlockContext context) {
+
+        StringBuilder processedLoop = new StringBuilder();
+        MessageBlockContext driverContext = new MessageBlockContext("SplitRestaurantDrivers", context);
+
+        Restaurant splitRestaurant = context.getSplitRestaurant();
+
+        for (Driver driver : splitRestaurant.getDrivers().values()) {
+
+            driverContext.setDriver(driver);
+
+            for (MessageBlockElement element : loop.getElements()) {
+                ProcessingReturnValue returnValue = processElement(element, driverContext);
+                processedLoop.append(returnValue.output);
+
+                if (returnValue.status == ProcessingStatus.CONTINUE) {
+                    break;
+                }
+            }
+        }
+
+        LOGGER.trace("${{}} = \"{}\"", loop, processedLoop);
+        return new ProcessingReturnValue(ProcessingStatus.COMPLETE, processedLoop.toString());
+    }
+
+    @Override
+    boolean processBooleanSimpleRef(MessageBlockSimpleRef element, MessageBlockContext context) {
+        String refName = element.getName();
+        Driver driver = context.getDriver();
+        boolean value;
+
+        switch (refName) {
+            case "ThisDriverSplitsAnyRestaurant":
+                value = driverHasSplitRestaurant(driver);
+                break;
+            case "ThisDriverAnyCondo":
+                value = driver.hasCondo();
+                break;
+            case "AnySplitRestaurants":
+                value = anySplitRestaurants();
+                break;
+            case "IsFirstRestaurantClosingBefore545PM":
+                String restaurantName = driver.getFirstRestaurantName();
+                Restaurant restaurant = restaurants.get(restaurantName);
+                value = restaurant.closesBefore(545);
+                break;
+            default:
+                throw new MemberDataException(context.formatException("unknown boolean variable ${" + refName + "}"));
+        }
+
+        LOGGER.trace("${{}} = \"{}\"", element, value);
+        return value;
+    }
+
+    @Override
     boolean processBooleanListRef(MessageBlockListRef listRef, MessageBlockContext context) {
         String listName = listRef.getListName();
         String refName = listRef.getName();
@@ -537,4 +749,33 @@ public class DriverPostFormatV200 extends DriverPostFormat {
         LOGGER.trace("${{}} = \"{}\"", listRef, value);
         return value;
     }
+
+    private boolean driverHasSplitRestaurant(final Driver driver) {
+
+        boolean hasSplit = false;
+
+        for (Restaurant pickup : driver.getPickups()) {
+            Restaurant restaurant = restaurants.get(pickup.getName());
+
+            if (restaurant.getDrivers().size() > 1) {
+                hasSplit = true;
+                break;
+            }
+        }
+
+        LOGGER.trace("Driver {} has{} split restaurants", driver.getUserName(), hasSplit ? "" : " no");
+
+        return hasSplit;
+    }
+
+    private boolean anySplitRestaurants() {
+        for (Restaurant restaurant : restaurants.values()) {
+            if (restaurant.getDrivers().size() > 1) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
 }

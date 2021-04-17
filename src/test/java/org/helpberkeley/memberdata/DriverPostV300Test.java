@@ -53,18 +53,6 @@ public class DriverPostV300Test extends DriverPostTest {
     }
 
     @Override
-    void checkExpectedPickups(List<String> posts) {
-        assertThat(posts).containsExactly("Bauman Meals/Groceries|Cust Name 1|Cust1\n"
-                + "Bauman Meals/Groceries|Cust Name 2|Cust2\n"
-                + "Bauman Meals/Groceries|Cust Name 3|Cust3\n"
-                + "Bauman Meals/Groceries|Cust Name 4|Cust4\n"
-                + "Bauman Meals/Groceries|Cust Name 5|Cust5\n"
-                + "Bauman Meals/Groceries|Cust Name 6|Cust6\n"
-                + "Bauman Meals/Groceries|Cust Name 7|Cust7\n"
-        );
-    }
-
-    @Override
     void checkExpectedDeliveries(List<String> posts) {
         assertThat(posts).hasSize(1);
         assertThat(posts).containsExactly("Cust Name 1|(555) 555.1112|(111) 222.3333|"
@@ -150,7 +138,6 @@ public class DriverPostV300Test extends DriverPostTest {
         );
     }
 
-    // FIX THIS, DS: add V300 specific variables
     @Test
     public void thisDriverRestaurantTest() {
         String format = "LOOP &{ThisDriverRestaurant} { "
@@ -162,9 +149,9 @@ public class DriverPostV300Test extends DriverPostTest {
                 + "\"|\""
                 + " &{ThisDriverRestaurant.Details}"
                 + "\"|\""
-                + " &{ThisDriverRestaurant.TotalDrivers}"
+                + " &{ThisDriverRestaurant.StandardMeals}"
                 + "\"|\""
-                + " &{ThisDriverRestaurant.TotalOrders}"
+                + " &{ThisDriverRestaurant.StandardGroceries}"
                 + "\"\\n\""
                 + " }";
         HttpClientSimulator.setQueryResponseData(getDriverPostFormatQuery(), createMessageBlock(format));
@@ -179,26 +166,23 @@ public class DriverPostV300Test extends DriverPostTest {
                         + "|:frog:" // Emoji
                         + "|1955 Ninth St., Berkeley, CA"  // Address
                         + "|Come from Hearst, park alongside E side of street past loading dock" // Details
-                        + "|1" // TotalDrivers
-                        + "|7\n" // TotalOrders
+                        + "|2" // StandardMeals
+                        + "|4\n" // StandardGroceries
         );
     }
 
-    @Ignore
     @Test
-    public void v300PickupsTest() {
+    public void v300PickupsBooleansTest() {
         String format = "LOOP &{ThisDriverRestaurant} { "
-                + " &{ThisDriverRestaurant.AnyMealsOrGroceries}"
+                + " IF &{ThisDriverRestaurant.AnyMealsOrGroceries} THEN { \"HasMealsOrGroceries\" }"
                 + "\"|\""
                 + " IF &{ThisDriverRestaurant.StandardMeals} THEN { \"std meals\" }"
                 + "\"|\""
                 + " IF &{ThisDriverRestaurant.AlternateMeals} THEN { \"alt meals\" }"
                 + "\"|\""
-                + " IF &{Consumer.AlternateMeals} THEN { \"alt meals\" }"
+                + " IF &{ThisDriverRestaurant.StandardGrocery} THEN { \"std grocery\" }"
                 + "\"|\""
-                + " IF &{Consumer.StandardGrocery} THEN { \"std grocery\" }"
-                + "\"|\""
-                + " IF &{Consumer.AlternateGrocery} THEN { \"alt grocery\" }"
+                + " IF &{ThisDriverRestaurant.AlternateGrocery} THEN { \"alt grocery\" }"
                 + "\"\\n\""
                 + " }";
         HttpClientSimulator.setQueryResponseData(getDriverPostFormatQuery(), createMessageBlock(format));
@@ -208,13 +192,33 @@ public class DriverPostV300Test extends DriverPostTest {
                 getDriverPostFormatQuery(),
                 getGroupInstructionsFormatQuery());
         List<String> posts = driverPostFormat.generateDriverPosts();
-        assertThat(posts).containsExactly("Cust Name 1||alt meals||\n"
-                + "Cust Name 2|std meals||std grocery|\n"
-                + "Cust Name 3|||std grocery|\n"
-                + "Cust Name 4||alt meals||alt grocery\n"
-                + "Cust Name 5||alt meals||\n"
-                + "Cust Name 6||||alt grocery\n"
-                + "Cust Name 7||alt meals||alt grocery\n"
-        );
+        assertThat(posts).containsExactly("HasMealsOrGroceries|std meals|alt meals|std grocery|alt grocery\n");
+    }
+
+    @Ignore
+    @Test
+    public void v300PickupsTest() {
+        String format = "LOOP &{ThisDriverRestaurant} {"
+                + " &{ThisDriverRestaurant.StandardMeals}"
+                + "\"|\""
+                + " LOOP &{ThisDriverRestaurant.AlternateMeals} {"
+                + " &{AlternateMeals.Type} \":\" &{AlternateMeals.Count} \":\""
+                +" } "
+                + "\"|\""
+                + " &{ThisDriverRestaurant.StandardGrocery}"
+                + "\"|\""
+                + " LOOP &{ThisDriverRestaurant.AlternateGroceries} {"
+                + " &{AlternateGroceries.Type} \":\" &{AlternateGroceries.Count} \":\""
+                +" } "
+                + "\"\\n\""
+                + " }";
+        HttpClientSimulator.setQueryResponseData(getDriverPostFormatQuery(), createMessageBlock(format));
+        String routedDeliveries = readResourceFile(getRoutedDeliveriesFileName());
+        DriverPostFormat driverPostFormat = DriverPostFormat.create(createApiSimulator(), users, routedDeliveries,
+                getRestaurantTemplateQuery(),
+                getDriverPostFormatQuery(),
+                getGroupInstructionsFormatQuery());
+        List<String> posts = driverPostFormat.generateDriverPosts();
+        assertThat(posts).containsExactly("HasMealsOrGroceries|std meals|alt meals|std grocery|alt grocery\n");
     }
 }

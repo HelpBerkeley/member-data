@@ -52,18 +52,6 @@ public class DriverPostV200Test extends DriverPostTest {
     }
 
     @Override
-    void checkExpectedPickups(List<String> posts) {
-        assertThat(posts).hasSize(2);
-        assertThat(posts).containsExactly("Sweet Basil|Cust Name 2|Cust2\n"
-                + "Bopshop|Cust Name 1|Cust1\n"
-                + "Bopshop|Cust Name 3|Cust3\n"
-                , "Cafe Raj|Cust Name 4|Cust4\n"
-                + "Cafe Raj|Cust Name 5|Cust5\n"
-                + "Cafe Raj|Cust Name 6|Cust6\n"
-                + "Cafe Raj|Cust Name 7|Cust7\n");
-    }
-
-    @Override
     void checkExpectedDeliveries(List<String> posts) {
         assertThat(posts).hasSize(2);
         assertThat(posts).containsExactly("Cust Name 1|(555) 555.1112|(111) 222.3333|"
@@ -299,5 +287,34 @@ public class DriverPostV200Test extends DriverPostTest {
                 + "Bopshop|:motor_scooter:|1823 Solano Ave, Berkeley||1|2|NotSplit|Pics\n");
         assertThat(posts.get(1)).isEqualTo("Cafe Raj|:open_umbrella:|1158 Solano Ave, Albany"
                 + "|One,Two,Three details|1|4|NotSplit|Pics\n");
+    }
+
+    @Test
+    public void thisDriverRestaurantPickupTest() {
+        String format = "LOOP &{ThisDriverRestaurant} { "
+                + "LOOP &{ThisDriverRestaurant.Pickup} { "
+                + " &{ThisDriverRestaurant.Name}"
+                + "\"|\""
+                + " &{Pickup.MemberName}"
+                + "\"|\""
+                + " &{Pickup.UserName}"
+                + "\"\\n\""
+                + " }"
+                + " }";
+        HttpClientSimulator.setQueryResponseData(getDriverPostFormatQuery(), createMessageBlock(format));
+        String routedDeliveries = readResourceFile(getRoutedDeliveriesFileName());
+        DriverPostFormat driverPostFormat = DriverPostFormat.create(createApiSimulator(), users, routedDeliveries,
+                getRestaurantTemplateQuery(),
+                getDriverPostFormatQuery(),
+                getGroupInstructionsFormatQuery());
+        List<String> posts = driverPostFormat.generateDriverPosts();
+        assertThat(posts).hasSize(2);
+        assertThat(posts).containsExactly("Sweet Basil|Cust Name 2|Cust2\n"
+                    + "Bopshop|Cust Name 1|Cust1\n"
+                    + "Bopshop|Cust Name 3|Cust3\n",
+                    "Cafe Raj|Cust Name 4|Cust4\n"
+                    + "Cafe Raj|Cust Name 5|Cust5\n"
+                    + "Cafe Raj|Cust Name 6|Cust6\n"
+                    + "Cafe Raj|Cust Name 7|Cust7\n");
     }
 }

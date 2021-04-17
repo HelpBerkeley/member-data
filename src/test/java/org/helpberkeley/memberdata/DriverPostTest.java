@@ -45,7 +45,6 @@ public abstract class DriverPostTest extends TestBase {
     abstract int getDriverPostFormatQuery();
     abstract int getGroupInstructionsFormatQuery();
     abstract String getRoutedDeliveriesFileName();
-    abstract void checkExpectedPickups(List<String> posts);
     abstract void checkExpectedDeliveries(List<String> posts);
     abstract void checkCondoConsumers(List<String> posts);
 
@@ -82,29 +81,6 @@ public abstract class DriverPostTest extends TestBase {
         for (String post : driverPostFormat.generateDriverPosts()) {
             assertThat(post).isEqualTo(literal);
         }
-    }
-
-    @Test
-    public void thisDriverRestaurantPickupTest() {
-        String format = "LOOP &{ThisDriverRestaurant} { "
-                + "LOOP &{ThisDriverRestaurant.Pickup} { "
-                + " &{ThisDriverRestaurant.Name}"
-                + "\"|\""
-                + " &{Pickup.MemberName}"
-                + "\"|\""
-                + " &{Pickup.UserName}"
-                + "\"\\n\""
-                + " }"
-                + " }";
-        String json = new MessageBlockJSON(format).toJSON();
-        HttpClientSimulator.setQueryResponseData(getDriverPostFormatQuery(), json);
-        String routedDeliveries = readResourceFile(getRoutedDeliveriesFileName());
-        DriverPostFormat driverPostFormat = DriverPostFormat.create(createApiSimulator(), users, routedDeliveries,
-                getRestaurantTemplateQuery(),
-                getDriverPostFormatQuery(),
-                getGroupInstructionsFormatQuery());
-        List<String> posts = driverPostFormat.generateDriverPosts();
-        checkExpectedPickups(posts);
     }
 
     @Test
