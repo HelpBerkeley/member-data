@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020. helpberkeley.org
+ * Copyright (c) 2020-2021. helpberkeley.org
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -140,6 +140,13 @@ class MessageBlock implements MessageBlockScope {
         getScope().addElement(new MessageBlockQuotedString(string));
     }
 
+    void addContinue() {
+        // FIX THIS, DS: audit here that there is an enclosing loop?
+        //               or do we have to wait until parse is complete?
+        //               we could stil be in the middle of a conditional.
+        getScope().addElement(new MessageBlockContinue());
+    }
+
     void startConditional(MessageBlockConditional.EvaluationType evaluationType) {
         scopeStack.push(new MessageBlockConditional(evaluationType));
     }
@@ -215,6 +222,11 @@ class MessageBlock implements MessageBlockScope {
         @Override
         public void enterConditionalFalse(MessageBlockParser.ConditionalFalseContext ctx) {
             messageBlock.startConditional(MessageBlockConditional.EvaluationType.EVAL_FALSE);
+        }
+
+        @Override
+        public void enterContinueElement(MessageBlockParser.ContinueElementContext ctx) {
+            messageBlock.addContinue();
         }
 
         @Override

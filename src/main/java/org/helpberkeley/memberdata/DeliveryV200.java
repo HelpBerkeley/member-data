@@ -22,8 +22,6 @@
  */
 package org.helpberkeley.memberdata;
 
-import org.helpberkeley.memberdata.route.Location;
-
 public class DeliveryV200 extends Delivery {
 
     private String normalRations;

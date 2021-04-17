@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020. helpberkeley.org
+ * Copyright (c) 2020-2021. helpberkeley.org
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -32,6 +32,7 @@ element       :
               | variable        # Var
               | conditional     # If
               | loop            # LoopElement
+              | loop_continue   # ContinueElement
               ;
 
 variable      :
@@ -65,10 +66,12 @@ loop          :
               | 'LOOP' list_ref '{' element+ '}'    # LoopListMember
               ;
 
+loop_continue : 'CONTINUE' ;
+
 ID            : LETTER (LETTER|DIGIT)* ;
 COMPOSITE     : ID '.' ID ;
 LETTER        : [a-zA-Z] ;
 DIGIT         : [0-9] ;
 WHITESPACE    : [ \t\r\n]+ -> skip ;
 QUOTED_STRING : '"' (~'"')* '"' ;
-CODE_ESACPE   : '```' -> skip ;
+CODE_ESCAPE   : '```' -> skip ;

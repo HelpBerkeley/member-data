@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020. helpberkeley.org
+ * Copyright (c) 2020-2021. helpberkeley.org
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -305,5 +305,37 @@ public class MessageBlockTest extends TestBase {
         Throwable thrown = catchThrowable(messageBlock::parse);
         assertThat(thrown).isInstanceOf(MemberDataException.class);
         assertThat(thrown).hasMessageContaining(block);
+    }
+
+    @Test
+    public void continueTest() {
+        String block =
+                "[loopWithContinueElement]\n" +
+                    "LOOP &{List.LoopVar} {\n" +
+                    "    IF NOT ${var1} THEN {\n" +
+                    "        CONTINUE" +
+                    "    }" +
+                    "    &{LoopVar.v1}\n" +
+                    "}\n";
+
+        MessageBlock messageBlock = new MessageBlock(0, block);
+        messageBlock.parse();
+
+        assertThat(messageBlock.getName()).isEqualTo("loopWithContinueElement");
+        assertThat(messageBlock.getElements()).hasSize(1);
+        assertThat(messageBlock.getElements().get(0)).isInstanceOf(MessageBlockLoop.class);
+        MessageBlockLoop loop = (MessageBlockLoop)messageBlock.getElements().get(0);
+        assertThat(loop.getLoopRef()).isInstanceOf(MessageBlockListRef.class);
+        assertThat(loop.getLoopRef().getName()).isEqualTo("List.LoopVar");
+        assertThat(loop.getElements()).hasSize(2);
+        assertThat(loop.getElements().get(0)).isInstanceOf(MessageBlockConditional.class);
+        MessageBlockConditional conditional = (MessageBlockConditional)loop.getElements().get(0);
+        assertThat(conditional.getEvaluationType()).isEqualTo(MessageBlockConditional.EvaluationType.EVAL_FALSE);
+        assertThat(conditional.getConditional().getName()).isEqualTo("var1");
+        assertThat(conditional.getElements()).hasSize(1);
+        assertThat(conditional.getElements().get(0)).isInstanceOf(MessageBlockContinue.class);
+        MessageBlockListRef listRef = (MessageBlockListRef)loop.getElements().get(1);
+        assertThat(listRef.getListName()).isEqualTo("LoopVar");
+        assertThat(listRef.getName()).isEqualTo("LoopVar.v1");
     }
 }

@@ -22,200 +22,173 @@
  */
 package org.helpberkeley.memberdata;
 
+import com.cedarsoftware.util.io.JsonWriter;
 import org.junit.Test;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
 
-public class DriverPostTest extends TestBase {
+public abstract class DriverPostTest extends TestBase {
 
-    private final Map<String, User> users;
+    protected final Map<String, User> users;
 
     public DriverPostTest() {
         Loader loader = new Loader(createApiSimulator());
         users = new Tables(loader.load()).mapByUserName();
     }
 
+    abstract int getRestaurantTemplateQuery();
+    abstract int getDriverPostFormatQuery();
+    abstract int getGroupInstructionsFormatQuery();
+    abstract String getRoutedDeliveriesFileName();
+    abstract void checkExpectedPickups(List<String> posts);
+    abstract void checkExpectedDeliveries(List<String> posts);
+    abstract void checkCondoConsumers(List<String> posts);
+
+    protected String createMessageBlock(String contents) {
+        return new MessageBlockJSON(contents).toJSON();
+    }
+
     @Test
-    public void singleDriverMessageTest() {
-        String routedDeliveries = readResourceFile("routed-deliveries-single.csv");
+    public void emptyTest() {
+        String json = new MessageBlockJSON("").toJSON();
+
+        HttpClientSimulator.setQueryResponseData(getDriverPostFormatQuery(), json);
+        String routedDeliveries = readResourceFile(getRoutedDeliveriesFileName());
         DriverPostFormat driverPostFormat = DriverPostFormat.create(createApiSimulator(), users, routedDeliveries,
-                Constants.QUERY_GET_CURRENT_VALIDATED_DRIVER_MESSAGE_RESTAURANT_TEMPLATE,
-                Constants.QUERY_GET_DRIVERS_POST_FORMAT_V23,
-                Constants.QUERY_GET_GROUP_INSTRUCTIONS_FORMAT_V22);
+                getRestaurantTemplateQuery(),
+                getDriverPostFormatQuery(),
+                getGroupInstructionsFormatQuery());
+        for (String post : driverPostFormat.generateDriverPosts()) {
+            assertThat(post).isEqualTo("");
+        }
+    }
+
+    @Test
+    public void literalStringTest() {
+        String literal = "Fhqwhgads"; // Everybody to the Limit!
+        String json = new MessageBlockJSON(quote(literal)).toJSON();
+
+        HttpClientSimulator.setQueryResponseData(getDriverPostFormatQuery(), json);
+        String routedDeliveries = readResourceFile(getRoutedDeliveriesFileName());
+        DriverPostFormat driverPostFormat = DriverPostFormat.create(createApiSimulator(), users, routedDeliveries,
+                getRestaurantTemplateQuery(),
+                getDriverPostFormatQuery(),
+                getGroupInstructionsFormatQuery());
+        for (String post : driverPostFormat.generateDriverPosts()) {
+            assertThat(post).isEqualTo(literal);
+        }
+    }
+
+    @Test
+    public void thisDriverRestaurantPickupTest() {
+        String format = "LOOP &{ThisDriverRestaurant} { "
+                + "LOOP &{ThisDriverRestaurant.Pickup} { "
+                + " &{ThisDriverRestaurant.Name}"
+                + "\"|\""
+                + " &{Pickup.MemberName}"
+                + "\"|\""
+                + " &{Pickup.UserName}"
+                + "\"\\n\""
+                + " }"
+                + " }";
+        String json = new MessageBlockJSON(format).toJSON();
+        HttpClientSimulator.setQueryResponseData(getDriverPostFormatQuery(), json);
+        String routedDeliveries = readResourceFile(getRoutedDeliveriesFileName());
+        DriverPostFormat driverPostFormat = DriverPostFormat.create(createApiSimulator(), users, routedDeliveries,
+                getRestaurantTemplateQuery(),
+                getDriverPostFormatQuery(),
+                getGroupInstructionsFormatQuery());
         List<String> posts = driverPostFormat.generateDriverPosts();
-        assertThat(posts).hasSize(1);
-        String post = posts.get(0);
-        assertThat(post).contains("@jsDriver");
-        assertThat(post).contains("Any issue: call today's on-call ops manager, @JVol, at (123) 456.7890.\n");
-        assertThat(post).contains("You have a condo on your run");
-        assertThat(post).contains("**Complete condo instructions**");
-        assertThat(post).contains("Cafe Raj :open_umbrella:");
-        assertThat(post).contains("5:10 PM");
-        assertThat(post).contains("Cust Name 5");
-        assertThat(post).contains("**GMap static URL:** [jsDriver's itinerary](https://www.google.com/maps/dir/x+y+z)");
+        checkExpectedPickups(posts);
     }
 
     @Test
-    public void multiDriverMessageTest() {
-        String routedDeliveries = readResourceFile("routed-deliveries-v200.csv");
+    public void deliveriesTest() {
+        String format = "LOOP &{Consumer} { "
+                + " &{Consumer.Name}"
+                + "\"|\""
+                + " &{Consumer.CompactPhone}"
+                + "\"|\""
+                + " IF &{Consumer.IsAltPhone} THEN { &{Consumer.CompactAltPhone} }"
+                + " IF NOT &{Consumer.IsAltPhone} THEN { \"NoAltPhone\" } "
+                + "\"|\""
+                + " &{Consumer.Address}"
+                + "\"|\""
+                + " IF &{Consumer.IsCondo} THEN { \"Condo\" } "
+                + " IF NOT &{Consumer.IsCondo} THEN { \"NoCondo\" } "
+                + "\"|\""
+                + " &{Consumer.RestaurantEmoji}"
+                + "\"|\""
+                + " &{Consumer.Details}"
+                + "\"\\n\""
+                + " }";
+        String json = new MessageBlockJSON(format).toJSON();
+        HttpClientSimulator.setQueryResponseData(getDriverPostFormatQuery(), json);
+        String routedDeliveries = readResourceFile(getRoutedDeliveriesFileName());
         DriverPostFormat driverPostFormat = DriverPostFormat.create(createApiSimulator(), users, routedDeliveries,
-                Constants.QUERY_GET_CURRENT_VALIDATED_DRIVER_MESSAGE_RESTAURANT_TEMPLATE,
-                Constants.QUERY_GET_DRIVERS_POST_FORMAT_V23,
-                Constants.QUERY_GET_GROUP_INSTRUCTIONS_FORMAT_V22);
-
+                getRestaurantTemplateQuery(),
+                getDriverPostFormatQuery(),
+                getGroupInstructionsFormatQuery());
         List<String> posts = driverPostFormat.generateDriverPosts();
-        assertThat(posts).hasSize(2);
-
-        String post = posts.get(0);
-//        System.out.println(post);
-        assertThat(post).contains("@jbDriver");
-        assertThat(post).contains("Any issue: call today's on-call ops manager, @JVol, at (123) 456.7890.\n");
-        assertThat(post).doesNotContain("You have a condo on your run");
-        assertThat(post).doesNotContain("Complete condo instructions");
-        assertThat(post).contains("Talavera");
-        assertThat(post).contains("5:05 PM");   // Adjusted start time
-        assertThat(post).contains("Sweet Basil");
-        assertThat(post).contains("Bopshop");
-        assertThat(post).contains("Cust Name 1");
-        assertThat(post).contains("(555) 555.1112, (111) 222.3333");
-        assertThat(post).contains("Cust Name 2");
-        assertThat(post).contains("Cust Name 3");
-
-        post = posts.get(1);
-//        System.out.println(post);
-        assertThat(post).contains("@jsDriver");
-        assertThat(post).contains("Any issue: call today's on-call ops manager, @JVol, at (123) 456.7890.\n");
-        assertThat(post).contains("You have a condo on your run");
-        assertThat(post).contains("Complete condo instructions");
-        assertThat(post).contains("Cafe Raj");
-        assertThat(post).contains("5:10 PM");
-        assertThat(post).contains("Cust Name 4");
-        assertThat(post).contains("Cust Name 5");
-        assertThat(post).contains("Cust Name 6");
-        assertThat(post).contains("Cust Name 7");
-    }
-
-    @Test public void multiDriverWithSplitMessageTest() {
-        String routedDeliveries = readResourceFile("routed-deliveries-with-split-restaurant.csv");
-        DriverPostFormat driverPostFormat = DriverPostFormat.create(createApiSimulator(), users, routedDeliveries,
-                Constants.QUERY_GET_CURRENT_VALIDATED_DRIVER_MESSAGE_RESTAURANT_TEMPLATE,
-                Constants.QUERY_GET_DRIVERS_POST_FORMAT_V23,
-                Constants.QUERY_GET_GROUP_INSTRUCTIONS_FORMAT_V22);
-
-        List<String> posts = driverPostFormat.generateDriverPosts();
-        assertThat(posts).hasSize(4);
-    }
-
-    @Test public void multiDriverWithMultiSplitsMessageTest() {
-        String routedDeliveries = readResourceFile("routed-deliveries-with-split-restaurants.csv");
-        DriverPostFormat driverPostFormat = DriverPostFormat.create(createApiSimulator(), users, routedDeliveries,
-                Constants.QUERY_GET_CURRENT_VALIDATED_DRIVER_MESSAGE_RESTAURANT_TEMPLATE,
-                Constants.QUERY_GET_DRIVERS_POST_FORMAT, Constants.QUERY_GET_GROUP_INSTRUCTIONS_FORMAT);
-
-        List<String> posts = driverPostFormat.generateDriverPosts();
-        assertThat(posts).hasSize(2);
-        String post = posts.get(0);
-        System.out.println(post);
-        assertThat(post).contains("take pics");
-        post = posts.get(1);
-        post = driverPostFormat.generateSummary();
-        assertThat(post).contains("No drivers going to Thai Delight");
-        assertThat(post).contains("No drivers going to V&A Cafe");
-        assertThat(post).contains("No drivers going to Tacos Sinaloa");
-        assertThat(post).contains("No drivers going to Talavera");
-        assertThat(post).contains("No drivers going to Gregoire");
-        assertThat(post).contains("No drivers going to Da Lian");
-        assertThat(post).contains("No drivers going to Sweet Basil");
-        assertThat(post).contains("No drivers going to Bopshop");
-        assertThat(post).contains("No drivers going to Crepevine");
-    }
-
-    @Test public void multiDriverWithMultiSplitsMessageDisableRestaurantAuditTest() {
-        String routedDeliveries =
-                readResourceFile("routed-deliveries-with-split-restaurants-audit-disabled.csv");
-        DriverPostFormat driverPostFormat = DriverPostFormat.create(createApiSimulator(), users, routedDeliveries,
-                Constants.QUERY_GET_CURRENT_VALIDATED_DRIVER_MESSAGE_RESTAURANT_TEMPLATE,
-                Constants.QUERY_GET_DRIVERS_POST_FORMAT_V23,
-                Constants.QUERY_GET_GROUP_INSTRUCTIONS_FORMAT_V22);
-
-        List<String> posts = driverPostFormat.generateDriverPosts();
-        assertThat(posts).hasSize(2);
-        String post = driverPostFormat.generateSummary();
-        assertThat(post).doesNotContain("No drivers going to ");
+        checkExpectedDeliveries(posts);
     }
 
     @Test
-    public void generateGroupInstructionsNoSplitsPostTest() {
-        String routedDeliveries = readResourceFile("routed-deliveries-v200.csv");
+    public void invalidContinueTest() {
+
+        String json = new MessageBlockJSON("CONTINUE").toJSON();
+        HttpClientSimulator.setQueryResponseData(getDriverPostFormatQuery(), json);
+        String routedDeliveries = readResourceFile(getRoutedDeliveriesFileName());
         DriverPostFormat driverPostFormat = DriverPostFormat.create(createApiSimulator(), users, routedDeliveries,
-                Constants.QUERY_GET_CURRENT_VALIDATED_DRIVER_MESSAGE_RESTAURANT_TEMPLATE,
-                Constants.QUERY_GET_DRIVERS_POST_FORMAT_V23,
-                Constants.QUERY_GET_GROUP_INSTRUCTIONS_FORMAT_V22);
-
-        String post = driverPostFormat.generateGroupInstructionsPost();
-//        System.out.println(post);
-        assertThat(post).doesNotContain("**Split Restaurants**");
-        assertThat(post).doesNotContain("closes at");
-    }
-
-    @Test
-    public void generateGroupInstructionsWithSplitsPostTest() {
-        String routedDeliveries = readResourceFile("routed-deliveries-with-split-restaurant.csv");
-        DriverPostFormat driverPostFormat = DriverPostFormat.create(createApiSimulator(), users, routedDeliveries,
-                Constants.QUERY_GET_CURRENT_VALIDATED_DRIVER_MESSAGE_RESTAURANT_TEMPLATE,
-                Constants.QUERY_GET_DRIVERS_POST_FORMAT_V23,
-                Constants.QUERY_GET_GROUP_INSTRUCTIONS_FORMAT_V22);
-
-        String post = driverPostFormat.generateGroupInstructionsPost();
-//        System.out.println(post);
-        assertThat(post).contains("**Split restaurant drivers:**");
-        assertThat(post).contains("(888) 888.8888");
-        assertThat(post).contains("(999) 999.9999");
-        assertThat(post).contains("closes at 5:00 PM.");
-    }
-
-    @Test
-    public void generateBackupDriverPostTest() {
-        String routedDeliveries = readResourceFile("routed-deliveries-v200.csv");
-        DriverPostFormat driverPostFormat = DriverPostFormat.create(createApiSimulator(), users, routedDeliveries,
-                Constants.QUERY_GET_CURRENT_VALIDATED_DRIVER_MESSAGE_RESTAURANT_TEMPLATE,
-                Constants.QUERY_GET_DRIVERS_POST_FORMAT_V23,
-                Constants.QUERY_GET_GROUP_INSTRUCTIONS_FORMAT_V22);
-
-        String post = driverPostFormat.generateBackupDriverPost();
-//        System.out.println(post);
-    }
-
-    @Test
-    public void noDeliveriesTest() {
-        String routedDeliveries = readResourceFile("routed-deliveries-pickup-only.csv");
-        DriverPostFormat driverPostFormat = DriverPostFormat.create(createApiSimulator(), users, routedDeliveries,
-                Constants.QUERY_GET_CURRENT_VALIDATED_DRIVER_MESSAGE_RESTAURANT_TEMPLATE,
-                Constants.QUERY_GET_DRIVERS_POST_FORMAT_V23,
-                Constants.QUERY_GET_GROUP_INSTRUCTIONS_FORMAT_V22);
-
-        assertThat(driverPostFormat.getDrivers()).hasSize(1);
-        Driver driver = driverPostFormat.getDrivers().get(0);
-        assertThat(driver.getUserName()).isEqualTo("jsDriver");
-        assertThat(driver.getDeliveries()).isEmpty();
-        List<String> posts = driverPostFormat.generateDriverPosts();
-        String post = posts.get(0);
-//        System.out.println(post);
-    }
-
-    @Test
-    public void missingRationTypeCountTest() {
-        String routedDeliveries = readResourceFile("routed-deliveries-missing-ration-type-count.csv");
-        Throwable thrown = catchThrowable(() -> DriverPostFormat.create(createApiSimulator(),
-                users, routedDeliveries,
-                Constants.QUERY_GET_CURRENT_VALIDATED_DRIVER_MESSAGE_RESTAURANT_TEMPLATE,
-                Constants.QUERY_GET_DRIVERS_POST_FORMAT_V23,
-                Constants.QUERY_GET_GROUP_INSTRUCTIONS_FORMAT_V22));
+                getRestaurantTemplateQuery(),
+                getDriverPostFormatQuery(),
+                getGroupInstructionsFormatQuery());
+        Throwable thrown = catchThrowable(() -> driverPostFormat.generateDriverPosts());
         assertThat(thrown).isInstanceOf(MemberDataException.class);
-        assertThat(thrown).hasMessageContaining("normal and/or veggie rations column is empty");
+        assertThat(thrown).hasMessageContaining(DriverPostFormat.ERROR_CONTINUE_WITHOUT_LOOP);
+    }
+
+    @Test
+    public void singleLevelContinueTest() {
+        String format = "LOOP &{Consumer} { "
+                + " IF NOT &{Consumer.IsCondo} THEN { CONTINUE }"
+                + " &{Consumer.Name}"
+                + "\"\\n\""
+                + " }";
+        String json = new MessageBlockJSON(format).toJSON();
+        HttpClientSimulator.setQueryResponseData(getDriverPostFormatQuery(), json);
+        String routedDeliveries = readResourceFile(getRoutedDeliveriesFileName());
+        DriverPostFormat driverPostFormat = DriverPostFormat.create(createApiSimulator(), users, routedDeliveries,
+                getRestaurantTemplateQuery(),
+                getDriverPostFormatQuery(),
+                getGroupInstructionsFormatQuery());
+        List<String> posts = driverPostFormat.generateDriverPosts();
+        checkCondoConsumers(posts);
+    }
+
+    protected String quote(String quotable) {
+        return "\"" + quotable + "\"";
+    }
+
+    static private class MessageBlockJSON {
+        final String[] columns;
+        final Object[][] rows;
+
+        MessageBlockJSON(String message) {
+            columns = new String[] { "post_number", "raw", "deleted_at" };
+            Object[] row = new Object[] { 1, "[Test]\n" + message, null };
+            rows = new Object[][] { row };
+        }
+
+        String toJSON() {
+            Map<String, Object> options = new HashMap<>();
+            options.put(JsonWriter.TYPE, Boolean.FALSE);
+            return JsonWriter.objectToJson(this, options);
+        }
     }
 }

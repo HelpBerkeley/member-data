@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021. helpberkeley.org
+ * Copyright (c) 2021-2021. helpberkeley.org
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -20,33 +20,11 @@
  * SOFTWARE.
  *
  */
-
 package org.helpberkeley.memberdata;
 
-import java.util.List;
-import java.util.Map;
-
-class ControlBlockV200 extends ControlBlock {
-
-     ControlBlockV200(String header) {
-         super(header);
-    }
-
+public class MessageBlockContinue implements MessageBlockElement {
     @Override
-    void audit(Map<String, User> users, Map<String, Restaurant> restaurants, List<Restaurant> splitRestaurants) {
-        StringBuilder errors = new StringBuilder();
-
-        auditOpsManager(errors, users);
-        auditSplitRestaurants(errors, users, restaurants, splitRestaurants);
-        auditBackupDrivers(errors, users);
-
-        if (errors.length() != 0) {
-            throw new MemberDataException(errors.toString());
-        }
-    }
-
-    @Override
-    public String getVersion() {
-        return Constants.CONTROL_BLOCK_VERSION_200;
+    public String getName() {
+        return "CONTINUE";
     }
 }

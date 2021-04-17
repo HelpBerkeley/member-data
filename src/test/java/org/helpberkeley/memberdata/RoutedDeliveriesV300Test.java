@@ -151,7 +151,7 @@ public class RoutedDeliveriesV300Test extends TestBase {
         assertThat(delivery.getCity()).isEqualTo("Berkeley");
         assertThat(delivery.getAddress()).isEqualTo("55 55th St");
         assertThat(delivery.isCondo()).isTrue();
-        assertThat(delivery.getDetails()).isEqualTo("listed as a condo but may not be.");
+        assertThat(delivery.getDetails()).isEqualTo("listed as a condo but");
         assertThat(delivery.getRestaurant()).isEqualTo("Bauman Meals/Groceries");
         assertThat(delivery).isInstanceOf(DeliveryV300.class);
         deliveryV300 = (DeliveryV300)delivery;
