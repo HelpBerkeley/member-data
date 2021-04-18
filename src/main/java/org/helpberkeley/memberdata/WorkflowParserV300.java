@@ -570,59 +570,62 @@ public class WorkflowParserV300 extends WorkflowParser {
     @Override
     void auditPickupDeliveryMismatch(Driver driver) {
 
-        // First build of map of deliveries (orders) per restaurant
-        Map<String, Long> deliveryOrders = new HashMap<>();
-        for (Delivery delivery : driver.getDeliveries()) {
-            String restaurantName = delivery.getRestaurant();
+        // FIX THIS, DS: implement
 
-            // FIX THIS, DS: re-implement this audit
-            // Support for 0 order delivery (e.g. donation drop-off)
-//            if (delivery.getNormalRations().equals("0") &&
-//                    delivery.getVeggieRations().equals("0")) {
-//                continue;
+//        // First build of map of deliveries (orders) per restaurant
+//        Map<String, Long> deliveryOrders = new HashMap<>();
+//        for (Delivery delivery : driver.getDeliveries()) {
+//            String restaurantName = delivery.getRestaurant();
+//
+//            // FIX THIS, DS: re-implement this audit
+//            // Support for 0 order delivery (e.g. donation drop-off)
+////            if (delivery.getNormalRations().equals("0") &&
+////                    delivery.getVeggieRations().equals("0")) {
+////                continue;
+////            }
+//
+//            Long orders = deliveryOrders.getOrDefault(restaurantName, 0L);
+//            orders++;
+//            deliveryOrders.put(restaurantName, orders);
+//        }
+//
+//        // Now build a map of orders to pickup per restaurant
+//        Map<String, Long> pickupOrders = new HashMap<>();
+//        for (Restaurant restaurant : driver.getPickups()) {
+//            String restaurantName = restaurant.getName();
+//
+//            // FIX THIS, DS: too late to audit this here?
+//            if (pickupOrders.containsKey(restaurantName)) {
+//                throw new MemberDataException("Restaurant " + restaurantName
+//                        + " appears more than once for driver " + driver.getUserName());
 //            }
-
-            Long orders = deliveryOrders.getOrDefault(restaurantName, 0L);
-            orders++;
-            deliveryOrders.put(restaurantName, orders);
-        }
-
-        // Now build a map of orders to pickup per restaurant
-        Map<String, Long> pickupOrders = new HashMap<>();
-        for (Restaurant restaurant : driver.getPickups()) {
-            String restaurantName = restaurant.getName();
-
-            // FIX THIS, DS: too late to audit this here?
-            if (pickupOrders.containsKey(restaurantName)) {
-                throw new MemberDataException("Restaurant " + restaurantName
-                        + " appears more than once for driver " + driver.getUserName());
-            }
-
-            pickupOrders.put(restaurantName, restaurant.getOrders());
-        }
-
+//
+//            // FIX THIS, DS: IMPLEMENT
+////            pickupOrders.put(restaurantName, restaurant.getOrders());
+//        }
+//
         StringBuilder errors = new StringBuilder();
-
-        // Now check that the pickups match the deliveries
-        for (String restaurant : pickupOrders.keySet()) {
-
-            if (pickupOrders.get(restaurant) == 0L) {
-                if (deliveryOrders.containsKey(restaurant)){
-                    errors.append("deliveries for ").append(restaurant).append(", but 0 orders\n");
-                }
-            } else if (! deliveryOrders.containsKey(restaurant)) {
-                errors.append("orders for ").append(restaurant).append(" but no deliveries\n");
-            } else if (! deliveryOrders.get(restaurant).equals(pickupOrders.get(restaurant))) {
-                errors.append(pickupOrders.get(restaurant)).append(" orders for ").append(restaurant).append(" but ").append(deliveryOrders.get(restaurant)).append(" deliveries\n");
-            }
-        }
-
-        // And that each delivery order has a pickup
-        for (String restaurant : deliveryOrders.keySet()) {
-            if (! pickupOrders.containsKey(restaurant)) {
-                errors.append(deliveryOrders.get(restaurant)).append(" deliveries for ").append(restaurant).append(" but no orders\n");
-            }
-        }
+//
+//        // Now check that the pickups match the deliveries
+//        for (String restaurant : pickupOrders.keySet()) {
+//
+//            if (pickupOrders.get(restaurant) == 0L) {
+//                if (deliveryOrders.containsKey(restaurant)){
+//                    errors.append("deliveries for ").append(restaurant).append(", but 0 orders\n");
+//                }
+//            } else if (! deliveryOrders.containsKey(restaurant)) {
+//                errors.append("orders for ").append(restaurant).append(" but no deliveries\n");
+//            } else if (! deliveryOrders.get(restaurant).equals(pickupOrders.get(restaurant))) {
+//                errors.append(pickupOrders.get(restaurant)).append(" orders for ").append(restaurant).append(" but ").append(deliveryOrders.get(restaurant)).append(" deliveries\n");
+//            }
+//        }
+//
+//        // And that each delivery order has a pickup
+//        for (String restaurant : deliveryOrders.keySet()) {
+//            if (! pickupOrders.containsKey(restaurant)) {
+//                errors.append(deliveryOrders.get(restaurant)).append(" deliveries for ").append(restaurant).append(" but no orders\n");
+//            }
+//        }
 
         if (errors.length() > 0) {
             throw new MemberDataException("Driver " + driver.getUserName() + ": " + errors);

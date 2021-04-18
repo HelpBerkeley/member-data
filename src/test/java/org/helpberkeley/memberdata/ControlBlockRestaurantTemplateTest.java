@@ -217,15 +217,17 @@ public class ControlBlockRestaurantTemplateTest extends TestBase {
 
         for (Restaurant restaurant : parser.restaurants().values()) {
 
+            RestaurantV200 restaurantV200 = (RestaurantV200) restaurant;
+
             if (restaurant.getName().equals("Gregoire")) {
-                assertThat(restaurant).as(restaurant.getName())
-                        .extracting(Restaurant::getNoPics).isEqualTo(true);
+                assertThat(restaurantV200).as(restaurantV200.getName())
+                        .extracting(RestaurantV200::getNoPics).isEqualTo(true);
             } else if (restaurant.getName().equals("Da Lian")) {
-                assertThat(restaurant).as(restaurant.getName()).
-                        extracting(Restaurant::getNoPics).isEqualTo(true);
+                assertThat(restaurantV200).as(restaurantV200.getName()).
+                        extracting(RestaurantV200::getNoPics).isEqualTo(true);
             } else {
-                assertThat(restaurant).as(restaurant.getName()).
-                        extracting(Restaurant::getNoPics).isEqualTo(false);
+                assertThat(restaurantV200).as(restaurantV200.getName()).
+                        extracting(RestaurantV200::getNoPics).isEqualTo(false);
             }
         }
     }

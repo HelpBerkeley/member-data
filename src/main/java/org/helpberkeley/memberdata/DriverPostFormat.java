@@ -200,6 +200,7 @@ public abstract class DriverPostFormat {
         final String firstRestaurant = context.getDriver().getFirstRestaurantName();
         final Restaurant restaurant = restaurants.get(firstRestaurant);
         assert restaurant != null : firstRestaurant + " was not found the in restaurant template post";
+        DriverV200 driver = (DriverV200)context.getDriver();
 
         switch (varName) {
             case "ThisDriverUserName":
@@ -209,7 +210,7 @@ public abstract class DriverPostFormat {
                 value = restaurant.getName();
                 break;
             case "ThisDriverFirstRestaurantStartTime":
-                value = context.getDriver().getStartTime();
+                value = driver.getStartTime();
                 break;
             case "ThisDriverFirstRestaurantClosingTime":
                 value = restaurant.getClosingTime();

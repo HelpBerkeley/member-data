@@ -112,8 +112,11 @@ public class DriverPostFormatV200 extends DriverPostFormat {
         long numNormal = 0;
 
         for (Driver driver : drivers) {
-            String originalStartTime = driver.getOriginalStartTime();
-            String startTime = driver.getStartTime();
+
+            DriverV200 driverV200 = (DriverV200)driver;
+
+            String originalStartTime = driverV200.getOriginalStartTime();
+            String startTime = driverV200.getStartTime();
 
             if (! startTime.equals(originalStartTime)) {
 
@@ -142,9 +145,10 @@ public class DriverPostFormatV200 extends DriverPostFormat {
         boolean headerAdded = false;
 
         for (Restaurant restaurant : restaurants.values()) {
+            RestaurantV200 restaurantV200 = (RestaurantV200) restaurant;
             String cleanupDriver;
 
-            totalOrders += restaurant.getOrders();
+            totalOrders += restaurantV200.getOrders();
 
             if (restaurant.getDrivers().size() < 2) {
                 continue;
@@ -352,7 +356,7 @@ public class DriverPostFormatV200 extends DriverPostFormat {
         // so the we can detect split restaurants.
         for (Driver driver : drivers) {
             for (Restaurant pickup : driver.getPickups()) {
-                Restaurant restaurant = restaurants.get(pickup.getName());
+                RestaurantV200 restaurant = (RestaurantV200) restaurants.get(pickup.getName());
 
                 // FIX THIS, DS: audit this earlier so that we can come up with a line number
                 if (restaurant == null) {
@@ -361,7 +365,7 @@ public class DriverPostFormatV200 extends DriverPostFormat {
                 }
 
                 restaurant.addDriver(driver);
-                restaurant.addOrders(pickup.getOrders());
+                restaurant.addOrders(((RestaurantV200)pickup).getOrders());
             }
         }
     }
@@ -427,8 +431,8 @@ public class DriverPostFormatV200 extends DriverPostFormat {
         String value;
 
         // FIX THIS, DS: unify Restaurant so that there are not multiple copies
-        Restaurant pickupRestaurant = context.getPickupRestaurant();
-        Restaurant globalRestaurant = restaurants.get(pickupRestaurant.getName());
+        RestaurantV200 pickupRestaurant = (RestaurantV200) context.getPickupRestaurant();
+        RestaurantV200 globalRestaurant = (RestaurantV200) restaurants.get(pickupRestaurant.getName());
 
         switch (refName) {
             case "ThisDriverRestaurant.Name":
@@ -465,7 +469,7 @@ public class DriverPostFormatV200 extends DriverPostFormat {
         String refName = listRef.getName();
         String value;
 
-        Driver driver = context.getDriver();
+        DriverV200 driver = (DriverV200) context.getDriver();
         String firstRestaurantName = driver.getFirstRestaurantName();
         Restaurant restaurant = restaurants.get(firstRestaurantName);
         assert restaurant != null : firstRestaurantName + " was not found the in restaurant template post";
@@ -504,7 +508,7 @@ public class DriverPostFormatV200 extends DriverPostFormat {
         String refName = listRef.getName();
         String value;
 
-        Restaurant splitRestaurant = context.getSplitRestaurant();
+        RestaurantV200 splitRestaurant = (RestaurantV200) context.getSplitRestaurant();
         String name = splitRestaurant.getName();
 
         switch (refName) {
@@ -692,9 +696,9 @@ public class DriverPostFormatV200 extends DriverPostFormat {
         boolean value;
 
         if (listName.equals("ThisDriverRestaurant")) {
-            Restaurant restaurant = context.getPickupRestaurant();
+            RestaurantV200 restaurant = (RestaurantV200) context.getPickupRestaurant();
             String restaurantName = restaurant.getName();
-            Restaurant globalRestaurant = restaurants.get(restaurantName);
+            RestaurantV200 globalRestaurant = (RestaurantV200) restaurants.get(restaurantName);
 
             switch (refName) {
                 case "ThisDriverRestaurant.IsSplit":

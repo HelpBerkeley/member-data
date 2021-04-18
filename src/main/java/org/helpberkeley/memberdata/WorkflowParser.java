@@ -378,7 +378,8 @@ public abstract class WorkflowParser {
                 throw new MemberDataException("Driver " + driverUserName + " unrecognizable gmap URL");
             }
 
-            driver = new Driver(driverBean, restaurants, deliveries, gmapURL, controlBlock.lateArrivalAuditDisabled());
+            driver = Driver.createDriver(
+                    driverBean, restaurants, deliveries, gmapURL, controlBlock.lateArrivalAuditDisabled());
         } else {
             assert mode == Mode.DRIVER_ROUTE_REQUEST;
 
@@ -389,7 +390,7 @@ public abstract class WorkflowParser {
                 throw new MemberDataException("Line " + lineNumber + " is not empty");
             }
 
-            driver = new Driver(driverBean, restaurants, deliveries);
+            driver = Driver.createDriver(driverBean, restaurants, deliveries);
         }
 
         return driver;
@@ -418,20 +419,16 @@ public abstract class WorkflowParser {
                 errors += "missing address\n";
             }
             String details = bean.getDetails();
-            // FIX THIS, DS: orders is V200 specific
-            String orders = bean.getOrders();
-            if (orders.isEmpty()) {
-                errors += "missing orders";
-            }
+
+            Restaurant restaurant = Restaurant.createRestaurant(controlBlock, restaurantName);
+            errors += restaurant.setVersionSpecificFields(bean);
 
             if (! errors.isEmpty()) {
                 throw new MemberDataException("line " + lineNumber + " " + errors);
             }
 
-            Restaurant restaurant = new Restaurant(restaurantName);
             restaurant.setAddress(address);
             restaurant.setDetails(details);
-            restaurant.setOrders(orders);
 
             // FIX THIS, DS: refactor to a single map of restaurants
             if (mode == Mode.DRIVER_MESSAGE_REQUEST) {

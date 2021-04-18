@@ -550,25 +550,25 @@ public abstract class ControlBlock {
     List<String> processAltMealOptions(String value, long lineNumber) {
         unsupported(lineNumber, Constants.CONTROL_BLOCK_ALT_MEAL_OPTIONS);
 
-        return Collections.EMPTY_LIST;
+        return List.of();
     }
 
     List<String> processAltGroceryOptions(String value, long lineNumber) {
         unsupported(lineNumber, Constants.CONTROL_BLOCK_ALT_GROCERY_OPTIONS);
 
-        return Collections.EMPTY_LIST;
+        return List.of();
     }
 
     List<String> processStartTimes(String value, long lineNumber) {
         unsupported(lineNumber, Constants.CONTROL_BLOCK_START_TIMES);
 
-        return Collections.EMPTY_LIST;
+        return List.of();
     }
 
     List<String> processPickupManagers(String value, long lineNumber) {
         unsupported(lineNumber, Constants.CONTROL_BLOCK_PICKUP_MANAGERS);
 
-        return Collections.EMPTY_LIST;
+        return List.of();
     }
 
     static class SplitRestaurant {

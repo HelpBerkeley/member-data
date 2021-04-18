@@ -483,7 +483,7 @@ public class WorkflowParserV200 extends WorkflowParser {
                         + " appears more than once for driver " + driver.getUserName());
             }
 
-            pickupOrders.put(restaurantName, restaurant.getOrders());
+            pickupOrders.put(restaurantName, ((RestaurantV200)restaurant).getOrders());
         }
 
         StringBuilder errors = new StringBuilder();

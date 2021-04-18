@@ -22,39 +22,10 @@
  */
 package org.helpberkeley.memberdata;
 
-public interface RestaurantBean {
-    String getVersion();
+class DriverV300 extends Driver {
 
-    String getConsumer();
-    String getDriver();
-    String getName();
-    String getUserName();
-    String getCity();
-    String getRestaurant();
-    String getCondo();
-    String getNormal();
-    String getVeggie();
-    String getOrders();
-    String getDetails();
-
-    String getControlBlockDirective();
-    String getControlBlockKey();
-    String getControlBlockValue();
-    String getRoute();
-    boolean isEmpty();
-    String routeColumn();
-    String getActive();
-    String getStartTime();
-    String getClosingTime();
-    String getEmoji();
-
-    String restaurantColumn();
-    String startTimeColumn();
-    String closingTimeColumn();
-    String emojiColumn();
-
-    default String unsupported(String columnName) {
-        throw new MemberDataException("Column heading \""
-                + columnName + "\" is not supported in control block version " + getVersion());
+    @Override
+    void setStartTime() {
+        // FIX THIS, DS: move this abstract out of the base
     }
 }

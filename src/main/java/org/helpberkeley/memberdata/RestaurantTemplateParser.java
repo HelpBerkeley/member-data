@@ -326,17 +326,14 @@ public abstract class RestaurantTemplateParser {
             if (restaurants.containsKey(restaurantName)) {
                 throwTemplateError(restaurantName + DUPLICATE_ROUTE_ERROR);
             }
-            Restaurant restaurant = new Restaurant(restaurantName);
+            Restaurant restaurant = Restaurant.createRestaurant(controlBlock, restaurantName);
             restaurants.put(restaurantName, restaurant);
             restaurant.setRoute(routeName);
             restaurant.setStartTime(startTime);
             restaurant.setClosingTime(closingTime);
             restaurant.setEmoji(emoji);
 
-            String noPics = bean.getNoPics();
-            if (noPics.equalsIgnoreCase(Constants.WORKFLOW_NO_PICS)) {
-                restaurant.setNoPics();
-            }
+            restaurant.setVersionSpecificFields(bean);
         } while ((bean = nextRow()) != null);
     }
 

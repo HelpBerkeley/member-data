@@ -112,84 +112,86 @@ public class DriverPostFormatV300 extends DriverPostFormat {
     String generateSummary() {
         StringBuilder summary = new StringBuilder();
 
-        if (! controlBlock.restaurantsAuditDisabled()) {
-            // Restaurants with no drivers
-            for (Restaurant restaurant : restaurants.values()) {
-                if (restaurant.getDrivers().size() == 0) {
-                    summary.append("No drivers going to ").append(restaurant.getName()).append("\n");
-                }
-            }
-        }
-        summary.append("\n");
+        // FIX THIS, DS: implement
 
-        long numStdMeals = 0;
-        long numAltMeals = 0;
-        long numStdGrocvery = 0;
-        long numAltGrocery = 0;
-
-        for (Driver driver : drivers) {
-            String originalStartTime = driver.getOriginalStartTime();
-            String startTime = driver.getStartTime();
-
-            if (! startTime.equals(originalStartTime)) {
-
-                summary.append("Driver ").append(driver.getUserName())
-                        .append(", start time for ").append(driver.getFirstRestaurantName())
-                        .append(" adjusted to ").append(startTime).append(" from ").append(originalStartTime)
-                        .append('\n');
-            }
-
-            for (String warning : driver.getWarningMessages()) {
-                summary.append("Warning: driver ").append(driver.getUserName())
-                        .append(" ").append(warning).append('\n');
-            }
-
-            // FIX THIS, DS: re-implement
-//            for (Delivery delivery : driver.getDeliveries()) {
-//                numNormal += Long.parseLong(delivery.getNormalRations());
-//                numVeggie += Long.parseLong(delivery.getVeggieRations());
+//        if (! controlBlock.restaurantsAuditDisabled()) {
+//            // Restaurants with no drivers
+//            for (Restaurant restaurant : restaurants.values()) {
+//                if (restaurant.getDrivers().size() == 0) {
+//                    summary.append("No drivers going to ").append(restaurant.getName()).append("\n");
+//                }
 //            }
-        }
-
-        summary.append("\n");
-
-        // Split restaurants / cleanup drivers / orders
-
-        long totalOrders = 0;
-        boolean headerAdded = false;
-
-        for (Restaurant restaurant : restaurants.values()) {
-            String cleanupDriver;
-
-            totalOrders += restaurant.getOrders();
-
-            if (restaurant.getDrivers().size() < 2) {
-                continue;
-            }
-
-            if (! controlBlock.splitRestaurantAuditsDisabled()) {
-                if (!headerAdded) {
-                    summary.append("|Split Restaurants|Cleanup Driver|\n");
-                    summary.append("|---|---|\n");
-
-                    headerAdded = true;
-                }
-            }
-
-            if (controlBlock.splitRestaurantAuditsDisabled()) {
-                cleanupDriver = "";
-            } else {
-                cleanupDriver = controlBlock.getSplitRestaurant(restaurant.getName()).getCleanupDriverUserName();
-            }
-
-            if (! controlBlock.splitRestaurantAuditsDisabled()) {
-                summary.append("|");
-                summary.append(restaurant.getName());
-                summary.append("|");
-                summary.append(cleanupDriver);
-                summary.append("|\n");
-            }
-        }
+//        }
+//        summary.append("\n");
+//
+//        long numStdMeals = 0;
+//        long numAltMeals = 0;
+//        long numStdGrocvery = 0;
+//        long numAltGrocery = 0;
+//
+//        for (Driver driver : drivers) {
+//            String originalStartTime = driver.getOriginalStartTime();
+//            String startTime = driver.getStartTime();
+//
+//            if (! startTime.equals(originalStartTime)) {
+//
+//                summary.append("Driver ").append(driver.getUserName())
+//                        .append(", start time for ").append(driver.getFirstRestaurantName())
+//                        .append(" adjusted to ").append(startTime).append(" from ").append(originalStartTime)
+//                        .append('\n');
+//            }
+//
+//            for (String warning : driver.getWarningMessages()) {
+//                summary.append("Warning: driver ").append(driver.getUserName())
+//                        .append(" ").append(warning).append('\n');
+//            }
+//
+//            // FIX THIS, DS: re-implement
+////            for (Delivery delivery : driver.getDeliveries()) {
+////                numNormal += Long.parseLong(delivery.getNormalRations());
+////                numVeggie += Long.parseLong(delivery.getVeggieRations());
+////            }
+//        }
+//
+//        summary.append("\n");
+//
+//        // Split restaurants / cleanup drivers / orders
+//
+//        long totalOrders = 0;
+//        boolean headerAdded = false;
+//
+//        for (Restaurant restaurant : restaurants.values()) {
+//            String cleanupDriver;
+//
+//            totalOrders += restaurant.getOrders();
+//
+//            if (restaurant.getDrivers().size() < 2) {
+//                continue;
+//            }
+//
+//            if (! controlBlock.splitRestaurantAuditsDisabled()) {
+//                if (!headerAdded) {
+//                    summary.append("|Split Restaurants|Cleanup Driver|\n");
+//                    summary.append("|---|---|\n");
+//
+//                    headerAdded = true;
+//                }
+//            }
+//
+//            if (controlBlock.splitRestaurantAuditsDisabled()) {
+//                cleanupDriver = "";
+//            } else {
+//                cleanupDriver = controlBlock.getSplitRestaurant(restaurant.getName()).getCleanupDriverUserName();
+//            }
+//
+//            if (! controlBlock.splitRestaurantAuditsDisabled()) {
+//                summary.append("|");
+//                summary.append(restaurant.getName());
+//                summary.append("|");
+//                summary.append(cleanupDriver);
+//                summary.append("|\n");
+//            }
+//        }
 
         // Total
 
@@ -289,15 +291,8 @@ public class DriverPostFormatV300 extends DriverPostFormat {
 
     private void auditControlBlock() {
 
-        List<Restaurant> splitRestaurants = new ArrayList<>();
-
-        for (Restaurant restaurant : restaurants.values()) {
-            if (restaurant.getDrivers().size() > 1) {
-                splitRestaurants.add(restaurant);
-            }
-        }
-
-        controlBlock.audit(users, restaurants, splitRestaurants);
+        // FIX THIS, DS: move split restaurants out of the base control block
+        controlBlock.audit(users, restaurants, null);
         statusMessages.append(controlBlock.getWarnings());
     }
 
@@ -379,7 +374,9 @@ public class DriverPostFormatV300 extends DriverPostFormat {
                 }
 
                 restaurant.addDriver(driver);
-                restaurant.addOrders(pickup.getOrders());
+
+                // FIX THIS, DS: populate restaurant totals,  need control already audited for alt types?
+//                restaurant.addOrders(pickup.getOrders());
             }
         }
     }
@@ -545,12 +542,10 @@ public class DriverPostFormatV300 extends DriverPostFormat {
         Driver driver = context.getDriver();
         boolean value;
 
-        switch (refName) {
-            case "ThisDriverAnyCondo":
-                value = driver.hasCondo();
-                break;
-            default:
-                throw new MemberDataException(context.formatException("unknown boolean variable ${" + refName + "}"));
+        if ("ThisDriverAnyCondo".equals(refName)) {
+            value = driver.hasCondo();
+        } else {
+            throw new MemberDataException(context.formatException("unknown boolean variable ${" + refName + "}"));
         }
 
         LOGGER.trace("${{}} = \"{}\"", element, value);
@@ -588,21 +583,28 @@ public class DriverPostFormatV300 extends DriverPostFormat {
         } else if (listName.equals("Consumer")) {
             DeliveryV300 delivery = (DeliveryV300) context.getDelivery();
 
-            if (refName.equals("Consumer.IsAltPhone")) {
-                String altPhone = delivery.getAltPhone();
-                value = ((! altPhone.isEmpty()) && (! altPhone.equalsIgnoreCase("none")));
-            } else if (refName.equals("Consumer.IsCondo")) {
-                value = delivery.isCondo();
-            } else if (refName.equals(CONSUMER_STD_MEALS)) {
-                value = Integer.valueOf(delivery.getStdMeals()) > 0;
-            } else if (refName.equals(CONSUMER_ALT_MEALS)) {
-                value = Integer.valueOf(delivery.getAltMeals()) > 0;
-            } else if (refName.equals(CONSUMER_STD_GROCERY)) {
-                value = Integer.valueOf(delivery.getStdGrocery()) > 0;
-            } else if (refName.equals(CONSUMER_ALT_GROCERY)) {
-                value = Integer.valueOf(delivery.getAltGrocery()) > 0;
-            } else {
-                throw new MemberDataException(context.formatException("Unknown boolean variable &{" + refName + "}"));
+            switch (refName) {
+                case "Consumer.IsAltPhone":
+                    String altPhone = delivery.getAltPhone();
+                    value = ((!altPhone.isEmpty()) && (!altPhone.equalsIgnoreCase("none")));
+                    break;
+                case "Consumer.IsCondo":
+                    value = delivery.isCondo();
+                    break;
+                case CONSUMER_STD_MEALS:
+                    value = Integer.parseInt(delivery.getStdMeals()) > 0;
+                    break;
+                case CONSUMER_ALT_MEALS:
+                    value = Integer.parseInt(delivery.getAltMeals()) > 0;
+                    break;
+                case CONSUMER_STD_GROCERY:
+                    value = Integer.parseInt(delivery.getStdGrocery()) > 0;
+                    break;
+                case CONSUMER_ALT_GROCERY:
+                    value = Integer.parseInt(delivery.getAltGrocery()) > 0;
+                    break;
+                default:
+                    throw new MemberDataException(context.formatException("Unknown boolean variable &{" + refName + "}"));
             }
         } else if (refName.equals("Driver.IsFirstRestaurantClosingBefore7PM")) {
             Driver driver = context.getDriver();
@@ -694,7 +696,7 @@ public class DriverPostFormatV300 extends DriverPostFormat {
 
         for (Delivery delivery : driver.getDeliveries()) {
             DeliveryV300 deliveryV300 = (DeliveryV300)delivery;
-            total += Integer.valueOf(deliveryV300.getStdMeals());
+            total += Integer.parseInt(deliveryV300.getStdMeals());
         }
 
         return String.valueOf(total);
@@ -705,7 +707,7 @@ public class DriverPostFormatV300 extends DriverPostFormat {
 
         for (Delivery delivery : driver.getDeliveries()) {
             DeliveryV300 deliveryV300 = (DeliveryV300)delivery;
-            total += Integer.valueOf(deliveryV300.getStdGrocery());
+            total += Integer.parseInt(deliveryV300.getStdGrocery());
         }
 
         return String.valueOf(total);
