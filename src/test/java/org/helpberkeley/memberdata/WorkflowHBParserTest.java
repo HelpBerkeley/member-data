@@ -235,7 +235,7 @@ public class WorkflowHBParserTest extends TestBase {
     public void unroutedWorkflowTest() {
         String unroutedDeliveries = readResourceFile("unrouted-deliveries.csv");
         WorkflowParser workflowParser = WorkflowParser.create(
-                WorkflowParser.Mode.DRIVER_ROUTE_REQUEST, Collections.emptyMap(), unroutedDeliveries);
+                WorkflowParser.Mode.DRIVER_ROUTE_REQUEST, Map.of(), unroutedDeliveries);
         workflowParser.drivers();
     }
 

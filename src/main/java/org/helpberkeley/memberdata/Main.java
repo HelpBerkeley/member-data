@@ -169,6 +169,9 @@ public class Main {
             case Options.COMMAND_COMPLETED_DAILY_ORDERS:
                 completedDailyOrders(apiClient, options.getFileName());
                 break;
+            case Options.COMMAND_TEST_REQUEST:
+                testRequest(apiClient, options.getFileName());
+                break;
             default:
                 assert options.getCommand().equals(Options.COMMAND_POST_DRIVERS) : options.getCommand();
                 postDrivers(apiClient, options.getFileName());
@@ -671,8 +674,6 @@ public class Main {
             return;
         }
 
-        LOGGER.info("Holiday driver message request found:\n" + reply);
-
         WorkRequestHandler.WorkRequest request = (WorkRequestHandler.WorkRequest) reply;
 
         // Parse users files
@@ -695,8 +696,8 @@ public class Main {
             String statusMessage = generateDriverPosts(
                     apiClient, users, routedDeliveries, topic,
                     Constants.QUERY_GET_CURRENT_VALIDATED_ONE_KITCHEN_RESTAURANT_TEMPLATE,
-                    Constants.QUERY_GET_ONE_KITCHEN_DRIVERS_POST_FORMAT_V1,
-                    Constants.QUERY_GET_ONE_KITCHEN_GROUP_POST_FORMAT_V1);
+                    Constants.QUERY_GET_ONE_KITCHEN_DRIVERS_POST_FORMAT_V300,
+                    Constants.QUERY_GET_ONE_KITCHEN_GROUP_POST_FORMAT_V300);
             request.postStatus(WorkRequestHandler.RequestStatus.Succeeded, statusMessage);
         } catch (MemberDataException ex) {
             String reason = ex.getCause() != null ? ex.getCause().getMessage() : ex.getMessage();
@@ -1183,6 +1184,49 @@ public class Main {
                 assert topicId == Constants.TOPIC_REQUEST_DRIVER_ROUTES.getId() : topicId;
                 doDriverRoutes(apiClient, request);
             }
+        }
+    }
+
+    private static void testRequest(ApiClient apiClient, String usersFile) {
+        String json = apiClient.runQuery(Constants.QUERY_GET_LAST_TEST_REQUEST);
+        ApiQueryResult apiQueryResult = HBParser.parseQueryResult(json);
+
+        assert apiQueryResult.rows.length == 1 : apiQueryResult.rows.length;
+        Integer topicIdIndex = apiQueryResult.getColumnIndex(Constants.DISCOURSE_COLUMN_TOPIC_ID);
+        assert topicIdIndex != null;
+        Integer postNumberIndex = apiQueryResult.getColumnIndex(Constants.DISCOURSE_COLUMN_POST_NUMBER);
+        assert postNumberIndex != null;
+        Integer rawIndex = apiQueryResult.getColumnIndex(Constants.DISCOURSE_COLUMN_RAW);
+        assert rawIndex != null;
+
+        Object rowObj = apiQueryResult.rows[0];
+        Object[] columns = (Object[]) rowObj;
+        assert columns.length == 4 : columns.length;
+        Long topicId = (Long)columns[topicIdIndex];
+        Long postNumber = (Long)columns[postNumberIndex];
+        String raw = (String)columns[rawIndex];
+
+        WorkRequestHandler requestHandler = new WorkRequestHandler(apiClient, topicId, postNumber, raw);
+        WorkRequestHandler.Reply reply;
+
+        try {
+            reply = requestHandler.getLastReply();
+
+            // Nothing to do.
+            if (reply instanceof WorkRequestHandler.Status) {
+                return;
+            }
+
+            // Parse users files
+            String csvData = Files.readString(Paths.get(usersFile));
+            Map<String, User> users = new Tables(HBParser.users(csvData)).mapByUserName();
+
+            WorkRequestHandler.WorkRequest request = (WorkRequestHandler.WorkRequest) reply;
+            request.setTestTopic();
+            doOneKitchenDriverMessages(apiClient, request, users);
+        } catch (MemberDataException | IOException | CsvException ex) {
+            LOGGER.warn("getLastReply failed: " + ex + "\n" + ex.getMessage());
+            requestHandler.postStatus(WorkRequestHandler.RequestStatus.Failed, ex.getMessage());
         }
     }
 

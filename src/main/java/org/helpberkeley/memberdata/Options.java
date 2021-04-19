@@ -49,6 +49,7 @@ public class Options {
     static final String COMMAND_CUSTOMER_CARE_POST = "customer-care";
     static final String COMMAND_FRREG = "frreg";
     static final String COMMAND_WORK_REQUESTS = "work-requests";
+    static final String COMMAND_TEST_REQUEST = "test-request";
 
     static final String USAGE_ERROR = "Usage error for command ";
     static final String UNKNOWN_COMMAND = USAGE_ERROR + ": unknown command: ";
@@ -60,8 +61,8 @@ public class Options {
 
     static final String USAGE =
             "Usage: " + COMMAND_FETCH + "\n"
-                    + "    | " + COMMAND_WORK_REQUESTS + "all-members-file\n"
-                    + "    | " + COMMAND_COMPLETED_DAILY_ORDERS + "all-members-file\n"
+                    + "    | " + COMMAND_WORK_REQUESTS + " all-members-file\n"
+                    + "    | " + COMMAND_COMPLETED_DAILY_ORDERS + " all-members-file\n"
                     + "    | " + COMMAND_DRIVER_MESSAGES + " all-members-file\n"
                     + "    | " + COMMAND_ONE_KITCHEN_DRIVER_MESSAGES + " all-members-file\n"
                     + "    | " + COMMAND_DRIVER_ROUTES + "\n"
@@ -81,7 +82,8 @@ public class Options {
                     + "    | " + COMMAND_UPDATE_DISPATCHERS + " dispatchers-file-name\n"
                     + "    | " + COMMAND_CUSTOMER_CARE_POST + " all-members-file\n"
                     + "    | " + COMMAND_FRREG + " all-members-file\n"
-                    + "    | " + COMMAND_RESTAURANT_TEMPLATE + "\n";
+                    + "    | " + COMMAND_RESTAURANT_TEMPLATE + "\n"
+                    + "    | " + COMMAND_TEST_REQUEST + " all-members-file\n";
 
     private final String[] args;
     private String command;
@@ -131,6 +133,7 @@ public class Options {
             case COMMAND_CUSTOMER_CARE_POST:
             case COMMAND_FRREG:
             case COMMAND_DRIVERS:
+            case COMMAND_TEST_REQUEST:
                 setCommand(arg);
                 if (index == args.length) {
                     dieMessage(USAGE_ERROR + arg + COMMAND_REQUIRES_FILE_NAME);

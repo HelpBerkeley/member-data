@@ -26,9 +26,11 @@ public class RestaurantV200 extends Restaurant {
 
     private boolean noPics = false;
     private long orders = 0;
+    private final ControlBlockV200 controlBlock;
 
     RestaurantV200(ControlBlock controlBlock, String name) {
-        super(controlBlock, name);
+        super(name);
+        this.controlBlock = (ControlBlockV200) controlBlock;
     }
 
     @Override

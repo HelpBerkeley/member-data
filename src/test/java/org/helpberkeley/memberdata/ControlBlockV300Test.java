@@ -111,8 +111,8 @@ public class ControlBlockV300Test extends ControlBlockTestBase{
                 + CONTROL_BLOCK_END_ROW;
 
         WorkflowParser workflowParser = WorkflowParser.create(
-                WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, Collections.EMPTY_MAP, workFlowData);
-        ControlBlock controlBlock = workflowParser.controlBlock();
+                WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, Map.of(), workFlowData);
+        ControlBlockV300 controlBlock = (ControlBlockV300) workflowParser.controlBlock();
         assertThat(controlBlock.getWarnings()).isEmpty();
         assertThat(controlBlock.getAltMealOptions()).containsExactly("none", "veggie", "noRed", "noPork");
         assertThat(controlBlock.getAltGroceryOptions()).isEmpty();
@@ -132,8 +132,8 @@ public class ControlBlockV300Test extends ControlBlockTestBase{
                 + CONTROL_BLOCK_END_ROW;
 
         WorkflowParser workflowParser = WorkflowParser.create(
-                WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, Collections.EMPTY_MAP, workFlowData);
-        ControlBlock controlBlock = workflowParser.controlBlock();
+                WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, Map.of(), workFlowData);
+        ControlBlockV300 controlBlock = (ControlBlockV300) workflowParser.controlBlock();
         assertThat(controlBlock.getWarnings()).isEmpty();
         assertThat(controlBlock.getAltGroceryOptions()).containsExactly("none", "veg", "custom pick");
         assertThat(controlBlock.getAltMealOptions()).isEmpty();
@@ -153,8 +153,8 @@ public class ControlBlockV300Test extends ControlBlockTestBase{
                 + CONTROL_BLOCK_END_ROW;
 
         WorkflowParser workflowParser = WorkflowParser.create(
-                WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, Collections.EMPTY_MAP, workFlowData);
-        ControlBlock controlBlock = workflowParser.controlBlock();
+                WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, Map.of(), workFlowData);
+        ControlBlockV300 controlBlock = (ControlBlockV300) workflowParser.controlBlock();
         assertThat(controlBlock.getWarnings()).isEmpty();
         assertThat(controlBlock.getStartTimes()).containsExactly("3:00", "3:10", "3:15");
         assertThat(controlBlock.getAltMealOptions()).isEmpty();
@@ -174,8 +174,8 @@ public class ControlBlockV300Test extends ControlBlockTestBase{
                 + CONTROL_BLOCK_END_ROW;
 
         WorkflowParser workflowParser = WorkflowParser.create(
-                WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, Collections.EMPTY_MAP, workFlowData);
-        ControlBlock controlBlock = workflowParser.controlBlock();
+                WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, Map.of(), workFlowData);
+        ControlBlockV300 controlBlock = (ControlBlockV300) workflowParser.controlBlock();
         assertThat(controlBlock.getWarnings()).isEmpty();
         assertThat(controlBlock.getPickupManagers()).containsExactly("John", "Jacob", "Jingleheimer");
         assertThat(controlBlock.getStartTimes()).isEmpty();

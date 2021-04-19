@@ -28,7 +28,6 @@ import java.util.Map;
 
 public abstract class Restaurant {
     protected final String name;
-    private final ControlBlock controlBlock;
     protected String address = "";
     private String startTime = "";
     private String closingTime = "";
@@ -38,9 +37,8 @@ public abstract class Restaurant {
     private String route = "";
     private final Map<String, Driver> drivers = new HashMap<>();
 
-    protected Restaurant(ControlBlock controlBlock, String name) {
+    protected Restaurant(String name) {
         this.name = name;
-        this.controlBlock = controlBlock;
     }
 
     public static Restaurant createRestaurant(ControlBlock controlBlock, String name) {

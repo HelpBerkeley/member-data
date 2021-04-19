@@ -77,9 +77,9 @@ public class DriverPostV300Test extends DriverPostTest {
         String format = "LOOP &{Consumer} { "
                 + " &{Consumer.Name}"
                 + "\"|\""
-                + " &{Consumer.StandardMeals}"
+                + " &{Consumer.StandardMeal}"
                 + "\"|\""
-                + " &{Consumer.AlternateMeals}"
+                + " &{Consumer.AlternateMeal}"
                 + "\"|\""
                 + " &{Consumer.AlternateMealType}"
                 + "\"|\""
@@ -112,9 +112,9 @@ public class DriverPostV300Test extends DriverPostTest {
         String format = "LOOP &{Consumer} { "
                 + " &{Consumer.Name}"
                 + "\"|\""
-                + " IF &{Consumer.StandardMeals} THEN { \"std meals\" }"
+                + " IF &{Consumer.StandardMeal} THEN { \"std meals\" }"
                 + "\"|\""
-                + " IF &{Consumer.AlternateMeals} THEN { \"alt meals\" }"
+                + " IF &{Consumer.AlternateMeal} THEN { \"alt meals\" }"
                 + "\"|\""
                 + " IF &{Consumer.StandardGrocery} THEN { \"std grocery\" }"
                 + "\"|\""
@@ -195,7 +195,6 @@ public class DriverPostV300Test extends DriverPostTest {
         assertThat(posts).containsExactly("HasMealsOrGroceries|std meals|alt meals|std grocery|alt grocery\n");
     }
 
-    @Ignore
     @Test
     public void v300PickupsTest() {
         String format = "LOOP &{ThisDriverRestaurant} {"
@@ -205,7 +204,7 @@ public class DriverPostV300Test extends DriverPostTest {
                 + " &{AlternateMeals.Type} \":\" &{AlternateMeals.Count} \":\""
                 +" } "
                 + "\"|\""
-                + " &{ThisDriverRestaurant.StandardGrocery}"
+                + " &{ThisDriverRestaurant.StandardGroceries}"
                 + "\"|\""
                 + " LOOP &{ThisDriverRestaurant.AlternateGroceries} {"
                 + " &{AlternateGroceries.Type} \":\" &{AlternateGroceries.Count} \":\""
@@ -219,6 +218,6 @@ public class DriverPostV300Test extends DriverPostTest {
                 getDriverPostFormatQuery(),
                 getGroupInstructionsFormatQuery());
         List<String> posts = driverPostFormat.generateDriverPosts();
-        assertThat(posts).containsExactly("HasMealsOrGroceries|std meals|alt meals|std grocery|alt grocery\n");
+        assertThat(posts).containsExactly("2|veggie:2:noRed:1:noPork:1:|4|veg:1:custom pick:2:\n");
     }
 }

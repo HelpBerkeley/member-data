@@ -25,6 +25,9 @@ package org.helpberkeley.memberdata;
 import java.text.MessageFormat;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 class DriverV200 extends Driver {
 
@@ -37,6 +40,28 @@ class DriverV200 extends Driver {
 
     private String originalStartTime;
     private String startTime;
+    private final List<DeliveryV200> deliveries = new ArrayList<>();
+
+    DriverV200(List<Delivery> deliveries) {
+        for (Delivery delivery : deliveries) {
+            assert delivery instanceof DeliveryV200;
+            this.deliveries.add((DeliveryV200) delivery);
+        }
+    }
+
+    @Override
+    public List<Delivery> getDeliveries() {
+        return Collections.unmodifiableList(deliveries);
+    }
+
+    @Override
+    void resetDeliveries(List<Delivery> deliveries) {
+        this.deliveries.clear();
+        for (Delivery delivery : deliveries) {
+            assert delivery instanceof DeliveryV200;
+            this.deliveries.add((DeliveryV200) delivery);
+        }
+    }
 
     public long getOrders(String restaurantName) {
         // FIX THIS, DS: use ordered map for pickups

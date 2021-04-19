@@ -22,10 +22,48 @@
  */
 package org.helpberkeley.memberdata;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+
 class DriverV300 extends Driver {
+
+    private final List<DeliveryV300> deliveries = new ArrayList<>();
+
+    DriverV300(List<Delivery> deliveries) {
+        for (Delivery delivery : deliveries) {
+            assert delivery instanceof DeliveryV300;
+            this.deliveries.add((DeliveryV300) delivery);
+        }
+    }
+
+    @Override
+    public List<Delivery> getDeliveries() {
+        return Collections.unmodifiableList(deliveries);
+    }
+
+    public List<DeliveryV300> getDeliveriesV300() {
+        return Collections.unmodifiableList(deliveries);
+    }
+
+    @Override
+    void resetDeliveries(List<Delivery> deliveries) {
+        this.deliveries.clear();
+        for (Delivery delivery : deliveries) {
+            assert delivery instanceof DeliveryV300;
+            this.deliveries.add((DeliveryV300) delivery);
+        }
+    }
 
     @Override
     void setStartTime() {
         // FIX THIS, DS: move this abstract out of the base
+    }
+
+    @Override
+    String getStartTime() {
+        // FIX THIS, DS: implement
+        return "";
     }
 }

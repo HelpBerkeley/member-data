@@ -199,7 +199,7 @@ public class WorkRequestHandler {
     static class WorkRequest extends Reply {
         final String date;
         final UploadFile uploadFile;
-        final Long topic;
+        Long topic;
         final String version;
         final boolean disableDateAudit;
 
@@ -211,6 +211,10 @@ public class WorkRequestHandler {
             this.topic = topic;
             this.version = version;
             this.disableDateAudit = disableDateAudit;
+        }
+
+        void setTestTopic() {
+            this.topic = Main.STONE_TEST_TOPIC;
         }
 
         // Generate a reply to the topic id

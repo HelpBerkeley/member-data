@@ -37,7 +37,7 @@ public abstract class Driver {
     private String gMapURL = null;
     private WorkflowBean bean;
     protected List<Restaurant> pickups;
-    private List<Delivery> deliveries;
+//    private List<Delivery> deliveries;
     private long routeSeconds = 0;
     protected final List<String> warningMessages = new ArrayList<>();
     protected boolean disableLateArrivalAudit = false;
@@ -52,16 +52,15 @@ public abstract class Driver {
         Driver driver;
 
         if (driverBean instanceof WorkflowBeanV200) {
-            driver = new DriverV200();
+            driver = new DriverV200(deliveries);
         } else if (driverBean instanceof WorkflowBeanV300) {
-            driver = new DriverV300();
+            driver = new DriverV300(deliveries);
         } else {
             throw new MemberDataException("Version not supported for " + driverBean);
         }
 
         driver.bean = driverBean;
         driver.pickups = pickups;
-        driver.deliveries = deliveries;
         driver.gMapURL = gmapURL;
         driver.disableLateArrivalAudit = disableLateArrivalAudit;
         driver.setStartTime();
@@ -70,23 +69,24 @@ public abstract class Driver {
     }
 
     abstract void setStartTime();
+    public abstract List<Delivery> getDeliveries();
+    abstract void resetDeliveries(List<Delivery> deliveries);
+    abstract String getStartTime();
 
     public static Driver createDriver(WorkflowBean driverBean, List<Restaurant> pickups, List<Delivery> deliveries) {
 
         Driver driver;
 
         if (driverBean instanceof WorkflowBeanV200) {
-            driver = new DriverV200();
+            driver = new DriverV200(deliveries);
         } else if (driverBean instanceof WorkflowBeanV300) {
-            driver = new DriverV300();
+            driver = new DriverV300(deliveries);
         } else {
             throw new MemberDataException("Version not supported for " + driverBean);
         }
 
         driver.bean = driverBean;
         driver.pickups = pickups;
-        driver.deliveries = deliveries;
-//        driver.setStartTime();
 
         return driver;
     }
@@ -113,7 +113,7 @@ public abstract class Driver {
     }
 
     public boolean hasCondo() {
-        for (Delivery delivery : deliveries) {
+        for (Delivery delivery : getDeliveries()) {
             if (delivery.isCondo()) {
                 return true;
             }
@@ -133,13 +133,8 @@ public abstract class Driver {
         return Collections.unmodifiableList(pickups);
     }
 
-    public List<Delivery> getDeliveries() {
-        return Collections.unmodifiableList(deliveries);
-    }
-
     public void setDeliveries(List<Delivery> deliveries, long totalSeconds) {
-        this.deliveries.clear();
-        this.deliveries.addAll(deliveries);
+        resetDeliveries(deliveries);
         generateURL();
         this.routeSeconds = totalSeconds;
     }
@@ -170,7 +165,7 @@ public abstract class Driver {
 
         Location prevLocation = null;
 
-        for (Delivery delivery : deliveries) {
+        for (Delivery delivery : getDeliveries()) {
 
             Location location = delivery.getLocation();
 
@@ -210,7 +205,7 @@ public abstract class Driver {
             block.append(pickup.pickupRow());
         }
 
-        for (Delivery delivery : deliveries) {
+        for (Delivery delivery : getDeliveries()) {
             block.append(delivery.deliveryRow());
         }
 

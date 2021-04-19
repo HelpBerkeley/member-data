@@ -33,6 +33,7 @@ class MessageBlockContext {
     private Restaurant splitRestaurant;
     private Restaurant pickupRestaurant;
     private String backupDriver;
+    private String alternateType;
 
     MessageBlockContext(String name, MessageBlockContext parent) {
         this.name = name;
@@ -93,6 +94,10 @@ class MessageBlockContext {
 
     void setBackupDriver(String backupDriver) {
         this.backupDriver = backupDriver;
+    }
+
+    void setAlternateType(String alternateType) {
+        this.alternateType = alternateType;
     }
 
     String getBlockName() {
@@ -177,6 +182,10 @@ class MessageBlockContext {
         }
 
         return null;
+    }
+
+    String getAlternateType() {
+        return alternateType;
     }
 
     // FIX THIS, DS: pass in an element and get the line number from it.

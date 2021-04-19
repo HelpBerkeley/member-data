@@ -23,11 +23,15 @@
 
 package org.helpberkeley.memberdata;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
 class ControlBlockV300 extends ControlBlock {
+
+    private final List<String> altMealOptions = new ArrayList<>();
+    private final List<String> altGroceryOptions = new ArrayList<>();
 
      ControlBlockV300(String header) {
          super(header);
@@ -51,15 +55,15 @@ class ControlBlockV300 extends ControlBlock {
     }
 
     @Override
-    List<String> processAltMealOptions(String value, long lineNumber) {
+    void processAltMealOptions(String value, long lineNumber) {
         // FIX THIS, DS: is there auditing to do here?
-         return processList(value, lineNumber);
+         altMealOptions.addAll(processList(value, lineNumber));
     }
 
     @Override
-    List<String> processAltGroceryOptions(String value, long lineNumber) {
+    void processAltGroceryOptions(String value, long lineNumber) {
         // FIX THIS, DS: is there auditing to do here?
-        return processList(value, lineNumber);
+        altGroceryOptions.addAll(processList(value, lineNumber));
     }
 
     @Override
@@ -72,6 +76,15 @@ class ControlBlockV300 extends ControlBlock {
     List<String> processPickupManagers(String value, long lineNumber) {
         // FIX THIS, DS: is there auditing to do here?
         return processList(value, lineNumber);
+    }
+
+
+    public List<String> getAltMealOptions() {
+         return altMealOptions;
+    }
+
+    public List<String> getAltGroceryOptions() {
+         return altGroceryOptions;
     }
 
     private List<String> processList(String value, long lineNumber) {

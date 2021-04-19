@@ -35,11 +35,13 @@ public class DriverPostFormatV300 extends DriverPostFormat {
 
     private static final String STD_MEALS = "StandardMeals";
     private static final String ALT_MEALS = "AlternateMeals";
+    private static final String STD_MEAL = "StandardMeal";
+    private static final String ALT_MEAL = "AlternateMeal";
     private static final String STD_GROCERY = "StandardGrocery";
     private static final String ALT_GROCERY = "AlternateGrocery";
 
-    private static final String CONSUMER_STD_MEALS = "Consumer." + STD_MEALS;
-    private static final String CONSUMER_ALT_MEALS = "Consumer." + ALT_MEALS;
+    private static final String CONSUMER_STD_MEAL = "Consumer." + STD_MEAL;
+    private static final String CONSUMER_ALT_MEAL = "Consumer." + ALT_MEAL;
     private static final String CONSUMER_STD_GROCERY = "Consumer." + STD_GROCERY;
     private static final String CONSUMER_ALT_GROCERY = "Consumer." + ALT_GROCERY;
 
@@ -57,6 +59,7 @@ public class DriverPostFormatV300 extends DriverPostFormat {
     private final int driverTemplateQuery;
     private final int groupTemplateQuery;
     private final int restaurantTemplateQuery;
+    private ControlBlockV300 controlBlock;
 
     DriverPostFormatV300(ApiClient apiClient, Map<String, User> users, String routedDeliveries) {
         super(apiClient, users, routedDeliveries);
@@ -81,6 +84,11 @@ public class DriverPostFormatV300 extends DriverPostFormat {
         this.groupTemplateQuery = groupTemplateQuery;
         this.restaurantTemplateQuery = restaurantTemplateQuery;
         initialize(routedDeliveries);
+    }
+
+    @Override
+    ControlBlock getControlBlock() {
+        return controlBlock;
     }
 
     @Override
@@ -359,7 +367,10 @@ public class DriverPostFormatV300 extends DriverPostFormat {
         WorkflowParser parser = WorkflowParser.create(
                 WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, restaurants, routedDeliveries);
         drivers = parser.drivers();
-        controlBlock = parser.getControlBlock();
+
+        ControlBlock cb = parser.getControlBlock();
+        assert cb instanceof ControlBlockV300 : "Mismatched control block";
+        controlBlock = (ControlBlockV300)cb;
 
         // Add all the individual driver pickups to the global restaurants,
         // so the we can detect split restaurants.
@@ -374,9 +385,6 @@ public class DriverPostFormatV300 extends DriverPostFormat {
                 }
 
                 restaurant.addDriver(driver);
-
-                // FIX THIS, DS: populate restaurant totals,  need control already audited for alt types?
-//                restaurant.addOrders(pickup.getOrders());
             }
         }
     }
@@ -441,10 +449,10 @@ public class DriverPostFormatV300 extends DriverPostFormat {
             case "Consumer.RestaurantEmoji":
                 value = restaurants.get(delivery.getRestaurant()).getEmoji();
                 break;
-            case CONSUMER_STD_MEALS:
+            case CONSUMER_STD_MEAL:
                 value = delivery.getStdMeals();
                 break;
-            case CONSUMER_ALT_MEALS:
+            case CONSUMER_ALT_MEAL:
                 value = delivery.getAltMeals();
                 break;
             case "Consumer.AlternateMealType":
@@ -525,7 +533,7 @@ public class DriverPostFormatV300 extends DriverPostFormat {
             case "ThisDriverRestaurant.AlternateMeals":
                 returnValue = processAlternateMealsLoopRef(loop, context);
                 break;
-            case "ThisDriverRestaurant.AlternateGroceriesMeals":
+            case "ThisDriverRestaurant.AlternateGroceries":
                 returnValue = processAlternateGroceriesLoopRef(loop, context);
                 break;
             default:
@@ -561,7 +569,6 @@ public class DriverPostFormatV300 extends DriverPostFormat {
         if (listName.equals("ThisDriverRestaurant")) {
             Restaurant restaurant = context.getPickupRestaurant();
             String restaurantName = restaurant.getName();
-            Restaurant globalRestaurant = restaurants.get(restaurantName);
             Driver driver = context.getDriver();
 
             switch (refName) {
@@ -591,10 +598,10 @@ public class DriverPostFormatV300 extends DriverPostFormat {
                 case "Consumer.IsCondo":
                     value = delivery.isCondo();
                     break;
-                case CONSUMER_STD_MEALS:
+                case CONSUMER_STD_MEAL:
                     value = Integer.parseInt(delivery.getStdMeals()) > 0;
                     break;
-                case CONSUMER_ALT_MEALS:
+                case CONSUMER_ALT_MEAL:
                     value = Integer.parseInt(delivery.getAltMeals()) > 0;
                     break;
                 case CONSUMER_STD_GROCERY:
@@ -637,6 +644,12 @@ public class DriverPostFormatV300 extends DriverPostFormat {
             case "Consumer":
                 returnValue = processDeliveriesListRef(listRef, context);
                 break;
+            case "AlternateMeals":
+                returnValue = processAlternateMealsListRef(listRef, context);
+                break;
+            case "AlternateGroceries":
+                returnValue = processAlternateGroceriesListRef(listRef, context);
+                break;
             default:
                 throw new MemberDataException(context.formatException(
                         "unknown list name &{" + listName + "} in " + "&{" + refName + "}"));
@@ -671,17 +684,50 @@ public class DriverPostFormatV300 extends DriverPostFormat {
             case "ThisDriverRestaurant.StandardMeals":
                 value = getStandardMeals(pickupRestaurant.getName(), driver);
                 break;
-            case "ThisDriverRestaurant.AlternateMeals":
-                value = "FIX THIS, IMPLEMENT ThisDriverRestaurant.AlternateMeals";
-                break;
             case "ThisDriverRestaurant.StandardGroceries":
                 value = getStandardGroceries(pickupRestaurant.getName(), driver);
                 break;
-            case "ThisDriverRestaurant.AlternateGroceries":
-                value = "FIX THIS, IMPLEMENT ThisDriverRestaurant.AlternateGroceries";
+            default:
+                throw new MemberDataException(context.formatException("unknown list variable &{" + refName + "}"));
+        }
+
+        LOGGER.trace("${{}} = \"{}\"", refName, value);
+        return new ProcessingReturnValue(ProcessingStatus.COMPLETE, value);
+    }
+
+    private ProcessingReturnValue processAlternateMealsListRef(
+            MessageBlockListRef listRef, MessageBlockContext context) {
+
+        String refName = listRef.getName();
+        String value;
+
+        switch (refName) {
+            case "AlternateMeals.Type":
+                value = context.getAlternateType();
                 break;
-            case "ThisDriverRestaurant.AnyMealsOrGroceries":
-                value = "FIX THIS, IMPLEMENT ThisDriverRestaurant.AnyMealsOrGroceries";
+            case "AlternateMeals.Count":
+                value = getAlternateMealTotal(context);
+                break;
+            default:
+                throw new MemberDataException(context.formatException("unknown list variable &{" + refName + "}"));
+        }
+
+        LOGGER.trace("${{}} = \"{}\"", refName, value);
+        return new ProcessingReturnValue(ProcessingStatus.COMPLETE, value);
+    }
+
+    private ProcessingReturnValue processAlternateGroceriesListRef(
+            MessageBlockListRef listRef, MessageBlockContext context) {
+
+        String refName = listRef.getName();
+        String value;
+
+        switch (refName) {
+            case "AlternateGroceries.Type":
+                value = context.getAlternateType();
+                break;
+            case "AlternateGroceries.Count":
+                value = getAlternateGroceryTotal(context);
                 break;
             default:
                 throw new MemberDataException(context.formatException("unknown list variable &{" + refName + "}"));
@@ -769,23 +815,21 @@ public class DriverPostFormatV300 extends DriverPostFormat {
 
         LOGGER.trace("processAlternateMeals: {}", altMealsContext);
 
-        Restaurant restaurant = context.getPickupRestaurant();
+        RestaurantV300 restaurant = (RestaurantV300) context.getPickupRestaurant();
 
-//        // Look through deliveries and find consumers/orders for this restaurant
-//
-//        for (Delivery delivery : driver.getDeliveries()) {
-//            if (delivery.getRestaurant().equals(restaurant.getName())) {
-//                context.setDelivery(delivery);
-//                for (MessageBlockElement loopElement : loop.getElements()) {
-//                    ProcessingReturnValue returnValue = processElement(loopElement, deliveryContext);
-//                    output.append(returnValue.output);
-//
-//                    if (returnValue.status == ProcessingStatus.CONTINUE) {
-//                        break;
-//                    }
-//                }
-//            }
-//        }
+        for (String alternateMealType : restaurant.getAlternateMealTypes()) {
+
+            altMealsContext.setAlternateType(alternateMealType);
+
+            for (MessageBlockElement loopElement : loop.getElements()) {
+                ProcessingReturnValue returnValue = processElement(loopElement, altMealsContext);
+                output.append(returnValue.output);
+
+                if (returnValue.status == ProcessingStatus.CONTINUE) {
+                    break;
+                }
+            }
+        }
 
         LOGGER.trace("${{}} = \"{}\"", loop, output);
         return new ProcessingReturnValue(ProcessingStatus.COMPLETE, output.toString());
@@ -793,6 +837,64 @@ public class DriverPostFormatV300 extends DriverPostFormat {
 
     protected final  ProcessingReturnValue processAlternateGroceriesLoopRef(
             MessageBlockLoop loop, MessageBlockContext context) {
-        return null;
+
+        StringBuilder output = new StringBuilder();
+        MessageBlockContext altGroceriesContext = new MessageBlockContext("AlternateGroceries", context);
+        altGroceriesContext.setPickupRestaurant(context.getPickupRestaurant());
+
+        LOGGER.trace("processAlternateGroceries: {}", altGroceriesContext);
+
+        RestaurantV300 restaurant = (RestaurantV300) context.getPickupRestaurant();
+
+        for (String alternateGroceryType : restaurant.getAlternateGroceryTypes()) {
+
+            altGroceriesContext.setAlternateType(alternateGroceryType);
+
+            for (MessageBlockElement loopElement : loop.getElements()) {
+                ProcessingReturnValue returnValue = processElement(loopElement, altGroceriesContext);
+                output.append(returnValue.output);
+
+                if (returnValue.status == ProcessingStatus.CONTINUE) {
+                    break;
+                }
+            }
+        }
+
+        LOGGER.trace("${{}} = \"{}\"", loop, output);
+        return new ProcessingReturnValue(ProcessingStatus.COMPLETE, output.toString());
+    }
+
+    String getAlternateMealTotal(MessageBlockContext context) {
+        String mealType = context.getAlternateType();
+        DriverV300 driver = (DriverV300) context.getDriver();
+        RestaurantV300 restaurant = (RestaurantV300) context.getPickupRestaurant();
+        int total = 0;
+
+        for (DeliveryV300 delivery : driver.getDeliveriesV300()) {
+            if (restaurant.getName().equals(delivery.getRestaurant())
+                && mealType.equals(delivery.getTypeMeal())) {
+
+                total += Integer.parseInt(delivery.getAltMeals());
+            }
+        }
+
+        return String.valueOf(total);
+    }
+
+    String getAlternateGroceryTotal(MessageBlockContext context) {
+        String groceryType = context.getAlternateType();
+        DriverV300 driver = (DriverV300) context.getDriver();
+        RestaurantV300 restaurant = (RestaurantV300) context.getPickupRestaurant();
+        int total = 0;
+
+        for (DeliveryV300 delivery : driver.getDeliveriesV300()) {
+            if (restaurant.getName().equals(delivery.getRestaurant())
+                    && groceryType.equals(delivery.getTypeGrocery())) {
+
+                total += Integer.parseInt(delivery.getAltGrocery());
+            }
+        }
+
+        return String.valueOf(total);
     }
 }

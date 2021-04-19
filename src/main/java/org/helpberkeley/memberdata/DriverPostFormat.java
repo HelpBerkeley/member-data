@@ -36,8 +36,6 @@ public abstract class DriverPostFormat {
     // FIX THIS, DS: fix lifecycle.  Currently initialized in an abstract
     protected Map<String, Restaurant> restaurants;
     // FIX THIS, DS: fix lifecycle.  Currently initialized in an abstract
-    protected ControlBlock controlBlock;
-    // FIX THIS, DS: fix lifecycle.  Currently initialized in an abstract
     protected List<Driver> drivers;
 
     public static DriverPostFormat create(
@@ -116,6 +114,7 @@ public abstract class DriverPostFormat {
              String routedDeliveries, int driverTemplateQuery, int groupTemplateQuery) {
     }
 
+    abstract ControlBlock getControlBlock();
     abstract void initialize(String routedDeliveries);
     abstract List<String> generateDriverPosts();
     abstract List<Driver> getDrivers();
@@ -200,7 +199,7 @@ public abstract class DriverPostFormat {
         final String firstRestaurant = context.getDriver().getFirstRestaurantName();
         final Restaurant restaurant = restaurants.get(firstRestaurant);
         assert restaurant != null : firstRestaurant + " was not found the in restaurant template post";
-        DriverV200 driver = (DriverV200)context.getDriver();
+        Driver driver = context.getDriver();
 
         switch (varName) {
             case "ThisDriverUserName":
@@ -473,7 +472,7 @@ public abstract class DriverPostFormat {
 
         LOGGER.trace("processBackupDrivers: {}", backupDriverContext);
 
-        for (String backupDriver : controlBlock.getBackupDrivers()) {
+        for (String backupDriver : getControlBlock().getBackupDrivers()) {
 
             backupDriverContext.setBackupDriver(backupDriver);
 

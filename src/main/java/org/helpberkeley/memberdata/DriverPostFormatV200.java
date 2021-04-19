@@ -42,6 +42,7 @@ public class DriverPostFormatV200 extends DriverPostFormat {
     private final int driverTemplateQuery;
     private final int groupTemplateQuery;
     private final int restaurantTemplateQuery;
+    private ControlBlockV200 controlBlock;
 
     DriverPostFormatV200(ApiClient apiClient, Map<String, User> users, String routedDeliveries) {
         super(apiClient, users, routedDeliveries);
@@ -77,6 +78,11 @@ public class DriverPostFormatV200 extends DriverPostFormat {
         loadBackupDriverPostFormat();
         loadRoutedDeliveries(routedDeliveries);
         auditControlBlock();
+    }
+
+    @Override
+    ControlBlock getControlBlock() {
+        return controlBlock;
     }
 
     @Override
@@ -350,7 +356,9 @@ public class DriverPostFormatV200 extends DriverPostFormat {
         WorkflowParser parser = WorkflowParser.create(
                 WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, restaurants, routedDeliveries);
         drivers = parser.drivers();
-        controlBlock = parser.getControlBlock();
+        ControlBlock cb = parser.getControlBlock();
+        assert cb instanceof ControlBlockV200 : "Mismatched control block";
+        controlBlock = (ControlBlockV200) cb;
 
         // Add all the individual driver pickups to the global restaurants,
         // so the we can detect split restaurants.

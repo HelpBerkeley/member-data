@@ -31,6 +31,7 @@ import org.junit.Test;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -65,7 +66,7 @@ public class RouteTest extends TestBase {
 
         String csvData = readResourceFile("unrouted-deliveries-empty-delivery.csv");
         WorkflowParser workflowParser = WorkflowParser.create(
-                WorkflowParser.Mode.DRIVER_ROUTE_REQUEST, Collections.emptyMap(), csvData);
+                WorkflowParser.Mode.DRIVER_ROUTE_REQUEST, Map.of(), csvData);
         List<Driver> drivers = workflowParser.drivers();
         Route route = new Route();
 

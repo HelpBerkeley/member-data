@@ -643,7 +643,7 @@ public class DriverStartTimeTest extends TestBase {
         driverBean.setUserName("jb");
 
         return (DriverV200) Driver.createDriver(
-                driverBean, pickupRestaurants, null, "https://something", disableLateStartAudit);
+                driverBean, pickupRestaurants, List.of(), "https://something", disableLateStartAudit);
     }
 
     static class TestData {

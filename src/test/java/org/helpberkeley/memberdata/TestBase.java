@@ -116,6 +116,7 @@ public class TestBase {
             Options.COMMAND_CUSTOMER_CARE_POST,
             Options.COMMAND_FRREG,
             Options.COMMAND_WORK_REQUESTS,
+            Options.COMMAND_TEST_REQUEST,
     };
 
     static final String[] COMMANDS_WITH_NO_PARAMETERS = {

@@ -63,8 +63,6 @@ public abstract class ControlBlock {
     private final List<OpsManager> opsManagers = new ArrayList<>();
     private final Map<String, SplitRestaurant> splitRestaurantMap = new HashMap<>();
     private final List<String> backupDrivers = new ArrayList<>();
-    private final List<String> altMealOptions = new ArrayList<>();
-    private final List<String> altGroceryOptions = new ArrayList<>();
     private final List<String> startTimes = new ArrayList<>();
     private final List<String> pickupManagers = new ArrayList<>();
     private boolean disableLateArrivalAudit = false;
@@ -259,16 +257,6 @@ public abstract class ControlBlock {
         return backupDrivers;
     }
 
-    List<String> getAltMealOptions() {
-        // FIX THIS, DS: audit that the current version supports thist?
-        return altMealOptions;
-    }
-
-    List<String> getAltGroceryOptions() {
-        // FIX THIS, DS: audit that the current version supports thist?
-        return altGroceryOptions;
-    }
-
     List<String> getStartTimes() {
         // FIX THIS, DS: audit that the current version supports thist?
         return startTimes;
@@ -303,10 +291,10 @@ public abstract class ControlBlock {
                 processAuditControl(variable, value, lineNumber);
                 break;
             case Constants.CONTROL_BLOCK_ALT_MEAL_OPTIONS:
-                altMealOptions.addAll(processAltMealOptions(value, lineNumber));
+                processAltMealOptions(value, lineNumber);
                 break;
             case Constants.CONTROL_BLOCK_ALT_GROCERY_OPTIONS:
-                altGroceryOptions.addAll(processAltGroceryOptions(value, lineNumber));
+                processAltGroceryOptions(value, lineNumber);
                 break;
             case Constants.CONTROL_BLOCK_START_TIMES:
                 startTimes.addAll(processStartTimes(value, lineNumber));
@@ -547,16 +535,12 @@ public abstract class ControlBlock {
         backupDrivers.add(backupDriver);
     }
 
-    List<String> processAltMealOptions(String value, long lineNumber) {
+    void processAltMealOptions(String value, long lineNumber) {
         unsupported(lineNumber, Constants.CONTROL_BLOCK_ALT_MEAL_OPTIONS);
-
-        return List.of();
     }
 
-    List<String> processAltGroceryOptions(String value, long lineNumber) {
+    void processAltGroceryOptions(String value, long lineNumber) {
         unsupported(lineNumber, Constants.CONTROL_BLOCK_ALT_GROCERY_OPTIONS);
-
-        return List.of();
     }
 
     List<String> processStartTimes(String value, long lineNumber) {

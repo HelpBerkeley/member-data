@@ -24,14 +24,26 @@ package org.helpberkeley.memberdata;
 
 import java.util.HashSet;
 import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
 
 public class RestaurantV300 extends Restaurant {
 
+    private final ControlBlockV300 controlBlock;
     private final HashSet<String> alternateMealTypes = new LinkedHashSet<>();
     private final HashSet<String> alternateGroceryTypes = new LinkedHashSet<>();
 
     RestaurantV300(ControlBlock controlBlock, String name) {
-        super(controlBlock, name);
+        super(name);
+        this.controlBlock = (ControlBlockV300) controlBlock;
+
+        for (String altMealType : ((ControlBlockV300) controlBlock).getAltMealOptions()) {
+            alternateMealTypes.add(altMealType);
+        }
+
+        for (String altGroceryType : ((ControlBlockV300) controlBlock).getAltGroceryOptions()) {
+            alternateGroceryTypes.add(altGroceryType);
+        }
     }
 
     @Override
@@ -60,5 +72,25 @@ public class RestaurantV300 extends Restaurant {
     @Override
     protected void mergeInGlobalVersionSpecificFields(Restaurant restaurant) {
         RestaurantV300 globalRestaurant = (RestaurantV300) restaurant;
+
+        if (alternateMealTypes.isEmpty()) {
+            alternateMealTypes.addAll(globalRestaurant.alternateMealTypes);
+        } else {
+            assert alternateMealTypes.containsAll(globalRestaurant.alternateMealTypes);
+        }
+
+        if (alternateGroceryTypes.isEmpty()) {
+            alternateGroceryTypes.addAll(globalRestaurant.alternateGroceryTypes);
+        } else {
+            assert alternateGroceryTypes.containsAll(globalRestaurant.alternateGroceryTypes);
+        }
+    }
+
+    public Set<String> getAlternateMealTypes() {
+        return alternateMealTypes;
+    }
+
+    public Set<String> getAlternateGroceryTypes() {
+        return alternateGroceryTypes;
     }
 }

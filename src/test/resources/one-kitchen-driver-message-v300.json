@@ -1,0 +1,20 @@
+{
+  "success": true,
+  "errors": [],
+  "duration": 0.9,
+  "result_count": 1,
+  "params": {},
+  "columns": [
+    "post_number",
+    "raw",
+    "deleted_at"
+  ],
+  "default_limit": 1000,
+  "rows": [
+    [
+      1,
+      "[Deliveries]\n```\n\"|Name|Phone|Address|Details|\\n\n| --- | --- | --- | --- |\\n\"\nLOOP &{Consumer} {\n  \"|\" &{Consumer.Name} \"|\" &{Consumer.CompactPhone} \"|\"\n  IF &{Consumer.StandardMeals} THEN {\n     &{Consumer.StandardMeals} \" std meal; \"\n  }\n  LOOP &{Consumer.AlternateMeals} {\n     IF &{AlternateMeals.Count}  THEN {\n       &{AlternateMeals.Count} \" \" &{AlternateMeals.Type} \" meal; \"\n  }\n }\n IF &{Consumer.StandardGroceries} THEN {\n    &{Consumer.StandardGroceries} \" std grocery; \"\n  }\n  LOOP &{Consumer.AlternateGroceries} {\n    IF &{AlternateGroceries.Count} THEN {\n      &{AlternateGroceries.Count} \" \" &{AlternateGroceries.Type} \" grocery; \"\n    }\n  }\n  &{Consumer.Details} \"|\\n\"\n}\n```",
+      null
+    ]
+  ]
+}
