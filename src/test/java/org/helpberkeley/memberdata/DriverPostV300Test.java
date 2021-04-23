@@ -39,7 +39,7 @@ public class DriverPostV300Test extends DriverPostTest {
 
     @Override
     int getDriverPostFormatQuery() {
-        return Constants.QUERY_GET_DRIVERS_POST_FORMAT_V23;
+        return Constants.QUERY_GET_ONE_KITCHEN_DRIVERS_POST_FORMAT_V300;
     }
 
     @Override
@@ -219,5 +219,18 @@ public class DriverPostV300Test extends DriverPostTest {
                 getGroupInstructionsFormatQuery());
         List<String> posts = driverPostFormat.generateDriverPosts();
         assertThat(posts).containsExactly("2|veggie:2:noRed:1:noPork:1:|4|veg:1:custom pick:2:\n");
+    }
+
+    @Test
+    public void startTimeTest() {
+        String format = "\"Start time: \" ${ThisDriverFirstRestaurantStartTime} \"\n\"";
+        HttpClientSimulator.setQueryResponseData(getDriverPostFormatQuery(), createMessageBlock(format));
+        String routedDeliveries = readResourceFile(getRoutedDeliveriesFileName());
+        DriverPostFormat driverPostFormat = DriverPostFormat.create(createApiSimulator(), users, routedDeliveries,
+                getRestaurantTemplateQuery(),
+                getDriverPostFormatQuery(),
+                getGroupInstructionsFormatQuery());
+        List<String> posts = driverPostFormat.generateDriverPosts();
+        assertThat(posts).containsExactly("Start time: 3:00");
     }
 }

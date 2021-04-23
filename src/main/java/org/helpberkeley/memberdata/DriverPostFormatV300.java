@@ -25,7 +25,7 @@ package org.helpberkeley.memberdata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -50,40 +50,11 @@ public class DriverPostFormatV300 extends DriverPostFormat {
     private static final String THIS_DRIVER_RESTAURANT_STD_GROCERY = "ThisDriverRestaurant." + STD_GROCERY;
     private static final String THIS_DRIVER_RESTAURANT_ALT_GROCERY = "ThisDriverRestaurant." + ALT_GROCERY;
 
-    private final ApiClient apiClient;
-    private final List<MessageBlock> driverPostMessageBlocks = new ArrayList<>();
-    private final List<MessageBlock> groupInstructionMessageBlocks = new ArrayList<>();
-    private final List<MessageBlock> backupDriverMessageBlocks = new ArrayList<>();
-    private final Map<String, User> users;
     private final StringBuilder statusMessages = new StringBuilder();
-    private final int driverTemplateQuery;
-    private final int groupTemplateQuery;
-    private final int restaurantTemplateQuery;
     private ControlBlockV300 controlBlock;
 
-    DriverPostFormatV300(ApiClient apiClient, Map<String, User> users, String routedDeliveries) {
-        super(apiClient, users, routedDeliveries);
-        this.apiClient = apiClient;
-        this.users = users;
-        // FIX THIS, DS: set up invalid query id?
-        this.driverTemplateQuery = 0;
-        this.groupTemplateQuery = 0;
-        this.restaurantTemplateQuery = 0;
-
-        initialize(routedDeliveries);
-    }
-
-    // FIX THIS, DS: cleanup duplicated code in ctor
-    DriverPostFormatV300(ApiClient apiClient, Map<String, User> users, String routedDeliveries,
-             int restaurantTemplateQuery, int driverTemplateQuery, int groupTemplateQuery) {
-
-        super(apiClient, users, routedDeliveries, driverTemplateQuery, groupTemplateQuery);
-        this.apiClient = apiClient;
-        this.users = users;
-        this.driverTemplateQuery = driverTemplateQuery;
-        this.groupTemplateQuery = groupTemplateQuery;
-        this.restaurantTemplateQuery = restaurantTemplateQuery;
-        initialize(routedDeliveries);
+    DriverPostFormatV300() {
+        super();
     }
 
     @Override
@@ -99,6 +70,7 @@ public class DriverPostFormatV300 extends DriverPostFormat {
         loadBackupDriverPostFormat();
         loadRoutedDeliveries(routedDeliveries);
         auditControlBlock();
+        setDriverStartTimes();
     }
 
     @Override
@@ -228,139 +200,10 @@ public class DriverPostFormatV300 extends DriverPostFormat {
         return summary.toString();
     }
 
-    @Override
-    List<String> generateDriverPosts() {
-
-        List<String> driverPosts = new ArrayList<>();
-        for (Driver driver : drivers) {
-            StringBuilder post = new StringBuilder();
-
-            MessageBlockContext context = new MessageBlockContext("Base", null);
-            context.setDriver(driver);
-
-            for (MessageBlock messageBlock : driverPostMessageBlocks) {
-
-                context.setMessageBlockContext(messageBlock.getPostNumber(), messageBlock.getName());
-
-                if (messageBlock.getName().equalsIgnoreCase("comment")) {
-                    continue;
-                }
-
-                post.append(processMessageBlock(messageBlock, context));
-            }
-
-            driverPosts.add(post.toString());
-        }
-
-        return driverPosts;
-    }
-
-    @Override
-    String generateGroupInstructionsPost() {
-
-        StringBuilder post = new StringBuilder();
-
-        MessageBlockContext context = new MessageBlockContext("Base", null);
-
-        for (MessageBlock messageBlock : groupInstructionMessageBlocks) {
-
-            context.setMessageBlockContext(messageBlock.getPostNumber(), messageBlock.getName());
-
-            if (messageBlock.name.equalsIgnoreCase("comment")) {
-                continue;
-            }
-
-            post.append(processMessageBlock(messageBlock, context));
-        }
-
-        return post.toString();
-    }
-
-    @Override
-    String generateBackupDriverPost() {
-
-        StringBuilder post = new StringBuilder();
-
-        MessageBlockContext context = new MessageBlockContext("Base", null);
-
-        for (MessageBlock messageBlock : backupDriverMessageBlocks) {
-
-            context.setMessageBlockContext(messageBlock.getPostNumber(), messageBlock.getName());
-
-            if (messageBlock.name.equalsIgnoreCase("comment")) {
-                continue;
-            }
-
-            post.append(processMessageBlock(messageBlock, context));
-        }
-
-        return post.toString();
-    }
-
     private void auditControlBlock() {
 
-        // FIX THIS, DS: move split restaurants out of the base control block
-        controlBlock.audit(users, restaurants, null);
+        controlBlock.audit(users, getDrivers());
         statusMessages.append(controlBlock.getWarnings());
-    }
-
-    private void loadLastRestaurantTemplate() {
-        String  json = apiClient.runQuery(restaurantTemplateQuery);
-        ApiQueryResult apiQueryResult = HBParser.parseQueryResult(json);
-        assert apiQueryResult.rows.length == 1;
-
-        Object[] columns = (Object[])apiQueryResult.rows[0];
-        assert columns.length == 3 : columns.length;
-        String rawPost = (String)columns[2];
-        RestaurantTemplatePost restaurantTemplatePost = HBParser.restaurantTemplatePost(rawPost);
-        String restaurantTemplate = apiClient.downloadFile(restaurantTemplatePost.uploadFile.getFileName());
-        RestaurantTemplateParser parser = RestaurantTemplateParser.create(restaurantTemplate);
-        restaurants = parser.restaurants();
-    }
-
-    private void loadDriverPostFormat() {
-        String json = apiClient.runQuery(driverTemplateQuery);
-        ApiQueryResult apiQueryResult = HBParser.parseQueryResult(json);
-
-        for (Object rowObj : apiQueryResult.rows) {
-            Object[] columns = (Object[]) rowObj;
-            assert columns.length == 3 : columns.length;
-
-            MessageBlock messageBlock = new MessageBlock((Long)columns[0], (String)columns[1]);
-            // FIX THIS, DS: catch and update status here?
-            messageBlock.parse();
-            driverPostMessageBlocks.add(messageBlock);
-        }
-    }
-
-    private void loadGroupPostFormat() {
-        String json = apiClient.runQuery(groupTemplateQuery);
-        ApiQueryResult apiQueryResult = HBParser.parseQueryResult(json);
-
-        for (Object rowObj : apiQueryResult.rows) {
-            Object[] columns = (Object[]) rowObj;
-            assert columns.length == 3 : columns.length;
-
-            MessageBlock messageBlock = new MessageBlock((Long)columns[0], (String)columns[1]);
-            // FIX THIS, DS: catch and update status here?
-            messageBlock.parse();
-            groupInstructionMessageBlocks.add(messageBlock);
-        }
-    }
-
-    private void loadBackupDriverPostFormat() {
-        String json = apiClient.runQuery(Constants.QUERY_GET_BACKUP_DRIVER_FORMAT);
-        ApiQueryResult apiQueryResult = HBParser.parseQueryResult(json);
-
-        for (Object rowObj : apiQueryResult.rows) {
-            Object[] columns = (Object[]) rowObj;
-            assert columns.length == 3 : columns.length;
-
-            MessageBlock messageBlock = new MessageBlock((Long)columns[0], (String)columns[1]);
-            // FIX THIS, DS: catch and update status here?
-            messageBlock.parse();
-            backupDriverMessageBlocks.add(messageBlock);
-        }
     }
 
     private void loadRoutedDeliveries(final String routedDeliveries) {
@@ -386,6 +229,17 @@ public class DriverPostFormatV300 extends DriverPostFormat {
 
                 restaurant.addDriver(driver);
             }
+        }
+    }
+
+    // Do simple variable replacement
+    //
+    @Override
+    String versionSpecificSimpleRef(MessageBlockContext context, String varName) {
+
+        switch (varName) {
+            default:
+                throw new MemberDataException(context.formatException("unknown variable ${" + varName + "}"));
         }
     }
 
@@ -613,16 +467,6 @@ public class DriverPostFormatV300 extends DriverPostFormat {
                 default:
                     throw new MemberDataException(context.formatException("Unknown boolean variable &{" + refName + "}"));
             }
-        } else if (refName.equals("Driver.IsFirstRestaurantClosingBefore7PM")) {
-            Driver driver = context.getDriver();
-            String firstName = driver.getFirstRestaurantName();
-            Restaurant firstRestaurant = restaurants.get(firstName);
-            value = firstRestaurant.closesBefore(700);
-        } else if (refName.equals("Driver.IsFirstRestaurantClosingBefore545PM")) {
-            Driver driver = context.getDriver();
-            String firstName = driver.getFirstRestaurantName();
-            Restaurant firstRestaurant = restaurants.get(firstName);
-            value = firstRestaurant.closesBefore(545);
         } else {
             throw new MemberDataException(context.formatException("Unknown boolean variable &{" + refName + "}"));
         }
@@ -896,5 +740,17 @@ public class DriverPostFormatV300 extends DriverPostFormat {
         }
 
         return String.valueOf(total);
+    }
+
+    private void setDriverStartTimes() {
+        assert controlBlock.getStartTimes().size() >= drivers.size();
+
+        Iterator<String> startTimesIterator = controlBlock.getStartTimes().iterator();
+
+        for (Driver driver : drivers) {
+            DriverV300 driverV300 = (DriverV300) driver;
+            assert startTimesIterator.hasNext();
+            driverV300.setStartTime(startTimesIterator.next());
+        }
     }
 }

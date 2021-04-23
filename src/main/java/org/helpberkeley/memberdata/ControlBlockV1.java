@@ -33,19 +33,6 @@ class ControlBlockV1 extends ControlBlock {
     }
 
     @Override
-    void audit(Map<String, User> users, Map<String, Restaurant> restaurants, List<Restaurant> splitRestaurants) {
-        StringBuilder errors = new StringBuilder();
-
-        auditOpsManager(errors, users);
-        auditSplitRestaurants(errors, users, restaurants, splitRestaurants);
-        auditBackupDrivers(errors, users);
-
-        if (errors.length() != 0) {
-            throw new MemberDataException(errors.toString());
-        }
-    }
-
-    @Override
     public String getVersion() {
         return Constants.CONTROL_BLOCK_VERSION_1;
     }

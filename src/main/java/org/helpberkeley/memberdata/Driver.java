@@ -63,12 +63,12 @@ public abstract class Driver {
         driver.pickups = pickups;
         driver.gMapURL = gmapURL;
         driver.disableLateArrivalAudit = disableLateArrivalAudit;
-        driver.setStartTime();
+        driver.initialize();
 
         return driver;
     }
 
-    abstract void setStartTime();
+    abstract void initialize();
     public abstract List<Delivery> getDeliveries();
     abstract void resetDeliveries(List<Delivery> deliveries);
     abstract String getStartTime();

@@ -22,6 +22,7 @@
  */
 package org.helpberkeley.memberdata;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.text.MessageFormat;
@@ -30,6 +31,7 @@ import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.catchThrowable;
 
 public class ControlBlockV300Test extends ControlBlockTestBase{
 
@@ -97,6 +99,12 @@ public class ControlBlockV300Test extends ControlBlockTestBase{
     @Override
     protected Map<String, Restaurant> getAllRestaurants() {
         return allRestaurants;
+    }
+
+    @Override
+    void audit(ControlBlock controlBlock) {
+        assertThat(controlBlock).isInstanceOf(ControlBlockV300.class);
+        ((ControlBlockV300)controlBlock).audit(users, List.of());
     }
 
     @Test
@@ -181,5 +189,103 @@ public class ControlBlockV300Test extends ControlBlockTestBase{
         assertThat(controlBlock.getStartTimes()).isEmpty();
         assertThat(controlBlock.getAltMealOptions()).isEmpty();
         assertThat(controlBlock.getAltGroceryOptions()).isEmpty();
+    }
+
+    @Test
+    public void startTimesAuditWarningsTest() {
+        String key = Constants.CONTROL_BLOCK_START_TIMES;
+        String value = "\"3:00, 3:10, 3:15\"";
+        String opsManagerKey = "OpsManager (UserName|Phone)";
+        String opsManagerValue = "JVol|222-222-2222";
+
+        String workFlowData = HEADER
+                + CONTROL_BLOCK_BEGIN_ROW
+                + CONTROL_BLOCK_VERSION_ROW
+                + getKeyValueRow(key, value)
+                + getKeyValueRow(opsManagerKey, opsManagerValue)
+                + CONTROL_BLOCK_END_ROW;
+
+        WorkflowParser workflowParser = WorkflowParser.create(
+                WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, Map.of(), workFlowData);
+        ControlBlockV300 controlBlock = (ControlBlockV300) workflowParser.controlBlock();
+        assertThat(controlBlock.getWarnings()).isEmpty();
+        controlBlock.audit(users, List.of());
+        assertThat(controlBlock.getWarnings()).contains(ControlBlockV300.MORE_START_TIMES_THAN_DRIVERS);
+    }
+
+    @Test
+    public void invalidStartTimesTest() {
+        String opsManagerKey = "OpsManager (UserName|Phone)";
+        String opsManagerValue = "JVol|222-222-2222";
+        String key = Constants.CONTROL_BLOCK_START_TIMES;
+        String[] values = {
+                "", "Seven", "1130", "9:O3"
+        };
+
+        for (String value : values) {
+            String workFlowData = HEADER
+                    + CONTROL_BLOCK_BEGIN_ROW
+                    + CONTROL_BLOCK_VERSION_ROW
+                    + getKeyValueRow(key, value)
+                    + getKeyValueRow(opsManagerKey, opsManagerValue)
+                    + CONTROL_BLOCK_END_ROW;
+
+            WorkflowParser workflowParser = WorkflowParser.create(
+                    WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, Map.of(), workFlowData);
+            ControlBlockV300 controlBlock = (ControlBlockV300) workflowParser.controlBlock();
+
+            Throwable thrown = catchThrowable(() -> controlBlock.audit(users, List.of()));
+            assertThat(thrown).isInstanceOf(MemberDataException.class);
+            assertThat(thrown).hasMessage(MessageFormat.format(ControlBlockV300.INVALID_START_TIME, value));
+        }
+    }
+
+    @Test
+    public void validStartTimesTest() {
+        String opsManagerKey = "OpsManager (UserName|Phone)";
+        String opsManagerValue = "JVol|222-222-2222";
+        String key = Constants.CONTROL_BLOCK_START_TIMES;
+        String[] values = {
+                "3:59", "03:11", "4:19 PM", "21:42"
+        };
+
+        for (String value : values) {
+            String workFlowData = HEADER
+                    + CONTROL_BLOCK_BEGIN_ROW
+                    + CONTROL_BLOCK_VERSION_ROW
+                    + getKeyValueRow(key, value)
+                    + getKeyValueRow(opsManagerKey, opsManagerValue)
+                    + CONTROL_BLOCK_END_ROW;
+
+            WorkflowParser workflowParser = WorkflowParser.create(
+                    WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, Map.of(), workFlowData);
+            ControlBlockV300 controlBlock = (ControlBlockV300) workflowParser.controlBlock();
+            assertThat(controlBlock.getStartTimes()).containsExactly(value);
+            controlBlock.audit(users, List.of());
+        }
+    }
+
+    // FIX THIS, DS: need to create a route workflow sheet for this test
+    @Ignore
+    @Test
+    public void notEnoughStartTimesTest() {
+        String opsManagerKey = "OpsManager (UserName|Phone)";
+        String opsManagerValue = "JVol|222-222-2222";
+        String key = Constants.CONTROL_BLOCK_START_TIMES;
+        String value = "3:00";
+
+        String workFlowData = HEADER
+                + CONTROL_BLOCK_BEGIN_ROW
+                + CONTROL_BLOCK_VERSION_ROW
+                + getKeyValueRow(key, value)
+                + getKeyValueRow(opsManagerKey, opsManagerValue)
+                + CONTROL_BLOCK_END_ROW;
+
+        WorkflowParser workflowParser = WorkflowParser.create(
+                WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, Map.of(), workFlowData);
+        ControlBlockV300 controlBlock = (ControlBlockV300) workflowParser.controlBlock();
+
+        Throwable thrown = catchThrowable(() -> controlBlock.audit(users, List.of()));
+        assertThat(thrown).isInstanceOf(MemberDataException.class);
     }
 }

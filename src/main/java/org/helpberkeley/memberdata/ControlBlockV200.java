@@ -32,7 +32,6 @@ class ControlBlockV200 extends ControlBlock {
          super(header);
     }
 
-    @Override
     void audit(Map<String, User> users, Map<String, Restaurant> restaurants, List<Restaurant> splitRestaurants) {
         StringBuilder errors = new StringBuilder();
 

@@ -32,11 +32,21 @@ public abstract class DriverPostFormat {
     public static final String ERROR_CONTINUE_WITHOUT_LOOP = "CONTINUE without an enclosing loop";
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DriverPostFormat.class);
+    protected ApiClient apiClient;
 
     // FIX THIS, DS: fix lifecycle.  Currently initialized in an abstract
     protected Map<String, Restaurant> restaurants;
     // FIX THIS, DS: fix lifecycle.  Currently initialized in an abstract
     protected List<Driver> drivers;
+
+    protected Map<String, User> users;
+    protected final List<MessageBlock> driverPostMessageBlocks = new ArrayList<>();
+    protected final List<MessageBlock> groupInstructionMessageBlocks = new ArrayList<>();
+    protected final List<MessageBlock> backupDriverMessageBlocks = new ArrayList<>();
+
+    private int driverTemplateQuery = 0;
+    private int groupTemplateQuery = 0;
+    private int restaurantTemplateQuery = 0;
 
     public static DriverPostFormat create(
             ApiClient apiClient, Map<String, User> users, String routedDeliveries) {
@@ -57,16 +67,19 @@ public abstract class DriverPostFormat {
                 throw new MemberDataException(
                         "Control block version " + controlBlock.getVersion() + " is not supported.\n");
             case Constants.CONTROL_BLOCK_VERSION_200:
-                driverPostFormat = new DriverPostFormatV200(apiClient, users, normalized);
+                driverPostFormat = new DriverPostFormatV200();
                 break;
             case Constants.CONTROL_BLOCK_VERSION_300:
-                driverPostFormat = new DriverPostFormatV300(apiClient, users, normalized);
+                driverPostFormat = new DriverPostFormatV300();
                 break;
             default:
                 throw new MemberDataException(
                         "Control block version " + controlBlock.getVersion() + " is not supported.\n");
         }
 
+        driverPostFormat.apiClient = apiClient;
+        driverPostFormat.users = users;
+        driverPostFormat.initialize(routedDeliveries);
         return driverPostFormat;
     }
 
@@ -91,35 +104,32 @@ public abstract class DriverPostFormat {
                 throw new MemberDataException(
                         "Control block version " + controlBlock.getVersion() + " is not supported.\n");
             case Constants.CONTROL_BLOCK_VERSION_200:
-                driverPostFormat = new DriverPostFormatV200(apiClient, users, normalized,
-                        restaurantTemplateQuery, driverTemplateQuery, groupTemplateQuery);
+                driverPostFormat = new DriverPostFormatV200();
                 break;
             case Constants.CONTROL_BLOCK_VERSION_300:
-                driverPostFormat = new DriverPostFormatV300(apiClient, users, normalized,
-                        restaurantTemplateQuery, driverTemplateQuery, groupTemplateQuery);
+                driverPostFormat = new DriverPostFormatV300();
                 break;
             default:
                 throw new MemberDataException(
                         "Control block version " + controlBlock.getVersion() + " is not supported.\n");
         }
 
+        driverPostFormat.apiClient = apiClient;
+        driverPostFormat.users = users;
+        driverPostFormat.restaurantTemplateQuery = restaurantTemplateQuery;
+        driverPostFormat.driverTemplateQuery = driverTemplateQuery;
+        driverPostFormat.groupTemplateQuery = groupTemplateQuery;
+
+        driverPostFormat.initialize(routedDeliveries);
         return driverPostFormat;
     }
 
-    protected DriverPostFormat(ApiClient apiClient, Map<String, User> users, String routedDeliveries) {
-    }
-
-    // FIX THIS, DS: cleanup duplicated code in ctor
-    protected DriverPostFormat(ApiClient apiClient, Map<String, User> users,
-             String routedDeliveries, int driverTemplateQuery, int groupTemplateQuery) {
+    protected DriverPostFormat() {
     }
 
     abstract ControlBlock getControlBlock();
     abstract void initialize(String routedDeliveries);
-    abstract List<String> generateDriverPosts();
     abstract List<Driver> getDrivers();
-    abstract String generateGroupInstructionsPost();
-    abstract String generateBackupDriverPost();
     abstract String statusMessages();
     abstract String generateSummary();
     abstract Map<String, Restaurant> getRestaurants();
@@ -132,6 +142,133 @@ public abstract class DriverPostFormat {
     abstract ProcessingReturnValue processListRef(MessageBlockListRef listRef, MessageBlockContext context);
     abstract ProcessingReturnValue processLoopListRef(
             MessageBlockLoop loop, MessageBlockListRef listRef, MessageBlockContext context);
+    abstract String versionSpecificSimpleRef(MessageBlockContext context, String varName);
+
+    public final List<String> generateDriverPosts() {
+
+        List<String> driverPosts = new ArrayList<>();
+        for (Driver driver : drivers) {
+            StringBuilder post = new StringBuilder();
+
+            MessageBlockContext context = new MessageBlockContext("Base", null);
+            context.setDriver(driver);
+
+            for (MessageBlock messageBlock : driverPostMessageBlocks) {
+
+                context.setMessageBlockContext(messageBlock.getPostNumber(), messageBlock.getName());
+
+                if (messageBlock.getName().equalsIgnoreCase("comment")) {
+                    continue;
+                }
+
+                post.append(processMessageBlock(messageBlock, context));
+            }
+
+            driverPosts.add(post.toString());
+        }
+
+        return driverPosts;
+    }
+
+    public final String generateGroupInstructionsPost() {
+
+        StringBuilder post = new StringBuilder();
+
+        MessageBlockContext context = new MessageBlockContext("Base", null);
+
+        for (MessageBlock messageBlock : groupInstructionMessageBlocks) {
+
+            context.setMessageBlockContext(messageBlock.getPostNumber(), messageBlock.getName());
+
+            if (messageBlock.name.equalsIgnoreCase("comment")) {
+                continue;
+            }
+
+            post.append(processMessageBlock(messageBlock, context));
+        }
+
+        return post.toString();
+    }
+
+    public final String generateBackupDriverPost() {
+
+        StringBuilder post = new StringBuilder();
+
+        MessageBlockContext context = new MessageBlockContext("Base", null);
+
+        for (MessageBlock messageBlock : backupDriverMessageBlocks) {
+
+            context.setMessageBlockContext(messageBlock.getPostNumber(), messageBlock.getName());
+
+            if (messageBlock.name.equalsIgnoreCase("comment")) {
+                continue;
+            }
+
+            post.append(processMessageBlock(messageBlock, context));
+        }
+
+        return post.toString();
+    }
+
+
+    protected final void loadLastRestaurantTemplate() {
+        String  json = apiClient.runQuery(restaurantTemplateQuery);
+        ApiQueryResult apiQueryResult = HBParser.parseQueryResult(json);
+        assert apiQueryResult.rows.length == 1;
+
+        Object[] columns = (Object[])apiQueryResult.rows[0];
+        assert columns.length == 3 : columns.length;
+        String rawPost = (String)columns[2];
+        RestaurantTemplatePost restaurantTemplatePost = HBParser.restaurantTemplatePost(rawPost);
+        String restaurantTemplate = apiClient.downloadFile(restaurantTemplatePost.uploadFile.getFileName());
+        RestaurantTemplateParser parser = RestaurantTemplateParser.create(restaurantTemplate);
+        restaurants = parser.restaurants();
+    }
+
+    protected final void loadDriverPostFormat() {
+        String json = apiClient.runQuery(driverTemplateQuery);
+        ApiQueryResult apiQueryResult = HBParser.parseQueryResult(json);
+
+        for (Object rowObj : apiQueryResult.rows) {
+            Object[] columns = (Object[]) rowObj;
+            assert columns.length == 3 : columns.length;
+
+            MessageBlock messageBlock = new MessageBlock((Long)columns[0], (String)columns[1]);
+            // FIX THIS, DS: catch and update status here?
+            messageBlock.parse();
+            driverPostMessageBlocks.add(messageBlock);
+        }
+    }
+
+    protected final void loadGroupPostFormat() {
+        String json = apiClient.runQuery(groupTemplateQuery);
+        ApiQueryResult apiQueryResult = HBParser.parseQueryResult(json);
+
+        for (Object rowObj : apiQueryResult.rows) {
+            Object[] columns = (Object[]) rowObj;
+            assert columns.length == 3 : columns.length;
+
+            MessageBlock messageBlock = new MessageBlock((Long)columns[0], (String)columns[1]);
+            // FIX THIS, DS: catch and update status here?
+            messageBlock.parse();
+            groupInstructionMessageBlocks.add(messageBlock);
+        }
+    }
+
+    protected final void loadBackupDriverPostFormat() {
+        String json = apiClient.runQuery(Constants.QUERY_GET_BACKUP_DRIVER_FORMAT);
+        ApiQueryResult apiQueryResult = HBParser.parseQueryResult(json);
+
+        for (Object rowObj : apiQueryResult.rows) {
+            Object[] columns = (Object[]) rowObj;
+            assert columns.length == 3 : columns.length;
+
+            MessageBlock messageBlock = new MessageBlock((Long)columns[0], (String)columns[1]);
+            // FIX THIS, DS: catch and update status here?
+            messageBlock.parse();
+            backupDriverMessageBlocks.add(messageBlock);
+        }
+    }
 
     protected final String processMessageBlock(MessageBlock messageBlock, MessageBlockContext context) {
 
@@ -221,11 +358,10 @@ public abstract class DriverPostFormat {
                 value = context.getDriver().getgMapURL();
                 break;
             default:
-                throw new MemberDataException(context.formatException("unknown variable ${" + varName + "}"));
+                value = versionSpecificSimpleRef(context, varName);
         }
 
         LOGGER.trace("${{}} = \"{}\"", varName, value);
-
         return new ProcessingReturnValue(ProcessingStatus.COMPLETE, value);
     }
 

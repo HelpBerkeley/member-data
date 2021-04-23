@@ -23,13 +23,13 @@
 package org.helpberkeley.memberdata;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
 class DriverV300 extends Driver {
 
     private final List<DeliveryV300> deliveries = new ArrayList<>();
+    private String startTime;
 
     DriverV300(List<Delivery> deliveries) {
         for (Delivery delivery : deliveries) {
@@ -57,13 +57,17 @@ class DriverV300 extends Driver {
     }
 
     @Override
-    void setStartTime() {
-        // FIX THIS, DS: move this abstract out of the base
+    void initialize() {
+
+    }
+
+    void setStartTime(String startTime) {
+        this.startTime = startTime;
     }
 
     @Override
     String getStartTime() {
-        // FIX THIS, DS: implement
-        return "";
+        assert startTime != null;
+        return startTime;
     }
 }

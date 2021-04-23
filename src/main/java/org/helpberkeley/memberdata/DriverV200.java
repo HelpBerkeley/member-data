@@ -77,7 +77,12 @@ class DriverV200 extends Driver {
     }
 
     @Override
-    void setStartTime() {
+    void initialize() {
+
+        setStartTime();
+    }
+
+    private void setStartTime() {
 
         RestaurantV200 restaurant = (RestaurantV200) pickups.get(0);
 

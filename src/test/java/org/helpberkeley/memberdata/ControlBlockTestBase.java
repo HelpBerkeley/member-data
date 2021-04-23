@@ -46,6 +46,7 @@ public abstract class ControlBlockTestBase extends TestBase {
     abstract String getEmptyRow();
     abstract String getDirectiveRow(String directive);
     abstract String getKeyValueRow(String key, String value);
+    abstract void audit(ControlBlock controlBlock);
 
     public ControlBlockTestBase() {
         List<User> userList = new Loader(createApiSimulator()).load();
@@ -258,8 +259,7 @@ public abstract class ControlBlockTestBase extends TestBase {
         WorkflowParser workflowParser = WorkflowParser.create(
                 WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, Map.of(), workFlowData);
         ControlBlock controlBlock = workflowParser.controlBlock();
-        Throwable thrown = catchThrowable(() -> controlBlock.audit(
-                users, Map.of(), List.of()));
+        Throwable thrown = catchThrowable(() -> audit(controlBlock));
         assertThat(thrown).isInstanceOf(MemberDataException.class);
         assertThat(thrown).hasMessageContaining(
                 MessageFormat.format(ControlBlock.UNKNOWN_OPS_MANAGER, "UnknownDudette"));
@@ -300,7 +300,7 @@ public abstract class ControlBlockTestBase extends TestBase {
         WorkflowParser workflowParser = WorkflowParser.create(
                 WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, Map.of(), workFlowData);
         ControlBlock controlBlock = workflowParser.controlBlock();
-        controlBlock.audit(users, Map.of(), List.of());
+        audit(controlBlock);
         assertThat(controlBlock.getWarnings()).contains(
                 MessageFormat.format(ControlBlock.OPS_MANAGER_PHONE_MISMATCH, "JVol", "222-222-2222"));
     }
@@ -522,8 +522,7 @@ public abstract class ControlBlockTestBase extends TestBase {
         WorkflowParser workflowParser = WorkflowParser.create(
                 WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, Map.of(), workFlowData);
 
-        Throwable thrown = catchThrowable(() ->
-                workflowParser.controlBlock().audit(users, Map.of(), List.of()));
+        Throwable thrown = catchThrowable(() -> audit(workflowParser.controlBlock()));
         assertThat(thrown).isInstanceOf(MemberDataException.class);
         assertThat(thrown).hasMessageContaining(ControlBlock.ERROR_MISSING_OPS_MANAGER);
     }
@@ -544,8 +543,7 @@ public abstract class ControlBlockTestBase extends TestBase {
         WorkflowParser workflowParser = WorkflowParser.create(
                 WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, Map.of(), workFlowData);
 
-        Throwable thrown = catchThrowable(() ->
-                workflowParser.controlBlock().audit(users, Map.of(), List.of()));
+        Throwable thrown = catchThrowable(() -> audit(workflowParser.controlBlock()));
         assertThat(thrown).isInstanceOf(MemberDataException.class);
         assertThat(thrown).hasMessage(
                 "Set OpsManager user name \"ReplaceThisByUserName\" at line 4 to a valid OpsManager user name.\n");
@@ -566,8 +564,7 @@ public abstract class ControlBlockTestBase extends TestBase {
         WorkflowParser workflowParser = WorkflowParser.create(
                 WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, Map.of(), workFlowData);
 
-        Throwable thrown = catchThrowable(() ->
-                workflowParser.controlBlock().audit(users, Map.of(), List.of()));
+        Throwable thrown = catchThrowable(() -> audit(workflowParser.controlBlock()));
         assertThat(thrown).isInstanceOf(MemberDataException.class);
         assertThat(thrown).hasMessage("Set OpsManager phone "
                 + "\"ReplaceThisByPhone#In510-555-1212Format\" at line 4 to a valid phone number.\n");
@@ -590,8 +587,7 @@ public abstract class ControlBlockTestBase extends TestBase {
         WorkflowParser workflowParser = WorkflowParser.create(
                 WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, Map.of(), workFlowData);
 
-        Throwable thrown = catchThrowable(() ->
-                workflowParser.controlBlock().audit(users, Map.of(), List.of()));
+        Throwable thrown = catchThrowable(() -> audit(workflowParser.controlBlock()));
         assertThat(thrown).isInstanceOf(MemberDataException.class);
         assertThat(thrown).hasMessage("Line 5, multiple OpsManager entries not yet supported.\n");
     }
@@ -614,8 +610,7 @@ public abstract class ControlBlockTestBase extends TestBase {
         WorkflowParser workflowParser = WorkflowParser.create(
                 WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, Map.of(), workFlowData);
 
-        Throwable thrown = catchThrowable(() ->
-                workflowParser.controlBlock().audit(users, Map.of(), List.of()));
+        Throwable thrown = catchThrowable(() -> audit(workflowParser.controlBlock()));
         assertThat(thrown).isInstanceOf(MemberDataException.class);
         assertThat(thrown).hasMessage("Set SplitRestaurant name "
                 + "\"ReplaceThisBySplitRestaurantName\" at line 5 to a valid restaurant name.\n");
@@ -639,8 +634,7 @@ public abstract class ControlBlockTestBase extends TestBase {
         WorkflowParser workflowParser = WorkflowParser.create(
                 WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, Map.of(), workFlowData);
 
-        Throwable thrown = catchThrowable(() ->
-                workflowParser.controlBlock().audit(users, Map.of(), List.of()));
+        Throwable thrown = catchThrowable(() -> audit(workflowParser.controlBlock()));
         assertThat(thrown).isInstanceOf(MemberDataException.class);
         assertThat(thrown).hasMessage("Set SplitRestaurant cleanup driver user name "
                 + "\"White Castle\" at line 5 to a valid user name.\n");
@@ -662,7 +656,7 @@ public abstract class ControlBlockTestBase extends TestBase {
                 WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, Map.of(), workFlowData);
 
         ControlBlock controlBlock = workflowParser.controlBlock();
-        controlBlock.audit(users, Map.of(), List.of());
+        audit(controlBlock);
         assertThat(controlBlock.getWarnings()).contains("No BackupDriverUserName set in the control block.\n");
     }
 
@@ -701,8 +695,7 @@ public abstract class ControlBlockTestBase extends TestBase {
         WorkflowParser workflowParser = WorkflowParser.create(
                 WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, Map.of(), workFlowData);
 
-        Throwable thrown = catchThrowable(() ->
-                workflowParser.controlBlock().audit(users, Map.of(), List.of()));
+        Throwable thrown = catchThrowable(() -> audit(workflowParser.controlBlock()));
         assertThat(thrown).isInstanceOf(MemberDataException.class);
         assertThat(thrown).hasMessageContaining(
                 MessageFormat.format(ControlBlock.UNKNOWN_BACKUP_DRIVER, "NotAMemberDude"));
@@ -728,7 +721,7 @@ public abstract class ControlBlockTestBase extends TestBase {
                 WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, Map.of(), workFlowData);
 
         ControlBlock controlBlock = workflowParser.controlBlock();
-        controlBlock.audit(users, Map.of(), List.of());
+        audit(controlBlock);
         assertThat(controlBlock.getWarnings()).contains(
                 MessageFormat.format(ControlBlock.BACKUP_IS_NOT_A_DRIVER, "ZZZ"));
     }
@@ -748,8 +741,7 @@ public abstract class ControlBlockTestBase extends TestBase {
         WorkflowParser workflowParser = WorkflowParser.create(
                 WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, Map.of(), workFlowData);
 
-        Throwable thrown = catchThrowable(() ->
-                workflowParser.controlBlock().audit(users, Map.of(), List.of()));
+        Throwable thrown = catchThrowable(() -> audit(workflowParser.controlBlock()));
         assertThat(thrown).isInstanceOf(MemberDataException.class);
         assertThat(thrown).hasMessageContaining("Invalid setting");
         assertThat(thrown).hasMessageContaining(Constants.CONTROL_BLOCK_LATE_ARRIVAL_AUDIT);

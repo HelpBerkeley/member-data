@@ -24,7 +24,6 @@ package org.helpberkeley.memberdata;
 
 import java.util.HashSet;
 import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.Set;
 
 public class RestaurantV300 extends Restaurant {

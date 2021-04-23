@@ -107,6 +107,12 @@ public class ControlBlockV200Test extends ControlBlockTestBase {
         return EMPTY_ROW.replaceFirst(",,,,,,,", "FALSE,FALSE,," + key + ",,,," + value);
     }
 
+    @Override
+    void audit(ControlBlock controlBlock) {
+        assertThat(controlBlock).isInstanceOf(ControlBlockV200.class);
+        ((ControlBlockV200)controlBlock).audit(users, Map.of(), List.of());
+    }
+
     @Test
     public void altMealOptionsTest() {
         String key = Constants.CONTROL_BLOCK_ALT_MEAL_OPTIONS;

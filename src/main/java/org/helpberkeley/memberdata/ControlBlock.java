@@ -63,7 +63,6 @@ public abstract class ControlBlock {
     private final List<OpsManager> opsManagers = new ArrayList<>();
     private final Map<String, SplitRestaurant> splitRestaurantMap = new HashMap<>();
     private final List<String> backupDrivers = new ArrayList<>();
-    private final List<String> startTimes = new ArrayList<>();
     private final List<String> pickupManagers = new ArrayList<>();
     private boolean disableLateArrivalAudit = false;
     private boolean disableSplitRestaurantAudits = false;
@@ -120,9 +119,6 @@ public abstract class ControlBlock {
                         "Control block version " + version + " is not supported.\n");
         }
     }
-
-    abstract void audit(Map<String, User> users,
-            Map<String, Restaurant> restaurants, List<Restaurant> splitRestaurants);
 
     boolean lateArrivalAuditDisabled() {
         return disableLateArrivalAudit;
@@ -257,11 +253,6 @@ public abstract class ControlBlock {
         return backupDrivers;
     }
 
-    List<String> getStartTimes() {
-        // FIX THIS, DS: audit that the current version supports thist?
-        return startTimes;
-    }
-
     List<String> getPickupManagers() {
         // FIX THIS, DS: audit that the current version supports thist?
         return pickupManagers;
@@ -297,7 +288,7 @@ public abstract class ControlBlock {
                 processAltGroceryOptions(value, lineNumber);
                 break;
             case Constants.CONTROL_BLOCK_START_TIMES:
-                startTimes.addAll(processStartTimes(value, lineNumber));
+                processStartTimes(value, lineNumber);
                 break;
             case Constants.CONTROL_BLOCK_PICKUP_MANAGERS:
                 pickupManagers.addAll(processPickupManagers(value, lineNumber));
@@ -543,10 +534,8 @@ public abstract class ControlBlock {
         unsupported(lineNumber, Constants.CONTROL_BLOCK_ALT_GROCERY_OPTIONS);
     }
 
-    List<String> processStartTimes(String value, long lineNumber) {
+    void processStartTimes(String value, long lineNumber) {
         unsupported(lineNumber, Constants.CONTROL_BLOCK_START_TIMES);
-
-        return List.of();
     }
 
     List<String> processPickupManagers(String value, long lineNumber) {
