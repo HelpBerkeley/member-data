@@ -44,13 +44,25 @@ class RestaurantTemplateParserV300 extends RestaurantTemplateParser {
     }
 
     @Override
+    boolean isAddressBlockMarker(final RestaurantBean bean) {
+        assert bean instanceof RestaurantBeanV300;
+
+        // An address block marker looks like:
+        //    FALSE,TRUE,,,,,,,,,,,,,
+        //
+        return ((! Boolean.parseBoolean(bean.getConsumer()))
+                && Boolean.parseBoolean(bean.getDriver())
+                && bean.getRestaurant().isEmpty()
+                && bean.getDetails().isEmpty());
+    }
+
+    @Override
     protected void auditColumns(final String csvData) {
 
         List<String> columnNames =  List.of(
                 Constants.WORKFLOW_CONSUMER_COLUMN,
                 Constants.WORKFLOW_DRIVER_COLUMN,
                 Constants.WORKFLOW_RESTAURANTS_COLUMN,
-                Constants.WORKFLOW_ORDERS_COLUMN,
                 Constants.WORKFLOW_DETAILS_COLUMN,
                 Constants.WORKFLOW_CONDO_COLUMN,
                 Constants.WORKFLOW_STD_MEALS_COLUMN,

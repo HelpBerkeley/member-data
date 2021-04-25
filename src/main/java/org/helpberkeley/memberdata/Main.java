@@ -49,6 +49,7 @@ public class Main {
     static final String MEMBERDATA_REPORT_FILE = "member-data-report";
 
     static final String WORKFLOW_TITLE = "Workflow Data";
+    static final String ONE_KITCHEN_WORKFLOW_TITLE = "Free Meals Workflow Data";
     static final String DISPATCHERS_TITLE = "Dispatchers Info";
     static final String INREACH_TITLE = "Customer Info";
     static final String DRIVERS_TITLE = "Volunteer Drivers";
@@ -64,6 +65,7 @@ public class Main {
     static final long DRIVERS_POST_TOPIC = 638;
     static final long ALL_MEMBERS_POST_TOPIC = 837;
     static final long WORKFLOW_DATA_TOPIC = 824;
+    static final long ONE_KITCHEN_WORKFLOW_DATA_TOPIC = 6658;
     static final long INREACH_POST_TOPIC = 820;
     static final long COMPLETED_DAILY_DELIVERIES_TOPIC = 859;
     static final long DISPATCHERS_POST_TOPIC = 938;
@@ -165,6 +167,9 @@ public class Main {
                 break;
             case Options.COMMAND_WORKFLOW:
                 generateWorkflow(apiClient, options.getFileName());
+                break;
+            case Options.COMMAND_ONE_KITCHEN_WORKFLOW:
+                generateOneKitchenWorkflow(apiClient, options.getFileName());
                 break;
             case Options.COMMAND_COMPLETED_DAILY_ORDERS:
                 completedDailyOrders(apiClient, options.getFileName());
@@ -495,6 +500,44 @@ public class Main {
 
         // Create a post in with a link to the uploaded file.
         postFile(apiClient, workflowFileName, upload.getShortURL(), WORKFLOW_TITLE, WORKFLOW_DATA_TOPIC);
+    }
+
+    private static void generateOneKitchenWorkflow(ApiClient apiClient, final String usersFile)
+            throws IOException, CsvException {
+
+        // Read/parse the members data
+        String csvData = Files.readString(Paths.get(usersFile));
+        List<User> users = HBParser.users(csvData);
+
+        // Fetch/parse the last restaurant template reply
+        String  json = apiClient.runQuery(
+                Constants.QUERY_GET_CURRENT_VALIDATED_ONE_KITCHEN_RESTAURANT_TEMPLATE);
+        ApiQueryResult apiQueryResult = HBParser.parseQueryResult(json);
+        assert apiQueryResult.rows.length == 1;
+
+        Object[] columns = (Object[])apiQueryResult.rows[0];
+        assert columns.length == 3 : columns.length;
+        String rawPost = (String)columns[2];
+        RestaurantTemplatePost restaurantTemplatePost = HBParser.restaurantTemplatePost(rawPost);
+
+        // Fetch/parse the delivery details
+        json = apiClient.runQuery(Constants.QUERY_GET_DELIVERY_DETAILS);
+        apiQueryResult = HBParser.parseQueryResult(json);
+        Map<String, DetailsPost> deliveryDetails = HBParser.deliveryDetails(apiQueryResult);
+
+        // Download the restaurant template file
+        String restaurantTemplate = apiClient.downloadFile(restaurantTemplatePost.uploadFile.getFileName());
+
+        // Generate the workflow file
+        String workflowFileName = new UserExporter(users).oneKitchenWorkflowToFile(
+                restaurantTemplate, deliveryDetails, Constants.ONE_KITCHEN_WORKFLOW_FILE);
+
+        // Upload it to Discourse
+        Upload upload = new Upload(apiClient, workflowFileName);
+
+        // Create a post in with a link to the uploaded file.
+        postFile(apiClient, workflowFileName, upload.getShortURL(),
+                ONE_KITCHEN_WORKFLOW_TITLE, ONE_KITCHEN_WORKFLOW_DATA_TOPIC);
     }
 
     private static void driverRoutes(ApiClient apiClient) {

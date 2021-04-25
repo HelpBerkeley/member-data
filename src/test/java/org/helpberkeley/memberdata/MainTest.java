@@ -156,6 +156,13 @@ public class MainTest extends TestBase {
     }
 
     @Test
+    public void oneKitchenWorkflowTest() throws IOException, CsvException {
+        String usersFile = findFile(Constants.MEMBERDATA_RAW_FILE, "csv");
+        String[] args = { Options.COMMAND_ONE_KITCHEN_WORKFLOW, usersFile };
+        Main.main(args);
+    }
+
+    @Test
     public void driverMessagesTest() throws IOException, CsvException {
         String usersFile = findFile(Constants.MEMBERDATA_RAW_FILE, "csv");
         String[] args = { Options.COMMAND_DRIVER_MESSAGES, usersFile };

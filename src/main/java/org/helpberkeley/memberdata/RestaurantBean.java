@@ -34,7 +34,6 @@ public interface RestaurantBean {
     String getCondo();
     String getNormal();
     String getVeggie();
-    String getOrders();
     String getDetails();
 
     String getControlBlockDirective();

@@ -95,6 +95,7 @@ public abstract class RestaurantTemplateParser {
 
     protected abstract void auditColumns(String csvData);
     protected abstract List<RestaurantBean> parse(String csvData);
+    abstract boolean isAddressBlockMarker(RestaurantBean bean);
 
     Map<String, Restaurant> restaurants() {
         Map<String, Restaurant> restaurants = new HashMap<>();
@@ -214,23 +215,6 @@ public abstract class RestaurantTemplateParser {
         return directive.isEmpty()
                 && bean.getControlBlockKey().isEmpty()
                 && bean.getControlBlockValue().isEmpty();
-    }
-
-    /**
-     * Is the passed in row the start of an restaurant address block?
-     * @param bean RestaurantBean row representation
-     * @return Whether or not the row is an address block start marker.
-     */
-    private boolean isAddressBlockMarker(final RestaurantBean bean) {
-
-        // An address block marker looks like:
-        //    FALSE,TRUE,,,,,,,,,,,,,
-        //
-        return ((! Boolean.parseBoolean(bean.getConsumer()))
-                && Boolean.parseBoolean(bean.getDriver())
-                && bean.getRestaurant().isEmpty()
-                && bean.getOrders().isEmpty()
-                && bean.getDetails().isEmpty());
     }
 
     /**

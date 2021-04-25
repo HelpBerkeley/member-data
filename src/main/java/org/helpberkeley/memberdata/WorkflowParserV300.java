@@ -61,7 +61,6 @@ public class WorkflowParserV300 extends WorkflowParser {
                 Constants.WORKFLOW_DRIVER_COLUMN,
                 Constants.WORKFLOW_NAME_COLUMN,
                 Constants.WORKFLOW_NEIGHBORHOOD_COLUMN,
-                Constants.WORKFLOW_ORDERS_COLUMN,
                 Constants.WORKFLOW_PHONE_COLUMN,
                 Constants.WORKFLOW_RESTAURANTS_COLUMN,
                 Constants.WORKFLOW_USER_NAME_COLUMN,

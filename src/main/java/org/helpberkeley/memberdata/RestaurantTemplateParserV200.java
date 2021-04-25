@@ -43,6 +43,25 @@ class RestaurantTemplateParserV200 extends RestaurantTemplateParser {
                 new StringReader(csvData)).withType(RestaurantBeanV200.class).build().parse();
     }
 
+    /**
+     * Is the passed in row the start of an restaurant address block?
+     * @param bean RestaurantBean row representation
+     * @return Whether or not the row is an address block start marker.
+     */
+    @Override
+    boolean isAddressBlockMarker(final RestaurantBean bean) {
+        assert bean instanceof RestaurantBeanV200;
+
+        // An address block marker looks like:
+        //    FALSE,TRUE,,,,,,,,,,,,,
+        //
+        return ((! Boolean.parseBoolean(bean.getConsumer()))
+                && Boolean.parseBoolean(bean.getDriver())
+                && bean.getRestaurant().isEmpty()
+                && ((RestaurantBeanV200)bean).getOrders().isEmpty()
+                && bean.getDetails().isEmpty());
+    }
+
     @Override
     protected void auditColumns(final String csvData) {
 

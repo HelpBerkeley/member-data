@@ -31,6 +31,7 @@ public class Constants {
     static final String VOLUNTEER_REQUESTS_FILE = "volunteer-requests";
     static final String DRIVERS_FILE = "drivers";
     static final String WORKFLOW_FILE = "workflow";
+    static final String ONE_KITCHEN_WORKFLOW_FILE = "free-meals-workflow";
     static final String INREACH_FILE = "inreach";
     static final String DISPATCHERS_FILE = "dispatchers";
     static final String ORDER_HISTORY_FILE = "order-history";

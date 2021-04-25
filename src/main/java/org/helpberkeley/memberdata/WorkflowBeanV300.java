@@ -62,8 +62,6 @@ public class WorkflowBeanV300 implements WorkflowBean {
     private String altGrocery;
     @CsvBindByName(column = Constants.WORKFLOW_TYPE_GROCERY_COLUMN)
     private String typeGrocery;
-    @CsvBindByName(column = Constants.WORKFLOW_ORDERS_COLUMN)
-    private String orders;
 
     public WorkflowBeanV300() {
 
@@ -140,8 +138,7 @@ public class WorkflowBeanV300 implements WorkflowBean {
             && typeMeal.isEmpty()
             && stdGrocery.isEmpty()
             && altGrocery.isEmpty()
-            && typeGrocery.isEmpty()
-            && orders.isEmpty();
+            && typeGrocery.isEmpty();
     }
 
     // Annotated accessors for CSV parser
@@ -290,11 +287,9 @@ public class WorkflowBeanV300 implements WorkflowBean {
         this.typeGrocery = typeGrocery;
     }
 
+    @Override
     public String getOrders() {
-        return orders.trim();
-    }
-
-    public void setOrders(String orders) {
-        this.orders = orders;
+        throw new MemberDataException(
+                "getOrders() not supported in version " + Constants.CONTROL_BLOCK_VERSION_300);
     }
 }

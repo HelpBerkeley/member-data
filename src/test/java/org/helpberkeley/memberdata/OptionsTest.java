@@ -71,7 +71,6 @@ public class OptionsTest extends TestBase {
             assertThat(thrown).hasMessageContaining(Options.COMMAND_REQUIRES_FILE_NAME);
             assertThat(thrown).hasMessageContaining(Options.USAGE);
         }
-
     }
 
     @Test

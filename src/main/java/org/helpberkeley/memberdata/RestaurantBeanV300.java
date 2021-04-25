@@ -65,9 +65,6 @@ public class RestaurantBeanV300 implements RestaurantBean {
     @CsvBindByName(column = Constants.WORKFLOW_TYPE_GROCERY_COLUMN)
     private String typeGrocery;
 
-    @CsvBindByName(column = Constants.WORKFLOW_ORDERS_COLUMN)
-    private String orders;
-
     @CsvBindByName(column = Constants.WORKFLOW_DETAILS_COLUMN)
     private String details;
 
@@ -178,10 +175,6 @@ public class RestaurantBeanV300 implements RestaurantBean {
         return getColumnName(Constants.WORKFLOW_RESTAURANTS_COLUMN);
     }
 
-    public String ordersColumn() {
-        return getColumnName(Constants.WORKFLOW_ORDERS_COLUMN);
-    }
-
     public String stdMealsColumn() {
         return getColumnName(Constants.WORKFLOW_STD_MEALS_COLUMN);
     }
@@ -239,7 +232,6 @@ public class RestaurantBeanV300 implements RestaurantBean {
                 && stdGrocery.isEmpty()
                 && altGrocery.isEmpty()
                 && typeGrocery.isEmpty()
-                && orders.isEmpty()
                 && details.isEmpty();
     }
 
@@ -347,14 +339,6 @@ public class RestaurantBeanV300 implements RestaurantBean {
 
     public void setTypeGrocery(String typeGrocery) {
         this.typeGrocery = typeGrocery;
-    }
-
-    public String getOrders() {
-        return orders.trim();
-    }
-
-    public void setOrders(String orders) {
-        this.orders = orders;
     }
 
     public String getDetails() {

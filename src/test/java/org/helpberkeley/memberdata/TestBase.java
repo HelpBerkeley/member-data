@@ -117,6 +117,7 @@ public class TestBase {
             Options.COMMAND_FRREG,
             Options.COMMAND_WORK_REQUESTS,
             Options.COMMAND_TEST_REQUEST,
+            Options.COMMAND_ONE_KITCHEN_WORKFLOW,
     };
 
     static final String[] COMMANDS_WITH_NO_PARAMETERS = {
@@ -127,8 +128,6 @@ public class TestBase {
     };
 
     static final String TEST_FILE_NAME = "pom.xml";
-    static final String TEST_SECOND_FILE_NAME = "LICENSE.txt";
-    static final String TEST_THIRD_FILE_NAME = "README.md";
     static final String TEST_SHORT_URL = Constants.UPLOAD_URI_PREFIX + "ab34dezzAndSomethingY.csv";
 
     @BeforeClass
