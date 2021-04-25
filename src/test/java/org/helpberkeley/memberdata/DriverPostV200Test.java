@@ -55,13 +55,13 @@ public class DriverPostV200Test extends DriverPostTest {
     void checkExpectedDeliveries(List<String> posts) {
         assertThat(posts).hasSize(2);
         assertThat(posts).containsExactly("Cust Name 1|(555) 555.1112|(111) 222.3333|"
-                + "123 456th Ave|NoCondo|:motor_scooter:|\n"
-                + "Cust Name 2|(555) 555.2222|NoAltPhone|77 77th St|NoCondo|:lemon:|\n"
-                + "Cust Name 3|(555) 555.3333|NoAltPhone|11 11th St|NoCondo|:motor_scooter:|\n",
-                "Cust Name 4|(555) 555.4444|NoAltPhone|44 44th St|NoCondo|:open_umbrella:|\n"
-                + "Cust Name 5|(555) 555.5555|NoAltPhone|55 55th St|Condo|:open_umbrella:|listed as a condo but\n"
-                + "Cust Name 6|(555) 555.6666|NoAltPhone|66 66th St|NoCondo|:open_umbrella:|\n"
-                + "Cust Name 7|(555) 555.7777|NoAltPhone|77 77th St|NoCondo|:open_umbrella:|\n"
+                + "123 456th Ave|NoCondo|\n"
+                + "Cust Name 2|(555) 555.2222|NoAltPhone|77 77th St|NoCondo|\n"
+                + "Cust Name 3|(555) 555.3333|NoAltPhone|11 11th St|NoCondo|\n",
+                "Cust Name 4|(555) 555.4444|NoAltPhone|44 44th St|NoCondo|\n"
+                + "Cust Name 5|(555) 555.5555|NoAltPhone|55 55th St|Condo|listed as a condo but\n"
+                + "Cust Name 6|(555) 555.6666|NoAltPhone|66 66th St|NoCondo|\n"
+                + "Cust Name 7|(555) 555.7777|NoAltPhone|77 77th St|NoCondo|\n"
         );
     }
 
@@ -316,5 +316,43 @@ public class DriverPostV200Test extends DriverPostTest {
                     + "Cafe Raj|Cust Name 5|Cust5\n"
                     + "Cafe Raj|Cust Name 6|Cust6\n"
                     + "Cafe Raj|Cust Name 7|Cust7\n");
+    }
+
+    @Test
+    public void deliveriesV200Test() {
+        String format = "LOOP &{Consumer} { "
+                + " &{Consumer.Name}"
+                + "\"|\""
+                + " &{Consumer.CompactPhone}"
+                + "\"|\""
+                + " IF &{Consumer.IsAltPhone} THEN { &{Consumer.CompactAltPhone} }"
+                + " IF NOT &{Consumer.IsAltPhone} THEN { \"NoAltPhone\" } "
+                + "\"|\""
+                + " &{Consumer.Address}"
+                + "\"|\""
+                + " IF &{Consumer.IsCondo} THEN { \"Condo\" } "
+                + " IF NOT &{Consumer.IsCondo} THEN { \"NoCondo\" } "
+                + "\"|\""
+                + " &{Consumer.RestaurantEmoji}"
+                + "\"|\""
+                + " &{Consumer.Details}"
+                + "\"\\n\""
+                + " }";
+        HttpClientSimulator.setQueryResponseData(getDriverPostFormatQuery(), createMessageBlock(format));
+        String routedDeliveries = readResourceFile(getRoutedDeliveriesFileName());
+        DriverPostFormat driverPostFormat = DriverPostFormat.create(createApiSimulator(), users, routedDeliveries,
+                getRestaurantTemplateQuery(),
+                getDriverPostFormatQuery(),
+                getGroupInstructionsFormatQuery());
+        List<String> posts = driverPostFormat.generateDriverPosts();
+        assertThat(posts).containsExactly("Cust Name 1|(555) 555.1112|(111) 222.3333|"
+                + "123 456th Ave|NoCondo|:motor_scooter:|\n"
+                + "Cust Name 2|(555) 555.2222|NoAltPhone|77 77th St|NoCondo|:lemon:|\n"
+                + "Cust Name 3|(555) 555.3333|NoAltPhone|11 11th St|NoCondo|:motor_scooter:|\n",
+                "Cust Name 4|(555) 555.4444|NoAltPhone|44 44th St|NoCondo|:open_umbrella:|\n"
+                + "Cust Name 5|(555) 555.5555|NoAltPhone|55 55th St|Condo|:open_umbrella:|listed as a condo but\n"
+                + "Cust Name 6|(555) 555.6666|NoAltPhone|66 66th St|NoCondo|:open_umbrella:|\n"
+                + "Cust Name 7|(555) 555.7777|NoAltPhone|77 77th St|NoCondo|:open_umbrella:|\n"
+        );
     }
 }

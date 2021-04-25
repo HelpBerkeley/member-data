@@ -56,13 +56,13 @@ public class DriverPostV300Test extends DriverPostTest {
     void checkExpectedDeliveries(List<String> posts) {
         assertThat(posts).hasSize(1);
         assertThat(posts).containsExactly("Cust Name 1|(555) 555.1112|(111) 222.3333|"
-                        + "123 456th Ave|NoCondo|:frog:|\n"
-                        + "Cust Name 2|(555) 555.2222|NoAltPhone|77 77th St|NoCondo|:frog:|\n"
-                        + "Cust Name 3|(555) 555.3333|NoAltPhone|11 11th St|NoCondo|:frog:|\n"
-                        + "Cust Name 4|(555) 555.4444|NoAltPhone|44 44th St|NoCondo|:frog:|\n"
-                        + "Cust Name 5|(555) 555.5555|NoAltPhone|55 55th St|Condo|:frog:|listed as a condo but\n"
-                        + "Cust Name 6|(555) 555.6666|NoAltPhone|66 66th St|NoCondo|:frog:|\n"
-                        + "Cust Name 7|(555) 555.7777|NoAltPhone|77 77th St|NoCondo|:frog:|\n"
+                        + "123 456th Ave|NoCondo|\n"
+                        + "Cust Name 2|(555) 555.2222|NoAltPhone|77 77th St|NoCondo|\n"
+                        + "Cust Name 3|(555) 555.3333|NoAltPhone|11 11th St|NoCondo|\n"
+                        + "Cust Name 4|(555) 555.4444|NoAltPhone|44 44th St|NoCondo|\n"
+                        + "Cust Name 5|(555) 555.5555|NoAltPhone|55 55th St|Condo|listed as a condo but\n"
+                        + "Cust Name 6|(555) 555.6666|NoAltPhone|66 66th St|NoCondo|\n"
+                        + "Cust Name 7|(555) 555.7777|NoAltPhone|77 77th St|NoCondo|\n"
         );
     }
 

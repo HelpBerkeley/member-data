@@ -98,8 +98,6 @@ public abstract class DriverPostTest extends TestBase {
                 + " IF &{Consumer.IsCondo} THEN { \"Condo\" } "
                 + " IF NOT &{Consumer.IsCondo} THEN { \"NoCondo\" } "
                 + "\"|\""
-                + " &{Consumer.RestaurantEmoji}"
-                + "\"|\""
                 + " &{Consumer.Details}"
                 + "\"\\n\""
                 + " }";

@@ -297,12 +297,6 @@ public class DriverPostFormatV300 extends DriverPostFormat {
             case "Consumer.Details":
                 value = delivery.getDetails();
                 break;
-            case "Consumer.Restaurant":
-                value = delivery.getRestaurant();
-                break;
-            case "Consumer.RestaurantEmoji":
-                value = restaurants.get(delivery.getRestaurant()).getEmoji();
-                break;
             case CONSUMER_STD_MEAL:
                 value = delivery.getStdMeals();
                 break;
@@ -715,9 +709,7 @@ public class DriverPostFormatV300 extends DriverPostFormat {
         int total = 0;
 
         for (DeliveryV300 delivery : driver.getDeliveriesV300()) {
-            if (restaurant.getName().equals(delivery.getRestaurant())
-                && mealType.equals(delivery.getTypeMeal())) {
-
+            if (mealType.equals(delivery.getTypeMeal())) {
                 total += Integer.parseInt(delivery.getAltMeals());
             }
         }
@@ -732,9 +724,7 @@ public class DriverPostFormatV300 extends DriverPostFormat {
         int total = 0;
 
         for (DeliveryV300 delivery : driver.getDeliveriesV300()) {
-            if (restaurant.getName().equals(delivery.getRestaurant())
-                    && groceryType.equals(delivery.getTypeGrocery())) {
-
+            if (groceryType.equals(delivery.getTypeGrocery())) {
                 total += Integer.parseInt(delivery.getAltGrocery());
             }
         }

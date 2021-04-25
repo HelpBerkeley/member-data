@@ -23,9 +23,6 @@
 
 package org.helpberkeley.memberdata;
 
-import java.util.List;
-import java.util.Map;
-
 class ControlBlockV1 extends ControlBlock {
 
      ControlBlockV1(String header) {

@@ -44,6 +44,11 @@ public class DeliveryV300 extends Delivery {
         super(name, lineNumber);
     }
 
+    @Override
+    public String getRestaurant() {
+        throw new MemberDataException("Delivery.getRestaurant() not supported");
+    }
+
     public void setStdMeals(String stdMeals) {
         this.stdMeals = stdMeals;
     }

@@ -31,7 +31,8 @@ import java.util.*;
 public class WorkflowParserV300 extends WorkflowParser {
 
     public static final String EMPTY_DELIVERY = "Line {0}, Driver {1} delivering nothing to {2}.\n";
-    public static final String MISSING_PICKUP = "Line {0}, driver {1} delivery from {2} but no pickup.\n";
+    public static final String MISSING_MEAL_PICKUP = "Line {0}, driver {1}, meal delivery from {2} but no pickup.\n";
+    public static final String MISSING_GROCERY_PICKUP = "Line {0}, driver {1}, grocery delivery from {2} but no pickup.\n";
 
     public WorkflowParserV300(Mode mode, final String csvData) {
         super(mode, csvData);
@@ -131,7 +132,9 @@ public class WorkflowParserV300 extends WorkflowParser {
             String details = bean.getDetails();
             String restaurantName = bean.getRestaurant();
             if (restaurantName.isEmpty()) {
-                errors += "missing restaurant name\n";
+                // FIX THIS, DS: resolve multi-pickup restaurant names
+                restaurantName = "";
+//                errors += "missing restaurant name\n";
             }
             String stdMeals = bean.getStdMeals().trim();
             String altMeals = bean.getAltMeals().trim();
@@ -204,373 +207,6 @@ public class WorkflowParserV300 extends WorkflowParser {
         return deliveries;
     }
 
-//    public List<Driver> drivers() {
-//
-//        LinkedHashMap<String, Driver> driverMap = new LinkedHashMap<>();
-//        WorkflowBean bean;
-//
-//        while ((bean = nextRow()) != null) {
-//
-//            if (isControlBlockBeginRow(bean)) {
-//                processControlBlock();
-//                continue;
-//            }
-//
-//            if (bean.isEmpty()) {
-//                 continue;
-//            }
-//
-//            if (! isDriverRow(bean)) {
-//                throw new MemberDataException("line " + lineNumber + " is not a driver row. "
-//                    + "Is this a driver who is also a consumer? If so, the consumer column must be set to false.");
-//            }
-//
-//            if (driverMap.containsKey(bean.getUserName())) {
-//                throw new MemberDataException("Duplicate driver \"" + bean.getUserName() + "\" at line " + lineNumber);
-//            }
-//
-//            Driver driver = processDriver(bean);
-//            auditPickupDeliveryMismatch(driver);
-//            driverMap.put(driver.getUserName(), driver);
-//        }
-//
-//        return new ArrayList<>(driverMap.values());
-//    }
-//
-//    ControlBlock getControlBlock() {
-//        return controlBlock;
-//    }
-//
-//    ControlBlock controlBlock() {
-//
-//        WorkflowBean bean;
-//
-//        bean = nextRow();
-//        if ((bean != null) && isControlBlockBeginRow(bean)) {
-//            processControlBlock();
-//        }
-//
-//        return controlBlock;
-//    }
-//
-//    /**
-//     * The first row of a control block looks like:
-//     *     FALSE,FALSE,ControlBegin,,,,,,,,,,,,,
-//     * @param bean WorkflowBean representation of row
-//     * @return Whether or not the row is the beginning of a control block.
-//     */
-//    private boolean isControlBlockBeginRow(WorkflowBean bean) {
-//
-//        String consumerValue = bean.getConsumer();
-//        String driverValue = bean.getDriver();
-//        String directive = bean.getControlBlockDirective();
-//
-//        return (! Boolean.parseBoolean(consumerValue))
-//            && (! Boolean.parseBoolean(driverValue))
-//            && (directive.equals(Constants.CONTROL_BLOCK_BEGIN));
-//    }
-//
-//    /**
-//     * The final row of a control block looks like:
-//     *     FALSE,FALSE,ControlEnd,,,,,,,,,,,,,
-//     * @param bean WorkflowBean representation of row
-//     * @return Whether or not the row is the end of a control block.
-//     */
-//    private boolean isControlBlockEndRow(WorkflowBean bean) {
-//
-//        String consumerValue = bean.getConsumer();
-//        String driverValue = bean.getDriver();
-//        String directive = bean.getControlBlockDirective();
-//
-//        return (! Boolean.parseBoolean(consumerValue))
-//                && (! Boolean.parseBoolean(driverValue))
-//                && (directive.equals(Constants.CONTROL_BLOCK_END));
-//    }
-//
-//    /**
-//     * A driver row looks like
-//     *     FALSE,TRUE,...
-//     * @param bean WorkflowBean representation of row
-//     * @return Whether or not the row is a driver row
-//     */
-//    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
-//    private boolean isDriverRow(WorkflowBean bean) {
-//        String consumerValue = bean.getConsumer();
-//        String driverValue = bean.getDriver();
-//
-//        return Boolean.parseBoolean(driverValue) && (! Boolean.parseBoolean(consumerValue));
-//    }
-//
-//    private void processControlBlock() {
-//        WorkflowBean bean;
-//
-//        while ((bean = nextRow()) != null) {
-//
-//            auditControlBlockRow(bean);
-//
-//            if (isControlBlockEndRow(bean)) {
-//                break;
-//            } else if (ignoreControlBlockRow(bean)) {
-//                continue;
-//            }
-//
-//            if (mode != Mode.DRIVER_ROUTE_REQUEST) {
-//                assert mode == Mode.DRIVER_MESSAGE_REQUEST : mode;
-//                controlBlock.processRow(bean, lineNumber);
-//            }
-//        }
-//    }
-//
-//    private void auditControlBlockRow(WorkflowBean bean) {
-//        String errors = "";
-//
-//        if (! bean.getConsumer().equalsIgnoreCase("false")) {
-//            errors += "Control block " + Constants.WORKFLOW_CONSUMER_COLUMN
-//                    + " column does not contain FALSE, at line " + lineNumber + ".\n";
-//        }
-//        if (! bean.getDriver().equalsIgnoreCase("false")) {
-//            errors += "Control block " + Constants.WORKFLOW_DRIVER_COLUMN
-//                    + " column does not contain FALSE, at line " + lineNumber + ".\n";
-//        }
-//
-//        String directive = bean.getControlBlockDirective();
-//
-//        switch (directive) {
-//            case "":
-//            case Constants.CONTROL_BLOCK_COMMENT:
-//            case Constants.CONTROL_BLOCK_END:
-//                break;
-//            default:
-//                errors += "Unexpected control block directive \"" + directive
-//                    + "\" in " + Constants.WORKFLOW_NAME_COLUMN + " column at line " + lineNumber
-//                    + ".\n";
-//        }
-//
-//        if (! errors.isEmpty()) {
-//            throw new MemberDataException(errors);
-//        }
-//    }
-//
-//    // FIX THIS, DS: move to ControlBlock.  Call by processRow
-//    private boolean ignoreControlBlockRow(WorkflowBean bean) {
-//
-//        String directive = bean.getControlBlockDirective();
-//
-//        if (directive.equals(Constants.CONTROL_BLOCK_COMMENT)) {
-//            return true;
-//        }
-//
-//        return directive.isEmpty()
-//                && bean.getControlBlockKey().isEmpty()
-//                && bean.getControlBlockValue().isEmpty();
-//    }
-//
-//    private Driver processDriver(WorkflowBean driverBean) {
-//
-//        String errors = "";
-//
-//        String driverUserName = driverBean.getUserName();
-//        if (driverUserName.isEmpty()) {
-//            errors += "missing driver user name\n";
-//        }
-//        String driverPhone = driverBean.getPhone();
-//        if (driverPhone.isEmpty()) {
-//            errors += "missing driver phone number\n";
-//        }
-//        String driverAddress = driverBean.getAddress();
-//        if (driverAddress.isEmpty()) {
-//            errors += "missing driver address\n";
-//        }
-//        String driverCity = driverBean.getCity();
-//        if (driverCity.isEmpty()) {
-//            errors += "missing driver city\n";
-//        }
-//
-//        if (! errors.isEmpty()) {
-//            throw new MemberDataException("line " + lineNumber + " " + errors);
-//        }
-//
-//        // Read 1 or more restaurant rows. Example:
-//        // FALSE,,,,,,,,"1561 Solano Ave, Berkeley",FALSE,,Talavera,,,0
-//        //
-//        List<Restaurant> restaurants = processRestaurants();
-//        List<Delivery> deliveries = processDeliveries();
-//
-//        WorkflowBean bean = nextRow();
-//
-//        if (bean == null) {
-//            throw new MemberDataException(
-//                    "Line " + lineNumber + " driver block for " + driverUserName + " missing closing driver row");
-//        }
-//
-//        if (! isDriverRow(bean)) {
-//            throw new MemberDataException("line " + lineNumber + " is not a driver row. "
-//                    + "Is this a driver who is also a consumer? If so, the consumer column must be set to false.");
-//        }
-//        if (! driverUserName.equals(bean.getUserName())) {
-//            throw new MemberDataException(driverUserName + ", line " + lineNumber + ", mismatch driver end name");
-//        }
-//
-//        Driver driver;
-//
-//        bean = nextRow();
-//
-//        if (mode == Mode.DRIVER_MESSAGE_REQUEST) {
-//            if (bean == null) {
-//                throw new MemberDataException("Driver " + driverUserName
-//                        + " missing gmap URL after line " + lineNumber);
-//            }
-//
-//            String gmapURL = bean.getGMapURL();
-//            if (gmapURL.isEmpty()) {
-//                throw new MemberDataException("Line " + lineNumber + ", driver " + driverUserName + " empty gmap URL");
-//            }
-//            if (!gmapURL.contains("https://")) {
-//                throw new MemberDataException("Driver " + driverUserName + " unrecognizable gmap URL");
-//            }
-//
-//            driver = new Driver(driverBean, restaurants, deliveries, gmapURL, controlBlock.lateArrivalAuditDisabled());
-//        } else {
-//            assert mode == Mode.DRIVER_ROUTE_REQUEST;
-//
-//            // This can be either an empty row, marking boundary between this driver and the next,
-//            // Or the end of file.
-//
-//            if ((bean != null) && (! emptyRow(bean))) {
-//                throw new MemberDataException("Line " + lineNumber + " is not empty");
-//            }
-//
-//            driver = new Driver(driverBean, restaurants, deliveries);
-//        }
-//
-//        return driver;
-//    }
-//
-//    private List<Restaurant> processRestaurants() {
-//
-//        List<Restaurant> restaurants = new ArrayList<>();
-//        WorkflowBean bean;
-//
-//        while ((bean = peekNextRow()) != null) {
-//
-//            if (! (bean.getConsumer().equalsIgnoreCase("FALSE") && bean.getDriver().isEmpty())) {
-//                break;
-//            }
-//
-//            bean = nextRow();
-//            String errors = "";
-//
-//            String restaurantName = Objects.requireNonNull(bean).getRestaurant();
-//            if (restaurantName.isEmpty()) {
-//                errors += "missing restaurant name\n";
-//            }
-//            String address = bean.getAddress();
-//            if (address.isEmpty()) {
-//                errors += "missing address\n";
-//            }
-//            String details = bean.getDetails();
-//            String orders = bean.getOrders();
-//            if (orders.isEmpty()) {
-//                errors += "missing orders";
-//            }
-//
-//            if (! errors.isEmpty()) {
-//                throw new MemberDataException("line " + lineNumber + " " + errors);
-//            }
-//
-//            Restaurant restaurant = new Restaurant(restaurantName);
-//            restaurant.setAddress(address);
-//            restaurant.setDetails(details);
-//            restaurant.setOrders(orders);
-//
-//            // FIX THIS, DS: refactor to a single map of restaurants
-//            if (globalRestaurants != null) {
-//                Restaurant globalRestaurant = globalRestaurants.get(restaurantName);
-//                if (globalRestaurant == null) {
-//                    throw new MemberDataException("Restaurant " + restaurantName + ", line number " + lineNumber
-//                        + ", not found in restaurant template");
-//                }
-//                restaurant.mergeGlobal(globalRestaurant);
-//            }
-//
-//            restaurants.add(restaurant);
-//        }
-//
-//        return restaurants;
-//    }
-//
-//    private List<Delivery> processDeliveries() {
-//        List<Delivery> deliveries = new ArrayList<>();
-//        WorkflowBean bean;
-//
-//        while ((bean = peekNextRow()) != null) {
-//            if (! bean.getConsumer().equalsIgnoreCase("TRUE")) {
-//                break;
-//            }
-//
-//            bean = nextRow();
-//            assert bean != null;
-//            String errors = "";
-//
-//            String consumerName = bean.getName();
-//            if (consumerName.isEmpty()) {
-//                errors += "missing consumer name\n";
-//            }
-//            String userName = bean.getUserName();
-//            if (userName.isEmpty()) {
-//                errors += "missing user name\n";
-//            }
-//            String phone = bean.getPhone();
-//            if (phone.isEmpty()) {
-//                errors += "missing phone\n";
-//            }
-//            String altPhone = bean.getAltPhone();
-//            String neighborhood = bean.getNeighborhood();
-//            String city = bean.getCity();
-//            if (city.isEmpty()) {
-//                errors += "missing city\n";
-//            }
-//            String address = bean.getAddress();
-//            if (address.isEmpty()) {
-//                errors += "missing address\n";
-//            }
-//            boolean isCondo = Boolean.parseBoolean(bean.getCondo());
-//            String details = bean.getDetails();
-//            String restaurantName = bean.getRestaurant();
-//            if (restaurantName.isEmpty()) {
-//                errors += "missing restaurant name\n";
-//            }
-//            String normalRations = bean.getNormal();
-//            String veggieRations = bean.getVeggie();
-//
-//            if (normalRations.isEmpty() || veggieRations.isEmpty()) {
-//                errors += "normal and/or veggie rations column is empty. "
-//                        + "Please insert the the correct number(s) (e.g. 0). ";
-//            }
-//
-//            if (! errors.isEmpty()) {
-//                throw new MemberDataException("line " + lineNumber + " " + errors);
-//            }
-//
-//            Delivery delivery = new Delivery(consumerName);
-//            delivery.setUserName(userName);
-//            delivery.setPhone(phone);
-//            delivery.setAltPhone(altPhone);
-//            delivery.setNeighborhood(neighborhood);
-//            delivery.setCity(city);
-//            delivery.setAddress(address);
-//            delivery.setIsCondo(isCondo);
-//            delivery.setDetails(details);
-//            delivery.setRestaurant(restaurantName);
-//            delivery.setNormalRations(normalRations.isEmpty() ? "0" : normalRations);
-//            delivery.setVeggieRations(veggieRations.isEmpty() ? "0" : veggieRations);
-//
-//            deliveries.add(delivery);
-//        }
-//
-//        return deliveries;
-//    }
-//
     @Override
     void auditPickupDeliveryMismatch(Driver driver) {
 
@@ -591,6 +227,9 @@ public class WorkflowParserV300 extends WorkflowParser {
 
         StringBuilder errors = new StringBuilder();
 
+        assert controlBlock instanceof ControlBlockV300;
+        ControlBlockV300 controlBlockV300 = (ControlBlockV300) controlBlock;
+
         // Audit deliveries
         for (Delivery delivery : driver.getDeliveries()) {
             DeliveryV300 deliveryV300 = (DeliveryV300) delivery;
@@ -605,11 +244,20 @@ public class WorkflowParserV300 extends WorkflowParser {
                         delivery.getLineNumber(), driver.getName(), delivery.getName()));
             }
 
-            // Check that we are picking up from each restaurant in the deliveries.
+            // Check that if we have meals, that the meal source location is in the pickups
+            if (! (deliveryV300.getStdMeals().equals("0") && deliveryV300.getAltMeals().equals("0"))) {
+                if (! pickups.contains(controlBlockV300.getMealSource())) {
+                    errors.append(MessageFormat.format(MISSING_MEAL_PICKUP,
+                            delivery.getLineNumber(), driver, controlBlockV300.getMealSource()));
+                }
+            }
 
-            if (! pickups.contains(delivery.getRestaurant())) {
-                errors.append(MessageFormat.format(MISSING_PICKUP,
-                        delivery.getLineNumber(), driver, delivery.getRestaurant()));
+            // Check that if we have meals, that the meal source location is in the pickups
+            if (! (deliveryV300.getStdGrocery().equals("0") && deliveryV300.getAltGrocery().equals("0"))) {
+                if (!pickups.contains(controlBlockV300.getGrocerySource())) {
+                    errors.append(MessageFormat.format(MISSING_GROCERY_PICKUP,
+                            delivery.getLineNumber(), driver, controlBlockV300.getMealSource()));
+                }
             }
         }
 

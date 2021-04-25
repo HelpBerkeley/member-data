@@ -63,15 +63,13 @@ public abstract class DriverPostFormat {
         switch (controlBlock.getVersion()) {
             case Constants.CONTROL_BLOCK_VERSION_UNKNOWN:
                 throw new MemberDataException("Control block not found");
-            case Constants.CONTROL_BLOCK_VERSION_1:
-                throw new MemberDataException(
-                        "Control block version " + controlBlock.getVersion() + " is not supported.\n");
             case Constants.CONTROL_BLOCK_VERSION_200:
                 driverPostFormat = new DriverPostFormatV200();
                 break;
             case Constants.CONTROL_BLOCK_VERSION_300:
                 driverPostFormat = new DriverPostFormatV300();
                 break;
+            case Constants.CONTROL_BLOCK_VERSION_1:
             default:
                 throw new MemberDataException(
                         "Control block version " + controlBlock.getVersion() + " is not supported.\n");
