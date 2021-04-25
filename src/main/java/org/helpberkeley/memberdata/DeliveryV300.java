@@ -40,8 +40,8 @@ public class DeliveryV300 extends Delivery {
                 + ", grocery:" + getStdGrocery() + ':' + getAltGrocery();
     }
 
-    public DeliveryV300(String name) {
-        super(name);
+    public DeliveryV300(String name, long lineNumber) {
+        super(name, lineNumber);
     }
 
     public void setStdMeals(String stdMeals) {

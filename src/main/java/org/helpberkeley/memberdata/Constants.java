@@ -191,6 +191,7 @@ public class Constants {
     public static final String CONTROL_BLOCK_ALT_GROCERY_OPTIONS = "AltGroceryOptions()";
     public static final String CONTROL_BLOCK_START_TIMES = "StartTimes()";
     public static final String CONTROL_BLOCK_PICKUP_MANAGERS = "PickupManagers()";
+    public static final String CONTROL_BLOCK_FOOD_SOURCES = "FoodSources(Meal|Grocery)";
 
     public static final String CONTROL_BLOCK_VALUE_DEFAULT_PREFIX = "ReplaceThisBy";
     public static final String CONTROL_BLOCK_VERSION_UNKNOWN = "0";

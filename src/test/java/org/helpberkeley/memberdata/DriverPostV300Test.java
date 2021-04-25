@@ -233,4 +233,16 @@ public class DriverPostV300Test extends DriverPostTest {
         List<String> posts = driverPostFormat.generateDriverPosts();
         assertThat(posts).containsExactly("Start time: 3:00");
     }
+
+
+    @Test public void multiDriverMessageTest() {
+        String routedDeliveries = readResourceFile("routed-deliveries-multi-driver-v300.csv");
+        DriverPostFormat driverPostFormat = DriverPostFormat.create(createApiSimulator(), users, routedDeliveries,
+                getRestaurantTemplateQuery(),
+                getDriverPostFormatQuery(),
+                getGroupInstructionsFormatQuery());
+
+        List<String> posts = driverPostFormat.generateDriverPosts();
+        assertThat(posts).hasSize(2);
+    }
 }

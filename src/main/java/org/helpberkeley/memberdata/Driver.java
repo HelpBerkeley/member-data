@@ -37,7 +37,6 @@ public abstract class Driver {
     private String gMapURL = null;
     private WorkflowBean bean;
     protected List<Restaurant> pickups;
-//    private List<Delivery> deliveries;
     private long routeSeconds = 0;
     protected final List<String> warningMessages = new ArrayList<>();
     protected boolean disableLateArrivalAudit = false;
@@ -143,6 +142,10 @@ public abstract class Driver {
         assert ! pickups.isEmpty();
 
         return pickups.get(0).getName();
+    }
+
+    public void addWarning(String warning) {
+        warningMessages.add(warning);
     }
 
     private void generateURL() {

@@ -43,6 +43,8 @@ class ControlBlockV300 extends ControlBlock {
     private final List<String> altMealOptions = new ArrayList<>();
     private final List<String> altGroceryOptions = new ArrayList<>();
     private final List<String> startTimes = new ArrayList<>();
+    private String mealSource = "";
+    private String grocerySource = "";
 
      ControlBlockV300(String header) {
          super(header);
@@ -89,6 +91,35 @@ class ControlBlockV300 extends ControlBlock {
         return processList(value, lineNumber);
     }
 
+
+    //
+    // A FoodSources data field should look like "meal source  | grocery source"
+    //
+    @Override
+    void processFoodSources(String value, long lineNumber) {
+
+        String[] fields = value.split("\\" + INTRA_FIELD_SEPARATOR, -42);
+
+        if (fields.length != 2) {
+            throw new MemberDataException("FoodSources value \"" + value
+                    + "\" at line " + lineNumber + " does not match \"Meal source | Grocery source\".\n");
+        }
+
+        mealSource = fields[0].trim();
+        grocerySource = fields[1].trim();
+
+        StringBuilder errors = new StringBuilder();
+
+        if (mealSource.isEmpty()) {
+            warnings.append("Line ").append(lineNumber).append(", No meal source specified.\n");
+        }
+
+        if (grocerySource.isEmpty()) {
+            warnings.append("Line ").append(lineNumber).append(", No grocery source specified.\n");
+        }
+    }
+
+
     public List<String> getAltMealOptions() {
          return altMealOptions;
     }
@@ -99,6 +130,14 @@ class ControlBlockV300 extends ControlBlock {
 
     public List<String> getStartTimes() {
          return startTimes;
+    }
+
+    public String getMealSource() {
+         return mealSource;
+    }
+
+    public String getGrocerySource() {
+         return grocerySource;
     }
 
     private List<String> processList(String value, long lineNumber) {

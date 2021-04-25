@@ -1,8 +1,8 @@
 {
   "success": true,
   "errors": [],
-  "duration": 0.9,
-  "result_count": 1,
+  "duration": 0.7,
+  "result_count": 5,
   "params": {},
   "columns": [
     "post_number",
@@ -13,7 +13,27 @@
   "rows": [
     [
       1,
-      "[Deliveries]\n```\n\"|Name|Phone|Address|Details|\\n\n| --- | --- | --- | --- |\\n\"\nLOOP &{Consumer} {\n  \"|\" &{Consumer.Name} \"|\" &{Consumer.CompactPhone} \"|\"\n  IF &{Consumer.StandardMeals} THEN {\n     &{Consumer.StandardMeals} \" std meal; \"\n  }\n  LOOP &{Consumer.AlternateMeals} {\n     IF &{AlternateMeals.Count}  THEN {\n       &{AlternateMeals.Count} \" \" &{AlternateMeals.Type} \" meal; \"\n  }\n }\n IF &{Consumer.StandardGroceries} THEN {\n    &{Consumer.StandardGroceries} \" std grocery; \"\n  }\n  LOOP &{Consumer.AlternateGroceries} {\n    IF &{AlternateGroceries.Count} THEN {\n      &{AlternateGroceries.Count} \" \" &{AlternateGroceries.Type} \" grocery; \"\n    }\n  }\n  &{Consumer.Details} \"|\\n\"\n}\n```",
+      "[Comment]\n\nComment post. This thread is specifying the way the software is formatting the drivers' threads.\n\n* All replies not marked [Comment] are picked up by the software, in order,  directly from the post.\n\nNew language features in 3.0.0:\n* CONTINUE - continues execution at the top of the current loop\n* conditional boolean support for some integer variables. Example: _IF &{Consumer.StandardMeals}_\n\n**Variables**\n\n**ThisDriverUserName** ... string, driver's block scope, from workflow spreadsheet\n**ThisDriverFirstRestaurantStartTime** ... string, driver's block scope, from workflow spreadsheet\n**FirstRestaurantEmoji**   ... string, calculated from restaurant template\n**ThisDriverStartTime** ... string, driver's block scope, from control block\n**ThisDriverGMapURL**  ... string, driver's block scope, from workflow spreadsheet\n\n\n**OnCallOpsManager**  ... structure\n**.UserName** ... string, workflow spreadsheet scope, from workflow control block\n**.Phone** ... string, workflow spreadsheet scope, from workflow control block\n**.CompactPhone** ... string, workflow spreadsheet scope, from workflow control block, in format (510) 555.1212\n**ThisDriverAnyCondo**  ... boolean, driver's block scope scope, from workflow spreadsheet\n\n**ThisDriverRestaurant**   list, driver's block scope\n**.Name** ... string, from workflow spreadsheet and restaurant template\n**.Emoji** ... string, from workflow spreadsheet\n**.Address** ... string, from workflow spreadsheet\n**.Details**  ... string, from workflow spreadsheet\n**.StandardMeals** ... integer, totaled from workflow spreadsheet\n________________ boolean when used in an IF statement.\n**.AlternateMeals** ... list, from workflow spreadsheet\n________________ boolean when used in an IF statement.\n**.StandardGroceries** - integer, totaled from workflow spreadsheet\n________________ boolean when used in an IF statement.\n**.AlternateGroceries** ... list, from from workflow spreadsheet\n________________ boolean when used in an IF statement.\n**ThisDriverRestaurant.MealsOrGroceries**  ... boolean, driver block\n\n**ThisDriverRestaurant.AlternateMeals** ... list, driver block scope\n**.Type**  ... string, from driver block\n**.Count**  ... integer, from driver block\n\n**ThisDriverRestaurant.AlternateGroceries** ... list, driver block scope\n**.Type**  ... string, from driver block\n**.Count**  ... integer, from driver block\n\n**Consumer**  list, driver's block scope\n**.Name** ... string, from workflow spreadsheet\n**.UserName** ... string, from workflow spreadsheet\n**.CompactPhone** ... string, from workflow spreadsheet, in format (510) 555.1212\n**.CompactAltPhone** ... string, from workflow spreadsheet, in format (510) 555.1212\n**.IsAltPhone** ... boolean, from workflow spreadsheet (meaning: is there an Alt phone number?)\n**.City** ... string, from workflow spreadsheet\n**.Address** ... string, from workflow spreadsheet\n**.IsCondo** ... boolean, from workflow spreadsheet\n**.Details**  ... string, from workflow spreadsheet\n**.Restaurant**  ... string, from workflow spreadsheet\n**.RestaurantEmoji** ... string, from workflow spreadsheet\n**.StandardMeal**  ... integer, from workflow spreadsheet\n________________ boolean when used in an IF statement.\n**.AlternateMeal** ... integer, from workflow spreadsheet\n________________ boolean when used in an IF statement.\n**.AlternateMealType** ... string, from workflow spreadsheet\n**.StandardGrocery** ... integer, from workflow spreadsheet\n________________ boolean when used in an IF statement.\n**AlternateGrocery** ... integer, from workflow spreadsheet\n________________ boolean when used in an IF statement.\n**AlternateGroceryType** .. string, from workflow spreadsheet",
+      null
+    ],
+    [
+      3,
+      "[header]\n```\n\"Drivers run @\" ${ThisDriverUserName} \": start at \" ${ThisDriverFirstRestaurant}\n\" \"  ${ThisDriverFirstRestaurantStartTime} \"\\n\\n\"\n```",
+      null
+    ],
+    [
+      4,
+      "[Deliveries]\n```\n\"**Deliveries**\\n\"\n\n\"|Name|Phone|Address|Details|\\n\n| --- | --- | --- | --- |\\n\"\nLOOP &{Consumer} {\n  \"|\" &{Consumer.Name} \"|\" &{Consumer.CompactPhone} \"|\" &{Consumer.Address} \"|\"\n  IF &{Consumer.StandardMeal} THEN {\n     &{Consumer.StandardMeal} \" std meal; \"\n  }\n  IF &{Consumer.AlternateMeal}  THEN {\n     &{Consumer.AlternateMeal} \" \"\n     &{Consumer.AlternateMealType} \" meal; \"\n  }\n  IF &{Consumer.StandardGrocery} THEN {\n    &{Consumer.StandardGrocery} \" std grocery; \"\n  }\n  IF &{Consumer.AlternateGrocery} THEN {\n    &{Consumer.AlternateGrocery} \" \"\n    &{Consumer.AlternateGroceryType} \" grocery; \"\n  }\n  &{Consumer.Details} \"|\\n\"\n}\n```",
+      null
+    ],
+    [
+      5,
+      "[Pickups]\n```\n\"**Pickups**\\n\\n\"\n\nLOOP &{ThisDriverRestaurant} {\n  \"|Std Meal|\"\n  LOOP &{ThisDriverRestaurant.AlternateMeals} {\n    &{AlternateMeals.Type} \"|\"\n  }\n  \"Std Grocery|\"\n  LOOP &{ThisDriverRestaurant.AlternateGroceries} {\n    &{AlternateGroceries.Type} \"|\"\n  }\n  \"\\n\"\n  \"| --- |\"\n  LOOP &{ThisDriverRestaurant.AlternateMeals} {\n    \" --- |\"\n  }\n  \" --- |\"\n  LOOP &{ThisDriverRestaurant.AlternateGroceries} {\n    \" --- |\"\n  }\n  \"\\n\"\n  \"|\" &{ThisDriverRestaurant.StandardMeals} \"|\"\n  LOOP &{ThisDriverRestaurant.AlternateMeals} {\n    &{AlternateMeals.Count} \"|\"\n  }\n  &{ThisDriverRestaurant.StandardGroceries} \"|\"\n  LOOP &{ThisDriverRestaurant.AlternateGroceries} {\n    &{AlternateGroceries.Count} \"|\"\n  }\n \"\\n\"\n }\n```",
+      null
+    ],
+    [
+      6,
+      "[Deliveries]\n```\n\"**Deliveries**\\n\"\n\n\"|Name|Phone|Address|Details|\\n\n| --- | --- | --- | --- |\\n\"\nLOOP &{Consumer} {\n  \"|\" &{Consumer.Name} \"|\" &{Consumer.CompactPhone} \"|\" &{Consumer.Address} \"|\"\n  IF &{Consumer.StandardMeal} THEN {\n     &{Consumer.StandardMeal} \" std meal; \"\n  }\n  IF &{Consumer.AlternateMeal}  THEN {\n     &{Consumer.AlternateMeal} \" \"\n     &{Consumer.AlternateMealType} \" meal; \"\n  }\n  IF &{Consumer.StandardGrocery} THEN {\n    &{Consumer.StandardGrocery} \" std grocery; \"\n  }\n  IF &{Consumer.AlternateGrocery} THEN {\n    &{Consumer.AlternateGrocery} \" \"\n    &{Consumer.AlternateGroceryType} \" grocery; \"\n  }\n  &{Consumer.Details} \"|\\n\"\n}\n```",
       null
     ]
   ]

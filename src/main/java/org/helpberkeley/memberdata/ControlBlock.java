@@ -293,6 +293,9 @@ public abstract class ControlBlock {
             case Constants.CONTROL_BLOCK_PICKUP_MANAGERS:
                 pickupManagers.addAll(processPickupManagers(value, lineNumber));
                 break;
+            case Constants.CONTROL_BLOCK_FOOD_SOURCES:
+                processFoodSources(value, lineNumber);
+                break;
             default:
                 warnings.append("Unknown key \"")
                         .append(variable)
@@ -536,6 +539,10 @@ public abstract class ControlBlock {
 
     void processStartTimes(String value, long lineNumber) {
         unsupported(lineNumber, Constants.CONTROL_BLOCK_START_TIMES);
+    }
+
+    void processFoodSources(String value, long lineNumber) {
+        unsupported(lineNumber, Constants.CONTROL_BLOCK_FOOD_SOURCES);
     }
 
     List<String> processPickupManagers(String value, long lineNumber) {

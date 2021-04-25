@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.catchThrowable;
 
 public class RoutedDeliveriesV300Test extends TestBase {
 
@@ -39,13 +40,13 @@ public class RoutedDeliveriesV300Test extends TestBase {
     }
 
     @Test
-    public void parseRoutedTest() {
+    public void singleDriverTest() {
         String csvData = readResourceFile("routed-deliveries-v300.csv");
 
         DriverPostFormat driverPostFormat = DriverPostFormat.create(createApiSimulator(), users, csvData,
                 Constants.QUERY_GET_CURRENT_VALIDATED_ONE_KITCHEN_RESTAURANT_TEMPLATE,
-                Constants.QUERY_GET_DRIVERS_POST_FORMAT_V23,
-                Constants.QUERY_GET_GROUP_INSTRUCTIONS_FORMAT_V22);
+                Constants.QUERY_GET_ONE_KITCHEN_DRIVERS_POST_FORMAT_V300,
+                Constants.QUERY_GET_ONE_KITCHEN_GROUP_POST_FORMAT_V300);
         List<Driver> drivers = driverPostFormat.getDrivers();
 
         assertThat(drivers).hasSize(1);
@@ -63,9 +64,6 @@ public class RoutedDeliveriesV300Test extends TestBase {
         assertThat(restaurant.getDetails()).isEqualTo(
                 "Come from Hearst, park alongside E side of street past loading dock");
 
-        // FIX THIS, DS: what to do about orders?
-//        assertThat(restaurant.getOrders()).isEqualTo(7);
-
         List<Delivery> deliveries = driver.getDeliveries();
         assertThat(deliveries).hasSize(7);
 
@@ -80,7 +78,7 @@ public class RoutedDeliveriesV300Test extends TestBase {
         assertThat(delivery.getDetails()).isEmpty();
         assertThat(delivery.getRestaurant()).isEqualTo("Bauman Meals/Groceries");
         assertThat(delivery).isInstanceOf(DeliveryV300.class);
-        DeliveryV300 deliveryV300 = (DeliveryV300)delivery;
+        DeliveryV300 deliveryV300 = (DeliveryV300) delivery;
         assertThat(deliveryV300.getStdMeals()).isEqualTo("0");
         assertThat(deliveryV300.getAltMeals()).isEqualTo("1");
         assertThat(deliveryV300.getTypeMeal()).isEqualTo("noRed");
@@ -99,7 +97,7 @@ public class RoutedDeliveriesV300Test extends TestBase {
         assertThat(delivery.getDetails()).isEmpty();
         assertThat(delivery.getRestaurant()).isEqualTo("Bauman Meals/Groceries");
         assertThat(delivery).isInstanceOf(DeliveryV300.class);
-        deliveryV300 = (DeliveryV300)delivery;
+        deliveryV300 = (DeliveryV300) delivery;
         assertThat(deliveryV300.getStdMeals()).isEqualTo("2");
         assertThat(deliveryV300.getAltMeals()).isEqualTo("0");
         assertThat(deliveryV300.getTypeMeal()).isEqualTo(Constants.ALT_TYPE_NONE);
@@ -118,7 +116,7 @@ public class RoutedDeliveriesV300Test extends TestBase {
         assertThat(delivery.getDetails()).isEmpty();
         assertThat(delivery.getRestaurant()).isEqualTo("Bauman Meals/Groceries");
         assertThat(delivery).isInstanceOf(DeliveryV300.class);
-        deliveryV300 = (DeliveryV300)delivery;
+        deliveryV300 = (DeliveryV300) delivery;
         assertThat(deliveryV300.getStdMeals()).isEqualTo("0");
         assertThat(deliveryV300.getAltMeals()).isEqualTo("0");
         assertThat(deliveryV300.getTypeMeal()).isEqualTo(Constants.ALT_TYPE_NONE);
@@ -137,7 +135,7 @@ public class RoutedDeliveriesV300Test extends TestBase {
         assertThat(delivery.getDetails()).isEmpty();
         assertThat(delivery.getRestaurant()).isEqualTo("Bauman Meals/Groceries");
         assertThat(delivery).isInstanceOf(DeliveryV300.class);
-        deliveryV300 = (DeliveryV300)delivery;
+        deliveryV300 = (DeliveryV300) delivery;
         assertThat(deliveryV300.getStdMeals()).isEqualTo("0");
         assertThat(deliveryV300.getAltMeals()).isEqualTo("1");
         assertThat(deliveryV300.getTypeMeal()).isEqualTo("veggie");
@@ -156,7 +154,7 @@ public class RoutedDeliveriesV300Test extends TestBase {
         assertThat(delivery.getDetails()).isEqualTo("listed as a condo but");
         assertThat(delivery.getRestaurant()).isEqualTo("Bauman Meals/Groceries");
         assertThat(delivery).isInstanceOf(DeliveryV300.class);
-        deliveryV300 = (DeliveryV300)delivery;
+        deliveryV300 = (DeliveryV300) delivery;
         assertThat(deliveryV300.getStdMeals()).isEqualTo("0");
         assertThat(deliveryV300.getAltMeals()).isEqualTo("1");
         assertThat(deliveryV300.getTypeMeal()).isEqualTo("noPork");
@@ -175,7 +173,7 @@ public class RoutedDeliveriesV300Test extends TestBase {
         assertThat(delivery.getDetails()).isEmpty();
         assertThat(delivery.getRestaurant()).isEqualTo("Bauman Meals/Groceries");
         assertThat(delivery).isInstanceOf(DeliveryV300.class);
-        deliveryV300 = (DeliveryV300)delivery;
+        deliveryV300 = (DeliveryV300) delivery;
         assertThat(deliveryV300.getStdMeals()).isEqualTo("0");
         assertThat(deliveryV300.getAltMeals()).isEqualTo("0");
         assertThat(deliveryV300.getTypeMeal()).isEqualTo(Constants.ALT_TYPE_NONE);
@@ -194,12 +192,207 @@ public class RoutedDeliveriesV300Test extends TestBase {
         assertThat(delivery.getDetails()).isEmpty();
         assertThat(delivery.getRestaurant()).isEqualTo("Bauman Meals/Groceries");
         assertThat(delivery).isInstanceOf(DeliveryV300.class);
-        deliveryV300 = (DeliveryV300)delivery;
+        deliveryV300 = (DeliveryV300) delivery;
         assertThat(deliveryV300.getStdMeals()).isEqualTo("0");
         assertThat(deliveryV300.getAltMeals()).isEqualTo("1");
         assertThat(deliveryV300.getTypeMeal()).isEqualTo("veggie");
         assertThat(deliveryV300.getStdGrocery()).isEqualTo("0");
         assertThat(deliveryV300.getAltGrocery()).isEqualTo("1");
         assertThat(deliveryV300.getTypeGrocery()).isEqualTo("custom pick");
+    }
+
+    @Test
+    public void multiDriverTest() {
+        String csvData = readResourceFile("routed-deliveries-multi-driver-v300.csv");
+
+        DriverPostFormat driverPostFormat = DriverPostFormat.create(createApiSimulator(), users, csvData,
+                Constants.QUERY_GET_CURRENT_VALIDATED_ONE_KITCHEN_RESTAURANT_TEMPLATE,
+                Constants.QUERY_GET_ONE_KITCHEN_DRIVERS_POST_FORMAT_V300,
+                Constants.QUERY_GET_ONE_KITCHEN_GROUP_POST_FORMAT_V300);
+
+        List<Driver> drivers = driverPostFormat.getDrivers();
+
+        assertThat(drivers).hasSize(2);
+        Driver driver = drivers.get(0);
+        assertThat(driver.getUserName()).isEqualTo("jbDriver");
+        assertThat(driver.hasCondo()).isFalse();
+        assertThat(driver.getgMapURL()).isEqualTo("https://www.google.com/maps/dir/something+something+else");
+
+        List<Restaurant> pickups = driver.getPickups();
+        assertThat(pickups).hasSize(1);
+
+        Restaurant restaurant = pickups.get(0);
+        assertThat(restaurant.getName()).isEqualTo("Bauman Meals/Groceries");
+        assertThat(restaurant.getAddress()).isEqualTo("1955 Ninth St., Berkeley, CA");
+        assertThat(restaurant.getDetails()).isEqualTo(
+                "Come from Hearst, park alongside E side of street past loading dock");
+
+        List<Delivery> deliveries = driver.getDeliveries();
+        assertThat(deliveries).hasSize(4);
+
+        Delivery delivery = deliveries.get(0);
+        assertThat(delivery.getName()).isEqualTo("Cust Name 1");
+        assertThat(delivery.getUserName()).isEqualTo("Cust1");
+        assertThat(delivery.getPhone()).isEqualTo("555-555-1112");
+        assertThat(delivery.getAltPhone()).isEqualTo("111-222-3333");
+        assertThat(delivery.getCity()).isEqualTo("Berkeley");
+        assertThat(delivery.getAddress()).isEqualTo("123 456th Ave");
+        assertThat(delivery.isCondo()).isFalse();
+        assertThat(delivery.getDetails()).isEmpty();
+        assertThat(delivery.getRestaurant()).isEqualTo("Bauman Meals/Groceries");
+        assertThat(delivery).isInstanceOf(DeliveryV300.class);
+        DeliveryV300 deliveryV300 = (DeliveryV300) delivery;
+        assertThat(deliveryV300.getStdMeals()).isEqualTo("0");
+        assertThat(deliveryV300.getAltMeals()).isEqualTo("1");
+        assertThat(deliveryV300.getTypeMeal()).isEqualTo("noRed");
+        assertThat(deliveryV300.getStdGrocery()).isEqualTo("0");
+        assertThat(deliveryV300.getAltGrocery()).isEqualTo("0");
+        assertThat(deliveryV300.getTypeGrocery()).isEqualTo("none");
+
+        delivery = deliveries.get(1);
+        assertThat(delivery.getName()).isEqualTo("Cust Name 2");
+        assertThat(delivery.getUserName()).isEqualTo("Cust2");
+        assertThat(delivery.getPhone()).isEqualTo("555-555-2222");
+        assertThat(delivery.getAltPhone()).isEqualTo(Constants.ALT_TYPE_NONE);
+        assertThat(delivery.getCity()).isEqualTo("Berkeley");
+        assertThat(delivery.getAddress()).isEqualTo("77 77th St");
+        assertThat(delivery.isCondo()).isFalse();
+        assertThat(delivery.getDetails()).isEmpty();
+        assertThat(delivery.getRestaurant()).isEqualTo("Bauman Meals/Groceries");
+        assertThat(delivery).isInstanceOf(DeliveryV300.class);
+        deliveryV300 = (DeliveryV300) delivery;
+        assertThat(deliveryV300.getStdMeals()).isEqualTo("2");
+        assertThat(deliveryV300.getAltMeals()).isEqualTo("0");
+        assertThat(deliveryV300.getTypeMeal()).isEqualTo(Constants.ALT_TYPE_NONE);
+        assertThat(deliveryV300.getStdGrocery()).isEqualTo("2");
+        assertThat(deliveryV300.getAltGrocery()).isEqualTo("0");
+        assertThat(deliveryV300.getTypeGrocery()).isEqualTo("none");
+
+        delivery = deliveries.get(2);
+        assertThat(delivery.getName()).isEqualTo("Cust Name 3");
+        assertThat(delivery.getUserName()).isEqualTo("Cust3");
+        assertThat(delivery.getPhone()).isEqualTo("555-555-3333");
+        assertThat(delivery.getAltPhone()).isEqualTo(Constants.ALT_TYPE_NONE);
+        assertThat(delivery.getCity()).isEqualTo("Berkeley");
+        assertThat(delivery.getAddress()).isEqualTo("11 11th St");
+        assertThat(delivery.isCondo()).isFalse();
+        assertThat(delivery.getDetails()).isEmpty();
+        assertThat(delivery.getRestaurant()).isEqualTo("Bauman Meals/Groceries");
+        assertThat(delivery).isInstanceOf(DeliveryV300.class);
+        deliveryV300 = (DeliveryV300) delivery;
+        assertThat(deliveryV300.getStdMeals()).isEqualTo("0");
+        assertThat(deliveryV300.getAltMeals()).isEqualTo("0");
+        assertThat(deliveryV300.getTypeMeal()).isEqualTo(Constants.ALT_TYPE_NONE);
+        assertThat(deliveryV300.getStdGrocery()).isEqualTo("2");
+        assertThat(deliveryV300.getAltGrocery()).isEqualTo("0");
+        assertThat(deliveryV300.getTypeGrocery()).isEqualTo("none");
+
+        delivery = deliveries.get(3);
+        assertThat(delivery.getName()).isEqualTo("Cust Name 4");
+        assertThat(delivery.getUserName()).isEqualTo("Cust4");
+        assertThat(delivery.getPhone()).isEqualTo("555-555-4444");
+        assertThat(delivery.getAltPhone()).isEqualTo(Constants.ALT_TYPE_NONE);
+        assertThat(delivery.getCity()).isEqualTo("Berkeley");
+        assertThat(delivery.getAddress()).isEqualTo("44 44th St");
+        assertThat(delivery.isCondo()).isFalse();
+        assertThat(delivery.getDetails()).isEmpty();
+        assertThat(delivery.getRestaurant()).isEqualTo("Bauman Meals/Groceries");
+        assertThat(delivery).isInstanceOf(DeliveryV300.class);
+        deliveryV300 = (DeliveryV300) delivery;
+        assertThat(deliveryV300.getStdMeals()).isEqualTo("0");
+        assertThat(deliveryV300.getAltMeals()).isEqualTo("1");
+        assertThat(deliveryV300.getTypeMeal()).isEqualTo("veggie");
+        assertThat(deliveryV300.getStdGrocery()).isEqualTo("0");
+        assertThat(deliveryV300.getAltGrocery()).isEqualTo("1");
+        assertThat(deliveryV300.getTypeGrocery()).isEqualTo("veg");
+
+        driver = drivers.get(1);
+        assertThat(driver.getUserName()).isEqualTo("jsDriver");
+        assertThat(driver.hasCondo()).isTrue();
+        assertThat(driver.getgMapURL()).isEqualTo("https://www.google.com/maps/dir/x+y+z");
+
+        pickups = driver.getPickups();
+        assertThat(pickups).hasSize(1);
+
+        restaurant = pickups.get(0);
+        assertThat(restaurant.getName()).isEqualTo("Bauman Meals/Groceries");
+        assertThat(restaurant.getAddress()).isEqualTo("1955 Ninth St., Berkeley, CA");
+        assertThat(restaurant.getDetails()).isEqualTo(
+                "Come from Hearst, park alongside E side of street past loading dock");
+
+        deliveries = driver.getDeliveries();
+        assertThat(deliveries).hasSize(3);
+
+        delivery = deliveries.get(0);
+        assertThat(delivery.getName()).isEqualTo("Cust Name 5");
+        assertThat(delivery.getUserName()).isEqualTo("Cust5");
+        assertThat(delivery.getPhone()).isEqualTo("555-555-5555");
+        assertThat(delivery.getAltPhone()).isEqualTo(Constants.ALT_TYPE_NONE);
+        assertThat(delivery.getCity()).isEqualTo("Berkeley");
+        assertThat(delivery.getAddress()).isEqualTo("55 55th St");
+        assertThat(delivery.isCondo()).isTrue();
+        assertThat(delivery.getDetails()).isEqualTo("listed as a condo but");
+        assertThat(delivery.getRestaurant()).isEqualTo("Bauman Meals/Groceries");
+        assertThat(delivery).isInstanceOf(DeliveryV300.class);
+        deliveryV300 = (DeliveryV300) delivery;
+        assertThat(deliveryV300.getStdMeals()).isEqualTo("0");
+        assertThat(deliveryV300.getAltMeals()).isEqualTo("1");
+        assertThat(deliveryV300.getTypeMeal()).isEqualTo("noPork");
+        assertThat(deliveryV300.getStdGrocery()).isEqualTo("0");
+        assertThat(deliveryV300.getAltGrocery()).isEqualTo("0");
+        assertThat(deliveryV300.getTypeGrocery()).isEqualTo(Constants.ALT_TYPE_NONE);
+
+        delivery = deliveries.get(1);
+        assertThat(delivery.getName()).isEqualTo("Cust Name 6");
+        assertThat(delivery.getUserName()).isEqualTo("Cust6");
+        assertThat(delivery.getPhone()).isEqualTo("555-555-6666");
+        assertThat(delivery.getAltPhone()).isEqualTo(Constants.ALT_TYPE_NONE);
+        assertThat(delivery.getCity()).isEqualTo("Berkeley");
+        assertThat(delivery.getAddress()).isEqualTo("66 66th St");
+        assertThat(delivery.isCondo()).isFalse();
+        assertThat(delivery.getDetails()).isEmpty();
+        assertThat(delivery.getRestaurant()).isEqualTo("Bauman Meals/Groceries");
+        assertThat(delivery).isInstanceOf(DeliveryV300.class);
+        deliveryV300 = (DeliveryV300) delivery;
+        assertThat(deliveryV300.getStdMeals()).isEqualTo("0");
+        assertThat(deliveryV300.getAltMeals()).isEqualTo("0");
+        assertThat(deliveryV300.getTypeMeal()).isEqualTo(Constants.ALT_TYPE_NONE);
+        assertThat(deliveryV300.getStdGrocery()).isEqualTo("0");
+        assertThat(deliveryV300.getAltGrocery()).isEqualTo("1");
+        assertThat(deliveryV300.getTypeGrocery()).isEqualTo("custom pick");
+
+        delivery = deliveries.get(2);
+        assertThat(delivery.getName()).isEqualTo("Cust Name 7");
+        assertThat(delivery.getUserName()).isEqualTo("Cust7");
+        assertThat(delivery.getPhone()).isEqualTo("555-555-7777");
+        assertThat(delivery.getAltPhone()).isEqualTo(Constants.ALT_TYPE_NONE);
+        assertThat(delivery.getCity()).isEqualTo("Berkeley");
+        assertThat(delivery.getAddress()).isEqualTo("77 77th St");
+        assertThat(delivery.isCondo()).isFalse();
+        assertThat(delivery.getDetails()).isEmpty();
+        assertThat(delivery.getRestaurant()).isEqualTo("Bauman Meals/Groceries");
+        assertThat(delivery).isInstanceOf(DeliveryV300.class);
+        deliveryV300 = (DeliveryV300) delivery;
+        assertThat(deliveryV300.getStdMeals()).isEqualTo("0");
+        assertThat(deliveryV300.getAltMeals()).isEqualTo("1");
+        assertThat(deliveryV300.getTypeMeal()).isEqualTo("veggie");
+        assertThat(deliveryV300.getStdGrocery()).isEqualTo("0");
+        assertThat(deliveryV300.getAltGrocery()).isEqualTo("1");
+        assertThat(deliveryV300.getTypeGrocery()).isEqualTo("custom pick");
+    }
+
+    @Test
+    public void missingPickupTest() {
+        String csvData = readResourceFile("routed-deliveries-missing-pickup-v300.csv");
+
+        Throwable thrown = catchThrowable(() -> DriverPostFormat.create(createApiSimulator(), users, csvData,
+                Constants.QUERY_GET_CURRENT_VALIDATED_ONE_KITCHEN_RESTAURANT_TEMPLATE,
+                Constants.QUERY_GET_ONE_KITCHEN_DRIVERS_POST_FORMAT_V300,
+                Constants.QUERY_GET_ONE_KITCHEN_GROUP_POST_FORMAT_V300));
+        assertThat(thrown).isInstanceOf(MemberDataException.class);
+        assertThat(thrown).hasMessage(
+                "Line 23, driver jsDriver delivery from Bauman Meals/Groceries but no pickup.\n"
+                + "Line 24, driver jsDriver delivery from Bauman Meals/Groceries but no pickup.\n"
+                + "Line 25, driver jsDriver delivery from Bauman Meals/Groceries but no pickup.\n");
     }
 }

@@ -138,7 +138,7 @@ public class WorkflowParserV200 extends WorkflowParser {
                 throw new MemberDataException("line " + lineNumber + " " + errors);
             }
 
-            DeliveryV200 delivery = new DeliveryV200(consumerName);
+            DeliveryV200 delivery = new DeliveryV200(consumerName, lineNumber);
             delivery.setUserName(userName);
             delivery.setPhone(phone);
             delivery.setAltPhone(altPhone);

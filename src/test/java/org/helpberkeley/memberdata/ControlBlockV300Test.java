@@ -150,6 +150,31 @@ public class ControlBlockV300Test extends ControlBlockTestBase{
     }
 
     @Test
+    public void foodSourcesTest() {
+        String key = Constants.CONTROL_BLOCK_FOOD_SOURCES;
+        String mealSource = "Meals'R'Us";
+        String grocerySource = "Groceryland";
+        String value = mealSource + '|' + grocerySource;
+
+        String workFlowData = HEADER
+                + CONTROL_BLOCK_BEGIN_ROW
+                + CONTROL_BLOCK_VERSION_ROW
+                + getKeyValueRow(key, value)
+                + CONTROL_BLOCK_END_ROW;
+
+        WorkflowParser workflowParser = WorkflowParser.create(
+                WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, Map.of(), workFlowData);
+        ControlBlockV300 controlBlock = (ControlBlockV300) workflowParser.controlBlock();
+        assertThat(controlBlock.getWarnings()).isEmpty();
+        assertThat(controlBlock.getMealSource()).isEqualTo(mealSource);
+        assertThat(controlBlock.getGrocerySource()).isEqualTo(grocerySource);
+        assertThat(controlBlock.getAltGroceryOptions()).isEmpty();
+        assertThat(controlBlock.getAltMealOptions()).isEmpty();
+        assertThat(controlBlock.getStartTimes()).isEmpty();
+        assertThat(controlBlock.getPickupManagers()).isEmpty();
+    }
+
+    @Test
     public void startTimesTest() {
         String key = Constants.CONTROL_BLOCK_START_TIMES;
         String value = "\"3:00, 3:10, 3:15\"";

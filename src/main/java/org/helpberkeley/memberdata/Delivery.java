@@ -27,6 +27,7 @@ import org.helpberkeley.memberdata.route.Location;
 public abstract class Delivery {
 
     protected final String name;
+    protected final long lineNumber;
     protected String userName;
     protected String phone;
     protected String altPhone;
@@ -38,8 +39,9 @@ public abstract class Delivery {
     protected String restaurant;
     protected Location location;
 
-    public Delivery(final String name) {
+    public Delivery(String name, long lineNumber) {
         this.name = name;
+        this.lineNumber = lineNumber;
     }
 
     public void setUserName(String userName) {
@@ -123,6 +125,10 @@ public abstract class Delivery {
 
     public Location getLocation() {
         return location;
+    }
+
+    public long getLineNumber() {
+        return lineNumber;
     }
 
     public abstract String deliveryRow();

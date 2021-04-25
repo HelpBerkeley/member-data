@@ -27,8 +27,8 @@ public class DeliveryV200 extends Delivery {
     private String normalRations;
     private String veggieRations;
 
-    public DeliveryV200(String name) {
-        super(name);
+    public DeliveryV200(String name, long lineNumber) {
+        super(name, lineNumber);
     }
 
     @Override
