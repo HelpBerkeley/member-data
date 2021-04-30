@@ -448,11 +448,16 @@ public abstract class DriverPostFormat {
                 returnValue = processBackupDrivers(loop, context);
                 break;
             default:
-                throw new MemberDataException(context.formatException("unknown list variable &{" + listName + "}"));
+                returnValue = processVersionSpecificLoopListNameRef(listName, loop, context);
         }
 
         LOGGER.trace("${{}} = \"{}\"", listName, returnValue.output);
         return returnValue;
+    }
+
+    protected ProcessingReturnValue processVersionSpecificLoopListNameRef(
+            String listName, MessageBlockLoop loop, MessageBlockContext context) {
+        throw new MemberDataException(context.formatException("unknown list variable &{" + listName + "}"));
     }
 
     protected final  ProcessingReturnValue processRestaurantPickups(

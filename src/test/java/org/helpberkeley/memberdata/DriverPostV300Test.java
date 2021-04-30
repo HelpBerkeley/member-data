@@ -196,8 +196,9 @@ public class DriverPostV300Test extends DriverPostTest {
     }
 
     @Test
-    public void v300PickupsTest() {
+    public void v300SingleLocationPickupsTest() {
         String format = "LOOP &{ThisDriverRestaurant} {"
+                + " &{ThisDriverRestaurant.Name} \"\\n\""
                 + " &{ThisDriverRestaurant.StandardMeals}"
                 + "\"|\""
                 + " LOOP &{ThisDriverRestaurant.AlternateMeals} {"
@@ -218,7 +219,73 @@ public class DriverPostV300Test extends DriverPostTest {
                 getDriverPostFormatQuery(),
                 getGroupInstructionsFormatQuery());
         List<String> posts = driverPostFormat.generateDriverPosts();
-        assertThat(posts).containsExactly("2|veggie:2:noRed:1:noPork:1:|4|veg:1:custom pick:2:\n");
+        assertThat(posts).containsExactly("Bauman Meals/Groceries\n"
+                + "2|veggie:2:noRed:1:noPork:1:|4|veg:1:custom pick:2:\n");
+    }
+
+    @Test
+    public void v300MultiLocationPickupsTest() {
+        String format = "LOOP &{ThisDriverRestaurant} {"
+                + " &{ThisDriverRestaurant.Name} "
+                + "\"|\""
+                + " &{ThisDriverRestaurant.StandardMeals}"
+                + "\"|\""
+                + " LOOP &{ThisDriverRestaurant.AlternateMeals} {"
+                + " &{AlternateMeals.Type} \":\" &{AlternateMeals.Count} \":\""
+                +" } "
+                + "\"|\""
+                + " &{ThisDriverRestaurant.StandardGroceries}"
+                + "\"|\""
+                + " LOOP &{ThisDriverRestaurant.AlternateGroceries} {"
+                + " &{AlternateGroceries.Type} \":\" &{AlternateGroceries.Count} \":\""
+                +" } "
+                + "\"|\""
+                + "\"\\n\""
+                + " }";
+        HttpClientSimulator.setQueryResponseData(getDriverPostFormatQuery(), createMessageBlock(format));
+        String routedDeliveries = readResourceFile("routed-deliveries-multi-pickup-v300.csv");
+        DriverPostFormat driverPostFormat = DriverPostFormat.create(createApiSimulator(), users, routedDeliveries,
+                getRestaurantTemplateQuery(),
+                getDriverPostFormatQuery(),
+                getGroupInstructionsFormatQuery());
+        List<String> posts = driverPostFormat.generateDriverPosts();
+        assertThat(posts).containsExactly(
+                "RevFoodTruck|2|veggie:2:noRed:1:noPork:1:|0|veg:0:custom pick:0:|\n"
+                + "BFN|0|veggie:0:noRed:0:noPork:0:|4|veg:1:custom pick:2:|\n");
+    }
+
+    @Test
+    public void alternateMealsTest() {
+        String format = "LOOP &{AlternateMeals} {"
+                + "&{AlternateMeals.Type} "
+                + "\":\""
+                + "}"
+                + "\"\\n\"";
+        HttpClientSimulator.setQueryResponseData(getDriverPostFormatQuery(), createMessageBlock(format));
+        String routedDeliveries = readResourceFile(getRoutedDeliveriesFileName());
+        DriverPostFormat driverPostFormat = DriverPostFormat.create(createApiSimulator(), users, routedDeliveries,
+                getRestaurantTemplateQuery(),
+                getDriverPostFormatQuery(),
+                getGroupInstructionsFormatQuery());
+        List<String> posts = driverPostFormat.generateDriverPosts();
+        assertThat(posts).containsExactly("veggie:noRed:noPork:\n");
+    }
+
+    @Test
+    public void alternateGroceriesTest() {
+        String format = "LOOP &{AlternateGroceries} {"
+                + "&{AlternateGroceries.Type} "
+                + "\":\""
+                + "}"
+                + "\"\\n\"";
+        HttpClientSimulator.setQueryResponseData(getDriverPostFormatQuery(), createMessageBlock(format));
+        String routedDeliveries = readResourceFile(getRoutedDeliveriesFileName());
+        DriverPostFormat driverPostFormat = DriverPostFormat.create(createApiSimulator(), users, routedDeliveries,
+                getRestaurantTemplateQuery(),
+                getDriverPostFormatQuery(),
+                getGroupInstructionsFormatQuery());
+        List<String> posts = driverPostFormat.generateDriverPosts();
+        assertThat(posts).containsExactly("veg:custom pick:\n");
     }
 
     @Test

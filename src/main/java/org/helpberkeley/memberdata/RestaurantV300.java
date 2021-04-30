@@ -36,12 +36,16 @@ public class RestaurantV300 extends Restaurant {
         super(name);
         this.controlBlock = (ControlBlockV300) controlBlock;
 
-        for (String altMealType : ((ControlBlockV300) controlBlock).getAltMealOptions()) {
-            alternateMealTypes.add(altMealType);
+        if (this.controlBlock.getMealSource().equals(name)) {
+            for (String altMealType : ((ControlBlockV300) controlBlock).getAltMealOptions()) {
+                alternateMealTypes.add(altMealType);
+            }
         }
 
-        for (String altGroceryType : ((ControlBlockV300) controlBlock).getAltGroceryOptions()) {
-            alternateGroceryTypes.add(altGroceryType);
+        if (this.controlBlock.getGrocerySource().equals(name)) {
+            for (String altGroceryType : ((ControlBlockV300) controlBlock).getAltGroceryOptions()) {
+                alternateGroceryTypes.add(altGroceryType);
+            }
         }
     }
 

@@ -407,7 +407,7 @@ public class RoutedDeliveriesV300Test extends TestBase {
         assertThat(pickups).hasSize(2);
 
         Restaurant restaurant = pickups.get(0);
-        assertThat(restaurant.getName()).isEqualTo("West Berkeley");
+        assertThat(restaurant.getName()).isEqualTo("RevFoodTruck");
         assertThat(restaurant.getAddress()).isEqualTo("9999 999 St., Berkeley, CA");
         assertThat(restaurant.getDetails()).isEmpty();
 
