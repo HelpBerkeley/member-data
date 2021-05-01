@@ -22,7 +22,6 @@
  */
 package org.helpberkeley.memberdata;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.List;
@@ -73,7 +72,7 @@ public class DriverPostV300Test extends DriverPostTest {
     }
 
     @Test
-    public void v300DeliveriesTest() {
+    public void v300SingleDriverDeliveriesTest() {
         String format = "LOOP &{Consumer} { "
                 + " &{Consumer.Name}"
                 + "\"|\""
@@ -102,6 +101,42 @@ public class DriverPostV300Test extends DriverPostTest {
                 + "Cust Name 3|0|0|none|2|0|none\n"
                 + "Cust Name 4|0|1|veggie|0|1|veg\n"
                 + "Cust Name 5|0|1|noPork|0|0|none\n"
+                + "Cust Name 6|0|0|none|0|1|custom pick\n"
+                + "Cust Name 7|0|1|veggie|0|1|custom pick\n"
+        );
+    }
+
+    @Test
+    public void v300MultiDriverDeliveriesTest() {
+        String format = "LOOP &{Consumer} { "
+                + " &{Consumer.Name}"
+                + "\"|\""
+                + " &{Consumer.StandardMeal}"
+                + "\"|\""
+                + " &{Consumer.AlternateMeal}"
+                + "\"|\""
+                + " &{Consumer.AlternateMealType}"
+                + "\"|\""
+                + " &{Consumer.StandardGrocery}"
+                + "\"|\""
+                + " &{Consumer.AlternateGrocery}"
+                + "\"|\""
+                + " &{Consumer.AlternateGroceryType}"
+                + "\"\\n\""
+                + " }";
+        HttpClientSimulator.setQueryResponseData(getDriverPostFormatQuery(), createMessageBlock(format));
+        String routedDeliveries = readResourceFile("routed-deliveries-multi-driver-v300.csv");
+        DriverPostFormat driverPostFormat = DriverPostFormat.create(createApiSimulator(), users, routedDeliveries,
+                getRestaurantTemplateQuery(),
+                getDriverPostFormatQuery(),
+                getGroupInstructionsFormatQuery());
+        List<String> posts = driverPostFormat.generateDriverPosts();
+        assertThat (posts).hasSize(2);
+        assertThat(posts).containsExactly("Cust Name 1|0|1|noRed|0|0|none\n"
+                + "Cust Name 2|2|0|none|2|0|none\n"
+                + "Cust Name 3|0|0|none|2|0|none\n"
+                + "Cust Name 4|0|1|veggie|0|1|veg\n",
+                "Cust Name 5|0|1|noPork|0|0|none\n"
                 + "Cust Name 6|0|0|none|0|1|custom pick\n"
                 + "Cust Name 7|0|1|veggie|0|1|custom pick\n"
         );
@@ -299,17 +334,5 @@ public class DriverPostV300Test extends DriverPostTest {
                 getGroupInstructionsFormatQuery());
         List<String> posts = driverPostFormat.generateDriverPosts();
         assertThat(posts).containsExactly("Start time: 3:00");
-    }
-
-
-    @Test public void multiDriverMessageTest() {
-        String routedDeliveries = readResourceFile("routed-deliveries-multi-driver-v300.csv");
-        DriverPostFormat driverPostFormat = DriverPostFormat.create(createApiSimulator(), users, routedDeliveries,
-                getRestaurantTemplateQuery(),
-                getDriverPostFormatQuery(),
-                getGroupInstructionsFormatQuery());
-
-        List<String> posts = driverPostFormat.generateDriverPosts();
-        assertThat(posts).hasSize(2);
     }
 }
