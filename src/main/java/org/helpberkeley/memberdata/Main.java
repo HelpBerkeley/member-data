@@ -694,29 +694,33 @@ public class Main {
     private static void doOneKitchenDriverMessages(
             ApiClient apiClient, WorkRequestHandler.WorkRequest request, Map<String, User> users) {
 
-        long topic = (request.topic != null) ? request.topic : DRIVERS_POST_STAGING_TOPIC_ID;
 
-        String version = request.version;
-        if (version == null) {
-            version = Constants.CONTROL_BLOCK_CURRENT_VERSION;
-        }
+        // FIX THIS, DS: turn back on it necessary.
+        return;
 
-        // Download file
-        String routedDeliveries = apiClient.downloadFile(request.uploadFile.getFileName());
-        request.postStatus(WorkRequestHandler.RequestStatus.Processing, "");
-
-        try {
-            String statusMessage = generateDriverPosts(
-                    apiClient, users, routedDeliveries, version, topic,
-                    Constants.QUERY_GET_ONE_KITCHEN_DRIVERS_POST_FORMAT_V1,
-                    Constants.QUERY_GET_ONE_KITCHEN_GROUP_POST_FORMAT_V1,
-                    CombinationDriverPost.GENERATE_COMBINATION_POST);
-            request.postStatus(WorkRequestHandler.RequestStatus.Succeeded, statusMessage);
-        } catch (MemberDataException ex) {
-            String reason = ex.getCause() != null ? ex.getCause().getMessage() : ex.getMessage();
-            request.postStatus(WorkRequestHandler.RequestStatus.Failed, reason);
-
-        }
+//        long topic = (request.topic != null) ? request.topic : DRIVERS_POST_STAGING_TOPIC_ID;
+//
+//        String version = request.version;
+//        if (version == null) {
+//            version = Constants.CONTROL_BLOCK_CURRENT_VERSION;
+//        }
+//
+//        // Download file
+//        String routedDeliveries = apiClient.downloadFile(request.uploadFile.getFileName());
+//        request.postStatus(WorkRequestHandler.RequestStatus.Processing, "");
+//
+//        try {
+//            String statusMessage = generateDriverPosts(
+//                    apiClient, users, routedDeliveries, version, topic,
+//                    Constants.QUERY_GET_ONE_KITCHEN_DRIVERS_POST_FORMAT_V1,
+//                    Constants.QUERY_GET_ONE_KITCHEN_GROUP_POST_FORMAT_V1,
+//                    CombinationDriverPost.GENERATE_COMBINATION_POST);
+//            request.postStatus(WorkRequestHandler.RequestStatus.Succeeded, statusMessage);
+//        } catch (MemberDataException ex) {
+//            String reason = ex.getCause() != null ? ex.getCause().getMessage() : ex.getMessage();
+//            request.postStatus(WorkRequestHandler.RequestStatus.Failed, reason);
+//
+//        }
     }
 
     private static String generateDriverPosts(ApiClient apiClient,
