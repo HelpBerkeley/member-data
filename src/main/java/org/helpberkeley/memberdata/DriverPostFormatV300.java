@@ -178,10 +178,23 @@ public class DriverPostFormatV300 extends DriverPostFormat {
     @Override
     String versionSpecificSimpleRef(MessageBlockContext context, String varName) {
 
+        String value;
+
         switch (varName) {
+            case "FirstPickupLocation":
+                value = controlBlock.getMealSource();
+                break;
+            case "TotalStandardGrocery":
+                value = getStandardGroceryTotal();
+                break;
+            case "TotalStandardMeal":
+                value = getStandardMealTotal();
+                break;
             default:
                 throw new MemberDataException(context.formatException("unknown variable ${" + varName + "}"));
         }
+
+        return value;
     }
 
     @Override
@@ -517,6 +530,10 @@ public class DriverPostFormatV300 extends DriverPostFormat {
             case "AlternateMeals.Count":
                 value = getAlternateMealTotal(context);
                 break;
+            case "AlternateMeals.Total":
+                assert ! context.getAlternateType().isEmpty() : "no alternate meal type set";
+                value = getAllDriverAlternateMealsTotal(context.getAlternateType());
+                break;
             default:
                 throw new MemberDataException(context.formatException("unknown list variable &{" + refName + "}"));
         }
@@ -537,6 +554,10 @@ public class DriverPostFormatV300 extends DriverPostFormat {
                 break;
             case "AlternateGroceries.Count":
                 value = getAlternateGroceryTotal(context);
+                break;
+            case "AlternateGroceries.Total":
+                assert ! context.getAlternateType().isEmpty() : "no alternate grocery type set";
+                value = getAllDriverAlternateGroceriesTotal(context.getAlternateType());
                 break;
             default:
                 throw new MemberDataException(context.formatException("unknown list variable &{" + refName + "}"));
@@ -878,5 +899,49 @@ public class DriverPostFormatV300 extends DriverPostFormat {
 
         LOGGER.trace("${{}} = \"{}\"", refName, value);
         return value;
+    }
+
+    // FIX THIS, DS: change the driver internal representation to integer
+    //               to avoid all this string/int conversion
+    private String getStandardMealTotal() {
+        int total = 0;
+        for (Driver driver : drivers) {
+            total += Integer.parseInt(((DriverV300)driver).getStandardMeals());
+        }
+
+        return String.valueOf(total);
+    }
+
+    // FIX THIS, DS: change the driver internal representation to integer
+    //               to avoid all this string/int conversion
+    private String getStandardGroceryTotal() {
+        int total = 0;
+        for (Driver driver : drivers) {
+            total += Integer.parseInt(((DriverV300)driver).getStandardGroceries());
+        }
+
+        return String.valueOf(total);
+    }
+
+    // FIX THIS, DS: change the driver internal representation to integer
+    //               to avoid all this string/int conversion
+    private String getAllDriverAlternateMealsTotal(String mealType) {
+        int total = 0;
+        for (Driver driver : drivers) {
+            total += ((DriverV300)driver).getAltMeals(mealType);
+        }
+
+        return String.valueOf(total);
+    }
+
+    // FIX THIS, DS: change the driver internal representation to integer
+    //               to avoid all this string/int conversion
+    private String getAllDriverAlternateGroceriesTotal(String groceryType) {
+        int total = 0;
+        for (Driver driver : drivers) {
+            total += ((DriverV300)driver).getAltGroceries(groceryType);
+        }
+
+        return String.valueOf(total);
     }
 }

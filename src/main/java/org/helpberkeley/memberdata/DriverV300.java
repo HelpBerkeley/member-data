@@ -92,4 +92,32 @@ class DriverV300 extends Driver {
 
         return String.valueOf(standardGroceries);
     }
+
+    // FIX THIS, DS: change the internal representation to int.
+    int getAltMeals(String mealType) {
+        int altMeals = 0;
+        for (DeliveryV300 delivery : deliveries) {
+            String numAltMeals = delivery.getAltMeals();
+
+            if ((! numAltMeals.equals("0")) && delivery.getTypeMeal().equals(mealType)) {
+                altMeals += Integer.parseInt(numAltMeals);
+            }
+        }
+
+        return altMeals;
+    }
+
+    // FIX THIS, DS: change the internal representation to int.
+    int getAltGroceries(String groceryType) {
+        int altGroceries = 0;
+        for (DeliveryV300 delivery : deliveries) {
+            String numAltGroceries = delivery.getAltGrocery();
+
+            if ((! numAltGroceries.equals("0")) && delivery.getTypeGrocery().equals(groceryType)) {
+                altGroceries += Integer.parseInt(numAltGroceries);
+            }
+        }
+
+        return altGroceries;
+    }
 }

@@ -214,4 +214,32 @@ public class PickupManagerPostV300Test extends TestBase {
                 "3:00|jbDriver|(777) 777.7777|2|1|1|0|4|1|0|\n"
                 + "3:05|jsDriver|(888) 888.8888|0|1|0|1|0|0|2|\n");
     }
+
+    @Test
+    public void v300TotalsSingleDriverTest() {
+        String format = "${TotalStandardMeal}"
+                + "\"|\""
+                + "LOOP &{AlternateMeals} {"
+                + "    &{AlternateMeals.Total} \" \" &{AlternateMeals.Type}"
+                + "    \"|\""
+                + "}"
+                + "${TotalStandardGrocery}"
+                + "\"|\""
+                + "LOOP &{AlternateGroceries} {"
+                + "    &{AlternateGroceries.Total} \" \" &{AlternateGroceries.Type}"
+                + "    \"|\""
+                + "}"
+                + "\"\\n\"";
+        HttpClientSimulator.setQueryResponseData(pickupManagerPostFormatQuery, createMessageBlock(format));
+        DriverPostFormat driverPostFormat = DriverPostFormat.create(
+                createApiSimulator(),
+                users,
+                oneDriverOneSource,
+                restaurantTemplateQuery,
+                driverPostFormatQuery,
+                groupPostFormatQuery);
+        // FIX THIS, DS: refactor.  make generic and have empty impl in V200?
+        String post = ((DriverPostFormatV300)driverPostFormat).generateDriversTablePost();
+        assertThat(post).isEqualTo("2|2 veggie|1 noRed|1 noPork|4|1 veg|2 custom pick|\n");
+    }
 }

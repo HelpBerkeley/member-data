@@ -313,4 +313,31 @@ public class ControlBlockV300Test extends ControlBlockTestBase{
         Throwable thrown = catchThrowable(() -> controlBlock.audit(users, List.of()));
         assertThat(thrown).isInstanceOf(MemberDataException.class);
     }
+
+    @Test
+    public void tooManyStartTimes() {
+        String opsManagerKey = "OpsManager (UserName|Phone)";
+        String opsManagerValue = "JVol|222-222-2222";
+        String key = Constants.CONTROL_BLOCK_START_TIMES;
+        String[] values = {
+                "3:59", "03:11", "4:19 PM", "21:42"
+        };
+
+        for (String value : values) {
+            String workFlowData = HEADER
+                    + CONTROL_BLOCK_BEGIN_ROW
+                    + CONTROL_BLOCK_VERSION_ROW
+                    + getKeyValueRow(key, value)
+                    + getKeyValueRow(opsManagerKey, opsManagerValue)
+                    + getKeyValueRow(key, value)
+                    + CONTROL_BLOCK_END_ROW;
+
+            WorkflowParser workflowParser = WorkflowParser.create(
+                    WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, Map.of(), workFlowData);
+            Throwable thrown = catchThrowable(() -> workflowParser.controlBlock());
+            assertThat(thrown).isInstanceOf(MemberDataException.class);
+            assertThat(thrown).hasMessage(MessageFormat.format(ControlBlockV300.TOO_MANY_START_TIMES_VARIABLES, 6));
+        }
+
+    }
 }

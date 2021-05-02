@@ -331,29 +331,24 @@ public abstract class DriverPostFormat {
         String varName = simpleRef.getName();
         String value;
 
-        final String firstRestaurant = context.getDriver().getFirstRestaurantName();
-        final Restaurant restaurant = restaurants.get(firstRestaurant);
-        assert restaurant != null : firstRestaurant + " was not found the in restaurant template post";
-        Driver driver = context.getDriver();
-
         switch (varName) {
             case "ThisDriverUserName":
                 value = context.getDriver().getUserName();
                 break;
-            case "ThisDriverFirstRestaurant":
-                value = restaurant.getName();
-                break;
-            case "ThisDriverFirstRestaurantStartTime":
-                value = driver.getStartTime();
-                break;
-            case "ThisDriverFirstRestaurantClosingTime":
-                value = restaurant.getClosingTime();
-                break;
-            case "FirstRestaurantEmoji":
-                value = restaurant.getEmoji();
-                break;
             case "ThisDriverGMapURL":
                 value = context.getDriver().getgMapURL();
+                break;
+            case "ThisDriverFirstRestaurant":
+                value = context.getDriver().getFirstRestaurantName();
+                break;
+            case "ThisDriverFirstRestaurantStartTime":
+                value = context.getDriver().getStartTime();
+                break;
+            case "ThisDriverFirstRestaurantClosingTime":
+                value = restaurants.get(context.getDriver().getFirstRestaurantName()).getClosingTime();
+                break;
+            case "FirstRestaurantEmoji":
+                value = restaurants.get(context.getDriver().getFirstRestaurantName()).getEmoji();
                 break;
             default:
                 value = versionSpecificSimpleRef(context, varName);

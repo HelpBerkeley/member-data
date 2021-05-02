@@ -338,4 +338,34 @@ public class DriverPostV300Test extends DriverPostTest {
         List<String> posts = driverPostFormat.generateDriverPosts();
         assertThat(posts).containsExactly("Start time: 3:00");
     }
+
+    @Test
+    public void v300FirstPickupLocationTest() {
+        String format = "LOOP &{Driver} {"
+                + " ${FirstPickupLocation} \"\\n\""
+                + "}";
+        HttpClientSimulator.setQueryResponseData(getGroupInstructionsFormatQuery(), createMessageBlock(format));
+        String routedDeliveries = readResourceFile(getRoutedDeliveriesFileName());
+        DriverPostFormat driverPostFormat = DriverPostFormat.create(createApiSimulator(), users, routedDeliveries,
+                getRestaurantTemplateQuery(),
+                getDriverPostFormatQuery(),
+                getGroupInstructionsFormatQuery());
+        String post = driverPostFormat.generateGroupInstructionsPost();
+        assertThat(post).isEqualTo("Bauman Meals/Groceries\n");
+    }
+
+    @Test
+    public void v300BackupDriversTest() {
+        String format = "LOOP &{BackupDriver} {"
+                + " ${BackupDriver.UserName} \"\\n\""
+                + "}";
+        HttpClientSimulator.setQueryResponseData(getGroupInstructionsFormatQuery(), createMessageBlock(format));
+        String routedDeliveries = readResourceFile(getRoutedDeliveriesFileName());
+        DriverPostFormat driverPostFormat = DriverPostFormat.create(createApiSimulator(), users, routedDeliveries,
+                getRestaurantTemplateQuery(),
+                getDriverPostFormatQuery(),
+                getGroupInstructionsFormatQuery());
+        String post = driverPostFormat.generateGroupInstructionsPost();
+        assertThat(post).isEqualTo("jsDriver\n");
+    }
 }

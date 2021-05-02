@@ -39,6 +39,8 @@ class ControlBlockV300 extends ControlBlock {
             "There are more drivers {0} than start times {1}.\n";
     public static final String INVALID_START_TIME =
             "\"{0}\" is not a valid start time. Must be of the form H:MM, H:MM PM (or AM), or HH:MM\n";
+    public static final String TOO_MANY_START_TIMES_VARIABLES =
+            "StartTimes() defined more than once.  Remove line {0}";
 
     private final List<String> altMealOptions = new ArrayList<>();
     private final List<String> altGroceryOptions = new ArrayList<>();
@@ -81,7 +83,10 @@ class ControlBlockV300 extends ControlBlock {
 
     @Override
     void processStartTimes(String value, long lineNumber) {
-        // FIX THIS, DS: is there auditing to do here?
+        if (! startTimes.isEmpty()) {
+            throw new MemberDataException(MessageFormat.format(TOO_MANY_START_TIMES_VARIABLES, lineNumber));
+        }
+
         startTimes.addAll(processList(value, lineNumber));
     }
 
