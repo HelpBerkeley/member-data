@@ -70,4 +70,26 @@ class DriverV300 extends Driver {
         assert startTime != null;
         return startTime;
     }
+
+    String getStandardMeals() {
+
+        int standardMeals = 0;
+        for (DeliveryV300 delivery : deliveries) {
+            // FIX THIS, DS: change the internal representation to int.
+            standardMeals += Integer.parseInt(delivery.getStdMeals());
+        }
+
+        return String.valueOf(standardMeals);
+    }
+
+    String getStandardGroceries() {
+
+        int standardGroceries = 0;
+        for (DeliveryV300 delivery : deliveries) {
+            // FIX THIS, DS: change the internal representation to int.
+            standardGroceries += Integer.parseInt(delivery.getStdGrocery());
+        }
+
+        return String.valueOf(standardGroceries);
+    }
 }

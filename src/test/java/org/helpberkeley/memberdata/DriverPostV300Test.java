@@ -154,6 +154,9 @@ public class DriverPostV300Test extends DriverPostTest {
                 + " IF &{Consumer.StandardGrocery} THEN { \"std grocery\" }"
                 + "\"|\""
                 + " IF &{Consumer.AlternateGrocery} THEN { \"alt grocery\" }"
+                + "\"|\""
+                + " IF &{Consumer.Details} THEN { \"details\" }"
+                + "\"|\""
                 + "\"\\n\""
                 + " }";
         HttpClientSimulator.setQueryResponseData(getDriverPostFormatQuery(), createMessageBlock(format));
@@ -163,13 +166,13 @@ public class DriverPostV300Test extends DriverPostTest {
                 getDriverPostFormatQuery(),
                 getGroupInstructionsFormatQuery());
         List<String> posts = driverPostFormat.generateDriverPosts();
-        assertThat(posts).containsExactly("Cust Name 1||alt meals||\n"
-                + "Cust Name 2|std meals||std grocery|\n"
-                + "Cust Name 3|||std grocery|\n"
-                + "Cust Name 4||alt meals||alt grocery\n"
-                + "Cust Name 5||alt meals||\n"
-                + "Cust Name 6||||alt grocery\n"
-                + "Cust Name 7||alt meals||alt grocery\n"
+        assertThat(posts).containsExactly("Cust Name 1||alt meals||||\n"
+                + "Cust Name 2|std meals||std grocery|||\n"
+                + "Cust Name 3|||std grocery|||\n"
+                + "Cust Name 4||alt meals||alt grocery||\n"
+                + "Cust Name 5||alt meals|||details|\n"
+                + "Cust Name 6||||alt grocery||\n"
+                + "Cust Name 7||alt meals||alt grocery||\n"
         );
     }
 

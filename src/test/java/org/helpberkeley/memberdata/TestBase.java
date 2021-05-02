@@ -21,6 +21,7 @@
 //
 package org.helpberkeley.memberdata;
 
+import com.cedarsoftware.util.io.JsonWriter;
 import org.helpberkeley.memberdata.route.GMapApiClient;
 import org.helpberkeley.memberdata.route.GmapApiSimulatorFactory;
 import org.junit.BeforeClass;
@@ -31,9 +32,7 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.ZonedDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Properties;
+import java.util.*;
 
 import static java.time.temporal.ChronoUnit.*;
 
@@ -444,5 +443,26 @@ public class TestBase {
 
     String shortBoolean(boolean value) {
         return value ? "Y" : "N";
+    }
+
+    String createMessageBlock(String contents) {
+        return new MessageBlockJSON(contents).toJSON();
+    }
+
+    static private class MessageBlockJSON {
+        final String[] columns;
+        final Object[][] rows;
+
+        MessageBlockJSON(String message) {
+            columns = new String[] { "post_number", "raw", "deleted_at" };
+            Object[] row = new Object[] { 1, "[Test]\n" + message, null };
+            rows = new Object[][] { row };
+        }
+
+        String toJSON() {
+            Map<String, Object> options = new HashMap<>();
+            options.put(JsonWriter.TYPE, Boolean.FALSE);
+            return JsonWriter.objectToJson(this, options);
+        }
     }
 }

@@ -314,9 +314,9 @@ public class DriverPostFormatV200 extends DriverPostFormat {
         return new ProcessingReturnValue(ProcessingStatus.COMPLETE, value);
     }
 
-    private ProcessingReturnValue processDriverListRef(MessageBlockListRef listRef, MessageBlockContext context) {
+    @Override
+    String versionSpecificDriverListRef(MessageBlockContext context, String refName) {
 
-        String refName = listRef.getName();
         String value;
 
         DriverV200 driver = (DriverV200) context.getDriver();
@@ -325,9 +325,6 @@ public class DriverPostFormatV200 extends DriverPostFormat {
         assert restaurant != null : firstRestaurantName + " was not found the in restaurant template post";
 
         switch (refName) {
-            case "Driver.UserName":
-                value = driver.getUserName();
-                break;
             case "Driver.FirstRestaurantName":
                 value = firstRestaurantName;
                 break;
@@ -341,15 +338,12 @@ public class DriverPostFormatV200 extends DriverPostFormat {
                 Restaurant splitRestaurant = context.getSplitRestaurant();
                 value = Long.toString(driver.getOrders(splitRestaurant.getName()));
                 break;
-            case "Driver.CompactPhone":
-                value = compactPhone(driver.getPhoneNumber());
-                break;
             default:
                 throw new MemberDataException(context.formatException("unknown list variable &{" + refName + "}"));
         }
 
         LOGGER.trace("${{}} = \"{}\"", refName, value);
-        return new ProcessingReturnValue(ProcessingStatus.COMPLETE, value);
+        return value;
     }
 
     private ProcessingReturnValue processSplitRestaurantListRef(

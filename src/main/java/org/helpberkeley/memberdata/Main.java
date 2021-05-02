@@ -756,7 +756,6 @@ public class Main {
         StringBuilder statusMessages = new StringBuilder();
         List<String> postURLs = new ArrayList<>();
         String groupPostURL = null;
-        String backupPostURL = null;
 
         DriverPostFormat driverPostFormat = DriverPostFormat.create(apiClient, users, routedDeliveries,
                 restaurantTemplateQuery, driverFormatQuery, groupFormatQuery);
@@ -818,29 +817,10 @@ public class Main {
                     + postResponse.postNumber);
         }
 
-        post = new Post();
-        post.title = "Generated Backup Driver Post";
-        post.topic_id = topic;
-        post.raw = driverPostFormat.generateBackupDriverPost();
-        post.createdAt = ZonedDateTime.now(ZoneId.systemDefault())
-                .format(DateTimeFormatter.ofPattern("uuuu.MM.dd.HH.mm.ss"));
-
-        response = apiClient.post(post.toJson());
-        LOGGER.info("generateBackupDriverPost {}", response.statusCode() == HTTP_OK ?
-                "" : "failed " + response.statusCode() + ": " + response.body());
-
-        if (response.statusCode() != HTTP_OK) {
-            statusMessages.append("Failed posting backup driver message: ")
-                    .append(response.statusCode()).append(": ").append(response.body()).append("\n");
-        } else {
-            PostResponse postResponse = HBParser.postResponse((String)response.body());
-            backupPostURL = ("https://go.helpberkeley.org/t/"
-                    + postResponse.topicSlug
-                    + '/'
-                    + postResponse.topicId
-                    + '/'
-                    + postResponse.postNumber);
-        }
+        String driversTableURL = generateDriversTablePost(
+                apiClient, driverPostFormat, topic, statusMessages);
+        String ordersTableURL = generateOrdersTablePost(
+                apiClient, driverPostFormat, topic, statusMessages);
 
         statusMessages.append(driverPostFormat.statusMessages());
         statusMessages.append("\n\n");
@@ -858,11 +838,87 @@ public class Main {
             statusMessages.append("\n[Group Instructions](").append(groupPostURL).append(")");
         }
 
-        if (backupPostURL != null) {
-            statusMessages.append("\n[Backup Driver](").append(backupPostURL).append(")");
+        if (driversTableURL != null) {
+            statusMessages.append("\n[Pickup Manager Drivers Table](").append(driversTableURL).append(")");
+        }
+
+        if (ordersTableURL != null) {
+            statusMessages.append("\n[Pickup Manager Orders Table](").append(ordersTableURL).append(")");
         }
 
         return statusMessages.toString();
+    }
+
+    private static String generateDriversTablePost(ApiClient apiClient, DriverPostFormat driverPostFormat,
+           long topic, StringBuilder statusMessages) {
+
+        if (! (driverPostFormat instanceof DriverPostFormatV300)) {
+            return null;
+        }
+
+        DriverPostFormatV300 driverPostFormatV300 = (DriverPostFormatV300) driverPostFormat;
+
+        Post post = new Post();
+        post.title = "Generated Drivers Table Post";
+        post.topic_id = topic;
+        post.raw = driverPostFormatV300.generateDriversTablePost();
+        post.createdAt = ZonedDateTime.now(ZoneId.systemDefault())
+                .format(DateTimeFormatter.ofPattern("uuuu.MM.dd.HH.mm.ss"));
+
+        HttpResponse<?> response = apiClient.post(post.toJson());
+        LOGGER.info("generateDriversTablePost {}", response.statusCode() == HTTP_OK ?
+                "" : "failed " + response.statusCode() + ": " + response.body());
+
+        if (response.statusCode() != HTTP_OK) {
+            statusMessages.append("Failed posting pickup manager message: ")
+                    .append(response.statusCode()).append(": ").append(response.body()).append("\n");
+        } else {
+            PostResponse postResponse = HBParser.postResponse((String)response.body());
+            return "https://go.helpberkeley.org/t/"
+                    + postResponse.topicSlug
+                    + '/'
+                    + postResponse.topicId
+                    + '/'
+                    + postResponse.postNumber;
+        }
+
+        return null;
+    }
+
+    private static String generateOrdersTablePost(ApiClient apiClient, DriverPostFormat driverPostFormat,
+                                                   long topic, StringBuilder statusMessages) {
+
+        if (! (driverPostFormat instanceof DriverPostFormatV300)) {
+            return null;
+        }
+
+        DriverPostFormatV300 driverPostFormatV300 = (DriverPostFormatV300) driverPostFormat;
+
+        Post post = new Post();
+        post.title = "Generated Orders Table Post";
+        post.topic_id = topic;
+        post.raw = driverPostFormatV300.generateOrdersTablePost();
+        post.createdAt = ZonedDateTime.now(ZoneId.systemDefault())
+                .format(DateTimeFormatter.ofPattern("uuuu.MM.dd.HH.mm.ss"));
+
+        HttpResponse<?> response = apiClient.post(post.toJson());
+        LOGGER.info("generateOrdersTablePost {}", response.statusCode() == HTTP_OK ?
+                "" : "failed " + response.statusCode() + ": " + response.body());
+
+        if (response.statusCode() != HTTP_OK) {
+            statusMessages.append("Failed posting pickup manager message: ")
+                    .append(response.statusCode()).append(": ").append(response.body()).append("\n");
+        } else {
+            PostResponse postResponse = HBParser.postResponse((String)response.body());
+            return "https://go.helpberkeley.org/t/"
+                    + postResponse.topicSlug
+                    + '/'
+                    + postResponse.topicId
+                    + '/'
+                    + postResponse.postNumber;
+        }
+
+        return null;
     }
 
     // FIX THIS, DS: update WorkRequestHandler postStatus() to handle this.  Then we can do end to end tests

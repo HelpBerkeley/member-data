@@ -141,6 +141,7 @@ public abstract class DriverPostFormat {
     abstract ProcessingReturnValue processLoopListRef(
             MessageBlockLoop loop, MessageBlockListRef listRef, MessageBlockContext context);
     abstract String versionSpecificSimpleRef(MessageBlockContext context, String varName);
+    abstract String versionSpecificDriverListRef(MessageBlockContext context, String varName);
 
     public final List<String> generateDriverPosts() {
 
@@ -207,7 +208,6 @@ public abstract class DriverPostFormat {
 
         return post.toString();
     }
-
 
     protected final void loadLastRestaurantTemplate() {
         String  json = apiClient.runQuery(restaurantTemplateQuery);
@@ -423,6 +423,33 @@ public abstract class DriverPostFormat {
         String refName = structRef.getName();
 
         throw new MemberDataException(context.formatException("Unknown boolean variable &{" + refName + "}"));
+    }
+
+    protected final ProcessingReturnValue processDriverListRef(
+            MessageBlockListRef listRef, MessageBlockContext context) {
+
+        String refName = listRef.getName();
+        String value;
+
+        Driver driver = context.getDriver();
+
+        switch (refName) {
+            case "Driver.Name":
+                value = driver.getName();
+                break;
+            case "Driver.UserName":
+                value = driver.getUserName();
+                break;
+            case "Driver.CompactPhone":
+                value = compactPhone(driver.getPhoneNumber());
+                break;
+            default:
+                value = versionSpecificDriverListRef(context, refName);
+                break;
+        }
+
+        LOGGER.trace("${{}} = \"{}\"", refName, value);
+        return new ProcessingReturnValue(ProcessingStatus.COMPLETE, value);
     }
 
     private ProcessingReturnValue processLoopListNameRef(

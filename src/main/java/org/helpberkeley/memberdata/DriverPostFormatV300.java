@@ -25,6 +25,7 @@ package org.helpberkeley.memberdata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -44,14 +45,17 @@ public class DriverPostFormatV300 extends DriverPostFormat {
     private static final String CONSUMER_ALT_MEAL = "Consumer." + ALT_MEAL;
     private static final String CONSUMER_STD_GROCERY = "Consumer." + STD_GROCERY;
     private static final String CONSUMER_ALT_GROCERY = "Consumer." + ALT_GROCERY;
+    private static final String CONSUMER_DETAILS = "Consumer.Details";
 
     private static final String THIS_DRIVER_RESTAURANT_STD_MEALS = "ThisDriverRestaurant." + STD_MEALS;
     private static final String THIS_DRIVER_RESTAURANT_ALT_MEALS = "ThisDriverRestaurant." + ALT_MEALS;
     private static final String THIS_DRIVER_RESTAURANT_STD_GROCERY = "ThisDriverRestaurant." + STD_GROCERY;
     private static final String THIS_DRIVER_RESTAURANT_ALT_GROCERY = "ThisDriverRestaurant." + ALT_GROCERY;
 
-    private final StringBuilder statusMessages = new StringBuilder();
     private ControlBlockV300 controlBlock;
+    private final StringBuilder statusMessages = new StringBuilder();
+    private final List<MessageBlock> driversTableMessageBlocks = new ArrayList<>();
+    private final List<MessageBlock> ordersTableMessageBlocks = new ArrayList<>();
 
     DriverPostFormatV300() {
         super();
@@ -68,6 +72,8 @@ public class DriverPostFormatV300 extends DriverPostFormat {
         loadDriverPostFormat();
         loadGroupPostFormat();
         loadBackupDriverPostFormat();
+        loadOrdersTablePostFormat();
+        loadDriversTablePostFormat();
         loadRoutedDeliveries(routedDeliveries);
         auditControlBlock();
         setDriverStartTimes();
@@ -90,114 +96,49 @@ public class DriverPostFormatV300 extends DriverPostFormat {
 
     @Override
     String generateSummary() {
-        StringBuilder summary = new StringBuilder();
 
         // FIX THIS, DS: implement
+        return "Summary not yet implemented\n";
+    }
 
-//        if (! controlBlock.restaurantsAuditDisabled()) {
-//            // Restaurants with no drivers
-//            for (Restaurant restaurant : restaurants.values()) {
-//                if (restaurant.getDrivers().size() == 0) {
-//                    summary.append("No drivers going to ").append(restaurant.getName()).append("\n");
-//                }
-//            }
-//        }
-//        summary.append("\n");
-//
-//        long numStdMeals = 0;
-//        long numAltMeals = 0;
-//        long numStdGrocvery = 0;
-//        long numAltGrocery = 0;
-//
-//        for (Driver driver : drivers) {
-//            String originalStartTime = driver.getOriginalStartTime();
-//            String startTime = driver.getStartTime();
-//
-//            if (! startTime.equals(originalStartTime)) {
-//
-//                summary.append("Driver ").append(driver.getUserName())
-//                        .append(", start time for ").append(driver.getFirstRestaurantName())
-//                        .append(" adjusted to ").append(startTime).append(" from ").append(originalStartTime)
-//                        .append('\n');
-//            }
-//
-//            for (String warning : driver.getWarningMessages()) {
-//                summary.append("Warning: driver ").append(driver.getUserName())
-//                        .append(" ").append(warning).append('\n');
-//            }
-//
-//            // FIX THIS, DS: re-implement
-////            for (Delivery delivery : driver.getDeliveries()) {
-////                numNormal += Long.parseLong(delivery.getNormalRations());
-////                numVeggie += Long.parseLong(delivery.getVeggieRations());
-////            }
-//        }
-//
-//        summary.append("\n");
-//
-//        // Split restaurants / cleanup drivers / orders
-//
-//        long totalOrders = 0;
-//        boolean headerAdded = false;
-//
-//        for (Restaurant restaurant : restaurants.values()) {
-//            String cleanupDriver;
-//
-//            totalOrders += restaurant.getOrders();
-//
-//            if (restaurant.getDrivers().size() < 2) {
-//                continue;
-//            }
-//
-//            if (! controlBlock.splitRestaurantAuditsDisabled()) {
-//                if (!headerAdded) {
-//                    summary.append("|Split Restaurants|Cleanup Driver|\n");
-//                    summary.append("|---|---|\n");
-//
-//                    headerAdded = true;
-//                }
-//            }
-//
-//            if (controlBlock.splitRestaurantAuditsDisabled()) {
-//                cleanupDriver = "";
-//            } else {
-//                cleanupDriver = controlBlock.getSplitRestaurant(restaurant.getName()).getCleanupDriverUserName();
-//            }
-//
-//            if (! controlBlock.splitRestaurantAuditsDisabled()) {
-//                summary.append("|");
-//                summary.append(restaurant.getName());
-//                summary.append("|");
-//                summary.append(cleanupDriver);
-//                summary.append("|\n");
-//            }
-//        }
+    public String generateDriversTablePost() {
 
-        // Total
+        StringBuilder post = new StringBuilder();
 
-        // Total orders: 19    Meals: 56  Drivers on the road: 4  Normal rations: 24   Veggie rations: 4
+        MessageBlockContext context = new MessageBlockContext("Base", null);
 
-        // | Orders | Meals | Drivers | Normal rations| Veggie rations|
-        //|---|---|---|---|---|
-        //| 10 | 30 | 3 | 14 | 1 |
+        for (MessageBlock messageBlock : driversTableMessageBlocks) {
 
-        // FIX THIS, DS: re-implement
-//        summary.append("\n");
-//        summary.append("|Orders|Meals|Drivers|Normal rations|Veggie rations|\n");
-//        summary.append("|---|---|---|---|---|\n");
-//        summary.append("|");
-//        summary.append(totalOrders);
-//        summary.append("|");
-//        summary.append((numNormal + numVeggie) * 2);
-//        summary.append("|");
-//        summary.append(drivers.size());
-//        summary.append("|");
-//        summary.append(numNormal);
-//        summary.append("|");
-//        summary.append(numVeggie);
-//        summary.append("|\n");
+            context.setMessageBlockContext(messageBlock.getPostNumber(), messageBlock.getName());
 
-        return summary.toString();
+            if (messageBlock.name.equalsIgnoreCase("comment")) {
+                continue;
+            }
+
+            post.append(processMessageBlock(messageBlock, context));
+        }
+
+        return post.toString();
+    }
+
+    public String generateOrdersTablePost() {
+
+        StringBuilder post = new StringBuilder();
+
+        MessageBlockContext context = new MessageBlockContext("Base", null);
+
+        for (MessageBlock messageBlock : ordersTableMessageBlocks) {
+
+            context.setMessageBlockContext(messageBlock.getPostNumber(), messageBlock.getName());
+
+            if (messageBlock.name.equalsIgnoreCase("comment")) {
+                continue;
+            }
+
+            post.append(processMessageBlock(messageBlock, context));
+        }
+
+        return post.toString();
     }
 
     private void auditControlBlock() {
@@ -405,6 +346,9 @@ public class DriverPostFormatV300 extends DriverPostFormat {
             case "ThisDriverRestaurant.AlternateGroceries":
                 returnValue = processAlternateGroceriesLoopRef(loop, context);
                 break;
+            case "Driver.Consumer":
+                returnValue = processDeliveriesLoopRef(loop, context);
+                break;
             default:
                 throw new MemberDataException(context.formatException("unknown loop list ref &{" + listRef + "}"));
         }
@@ -479,6 +423,9 @@ public class DriverPostFormatV300 extends DriverPostFormat {
                 case CONSUMER_ALT_GROCERY:
                     value = Integer.parseInt(delivery.getAltGrocery()) > 0;
                     break;
+                case CONSUMER_DETAILS:
+                    value = ! delivery.getDetails().isEmpty();
+                    break;
                 default:
                     throw new MemberDataException(context.formatException("Unknown boolean variable &{" + refName + "}"));
             }
@@ -502,6 +449,9 @@ public class DriverPostFormatV300 extends DriverPostFormat {
                 break;
             case "Consumer":
                 returnValue = processDeliveriesListRef(listRef, context);
+                break;
+            case "Driver":
+                returnValue = processDriverListRef(listRef, context);
                 break;
             case "AlternateMeals":
                 returnValue = processAlternateMealsListRef(listRef, context);
@@ -779,13 +729,51 @@ public class DriverPostFormatV300 extends DriverPostFormat {
         return new ProcessingReturnValue(ProcessingStatus.COMPLETE, output.toString());
     }
 
+    protected final  ProcessingReturnValue processDeliveriesLoopRef(
+            MessageBlockLoop loop, MessageBlockContext context) {
+
+        StringBuilder output = new StringBuilder();
+        MessageBlockContext deliveriesContext = new MessageBlockContext("Delivery", context);
+
+        LOGGER.trace("processDeliveriesLoopRef: {}", deliveriesContext);
+
+        Driver driver =  context.getDriver();
+
+        for (Delivery delivery : driver.getDeliveries()) {
+
+            deliveriesContext.setDelivery(delivery);
+
+            for (MessageBlockElement loopElement : loop.getElements()) {
+                ProcessingReturnValue returnValue = processElement(loopElement, deliveriesContext);
+                output.append(returnValue.output);
+
+                if (returnValue.status == ProcessingStatus.CONTINUE) {
+                    break;
+                }
+            }
+        }
+
+        LOGGER.trace("${{}} = \"{}\"", loop, output);
+        return new ProcessingReturnValue(ProcessingStatus.COMPLETE, output.toString());
+    }
+
     String getAlternateMealTotal(MessageBlockContext context) {
         String mealType = context.getAlternateType();
         DriverV300 driver = (DriverV300) context.getDriver();
-        RestaurantV300 restaurant = (RestaurantV300) context.getPickupRestaurant();
         int total = 0;
+        RestaurantV300 restaurant = (RestaurantV300) context.getPickupRestaurant();
+        String restaurantName;
 
-        if (restaurant.getName().equals(controlBlock.getMealSource())) {
+
+        // FIX THIS, DS: we are hitting this from two different contexts
+
+        if (restaurant == null) {
+            restaurantName = ((ControlBlockV300)controlBlock).getMealSource();
+        } else {
+            restaurantName = restaurant.getName();
+        }
+
+        if (restaurantName.equals(controlBlock.getMealSource())) {
             for (DeliveryV300 delivery : driver.getDeliveriesV300()) {
                 if (mealType.equals(delivery.getTypeMeal())) {
                     total += Integer.parseInt(delivery.getAltMeals());
@@ -800,9 +788,18 @@ public class DriverPostFormatV300 extends DriverPostFormat {
         String groceryType = context.getAlternateType();
         DriverV300 driver = (DriverV300) context.getDriver();
         RestaurantV300 restaurant = (RestaurantV300) context.getPickupRestaurant();
+        String restaurantName;
         int total = 0;
 
-        if (restaurant.getName().equals(controlBlock.getGrocerySource())) {
+        // FIX THIS, DS: we are hitting this from two different contexts
+
+        if (restaurant == null) {
+            restaurantName = ((ControlBlockV300)controlBlock).getGrocerySource();
+        } else {
+            restaurantName = restaurant.getName();
+        }
+
+        if (restaurantName.equals(controlBlock.getGrocerySource())) {
             for (DeliveryV300 delivery : driver.getDeliveriesV300()) {
                 if (groceryType.equals(delivery.getTypeGrocery())) {
                     total += Integer.parseInt(delivery.getAltGrocery());
@@ -823,5 +820,63 @@ public class DriverPostFormatV300 extends DriverPostFormat {
             assert startTimesIterator.hasNext();
             driverV300.setStartTime(startTimesIterator.next());
         }
+    }
+
+    private void loadDriversTablePostFormat() {
+        // FIX THIS, DS: refactor
+        String json = apiClient.runQuery(Constants.QUERY_GET_ONE_KITCHEN_DRIVERS_TABLE_POST_FORMAT_V300);
+
+        ApiQueryResult apiQueryResult = HBParser.parseQueryResult(json);
+
+        for (Object rowObj : apiQueryResult.rows) {
+            Object[] columns = (Object[]) rowObj;
+            assert columns.length == 3 : columns.length;
+
+            MessageBlock messageBlock = new MessageBlock((Long)columns[0], (String)columns[1]);
+            // FIX THIS, DS: catch and update status here?
+            messageBlock.parse();
+            driversTableMessageBlocks.add(messageBlock);
+        }
+    }
+
+    private void loadOrdersTablePostFormat() {
+        // FIX THIS, DS: refactor
+        String json = apiClient.runQuery(Constants.QUERY_GET_ONE_KITCHEN_ORDERS_TABLE_POST_FORMAT_V300);
+
+        ApiQueryResult apiQueryResult = HBParser.parseQueryResult(json);
+
+        for (Object rowObj : apiQueryResult.rows) {
+            Object[] columns = (Object[]) rowObj;
+            assert columns.length == 3 : columns.length;
+
+            MessageBlock messageBlock = new MessageBlock((Long)columns[0], (String)columns[1]);
+            // FIX THIS, DS: catch and update status here?
+            messageBlock.parse();
+            ordersTableMessageBlocks.add(messageBlock);
+        }
+    }
+
+    @Override
+    String  versionSpecificDriverListRef(MessageBlockContext context, String refName) {
+
+        String value;
+        DriverV300 driver = (DriverV300) context.getDriver();
+
+        switch (refName) {
+            case "Driver.StartTime":
+                value = driver.getStartTime();
+                break;
+            case "Driver.StandardMeals":
+                value =  driver.getStandardMeals();
+                break;
+            case "Driver.StandardGroceries":
+                value =  driver.getStandardGroceries();
+                break;
+            default:
+                throw new MemberDataException(context.formatException("unknown list variable &{" + refName + "}"));
+        }
+
+        LOGGER.trace("${{}} = \"{}\"", refName, value);
+        return value;
     }
 }
