@@ -34,6 +34,7 @@ class MessageBlockContext {
     private Restaurant pickupRestaurant;
     private String backupDriver;
     private String alternateType;
+    private String pickupManager;
 
     MessageBlockContext(String name, MessageBlockContext parent) {
         this.name = name;
@@ -98,6 +99,10 @@ class MessageBlockContext {
 
     void setAlternateType(String alternateType) {
         this.alternateType = alternateType;
+    }
+
+    void setPickupManager(String pickupManager) {
+        this.pickupManager = pickupManager;
     }
 
     String getBlockName() {
@@ -179,6 +184,18 @@ class MessageBlockContext {
 
         if (parent != null) {
             return parent.getBackupDriver();
+        }
+
+        return null;
+    }
+
+    String getPickupManager() {
+        if (pickupManager != null) {
+            return pickupManager;
+        }
+
+        if (parent != null) {
+            return parent.getPickupManager();
         }
 
         return null;

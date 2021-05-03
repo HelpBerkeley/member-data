@@ -378,13 +378,13 @@ public class RoutedDeliveriesV300Test extends TestBase {
                 Constants.QUERY_GET_ONE_KITCHEN_GROUP_POST_FORMAT_V300));
         assertThat(thrown).isInstanceOf(MemberDataException.class);
         assertThat(thrown).hasMessageContaining(MessageFormat.format(
-                WorkflowParserV300.MISSING_MEAL_PICKUP, 23, "jsDriver", "Bauman Meals/Groceries"));
-        assertThat(thrown).hasMessageContaining(MessageFormat.format(
-                WorkflowParserV300.MISSING_GROCERY_PICKUP, 24, "jsDriver", "Bauman Meals/Groceries"));
+                WorkflowParserV300.MISSING_MEAL_PICKUP, 24, "jsDriver", "Bauman Meals/Groceries"));
         assertThat(thrown).hasMessageContaining(MessageFormat.format(
                 WorkflowParserV300.MISSING_GROCERY_PICKUP, 25, "jsDriver", "Bauman Meals/Groceries"));
         assertThat(thrown).hasMessageContaining(MessageFormat.format(
-                WorkflowParserV300.MISSING_MEAL_PICKUP, 25, "jsDriver", "Bauman Meals/Groceries"));
+                WorkflowParserV300.MISSING_GROCERY_PICKUP, 26, "jsDriver", "Bauman Meals/Groceries"));
+        assertThat(thrown).hasMessageContaining(MessageFormat.format(
+                WorkflowParserV300.MISSING_MEAL_PICKUP, 26, "jsDriver", "Bauman Meals/Groceries"));
     }
 
     @Test

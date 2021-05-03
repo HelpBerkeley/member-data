@@ -56,8 +56,8 @@ public class ControlBlockV300Test extends ControlBlockTestBase{
     private final String altMealOptionsValue = "\"only-purple, no-emu\"";
     private final String altGroceryOptionsKey = Constants.CONTROL_BLOCK_ALT_GROCERY_OPTIONS;
     private final String altGroceryOptionsValue = "\"Mac'n'Cheese only, piscivorous\"";
-    private final String pickupManagersKey = Constants.CONTROL_BLOCK_PICKUP_MANAGERS;
-    private final String pickupManagersValue = "\"jVol, jsDriver\"";
+    private final String pickupManagersKey = Constants.CONTROL_BLOCK_PICKUP_MANAGER;
+    private final String pickupManagersValue = "ZZZ";
 
     public ControlBlockV300Test() {
         controlBlockData = readResourceFile("control-block-v300.csv");
@@ -220,13 +220,17 @@ public class ControlBlockV300Test extends ControlBlockTestBase{
 
     @Test
     public void pickupManagersTest() {
-        String key = Constants.CONTROL_BLOCK_PICKUP_MANAGERS;
-        String value = "\"John, Jacob, Jingleheimer\"";
+        String key = Constants.CONTROL_BLOCK_PICKUP_MANAGER;
+        String value1 = "ZZZ";
+        String value2 = "ThirdPerson";
+        String value3 = "JVol";
 
         String workFlowData = HEADER
                 + CONTROL_BLOCK_BEGIN_ROW
                 + CONTROL_BLOCK_VERSION_ROW
-                + getKeyValueRow(key, value)
+                + getKeyValueRow(key, value1)
+                + getKeyValueRow(key, value2)
+                + getKeyValueRow(key, value3)
                 + getKeyValueRow(altMealOptionsKey, altMealOptionsValue)
                 + getKeyValueRow(altGroceryOptionsKey, altGroceryOptionsValue)
                 + getKeyValueRow(startTimesKey, startTimesValue)
@@ -238,7 +242,7 @@ public class ControlBlockV300Test extends ControlBlockTestBase{
                 WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, Map.of(), workFlowData);
         ControlBlockV300 controlBlock = (ControlBlockV300) workflowParser.controlBlock();
         audit(controlBlock);
-        assertThat(controlBlock.getPickupManagers()).containsExactly("John", "Jacob", "Jingleheimer");
+        assertThat(controlBlock.getPickupManagers()).containsExactly("ZZZ", "ThirdPerson", "JVol");
     }
 
     @Test

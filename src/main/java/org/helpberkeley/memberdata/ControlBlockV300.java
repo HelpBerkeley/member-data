@@ -47,8 +47,6 @@ class ControlBlockV300 extends ControlBlock {
             + " is defined more than once in the control block.\n";
     public static final String TOO_MANY_ALT_GROCERY_OPTIONS_VARIABLES = Constants.CONTROL_BLOCK_ALT_GROCERY_OPTIONS
             + " is defined more than once in the control block.\n";
-    public static final String TOO_MANY_PICKUP_MANAGER_VARIABLES = Constants.CONTROL_BLOCK_PICKUP_MANAGERS
-            + " is defined more than once in the control block.\n";
     public static final String MISSING_FOOD_SOURCES_VARIABLE =
             "Required " + Constants.CONTROL_BLOCK_FOOD_SOURCES + " control block variable is missing.\n";
     public static final String MISSING_START_TIMES_VARIABLE =
@@ -58,7 +56,9 @@ class ControlBlockV300 extends ControlBlock {
     public static final String MISSING_ALT_GROCERY_OPTIONS_VARIABLE =
             "Required " + Constants.CONTROL_BLOCK_ALT_GROCERY_OPTIONS + " control block variable is missing.\n";
     public static final String MISSING_PICKUP_MANAGERS_VARIABLE =
-            "Required " + Constants.CONTROL_BLOCK_PICKUP_MANAGERS + " control block variable is missing.\n";
+            "Required " + Constants.CONTROL_BLOCK_PICKUP_MANAGER + " control block variable is missing.\n";
+    static final String UNKNOWN_PICKUP_MANAGER =
+            Constants.CONTROL_BLOCK_PICKUP_MANAGER + " {0} is not a member. Misspelling?\n";
 
     private List<String> pickupManagers = null;
     private List<String> altMealOptions = null;
@@ -80,7 +80,7 @@ class ControlBlockV300 extends ControlBlock {
         auditFoodSources(errors);
         auditAltMealOptions(errors);
         auditAltGroceryOptions(errors);
-        auditPickupManagers(errors);
+        auditPickupManagers(errors, users);
 
         if (errors.length() != 0) {
             throw new MemberDataException(errors.toString());
@@ -122,12 +122,11 @@ class ControlBlockV300 extends ControlBlock {
     }
 
     @Override
-    void processPickupManagers(String value, long lineNumber) {
-        if (pickupManagers != null) {
-            throw new MemberDataException(TOO_MANY_PICKUP_MANAGER_VARIABLES);
+    void processPickupManager(String value, long lineNumber) {
+        if (pickupManagers == null) {
+            pickupManagers = new ArrayList<>();
         }
-        pickupManagers = new ArrayList<>();
-        pickupManagers.addAll(processList(value));
+        pickupManagers.add(value.trim());
     }
 
 
@@ -241,9 +240,20 @@ class ControlBlockV300 extends ControlBlock {
         }
     }
 
-    private void auditPickupManagers(StringBuilder errors) {
+    private void auditPickupManagers(StringBuilder errors, Map<String, User> users) {
         if (pickupManagers == null) {
             errors.append(MISSING_PICKUP_MANAGERS_VARIABLE);
+            return;
+        }
+
+        for (String pickupManager : pickupManagers) {
+
+            User user = users.get(pickupManager);
+
+            if (user == null) {
+                errors.append(MessageFormat.format(UNKNOWN_PICKUP_MANAGER, pickupManager));
+            }
+            // FIX THIS, DS: add group audit warning?
         }
     }
 }

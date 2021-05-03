@@ -174,8 +174,8 @@ public class ControlBlockV200Test extends ControlBlockTestBase {
 
     @Test
     public void pickupManagersTest() {
-        String key = Constants.CONTROL_BLOCK_PICKUP_MANAGERS;
-        String value = "\"John, Jacob, Jingleheimer\"";
+        String key = Constants.CONTROL_BLOCK_PICKUP_MANAGER;
+        String value = "JVol";
 
         String workFlowData = HEADER
                 + CONTROL_BLOCK_BEGIN_ROW

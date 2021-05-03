@@ -333,6 +333,9 @@ public class DriverPostFormatV300 extends DriverPostFormat {
             case "AlternateGroceries":
                 returnValue = processAltGroceryTypesLoopRef(loop, context);
                 break;
+            case "PickupManager":
+                returnValue = processPickupManagerLoopRef(loop, context);
+                break;
             default:
                 throw new MemberDataException(
                         context.formatException("unknown list variable &{" + listName + "}"));
@@ -470,6 +473,9 @@ public class DriverPostFormatV300 extends DriverPostFormat {
             case "AlternateGroceries":
                 returnValue = processAlternateGroceriesListRef(listRef, context);
                 break;
+            case "PickupManager":
+                returnValue = processPickupManagerListRef(listRef, context);
+                break;
             default:
                 throw new MemberDataException(context.formatException(
                         "unknown list name &{" + listName + "} in " + "&{" + refName + "}"));
@@ -556,6 +562,24 @@ public class DriverPostFormatV300 extends DriverPostFormat {
             case "AlternateGroceries.Total":
                 assert ! context.getAlternateType().isEmpty() : "no alternate grocery type set";
                 value = getAllDriverAlternateGroceriesTotal(context.getAlternateType());
+                break;
+            default:
+                throw new MemberDataException(context.formatException("unknown list variable &{" + refName + "}"));
+        }
+
+        LOGGER.trace("${{}} = \"{}\"", refName, value);
+        return new ProcessingReturnValue(ProcessingStatus.COMPLETE, value);
+    }
+
+    private ProcessingReturnValue processPickupManagerListRef(
+            MessageBlockListRef listRef, MessageBlockContext context) {
+
+        String refName = listRef.getName();
+        String value;
+
+        switch (refName) {
+            case "PickupManager.UserName":
+                value = context.getPickupManager();
                 break;
             default:
                 throw new MemberDataException(context.formatException("unknown list variable &{" + refName + "}"));
@@ -760,6 +784,32 @@ public class DriverPostFormatV300 extends DriverPostFormat {
 
             for (MessageBlockElement loopElement : loop.getElements()) {
                 ProcessingReturnValue returnValue = processElement(loopElement, deliveriesContext);
+                output.append(returnValue.output);
+
+                if (returnValue.status == ProcessingStatus.CONTINUE) {
+                    break;
+                }
+            }
+        }
+
+        LOGGER.trace("${{}} = \"{}\"", loop, output);
+        return new ProcessingReturnValue(ProcessingStatus.COMPLETE, output.toString());
+    }
+
+    private ProcessingReturnValue processPickupManagerLoopRef(
+            MessageBlockLoop loop, MessageBlockContext context) {
+
+        StringBuilder output = new StringBuilder();
+        MessageBlockContext pickpManagerContext = new MessageBlockContext("PickupManager", context);
+
+        LOGGER.trace("processPickupManagerLoopRef: {}", pickpManagerContext);
+
+        for (String pickupManager : controlBlock.getPickupManagers()) {
+
+            pickpManagerContext.setPickupManager(pickupManager);
+
+            for (MessageBlockElement loopElement : loop.getElements()) {
+                ProcessingReturnValue returnValue = processElement(loopElement, pickpManagerContext);
                 output.append(returnValue.output);
 
                 if (returnValue.status == ProcessingStatus.CONTINUE) {

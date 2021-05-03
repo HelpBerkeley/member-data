@@ -22,6 +22,7 @@
  */
 package org.helpberkeley.memberdata;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.Map;
@@ -241,5 +242,53 @@ public class PickupManagerPostV300Test extends TestBase {
         // FIX THIS, DS: refactor.  make generic and have empty impl in V200?
         String post = ((DriverPostFormatV300)driverPostFormat).generateDriversTablePost();
         assertThat(post).isEqualTo("2|2 veggie|1 noRed|1 noPork|4|1 veg|2 custom pick|\n");
+    }
+
+    @Test
+    public void v300TotalsMultipleDriverTest() {
+        String format = "${TotalStandardMeal}"
+                + "\"|\""
+                + "LOOP &{AlternateMeals} {"
+                + "    &{AlternateMeals.Total} \" \" &{AlternateMeals.Type}"
+                + "    \"|\""
+                + "}"
+                + "${TotalStandardGrocery}"
+                + "\"|\""
+                + "LOOP &{AlternateGroceries} {"
+                + "    &{AlternateGroceries.Total} \" \" &{AlternateGroceries.Type}"
+                + "    \"|\""
+                + "}"
+                + "\"\\n\"";
+        HttpClientSimulator.setQueryResponseData(pickupManagerPostFormatQuery, createMessageBlock(format));
+        DriverPostFormat driverPostFormat = DriverPostFormat.create(
+                createApiSimulator(),
+                users,
+                multiDriverOneSource,
+                restaurantTemplateQuery,
+                driverPostFormatQuery,
+                groupPostFormatQuery);
+        // FIX THIS, DS: refactor.  make generic and have empty impl in V200?
+        String post = ((DriverPostFormatV300)driverPostFormat).generateDriversTablePost();
+        assertThat(post).isEqualTo("2|2 veggie|1 noRed|1 noPork|4|1 veg|2 custom pick|\n");
+    }
+
+    @Test
+    public void v300PickupManagersTest() {
+        String format = "LOOP &{PickupManager} {"
+                + "&{PickupManager.UserName}"
+                + "\"|\""
+                + "}"
+                + "\"\\n\"";
+        HttpClientSimulator.setQueryResponseData(pickupManagerPostFormatQuery, createMessageBlock(format));
+        DriverPostFormat driverPostFormat = DriverPostFormat.create(
+                createApiSimulator(),
+                users,
+                oneDriverOneSource,
+                restaurantTemplateQuery,
+                driverPostFormatQuery,
+                groupPostFormatQuery);
+        // FIX THIS, DS: refactor.  make generic and have empty impl in V200?
+        String post = ((DriverPostFormatV300)driverPostFormat).generateDriversTablePost();
+        assertThat(post).isEqualTo("ZZZ|ThirdPerson|\n");
     }
 }

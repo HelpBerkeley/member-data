@@ -284,8 +284,8 @@ public abstract class ControlBlock {
             case Constants.CONTROL_BLOCK_START_TIMES:
                 processStartTimes(value, lineNumber);
                 break;
-            case Constants.CONTROL_BLOCK_PICKUP_MANAGERS:
-                processPickupManagers(value, lineNumber);
+            case Constants.CONTROL_BLOCK_PICKUP_MANAGER:
+                processPickupManager(value, lineNumber);
                 break;
             case Constants.CONTROL_BLOCK_FOOD_SOURCES:
                 processFoodSources(value, lineNumber);
@@ -539,8 +539,8 @@ public abstract class ControlBlock {
         unsupported(lineNumber, Constants.CONTROL_BLOCK_FOOD_SOURCES);
     }
 
-    void processPickupManagers(String value, long lineNumber) {
-        unsupported(lineNumber, Constants.CONTROL_BLOCK_PICKUP_MANAGERS);
+    void processPickupManager(String value, long lineNumber) {
+        unsupported(lineNumber, Constants.CONTROL_BLOCK_PICKUP_MANAGER);
     }
 
     static class SplitRestaurant {
