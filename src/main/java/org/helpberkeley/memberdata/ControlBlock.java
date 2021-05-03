@@ -63,7 +63,6 @@ public abstract class ControlBlock {
     private final List<OpsManager> opsManagers = new ArrayList<>();
     private final Map<String, SplitRestaurant> splitRestaurantMap = new HashMap<>();
     private final List<String> backupDrivers = new ArrayList<>();
-    private final List<String> pickupManagers = new ArrayList<>();
     private boolean disableLateArrivalAudit = false;
     private boolean disableSplitRestaurantAudits = false;
     private boolean disableRestaurantsAudit = false;
@@ -253,11 +252,6 @@ public abstract class ControlBlock {
         return backupDrivers;
     }
 
-    List<String> getPickupManagers() {
-        // FIX THIS, DS: audit that the current version supports thist?
-        return pickupManagers;
-    }
-
     void processRow(WorkflowBean bean, long lineNumber) {
 
         String variable = bean.getControlBlockKey().replaceAll(" ", "");
@@ -291,7 +285,7 @@ public abstract class ControlBlock {
                 processStartTimes(value, lineNumber);
                 break;
             case Constants.CONTROL_BLOCK_PICKUP_MANAGERS:
-                pickupManagers.addAll(processPickupManagers(value, lineNumber));
+                processPickupManagers(value, lineNumber);
                 break;
             case Constants.CONTROL_BLOCK_FOOD_SOURCES:
                 processFoodSources(value, lineNumber);
@@ -545,10 +539,8 @@ public abstract class ControlBlock {
         unsupported(lineNumber, Constants.CONTROL_BLOCK_FOOD_SOURCES);
     }
 
-    List<String> processPickupManagers(String value, long lineNumber) {
+    void processPickupManagers(String value, long lineNumber) {
         unsupported(lineNumber, Constants.CONTROL_BLOCK_PICKUP_MANAGERS);
-
-        return List.of();
     }
 
     static class SplitRestaurant {

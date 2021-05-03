@@ -39,16 +39,35 @@ class ControlBlockV300 extends ControlBlock {
             "There are more drivers {0} than start times {1}.\n";
     public static final String INVALID_START_TIME =
             "\"{0}\" is not a valid start time. Must be of the form H:MM, H:MM PM (or AM), or HH:MM\n";
-    public static final String TOO_MANY_START_TIMES_VARIABLES =
-            "StartTimes() defined more than once.  Remove line {0}";
+    public static final String TOO_MANY_START_TIMES_VARIABLES = Constants.CONTROL_BLOCK_START_TIMES
+            + " is defined more than once in the control block.\n";
+    public static final String TOO_MANY_FOOD_SOURCES_VARIABLES = Constants.CONTROL_BLOCK_FOOD_SOURCES
+            + " is defined more than once in the control block.\n";
+    public static final String TOO_MANY_ALT_MEAL_OPTIONS_VARIABLES = Constants.CONTROL_BLOCK_ALT_MEAL_OPTIONS
+            + " is defined more than once in the control block.\n";
+    public static final String TOO_MANY_ALT_GROCERY_OPTIONS_VARIABLES = Constants.CONTROL_BLOCK_ALT_GROCERY_OPTIONS
+            + " is defined more than once in the control block.\n";
+    public static final String TOO_MANY_PICKUP_MANAGER_VARIABLES = Constants.CONTROL_BLOCK_PICKUP_MANAGERS
+            + " is defined more than once in the control block.\n";
+    public static final String MISSING_FOOD_SOURCES_VARIABLE =
+            "Required " + Constants.CONTROL_BLOCK_FOOD_SOURCES + " control block variable is missing.\n";
+    public static final String MISSING_START_TIMES_VARIABLE =
+            "Required " + Constants.CONTROL_BLOCK_START_TIMES + " control block variable is missing.\n";
+    public static final String MISSING_ALT_MEAL_OPTIONS_VARIABLE =
+            "Required " + Constants.CONTROL_BLOCK_ALT_MEAL_OPTIONS + " control block variable is missing.\n";
+    public static final String MISSING_ALT_GROCERY_OPTIONS_VARIABLE =
+            "Required " + Constants.CONTROL_BLOCK_ALT_GROCERY_OPTIONS + " control block variable is missing.\n";
+    public static final String MISSING_PICKUP_MANAGERS_VARIABLE =
+            "Required " + Constants.CONTROL_BLOCK_PICKUP_MANAGERS + " control block variable is missing.\n";
 
-    private final List<String> altMealOptions = new ArrayList<>();
-    private final List<String> altGroceryOptions = new ArrayList<>();
+    private List<String> pickupManagers = null;
+    private List<String> altMealOptions = null;
+    private List<String> altGroceryOptions = null;
     private final List<String> startTimes = new ArrayList<>();
     private String mealSource = "";
     private String grocerySource = "";
 
-     ControlBlockV300(String header) {
+    ControlBlockV300(String header) {
          super(header);
     }
 
@@ -58,6 +77,10 @@ class ControlBlockV300 extends ControlBlock {
         auditOpsManager(errors, users);
         auditBackupDrivers(errors, users);
         auditStartTimes(errors, drivers);
+        auditFoodSources(errors);
+        auditAltMealOptions(errors);
+        auditAltGroceryOptions(errors);
+        auditPickupManagers(errors);
 
         if (errors.length() != 0) {
             throw new MemberDataException(errors.toString());
@@ -71,29 +94,40 @@ class ControlBlockV300 extends ControlBlock {
 
     @Override
     void processAltMealOptions(String value, long lineNumber) {
-        // FIX THIS, DS: is there auditing to do here?
-         altMealOptions.addAll(processList(value, lineNumber));
+
+        if (altMealOptions != null) {
+            throw new MemberDataException(TOO_MANY_ALT_MEAL_OPTIONS_VARIABLES);
+        }
+
+        altMealOptions = new ArrayList<>();
+        altMealOptions.addAll(processList(value));
     }
 
     @Override
     void processAltGroceryOptions(String value, long lineNumber) {
-        // FIX THIS, DS: is there auditing to do here?
-        altGroceryOptions.addAll(processList(value, lineNumber));
+        if (altGroceryOptions != null) {
+            throw new MemberDataException(TOO_MANY_ALT_GROCERY_OPTIONS_VARIABLES);
+        }
+        altGroceryOptions = new ArrayList<>();
+        altGroceryOptions.addAll(processList(value));
     }
 
     @Override
     void processStartTimes(String value, long lineNumber) {
         if (! startTimes.isEmpty()) {
-            throw new MemberDataException(MessageFormat.format(TOO_MANY_START_TIMES_VARIABLES, lineNumber));
+            throw new MemberDataException(TOO_MANY_START_TIMES_VARIABLES);
         }
 
-        startTimes.addAll(processList(value, lineNumber));
+        startTimes.addAll(processList(value));
     }
 
     @Override
-    List<String> processPickupManagers(String value, long lineNumber) {
-        // FIX THIS, DS: is there auditing to do here?
-        return processList(value, lineNumber);
+    void processPickupManagers(String value, long lineNumber) {
+        if (pickupManagers != null) {
+            throw new MemberDataException(TOO_MANY_PICKUP_MANAGER_VARIABLES);
+        }
+        pickupManagers = new ArrayList<>();
+        pickupManagers.addAll(processList(value));
     }
 
 
@@ -102,6 +136,11 @@ class ControlBlockV300 extends ControlBlock {
     //
     @Override
     void processFoodSources(String value, long lineNumber) {
+
+         if (! (mealSource.isEmpty() && grocerySource.isEmpty())) {
+             throw new MemberDataException(TOO_MANY_FOOD_SOURCES_VARIABLES);
+
+         }
 
         String[] fields = value.split("\\" + INTRA_FIELD_SEPARATOR, -42);
 
@@ -112,8 +151,6 @@ class ControlBlockV300 extends ControlBlock {
 
         mealSource = fields[0].trim();
         grocerySource = fields[1].trim();
-
-        StringBuilder errors = new StringBuilder();
 
         if (mealSource.isEmpty()) {
             warnings.append("Line ").append(lineNumber).append(", No meal source specified.\n");
@@ -145,12 +182,21 @@ class ControlBlockV300 extends ControlBlock {
          return grocerySource;
     }
 
-    private List<String> processList(String value, long lineNumber) {
+    List<String> getPickupManagers() {
+        return pickupManagers;
+    }
+
+    private List<String> processList(String value) {
         // FIX THIS, DS: is there auditing to do here?
          return Arrays.asList(value.split("\\s*,\\s*"));
     }
 
     private void auditStartTimes(StringBuilder errors, List<Driver> drivers) {
+
+        if (startTimes.isEmpty()) {
+            errors.append(MISSING_START_TIMES_VARIABLE);
+            return;
+        }
 
         // Error if there are more drivers than start times
         if (drivers.size() > startTimes.size()) {
@@ -174,6 +220,30 @@ class ControlBlockV300 extends ControlBlock {
             if (! matcher.find()) {
                 errors.append(MessageFormat.format(INVALID_START_TIME, startTime));
             }
+        }
+    }
+
+    private void auditFoodSources(StringBuilder errors) {
+        if (mealSource.isEmpty() && grocerySource.isEmpty()) {
+            errors.append(MISSING_FOOD_SOURCES_VARIABLE);
+        }
+    }
+
+    private void auditAltMealOptions(StringBuilder errors) {
+        if (altMealOptions == null) {
+            errors.append(MISSING_ALT_MEAL_OPTIONS_VARIABLE);
+        }
+    }
+
+    private void auditAltGroceryOptions(StringBuilder errors) {
+        if (altGroceryOptions == null) {
+            errors.append(MISSING_ALT_GROCERY_OPTIONS_VARIABLE);
+        }
+    }
+
+    private void auditPickupManagers(StringBuilder errors) {
+        if (pickupManagers == null) {
+            errors.append(MISSING_PICKUP_MANAGERS_VARIABLE);
         }
     }
 }

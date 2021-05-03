@@ -222,8 +222,7 @@ public class DriverPostFormatV300 extends DriverPostFormat {
         return new ProcessingReturnValue(ProcessingStatus.COMPLETE, value);
     }
 
-    @Override
-    ProcessingReturnValue processDeliveriesListRef(MessageBlockListRef listRef, MessageBlockContext context) {
+    private ProcessingReturnValue processDeliveriesListRef(MessageBlockListRef listRef, MessageBlockContext context) {
         String refName = listRef.getName();
         String value;
 
@@ -277,8 +276,7 @@ public class DriverPostFormatV300 extends DriverPostFormat {
         return new ProcessingReturnValue(ProcessingStatus.COMPLETE, value);
     }
 
-    @Override
-    ProcessingReturnValue processThisRestaurantPickupListRef(
+    private ProcessingReturnValue processThisRestaurantPickupListRef(
             MessageBlockListRef listRef, MessageBlockContext context) {
 
         String refName = listRef.getName();
@@ -399,15 +397,15 @@ public class DriverPostFormatV300 extends DriverPostFormat {
 
             switch (refName) {
                 case "ThisDriverRestaurant.AnyMealsOrGroceries":
-                    return anyMealsOrGroceries(restaurantName, context.getDriver());
+                    return anyMealsOrGroceries(context.getDriver());
                 case THIS_DRIVER_RESTAURANT_STD_MEALS:
                     return anyStandardMeals(restaurantName, driver);
                 case THIS_DRIVER_RESTAURANT_ALT_MEALS:
-                    return anyAlternateMeals(restaurantName, driver);
+                    return anyAlternateMeals(driver);
                 case THIS_DRIVER_RESTAURANT_STD_GROCERY:
                     return anyStandardGroceries(restaurantName, driver);
                 case THIS_DRIVER_RESTAURANT_ALT_GROCERY:
-                    return anyAlternateGroceries(restaurantName, driver);
+                    return anyAlternateGroceries(driver);
                 default:
                     throw new MemberDataException(
                             context.formatException("Unknown boolean variable &{" + refName + "}"));
@@ -593,7 +591,7 @@ public class DriverPostFormatV300 extends DriverPostFormat {
         return String.valueOf(total);
     }
 
-    private boolean anyMealsOrGroceries(String restaurantName, Driver driver) {
+    private boolean anyMealsOrGroceries(Driver driver) {
         for (Delivery delivery : driver.getDeliveries()) {
             DeliveryV300 deliveryV300 = (DeliveryV300)delivery;
 
@@ -612,7 +610,7 @@ public class DriverPostFormatV300 extends DriverPostFormat {
         return ! getStandardMeals(restaurantName, driver).equals("0");
     }
 
-    private boolean anyAlternateMeals(String restaurantName, Driver driver) {
+    private boolean anyAlternateMeals(Driver driver) {
         for (Delivery delivery : driver.getDeliveries()) {
             DeliveryV300 deliveryV300 = (DeliveryV300)delivery;
 
@@ -628,7 +626,7 @@ public class DriverPostFormatV300 extends DriverPostFormat {
         return ! getStandardGroceries(restaurantName, driver).equals("0");
     }
 
-    private boolean anyAlternateGroceries(String restaurantName, Driver driver) {
+    private boolean anyAlternateGroceries(Driver driver) {
         for (Delivery delivery : driver.getDeliveries()) {
             DeliveryV300 deliveryV300 = (DeliveryV300)delivery;
 
@@ -701,8 +699,6 @@ public class DriverPostFormatV300 extends DriverPostFormat {
 
         LOGGER.trace("processAlternateMeals: {}", altMealsContext);
 
-        RestaurantV300 restaurant = (RestaurantV300) context.getPickupRestaurant();
-
         for (String alternateMealType : controlBlock.getAltMealOptions()) {
 
             altMealsContext.setAlternateType(alternateMealType);
@@ -729,8 +725,6 @@ public class DriverPostFormatV300 extends DriverPostFormat {
         altGroceriesContext.setPickupRestaurant(context.getPickupRestaurant());
 
         LOGGER.trace("processAlternateGroceries: {}", altGroceriesContext);
-
-        RestaurantV300 restaurant = (RestaurantV300) context.getPickupRestaurant();
 
         for (String alternateGroceryType : controlBlock.getAltGroceryOptions()) {
 

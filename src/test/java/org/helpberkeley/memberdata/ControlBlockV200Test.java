@@ -113,6 +113,11 @@ public class ControlBlockV200Test extends ControlBlockTestBase {
         ((ControlBlockV200)controlBlock).audit(users, Map.of(), List.of());
     }
 
+    @Override
+    String addVersionSpecificRequiredVariables() {
+        return "";
+    }
+
     @Test
     public void altMealOptionsTest() {
         String key = Constants.CONTROL_BLOCK_ALT_MEAL_OPTIONS;

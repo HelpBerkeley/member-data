@@ -373,8 +373,7 @@ public class DriverPostFormatV200 extends DriverPostFormat {
         return new ProcessingReturnValue(ProcessingStatus.COMPLETE, value);
     }
 
-    @Override
-    ProcessingReturnValue processDeliveriesListRef(MessageBlockListRef listRef, MessageBlockContext context) {
+    private ProcessingReturnValue processDeliveriesListRef(MessageBlockListRef listRef, MessageBlockContext context) {
         String refName = listRef.getName();
         String value;
 
@@ -422,8 +421,7 @@ public class DriverPostFormatV200 extends DriverPostFormat {
         return new ProcessingReturnValue(ProcessingStatus.COMPLETE, value);
     }
 
-    @Override
-    ProcessingReturnValue processThisRestaurantPickupListRef(
+    private ProcessingReturnValue processThisRestaurantPickupListRef(
             MessageBlockListRef listRef, MessageBlockContext context) {
 
         String refName = listRef.getName();

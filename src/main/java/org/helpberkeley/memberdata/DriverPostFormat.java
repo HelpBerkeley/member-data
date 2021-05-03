@@ -132,9 +132,6 @@ public abstract class DriverPostFormat {
     abstract String generateSummary();
     abstract Map<String, Restaurant> getRestaurants();
     abstract ProcessingReturnValue processStructRef(MessageBlockStructRef structRef, MessageBlockContext context);
-    abstract ProcessingReturnValue processDeliveriesListRef(MessageBlockListRef listRef, MessageBlockContext context);
-    abstract ProcessingReturnValue processThisRestaurantPickupListRef(
-            MessageBlockListRef listRef, MessageBlockContext context);
     abstract boolean processBooleanSimpleRef(MessageBlockSimpleRef element, MessageBlockContext context);
     abstract boolean processBooleanListRef(MessageBlockListRef listRef, MessageBlockContext context);
     abstract ProcessingReturnValue processListRef(MessageBlockListRef listRef, MessageBlockContext context);

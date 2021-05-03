@@ -22,11 +22,9 @@
  */
 package org.helpberkeley.memberdata;
 
-import org.apache.commons.collections4.map.PassiveExpiringMap;
 import org.junit.Test;
 
 import java.text.MessageFormat;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -47,6 +45,7 @@ public abstract class ControlBlockTestBase extends TestBase {
     abstract String getDirectiveRow(String directive);
     abstract String getKeyValueRow(String key, String value);
     abstract void audit(ControlBlock controlBlock);
+    abstract String addVersionSpecificRequiredVariables();
 
     public ControlBlockTestBase() {
         List<User> userList = new Loader(createApiSimulator()).load();
@@ -295,6 +294,7 @@ public abstract class ControlBlockTestBase extends TestBase {
                 + getBeginRow()
                 + getVersionRow()
                 + getKeyValueRow(key, value)
+                + addVersionSpecificRequiredVariables()
                 + getEndRow();
 
         WorkflowParser workflowParser = WorkflowParser.create(
@@ -650,6 +650,7 @@ public abstract class ControlBlockTestBase extends TestBase {
                 + getBeginRow()
                 + getVersionRow()
                 + getKeyValueRow(opsKey, opsValue)
+                + addVersionSpecificRequiredVariables()
                 + getEndRow();
 
         WorkflowParser workflowParser = WorkflowParser.create(
@@ -715,6 +716,7 @@ public abstract class ControlBlockTestBase extends TestBase {
                 + getVersionRow()
                 + getKeyValueRow(opsKey, opsValue)
                 + getKeyValueRow(backupDriverKey, backupDriverValue)
+                + addVersionSpecificRequiredVariables()
                 + getEndRow();
 
         WorkflowParser workflowParser = WorkflowParser.create(
