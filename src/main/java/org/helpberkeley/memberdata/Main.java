@@ -131,6 +131,9 @@ public class Main {
             case Options.COMMAND_RESTAURANT_TEMPLATE:
                 restaurantTemplate(apiClient);
                 break;
+            case Options.COMMAND_ONE_KITCHEN_RESTAURANT_TEMPLATE:
+                oneKitchenRestaurantTemplate(apiClient);
+                break;
             case Options.COMMAND_POST_ERRORS:
                 postUserErrors(apiClient, options.getFileName());
                 break;
@@ -1158,11 +1161,36 @@ public class Main {
         }
 
         WorkRequestHandler.WorkRequest request = (WorkRequestHandler.WorkRequest) reply;
-        doRestaurantTemplate(apiClient, request);
+        doRestaurantTemplate(apiClient, request, Constants.TOPIC_RESTAURANT_TEMPLATE_STORAGE.getId());
+    }
+
+    private static void oneKitchenRestaurantTemplate(ApiClient apiClient) {
+
+        Query query = new Query(
+                Constants.QUERY_GET_LAST_ONE_KITCHEN_RESTAURANT_TEMPLATE_REPLY,
+                Constants.TOPIC_POST_ONE_KITCHEN_RESTAURANT_TEMPLATE);
+        WorkRequestHandler requestHandler = new WorkRequestHandler(apiClient, query);
+
+        WorkRequestHandler.Reply reply;
+
+        try {
+            reply = requestHandler.getLastReply();
+        } catch (MemberDataException ex) {
+            LOGGER.warn("getLastReply failed: " + ex + "\n" + ex.getMessage());
+            requestHandler.postStatus(WorkRequestHandler.RequestStatus.Failed, ex.getMessage());
+            return;
+        }
+
+        if (reply instanceof WorkRequestHandler.Status) {
+            return;
+        }
+
+        WorkRequestHandler.WorkRequest request = (WorkRequestHandler.WorkRequest) reply;
+        doRestaurantTemplate(apiClient, request, Constants.TOPIC_ONE_KITCHEN_RESTAURANT_TEMPLATE_STORAGE.getId());
     }
 
     private static void doRestaurantTemplate(
-            ApiClient apiClient, WorkRequestHandler.WorkRequest request) {
+            ApiClient apiClient, WorkRequestHandler.WorkRequest request, int topicId) {
 
         try {
             // Download file
@@ -1179,7 +1207,7 @@ public class Main {
 
         Post post = new Post();
         post.title = request.date;
-        post.topic_id = Constants.TOPIC_RESTAURANT_TEMPLATE_STORAGE.getId();
+        post.topic_id = topicId;
         post.raw = request.raw;
         post.createdAt = ZonedDateTime.now(ZoneId.systemDefault())
                 .format(DateTimeFormatter.ofPattern("uuuu.MM.dd.HH.mm.ss"));
@@ -1278,7 +1306,7 @@ public class Main {
             } else if (topicId == Constants.TOPIC_REQUEST_SINGLE_RESTAURANT_DRIVER_MESSAGES.getId()) {
                 doOneKitchenDriverMessages(apiClient, request, users);
             } else if (topicId == Constants.TOPIC_POST_RESTAURANT_TEMPLATE.getId()) {
-                doRestaurantTemplate(apiClient, request);
+                doRestaurantTemplate(apiClient, request, Constants.TOPIC_POST_RESTAURANT_TEMPLATE.getId());
             } else {
                 assert topicId == Constants.TOPIC_REQUEST_DRIVER_ROUTES.getId() : topicId;
                 doDriverRoutes(apiClient, request);

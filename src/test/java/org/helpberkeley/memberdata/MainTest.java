@@ -351,6 +351,12 @@ public class MainTest extends TestBase {
     }
 
     @Test
+    public void oneKitchenRestaurantTemplateTest() throws IOException, CsvException {
+        String[] args = { Options.COMMAND_ONE_KITCHEN_RESTAURANT_TEMPLATE };
+        Main.main(args);
+    }
+
+    @Test
     public void customerCareMemberPostTest() throws IOException, CsvException {
         String usersFile = findFile(Constants.MEMBERDATA_RAW_FILE, "csv");
         String[] args = { Options.COMMAND_CUSTOMER_CARE_POST, usersFile };

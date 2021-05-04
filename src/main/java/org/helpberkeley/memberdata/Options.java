@@ -47,6 +47,7 @@ public class Options {
     static final String COMMAND_DRIVERS = "drivers";
     static final String COMMAND_DRIVER_HISTORY = "driver-history";
     static final String COMMAND_RESTAURANT_TEMPLATE = "restaurant-template";
+    static final String COMMAND_ONE_KITCHEN_RESTAURANT_TEMPLATE = "onekitchen-restaurant-template";
     static final String COMMAND_CUSTOMER_CARE_POST = "customer-care";
     static final String COMMAND_FRREG = "frreg";
     static final String COMMAND_WORK_REQUESTS = "work-requests";
@@ -86,6 +87,7 @@ public class Options {
                     + "    | " + COMMAND_CUSTOMER_CARE_POST + " all-members-file\n"
                     + "    | " + COMMAND_FRREG + " all-members-file\n"
                     + "    | " + COMMAND_RESTAURANT_TEMPLATE + "\n"
+                    + "    | " + COMMAND_ONE_KITCHEN_RESTAURANT_TEMPLATE + "\n"
                     + "    | " + COMMAND_TEST_REQUEST + " all-members-file\n";
 
     private final String[] args;
@@ -116,6 +118,7 @@ public class Options {
             case COMMAND_DRIVER_ROUTES:
             case COMMAND_DRIVER_HISTORY:
             case COMMAND_RESTAURANT_TEMPLATE:
+            case COMMAND_ONE_KITCHEN_RESTAURANT_TEMPLATE:
                 setCommand(arg);
                 break;
             case COMMAND_WORK_REQUESTS:

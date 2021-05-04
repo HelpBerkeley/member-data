@@ -124,6 +124,7 @@ public class TestBase {
             Options.COMMAND_DRIVER_ROUTES,
             Options.COMMAND_DRIVER_HISTORY,
             Options.COMMAND_RESTAURANT_TEMPLATE,
+            Options.COMMAND_ONE_KITCHEN_RESTAURANT_TEMPLATE,
     };
 
     static final String TEST_FILE_NAME = "pom.xml";

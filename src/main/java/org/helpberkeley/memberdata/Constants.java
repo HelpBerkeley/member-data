@@ -70,6 +70,7 @@ public class Constants {
     public static final int QUERY_GET_ONE_KITCHEN_GROUP_POST_FORMAT_V300 = 54;
     public static final int QUERY_GET_ONE_KITCHEN_DRIVERS_TABLE_POST_FORMAT_V300 = 55;
     public static final int QUERY_GET_ONE_KITCHEN_ORDERS_TABLE_POST_FORMAT_V300 = 56;
+    public static final int QUERY_GET_LAST_ONE_KITCHEN_RESTAURANT_TEMPLATE_REPLY = 57;
 
     // Current spec version for these queries
     public static final int QUERY_GET_DRIVERS_POST_FORMAT = QUERY_GET_DRIVERS_POST_FORMAT_V23;
@@ -86,6 +87,10 @@ public class Constants {
     public static final Topic TOPIC_POST_COMPLETED_DAILY_ORDERS = new Topic("Post completed daily orders", 859);
     public static final Topic TOPIC_DRIVER_TRAINING_TABLE = new Topic("Post completed daily orders", 5355);
     public static final Topic TOPIC_RESTAURANT_TEMPLATE_STORAGE = new Topic("Restaurant Template Storage", 6055);
+    public static final Topic TOPIC_ONE_KITCHEN_RESTAURANT_TEMPLATE_STORAGE =
+            new Topic("One Kitchen Restaurant Template Storage", 6547);
+    public static final Topic TOPIC_POST_ONE_KITCHEN_RESTAURANT_TEMPLATE =
+            new Topic("Post One Kitchen Restaurant Template", 6548);
 
     public static final String COLUMN_ID = "id";
     public static final String COLUMN_NAME = "name";
