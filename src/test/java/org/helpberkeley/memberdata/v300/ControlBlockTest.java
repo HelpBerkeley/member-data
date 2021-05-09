@@ -141,6 +141,23 @@ public class ControlBlockTest extends ControlBlockTestBase {
     }
 
     @Test
+    public void altMealOptionsNoneTest() {
+
+        String none = "none";
+        ControlBlockBuilder builder = new ControlBlockBuilder();
+        builder.withAltMealOptions(none);
+
+        WorkflowParser workflowParser = WorkflowParser.create(
+                WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, Map.of(), builder.build());
+
+        ControlBlockV300 controlBlock = (ControlBlockV300) workflowParser.controlBlock();
+        Throwable thrown = catchThrowable(() -> audit(controlBlock));
+        assertThat(thrown).isInstanceOf(MemberDataException.class);
+        assertThat(thrown).hasMessage(MessageFormat.format(
+                ControlBlockV300.INVALID_NONE_ALT, none, Constants.CONTROL_BLOCK_ALT_MEAL_OPTIONS));
+    }
+
+    @Test
     public void altGroceryOptionsTest() {
         String key = Constants.CONTROL_BLOCK_ALT_GROCERY_OPTIONS;
         String value = "\"none, veg, custom pick\"";
@@ -161,6 +178,23 @@ public class ControlBlockTest extends ControlBlockTestBase {
         ControlBlockV300 controlBlock = (ControlBlockV300) workflowParser.controlBlock();
         audit(controlBlock);
         assertThat(controlBlock.getAltGroceryOptions()).containsExactly("none", "veg", "custom pick");
+    }
+
+    @Test
+    public void altGroceryOptionsNoneTest() {
+
+        String none = "none";
+        ControlBlockBuilder builder = new ControlBlockBuilder();
+        builder.withAltGroceryOptions(none);
+
+        WorkflowParser workflowParser = WorkflowParser.create(
+                WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, Map.of(), builder.build());
+
+        ControlBlockV300 controlBlock = (ControlBlockV300) workflowParser.controlBlock();
+        Throwable thrown = catchThrowable(() -> audit(controlBlock));
+        assertThat(thrown).isInstanceOf(MemberDataException.class);
+        assertThat(thrown).hasMessage(MessageFormat.format(
+                ControlBlockV300.INVALID_NONE_ALT, none, Constants.CONTROL_BLOCK_ALT_GROCERY_OPTIONS));
     }
 
     @Test
@@ -187,6 +221,31 @@ public class ControlBlockTest extends ControlBlockTestBase {
         audit(controlBlock);
         assertThat(controlBlock.getMealSource()).isEqualTo(mealSource);
         assertThat(controlBlock.getGrocerySource()).isEqualTo(grocerySource);
+    }
+
+    @Test
+    public void foodSourcesBadValueTest() {
+        String key = Constants.CONTROL_BLOCK_FOOD_SOURCES;
+        String mealSource = "Meals'R'Us";
+        String grocerySource = "Groceryland";
+        String value = mealSource + ':' + grocerySource;
+
+        String workFlowData = HEADER
+                + CONTROL_BLOCK_BEGIN_ROW
+                + CONTROL_BLOCK_VERSION_ROW
+                + getKeyValueRow(key, value)
+                + getKeyValueRow(opsManagerKey, opsManagerValue)
+                + getKeyValueRow(startTimesKey, startTimesValue)
+                + getKeyValueRow(altMealOptionsKey, altMealOptionsKey)
+                + getKeyValueRow(altGroceryOptionsKey, altGroceryOptionsKey)
+                + getKeyValueRow(pickupManagersKey, pickupManagersValue)
+                + CONTROL_BLOCK_END_ROW;
+
+        WorkflowParser workflowParser = WorkflowParser.create(
+                WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, Map.of(), workFlowData);
+        Throwable thrown = catchThrowable(() -> workflowParser.controlBlock());
+        assertThat(thrown).isInstanceOf(MemberDataException.class);
+        assertThat(thrown).hasMessage(MessageFormat.format(ControlBlockV300.FOOD_SOURCES_BAD_VALUE, value, 4));
     }
 
     @Test

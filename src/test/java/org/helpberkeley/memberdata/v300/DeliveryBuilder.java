@@ -23,8 +23,11 @@
 package org.helpberkeley.memberdata.v300;
 
 class DeliveryBuilder {
-    private String consumerUserName = "Cust name 1";
-    private String consumerName = "cust1";
+
+    public static final String DEFAULT_CONSUMER_NAME = "Cust name 1";
+
+    private String consumerName = DEFAULT_CONSUMER_NAME;
+    private String consumerUserName = "cust1";
     private String city = "Berkeley";
     private String address = "123 456th St.";
     private String phone = "555-555-1112";

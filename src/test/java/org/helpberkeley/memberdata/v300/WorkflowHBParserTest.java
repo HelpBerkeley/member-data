@@ -22,8 +22,6 @@
  */
 package org.helpberkeley.memberdata.v300;
 
-import org.assertj.core.api.Assertions;
-import org.checkerframework.checker.units.qual.C;
 import org.helpberkeley.memberdata.*;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -32,7 +30,7 @@ import java.text.MessageFormat;
 import java.util.List;
 import java.util.Map;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.ThrowableAssert.catchThrowable;
 
 public class WorkflowHBParserTest extends WorkflowHBParserBaseTest {
@@ -42,13 +40,6 @@ public class WorkflowHBParserTest extends WorkflowHBParserBaseTest {
             + ControlBlockTest.CONTROL_BLOCK_VERSION_ROW
             + ControlBlockTest.CONTROL_BLOCK_END_ROW
             + ControlBlockTest.EMPTY_ROW;
-
-    private final String driverRow =
-        "FALSE,TRUE,Joe B. Driver,jbDriver,777-777-7777,none,Hills,Berkeley,77 77th Place,,,,,,,,,\n";
-    private final String restaurantRow =
-            "FALSE,,,,,,,,\"9999 999 St., Berkeley, CA\",FALSE,,RevFoodTruck,,,,,,\n";
-    private final String routeURL =
-        "\"https://www.google.com/maps/dir/something+something+else\",,,,,,,,,,,,,,,,,\n";
 
     private final ControlBlock controlBlock = ControlBlock.create(controlBlockData);
 
@@ -385,6 +376,90 @@ public class WorkflowHBParserTest extends WorkflowHBParserBaseTest {
         assertThat(thrown).isInstanceOf(MemberDataException.class);
         assertThat(thrown).hasMessage(MessageFormat.format(
                 WorkflowParserV300.MISSING_PHONE, "14"));
+    }
+
+    @Test
+    public void emptyGrocerySourceTest() {
+        DriverBlockBuilder driverBlock = new DriverBlockBuilder();
+        driverBlock.withRestaurant(new RestaurantBuilder());
+        driverBlock.withDelivery(new DeliveryBuilder().withPhone(""));
+        WorkflowBuilder workflowBuilder = new WorkflowBuilder();
+        workflowBuilder.withDriverBlock(driverBlock);
+        workflowBuilder.withControlBlock(new ControlBlockBuilder().withFoodSources("RevFoodTruck|"));
+
+        WorkflowParser parser = WorkflowParser.create(
+                WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, restaurants, workflowBuilder.build());
+        auditControlBlock(parser.controlBlock());
+        assertThat(parser.controlBlock().getWarnings()).contains(ControlBlockV300.EMPTY_GROCERY_SOURCE);
+    }
+
+    @Test
+    public void emptyMealSourceTest() {
+        DriverBlockBuilder driverBlock = new DriverBlockBuilder();
+        driverBlock.withRestaurant(new RestaurantBuilder());
+        driverBlock.withDelivery(new DeliveryBuilder().withStdGrocery("1"));
+        WorkflowBuilder workflowBuilder = new WorkflowBuilder();
+        workflowBuilder.withDriverBlock(driverBlock);
+        workflowBuilder.withControlBlock(new ControlBlockBuilder().withFoodSources("|BFN"));
+
+        WorkflowParser parser = WorkflowParser.create(
+                WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, restaurants, workflowBuilder.build());
+        auditControlBlock(parser.controlBlock());
+        assertThat(parser.controlBlock().getWarnings()).contains(ControlBlockV300.EMPTY_MEAL_SOURCE);
+    }
+
+    @Test
+    public void unknownPickupManagerTest() {
+        String notAMember = "Fred";
+        DriverBlockBuilder driverBlock = new DriverBlockBuilder();
+        driverBlock.withRestaurant(new RestaurantBuilder());
+        driverBlock.withDelivery(new DeliveryBuilder());
+        WorkflowBuilder workflowBuilder = new WorkflowBuilder();
+        workflowBuilder.withDriverBlock(driverBlock);
+        workflowBuilder.withControlBlock(new ControlBlockBuilder().withPickupManager(notAMember));
+
+        WorkflowParser parser = WorkflowParser.create(
+                WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, restaurants, workflowBuilder.build());
+        Throwable thrown = catchThrowable(() -> auditControlBlock(parser.controlBlock()));
+        assertThat(thrown).isInstanceOf(MemberDataException.class);
+        assertThat(thrown).hasMessage(MessageFormat.format(
+                ControlBlockV300.UNKNOWN_PICKUP_MANAGER, notAMember));
+    }
+
+    @Test
+    public void duplicatePickupRestaurantTest() {
+        DriverBlockBuilder driverBlock = new DriverBlockBuilder();
+        driverBlock.withRestaurant(new RestaurantBuilder());
+        driverBlock.withRestaurant(new RestaurantBuilder());
+        driverBlock.withDelivery(new DeliveryBuilder());
+        WorkflowBuilder workflowBuilder = new WorkflowBuilder();
+        workflowBuilder.withDriverBlock(driverBlock);
+
+        WorkflowParser parser = WorkflowParser.create(
+                WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, restaurants, workflowBuilder.build());
+        auditControlBlock(parser.controlBlock());
+        Throwable thrown = catchThrowable(() -> parser.drivers());
+        assertThat(thrown).isInstanceOf(MemberDataException.class);
+        assertThat(thrown).hasMessage(MessageFormat.format(WorkflowParserV300.DUPLICATE_PICKUP,
+                WorkflowBuilder.DEFAULT_RESTAURANT_NAME, WorkflowBuilder.DEFAULT_DRIVER_USER_NAME));
+    }
+
+    @Test
+    public void emptyDeliveryTest() {
+        DriverBlockBuilder driverBlock = new DriverBlockBuilder();
+        driverBlock.withRestaurant(new RestaurantBuilder());
+        driverBlock.withDelivery(new DeliveryBuilder().withStdMeals("0"));
+        WorkflowBuilder workflowBuilder = new WorkflowBuilder();
+        workflowBuilder.withDriverBlock(driverBlock);
+
+        WorkflowParser parser = WorkflowParser.create(
+                WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, restaurants, workflowBuilder.build());
+        auditControlBlock(parser.controlBlock());
+        List<Driver> drivers = parser.drivers();
+        assertThat(drivers).hasSize(1);
+        assertThat(drivers.get(0).getWarningMessages()).containsExactly(MessageFormat.format(
+                WorkflowParserV300.EMPTY_DELIVERY, 14,
+                WorkflowBuilder.DEFAULT_DRIVER_NAME, DeliveryBuilder.DEFAULT_CONSUMER_NAME));
     }
 
     private void auditControlBlock(ControlBlock controlBlock) {

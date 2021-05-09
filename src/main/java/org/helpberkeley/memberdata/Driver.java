@@ -148,6 +148,10 @@ public abstract class Driver {
         warningMessages.add(warning);
     }
 
+    public final List<String> getWarningMessages() {
+        return warningMessages;
+    }
+
     private void generateURL() {
         StringBuilder url = new StringBuilder();
 
@@ -288,9 +292,5 @@ public abstract class Driver {
         row.append(",,,\n");
 
         return row.toString();
-    }
-
-    List<String> getWarningMessages() {
-        return warningMessages;
     }
 }

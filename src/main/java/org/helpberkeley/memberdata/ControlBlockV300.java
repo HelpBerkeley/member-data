@@ -58,8 +58,16 @@ public class ControlBlockV300 extends ControlBlock {
             "Required " + Constants.CONTROL_BLOCK_ALT_GROCERY_OPTIONS + " control block variable is missing.\n";
     public static final String MISSING_PICKUP_MANAGERS_VARIABLE =
             "Required " + Constants.CONTROL_BLOCK_PICKUP_MANAGER + " control block variable is missing.\n";
-    static final String UNKNOWN_PICKUP_MANAGER =
+    public static final String UNKNOWN_PICKUP_MANAGER =
             Constants.CONTROL_BLOCK_PICKUP_MANAGER + " {0} is not a member. Misspelling?\n";
+    public static final String EMPTY_GROCERY_SOURCE =
+            "No grocery source specified in " + Constants.CONTROL_BLOCK_FOOD_SOURCES + ".\n";
+    public static final String EMPTY_MEAL_SOURCE =
+            "No meal source specified in " + Constants.CONTROL_BLOCK_FOOD_SOURCES + ".\n";
+    public static final String FOOD_SOURCES_BAD_VALUE = Constants.CONTROL_BLOCK_FOOD_SOURCES
+            + " value \"{0}\" at line {1} does not match \"Meal source | Grocery source\".\n";
+    public static final String INVALID_NONE_ALT = "\"{0}\" is not valid for control block {1}. "
+            + "Leave the value column empty if there are no alternate choices.\n";
 
     private List<String> pickupManagers = null;
     private List<String> altMealOptions = null;
@@ -150,19 +158,18 @@ public class ControlBlockV300 extends ControlBlock {
         String[] fields = value.split("\\" + INTRA_FIELD_SEPARATOR, -42);
 
         if (fields.length != 2) {
-            throw new MemberDataException("FoodSources value \"" + value
-                    + "\" at line " + lineNumber + " does not match \"Meal source | Grocery source\".\n");
+            throw new MemberDataException(MessageFormat.format(FOOD_SOURCES_BAD_VALUE, value, lineNumber));
         }
 
         mealSource = fields[0].trim();
         grocerySource = fields[1].trim();
 
         if (mealSource.isEmpty()) {
-            warnings.append("Line ").append(lineNumber).append(", No meal source specified.\n");
+            warnings.append(EMPTY_MEAL_SOURCE);
         }
 
         if (grocerySource.isEmpty()) {
-            warnings.append("Line ").append(lineNumber).append(", No grocery source specified.\n");
+            warnings.append(EMPTY_GROCERY_SOURCE);
         }
     }
 
@@ -237,12 +244,20 @@ public class ControlBlockV300 extends ControlBlock {
     private void auditAltMealOptions(StringBuilder errors) {
         if (altMealOptions == null) {
             errors.append(MISSING_ALT_MEAL_OPTIONS_VARIABLE);
+        } else if ((altMealOptions.size() == 1) &&
+                altMealOptions.get(0).equalsIgnoreCase(Constants.ALT_TYPE_NONE)) {
+            errors.append(MessageFormat.format(INVALID_NONE_ALT,
+                    Constants.ALT_TYPE_NONE, Constants.CONTROL_BLOCK_ALT_MEAL_OPTIONS));
         }
     }
 
     private void auditAltGroceryOptions(StringBuilder errors) {
         if (altGroceryOptions == null) {
             errors.append(MISSING_ALT_GROCERY_OPTIONS_VARIABLE);
+        } else if ((altGroceryOptions.size() == 1) &&
+            altGroceryOptions.get(0).equalsIgnoreCase(Constants.ALT_TYPE_NONE)) {
+            errors.append(MessageFormat.format(INVALID_NONE_ALT,
+                    Constants.ALT_TYPE_NONE, Constants.CONTROL_BLOCK_ALT_GROCERY_OPTIONS));
         }
     }
 

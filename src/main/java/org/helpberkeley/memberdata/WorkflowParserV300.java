@@ -64,6 +64,9 @@ public class WorkflowParserV300 extends WorkflowParser {
     public static final String MISSING_CITY = "Line {0}, missing city.\n";
     public static final String MISSING_ADDRESS = "Line {0}, missing address.\n";
 
+    public static final String DUPLICATE_PICKUP =
+            "Restaurant {0} appears more than once for driver {1}.\n";
+
     public WorkflowParserV300(Mode mode, final String csvData) {
         super(mode, csvData);
     }
@@ -207,10 +210,9 @@ public class WorkflowParserV300 extends WorkflowParser {
         for (Restaurant restaurant : driver.getPickups()) {
             String restaurantName = restaurant.getName();
 
-            // FIX THIS, DS: too late to audit this here?
             if (pickups.contains(restaurantName)) {
-                throw new MemberDataException("Restaurant " + restaurantName
-                        + " appears more than once for driver " + driver.getUserName());
+                throw new MemberDataException(MessageFormat.format(
+                        DUPLICATE_PICKUP, restaurantName, driver.getUserName()));
             }
 
             pickups.add(restaurantName);
@@ -324,15 +326,8 @@ public class WorkflowParserV300 extends WorkflowParser {
         }
 
         if (typeMeal.isEmpty()) {
-            errors.append(MessageFormat.format(MISSING_ALT_TYPE, lineNumber, Constants.WORKFLOW_TYPE_MEAL_COLUMN));
-        } else if (typeMeal.equals(Constants.ALT_TYPE_NONE)) {
-            errors.append(Constants.ALT_TYPE_NONE);
-            errors.append(" is invalid for the ");
-            errors.append(Constants.WORKFLOW_TYPE_MEAL_COLUMN);
-            errors.append(" column when ");
-            errors.append(Constants.WORKFLOW_ALT_MEALS_COLUMN);
-            errors.append(" is not 0. ");
-            errors.append("Please insert a valid alt meal type.\n");
+            errors.append(MessageFormat.format(
+                    MISSING_ALT_TYPE, lineNumber, Constants.WORKFLOW_TYPE_MEAL_COLUMN));
         }
     }
 
@@ -349,13 +344,8 @@ public class WorkflowParserV300 extends WorkflowParser {
         }
 
         if (typeGrocery.isEmpty()) {
-            errors.append(MessageFormat.format(MISSING_ALT_TYPE, lineNumber, Constants.WORKFLOW_TYPE_GROCERY_COLUMN));
-        } else if (typeGrocery.equals(Constants.ALT_TYPE_NONE)) {
-            errors.append(Constants.ALT_TYPE_NONE);
-            errors.append(" is invalid for the ");
-            errors.append(Constants.WORKFLOW_TYPE_GROCERY_COLUMN + " column when ");
-            errors.append(Constants.WORKFLOW_ALT_GROCERY_COLUMN + " is not 0. ");
-            errors.append("Please insert a valid alt grocery type.\n");
+            errors.append(MessageFormat.format(
+                    MISSING_ALT_TYPE, lineNumber, Constants.WORKFLOW_TYPE_GROCERY_COLUMN));
         }
     }
 }
