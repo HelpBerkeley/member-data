@@ -20,32 +20,32 @@
  * SOFTWARE.
  *
  */
+package org.helpberkeley.memberdata.v300;
 
-package org.helpberkeley.memberdata;
+import org.helpberkeley.memberdata.Constants;
 
-import java.util.List;
-import java.util.Map;
+public class DriverBuilder {
 
-public class ControlBlockV200 extends ControlBlock {
+    private String userName = WorkflowBuilder.DEFAULT_DRIVER_USER_NAME;
+    private String name = WorkflowBuilder.DEFAULT_DRIVER_NAME;
 
-     ControlBlockV200(String header) {
-         super(header);
-    }
-
-    public void audit(Map<String, User> users, Map<String, Restaurant> restaurants, List<Restaurant> splitRestaurants) {
-        StringBuilder errors = new StringBuilder();
-
-        auditOpsManager(errors, users);
-        auditSplitRestaurants(errors, users, restaurants, splitRestaurants);
-        auditBackupDrivers(errors, users);
-
-        if (errors.length() != 0) {
-            throw new MemberDataException(errors.toString());
-        }
+    public DriverBuilder withUserName(String userName) {
+        this.userName = userName;
+        return this;
     }
 
     @Override
-    public String getVersion() {
-        return Constants.CONTROL_BLOCK_VERSION_200;
+    public String toString() {
+        return build();
+    }
+
+    public String build() {
+        return "FALSE,TRUE,"
+                + name
+                + Constants.CSV_SEPARATOR
+                + userName
+                + Constants.CSV_SEPARATOR
+                + "777-777-7777,none,Hills,Berkeley,77 77th Place,,,,,,,,,"
+                + "\n";
     }
 }

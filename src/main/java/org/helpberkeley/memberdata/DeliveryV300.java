@@ -35,18 +35,12 @@ public class DeliveryV300 extends Delivery {
     public String toString() {
         return getUserName()
                 + ", condo:" + isCondo
-                + ", restaurant: " + getRestaurant()
                 + ", meals:" + getStdMeals() + ':' + getAltMeals()
                 + ", grocery:" + getStdGrocery() + ':' + getAltGrocery();
     }
 
     public DeliveryV300(String name, long lineNumber) {
         super(name, lineNumber);
-    }
-
-    @Override
-    public String getRestaurant() {
-        throw new MemberDataException("Delivery.getRestaurant() not supported");
     }
 
     public void setStdMeals(String stdMeals) {
@@ -108,10 +102,7 @@ public class DeliveryV300 extends Delivery {
         row.append("FALSE,");
 
         // Name
-        value = name;
-        if (value.contains(",")) {
-            value = "\"" + value + "\"";
-        }
+        value = csvEscapeCommas(name);
         row.append(value).append(",");
 
         // User Name
@@ -124,42 +115,26 @@ public class DeliveryV300 extends Delivery {
         row.append(altPhone).append(',');
 
         // Neighborhood
-        value = neighborhood;
-        if (value.contains(",")) {
-            value = "\"" + value + "\"";
-        }
+        value = csvEscapeCommas(neighborhood);
         row.append(value).append(",");
 
         // City
-        value = city;
-        if (value.contains(",")) {
-            value = "\"" + value + "\"";
-        }
+        value = csvEscapeCommas(city);
         row.append(value).append(",");
 
 
         // Address
-        value = address;
-        if (value.contains(",")) {
-            value = "\"" + value + "\"";
-        }
+        value = csvEscapeCommas(address);
         row.append(value).append(",");
 
         // Condo
         row.append(isCondo).append(",");
 
         // Details
-        value = details;
-        if (value.contains(",")) {
-            value = "\"" + value + "\"";
-        }
+        value = csvEscapeCommas(details);
         row.append(value).append(",");
 
         // Restaurant
-        value = restaurant;
-        if (value.contains(",")) {
-            value = "\"" + value + "\"";
-        }
         row.append(value).append(",");
 
         // std meals

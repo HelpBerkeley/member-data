@@ -97,7 +97,7 @@ public abstract class RestaurantTemplateParser {
     protected abstract List<RestaurantBean> parse(String csvData);
     abstract boolean isAddressBlockMarker(RestaurantBean bean);
 
-    Map<String, Restaurant> restaurants() {
+    public Map<String, Restaurant> restaurants() {
         Map<String, Restaurant> restaurants = new HashMap<>();
 
         RestaurantBean bean;

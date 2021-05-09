@@ -20,39 +20,43 @@
  * SOFTWARE.
  *
  */
-package org.helpberkeley.memberdata;
+package org.helpberkeley.memberdata.v300;
 
+import org.assertj.core.api.AssertionsForClassTypes;
+import org.assertj.core.api.ThrowableAssert;
+import org.helpberkeley.memberdata.*;
 import org.junit.Test;
 
+import java.text.MessageFormat;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
 
-public class DriverPostV300Test extends DriverPostTest {
+public class DriverPostTest extends org.helpberkeley.memberdata.DriverPostTest {
 
     @Override
-    int getRestaurantTemplateQuery() {
+    public int getRestaurantTemplateQuery() {
         return Constants.QUERY_GET_CURRENT_VALIDATED_ONE_KITCHEN_RESTAURANT_TEMPLATE;
     }
 
     @Override
-    int getDriverPostFormatQuery() {
+    public int getDriverPostFormatQuery() {
         return Constants.QUERY_GET_ONE_KITCHEN_DRIVERS_POST_FORMAT_V300;
     }
 
     @Override
-    int getGroupInstructionsFormatQuery() {
+    public int getGroupInstructionsFormatQuery() {
         return Constants.QUERY_GET_GROUP_INSTRUCTIONS_FORMAT_V22;
     }
 
     @Override
-    String getRoutedDeliveriesFileName() {
+    public String getRoutedDeliveriesFileName() {
         return "routed-deliveries-v300.csv";
     }
 
     @Override
-    void checkExpectedDeliveries(List<String> posts) {
+    public void checkExpectedDeliveries(List<String> posts) {
         assertThat(posts).hasSize(1);
         assertThat(posts).containsExactly("Cust Name 1|(555) 555.1112|(111) 222.3333|"
                         + "123 456th Ave|NoCondo|\n"
@@ -66,7 +70,7 @@ public class DriverPostV300Test extends DriverPostTest {
     }
 
     @Override
-    void checkCondoConsumers(List<String> posts) {
+    public void checkCondoConsumers(List<String> posts) {
         assertThat(posts).hasSize(1);
         assertThat(posts).containsExactly("Cust Name 5\n");
     }
@@ -96,12 +100,12 @@ public class DriverPostV300Test extends DriverPostTest {
                 getDriverPostFormatQuery(),
                 getGroupInstructionsFormatQuery());
         List<String> posts = driverPostFormat.generateDriverPosts();
-        assertThat(posts).containsExactly("Cust Name 1|0|1|noRed|0|0|none\n"
-                + "Cust Name 2|2|0|none|2|0|none\n"
-                + "Cust Name 3|0|0|none|2|0|none\n"
+        assertThat(posts).containsExactly("Cust Name 1|0|1|noRed|0|0|\n"
+                + "Cust Name 2|2|0||2|0|\n"
+                + "Cust Name 3|0|0||2|0|\n"
                 + "Cust Name 4|0|1|veggie|0|1|veg\n"
-                + "Cust Name 5|0|1|noPork|0|0|none\n"
-                + "Cust Name 6|0|0|none|0|1|custom pick\n"
+                + "Cust Name 5|0|1|noPork|0|0|\n"
+                + "Cust Name 6|0|0||0|1|custom pick\n"
                 + "Cust Name 7|0|1|veggie|0|1|custom pick\n"
         );
     }
@@ -132,12 +136,12 @@ public class DriverPostV300Test extends DriverPostTest {
                 getGroupInstructionsFormatQuery());
         List<String> posts = driverPostFormat.generateDriverPosts();
         assertThat (posts).hasSize(2);
-        assertThat(posts).containsExactly("Cust Name 1|0|1|noRed|0|0|none\n"
-                + "Cust Name 2|2|0|none|2|0|none\n"
-                + "Cust Name 3|0|0|none|2|0|none\n"
+        assertThat(posts).containsExactly("Cust Name 1|0|1|noRed|0|0|\n"
+                + "Cust Name 2|2|0||2|0|\n"
+                + "Cust Name 3|0|0||2|0|\n"
                 + "Cust Name 4|0|1|veggie|0|1|veg\n",
-                "Cust Name 5|0|1|noPork|0|0|none\n"
-                + "Cust Name 6|0|0|none|0|1|custom pick\n"
+                "Cust Name 5|0|1|noPork|0|0|\n"
+                + "Cust Name 6|0|0||0|1|custom pick\n"
                 + "Cust Name 7|0|1|veggie|0|1|custom pick\n"
         );
     }
@@ -367,5 +371,47 @@ public class DriverPostV300Test extends DriverPostTest {
                 getGroupInstructionsFormatQuery());
         String post = driverPostFormat.generateGroupInstructionsPost();
         assertThat(post).isEqualTo("jsDriver\n");
+    }
+
+    @Test
+    public void v300MissingAltMealTypesTest() {
+        String routedDeliveries = readResourceFile("routed-deliveries-missing-alts-v300.csv");
+        Throwable thrown = catchThrowable(() -> DriverPostFormat.create(createApiSimulator(),
+                users, routedDeliveries,
+                getRestaurantTemplateQuery(),
+                getDriverPostFormatQuery(),
+                getGroupInstructionsFormatQuery()));
+        assertThat(thrown).isInstanceOf(MemberDataException.class);
+        assertThat(thrown).hasMessage(
+                "Required AltMealOptions() control block variable is missing.\n"
+                + "Required AltGroceryOptions() control block variable is missing.\n");
+    }
+
+    @Test
+    public void notEnoughStartTimesTest() {
+        DeliveryBuilder delivery = new DeliveryBuilder();
+        delivery.withStdMeals("1");
+        DriverBlockBuilder driverBlock = new DriverBlockBuilder();
+        driverBlock.withRestaurant(new RestaurantBuilder());
+        driverBlock.withDelivery(delivery);
+
+        DriverBlockBuilder driverBlock2 = new DriverBlockBuilder();
+        driverBlock2.withDriver(new DriverBuilder().withUserName("jsDriver"));
+        driverBlock2.withRestaurant(new RestaurantBuilder());
+        driverBlock2.withDelivery(delivery);
+
+        WorkflowBuilder workflowBuilder = new WorkflowBuilder();
+        workflowBuilder.withDriverBlock(driverBlock);
+        workflowBuilder.withDriverBlock(driverBlock2);
+        workflowBuilder.withControlBlock(new ControlBlockBuilder().withStartTimes("2:00"));
+
+        Throwable thrown = catchThrowable(() -> DriverPostFormat.create(createApiSimulator(),
+                users, workflowBuilder.build(),
+                getRestaurantTemplateQuery(),
+                getDriverPostFormatQuery(),
+                getGroupInstructionsFormatQuery()));
+        assertThat(thrown).isInstanceOf(MemberDataException.class);
+        assertThat(thrown).hasMessage(MessageFormat.format(
+                ControlBlockV300.MORE_DRIVERS_THAN_START_TIMES, "2", "1"));
     }
 }

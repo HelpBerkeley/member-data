@@ -31,12 +31,13 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-class ControlBlockV300 extends ControlBlock {
+public class ControlBlockV300 extends ControlBlock {
 
     public static final String MORE_START_TIMES_THAN_DRIVERS =
             "More start times defined in control block than they are drivers.\n";
     public static final String MORE_DRIVERS_THAN_START_TIMES =
-            "There are more drivers {0} than start times {1}.\n";
+            "There are more drivers ({0}) than start times ({1}) defined in the "
+                    + Constants.CONTROL_BLOCK_START_TIMES + ".\n";
     public static final String INVALID_START_TIME =
             "\"{0}\" is not a valid start time. Must be of the form H:MM, H:MM PM (or AM), or HH:MM\n";
     public static final String TOO_MANY_START_TIMES_VARIABLES = Constants.CONTROL_BLOCK_START_TIMES
@@ -71,7 +72,7 @@ class ControlBlockV300 extends ControlBlock {
          super(header);
     }
 
-    void audit(Map<String, User> users, List<Driver> drivers) {
+    public void audit(Map<String, User> users, List<Driver> drivers) {
         StringBuilder errors = new StringBuilder();
 
         auditOpsManager(errors, users);
@@ -100,7 +101,10 @@ class ControlBlockV300 extends ControlBlock {
         }
 
         altMealOptions = new ArrayList<>();
-        altMealOptions.addAll(processList(value));
+
+        if (! value.isEmpty()) {
+            altMealOptions.addAll(processList(value));
+        }
     }
 
     @Override
@@ -109,7 +113,9 @@ class ControlBlockV300 extends ControlBlock {
             throw new MemberDataException(TOO_MANY_ALT_GROCERY_OPTIONS_VARIABLES);
         }
         altGroceryOptions = new ArrayList<>();
-        altGroceryOptions.addAll(processList(value));
+        if (! value.isEmpty()) {
+            altGroceryOptions.addAll(processList(value));
+        }
     }
 
     @Override
@@ -181,7 +187,7 @@ class ControlBlockV300 extends ControlBlock {
          return grocerySource;
     }
 
-    List<String> getPickupManagers() {
+    public List<String> getPickupManagers() {
         return pickupManagers;
     }
 

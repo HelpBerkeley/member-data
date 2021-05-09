@@ -127,10 +127,10 @@ public abstract class DriverPostFormat {
 
     abstract ControlBlock getControlBlock();
     abstract void initialize(String routedDeliveries);
-    abstract List<Driver> getDrivers();
+    public abstract List<Driver> getDrivers();
     abstract String statusMessages();
-    abstract String generateSummary();
-    abstract Map<String, Restaurant> getRestaurants();
+    public abstract String generateSummary();
+    public abstract Map<String, Restaurant> getRestaurants();
     abstract ProcessingReturnValue processStructRef(MessageBlockStructRef structRef, MessageBlockContext context);
     abstract boolean processBooleanSimpleRef(MessageBlockSimpleRef element, MessageBlockContext context);
     abstract boolean processBooleanListRef(MessageBlockListRef listRef, MessageBlockContext context);
@@ -477,37 +477,6 @@ public abstract class DriverPostFormat {
     protected ProcessingReturnValue processVersionSpecificLoopListNameRef(
             String listName, MessageBlockLoop loop, MessageBlockContext context) {
         throw new MemberDataException(context.formatException("unknown list variable &{" + listName + "}"));
-    }
-
-    protected final  ProcessingReturnValue processRestaurantPickups(
-            MessageBlockLoop loop, MessageBlockContext context) {
-
-        StringBuilder output = new StringBuilder();
-        Driver driver = context.getDriver();
-        MessageBlockContext deliveryContext = new MessageBlockContext("Delivery", context);
-
-        LOGGER.trace("processRestaurantPickups: {}", deliveryContext);
-
-        Restaurant restaurant = context.getPickupRestaurant();
-
-        // Look through deliveries and find consumers/orders for this restaurant
-
-        for (Delivery delivery : driver.getDeliveries()) {
-            if (delivery.getRestaurant().equals(restaurant.getName())) {
-                context.setDelivery(delivery);
-                for (MessageBlockElement loopElement : loop.getElements()) {
-                    ProcessingReturnValue returnValue = processElement(loopElement, deliveryContext);
-                    output.append(returnValue.output);
-
-                    if (returnValue.status == ProcessingStatus.CONTINUE) {
-                        break;
-                    }
-                }
-            }
-        }
-
-        LOGGER.trace("${{}} = \"{}\"", loop, output);
-        return new ProcessingReturnValue(ProcessingStatus.COMPLETE, output.toString());
     }
 
     private ProcessingReturnValue processPickups(MessageBlockLoop loop, MessageBlockContext context) {

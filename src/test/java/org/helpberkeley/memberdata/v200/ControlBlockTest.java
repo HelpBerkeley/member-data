@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-2021 helpberkeley.org
+ * Copyright (c) 2021. helpberkeley.org
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -20,8 +20,9 @@
  * SOFTWARE.
  *
  */
-package org.helpberkeley.memberdata;
+package org.helpberkeley.memberdata.v200;
 
+import org.helpberkeley.memberdata.*;
 import org.junit.Test;
 
 import java.text.MessageFormat;
@@ -33,9 +34,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.ThrowableAssert.catchThrowable;
 
 @SuppressWarnings("unchecked")
-public class ControlBlockV200Test extends ControlBlockTestBase {
+public class ControlBlockTest extends ControlBlockTestBase {
 
-    private final String controlBlockData;
     private final Map<String, Restaurant> allRestaurants;
 
     private static final String EMPTY_ROW = ",,,,,,,,,,,,,,\n";
@@ -54,67 +54,60 @@ public class ControlBlockV200Test extends ControlBlockTestBase {
 //    public static final String MINIMUM_CONTROL_BLOCK =
 //            CONTROL_BLOCK_BEGIN_ROW;
 
-    public ControlBlockV200Test() {
-        controlBlockData = readResourceFile("control-block-v200.csv");
-
+    public ControlBlockTest() {
         RestaurantTemplateParser parser =
                 RestaurantTemplateParser.create(readResourceFile("restaurant-template-v200.csv"));
         allRestaurants = parser.restaurants();
     }
 
     @Override
-    String getControlBlockData() {
-        return controlBlockData;
-    }
-
-    @Override
-    Map<String, Restaurant> getAllRestaurants() {
+    public Map<String, Restaurant> getAllRestaurants() {
         return allRestaurants;
     }
 
     @Override
-    String getHeader() {
+    public String getHeader() {
         return HEADER;
     }
 
     @Override
-    String getBeginRow() {
+    public String getBeginRow() {
         return CONTROL_BLOCK_BEGIN_ROW;
     }
 
     @Override
-    String getEndRow() {
+    public String getEndRow() {
         return CONTROL_BLOCK_END_ROW;
     }
 
     @Override
-    String getVersionRow() {
+    public String getVersionRow() {
         return CONTROL_BLOCK_VERSION_ROW;
     }
 
     @Override
-    String getEmptyRow() {
+    public String getEmptyRow() {
         return EMPTY_ROW;
     }
 
     @Override
-    String getDirectiveRow(String directive) {
+    public String getDirectiveRow(String directive) {
         return EMPTY_ROW.replaceFirst(",,,", "FALSE,FALSE," + directive + ",");
     }
 
     @Override
-    String getKeyValueRow(String key, String value) {
+    public String getKeyValueRow(String key, String value) {
         return EMPTY_ROW.replaceFirst(",,,,,,,", "FALSE,FALSE,," + key + ",,,," + value);
     }
 
     @Override
-    void audit(ControlBlock controlBlock) {
+    public void audit(ControlBlock controlBlock) {
         assertThat(controlBlock).isInstanceOf(ControlBlockV200.class);
         ((ControlBlockV200)controlBlock).audit(users, Map.of(), List.of());
     }
 
     @Override
-    String addVersionSpecificRequiredVariables() {
+    public String addVersionSpecificRequiredVariables() {
         return "";
     }
 

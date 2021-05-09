@@ -56,12 +56,12 @@ public class DriverPostFormatV200 extends DriverPostFormat {
     }
 
     @Override
-    List<Driver> getDrivers() {
+    public List<Driver> getDrivers() {
         return drivers;
     }
 
     @Override
-    Map<String, Restaurant> getRestaurants() {
+    public Map<String, Restaurant> getRestaurants() {
         return restaurants;
     }
 
@@ -71,7 +71,7 @@ public class DriverPostFormatV200 extends DriverPostFormat {
     }
 
     @Override
-    String generateSummary() {
+    public String generateSummary() {
         StringBuilder summary = new StringBuilder();
 
         if (! controlBlock.restaurantsAuditDisabled()) {
@@ -622,6 +622,37 @@ public class DriverPostFormatV200 extends DriverPostFormat {
         return value;
     }
 
+    private ProcessingReturnValue processRestaurantPickups(
+            MessageBlockLoop loop, MessageBlockContext context) {
+
+        StringBuilder output = new StringBuilder();
+        Driver driver = context.getDriver();
+        MessageBlockContext deliveryContext = new MessageBlockContext("Delivery", context);
+
+        LOGGER.trace("processRestaurantPickups: {}", deliveryContext);
+
+        Restaurant restaurant = context.getPickupRestaurant();
+
+        // Look through deliveries and find consumers/orders for this restaurant
+
+        for (Delivery delivery : driver.getDeliveries()) {
+            if (((DeliveryV200)delivery).getRestaurant().equals(restaurant.getName())) {
+                context.setDelivery(delivery);
+                for (MessageBlockElement loopElement : loop.getElements()) {
+                    ProcessingReturnValue returnValue = processElement(loopElement, deliveryContext);
+                    output.append(returnValue.output);
+
+                    if (returnValue.status == ProcessingStatus.CONTINUE) {
+                        break;
+                    }
+                }
+            }
+        }
+
+        LOGGER.trace("${{}} = \"{}\"", loop, output);
+        return new ProcessingReturnValue(ProcessingStatus.COMPLETE, output.toString());
+    }
+
     private boolean driverHasSplitRestaurant(final Driver driver) {
 
         boolean hasSplit = false;
@@ -649,5 +680,4 @@ public class DriverPostFormatV200 extends DriverPostFormat {
 
         return false;
     }
-
 }

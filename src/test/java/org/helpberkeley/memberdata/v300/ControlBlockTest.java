@@ -20,8 +20,9 @@
  * SOFTWARE.
  *
  */
-package org.helpberkeley.memberdata;
+package org.helpberkeley.memberdata.v300;
 
+import org.helpberkeley.memberdata.*;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -32,19 +33,18 @@ import java.util.Map;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
 
-public class ControlBlockV300Test extends ControlBlockTestBase{
+public class ControlBlockTest extends ControlBlockTestBase {
 
-    private final String controlBlockData;
     private final Map<String, User> users;
     private final Map<String, Restaurant> allRestaurants;
 
-    private static final String EMPTY_ROW = ",,,,,,,,,,,,,,,,,,\n";
+    public static final String EMPTY_ROW = ",,,,,,,,,,,,,,,,,\n";
 
-    private static final String HEADER = "Consumer,Driver,Name,User Name,Phone #,Phone2 #,Neighborhood,City,Address,"
-            + "Condo,Details,Restaurants,std meals,alt meals,type meal,std grocery,alt grocery,type grocery,#orders\n";
-    private final String  CONTROL_BLOCK_BEGIN_ROW = "FALSE,FALSE,ControlBegin,,,,,,,,,,,,,,,,\n";
-    private final String  CONTROL_BLOCK_END_ROW = "FALSE,FALSE,ControlEnd,,,,,,,,,,,,,,,,\n";
-    private final String  CONTROL_BLOCK_VERSION_ROW = "FALSE,FALSE,,Version ,,,,3-0-0,,,,,,,,,,,\n";
+    public static final String HEADER = "Consumer,Driver,Name,User Name,Phone #,Phone2 #,Neighborhood,City,Address,"
+            + "Condo,Details,Restaurants,std meals,alt meals,type meal,std grocery,alt grocery,type grocery\n";
+    public static final String  CONTROL_BLOCK_BEGIN_ROW = "FALSE,FALSE,ControlBegin,,,,,,,,,,,,,,,\n";
+    public static final String  CONTROL_BLOCK_END_ROW =   "FALSE,FALSE,ControlEnd  ,,,,,,,,,,,,,,,\n";
+    public static final String  CONTROL_BLOCK_VERSION_ROW = "FALSE,FALSE,,Version ,,,,3-0-0,,,,,,,,,,\n";
 
     private final String opsManagerKey = Constants.CONTROL_BLOCK_OPS_MANAGER;
     private final String opsManagerValue = "JVol|123-456-7890";
@@ -59,8 +59,7 @@ public class ControlBlockV300Test extends ControlBlockTestBase{
     private final String pickupManagersKey = Constants.CONTROL_BLOCK_PICKUP_MANAGER;
     private final String pickupManagersValue = "ZZZ";
 
-    public ControlBlockV300Test() {
-        controlBlockData = readResourceFile("control-block-v300.csv");
+    public ControlBlockTest() {
         List<User> userList = new Loader(createApiSimulator()).load();
         users = new Tables(userList).mapByUserName();
 
@@ -70,57 +69,52 @@ public class ControlBlockV300Test extends ControlBlockTestBase{
     }
 
     @Override
-    String getHeader() {
+    public String getHeader() {
         return HEADER;
     }
     @Override
-    String getBeginRow() {
+    public String getBeginRow() {
         return CONTROL_BLOCK_BEGIN_ROW;
     }
 
     @Override
-    String getEndRow() {
+    public String getEndRow() {
         return CONTROL_BLOCK_END_ROW;
     }
 
     @Override
-    String getVersionRow() {
+    public String getVersionRow() {
         return CONTROL_BLOCK_VERSION_ROW;
     }
 
     @Override
-    String getEmptyRow() {
+    public String getEmptyRow() {
         return EMPTY_ROW;
     }
 
     @Override
-    String getDirectiveRow(String directive) {
+    public String getDirectiveRow(String directive) {
         return EMPTY_ROW.replaceFirst(",,,", "FALSE,FALSE," + directive + ",");
     }
 
     @Override
-    String getKeyValueRow(String key, String value) {
+    public String getKeyValueRow(String key, String value) {
         return EMPTY_ROW.replaceFirst(",,,,,,,", "FALSE,FALSE,," + key + ",,,," + value);
     }
 
     @Override
-    protected String getControlBlockData() {
-        return controlBlockData;
-    }
-
-    @Override
-    protected Map<String, Restaurant> getAllRestaurants() {
+    public Map<String, Restaurant> getAllRestaurants() {
         return allRestaurants;
     }
 
     @Override
-    void audit(ControlBlock controlBlock) {
+    public void audit(ControlBlock controlBlock) {
         assertThat(controlBlock).isInstanceOf(ControlBlockV300.class);
         ((ControlBlockV300)controlBlock).audit(users, List.of());
     }
 
     @Override
-    String addVersionSpecificRequiredVariables() {
+    public String addVersionSpecificRequiredVariables() {
         return getKeyValueRow(foodSourcesKey, foodSourcesValue)
                 + getKeyValueRow(pickupManagersKey, pickupManagersValue)
                 + getKeyValueRow(startTimesKey, startTimesValue)
@@ -323,28 +317,6 @@ public class ControlBlockV300Test extends ControlBlockTestBase{
             assertThat(controlBlock.getStartTimes()).containsExactly(value);
             controlBlock.audit(users, List.of());
         }
-    }
-
-    // FIX THIS, DS: need to create a route workflow sheet for this test
-    @Ignore
-    @Test
-    public void notEnoughStartTimesTest() {
-        String key = Constants.CONTROL_BLOCK_START_TIMES;
-        String value = "3:00";
-
-        String workFlowData = HEADER
-                + CONTROL_BLOCK_BEGIN_ROW
-                + CONTROL_BLOCK_VERSION_ROW
-                + getKeyValueRow(key, value)
-                + getKeyValueRow(opsManagerKey, opsManagerValue)
-                + CONTROL_BLOCK_END_ROW;
-
-        WorkflowParser workflowParser = WorkflowParser.create(
-                WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, Map.of(), workFlowData);
-        ControlBlockV300 controlBlock = (ControlBlockV300) workflowParser.controlBlock();
-
-        Throwable thrown = catchThrowable(() -> controlBlock.audit(users, List.of()));
-        assertThat(thrown).isInstanceOf(MemberDataException.class);
     }
 
     @Test

@@ -20,8 +20,9 @@
  * SOFTWARE.
  *
  */
-package org.helpberkeley.memberdata;
+package org.helpberkeley.memberdata.v300;
 
+import org.helpberkeley.memberdata.*;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -29,7 +30,7 @@ import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class PickupManagerPostV300Test extends TestBase {
+public class PickupManagerPostTest extends TestBase {
 
     private final String oneDriverOneSource;
     private final String multiDriverOneSource;
@@ -40,7 +41,7 @@ public class PickupManagerPostV300Test extends TestBase {
     private final int groupPostFormatQuery = Constants.QUERY_GET_ONE_KITCHEN_GROUP_POST_FORMAT_V300;
     private final int pickupManagerPostFormatQuery = Constants.QUERY_GET_ONE_KITCHEN_DRIVERS_TABLE_POST_FORMAT_V300;
 
-    public PickupManagerPostV300Test() {
+    public PickupManagerPostTest() {
         oneDriverOneSource = readResourceFile("routed-deliveries-v300.csv");
         multiDriverOneSource = readResourceFile("routed-deliveries-multi-driver-v300.csv");
 

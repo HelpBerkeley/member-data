@@ -61,7 +61,7 @@ public class HttpClientSimulator extends HttpClient {
     static void setQueryResponseFile(int queryId, final String fileName) {
         queryResponseFiles.put(queryId, fileName);
     }
-    static void setQueryResponseData(int queryId, final String queryData) {
+    public static void setQueryResponseData(int queryId, final String queryData) {
         queryResponseData.put(queryId, queryData);
     }
 

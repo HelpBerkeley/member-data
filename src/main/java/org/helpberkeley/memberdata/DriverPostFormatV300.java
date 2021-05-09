@@ -80,12 +80,12 @@ public class DriverPostFormatV300 extends DriverPostFormat {
     }
 
     @Override
-    List<Driver> getDrivers() {
+    public List<Driver> getDrivers() {
         return drivers;
     }
 
     @Override
-    Map<String, Restaurant> getRestaurants() {
+    public Map<String, Restaurant> getRestaurants() {
         return restaurants;
     }
 
@@ -95,7 +95,7 @@ public class DriverPostFormatV300 extends DriverPostFormat {
     }
 
     @Override
-    String generateSummary() {
+    public String generateSummary() {
 
         // FIX THIS, DS: implement
         return "Summary not yet implemented\n";
@@ -276,49 +276,49 @@ public class DriverPostFormatV300 extends DriverPostFormat {
         return new ProcessingReturnValue(ProcessingStatus.COMPLETE, value);
     }
 
-    private ProcessingReturnValue processThisRestaurantPickupListRef(
-            MessageBlockListRef listRef, MessageBlockContext context) {
-
-        String refName = listRef.getName();
-        String value;
-
-        Restaurant pickupRestaurant = context.getPickupRestaurant();
-        DeliveryV300 delivery = (DeliveryV300)context.getDelivery();
-        assert delivery.getRestaurant().equals(pickupRestaurant.getName()) :
-                delivery.getRestaurant() + " != " + pickupRestaurant.getName();
-
-        switch (refName) {
-            case "Pickup.MemberName":
-                value = delivery.getName();
-                break;
-            case "Pickup.UserName":
-                value = delivery.getUserName();
-                break;
-            case "Pickup.StandardMeals":
-                value = delivery.getStdMeals();
-                break;
-            case "Pickup.AlternateMeals":
-                value = delivery.getAltMeals();
-                break;
-            case "Pickup.AlternateMealType":
-                value = delivery.getTypeMeal();
-                break;
-            case "Pickup.StandardGrocery":
-                value = delivery.getStdGrocery();
-                break;
-            case "Pickup.AlternateGrocery":
-                value = delivery.getAltGrocery();
-                break;
-            case "Pickup.AlternateGroceryType":
-                value = delivery.getTypeGrocery();
-                break;
-            default:
-                throw new MemberDataException(context.formatException("unknown list variable &{" + refName + "}"));
-        }
-
-        LOGGER.trace("${{}} = \"{}\"", refName, value);
-        return new ProcessingReturnValue(ProcessingStatus.COMPLETE, value);
-    }
+//    private ProcessingReturnValue processThisRestaurantPickupListRef(
+//            MessageBlockListRef listRef, MessageBlockContext context) {
+//
+//        String refName = listRef.getName();
+//        String value;
+//
+//        Restaurant pickupRestaurant = context.getPickupRestaurant();
+//        DeliveryV300 delivery = (DeliveryV300)context.getDelivery();
+//        assert delivery.getRestaurant().equals(pickupRestaurant.getName()) :
+//                delivery.getRestaurant() + " != " + pickupRestaurant.getName();
+//
+//        switch (refName) {
+//            case "Pickup.MemberName":
+//                value = delivery.getName();
+//                break;
+//            case "Pickup.UserName":
+//                value = delivery.getUserName();
+//                break;
+//            case "Pickup.StandardMeals":
+//                value = delivery.getStdMeals();
+//                break;
+//            case "Pickup.AlternateMeals":
+//                value = delivery.getAltMeals();
+//                break;
+//            case "Pickup.AlternateMealType":
+//                value = delivery.getTypeMeal();
+//                break;
+//            case "Pickup.StandardGrocery":
+//                value = delivery.getStdGrocery();
+//                break;
+//            case "Pickup.AlternateGrocery":
+//                value = delivery.getAltGrocery();
+//                break;
+//            case "Pickup.AlternateGroceryType":
+//                value = delivery.getTypeGrocery();
+//                break;
+//            default:
+//                throw new MemberDataException(context.formatException("unknown list variable &{" + refName + "}"));
+//        }
+//
+//        LOGGER.trace("${{}} = \"{}\"", refName, value);
+//        return new ProcessingReturnValue(ProcessingStatus.COMPLETE, value);
+//    }
 
     @Override
     protected ProcessingReturnValue processVersionSpecificLoopListNameRef(

@@ -26,6 +26,7 @@ public class DeliveryV200 extends Delivery {
 
     private String normalRations;
     private String veggieRations;
+    private String restaurant;
 
     public DeliveryV200(String name, long lineNumber) {
         super(name, lineNumber);
@@ -37,6 +38,11 @@ public class DeliveryV200 extends Delivery {
                 + ", condo:" + isCondo
                 + ", restaurant: " + getRestaurant()
                 + ", rations: " + getNormalRations() + ":" + getVeggieRations();
+    }
+
+
+    public void setRestaurant(String restaurant) {
+        this.restaurant = restaurant;
     }
 
     public void setNormalRations(String normalRations) {
@@ -55,6 +61,10 @@ public class DeliveryV200 extends Delivery {
         return veggieRations;
     }
 
+    public String getRestaurant() {
+        return restaurant;
+    }
+
     @Override
     public String deliveryRow() {
         StringBuilder row = new StringBuilder();
@@ -67,10 +77,7 @@ public class DeliveryV200 extends Delivery {
         row.append("FALSE,");
 
         // Name
-        value = name;
-        if (value.contains(",")) {
-            value = "\"" + value + "\"";
-        }
+        value = csvEscapeCommas(name);
         row.append(value).append(",");
 
         // User Name
@@ -83,42 +90,26 @@ public class DeliveryV200 extends Delivery {
         row.append(altPhone).append(',');
 
         // Neighborhood
-        value = neighborhood;
-        if (value.contains(",")) {
-            value = "\"" + value + "\"";
-        }
+        value = csvEscapeCommas(neighborhood);
         row.append(value).append(",");
 
         // City
-        value = city;
-        if (value.contains(",")) {
-            value = "\"" + value + "\"";
-        }
+        value = csvEscapeCommas(city);
         row.append(value).append(",");
 
-
         // Address
-        value = address;
-        if (value.contains(",")) {
-            value = "\"" + value + "\"";
-        }
+        value = csvEscapeCommas(address);
         row.append(value).append(",");
 
         // Condo
         row.append(isCondo).append(",");
 
         // Details
-        value = details;
-        if (value.contains(",")) {
-            value = "\"" + value + "\"";
-        }
+        value = csvEscapeCommas(details);
         row.append(value).append(",");
 
         // Restaurant
-        value = restaurant;
-        if (value.contains(",")) {
-            value = "\"" + value + "\"";
-        }
+        value = csvEscapeCommas(restaurant);
         row.append(value).append(",");
 
         // normal

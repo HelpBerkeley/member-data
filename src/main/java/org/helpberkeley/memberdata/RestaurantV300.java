@@ -37,14 +37,18 @@ public class RestaurantV300 extends Restaurant {
         this.controlBlock = (ControlBlockV300) controlBlock;
 
         if (this.controlBlock.getMealSource().equals(name)) {
-            for (String altMealType : ((ControlBlockV300) controlBlock).getAltMealOptions()) {
-                alternateMealTypes.add(altMealType);
+            if (this.controlBlock.getAltMealOptions() != null) {
+                for (String altMealType : this.controlBlock.getAltMealOptions()) {
+                    alternateMealTypes.add(altMealType);
+                }
             }
         }
 
         if (this.controlBlock.getGrocerySource().equals(name)) {
-            for (String altGroceryType : ((ControlBlockV300) controlBlock).getAltGroceryOptions()) {
-                alternateGroceryTypes.add(altGroceryType);
+            if (this.controlBlock.getAltGroceryOptions() != null) {
+                for (String altGroceryType : this.controlBlock.getAltGroceryOptions()) {
+                    alternateGroceryTypes.add(altGroceryType);
+                }
             }
         }
     }

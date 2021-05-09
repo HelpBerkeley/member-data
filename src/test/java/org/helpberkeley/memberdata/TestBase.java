@@ -446,7 +446,7 @@ public class TestBase {
         return value ? "Y" : "N";
     }
 
-    String createMessageBlock(String contents) {
+    public String createMessageBlock(String contents) {
         return new MessageBlockJSON(contents).toJSON();
     }
 

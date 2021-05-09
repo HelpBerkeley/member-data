@@ -85,6 +85,7 @@ public abstract class WorkflowParser {
     abstract void auditColumnNames(final String csvData);
 
     abstract List<Delivery> processDeliveries();
+    abstract void versionSpecificAudit(Driver driver);
 
     abstract void auditPickupDeliveryMismatch(Driver driver);
 
@@ -151,6 +152,12 @@ public abstract class WorkflowParser {
         return iterator.peek();
     }
 
+    protected final String getIntegerValue(String value) {
+
+        String newValue = value.trim();
+        return newValue.isEmpty() ? "0" : newValue;
+    }
+
     public List<Driver> drivers() {
 
         LinkedHashMap<String, Driver> driverMap = new LinkedHashMap<>();
@@ -178,6 +185,7 @@ public abstract class WorkflowParser {
 
             Driver driver = processDriver(bean);
             auditPickupDeliveryMismatch(driver);
+            versionSpecificAudit(driver);
             driverMap.put(driver.getUserName(), driver);
         }
 
@@ -188,7 +196,7 @@ public abstract class WorkflowParser {
         return controlBlock;
     }
 
-    ControlBlock controlBlock() {
+    public ControlBlock controlBlock() {
 
         WorkflowBean bean;
 

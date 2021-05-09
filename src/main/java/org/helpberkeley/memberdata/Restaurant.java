@@ -88,7 +88,7 @@ public abstract class Restaurant {
         this.emoji = emoji;
     }
 
-    String getName() {
+    public String getName() {
         return name;
     }
 
@@ -104,7 +104,7 @@ public abstract class Restaurant {
         return closingTime;
     }
 
-    String getDetails() {
+    public String getDetails() {
         return details;
     }
 
@@ -116,7 +116,7 @@ public abstract class Restaurant {
         return emoji;
     }
 
-    Map<String, Driver> getDrivers() {
+    public Map<String, Driver> getDrivers() {
         return Collections.unmodifiableMap(drivers);
     }
 

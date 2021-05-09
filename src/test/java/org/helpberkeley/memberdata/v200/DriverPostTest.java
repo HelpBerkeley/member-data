@@ -20,8 +20,9 @@
  * SOFTWARE.
  *
  */
-package org.helpberkeley.memberdata;
+package org.helpberkeley.memberdata.v200;
 
+import org.helpberkeley.memberdata.*;
 import org.junit.Test;
 
 import java.util.List;
@@ -29,30 +30,30 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
 
-public class DriverPostV200Test extends DriverPostTest {
+public class DriverPostTest extends org.helpberkeley.memberdata.DriverPostTest {
 
     @Override
-    int getRestaurantTemplateQuery() {
+    public int getRestaurantTemplateQuery() {
         return Constants.QUERY_GET_CURRENT_VALIDATED_DRIVER_MESSAGE_RESTAURANT_TEMPLATE;
     }
 
     @Override
-    int getDriverPostFormatQuery() {
+    public int getDriverPostFormatQuery() {
         return Constants.QUERY_GET_DRIVERS_POST_FORMAT_V23;
     }
 
     @Override
-    int getGroupInstructionsFormatQuery() {
+    public int getGroupInstructionsFormatQuery() {
         return Constants.QUERY_GET_GROUP_INSTRUCTIONS_FORMAT_V22;
     }
 
     @Override
-    String getRoutedDeliveriesFileName() {
+    public String getRoutedDeliveriesFileName() {
         return "routed-deliveries-v200.csv";
     }
 
     @Override
-    void checkExpectedDeliveries(List<String> posts) {
+    public void checkExpectedDeliveries(List<String> posts) {
         assertThat(posts).hasSize(2);
         assertThat(posts).containsExactly("Cust Name 1|(555) 555.1112|(111) 222.3333|"
                 + "123 456th Ave|NoCondo|\n"
@@ -66,7 +67,7 @@ public class DriverPostV200Test extends DriverPostTest {
     }
 
     @Override
-    void checkCondoConsumers(List<String> posts) {
+    public void checkCondoConsumers(List<String> posts) {
         assertThat(posts).hasSize(2);
         assertThat(posts).containsExactly("", "Cust Name 5\n");
     }

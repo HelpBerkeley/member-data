@@ -830,16 +830,8 @@ public class Main {
 
         statusMessages.append(driverPostFormat.generateSummary());
 
-        statusMessages.append("**Driver Messages Posted to [Get driver messages]")
+        statusMessages.append("**Messages Posted to [Get driver messages]")
                 .append("(https://go.helpberkeley.org/t/get-driver-messages/2123/)**\n\n");
-
-        for (String url : postURLs) {
-            statusMessages.append(url).append("\n");
-        }
-
-        if (groupPostURL != null) {
-            statusMessages.append("\n[Group Instructions](").append(groupPostURL).append(")");
-        }
 
         if (driversTableURL != null) {
             statusMessages.append("\n[Pickup Manager Drivers Table](").append(driversTableURL).append(")");
@@ -847,6 +839,14 @@ public class Main {
 
         if (ordersTableURL != null) {
             statusMessages.append("\n[Pickup Manager Orders Table](").append(ordersTableURL).append(")");
+        }
+
+        if (groupPostURL != null) {
+            statusMessages.append("\n[Group Instructions](").append(groupPostURL).append(")");
+        }
+
+        for (String url : postURLs) {
+            statusMessages.append(url).append("\n");
         }
 
         return statusMessages.toString();

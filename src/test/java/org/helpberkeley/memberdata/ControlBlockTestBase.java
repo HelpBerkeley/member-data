@@ -35,34 +35,20 @@ public abstract class ControlBlockTestBase extends TestBase {
 
     protected final Map<String, User> users;
 
-    abstract String getControlBlockData();
-    abstract Map<String, Restaurant> getAllRestaurants();
-    abstract String getHeader();
-    abstract String getBeginRow();
-    abstract String getEndRow();
-    abstract String getVersionRow();
-    abstract String getEmptyRow();
-    abstract String getDirectiveRow(String directive);
-    abstract String getKeyValueRow(String key, String value);
-    abstract void audit(ControlBlock controlBlock);
-    abstract String addVersionSpecificRequiredVariables();
+    public abstract Map<String, Restaurant> getAllRestaurants();
+    public abstract String getHeader();
+    public abstract String getBeginRow();
+    public abstract String getEndRow();
+    public abstract String getVersionRow();
+    public abstract String getEmptyRow();
+    public abstract String getDirectiveRow(String directive);
+    public abstract String getKeyValueRow(String key, String value);
+    public abstract void audit(ControlBlock controlBlock);
+    protected abstract String addVersionSpecificRequiredVariables();
 
     public ControlBlockTestBase() {
         List<User> userList = new Loader(createApiSimulator()).load();
         users = new Tables(userList).mapByUserName();
-    }
-
-    @Test
-    public void controlBlockTest() {
-        WorkflowParser workflowParser = WorkflowParser.create(
-                WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, getAllRestaurants(), getControlBlockData());
-
-        ControlBlock controlBlock = workflowParser.controlBlock();
-        assertThat(controlBlock.getOpsManagers()).containsExactly(
-                new ControlBlock.OpsManager("JVol", "123-456-7890"));
-        assertThat(controlBlock.getSplitRestaurants()).containsExactly(
-                new ControlBlock.SplitRestaurant("Jot Mahal", "joebdriver"));
-        assertThat(controlBlock.getBackupDrivers()).containsExactly("JVol");
     }
 
     /** Test that true in a consumer column throws an exception */

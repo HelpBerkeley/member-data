@@ -41,12 +41,12 @@ public abstract class DriverPostTest extends TestBase {
         users = new Tables(loader.load()).mapByUserName();
     }
 
-    abstract int getRestaurantTemplateQuery();
-    abstract int getDriverPostFormatQuery();
-    abstract int getGroupInstructionsFormatQuery();
-    abstract String getRoutedDeliveriesFileName();
-    abstract void checkExpectedDeliveries(List<String> posts);
-    abstract void checkCondoConsumers(List<String> posts);
+    public abstract int getRestaurantTemplateQuery();
+    public abstract int getDriverPostFormatQuery();
+    public abstract int getGroupInstructionsFormatQuery();
+    public abstract String getRoutedDeliveriesFileName();
+    public abstract void checkExpectedDeliveries(List<String> posts);
+    public abstract void checkCondoConsumers(List<String> posts);
 
     @Test
     public void emptyTest() {

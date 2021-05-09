@@ -163,11 +163,12 @@ public class WorkflowParserV200 extends WorkflowParser {
         // First build of map of deliveries (orders) per restaurant
         Map<String, Long> deliveryOrders = new HashMap<>();
         for (Delivery delivery : driver.getDeliveries()) {
-            String restaurantName = delivery.getRestaurant();
+            DeliveryV200 deliveryV200 = (DeliveryV200) delivery;
+            String restaurantName = deliveryV200.getRestaurant();
 
             // Support for 0 order delivery (e.g. donation drop-off)
-            if (((DeliveryV200)delivery).getNormalRations().equals("0") &&
-                    ((DeliveryV200)delivery).getVeggieRations().equals("0")) {
+            if (deliveryV200.getNormalRations().equals("0") &&
+                    deliveryV200.getVeggieRations().equals("0")) {
                 continue;
             }
 
@@ -216,5 +217,9 @@ public class WorkflowParserV200 extends WorkflowParser {
         if (errors.length() > 0) {
             throw new MemberDataException("Driver " + driver.getUserName() + ": " + errors);
         }
+    }
+
+    @Override
+    void versionSpecificAudit(Driver driver) {
     }
 }

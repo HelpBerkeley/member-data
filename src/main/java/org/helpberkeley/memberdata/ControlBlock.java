@@ -31,7 +31,9 @@ public abstract class ControlBlock {
     static final String ERROR_MISSING_OPS_MANAGER =
             "Control block missing a " + Constants.CONTROL_BLOCK_OPS_MANAGER + " entry.\n";
 
-    static final String BAD_HEADER_ROW = "Column names missing. Line 1 does not look like a header row";
+    static final String BAD_HEADER_ROW = "Line 1, column names missing.\n";
+    static final String MISSING_OR_INVALID_HEADER_ROW
+            = "Line 1, header row missing or has a duplicate column name ({0})\n";
     static final String ERROR_WRONG_NUMBER_OF_VERSION_KEYS =
             "Control block Version key must appear once and only once";
     static final String ERROR_WRONG_NUMBER_OF_VERSION_VALUES =
@@ -47,15 +49,19 @@ public abstract class ControlBlock {
             Constants.CONTROL_BLOCK_OPS_MANAGER + " {0} phone {1} does not match the member data\n";
     static final String UNKNOWN_SPLIT_RESTAURANT =
             Constants.CONTROL_BLOCK_SPLIT_RESTAURANT + " contains unknown restaurant {0}. Misspelling?\n";
-    static final String UNKNOWN_CLEANUP_DRIVER =
+    public static final String UNKNOWN_CLEANUP_DRIVER =
             Constants.CONTROL_BLOCK_SPLIT_RESTAURANT + " {0} for {1} is not a member. Misspelling?\n";
-    static final String WRONG_CLEANUP_DRIVER =
+    public static final String WRONG_CLEANUP_DRIVER =
             Constants.CONTROL_BLOCK_SPLIT_RESTAURANT + " {0} is not going to {1}.\n";
-    static final String MISSING_SPLIT_RESTAURANT =
+    public static final String MISSING_SPLIT_RESTAURANT =
             "Control block does not contain a "
             + Constants.CONTROL_BLOCK_SPLIT_RESTAURANT + " entry for {0}\n";
 
-    static final String UNSUPPORTED =
+    public boolean isDisableLateArrivalAudit() {
+        return disableLateArrivalAudit;
+    }
+
+    public static final String UNSUPPORTED =
             "{0} (line {1}) is not supported in control block version {2}\n";
 
     private final String header;
@@ -71,7 +77,12 @@ public abstract class ControlBlock {
 
     protected ControlBlock(String header) {
         this.header = header;
-        columnNames = Set.of(header.split(Constants.CSV_SEPARATOR));
+
+        try {
+            columnNames = Set.of(header.split(Constants.CSV_SEPARATOR));
+        } catch (IllegalArgumentException ex) {
+            throw new MemberDataException(MessageFormat.format(MISSING_OR_INVALID_HEADER_ROW, ex.getMessage()));
+        }
         auditColumnNames();
     }
 
@@ -99,7 +110,7 @@ public abstract class ControlBlock {
         String header = lines[0];
 
         if (! header.contains(Constants.CSV_SEPARATOR)) {
-            throw new MemberDataException(BAD_HEADER_ROW + ": " + header + "\n");
+            throw new MemberDataException(BAD_HEADER_ROW);
         }
 
         String version = new VersionParser(lines).version();
@@ -327,7 +338,7 @@ public abstract class ControlBlock {
         }
     }
 
-    String getWarnings() {
+    public String getWarnings() {
         return warnings.toString();
     }
 

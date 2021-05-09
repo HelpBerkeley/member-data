@@ -36,7 +36,6 @@ public abstract class Delivery {
     protected String address;
     protected Boolean isCondo;
     protected String details;
-    protected String restaurant;
     protected Location location;
 
     public Delivery(String name, long lineNumber) {
@@ -76,10 +75,6 @@ public abstract class Delivery {
         this.details = details;
     }
 
-    public void setRestaurant(String restaurant) {
-        this.restaurant = restaurant;
-    }
-
     public void setLocation(Location location) {
         this.location = location;
     }
@@ -115,10 +110,6 @@ public abstract class Delivery {
         return details;
     }
 
-    public String getRestaurant() {
-        return restaurant;
-    }
-
     public String getFullAddress() {
         return address + ", " + city + ", " + "CA";
     }
@@ -132,4 +123,12 @@ public abstract class Delivery {
     }
 
     public abstract String deliveryRow();
+
+    protected final String csvEscapeCommas(String value) {
+        if (value.contains(",")) {
+            return "\"" + value + "\"";
+        } else {
+            return value;
+        }
+    }
 }

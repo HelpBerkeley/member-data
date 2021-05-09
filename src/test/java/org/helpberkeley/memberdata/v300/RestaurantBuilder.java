@@ -20,32 +20,25 @@
  * SOFTWARE.
  *
  */
+package org.helpberkeley.memberdata.v300;
 
-package org.helpberkeley.memberdata;
+public class RestaurantBuilder {
 
-import java.util.List;
-import java.util.Map;
-
-public class ControlBlockV200 extends ControlBlock {
-
-     ControlBlockV200(String header) {
-         super(header);
-    }
-
-    public void audit(Map<String, User> users, Map<String, Restaurant> restaurants, List<Restaurant> splitRestaurants) {
-        StringBuilder errors = new StringBuilder();
-
-        auditOpsManager(errors, users);
-        auditSplitRestaurants(errors, users, restaurants, splitRestaurants);
-        auditBackupDrivers(errors, users);
-
-        if (errors.length() != 0) {
-            throw new MemberDataException(errors.toString());
-        }
-    }
+    private String name = WorkflowBuilder.DEFAULT_RESTAURANT_NAME;
 
     @Override
-    public String getVersion() {
-        return Constants.CONTROL_BLOCK_VERSION_200;
+    public String toString() {
+        return build();
+    }
+
+    public String build() {
+        return "FALSE,,,,,,,,\"9999 999 St., Berkeley, CA\",FALSE,,"
+                + name
+                + ",,,,,,\n";
+    }
+
+    public RestaurantBuilder withName(String name) {
+        this.name = name;
+        return this;
     }
 }

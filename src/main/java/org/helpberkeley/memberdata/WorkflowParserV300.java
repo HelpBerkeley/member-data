@@ -32,7 +32,37 @@ public class WorkflowParserV300 extends WorkflowParser {
 
     public static final String EMPTY_DELIVERY = "Line {0}, Driver {1} delivering nothing to {2}.\n";
     public static final String MISSING_MEAL_PICKUP = "Line {0}, driver {1}, meal delivery from {2} but no pickup.\n";
-    public static final String MISSING_GROCERY_PICKUP = "Line {0}, driver {1}, grocery delivery from {2} but no pickup.\n";
+    public static final String MISSING_GROCERY_PICKUP =
+            "Line {0}, driver {1}, grocery delivery from {2} but no pickup.\n";
+
+    public static final String INVALID_COUNT_VALUE =
+            "Line {0}, \"{1}\" is not a valid value for the \"{2}\" column.\n";
+
+    public static final String MISSING_ALT_TYPE =
+            "Line {0}, the \"{1}\" column is empty. "
+            + "Please insert the correct alternate type (e.g. veg).\n";
+
+    public static final String ALT_MEAL_MISMATCH =
+            "Line {0}, delivery alt meal type \"{1}\" does not match any of the options defined "
+            + "in the control block " + Constants.CONTROL_BLOCK_ALT_MEAL_OPTIONS + ": \"{2}\".\n";
+
+    public static final String EMPTY_ALT_MEAL =
+            "Line {0}, delivery has alt meal type \"{1}\" but control block "
+            + Constants.CONTROL_BLOCK_ALT_MEAL_OPTIONS + " is empty.\n";
+
+    public static final String ALT_GROCERY_MISMATCH =
+            "Line {0}, delivery alt grocery type \"{1}\" does not match any of the options defined "
+                    + "in the " + Constants.CONTROL_BLOCK_ALT_GROCERY_OPTIONS + ": \"{2}\".\n";
+
+    public static final String EMPTY_ALT_GROCERY =
+            "Line {0}, delivery has alt grocery type \"{1}\" but control block "
+                    + Constants.CONTROL_BLOCK_ALT_GROCERY_OPTIONS + " is empty.\n";
+
+    public static final String MISSING_CONSUMER_NAME = "Line {0}, missing consumer name.\n";
+    public static final String MISSING_CONSUMER_USER_NAME = "Line {0}, missing consumer user name.\n";
+    public static final String MISSING_PHONE = "Line {0}, missing primary phone number.\n";
+    public static final String MISSING_CITY = "Line {0}, missing city.\n";
+    public static final String MISSING_ADDRESS = "Line {0}, missing address.\n";
 
     public WorkflowParserV300(Mode mode, final String csvData) {
         super(mode, csvData);
@@ -103,84 +133,47 @@ public class WorkflowParserV300 extends WorkflowParser {
 
             bean = (WorkflowBeanV300) nextRow();
             assert bean != null;
-            String errors = "";
+            StringBuilder errors = new StringBuilder();
 
             String consumerName = bean.getName();
             if (consumerName.isEmpty()) {
-                errors += "missing consumer name\n";
+                errors.append(MessageFormat.format(MISSING_CONSUMER_NAME, lineNumber));
             }
             String userName = bean.getUserName();
             if (userName.isEmpty()) {
-                errors += "missing user name\n";
+                errors.append(MessageFormat.format(MISSING_CONSUMER_USER_NAME, lineNumber));
             }
             String phone = bean.getPhone();
             if (phone.isEmpty()) {
-                errors += "missing phone\n";
+                errors.append(MessageFormat.format(MISSING_PHONE, lineNumber));
             }
             String altPhone = bean.getAltPhone();
             String neighborhood = bean.getNeighborhood();
             String city = bean.getCity();
             if (city.isEmpty()) {
-                errors += "missing city\n";
+                errors.append(MessageFormat.format(MISSING_CITY, lineNumber));
             }
             String address = bean.getAddress();
             if (address.isEmpty()) {
-                errors += "missing address\n";
+                errors.append(MessageFormat.format(MISSING_ADDRESS, lineNumber));
             }
             boolean isCondo = Boolean.parseBoolean(bean.getCondo());
             String details = bean.getDetails();
-            String restaurantName = bean.getRestaurant();
-            if (restaurantName.isEmpty()) {
-                // FIX THIS, DS: resolve multi-pickup restaurant names
-                restaurantName = "";
-//                errors += "missing restaurant name\n";
-            }
-            String stdMeals = bean.getStdMeals().trim();
-            String altMeals = bean.getAltMeals().trim();
+
+            String stdMeals = getIntegerValue(bean.getStdMeals());
+            String altMeals = getIntegerValue(bean.getAltMeals());
             String typeMeal = bean.getTypeMeal().trim();
-            String stdGrocery = bean.getStdGrocery().trim();
-            String altGrocery = bean.getAltGrocery().trim();
+            String stdGrocery = getIntegerValue(bean.getStdGrocery());
+            String altGrocery = getIntegerValue(bean.getAltGrocery());
             String typeGrocery = bean.getTypeGrocery().trim();
 
-            if (stdMeals.isEmpty()) {
-                errors += Constants.WORKFLOW_STD_MEALS_COLUMN + " column is empty. ";
-                errors += "Please insert the the correct number(s) (e.g. 0).\n";
-            }
-            if (altMeals.isEmpty()) {
-                errors += Constants.WORKFLOW_ALT_MEALS_COLUMN + " column is empty. ";
-                errors += "Please insert the the correct number(s) (e.g. 0).\n";
-            } else if (! altMeals.equals("0")) {
-                if (typeMeal.isEmpty()) {
-                    errors += Constants.WORKFLOW_TYPE_MEAL_COLUMN + " column is empty. ";
-                    errors += "Please insert the the correct alternate grocery type (e.g. veg).\n";
-                } else if (typeMeal.equals(Constants.ALT_TYPE_NONE)) {
-                    errors += Constants.ALT_TYPE_NONE + " is invalid for the ";
-                    errors += Constants.WORKFLOW_TYPE_MEAL_COLUMN + " column when ";
-                    errors += Constants.WORKFLOW_ALT_MEALS_COLUMN + " is not 0. ";
-                    errors += "Please insert a valid alt meal type.\n";
-                }
-            }
-            if (stdGrocery.isEmpty()) {
-                errors += Constants.WORKFLOW_STD_GROCERY_COLUMN + " column is empty. ";
-                errors += "Please insert the the correct number(s) (e.g. 0).\n";
-            }
-            if (altGrocery.isEmpty()) {
-                errors += Constants.WORKFLOW_ALT_GROCERY_COLUMN + " column is empty. ";
-                errors += "Please insert the the correct number(s) (e.g. 0).\n";
-            } else if (! altGrocery.equals("0")) {
-                if (typeGrocery.isEmpty()) {
-                    errors += Constants.WORKFLOW_TYPE_GROCERY_COLUMN + " column is empty. ";
-                    errors += "Please insert the the correct alternate grocery type (e.g. veg).\n";
-                } else if (typeGrocery.equals(Constants.ALT_TYPE_NONE)) {
-                    errors += Constants.ALT_TYPE_NONE + " is invalid for the ";
-                    errors += Constants.WORKFLOW_TYPE_GROCERY_COLUMN + " column when ";
-                    errors += Constants.WORKFLOW_ALT_GROCERY_COLUMN + " is not 0. ";
-                    errors += "Please insert a valid alt grocery type.\n";
-                }
-            }
+            validIntegerValue(stdMeals, Constants.WORKFLOW_STD_MEALS_COLUMN, errors);
+            parseAuditAltMeals(altMeals, typeMeal, errors);
+            validIntegerValue(stdGrocery, Constants.WORKFLOW_STD_GROCERY_COLUMN, errors);
+            parseAuditAltGrocery(altGrocery, typeGrocery, errors);
 
-            if (! errors.isEmpty()) {
-                throw new MemberDataException("line " + lineNumber + " " + errors);
+            if (! errors.toString().isEmpty()) {
+                throw new MemberDataException(errors.toString());
             }
 
             DeliveryV300 delivery = new DeliveryV300(consumerName, lineNumber);
@@ -192,13 +185,12 @@ public class WorkflowParserV300 extends WorkflowParser {
             delivery.setAddress(address);
             delivery.setIsCondo(isCondo);
             delivery.setDetails(details);
-            delivery.setRestaurant(restaurantName);
-            delivery.setStdMeals(stdMeals.isEmpty() ? "0" : stdMeals);
-            delivery.setAltMeals(altMeals.isEmpty() ? "0" : altMeals);
-            delivery.setTypeMeal(typeMeal.isEmpty() ? "none" : typeMeal);
-            delivery.setStdGrocery(stdGrocery.isEmpty() ? "0" : stdGrocery);
-            delivery.setAltGrocery(altGrocery.isEmpty() ? "0" : altGrocery);
-            delivery.setTypeGrocery(typeGrocery.isEmpty() ? "none" : typeGrocery);
+            delivery.setStdMeals(stdMeals);
+            delivery.setAltMeals(altMeals);
+            delivery.setTypeMeal(typeMeal.isEmpty() ? "" : typeMeal);
+            delivery.setStdGrocery(stdGrocery);
+            delivery.setAltGrocery(altGrocery);
+            delivery.setTypeGrocery(typeGrocery.isEmpty() ? "" : typeGrocery);
 
             deliveries.add(delivery);
         }
@@ -262,6 +254,108 @@ public class WorkflowParserV300 extends WorkflowParser {
 
         if (errors.length() > 0) {
             throw new MemberDataException(errors.toString());
+        }
+    }
+
+    @Override
+    void versionSpecificAudit(Driver driver) {
+
+        ControlBlockV300 controlBlockV300 = (ControlBlockV300) controlBlock;
+
+        List<String> altMealTypes = controlBlockV300.getAltMealOptions();
+        List<String> altGroceryTypes = controlBlockV300.getAltGroceryOptions();
+        String errors = "";
+
+        for (DeliveryV300 delivery : ((DriverV300)driver).getDeliveriesV300()) {
+            if (! delivery.getAltMeals().equals("0")) {
+
+                if (altMealTypes == null) {
+//                    errors += MessageFormat.format(ALT_MEAL_OPTIONS_NOT_DEFINED,
+                    //                           lineNumber, delivery.getTypeMeal(), String.join(", ", altMealTypes));
+                } else if (altMealTypes.isEmpty()) {
+                    errors += MessageFormat.format(EMPTY_ALT_MEAL, lineNumber, delivery.getTypeMeal());
+                } else if (! altMealTypes.contains(delivery.getTypeMeal())) {
+                    errors += MessageFormat.format(ALT_MEAL_MISMATCH,
+                            lineNumber, delivery.getTypeMeal(), String.join(", ", altMealTypes));
+                }
+            }
+            if (! delivery.getAltGrocery().equals("0")) {
+
+                if (altGroceryTypes == null) {
+
+                } else if (altGroceryTypes.isEmpty()) {
+                    errors += MessageFormat.format(EMPTY_ALT_GROCERY, lineNumber, delivery.getTypeGrocery());
+                } else if (! altGroceryTypes.contains(delivery.getTypeGrocery())) {
+                    errors += MessageFormat.format(ALT_GROCERY_MISMATCH,
+                            lineNumber, delivery.getTypeGrocery(), String.join(", ", altGroceryTypes));
+                }
+            }
+        }
+
+        if (! errors.isEmpty()) {
+            throw new MemberDataException(errors);
+        }
+    }
+
+    private boolean validIntegerValue(String value, String columnName, StringBuilder errors) {
+
+        assert ! value.isEmpty();
+
+        try {
+            Integer.parseInt(value);
+        } catch (NumberFormatException ex) {
+            errors.append(MessageFormat.format(INVALID_COUNT_VALUE, lineNumber, value, columnName));
+            return false;
+        }
+
+        return true;
+    }
+
+    private void parseAuditAltMeals(String altMeals, String typeMeal, StringBuilder errors) {
+
+        assert ! altMeals.isEmpty();
+
+        if (altMeals.equals("0")) {
+            return;
+        }
+
+        if (! validIntegerValue(altMeals, Constants.WORKFLOW_ALT_MEALS_COLUMN, errors)) {
+            return;
+        }
+
+        if (typeMeal.isEmpty()) {
+            errors.append(MessageFormat.format(MISSING_ALT_TYPE, lineNumber, Constants.WORKFLOW_TYPE_MEAL_COLUMN));
+        } else if (typeMeal.equals(Constants.ALT_TYPE_NONE)) {
+            errors.append(Constants.ALT_TYPE_NONE);
+            errors.append(" is invalid for the ");
+            errors.append(Constants.WORKFLOW_TYPE_MEAL_COLUMN);
+            errors.append(" column when ");
+            errors.append(Constants.WORKFLOW_ALT_MEALS_COLUMN);
+            errors.append(" is not 0. ");
+            errors.append("Please insert a valid alt meal type.\n");
+        }
+    }
+
+    private void parseAuditAltGrocery(String altGrocery, String typeGrocery, StringBuilder errors) {
+
+        assert ! altGrocery.isEmpty();
+
+        if (altGrocery.equals("0")) {
+            return;
+        }
+
+        if (! validIntegerValue(altGrocery, Constants.WORKFLOW_ALT_GROCERY_COLUMN, errors)) {
+            return;
+        }
+
+        if (typeGrocery.isEmpty()) {
+            errors.append(MessageFormat.format(MISSING_ALT_TYPE, lineNumber, Constants.WORKFLOW_TYPE_GROCERY_COLUMN));
+        } else if (typeGrocery.equals(Constants.ALT_TYPE_NONE)) {
+            errors.append(Constants.ALT_TYPE_NONE);
+            errors.append(" is invalid for the ");
+            errors.append(Constants.WORKFLOW_TYPE_GROCERY_COLUMN + " column when ");
+            errors.append(Constants.WORKFLOW_ALT_GROCERY_COLUMN + " is not 0. ");
+            errors.append("Please insert a valid alt grocery type.\n");
         }
     }
 }
