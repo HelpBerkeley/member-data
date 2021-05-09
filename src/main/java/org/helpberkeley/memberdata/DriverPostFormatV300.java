@@ -28,7 +28,6 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 public class DriverPostFormatV300 extends DriverPostFormat {
 
@@ -82,11 +81,6 @@ public class DriverPostFormatV300 extends DriverPostFormat {
     @Override
     public List<Driver> getDrivers() {
         return drivers;
-    }
-
-    @Override
-    public Map<String, Restaurant> getRestaurants() {
-        return restaurants;
     }
 
     @Override

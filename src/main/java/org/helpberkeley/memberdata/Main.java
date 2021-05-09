@@ -831,7 +831,9 @@ public class Main {
         statusMessages.append(driverPostFormat.generateSummary());
 
         statusMessages.append("**Messages Posted to [Get driver messages]")
-                .append("(https://go.helpberkeley.org/t/get-driver-messages/2123/)**\n\n");
+                .append("(https://go.helpberkeley.org/t/")
+                .append(topic)
+                .append(")**\n\n");
 
         if (driversTableURL != null) {
             statusMessages.append("\n[Pickup Manager Drivers Table](").append(driversTableURL).append(")");

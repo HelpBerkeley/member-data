@@ -130,7 +130,6 @@ public abstract class DriverPostFormat {
     public abstract List<Driver> getDrivers();
     abstract String statusMessages();
     public abstract String generateSummary();
-    public abstract Map<String, Restaurant> getRestaurants();
     abstract ProcessingReturnValue processStructRef(MessageBlockStructRef structRef, MessageBlockContext context);
     abstract boolean processBooleanSimpleRef(MessageBlockSimpleRef element, MessageBlockContext context);
     abstract boolean processBooleanListRef(MessageBlockListRef listRef, MessageBlockContext context);
@@ -204,6 +203,10 @@ public abstract class DriverPostFormat {
         }
 
         return post.toString();
+    }
+
+    public Map<String, Restaurant> getRestaurants() {
+        return restaurants;
     }
 
     protected final void loadLastRestaurantTemplate() {

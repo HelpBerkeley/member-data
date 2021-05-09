@@ -38,17 +38,13 @@ public class RestaurantV300 extends Restaurant {
 
         if (this.controlBlock.getMealSource().equals(name)) {
             if (this.controlBlock.getAltMealOptions() != null) {
-                for (String altMealType : this.controlBlock.getAltMealOptions()) {
-                    alternateMealTypes.add(altMealType);
-                }
+                alternateMealTypes.addAll(this.controlBlock.getAltMealOptions());
             }
         }
 
         if (this.controlBlock.getGrocerySource().equals(name)) {
             if (this.controlBlock.getAltGroceryOptions() != null) {
-                for (String altGroceryType : this.controlBlock.getAltGroceryOptions()) {
-                    alternateGroceryTypes.add(altGroceryType);
-                }
+                alternateGroceryTypes.addAll(this.controlBlock.getAltGroceryOptions());
             }
         }
     }
@@ -91,13 +87,5 @@ public class RestaurantV300 extends Restaurant {
         } else {
             assert alternateGroceryTypes.containsAll(globalRestaurant.alternateGroceryTypes);
         }
-    }
-
-    public Set<String> getAlternateMealTypes() {
-        return alternateMealTypes;
-    }
-
-    public Set<String> getAlternateGroceryTypes() {
-        return alternateGroceryTypes;
     }
 }

@@ -266,7 +266,7 @@ public class WorkflowParserV300 extends WorkflowParser {
 
         List<String> altMealTypes = controlBlockV300.getAltMealOptions();
         List<String> altGroceryTypes = controlBlockV300.getAltGroceryOptions();
-        String errors = "";
+        StringBuilder errors = new StringBuilder();
 
         for (DeliveryV300 delivery : ((DriverV300)driver).getDeliveriesV300()) {
             if (! delivery.getAltMeals().equals("0")) {
@@ -275,10 +275,11 @@ public class WorkflowParserV300 extends WorkflowParser {
 //                    errors += MessageFormat.format(ALT_MEAL_OPTIONS_NOT_DEFINED,
                     //                           lineNumber, delivery.getTypeMeal(), String.join(", ", altMealTypes));
                 } else if (altMealTypes.isEmpty()) {
-                    errors += MessageFormat.format(EMPTY_ALT_MEAL, lineNumber, delivery.getTypeMeal());
+                    errors.append(MessageFormat.format(
+                            EMPTY_ALT_MEAL, lineNumber, delivery.getTypeMeal()));
                 } else if (! altMealTypes.contains(delivery.getTypeMeal())) {
-                    errors += MessageFormat.format(ALT_MEAL_MISMATCH,
-                            lineNumber, delivery.getTypeMeal(), String.join(", ", altMealTypes));
+                    errors.append(MessageFormat.format(ALT_MEAL_MISMATCH,
+                            lineNumber, delivery.getTypeMeal(), String.join(", ", altMealTypes)));
                 }
             }
             if (! delivery.getAltGrocery().equals("0")) {
@@ -286,16 +287,17 @@ public class WorkflowParserV300 extends WorkflowParser {
                 if (altGroceryTypes == null) {
 
                 } else if (altGroceryTypes.isEmpty()) {
-                    errors += MessageFormat.format(EMPTY_ALT_GROCERY, lineNumber, delivery.getTypeGrocery());
+                    errors.append(MessageFormat.format(
+                            EMPTY_ALT_GROCERY, lineNumber, delivery.getTypeGrocery()));
                 } else if (! altGroceryTypes.contains(delivery.getTypeGrocery())) {
-                    errors += MessageFormat.format(ALT_GROCERY_MISMATCH,
-                            lineNumber, delivery.getTypeGrocery(), String.join(", ", altGroceryTypes));
+                    errors.append(MessageFormat.format(ALT_GROCERY_MISMATCH,
+                            lineNumber, delivery.getTypeGrocery(), String.join(", ", altGroceryTypes)));
                 }
             }
         }
 
-        if (! errors.isEmpty()) {
-            throw new MemberDataException(errors);
+        if (errors.length() > 0) {
+            throw new MemberDataException(errors.toString());
         }
     }
 
