@@ -24,11 +24,11 @@ package org.helpberkeley.memberdata;
 
 public class DeliveryV300 extends Delivery {
 
-    private String stdMeals;
-    private String altMeals;
+    private int stdMeals;
+    private int altMeals;
     private String typeMeal;
-    private String stdGrocery;
-    private String altGrocery;
+    private int stdGrocery;
+    private int altGrocery;
     private String typeGrocery;
 
     @Override
@@ -44,11 +44,11 @@ public class DeliveryV300 extends Delivery {
     }
 
     public void setStdMeals(String stdMeals) {
-        this.stdMeals = stdMeals;
+        this.stdMeals = Integer.valueOf(stdMeals);
     }
 
     public void setAltMeals(String altMeals) {
-        this.altMeals = altMeals;
+        this.altMeals = Integer.valueOf(altMeals);
     }
 
     public void setTypeMeal(String typeMeal) {
@@ -56,22 +56,22 @@ public class DeliveryV300 extends Delivery {
     }
 
     public void setStdGrocery(String stdGrocery) {
-        this.stdGrocery = stdGrocery;
+        this.stdGrocery = Integer.valueOf(stdGrocery);
     }
 
     public void setAltGrocery(String altGrocery) {
-        this.altGrocery = altGrocery;
+        this.altGrocery = Integer.valueOf(altGrocery);
     }
 
     public void setTypeGrocery(String typeGrocery) {
         this.typeGrocery = typeGrocery;
     }
 
-    public String getStdMeals() {
+    public int getStdMeals() {
         return stdMeals;
     }
 
-    public String getAltMeals() {
+    public int getAltMeals() {
         return altMeals;
     }
 
@@ -79,11 +79,11 @@ public class DeliveryV300 extends Delivery {
         return typeMeal;
     }
 
-    public String getStdGrocery() {
+    public int getStdGrocery() {
         return stdGrocery;
     }
 
-    public String getAltGrocery() {
+    public int getAltGrocery() {
         return altGrocery;
     }
 

@@ -228,25 +228,25 @@ public class WorkflowParserV300 extends WorkflowParser {
             DeliveryV300 deliveryV300 = (DeliveryV300) delivery;
 
             // Delivery without any items?
-            if (deliveryV300.getStdMeals().equals("0")
-                    && deliveryV300.getAltMeals().equals("0")
-                    && deliveryV300.getStdGrocery().equals("0")
-                    && deliveryV300.getAltGrocery().equals("0")) {
+            if ((deliveryV300.getStdMeals() == 0)
+                    && (deliveryV300.getAltMeals() == 0)
+                    && (deliveryV300.getStdGrocery() == 0)
+                    && (deliveryV300.getAltGrocery() == 0)) {
 
                 driver.addWarning(MessageFormat.format(EMPTY_DELIVERY,
                         delivery.getLineNumber(), driver.getName(), delivery.getName()));
             }
 
             // Check that if we have meals, that the meal source location is in the pickups
-            if (! (deliveryV300.getStdMeals().equals("0") && deliveryV300.getAltMeals().equals("0"))) {
+            if ((deliveryV300.getStdMeals() > 0) || (deliveryV300.getAltMeals() > 0)) {
                 if (! pickups.contains(controlBlockV300.getMealSource())) {
                     errors.append(MessageFormat.format(MISSING_MEAL_PICKUP,
                             delivery.getLineNumber(), driver, controlBlockV300.getMealSource()));
                 }
             }
 
-            // Check that if we have meals, that the meal source location is in the pickups
-            if (! (deliveryV300.getStdGrocery().equals("0") && deliveryV300.getAltGrocery().equals("0"))) {
+            // Check that if we have groceries, that the grocery source location is in the pickups
+            if ((deliveryV300.getStdGrocery() > 0) || (deliveryV300.getAltGrocery() > 0)) {
                 if (!pickups.contains(controlBlockV300.getGrocerySource())) {
                     errors.append(MessageFormat.format(MISSING_GROCERY_PICKUP,
                             delivery.getLineNumber(), driver, controlBlockV300.getMealSource()));
@@ -269,7 +269,7 @@ public class WorkflowParserV300 extends WorkflowParser {
         StringBuilder errors = new StringBuilder();
 
         for (DeliveryV300 delivery : ((DriverV300)driver).getDeliveriesV300()) {
-            if (! delivery.getAltMeals().equals("0")) {
+            if (delivery.getAltMeals() > 0) {
 
                 if (altMealTypes == null) {
 //                    errors += MessageFormat.format(ALT_MEAL_OPTIONS_NOT_DEFINED,
@@ -282,7 +282,7 @@ public class WorkflowParserV300 extends WorkflowParser {
                             lineNumber, delivery.getTypeMeal(), String.join(", ", altMealTypes)));
                 }
             }
-            if (! delivery.getAltGrocery().equals("0")) {
+            if (delivery.getAltGrocery() > 0) {
 
                 if (altGroceryTypes == null) {
 

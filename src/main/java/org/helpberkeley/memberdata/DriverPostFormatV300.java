@@ -245,19 +245,19 @@ public class DriverPostFormatV300 extends DriverPostFormat {
                 value = delivery.getDetails();
                 break;
             case CONSUMER_STD_MEAL:
-                value = delivery.getStdMeals();
+                value = String.valueOf(delivery.getStdMeals());
                 break;
             case CONSUMER_ALT_MEAL:
-                value = delivery.getAltMeals();
+                value = String.valueOf(delivery.getAltMeals());
                 break;
             case "Consumer.AlternateMealType":
                 value = delivery.getTypeMeal();
                 break;
             case "Consumer.StandardGrocery":
-                value = delivery.getStdGrocery();
+                value = String.valueOf(delivery.getStdGrocery());
                 break;
             case "Consumer.AlternateGrocery":
-                value = delivery.getAltGrocery();
+                value = String.valueOf(delivery.getAltGrocery());
                 break;
             case "Consumer.AlternateGroceryType":
                 value = delivery.getTypeGrocery();
@@ -420,16 +420,16 @@ public class DriverPostFormatV300 extends DriverPostFormat {
                     value = delivery.isCondo();
                     break;
                 case CONSUMER_STD_MEAL:
-                    value = Integer.parseInt(delivery.getStdMeals()) > 0;
+                    value = (delivery.getStdMeals() > 0);
                     break;
                 case CONSUMER_ALT_MEAL:
-                    value = Integer.parseInt(delivery.getAltMeals()) > 0;
+                    value = (delivery.getAltMeals() > 0);
                     break;
                 case CONSUMER_STD_GROCERY:
-                    value = Integer.parseInt(delivery.getStdGrocery()) > 0;
+                    value = (delivery.getStdGrocery() > 0);
                     break;
                 case CONSUMER_ALT_GROCERY:
-                    value = Integer.parseInt(delivery.getAltGrocery()) > 0;
+                    value = (delivery.getAltGrocery() > 0);
                     break;
                 case CONSUMER_DETAILS:
                     value = ! delivery.getDetails().isEmpty();
@@ -589,7 +589,7 @@ public class DriverPostFormatV300 extends DriverPostFormat {
         if (restaurantName.equals(controlBlock.getMealSource())) {
             for (Delivery delivery : driver.getDeliveries()) {
                 DeliveryV300 deliveryV300 = (DeliveryV300) delivery;
-                total += Integer.parseInt(deliveryV300.getStdMeals());
+                total += deliveryV300.getStdMeals();
             }
         }
 
@@ -602,7 +602,7 @@ public class DriverPostFormatV300 extends DriverPostFormat {
         if (restaurantName.equals(controlBlock.getGrocerySource())) {
             for (Delivery delivery : driver.getDeliveries()) {
                 DeliveryV300 deliveryV300 = (DeliveryV300) delivery;
-                total += Integer.parseInt(deliveryV300.getStdGrocery());
+                total += deliveryV300.getStdGrocery();
             }
         }
 
@@ -613,10 +613,10 @@ public class DriverPostFormatV300 extends DriverPostFormat {
         for (Delivery delivery : driver.getDeliveries()) {
             DeliveryV300 deliveryV300 = (DeliveryV300)delivery;
 
-            if (! (deliveryV300.getStdMeals().equals("0")
-                    && deliveryV300.getAltMeals().equals("0")
-                    && deliveryV300.getStdGrocery().equals("0")
-                    && deliveryV300.getAltGrocery().equals("0"))) {
+            if ((deliveryV300.getStdMeals() > 0)
+                    || (deliveryV300.getAltMeals() > 0)
+                    || (deliveryV300.getStdGrocery() > 0)
+                    || (deliveryV300.getAltGrocery() > 0)) {
                 return true;
             }
         }
@@ -632,7 +632,7 @@ public class DriverPostFormatV300 extends DriverPostFormat {
         for (Delivery delivery : driver.getDeliveries()) {
             DeliveryV300 deliveryV300 = (DeliveryV300)delivery;
 
-            if (! deliveryV300.getAltMeals().equals("0")) {
+            if (deliveryV300.getAltMeals() > 0) {
                 return true;
             }
         }
@@ -648,7 +648,7 @@ public class DriverPostFormatV300 extends DriverPostFormat {
         for (Delivery delivery : driver.getDeliveries()) {
             DeliveryV300 deliveryV300 = (DeliveryV300)delivery;
 
-            if (! deliveryV300.getAltGrocery().equals("0")) {
+            if (deliveryV300.getAltGrocery() > 0) {
                 return true;
             }
         }
@@ -835,7 +835,7 @@ public class DriverPostFormatV300 extends DriverPostFormat {
         if (restaurantName.equals(controlBlock.getMealSource())) {
             for (DeliveryV300 delivery : driver.getDeliveriesV300()) {
                 if (mealType.equals(delivery.getTypeMeal())) {
-                    total += Integer.parseInt(delivery.getAltMeals());
+                    total += delivery.getAltMeals();
                 }
             }
         }
@@ -861,7 +861,7 @@ public class DriverPostFormatV300 extends DriverPostFormat {
         if (restaurantName.equals(controlBlock.getGrocerySource())) {
             for (DeliveryV300 delivery : driver.getDeliveriesV300()) {
                 if (groceryType.equals(delivery.getTypeGrocery())) {
-                    total += Integer.parseInt(delivery.getAltGrocery());
+                    total += delivery.getAltGrocery();
                 }
             }
         }

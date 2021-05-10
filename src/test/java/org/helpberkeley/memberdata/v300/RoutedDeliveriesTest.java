@@ -80,11 +80,11 @@ public class RoutedDeliveriesTest extends TestBase {
         assertThat(delivery.getDetails()).isEmpty();
         assertThat(delivery).isInstanceOf(DeliveryV300.class);
         DeliveryV300 deliveryV300 = (DeliveryV300) delivery;
-        assertThat(deliveryV300.getStdMeals()).isEqualTo("0");
-        assertThat(deliveryV300.getAltMeals()).isEqualTo("1");
+        assertThat(deliveryV300.getStdMeals()).isEqualTo(0);
+        assertThat(deliveryV300.getAltMeals()).isEqualTo(1);
         assertThat(deliveryV300.getTypeMeal()).isEqualTo("noRed");
-        assertThat(deliveryV300.getStdGrocery()).isEqualTo("0");
-        assertThat(deliveryV300.getAltGrocery()).isEqualTo("0");
+        assertThat(deliveryV300.getStdGrocery()).isEqualTo(0);
+        assertThat(deliveryV300.getAltGrocery()).isEqualTo(0);
         assertThat(deliveryV300.getTypeGrocery()).isEmpty();
 
         delivery = deliveries.get(1);
@@ -98,11 +98,11 @@ public class RoutedDeliveriesTest extends TestBase {
         assertThat(delivery.getDetails()).isEmpty();
         assertThat(delivery).isInstanceOf(DeliveryV300.class);
         deliveryV300 = (DeliveryV300) delivery;
-        assertThat(deliveryV300.getStdMeals()).isEqualTo("2");
-        assertThat(deliveryV300.getAltMeals()).isEqualTo("0");
+        assertThat(deliveryV300.getStdMeals()).isEqualTo(2);
+        assertThat(deliveryV300.getAltMeals()).isEqualTo(0);
         assertThat(deliveryV300.getTypeMeal()).isEmpty();
-        assertThat(deliveryV300.getStdGrocery()).isEqualTo("2");
-        assertThat(deliveryV300.getAltGrocery()).isEqualTo("0");
+        assertThat(deliveryV300.getStdGrocery()).isEqualTo(2);
+        assertThat(deliveryV300.getAltGrocery()).isEqualTo(0);
         assertThat(deliveryV300.getTypeGrocery()).isEmpty();
 
         delivery = deliveries.get(2);
@@ -116,11 +116,11 @@ public class RoutedDeliveriesTest extends TestBase {
         assertThat(delivery.getDetails()).isEmpty();
         assertThat(delivery).isInstanceOf(DeliveryV300.class);
         deliveryV300 = (DeliveryV300) delivery;
-        assertThat(deliveryV300.getStdMeals()).isEqualTo("0");
-        assertThat(deliveryV300.getAltMeals()).isEqualTo("0");
+        assertThat(deliveryV300.getStdMeals()).isEqualTo(0);
+        assertThat(deliveryV300.getAltMeals()).isEqualTo(0);
         assertThat(deliveryV300.getTypeMeal()).isEmpty();
-        assertThat(deliveryV300.getStdGrocery()).isEqualTo("2");
-        assertThat(deliveryV300.getAltGrocery()).isEqualTo("0");
+        assertThat(deliveryV300.getStdGrocery()).isEqualTo(2);
+        assertThat(deliveryV300.getAltGrocery()).isEqualTo(0);
         assertThat(deliveryV300.getTypeGrocery()).isEmpty();
 
         delivery = deliveries.get(3);
@@ -134,11 +134,11 @@ public class RoutedDeliveriesTest extends TestBase {
         assertThat(delivery.getDetails()).isEmpty();
         assertThat(delivery).isInstanceOf(DeliveryV300.class);
         deliveryV300 = (DeliveryV300) delivery;
-        assertThat(deliveryV300.getStdMeals()).isEqualTo("0");
-        assertThat(deliveryV300.getAltMeals()).isEqualTo("1");
+        assertThat(deliveryV300.getStdMeals()).isEqualTo(0);
+        assertThat(deliveryV300.getAltMeals()).isEqualTo(1);
         assertThat(deliveryV300.getTypeMeal()).isEqualTo("veggie");
-        assertThat(deliveryV300.getStdGrocery()).isEqualTo("0");
-        assertThat(deliveryV300.getAltGrocery()).isEqualTo("1");
+        assertThat(deliveryV300.getStdGrocery()).isEqualTo(0);
+        assertThat(deliveryV300.getAltGrocery()).isEqualTo(1);
         assertThat(deliveryV300.getTypeGrocery()).isEqualTo("veg");
 
         delivery = deliveries.get(4);
@@ -152,11 +152,11 @@ public class RoutedDeliveriesTest extends TestBase {
         assertThat(delivery.getDetails()).isEqualTo("listed as a condo but");
         assertThat(delivery).isInstanceOf(DeliveryV300.class);
         deliveryV300 = (DeliveryV300) delivery;
-        assertThat(deliveryV300.getStdMeals()).isEqualTo("0");
-        assertThat(deliveryV300.getAltMeals()).isEqualTo("1");
+        assertThat(deliveryV300.getStdMeals()).isEqualTo(0);
+        assertThat(deliveryV300.getAltMeals()).isEqualTo(1);
         assertThat(deliveryV300.getTypeMeal()).isEqualTo("noPork");
-        assertThat(deliveryV300.getStdGrocery()).isEqualTo("0");
-        assertThat(deliveryV300.getAltGrocery()).isEqualTo("0");
+        assertThat(deliveryV300.getStdGrocery()).isEqualTo(0);
+        assertThat(deliveryV300.getAltGrocery()).isEqualTo(0);
         assertThat(deliveryV300.getTypeGrocery()).isEmpty();
 
         delivery = deliveries.get(5);
@@ -170,11 +170,11 @@ public class RoutedDeliveriesTest extends TestBase {
         assertThat(delivery.getDetails()).isEmpty();
         assertThat(delivery).isInstanceOf(DeliveryV300.class);
         deliveryV300 = (DeliveryV300) delivery;
-        assertThat(deliveryV300.getStdMeals()).isEqualTo("0");
-        assertThat(deliveryV300.getAltMeals()).isEqualTo("0");
+        assertThat(deliveryV300.getStdMeals()).isEqualTo(0);
+        assertThat(deliveryV300.getAltMeals()).isEqualTo(0);
         assertThat(deliveryV300.getTypeMeal()).isEmpty();
-        assertThat(deliveryV300.getStdGrocery()).isEqualTo("0");
-        assertThat(deliveryV300.getAltGrocery()).isEqualTo("1");
+        assertThat(deliveryV300.getStdGrocery()).isEqualTo(0);
+        assertThat(deliveryV300.getAltGrocery()).isEqualTo(1);
         assertThat(deliveryV300.getTypeGrocery()).isEqualTo("custom pick");
 
         delivery = deliveries.get(6);
@@ -188,11 +188,11 @@ public class RoutedDeliveriesTest extends TestBase {
         assertThat(delivery.getDetails()).isEmpty();
         assertThat(delivery).isInstanceOf(DeliveryV300.class);
         deliveryV300 = (DeliveryV300) delivery;
-        assertThat(deliveryV300.getStdMeals()).isEqualTo("0");
-        assertThat(deliveryV300.getAltMeals()).isEqualTo("1");
+        assertThat(deliveryV300.getStdMeals()).isEqualTo(0);
+        assertThat(deliveryV300.getAltMeals()).isEqualTo(1);
         assertThat(deliveryV300.getTypeMeal()).isEqualTo("veggie");
-        assertThat(deliveryV300.getStdGrocery()).isEqualTo("0");
-        assertThat(deliveryV300.getAltGrocery()).isEqualTo("1");
+        assertThat(deliveryV300.getStdGrocery()).isEqualTo(0);
+        assertThat(deliveryV300.getAltGrocery()).isEqualTo(1);
         assertThat(deliveryV300.getTypeGrocery()).isEqualTo("custom pick");
     }
 
@@ -236,11 +236,11 @@ public class RoutedDeliveriesTest extends TestBase {
         assertThat(delivery.getDetails()).isEmpty();
         assertThat(delivery).isInstanceOf(DeliveryV300.class);
         DeliveryV300 deliveryV300 = (DeliveryV300) delivery;
-        assertThat(deliveryV300.getStdMeals()).isEqualTo("0");
-        assertThat(deliveryV300.getAltMeals()).isEqualTo("1");
+        assertThat(deliveryV300.getStdMeals()).isEqualTo(0);
+        assertThat(deliveryV300.getAltMeals()).isEqualTo(1);
         assertThat(deliveryV300.getTypeMeal()).isEqualTo("noRed");
-        assertThat(deliveryV300.getStdGrocery()).isEqualTo("0");
-        assertThat(deliveryV300.getAltGrocery()).isEqualTo("0");
+        assertThat(deliveryV300.getStdGrocery()).isEqualTo(0);
+        assertThat(deliveryV300.getAltGrocery()).isEqualTo(0);
         assertThat(deliveryV300.getTypeGrocery()).isEmpty();
 
         delivery = deliveries.get(1);
@@ -254,11 +254,11 @@ public class RoutedDeliveriesTest extends TestBase {
         assertThat(delivery.getDetails()).isEmpty();
         assertThat(delivery).isInstanceOf(DeliveryV300.class);
         deliveryV300 = (DeliveryV300) delivery;
-        assertThat(deliveryV300.getStdMeals()).isEqualTo("2");
-        assertThat(deliveryV300.getAltMeals()).isEqualTo("0");
+        assertThat(deliveryV300.getStdMeals()).isEqualTo(2);
+        assertThat(deliveryV300.getAltMeals()).isEqualTo(0);
         assertThat(deliveryV300.getTypeMeal()).isEmpty();
-        assertThat(deliveryV300.getStdGrocery()).isEqualTo("2");
-        assertThat(deliveryV300.getAltGrocery()).isEqualTo("0");
+        assertThat(deliveryV300.getStdGrocery()).isEqualTo(2);
+        assertThat(deliveryV300.getAltGrocery()).isEqualTo(0);
         assertThat(deliveryV300.getTypeGrocery()).isEmpty();
 
         delivery = deliveries.get(2);
@@ -272,11 +272,11 @@ public class RoutedDeliveriesTest extends TestBase {
         assertThat(delivery.getDetails()).isEmpty();
         assertThat(delivery).isInstanceOf(DeliveryV300.class);
         deliveryV300 = (DeliveryV300) delivery;
-        assertThat(deliveryV300.getStdMeals()).isEqualTo("0");
-        assertThat(deliveryV300.getAltMeals()).isEqualTo("0");
+        assertThat(deliveryV300.getStdMeals()).isEqualTo(0);
+        assertThat(deliveryV300.getAltMeals()).isEqualTo(0);
         assertThat(deliveryV300.getTypeMeal()).isEmpty();
-        assertThat(deliveryV300.getStdGrocery()).isEqualTo("2");
-        assertThat(deliveryV300.getAltGrocery()).isEqualTo("0");
+        assertThat(deliveryV300.getStdGrocery()).isEqualTo(2);
+        assertThat(deliveryV300.getAltGrocery()).isEqualTo(0);
         assertThat(deliveryV300.getTypeGrocery()).isEmpty();
 
         delivery = deliveries.get(3);
@@ -290,11 +290,11 @@ public class RoutedDeliveriesTest extends TestBase {
         assertThat(delivery.getDetails()).isEmpty();
         assertThat(delivery).isInstanceOf(DeliveryV300.class);
         deliveryV300 = (DeliveryV300) delivery;
-        assertThat(deliveryV300.getStdMeals()).isEqualTo("0");
-        assertThat(deliveryV300.getAltMeals()).isEqualTo("1");
+        assertThat(deliveryV300.getStdMeals()).isEqualTo(0);
+        assertThat(deliveryV300.getAltMeals()).isEqualTo(1);
         assertThat(deliveryV300.getTypeMeal()).isEqualTo("veggie");
-        assertThat(deliveryV300.getStdGrocery()).isEqualTo("0");
-        assertThat(deliveryV300.getAltGrocery()).isEqualTo("1");
+        assertThat(deliveryV300.getStdGrocery()).isEqualTo(0);
+        assertThat(deliveryV300.getAltGrocery()).isEqualTo(1);
         assertThat(deliveryV300.getTypeGrocery()).isEqualTo("veg");
 
         driver = drivers.get(1);
@@ -325,11 +325,11 @@ public class RoutedDeliveriesTest extends TestBase {
         assertThat(delivery.getDetails()).isEqualTo("listed as a condo but");
         assertThat(delivery).isInstanceOf(DeliveryV300.class);
         deliveryV300 = (DeliveryV300) delivery;
-        assertThat(deliveryV300.getStdMeals()).isEqualTo("0");
-        assertThat(deliveryV300.getAltMeals()).isEqualTo("1");
+        assertThat(deliveryV300.getStdMeals()).isEqualTo(0);
+        assertThat(deliveryV300.getAltMeals()).isEqualTo(1);
         assertThat(deliveryV300.getTypeMeal()).isEqualTo("noPork");
-        assertThat(deliveryV300.getStdGrocery()).isEqualTo("0");
-        assertThat(deliveryV300.getAltGrocery()).isEqualTo("0");
+        assertThat(deliveryV300.getStdGrocery()).isEqualTo(0);
+        assertThat(deliveryV300.getAltGrocery()).isEqualTo(0);
         assertThat(deliveryV300.getTypeGrocery()).isEmpty();
 
         delivery = deliveries.get(1);
@@ -343,11 +343,11 @@ public class RoutedDeliveriesTest extends TestBase {
         assertThat(delivery.getDetails()).isEmpty();
         assertThat(delivery).isInstanceOf(DeliveryV300.class);
         deliveryV300 = (DeliveryV300) delivery;
-        assertThat(deliveryV300.getStdMeals()).isEqualTo("0");
-        assertThat(deliveryV300.getAltMeals()).isEqualTo("0");
+        assertThat(deliveryV300.getStdMeals()).isEqualTo(0);
+        assertThat(deliveryV300.getAltMeals()).isEqualTo(0);
         assertThat(deliveryV300.getTypeMeal()).isEmpty();
-        assertThat(deliveryV300.getStdGrocery()).isEqualTo("0");
-        assertThat(deliveryV300.getAltGrocery()).isEqualTo("1");
+        assertThat(deliveryV300.getStdGrocery()).isEqualTo(0);
+        assertThat(deliveryV300.getAltGrocery()).isEqualTo(1);
         assertThat(deliveryV300.getTypeGrocery()).isEqualTo("custom pick");
 
         delivery = deliveries.get(2);
@@ -361,11 +361,11 @@ public class RoutedDeliveriesTest extends TestBase {
         assertThat(delivery.getDetails()).isEmpty();
         assertThat(delivery).isInstanceOf(DeliveryV300.class);
         deliveryV300 = (DeliveryV300) delivery;
-        assertThat(deliveryV300.getStdMeals()).isEqualTo("0");
-        assertThat(deliveryV300.getAltMeals()).isEqualTo("1");
+        assertThat(deliveryV300.getStdMeals()).isEqualTo(0);
+        assertThat(deliveryV300.getAltMeals()).isEqualTo(1);
         assertThat(deliveryV300.getTypeMeal()).isEqualTo("veggie");
-        assertThat(deliveryV300.getStdGrocery()).isEqualTo("0");
-        assertThat(deliveryV300.getAltGrocery()).isEqualTo("1");
+        assertThat(deliveryV300.getStdGrocery()).isEqualTo(0);
+        assertThat(deliveryV300.getAltGrocery()).isEqualTo(1);
         assertThat(deliveryV300.getTypeGrocery()).isEqualTo("custom pick");
     }
 
@@ -432,11 +432,11 @@ public class RoutedDeliveriesTest extends TestBase {
         assertThat(delivery.getDetails()).isEmpty();
         assertThat(delivery).isInstanceOf(DeliveryV300.class);
         DeliveryV300 deliveryV300 = (DeliveryV300) delivery;
-        assertThat(deliveryV300.getStdMeals()).isEqualTo("0");
-        assertThat(deliveryV300.getAltMeals()).isEqualTo("1");
+        assertThat(deliveryV300.getStdMeals()).isEqualTo(0);
+        assertThat(deliveryV300.getAltMeals()).isEqualTo(1);
         assertThat(deliveryV300.getTypeMeal()).isEqualTo("noRed");
-        assertThat(deliveryV300.getStdGrocery()).isEqualTo("0");
-        assertThat(deliveryV300.getAltGrocery()).isEqualTo("0");
+        assertThat(deliveryV300.getStdGrocery()).isEqualTo(0);
+        assertThat(deliveryV300.getAltGrocery()).isEqualTo(0);
         assertThat(deliveryV300.getTypeGrocery()).isEmpty();
 
         delivery = deliveries.get(1);
@@ -450,11 +450,11 @@ public class RoutedDeliveriesTest extends TestBase {
         assertThat(delivery.getDetails()).isEmpty();
         assertThat(delivery).isInstanceOf(DeliveryV300.class);
         deliveryV300 = (DeliveryV300) delivery;
-        assertThat(deliveryV300.getStdMeals()).isEqualTo("2");
-        assertThat(deliveryV300.getAltMeals()).isEqualTo("0");
+        assertThat(deliveryV300.getStdMeals()).isEqualTo(2);
+        assertThat(deliveryV300.getAltMeals()).isEqualTo(0);
         assertThat(deliveryV300.getTypeMeal()).isEmpty();
-        assertThat(deliveryV300.getStdGrocery()).isEqualTo("2");
-        assertThat(deliveryV300.getAltGrocery()).isEqualTo("0");
+        assertThat(deliveryV300.getStdGrocery()).isEqualTo(2);
+        assertThat(deliveryV300.getAltGrocery()).isEqualTo(0);
         assertThat(deliveryV300.getTypeGrocery()).isEmpty();
 
         delivery = deliveries.get(2);
@@ -468,11 +468,11 @@ public class RoutedDeliveriesTest extends TestBase {
         assertThat(delivery.getDetails()).isEmpty();
         assertThat(delivery).isInstanceOf(DeliveryV300.class);
         deliveryV300 = (DeliveryV300) delivery;
-        assertThat(deliveryV300.getStdMeals()).isEqualTo("0");
-        assertThat(deliveryV300.getAltMeals()).isEqualTo("0");
+        assertThat(deliveryV300.getStdMeals()).isEqualTo(0);
+        assertThat(deliveryV300.getAltMeals()).isEqualTo(0);
         assertThat(deliveryV300.getTypeMeal()).isEmpty();
-        assertThat(deliveryV300.getStdGrocery()).isEqualTo("2");
-        assertThat(deliveryV300.getAltGrocery()).isEqualTo("0");
+        assertThat(deliveryV300.getStdGrocery()).isEqualTo(2);
+        assertThat(deliveryV300.getAltGrocery()).isEqualTo(0);
         assertThat(deliveryV300.getTypeGrocery()).isEmpty();
 
         delivery = deliveries.get(3);
@@ -486,11 +486,11 @@ public class RoutedDeliveriesTest extends TestBase {
         assertThat(delivery.getDetails()).isEmpty();
         assertThat(delivery).isInstanceOf(DeliveryV300.class);
         deliveryV300 = (DeliveryV300) delivery;
-        assertThat(deliveryV300.getStdMeals()).isEqualTo("0");
-        assertThat(deliveryV300.getAltMeals()).isEqualTo("1");
+        assertThat(deliveryV300.getStdMeals()).isEqualTo(0);
+        assertThat(deliveryV300.getAltMeals()).isEqualTo(1);
         assertThat(deliveryV300.getTypeMeal()).isEqualTo("veggie");
-        assertThat(deliveryV300.getStdGrocery()).isEqualTo("0");
-        assertThat(deliveryV300.getAltGrocery()).isEqualTo("1");
+        assertThat(deliveryV300.getStdGrocery()).isEqualTo(0);
+        assertThat(deliveryV300.getAltGrocery()).isEqualTo(1);
         assertThat(deliveryV300.getTypeGrocery()).isEqualTo("veg");
 
         delivery = deliveries.get(4);
@@ -504,11 +504,11 @@ public class RoutedDeliveriesTest extends TestBase {
         assertThat(delivery.getDetails()).isEqualTo("listed as a condo but");
         assertThat(delivery).isInstanceOf(DeliveryV300.class);
         deliveryV300 = (DeliveryV300) delivery;
-        assertThat(deliveryV300.getStdMeals()).isEqualTo("0");
-        assertThat(deliveryV300.getAltMeals()).isEqualTo("1");
+        assertThat(deliveryV300.getStdMeals()).isEqualTo(0);
+        assertThat(deliveryV300.getAltMeals()).isEqualTo(1);
         assertThat(deliveryV300.getTypeMeal()).isEqualTo("noPork");
-        assertThat(deliveryV300.getStdGrocery()).isEqualTo("0");
-        assertThat(deliveryV300.getAltGrocery()).isEqualTo("0");
+        assertThat(deliveryV300.getStdGrocery()).isEqualTo(0);
+        assertThat(deliveryV300.getAltGrocery()).isEqualTo(0);
         assertThat(deliveryV300.getTypeGrocery()).isEmpty();
 
         delivery = deliveries.get(5);
@@ -522,11 +522,11 @@ public class RoutedDeliveriesTest extends TestBase {
         assertThat(delivery.getDetails()).isEmpty();
         assertThat(delivery).isInstanceOf(DeliveryV300.class);
         deliveryV300 = (DeliveryV300) delivery;
-        assertThat(deliveryV300.getStdMeals()).isEqualTo("0");
-        assertThat(deliveryV300.getAltMeals()).isEqualTo("0");
+        assertThat(deliveryV300.getStdMeals()).isEqualTo(0);
+        assertThat(deliveryV300.getAltMeals()).isEqualTo(0);
         assertThat(deliveryV300.getTypeMeal()).isEmpty();
-        assertThat(deliveryV300.getStdGrocery()).isEqualTo("0");
-        assertThat(deliveryV300.getAltGrocery()).isEqualTo("1");
+        assertThat(deliveryV300.getStdGrocery()).isEqualTo(0);
+        assertThat(deliveryV300.getAltGrocery()).isEqualTo(1);
         assertThat(deliveryV300.getTypeGrocery()).isEqualTo("custom pick");
 
         delivery = deliveries.get(6);
@@ -540,11 +540,11 @@ public class RoutedDeliveriesTest extends TestBase {
         assertThat(delivery.getDetails()).isEmpty();
         assertThat(delivery).isInstanceOf(DeliveryV300.class);
         deliveryV300 = (DeliveryV300) delivery;
-        assertThat(deliveryV300.getStdMeals()).isEqualTo("0");
-        assertThat(deliveryV300.getAltMeals()).isEqualTo("1");
+        assertThat(deliveryV300.getStdMeals()).isEqualTo(0);
+        assertThat(deliveryV300.getAltMeals()).isEqualTo(1);
         assertThat(deliveryV300.getTypeMeal()).isEqualTo("veggie");
-        assertThat(deliveryV300.getStdGrocery()).isEqualTo("0");
-        assertThat(deliveryV300.getAltGrocery()).isEqualTo("1");
+        assertThat(deliveryV300.getStdGrocery()).isEqualTo(0);
+        assertThat(deliveryV300.getAltGrocery()).isEqualTo(1);
         assertThat(deliveryV300.getTypeGrocery()).isEqualTo("custom pick");
     }
 

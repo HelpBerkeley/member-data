@@ -75,8 +75,7 @@ class DriverV300 extends Driver {
 
         int standardMeals = 0;
         for (DeliveryV300 delivery : deliveries) {
-            // FIX THIS, DS: change the internal representation to int.
-            standardMeals += Integer.parseInt(delivery.getStdMeals());
+            standardMeals += delivery.getStdMeals();
         }
 
         return String.valueOf(standardMeals);
@@ -86,35 +85,32 @@ class DriverV300 extends Driver {
 
         int standardGroceries = 0;
         for (DeliveryV300 delivery : deliveries) {
-            // FIX THIS, DS: change the internal representation to int.
-            standardGroceries += Integer.parseInt(delivery.getStdGrocery());
+            standardGroceries += delivery.getStdGrocery();
         }
 
         return String.valueOf(standardGroceries);
     }
 
-    // FIX THIS, DS: change the internal representation to int.
     int getAltMeals(String mealType) {
         int altMeals = 0;
         for (DeliveryV300 delivery : deliveries) {
-            String numAltMeals = delivery.getAltMeals();
+            int numAltMeals = delivery.getAltMeals();
 
-            if ((! numAltMeals.equals("0")) && delivery.getTypeMeal().equals(mealType)) {
-                altMeals += Integer.parseInt(numAltMeals);
+            if ((numAltMeals > 0) && delivery.getTypeMeal().equals(mealType)) {
+                altMeals += numAltMeals;
             }
         }
 
         return altMeals;
     }
 
-    // FIX THIS, DS: change the internal representation to int.
     int getAltGroceries(String groceryType) {
         int altGroceries = 0;
         for (DeliveryV300 delivery : deliveries) {
-            String numAltGroceries = delivery.getAltGrocery();
+            int numAltGroceries = delivery.getAltGrocery();
 
-            if ((! numAltGroceries.equals("0")) && delivery.getTypeGrocery().equals(groceryType)) {
-                altGroceries += Integer.parseInt(numAltGroceries);
+            if ((numAltGroceries > 0) && delivery.getTypeGrocery().equals(groceryType)) {
+                altGroceries += numAltGroceries;
             }
         }
 
