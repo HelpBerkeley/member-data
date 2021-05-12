@@ -91,8 +91,31 @@ public class DriverPostFormatV300 extends DriverPostFormat {
     @Override
     public String generateSummary() {
 
-        // FIX THIS, DS: implement
-        return "Summary not yet implemented\n";
+        StringBuilder summary = new StringBuilder();
+
+        if (! controlBlock.restaurantsAuditDisabled()) {
+            // Restaurants with no drivers
+            for (Restaurant restaurant : restaurants.values()) {
+                if ((restaurant.getName().equals(controlBlock.getMealSource())
+                        || restaurant.getName().equals(controlBlock.getGrocerySource()))
+                    && (restaurant.getDrivers().size() == 0)) {
+                        summary.append("No drivers going to ").append(restaurant.getName()).append("\n");
+                }
+            }
+        }
+        if (summary.length() > 0) {
+            summary.append("\n");
+        }
+
+        for (Driver driver : drivers) {
+            driver.getWarningMessages().forEach(summary::append);
+        }
+
+        if (summary.length() > 0) {
+            return summary.toString();
+        }
+
+        return "";
     }
 
     public String generateDriversTablePost() {
@@ -269,50 +292,6 @@ public class DriverPostFormatV300 extends DriverPostFormat {
         LOGGER.trace("${{}} = \"{}\"", refName, value);
         return new ProcessingReturnValue(ProcessingStatus.COMPLETE, value);
     }
-
-//    private ProcessingReturnValue processThisRestaurantPickupListRef(
-//            MessageBlockListRef listRef, MessageBlockContext context) {
-//
-//        String refName = listRef.getName();
-//        String value;
-//
-//        Restaurant pickupRestaurant = context.getPickupRestaurant();
-//        DeliveryV300 delivery = (DeliveryV300)context.getDelivery();
-//        assert delivery.getRestaurant().equals(pickupRestaurant.getName()) :
-//                delivery.getRestaurant() + " != " + pickupRestaurant.getName();
-//
-//        switch (refName) {
-//            case "Pickup.MemberName":
-//                value = delivery.getName();
-//                break;
-//            case "Pickup.UserName":
-//                value = delivery.getUserName();
-//                break;
-//            case "Pickup.StandardMeals":
-//                value = delivery.getStdMeals();
-//                break;
-//            case "Pickup.AlternateMeals":
-//                value = delivery.getAltMeals();
-//                break;
-//            case "Pickup.AlternateMealType":
-//                value = delivery.getTypeMeal();
-//                break;
-//            case "Pickup.StandardGrocery":
-//                value = delivery.getStdGrocery();
-//                break;
-//            case "Pickup.AlternateGrocery":
-//                value = delivery.getAltGrocery();
-//                break;
-//            case "Pickup.AlternateGroceryType":
-//                value = delivery.getTypeGrocery();
-//                break;
-//            default:
-//                throw new MemberDataException(context.formatException("unknown list variable &{" + refName + "}"));
-//        }
-//
-//        LOGGER.trace("${{}} = \"{}\"", refName, value);
-//        return new ProcessingReturnValue(ProcessingStatus.COMPLETE, value);
-//    }
 
     @Override
     protected ProcessingReturnValue processVersionSpecificLoopListNameRef(
@@ -961,8 +940,6 @@ public class DriverPostFormatV300 extends DriverPostFormat {
         return String.valueOf(total);
     }
 
-    // FIX THIS, DS: change the driver internal representation to integer
-    //               to avoid all this string/int conversion
     private String getAllDriverAlternateMealsTotal(String mealType) {
         int total = 0;
         for (Driver driver : drivers) {
@@ -972,8 +949,6 @@ public class DriverPostFormatV300 extends DriverPostFormat {
         return String.valueOf(total);
     }
 
-    // FIX THIS, DS: change the driver internal representation to integer
-    //               to avoid all this string/int conversion
     private String getAllDriverAlternateGroceriesTotal(String groceryType) {
         int total = 0;
         for (Driver driver : drivers) {

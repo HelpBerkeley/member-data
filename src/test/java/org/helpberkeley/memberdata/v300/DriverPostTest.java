@@ -414,4 +414,61 @@ public class DriverPostTest extends org.helpberkeley.memberdata.DriverPostTest {
         assertThat(thrown).hasMessage(MessageFormat.format(
                 ControlBlockV300.MORE_DRIVERS_THAN_START_TIMES, "2", "1"));
     }
+
+    @Test
+    public void generateNoWarningsSummaryTest() {
+        DriverBlockBuilder driverBlock = new DriverBlockBuilder();
+        driverBlock.withRestaurant(new RestaurantBuilder());
+        driverBlock.withDelivery(new DeliveryBuilder().withStdMeals("1"));
+
+        WorkflowBuilder workflowBuilder = new WorkflowBuilder();
+        workflowBuilder.withControlBlock(new ControlBlockBuilder().withFoodSources("RevFoodTruck|"));
+        workflowBuilder.withDriverBlock(driverBlock);
+
+        DriverPostFormat driverPostFormat = DriverPostFormat.create(createApiSimulator(),
+                users, workflowBuilder.build(),
+                getRestaurantTemplateQuery(),
+                getDriverPostFormatQuery(),
+                getGroupInstructionsFormatQuery());
+        String post = driverPostFormat.generateSummary();
+        assertThat(post).isEmpty();
+    }
+
+    @Test
+    public void generateSummaryWithUnvisitedRestaurantTest() {
+        DriverBlockBuilder driverBlock = new DriverBlockBuilder();
+        driverBlock.withRestaurant(new RestaurantBuilder());
+        driverBlock.withDelivery(new DeliveryBuilder().withStdMeals("1"));
+
+        WorkflowBuilder workflowBuilder = new WorkflowBuilder();
+        workflowBuilder.withDriverBlock(driverBlock);
+
+        DriverPostFormat driverPostFormat = DriverPostFormat.create(createApiSimulator(),
+                users, workflowBuilder.build(),
+                getRestaurantTemplateQuery(),
+                getDriverPostFormatQuery(),
+                getGroupInstructionsFormatQuery());
+        String post = driverPostFormat.generateSummary();
+        assertThat(post).isEqualTo("No drivers going to BFN\n\n");
+    }
+
+    @Test
+    public void generateEmptyDeliveryWarningSummaryTest() {
+        DriverBlockBuilder driverBlock = new DriverBlockBuilder();
+        driverBlock.withRestaurant(new RestaurantBuilder());
+        driverBlock.withRestaurant(new RestaurantBuilder().withName("BFN"));
+        driverBlock.withDelivery(new DeliveryBuilder());
+
+        WorkflowBuilder workflowBuilder = new WorkflowBuilder();
+        workflowBuilder.withDriverBlock(driverBlock);
+
+        DriverPostFormat driverPostFormat = DriverPostFormat.create(createApiSimulator(),
+                users, workflowBuilder.build(),
+                getRestaurantTemplateQuery(),
+                getDriverPostFormatQuery(),
+                getGroupInstructionsFormatQuery());
+        String post = driverPostFormat.generateSummary();
+        assertThat(post).isEqualTo(MessageFormat.format(WorkflowParserV300.EMPTY_DELIVERY, 15,
+                WorkflowBuilder.DEFAULT_DRIVER_NAME, DeliveryBuilder.DEFAULT_CONSUMER_NAME));
+    }
 }
