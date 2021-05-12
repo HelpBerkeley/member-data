@@ -131,6 +131,7 @@ public class UserExporterTest extends TestBase {
         assertThat(headerColumns[index++]).isEqualTo(User.ADDRESS_COLUMN);
         assertThat(headerColumns[index++]).isEqualTo(User.CONSUMER_COLUMN);
         assertThat(headerColumns[index++]).isEqualTo(User.VOICEONLY_COLUMN);
+        assertThat(headerColumns[index++]).isEqualTo(User.FRVOICEONLY_COLUMN);
         assertThat(headerColumns[index++]).isEqualTo(User.DISPATCHER_COLUMN);
         assertThat(headerColumns[index++]).isEqualTo(User.DRIVER_COLUMN);
         assertThat(headerColumns[index++]).isEqualTo(User.TRAINED_DRIVER_COLUMN);
@@ -170,6 +171,7 @@ public class UserExporterTest extends TestBase {
         assertThat(columns[index++]).isEqualTo(u1.getAddress());
         assertThat(columns[index++]).isEqualTo(String.valueOf(u1.isConsumer()));
         assertThat(columns[index++]).isEqualTo(String.valueOf(u1.isVoiceOnly()));
+        assertThat(columns[index++]).isEqualTo(String.valueOf(u1.isFRVoiceOnly()));
         assertThat(columns[index++]).isEqualTo(String.valueOf(u1.isDispatcher()));
         assertThat(columns[index++]).isEqualTo(String.valueOf(u1.isDriver()));
         assertThat(columns[index++]).isEqualTo(String.valueOf(u1.isTrainedDriver()));
@@ -192,6 +194,8 @@ public class UserExporterTest extends TestBase {
         assertThat(columns[index++]).isEqualTo(String.valueOf(u1.isModerator()));
         //noinspection UnusedAssignment
         assertThat(columns[index++]).isEqualTo(String.valueOf(u1.isWorkflow()));
+
+        // FIX THIS, DS: check all of the columns
     }
 
     @Test
@@ -242,6 +246,7 @@ public class UserExporterTest extends TestBase {
         assertThat(headerColumns[index++]).isEqualTo(User.SHORT_REFERRAL_COLUMN);
         assertThat(headerColumns[index++]).isEqualTo(User.SHORT_CONSUMER_COLUMN);
         assertThat(headerColumns[index++]).isEqualTo(User.SHORT_VOICEONLY_COLUMN);
+        assertThat(headerColumns[index++]).isEqualTo(User.SHORT_FRVOICEONLY_COLUMN);
         assertThat(headerColumns[index++]).isEqualTo(User.SHORT_DRIVER_COLUMN);
         assertThat(headerColumns[index++]).isEqualTo(User.SHORT_TRAINED_DRIVER_COLUMN);
         assertThat(headerColumns[index++]).isEqualTo(User.SHORT_DISPATCHER_COLUMN);
@@ -293,6 +298,7 @@ public class UserExporterTest extends TestBase {
         assertThat(columns[index++]).isEqualTo(String.valueOf(u1.getReferral()));
         assertThat(columns[index++]).isEqualTo(String.valueOf(u1.isConsumer()));
         assertThat(columns[index++]).isEqualTo(String.valueOf(u1.isVoiceOnly()));
+        assertThat(columns[index++]).isEqualTo(String.valueOf(u1.isFRVoiceOnly()));
         assertThat(columns[index++]).isEqualTo(String.valueOf(u1.isDriver()));
         assertThat(columns[index++]).isEqualTo(String.valueOf(u1.isTrainedDriver()));
         assertThat(columns[index++]).isEqualTo(String.valueOf(u1.isDispatcher()));

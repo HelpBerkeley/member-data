@@ -79,6 +79,7 @@ public class User {
     static final String EMAIL_VERIFIED_COLUMN = "Verified";
     static final String GROUPS_OWNED_COLUMN = "groups-owned";
     static final String FRREG_COLUMN = "frreg";
+    static final String FRVOICEONLY_COLUMN = "FRVoiceOnly";
 
     static final String SHORT_ID_COLUMN = "ID";
     static final String SHORT_CREATED_AT_COLUMN = "Created";
@@ -94,6 +95,7 @@ public class User {
     static final String SHORT_REFERRAL_COLUMN = "Refer";
     static final String SHORT_CONSUMER_COLUMN = "Consumer";
     static final String SHORT_VOICEONLY_COLUMN = "Voiceonly";
+    static final String SHORT_FRVOICEONLY_COLUMN = "FRVoiceonly";
     static final String SHORT_DRIVER_COLUMN = "Driver";
     static final String SHORT_DISPATCHER_COLUMN = "Dispatcher";
     static final String SHORT_WORKFLOW_COLUMN = "Workflow";
@@ -346,6 +348,10 @@ public class User {
         return groupMembership.contains(Constants.GROUP_VOICEONLY);
     }
 
+    Boolean isFRVoiceOnly() {
+        return groupMembership.contains(Constants.GROUP_FRVOICEONLY);
+    }
+
     Boolean isTrustLevel4() {
         return groupMembership.contains(Constants.GROUP_TRUST_LEVEL_4);
     }
@@ -497,6 +503,10 @@ public class User {
                 VOICEONLY_COLUMN +
                 "=" +
                 isVoiceOnly() +
+                ':' +
+                FRVOICEONLY_COLUMN +
+                "=" +
+                isFRVoiceOnly() +
                 ':' +
                 VOLUNTEER_REQUEST_COLUMN +
                 "=" +
@@ -1167,6 +1177,7 @@ public class User {
                 + SHORT_REFERRAL_COLUMN + Constants.CSV_SEPARATOR
                 + SHORT_CONSUMER_COLUMN + Constants.CSV_SEPARATOR
                 + SHORT_VOICEONLY_COLUMN + Constants.CSV_SEPARATOR
+                + SHORT_FRVOICEONLY_COLUMN + Constants.CSV_SEPARATOR
                 + SHORT_DRIVER_COLUMN + Constants.CSV_SEPARATOR
                 + SHORT_TRAINED_DRIVER_COLUMN + Constants.CSV_SEPARATOR
                 + SHORT_DISPATCHER_COLUMN + Constants.CSV_SEPARATOR
@@ -1213,6 +1224,7 @@ public class User {
                 + ADDRESS_COLUMN + Constants.CSV_SEPARATOR
                 + CONSUMER_COLUMN + Constants.CSV_SEPARATOR
                 + VOICEONLY_COLUMN + Constants.CSV_SEPARATOR
+                + FRVOICEONLY_COLUMN + Constants.CSV_SEPARATOR
                 + DISPATCHER_COLUMN + Constants.CSV_SEPARATOR
                 + DRIVER_COLUMN + Constants.CSV_SEPARATOR
                 + TRAINED_DRIVER_COLUMN + Constants.CSV_SEPARATOR
@@ -1265,6 +1277,7 @@ public class User {
                 escapeCommas(getAddress()) + Constants.CSV_SEPARATOR +
                 isConsumer() + Constants.CSV_SEPARATOR +
                 isVoiceOnly() + Constants.CSV_SEPARATOR +
+                isFRVoiceOnly() + Constants.CSV_SEPARATOR +
                 isDispatcher() + Constants.CSV_SEPARATOR +
                 isDriver() + Constants.CSV_SEPARATOR +
                 isTrainedDriver() + Constants.CSV_SEPARATOR +
@@ -1328,6 +1341,7 @@ public class User {
                 escapeCommas(getReferral()) + Constants.CSV_SEPARATOR +
                 isConsumer() + Constants.CSV_SEPARATOR +
                 isVoiceOnly() + Constants.CSV_SEPARATOR +
+                isFRVoiceOnly() + Constants.CSV_SEPARATOR +
                 isDriver() + Constants.CSV_SEPARATOR +
                 isTrainedDriver() + Constants.CSV_SEPARATOR +
                 isDispatcher() + Constants.CSV_SEPARATOR +
