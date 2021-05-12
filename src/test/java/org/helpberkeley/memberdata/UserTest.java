@@ -561,8 +561,24 @@ public class UserTest extends TestBase {
         User u3 = createUser();
 
         assertThat(u1.isVoiceOnly()).isTrue();
+        assertThat(u1.isFRVoiceOnly()).isFalse();
         assertThat(u1).isEqualTo(u2);
         assertThat(u1).isNotEqualTo(u3);
+        assertThat(u3.isVoiceOnly()).isFalse();
+        assertThat(u3.isFRVoiceOnly()).isFalse();
+    }
+
+    @Test
+    public void groupFRVoiceOnly() throws UserException {
+        User u1 = createUserWithGroup("u1", Constants.GROUP_FRVOICEONLY);
+        User u2 = createUserWithGroup("u1", Constants.GROUP_FRVOICEONLY);
+        User u3 = createUser();
+
+        assertThat(u1.isFRVoiceOnly()).isTrue();
+        assertThat(u1.isVoiceOnly()).isFalse();
+        assertThat(u1).isEqualTo(u2);
+        assertThat(u1).isNotEqualTo(u3);
+        assertThat(u3.isFRVoiceOnly()).isFalse();
         assertThat(u3.isVoiceOnly()).isFalse();
     }
 

@@ -200,7 +200,7 @@ public class HBParser {
         assert ! lines.isEmpty();
         String[] headers = lines.get(0);
 
-        assert headers.length == 47 : headers.length;
+        assert headers.length == 48 : headers.length;
 
         int index = 0;
         assert headers[index].equals(User.ID_COLUMN) : headers[index];
@@ -213,6 +213,7 @@ public class HBParser {
         assert headers[++index].equals(User.ADDRESS_COLUMN) : headers[index];
         assert headers[++index].equals(User.CONSUMER_COLUMN) : headers[index];
         assert headers[++index].equals(User.VOICEONLY_COLUMN) : headers[index];
+        assert headers[++index].equals(User.FRVOICEONLY_COLUMN) : headers[index];
         assert headers[++index].equals(User.DISPATCHER_COLUMN) : headers[index];
         assert headers[++index].equals(User.DRIVER_COLUMN) : headers[index];
         assert headers[++index].equals(User.TRAINED_DRIVER_COLUMN) : headers[index];
@@ -280,6 +281,10 @@ public class HBParser {
             if (Boolean.parseBoolean(columns[index++])) {
                 groups.add(Constants.GROUP_VOICEONLY);
             }
+            if (Boolean.parseBoolean(columns[index++])) {
+                groups.add(Constants.GROUP_FRVOICEONLY);
+            }
+
             if (Boolean.parseBoolean(columns[index++])) {
                 groups.add(Constants.GROUP_DISPATCHERS);
             }

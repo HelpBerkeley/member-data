@@ -52,6 +52,7 @@ public class RoundTripTest extends TestBase {
                 Constants.GROUP_MODERATORS,
                 Constants.GROUP_WORKFLOW,
                 Constants.GROUP_VOICEONLY,
+                Constants.GROUP_FRVOICEONLY,
                 Constants.GROUP_TRUST_LEVEL_4,
                 Constants.GROUP_CUSTOMER_INFO,
                 Constants.GROUP_ADVISOR,
@@ -71,6 +72,7 @@ public class RoundTripTest extends TestBase {
         UserExporter exporter = new UserExporter(users);
 
         String csvData = exporter.allMembersRaw();
+
         List<User> usersFromCSV = HBParser.users(csvData);
         assertThat(usersFromCSV).isEqualTo(users);
     }
