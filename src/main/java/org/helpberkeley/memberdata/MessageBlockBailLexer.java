@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020. helpberkeley.org
+ * Copyright (c) 2020-2021. helpberkeley.org
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -44,7 +44,7 @@ public class MessageBlockBailLexer extends MessageBlockLexer {
         String error = "Section: " + blockName + ", "
                 + "post: " + postNumber + ", "
                 + "problem at offset " + startIndex + ", "
-                + lexerException.toString() + ", "
+                + lexerException + ", "
                 + "in : " + input
                 + "\n";
 

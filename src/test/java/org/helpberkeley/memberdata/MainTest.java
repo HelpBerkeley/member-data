@@ -156,6 +156,13 @@ public class MainTest extends TestBase {
     }
 
     @Test
+    public void oneKitchenWorkflowTest() throws IOException, CsvException {
+        String usersFile = findFile(Constants.MEMBERDATA_RAW_FILE, "csv");
+        String[] args = { Options.COMMAND_ONE_KITCHEN_WORKFLOW, usersFile };
+        Main.main(args);
+    }
+
+    @Test
     public void driverMessagesTest() throws IOException, CsvException {
         String usersFile = findFile(Constants.MEMBERDATA_RAW_FILE, "csv");
         String[] args = { Options.COMMAND_DRIVER_MESSAGES, usersFile };
@@ -205,7 +212,7 @@ public class MainTest extends TestBase {
                         + "\"rows\": [ "
                         + "[ 42, null, \""
                         + yesterdayStr
-                        + "\n[xyzzy.csv|attachment](upload://routed-deliveries.csv) (5.8 KB)\" ] "
+                        + "\n[xyzzy.csv|attachment](upload://routed-deliveries-v200.csv) (5.8 KB)\" ] "
                         + "] }";
         HttpClientSimulator.setQueryResponseData(
                 Constants.QUERY_GET_LAST_COMPLETED_DAILY_ORDERS_REPLY, completedOrdersRequest);
@@ -246,7 +253,7 @@ public class MainTest extends TestBase {
             + "\"rows\": [ "
             + "[ 1, null, \""
             + nextWeekStr
-            + "\n[xyzzy.csv|attachment](upload://routed-deliveries.csv) (5.8 KB)\" ] "
+            + "\n[xyzzy.csv|attachment](upload://routed-deliveries-v200.csv) (5.8 KB)\" ] "
             + "] }";
         HttpClientSimulator.setQueryResponseData(
             Constants.QUERY_GET_LAST_COMPLETED_DAILY_ORDERS_REPLY, completedOrdersRequest);
@@ -274,7 +281,7 @@ public class MainTest extends TestBase {
                         + "\"rows\": [ "
                         + "[ 1, null, \""
                         + lastYearStr
-                        + "\n[xyzzy.csv|attachment](upload://routed-deliveries.csv) (5.8 KB)\" ] "
+                        + "\n[xyzzy.csv|attachment](upload://routed-deliveries-v200.csv) (5.8 KB)\" ] "
                         + "] }";
         HttpClientSimulator.setQueryResponseData(
                 Constants.QUERY_GET_LAST_COMPLETED_DAILY_ORDERS_REPLY, completedOrdersRequest);
@@ -302,7 +309,7 @@ public class MainTest extends TestBase {
                         + "\"rows\": [ "
                         + "[ 1, null, \""
                         + lastYearStr
-                        + "\nDisable date audit\n[xyzzy.csv|attachment](upload://routed-deliveries.csv) (5.8 KB)\" ] "
+                        + "\nDisable date audit\n[xyzzy.csv|attachment](upload://routed-deliveries-v200.csv) (5.8 KB)\" ] "
                         + "] }";
         HttpClientSimulator.setQueryResponseData(
                 Constants.QUERY_GET_LAST_COMPLETED_DAILY_ORDERS_REPLY, completedOrdersRequest);
@@ -340,6 +347,12 @@ public class MainTest extends TestBase {
     @Test
     public void restaurantTemplateTest() throws IOException, CsvException {
         String[] args = { Options.COMMAND_RESTAURANT_TEMPLATE };
+        Main.main(args);
+    }
+
+    @Test
+    public void oneKitchenRestaurantTemplateTest() throws IOException, CsvException {
+        String[] args = { Options.COMMAND_ONE_KITCHEN_RESTAURANT_TEMPLATE };
         Main.main(args);
     }
 

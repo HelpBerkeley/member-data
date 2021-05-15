@@ -40,10 +40,12 @@ public class RoutedDeliveriesTest extends TestBase {
 
     @Test
     public void parseRoutedTest() {
-        String csvData = readResourceFile("routed-deliveries.csv");
+        String csvData = readResourceFile("routed-deliveries-v200.csv");
 
-        DriverPostFormat driverPostFormat = new DriverPostFormat(createApiSimulator(),
-                users, Constants.CONTROL_BLOCK_CURRENT_VERSION, csvData);
+        DriverPostFormat driverPostFormat = DriverPostFormat.create(createApiSimulator(), users, csvData,
+                Constants.QUERY_GET_CURRENT_VALIDATED_DRIVER_MESSAGE_RESTAURANT_TEMPLATE,
+                Constants.QUERY_GET_DRIVERS_POST_FORMAT_V23,
+                Constants.QUERY_GET_GROUP_INSTRUCTIONS_FORMAT_V22);
         List<Driver> drivers = driverPostFormat.getDrivers();
 
         assertThat(drivers).hasSize(2);
@@ -55,19 +57,19 @@ public class RoutedDeliveriesTest extends TestBase {
         List<Restaurant> pickups = driver.getPickups();
         assertThat(pickups).hasSize(3);
 
-        Restaurant restaurant = pickups.get(0);
+        RestaurantV200 restaurant = (RestaurantV200) pickups.get(0);
         assertThat(restaurant.getName()).isEqualTo("Talavera");
         assertThat(restaurant.getAddress()).isEqualTo("1561 Solano Ave, Berkeley");
         assertThat(restaurant.getDetails()).isEmpty();
         assertThat(restaurant.getOrders()).isEqualTo(0);
 
-        restaurant = pickups.get(1);
+        restaurant = (RestaurantV200) pickups.get(1);
         assertThat(restaurant.getName()).isEqualTo("Sweet Basil");
         assertThat(restaurant.getAddress()).isEqualTo("1736 Solano Ave, Berkeley");
         assertThat(restaurant.getDetails()).isEmpty();
         assertThat(restaurant.getOrders()).isEqualTo(1);
 
-        restaurant = pickups.get(2);
+        restaurant = (RestaurantV200) pickups.get(2);
         assertThat(restaurant.getName()).isEqualTo("Bopshop");
         assertThat(restaurant.getAddress()).isEqualTo("1823 Solano Ave, Berkeley");
         assertThat(restaurant.getDetails()).isEmpty();
@@ -76,7 +78,7 @@ public class RoutedDeliveriesTest extends TestBase {
         List<Delivery> deliveries = driver.getDeliveries();
         assertThat(deliveries).hasSize(3);
 
-        Delivery delivery = deliveries.get(0);
+        DeliveryV200 delivery = (DeliveryV200)deliveries.get(0);
         assertThat(delivery.getName()).isEqualTo("Cust Name 1");
         assertThat(delivery.getUserName()).isEqualTo("Cust1");
         assertThat(delivery.getPhone()).isEqualTo("555-555-1112");
@@ -89,7 +91,7 @@ public class RoutedDeliveriesTest extends TestBase {
         assertThat(delivery.getNormalRations()).isEqualTo("1");
         assertThat(delivery.getVeggieRations()).isEqualTo("0");
 
-        delivery = deliveries.get(1);
+        delivery = (DeliveryV200)deliveries.get(1);
         assertThat(delivery.getName()).isEqualTo("Cust Name 2");
         assertThat(delivery.getUserName()).isEqualTo("Cust2");
         assertThat(delivery.getPhone()).isEqualTo("555-555-2222");
@@ -102,7 +104,7 @@ public class RoutedDeliveriesTest extends TestBase {
         assertThat(delivery.getNormalRations()).isEqualTo("1");
         assertThat(delivery.getVeggieRations()).isEqualTo("1");
 
-        delivery = deliveries.get(2);
+        delivery = (DeliveryV200)deliveries.get(2);
         assertThat(delivery.getName()).isEqualTo("Cust Name 3");
         assertThat(delivery.getUserName()).isEqualTo("Cust3");
         assertThat(delivery.getPhone()).isEqualTo("555-555-3333");
@@ -123,7 +125,7 @@ public class RoutedDeliveriesTest extends TestBase {
         pickups = driver.getPickups();
         assertThat(pickups).hasSize(1);
 
-        restaurant = pickups.get(0);
+        restaurant = (RestaurantV200) pickups.get(0);
         assertThat(restaurant.getName()).isEqualTo("Cafe Raj");
         assertThat(restaurant.getAddress()).isEqualTo("1158 Solano Ave, Albany");
         assertThat(restaurant.getDetails()).isEqualTo("One,Two,Three details");
@@ -132,7 +134,7 @@ public class RoutedDeliveriesTest extends TestBase {
         deliveries = driver.getDeliveries();
         assertThat(deliveries).hasSize(4);
 
-        delivery = deliveries.get(0);
+        delivery = (DeliveryV200)deliveries.get(0);
         assertThat(delivery.getName()).isEqualTo("Cust Name 4");
         assertThat(delivery.getUserName()).isEqualTo("Cust4");
         assertThat(delivery.getPhone()).isEqualTo("555-555-4444");
@@ -145,7 +147,7 @@ public class RoutedDeliveriesTest extends TestBase {
         assertThat(delivery.getNormalRations()).isEqualTo("0");
         assertThat(delivery.getVeggieRations()).isEqualTo("1");
 
-        delivery = deliveries.get(1);
+        delivery = (DeliveryV200)deliveries.get(1);
         assertThat(delivery.getName()).isEqualTo("Cust Name 5");
         assertThat(delivery.getUserName()).isEqualTo("Cust5");
         assertThat(delivery.getPhone()).isEqualTo("555-555-5555");
@@ -153,12 +155,12 @@ public class RoutedDeliveriesTest extends TestBase {
         assertThat(delivery.getCity()).isEqualTo("Berkeley");
         assertThat(delivery.getAddress()).isEqualTo("55 55th St");
         assertThat(delivery.isCondo()).isTrue();
-        assertThat(delivery.getDetails()).isEqualTo("listed as a condo but may not be.");
+        assertThat(delivery.getDetails()).isEqualTo("listed as a condo but");
         assertThat(delivery.getRestaurant()).isEqualTo("Cafe Raj");
         assertThat(delivery.getNormalRations()).isEqualTo("1");
         assertThat(delivery.getVeggieRations()).isEqualTo("0");
 
-        delivery = deliveries.get(2);
+        delivery = (DeliveryV200)deliveries.get(2);
         assertThat(delivery.getName()).isEqualTo("Cust Name 6");
         assertThat(delivery.getUserName()).isEqualTo("Cust6");
         assertThat(delivery.getPhone()).isEqualTo("555-555-6666");
@@ -171,7 +173,7 @@ public class RoutedDeliveriesTest extends TestBase {
         assertThat(delivery.getNormalRations()).isEqualTo("1");
         assertThat(delivery.getVeggieRations()).isEqualTo("0");
 
-        delivery = deliveries.get(3);
+        delivery = (DeliveryV200)deliveries.get(3);
         assertThat(delivery.getName()).isEqualTo("Cust Name 7");
         assertThat(delivery.getUserName()).isEqualTo("Cust7");
         assertThat(delivery.getPhone()).isEqualTo("555-555-7777");
@@ -188,8 +190,10 @@ public class RoutedDeliveriesTest extends TestBase {
     @Test
     public void parseRoutedWithSplitRestaurantTest() {
         String csvData = readResourceFile("routed-deliveries-with-split-restaurant.csv");
-        DriverPostFormat driverPostFormat = new DriverPostFormat(createApiSimulator(),
-                users, Constants.CONTROL_BLOCK_CURRENT_VERSION, csvData);
+        DriverPostFormat driverPostFormat = DriverPostFormat.create(createApiSimulator(), users, csvData,
+                Constants.QUERY_GET_CURRENT_VALIDATED_DRIVER_MESSAGE_RESTAURANT_TEMPLATE,
+                Constants.QUERY_GET_DRIVERS_POST_FORMAT_V23,
+                Constants.QUERY_GET_GROUP_INSTRUCTIONS_FORMAT_V22);
         List<Driver> drivers = driverPostFormat.getDrivers();
 
         assertThat(drivers).hasSize(4);
@@ -201,19 +205,19 @@ public class RoutedDeliveriesTest extends TestBase {
         List<Restaurant> pickups = driver.getPickups();
         assertThat(pickups).hasSize(3);
 
-        Restaurant restaurant = pickups.get(0);
+        RestaurantV200 restaurant = (RestaurantV200) pickups.get(0);
         assertThat(restaurant.getName()).isEqualTo("Talavera");
         assertThat(restaurant.getAddress()).isEqualTo("1561 Solano Ave, Berkeley");
         assertThat(restaurant.getDetails()).isEmpty();
         assertThat(restaurant.getOrders()).isEqualTo(0);
 
-        restaurant = pickups.get(1);
+        restaurant = (RestaurantV200) pickups.get(1);
         assertThat(restaurant.getName()).isEqualTo("Sweet Basil");
         assertThat(restaurant.getAddress()).isEqualTo("1736 Solano Ave, Berkeley");
         assertThat(restaurant.getDetails()).isEmpty();
         assertThat(restaurant.getOrders()).isEqualTo(1);
 
-        restaurant = pickups.get(2);
+        restaurant = (RestaurantV200) pickups.get(2);
         assertThat(restaurant.getName()).isEqualTo("Bopshop");
         assertThat(restaurant.getAddress()).isEqualTo("1823 Solano Ave, Berkeley");
         assertThat(restaurant.getDetails()).isEmpty();
@@ -222,7 +226,7 @@ public class RoutedDeliveriesTest extends TestBase {
         List<Delivery> deliveries = driver.getDeliveries();
         assertThat(deliveries).hasSize(3);
 
-        Delivery delivery = deliveries.get(0);
+        DeliveryV200 delivery = (DeliveryV200)deliveries.get(0);
         assertThat(delivery.getName()).isEqualTo("Cust Name 1");
         assertThat(delivery.getUserName()).isEqualTo("Cust1");
         assertThat(delivery.getPhone()).isEqualTo("555-555-1112");
@@ -235,7 +239,7 @@ public class RoutedDeliveriesTest extends TestBase {
         assertThat(delivery.getNormalRations()).isEqualTo("1");
         assertThat(delivery.getVeggieRations()).isEqualTo("0");
 
-        delivery = deliveries.get(1);
+        delivery = (DeliveryV200)deliveries.get(1);
         assertThat(delivery.getName()).isEqualTo("Cust Name 2");
         assertThat(delivery.getUserName()).isEqualTo("Cust2");
         assertThat(delivery.getPhone()).isEqualTo("555-555-2222");
@@ -248,7 +252,7 @@ public class RoutedDeliveriesTest extends TestBase {
         assertThat(delivery.getNormalRations()).isEqualTo("1");
         assertThat(delivery.getVeggieRations()).isEqualTo("1");
 
-        delivery = deliveries.get(2);
+        delivery = (DeliveryV200)deliveries.get(2);
         assertThat(delivery.getName()).isEqualTo("Cust Name 3");
         assertThat(delivery.getUserName()).isEqualTo("Cust3");
         assertThat(delivery.getPhone()).isEqualTo("555-555-3333");
@@ -269,7 +273,7 @@ public class RoutedDeliveriesTest extends TestBase {
         pickups = driver.getPickups();
         assertThat(pickups).hasSize(1);
 
-        restaurant = pickups.get(0);
+        restaurant = (RestaurantV200) pickups.get(0);
         assertThat(restaurant.getName()).isEqualTo("Cafe Raj");
         assertThat(restaurant.getAddress()).isEqualTo("1158 Solano Ave, Albany");
         assertThat(restaurant.getDetails()).isEqualTo("One,Two,Three details");
@@ -278,7 +282,7 @@ public class RoutedDeliveriesTest extends TestBase {
         deliveries = driver.getDeliveries();
         assertThat(deliveries).hasSize(2);
 
-        delivery = deliveries.get(0);
+        delivery = (DeliveryV200)deliveries.get(0);
         assertThat(delivery.getName()).isEqualTo("Cust Name 4");
         assertThat(delivery.getUserName()).isEqualTo("Cust4");
         assertThat(delivery.getPhone()).isEqualTo("555-555-4444");
@@ -291,7 +295,7 @@ public class RoutedDeliveriesTest extends TestBase {
         assertThat(delivery.getNormalRations()).isEqualTo("0");
         assertThat(delivery.getVeggieRations()).isEqualTo("1");
 
-        delivery = deliveries.get(1);
+        delivery = (DeliveryV200)deliveries.get(1);
         assertThat(delivery.getName()).isEqualTo("Cust Name 5");
         assertThat(delivery.getUserName()).isEqualTo("Cust5");
         assertThat(delivery.getPhone()).isEqualTo("555-555-5555");
@@ -312,13 +316,13 @@ public class RoutedDeliveriesTest extends TestBase {
         pickups = driver.getPickups();
         assertThat(pickups).hasSize(2);
 
-        restaurant = pickups.get(0);
+        restaurant = (RestaurantV200) pickups.get(0);
         assertThat(restaurant.getName()).isEqualTo("Cafe Raj");
         assertThat(restaurant.getAddress()).isEqualTo("1158 Solano Ave, Albany");
         assertThat(restaurant.getDetails()).isEqualTo("One,Two,Three details");
         assertThat(restaurant.getOrders()).isEqualTo(3);
 
-        restaurant = pickups.get(1);
+        restaurant = (RestaurantV200) pickups.get(1);
         assertThat(restaurant.getName()).isEqualTo("Kim's Cafe");
         assertThat(restaurant.getAddress()).isEqualTo("1823 Solano Ave, Berkeley");
         assertThat(restaurant.getDetails()).isEmpty();
@@ -327,7 +331,7 @@ public class RoutedDeliveriesTest extends TestBase {
         deliveries = driver.getDeliveries();
         assertThat(deliveries).hasSize(4);
 
-        delivery = deliveries.get(0);
+        delivery = (DeliveryV200)deliveries.get(0);
         assertThat(delivery.getName()).isEqualTo("Cust Name 6");
         assertThat(delivery.getUserName()).isEqualTo("Cust6");
         assertThat(delivery.getPhone()).isEqualTo("555-555-6666");
@@ -340,7 +344,7 @@ public class RoutedDeliveriesTest extends TestBase {
         assertThat(delivery.getNormalRations()).isEqualTo("1");
         assertThat(delivery.getVeggieRations()).isEqualTo("0");
 
-        delivery = deliveries.get(1);
+        delivery = (DeliveryV200)deliveries.get(1);
         assertThat(delivery.getName()).isEqualTo("Cust Name 6");
         assertThat(delivery.getUserName()).isEqualTo("Cust6");
         assertThat(delivery.getPhone()).isEqualTo("555-555-6666");
@@ -353,7 +357,7 @@ public class RoutedDeliveriesTest extends TestBase {
         assertThat(delivery.getNormalRations()).isEqualTo("1");
         assertThat(delivery.getVeggieRations()).isEqualTo("0");
 
-        delivery = deliveries.get(2);
+        delivery = (DeliveryV200)deliveries.get(2);
         assertThat(delivery.getName()).isEqualTo("Cust Name 7");
         assertThat(delivery.getUserName()).isEqualTo("Cust7");
         assertThat(delivery.getPhone()).isEqualTo("555-555-7777");
@@ -366,7 +370,7 @@ public class RoutedDeliveriesTest extends TestBase {
         assertThat(delivery.getNormalRations()).isEqualTo("1");
         assertThat(delivery.getVeggieRations()).isEqualTo("0");
 
-        delivery = deliveries.get(3);
+        delivery = (DeliveryV200)deliveries.get(3);
         assertThat(delivery.getName()).isEqualTo("Cust Name 8");
         assertThat(delivery.getUserName()).isEqualTo("Cust8");
         assertThat(delivery.getPhone()).isEqualTo("555-555-8888");
@@ -387,7 +391,7 @@ public class RoutedDeliveriesTest extends TestBase {
         pickups = driver.getPickups();
         assertThat(pickups).hasSize(1);
 
-        restaurant = pickups.get(0);
+        restaurant = (RestaurantV200) pickups.get(0);
         assertThat(restaurant.getName()).isEqualTo("V&A Cafe");
         assertThat(restaurant.getAddress()).isEqualTo("2521 Hearst Ave, Berkeley, CA 94709");
         assertThat(restaurant.getDetails()).isEqualTo(
@@ -397,7 +401,7 @@ public class RoutedDeliveriesTest extends TestBase {
         deliveries = driver.getDeliveries();
         assertThat(deliveries).hasSize(1);
 
-        delivery = deliveries.get(0);
+        delivery = (DeliveryV200)deliveries.get(0);
         assertThat(delivery.getName()).isEqualTo("Cust Name 8");
         assertThat(delivery.getUserName()).isEqualTo("Cust8");
         assertThat(delivery.getPhone()).isEqualTo("555-555-8888");
@@ -415,9 +419,11 @@ public class RoutedDeliveriesTest extends TestBase {
     public void parseRoutedWithSplitTurkeyTest() {
         String csvData = readResourceFile("routed-deliveries-turkey.csv");
         HttpClientSimulator.setQueryResponseFile(
-                Constants.QUERY_GET_CURRENT_VALIDATED_RESTAURANT_TEMPLATE, "restaurant-template-turkey.json");
-        DriverPostFormat driverPostFormat = new DriverPostFormat(createApiSimulator(),
-                users, Constants.CONTROL_BLOCK_CURRENT_VERSION, csvData);
+                Constants.QUERY_GET_CURRENT_VALIDATED_DRIVER_MESSAGE_RESTAURANT_TEMPLATE, "restaurant-template-turkey.json");
+        DriverPostFormat driverPostFormat = DriverPostFormat.create(createApiSimulator(), users, csvData,
+                Constants.QUERY_GET_CURRENT_VALIDATED_DRIVER_MESSAGE_RESTAURANT_TEMPLATE,
+                Constants.QUERY_GET_DRIVERS_POST_FORMAT_V23,
+                Constants.QUERY_GET_GROUP_INSTRUCTIONS_FORMAT_V22);
         List<Driver> drivers = driverPostFormat.getDrivers();
 
         assertThat(drivers).hasSize(3);
@@ -429,7 +435,7 @@ public class RoutedDeliveriesTest extends TestBase {
         List<Restaurant> pickups = driver.getPickups();
         assertThat(pickups).hasSize(1);
 
-        Restaurant restaurant = pickups.get(0);
+        RestaurantV200 restaurant = (RestaurantV200) pickups.get(0);
         assertThat(restaurant.getName()).isEqualTo("Nourish You!");
         assertThat(restaurant.getAddress()).isEqualTo("2701 8th St, Berkeley");
         assertThat(restaurant.getDetails()).isEmpty();
@@ -438,7 +444,7 @@ public class RoutedDeliveriesTest extends TestBase {
         List<Delivery> deliveries = driver.getDeliveries();
         assertThat(deliveries).hasSize(2);
 
-        Delivery delivery = deliveries.get(0);
+        DeliveryV200 delivery = (DeliveryV200)deliveries.get(0);
         assertThat(delivery.getName()).isEqualTo("Cust Name 1");
         assertThat(delivery.getUserName()).isEqualTo("Cust1");
         assertThat(delivery.getPhone()).isEqualTo("555-555-1112");
@@ -451,7 +457,7 @@ public class RoutedDeliveriesTest extends TestBase {
         assertThat(delivery.getNormalRations()).isEqualTo("1");
         assertThat(delivery.getVeggieRations()).isEqualTo("0");
 
-        delivery = deliveries.get(1);
+        delivery = (DeliveryV200)deliveries.get(1);
         assertThat(delivery.getName()).isEqualTo("Cust Name 1");
         assertThat(delivery.getUserName()).isEqualTo("Cust1");
         assertThat(delivery.getPhone()).isEqualTo("555-555-1112");
@@ -472,7 +478,7 @@ public class RoutedDeliveriesTest extends TestBase {
         pickups = driver.getPickups();
         assertThat(pickups).hasSize(1);
 
-        restaurant = pickups.get(0);
+        restaurant = (RestaurantV200) pickups.get(0);
         assertThat(restaurant.getName()).isEqualTo("Nourish You!");
         assertThat(restaurant.getAddress()).isEqualTo("2701 8th St, Berkeley");
         assertThat(restaurant.getDetails()).isEmpty();
@@ -481,7 +487,7 @@ public class RoutedDeliveriesTest extends TestBase {
         deliveries = driver.getDeliveries();
         assertThat(deliveries).hasSize(2);
 
-        delivery = deliveries.get(0);
+        delivery = (DeliveryV200)deliveries.get(0);
         assertThat(delivery.getName()).isEqualTo("Cust Name 4");
         assertThat(delivery.getUserName()).isEqualTo("Cust4");
         assertThat(delivery.getPhone()).isEqualTo("555-555-4444");
@@ -494,7 +500,7 @@ public class RoutedDeliveriesTest extends TestBase {
         assertThat(delivery.getNormalRations()).isEqualTo("0");
         assertThat(delivery.getVeggieRations()).isEqualTo("1");
 
-        delivery = deliveries.get(1);
+        delivery = (DeliveryV200)deliveries.get(1);
         assertThat(delivery.getName()).isEqualTo("Cust Name 5");
         assertThat(delivery.getUserName()).isEqualTo("Cust5");
         assertThat(delivery.getPhone()).isEqualTo("555-555-5555");
@@ -515,7 +521,7 @@ public class RoutedDeliveriesTest extends TestBase {
         pickups = driver.getPickups();
         assertThat(pickups).hasSize(1);
 
-        restaurant = pickups.get(0);
+        restaurant = (RestaurantV200) pickups.get(0);
         assertThat(restaurant.getName()).isEqualTo("Nourish You!");
         assertThat(restaurant.getAddress()).isEqualTo("2701 8th St, Berkeley");
         assertThat(restaurant.getDetails()).isEmpty();
@@ -524,7 +530,7 @@ public class RoutedDeliveriesTest extends TestBase {
         deliveries = driver.getDeliveries();
         assertThat(deliveries).hasSize(3);
 
-        delivery = deliveries.get(0);
+        delivery = (DeliveryV200)deliveries.get(0);
         assertThat(delivery.getName()).isEqualTo("Cust Name 6");
         assertThat(delivery.getUserName()).isEqualTo("Cust6");
         assertThat(delivery.getPhone()).isEqualTo("555-555-6666");
@@ -537,7 +543,7 @@ public class RoutedDeliveriesTest extends TestBase {
         assertThat(delivery.getNormalRations()).isEqualTo("1");
         assertThat(delivery.getVeggieRations()).isEqualTo("0");
 
-        delivery = deliveries.get(1);
+        delivery = (DeliveryV200)deliveries.get(1);
         assertThat(delivery.getName()).isEqualTo("Cust Name 7");
         assertThat(delivery.getUserName()).isEqualTo("Cust7");
         assertThat(delivery.getPhone()).isEqualTo("555-555-7777");
@@ -550,7 +556,7 @@ public class RoutedDeliveriesTest extends TestBase {
         assertThat(delivery.getNormalRations()).isEqualTo("1");
         assertThat(delivery.getVeggieRations()).isEqualTo("0");
 
-        delivery = deliveries.get(2);
+        delivery = (DeliveryV200)deliveries.get(2);
         assertThat(delivery.getName()).isEqualTo("Cust Name 8");
         assertThat(delivery.getUserName()).isEqualTo("Cust8");
         assertThat(delivery.getPhone()).isEqualTo("555-555-8888");
@@ -568,8 +574,10 @@ public class RoutedDeliveriesTest extends TestBase {
     public void parseRoutedEmptyDeliveryTest() {
         String csvData = readResourceFile("routed-deliveries-empty-delivery.csv");
 
-        DriverPostFormat driverPostFormat = new DriverPostFormat(createApiSimulator(),
-                users, Constants.CONTROL_BLOCK_CURRENT_VERSION, csvData);
+        DriverPostFormat driverPostFormat = DriverPostFormat.create(createApiSimulator(), users, csvData,
+                Constants.QUERY_GET_CURRENT_VALIDATED_DRIVER_MESSAGE_RESTAURANT_TEMPLATE,
+                Constants.QUERY_GET_DRIVERS_POST_FORMAT_V23,
+                Constants.QUERY_GET_GROUP_INSTRUCTIONS_FORMAT_V22);
         List<Driver> drivers = driverPostFormat.getDrivers();
 
         assertThat(drivers).hasSize(2);
@@ -581,19 +589,19 @@ public class RoutedDeliveriesTest extends TestBase {
         List<Restaurant> pickups = driver.getPickups();
         assertThat(pickups).hasSize(3);
 
-        Restaurant restaurant = pickups.get(0);
+        RestaurantV200 restaurant = (RestaurantV200) pickups.get(0);
         assertThat(restaurant.getName()).isEqualTo("Talavera");
         assertThat(restaurant.getAddress()).isEqualTo("1561 Solano Ave, Berkeley");
         assertThat(restaurant.getDetails()).isEmpty();
         assertThat(restaurant.getOrders()).isEqualTo(0);
 
-        restaurant = pickups.get(1);
+        restaurant = (RestaurantV200) pickups.get(1);
         assertThat(restaurant.getName()).isEqualTo("Sweet Basil");
         assertThat(restaurant.getAddress()).isEqualTo("1736 Solano Ave, Berkeley");
         assertThat(restaurant.getDetails()).isEmpty();
         assertThat(restaurant.getOrders()).isEqualTo(1);
 
-        restaurant = pickups.get(2);
+        restaurant = (RestaurantV200) pickups.get(2);
         assertThat(restaurant.getName()).isEqualTo("Bopshop");
         assertThat(restaurant.getAddress()).isEqualTo("1823 Solano Ave, Berkeley");
         assertThat(restaurant.getDetails()).isEmpty();
@@ -602,7 +610,7 @@ public class RoutedDeliveriesTest extends TestBase {
         List<Delivery> deliveries = driver.getDeliveries();
         assertThat(deliveries).hasSize(4);
 
-        Delivery delivery = deliveries.get(0);
+        DeliveryV200 delivery = (DeliveryV200)deliveries.get(0);
         assertThat(delivery.getName()).isEqualTo("Cust Name 1");
         assertThat(delivery.getUserName()).isEqualTo("Cust1");
         assertThat(delivery.getPhone()).isEqualTo("555-555-1112");
@@ -615,7 +623,7 @@ public class RoutedDeliveriesTest extends TestBase {
         assertThat(delivery.getNormalRations()).isEqualTo("1");
         assertThat(delivery.getVeggieRations()).isEqualTo("0");
 
-        delivery = deliveries.get(1);
+        delivery = (DeliveryV200)deliveries.get(1);
         assertThat(delivery.getName()).isEqualTo("Cust Name 2");
         assertThat(delivery.getUserName()).isEqualTo("Cust2");
         assertThat(delivery.getPhone()).isEqualTo("555-555-2222");
@@ -628,7 +636,7 @@ public class RoutedDeliveriesTest extends TestBase {
         assertThat(delivery.getNormalRations()).isEqualTo("1");
         assertThat(delivery.getVeggieRations()).isEqualTo("1");
 
-        delivery = deliveries.get(2);
+        delivery = (DeliveryV200)deliveries.get(2);
         assertThat(delivery.getName()).isEqualTo("Cust Name 3");
         assertThat(delivery.getUserName()).isEqualTo("Cust3");
         assertThat(delivery.getPhone()).isEqualTo("555-555-3333");
@@ -641,7 +649,7 @@ public class RoutedDeliveriesTest extends TestBase {
         assertThat(delivery.getNormalRations()).isEqualTo("1");
         assertThat(delivery.getVeggieRations()).isEqualTo("0");
 
-        delivery = deliveries.get(3);
+        delivery = (DeliveryV200)deliveries.get(3);
         assertThat(delivery.getName()).isEqualTo("Cust Name 8");
         assertThat(delivery.getUserName()).isEqualTo("Cust8");
         assertThat(delivery.getPhone()).isEqualTo("555-555-8888");
@@ -662,7 +670,7 @@ public class RoutedDeliveriesTest extends TestBase {
         pickups = driver.getPickups();
         assertThat(pickups).hasSize(1);
 
-        restaurant = pickups.get(0);
+        restaurant = (RestaurantV200) pickups.get(0);
         assertThat(restaurant.getName()).isEqualTo("Cafe Raj");
         assertThat(restaurant.getAddress()).isEqualTo("1158 Solano Ave, Albany");
         assertThat(restaurant.getDetails()).isEqualTo("One,Two,Three details");
@@ -671,7 +679,7 @@ public class RoutedDeliveriesTest extends TestBase {
         deliveries = driver.getDeliveries();
         assertThat(deliveries).hasSize(5);
 
-        delivery = deliveries.get(0);
+        delivery = (DeliveryV200)deliveries.get(0);
         assertThat(delivery.getName()).isEqualTo("Cust Name 4");
         assertThat(delivery.getUserName()).isEqualTo("Cust4");
         assertThat(delivery.getPhone()).isEqualTo("555-555-4444");
@@ -684,7 +692,7 @@ public class RoutedDeliveriesTest extends TestBase {
         assertThat(delivery.getNormalRations()).isEqualTo("0");
         assertThat(delivery.getVeggieRations()).isEqualTo("1");
 
-        delivery = deliveries.get(1);
+        delivery = (DeliveryV200)deliveries.get(1);
         assertThat(delivery.getName()).isEqualTo("Cust Name 5");
         assertThat(delivery.getUserName()).isEqualTo("Cust5");
         assertThat(delivery.getPhone()).isEqualTo("555-555-5555");
@@ -697,7 +705,7 @@ public class RoutedDeliveriesTest extends TestBase {
         assertThat(delivery.getNormalRations()).isEqualTo("1");
         assertThat(delivery.getVeggieRations()).isEqualTo("0");
 
-        delivery = deliveries.get(2);
+        delivery = (DeliveryV200)deliveries.get(2);
         assertThat(delivery.getName()).isEqualTo("Cust Name 6");
         assertThat(delivery.getUserName()).isEqualTo("Cust6");
         assertThat(delivery.getPhone()).isEqualTo("555-555-6666");
@@ -710,7 +718,7 @@ public class RoutedDeliveriesTest extends TestBase {
         assertThat(delivery.getNormalRations()).isEqualTo("1");
         assertThat(delivery.getVeggieRations()).isEqualTo("0");
 
-        delivery = deliveries.get(3);
+        delivery = (DeliveryV200)deliveries.get(3);
         assertThat(delivery.getName()).isEqualTo("Cust Name 7");
         assertThat(delivery.getUserName()).isEqualTo("Cust7");
         assertThat(delivery.getPhone()).isEqualTo("555-555-7777");
@@ -723,7 +731,7 @@ public class RoutedDeliveriesTest extends TestBase {
         assertThat(delivery.getNormalRations()).isEqualTo("1");
         assertThat(delivery.getVeggieRations()).isEqualTo("0");
 
-        delivery = deliveries.get(4);
+        delivery = (DeliveryV200)deliveries.get(4);
         assertThat(delivery.getName()).isEqualTo("Cust Name 8");
         assertThat(delivery.getUserName()).isEqualTo("Cust8");
         assertThat(delivery.getPhone()).isEqualTo("555-555-8888");

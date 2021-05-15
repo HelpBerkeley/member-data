@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020. helpberkeley.org
+ * Copyright (c) 2021. helpberkeley.org
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,284 +22,38 @@
  */
 package org.helpberkeley.memberdata;
 
-import com.opencsv.bean.CsvBindByName;
+public interface RestaurantBean {
+    String getVersion();
 
-public class RestaurantBean {
+    String getConsumer();
+    String getDriver();
+    String getName();
+    String getUserName();
+    String getCity();
+    String getRestaurant();
+    String getCondo();
+    String getNormal();
+    String getVeggie();
+    String getDetails();
 
-    @CsvBindByName(column = Constants.WORKFLOW_CONSUMER_COLUMN)
-    private String consumer;
+    String getControlBlockDirective();
+    String getControlBlockKey();
+    String getControlBlockValue();
+    String getRoute();
+    boolean isEmpty();
+    String routeColumn();
+    String getActive();
+    String getStartTime();
+    String getClosingTime();
+    String getEmoji();
 
-    @CsvBindByName(column = Constants.WORKFLOW_DRIVER_COLUMN)
-    private String driver;
+    String restaurantColumn();
+    String startTimeColumn();
+    String closingTimeColumn();
+    String emojiColumn();
 
-    @CsvBindByName(column = Constants.WORKFLOW_NAME_COLUMN)
-    private String name;
-
-    @CsvBindByName(column = Constants.WORKFLOW_USER_NAME_COLUMN)
-    private String userName;
-
-    @CsvBindByName(column = Constants.WORKFLOW_CITY_COLUMN)
-    private String city;
-
-    @CsvBindByName(column = Constants.WORKFLOW_RESTAURANTS_COLUMN)
-    private String restaurant;
-
-    @CsvBindByName(column = Constants.WORKFLOW_CONDO_COLUMN)
-    private String condo;
-
-    @CsvBindByName(column = Constants.WORKFLOW_NORMAL_COLUMN)
-    private String normal;
-
-    @CsvBindByName(column = Constants.WORKFLOW_VEGGIE_COLUMN)
-    private String veggie;
-
-    @CsvBindByName(column = Constants.WORKFLOW_ORDERS_COLUMN)
-    private String orders;
-
-    @CsvBindByName(column = Constants.WORKFLOW_DETAILS_COLUMN)
-    private String details;
-
-    public RestaurantBean() {
-
-    }
-
-    // Accessors for overloaded columns
-
-    /**
-     * In the restaurant template, in the route block, the
-     * consumer column is used for the route.
-     *
-     * @return route
-     */
-    public String getRoute() {
-        return getConsumer();
-    }
-
-    /**
-     * In the restaurant template, V1 and later, in the route block,
-     * the veggie column is used for the start time
-     *
-     * @return start time
-     */
-    public String getStartTime() {
-        return getVeggie();
-    }
-
-    /**
-     * In the restaurant template, V1 and later, in the route block,
-     * the orders column is used for the closing time
-     *
-     * @return closing time
-     */
-    public String getClosingTime() {
-        return getOrders();
-    }
-
-    /**
-     * In the restaurant template, in the route block, the
-     * condo column is used for No Pics
-     *
-     * @return No Pics
-     */
-    public String getNoPics() {
-        return getCondo();
-    }
-
-    /**
-     * In the restaurant template, in the route block, the
-     * details column is used for the status of the restaurant
-     *
-     * @return Restaurant active of retired
-     */
-    public String getActive() {
-        return getDetails().trim();
-    }
-
-    /**
-     * In the restaurant template, V1 and later, in the route block,
-     * the normal column is used for the restaurant emoji
-     *
-     * @return start time
-     */
-    public String getEmoji() {
-        return getNormal();
-    }
-
-    // Accessors for overloaded columns
-
-    /**
-     * In control blocks, the Name column is used for the directive
-     * @return Control block directive value
-     */
-    public String getControlBlockDirective() {
-        return getName().trim();
-    }
-
-    /**
-     * In control blocks, the User Name column is used for the key value
-     * @return Control block key value
-     */
-    public String getControlBlockKey() {
-        return getUserName().trim();
-    }
-
-    /**
-     * In control blocks, the City column is used for the data value
-     * @return Control block data value
-     */
-    public String getControlBlockValue() {
-        return getCity().trim();
-    }
-
-    // Column name accessors
-
-    public String consumerColumn() {
-        return getColumnName("consumer");
-    }
-
-    public String restaurantColumn() {
-        return getColumnName("restaurant");
-    }
-
-    public String ordersColumn() {
-        return getColumnName("orders");
-    }
-
-    public String normalColumn() {
-        return getColumnName("normal");
-    }
-
-    public String veggieColumn() {
-        return getColumnName("veggie");
-    }
-
-    public String startTimeColumn() {
-        return veggieColumn();
-    }
-
-    public String closingTimeColumn() {
-        return ordersColumn();
-    }
-
-    public String routeColumn() {
-        return consumerColumn();
-    }
-
-    public String emojiColumn() {
-        return normalColumn();
-    }
-
-
-    private String getColumnName(final String fieldName) {
-        try {
-            CsvBindByName bindByName =
-                    RestaurantBean.class.getDeclaredField(fieldName).getAnnotation(CsvBindByName.class);
-            return bindByName.column();
-        } catch (NoSuchFieldException e) {
-            throw new MemberDataException(e.getMessage());
-        }
-    }
-
-    // Utility accessors
-
-    public boolean isEmpty() {
-
-        return consumer.isEmpty()
-                && driver.isEmpty()
-                && restaurant.isEmpty()
-                && condo.isEmpty()
-                && veggie.isEmpty()
-                && orders.isEmpty()
-                && details.isEmpty();
-    }
-
-    // Annotated accessors for CSV parser
-
-    public String getConsumer() {
-        return consumer.trim();
-    }
-
-    public void setConsumer(String consumer) {
-        this.consumer = consumer;
-    }
-
-    public String getDriver() {
-        return driver.trim();
-    }
-
-    public void setDriver(String driver) {
-        this.driver = driver;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getUserName() {
-        return userName;
-    }
-
-    public void setUserName(String userName) {
-        this.userName = userName;
-    }
-
-    public String getCity() {
-        return city;
-    }
-
-    public void setCity(String city) {
-        this.city = city;
-    }
-
-    public String getRestaurant() {
-        return restaurant.trim();
-    }
-
-    public void setRestaurant(String restaurant) {
-        this.restaurant = restaurant;
-    }
-
-    public String getCondo() {
-        return condo.trim();
-    }
-
-    public void setCondo(String condo) {
-        this.condo = condo;
-    }
-
-    public String getNormal() {
-        return normal.trim();
-    }
-
-    public void setNormal(String normal) {
-        this.normal = normal;
-    }
-
-    public String getVeggie() {
-        return veggie.trim();
-    }
-
-    public void setVeggie(String veggie) {
-        this.veggie = veggie;
-    }
-
-    public String getOrders() {
-        return orders.trim();
-    }
-
-    public void setOrders(String orders) {
-        this.orders = orders;
-    }
-
-    public String getDetails() {
-        return details.trim();
-    }
-
-    public void setDetails(String details) {
-        this.details = details;
+    default String unsupported(String columnName) {
+        throw new MemberDataException("Column heading \""
+                + columnName + "\" is not supported in control block version " + getVersion());
     }
 }

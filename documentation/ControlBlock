@@ -1,0 +1,103 @@
+The control block is a section at the beginning of a workflow table that
+is used to version the schema of the workflow data provide macro support
+for driver message generation.
+
+A workflow table can contain 0 or 1 control blocks.
+(Workflow sheets without a control block are only supported for
+processing historical consumer order data that pre-dates the
+addition of control block support).
+
+The control block can only appear as the first section of the table.
+
+Rows within control block will have the same number of columns as the
+rest of the workflow table.
+
+All rows within the control block must have FALSE in the
+Consumer and Driver columns.
+
+Empty rows within a control block will be ignored:
+    FALSE,FALSE,,,,,,,,,,,,,
+
+The control block will have explicit beginning and ending marker rows, with the marker being in the Name column:
+    Consumer,Driver,Name,,,,,,,,,,,,,
+    FALSE,FALSE,ControlBegin,,,,,,,,,,,,
+    FALSE,FALSE,ControlEnd,,,,,,,,,,,,
+
+Rows within the control block which contain the Comment directive in
+the Name column will be ignored.
+
+Data rows within the control block support a single key/value pair per row.
+The key name is in the User Name column and the key value is in the City column:
+
+    Consumer,Driver,Name,User Name,EMail,Phone #,Phone2,Neighborhood,,,,,,,,
+    FALSE,FALSE,,BackupDriverUserName,,,,ReplaceThisByTheBackUpDriverUserName,,,,,,,,,
+
+The key value pair may also define a 2-uplet or an n-uplet. When that is so:
+    the key syntax will be CompositeVariable (Variable1 | Variable2 |…| Variable N)
+    The value syntax will be Value1 | Value 2 | … | Value N
+
+The default of any value will always be pre-filled to start with the
+string ReplaceThis in order to allow for detection of unfilled variables
+
+There may be zero or more data rows within a control block.
+
+Data row keys are well known (tied to being supported by a specific
+version of the control block).
+
+Support version 2-0-0 keys are:
+
+    Version
+    OpsManager (UserName | Phone)
+    SplitRestaurant (Name | CleanupDriverUserName)
+    BackupDriverUserName
+
+
+
+Consumer
+Driver
+Name
+User Name
+Phone #
+Phone2 #
+Neighborhood
+City
+Address
+Condo
+Details
+Restaurants
+normal
+veggie
+#orders
+
+but the meanings of particular columns differ depending upon context.
+
+Control block
+-------------
+
+Consumer - Boolean. Must be set to FALSE
+Driver - Boolean. Must be set to FALSE
+Name - Control block directive
+User Name - Key
+Phone # - Not used
+Phone2 # - Not used
+Neighborhood - Not used
+City - Value
+Address - Not used
+Condo - Not used
+Details - Not used
+Restaurants - Not used
+normal - Not used
+veggie - Not used
+#orders - Not used
+
+Supported control block directives:
+
+ControlBegin
+ControlEnd
+Comment
+Version
+OpsManager (UserName | Phone)
+SplitRestaurant (Name | CleanupDriverUserName)
+BackupDriverUserName
+
+

@@ -31,6 +31,7 @@ public class Constants {
     static final String VOLUNTEER_REQUESTS_FILE = "volunteer-requests";
     static final String DRIVERS_FILE = "drivers";
     static final String WORKFLOW_FILE = "workflow";
+    static final String ONE_KITCHEN_WORKFLOW_FILE = "free-meals-workflow";
     static final String INREACH_FILE = "inreach";
     static final String DISPATCHERS_FILE = "dispatchers";
     static final String ORDER_HISTORY_FILE = "order-history";
@@ -61,8 +62,15 @@ public class Constants {
     public static final int QUERY_GET_LAST_COMPLETED_DAILY_ORDERS_REPLY = 44;
     public static final int QUERY_GET_ORDER_HISTORY_DATA_POSTS = 45;
     public static final int QUERY_GET_DRIVER_DETAILS = 46;
-    public static final int QUERY_GET_CURRENT_VALIDATED_RESTAURANT_TEMPLATE = 49;
+    public static final int QUERY_GET_CURRENT_VALIDATED_DRIVER_MESSAGE_RESTAURANT_TEMPLATE = 49;
     public static final int QUERY_GET_LAST_REPLY_FROM_REQUEST_TOPICS = 50;
+    public static final int QUERY_GET_CURRENT_VALIDATED_ONE_KITCHEN_RESTAURANT_TEMPLATE = 51;
+    public static final int QUERY_GET_LAST_TEST_REQUEST = 52;
+    public static final int QUERY_GET_ONE_KITCHEN_DRIVERS_POST_FORMAT_V300 = 53;
+    public static final int QUERY_GET_ONE_KITCHEN_GROUP_POST_FORMAT_V300 = 54;
+    public static final int QUERY_GET_ONE_KITCHEN_DRIVERS_TABLE_POST_FORMAT_V300 = 55;
+    public static final int QUERY_GET_ONE_KITCHEN_ORDERS_TABLE_POST_FORMAT_V300 = 56;
+    public static final int QUERY_GET_LAST_ONE_KITCHEN_RESTAURANT_TEMPLATE_REPLY = 57;
 
     // Current spec version for these queries
     public static final int QUERY_GET_DRIVERS_POST_FORMAT = QUERY_GET_DRIVERS_POST_FORMAT_V23;
@@ -79,6 +87,10 @@ public class Constants {
     public static final Topic TOPIC_POST_COMPLETED_DAILY_ORDERS = new Topic("Post completed daily orders", 859);
     public static final Topic TOPIC_DRIVER_TRAINING_TABLE = new Topic("Post completed daily orders", 5355);
     public static final Topic TOPIC_RESTAURANT_TEMPLATE_STORAGE = new Topic("Restaurant Template Storage", 6055);
+    public static final Topic TOPIC_ONE_KITCHEN_RESTAURANT_TEMPLATE_STORAGE =
+            new Topic("One Kitchen Restaurant Template Storage", 6547);
+    public static final Topic TOPIC_POST_ONE_KITCHEN_RESTAURANT_TEMPLATE =
+            new Topic("Post One Kitchen Restaurant Template", 6548);
 
     public static final String COLUMN_ID = "id";
     public static final String COLUMN_NAME = "name";
@@ -119,6 +131,12 @@ public class Constants {
     public static final String WORKFLOW_NORMAL_COLUMN = "normal";
     public static final String WORKFLOW_RESTAURANTS_COLUMN = "Restaurants";
     public static final String WORKFLOW_ORDERS_COLUMN = "#orders";
+    public static final String WORKFLOW_STD_MEALS_COLUMN = "std meals";
+    public static final String WORKFLOW_ALT_MEALS_COLUMN = "alt meals";
+    public static final String WORKFLOW_TYPE_MEAL_COLUMN = "type meal";
+    public static final String WORKFLOW_STD_GROCERY_COLUMN = "std grocery";
+    public static final String WORKFLOW_ALT_GROCERY_COLUMN = "alt grocery";
+    public static final String WORKFLOW_TYPE_GROCERY_COLUMN = "type grocery";
 
     public static final String WORKFLOW_NO_PICS = "no pics";
 
@@ -157,6 +175,8 @@ public class Constants {
     public static final String GROUP_FRREG = "frreg";
     public static final String GROUP_FRVOICEONLY = "FRvoiceonly";
 
+    public static final String ALT_TYPE_NONE = "none";
+
     public static final String BERKELEY = "Berkeley";
     public static final String ALBANY = "Albany";
     public static final String KENSINGTON = "Kensington";
@@ -176,14 +196,17 @@ public class Constants {
     public static final String CONTROL_BLOCK_LATE_ARRIVAL_AUDIT = "LateArrivalAudit";
     public static final String CONTROL_BLOCK_UNVISITED_RESTAURANTS_AUDIT = "UnvisitedRestaurantsAudit";
     public static final String CONTROL_BLOCK_SPLIT_RESTAURANT_AUDITS = "SplitRestaurantAudits";
+    public static final String CONTROL_BLOCK_ALT_MEAL_OPTIONS = "AltMealOptions()";
+    public static final String CONTROL_BLOCK_ALT_GROCERY_OPTIONS = "AltGroceryOptions()";
+    public static final String CONTROL_BLOCK_START_TIMES = "StartTimes()";
+    public static final String CONTROL_BLOCK_PICKUP_MANAGER = "PickupManagerUserName";
+    public static final String CONTROL_BLOCK_FOOD_SOURCES = "FoodSources(Meal|Grocery)";
 
     public static final String CONTROL_BLOCK_VALUE_DEFAULT_PREFIX = "ReplaceThisBy";
     public static final String CONTROL_BLOCK_VERSION_UNKNOWN = "0";
     public static final String CONTROL_BLOCK_VERSION_1 = "1";
-    public static final String CONTROL_BLOCK_VERSION_2_0_0 = "2-0-0";
-
-    public static final String CONTROL_BLOCK_CURRENT_VERSION = CONTROL_BLOCK_VERSION_2_0_0;
-
+    public static final String CONTROL_BLOCK_VERSION_200 = "2-0-0";
+    public static final String CONTROL_BLOCK_VERSION_300 = "3-0-0";
 
     public static final long UNKNOWN_USER_ID = 852;
     public static final String UNKNOWN_USER = "unknown-user";

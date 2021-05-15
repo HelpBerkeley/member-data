@@ -53,3 +53,7 @@ changes to group names.
 Double quotes in a full user name will cause HTTP 400 errors
 when used in a generated message/table.  Example: a full user
 name of Joe "Billy Bob" Thorton
+
+Add a heart beat post update, to show the back end running
+
+Update user names to audit case-insensitive

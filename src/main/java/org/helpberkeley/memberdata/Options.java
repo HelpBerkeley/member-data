@@ -39,6 +39,7 @@ public class Options {
     static final String COMMAND_INREACH = "inreach";
     static final String COMMAND_EMAIL = "email";
     static final String COMMAND_WORKFLOW = "workflow";
+    static final String COMMAND_ONE_KITCHEN_WORKFLOW = "onekitchen-workflow";
     static final String COMMAND_DRIVER_MESSAGES = "driver-messages";
     static final String COMMAND_ONE_KITCHEN_DRIVER_MESSAGES = "one-kitchen-driver-messages";
     static final String COMMAND_DRIVER_ROUTES = "driver-routes";
@@ -46,22 +47,25 @@ public class Options {
     static final String COMMAND_DRIVERS = "drivers";
     static final String COMMAND_DRIVER_HISTORY = "driver-history";
     static final String COMMAND_RESTAURANT_TEMPLATE = "restaurant-template";
+    static final String COMMAND_ONE_KITCHEN_RESTAURANT_TEMPLATE = "onekitchen-restaurant-template";
     static final String COMMAND_CUSTOMER_CARE_POST = "customer-care";
     static final String COMMAND_FRREG = "frreg";
     static final String COMMAND_WORK_REQUESTS = "work-requests";
+    static final String COMMAND_TEST_REQUEST = "test-request";
 
     static final String USAGE_ERROR = "Usage error for command ";
     static final String UNKNOWN_COMMAND = USAGE_ERROR + ": unknown command: ";
     static final String TOO_MANY_COMMANDS = USAGE_ERROR + ": too many commands";
     static final String COMMAND_REQUIRES_FILE_NAME = ": command requires a file name parameter";
     static final String COMMAND_REQUIRES_SHORT_URL = ": command requires a short URL";
+    static final String COMMAND_REQUIRES_ONE_ARG = ": command requires an argument";
     static final String BAD_SHORT_URL = USAGE_ERROR + ": short url syntax error";
     static final String FILE_DOES_NOT_EXIST = USAGE_ERROR + ": file does not exist: ";
 
     static final String USAGE =
             "Usage: " + COMMAND_FETCH + "\n"
-                    + "    | " + COMMAND_WORK_REQUESTS + "all-members-file\n"
-                    + "    | " + COMMAND_COMPLETED_DAILY_ORDERS + "all-members-file\n"
+                    + "    | " + COMMAND_WORK_REQUESTS + " all-members-file\n"
+                    + "    | " + COMMAND_COMPLETED_DAILY_ORDERS + " all-members-file\n"
                     + "    | " + COMMAND_DRIVER_MESSAGES + " all-members-file\n"
                     + "    | " + COMMAND_ONE_KITCHEN_DRIVER_MESSAGES + " all-members-file\n"
                     + "    | " + COMMAND_DRIVER_ROUTES + "\n"
@@ -71,6 +75,7 @@ public class Options {
                     + "    | " + COMMAND_INREACH + " all-members-file\n"
                     + "    | " + COMMAND_EMAIL + " all-members-file\n"
                     + "    | " + COMMAND_WORKFLOW + " all-members-file\n"
+                    + "    | " + COMMAND_ONE_KITCHEN_WORKFLOW + " all-members-file\n"
                     + "    | " + COMMAND_POST_ERRORS + " errors-file-name\n"
                     + "    | " + COMMAND_POST_CONSUMER_REQUESTS + " consumer-requests-file-name\n"
                     + "    | " + COMMAND_POST_VOLUNTEER_REQUESTS + " volunteer-requests-file-name\n"
@@ -81,7 +86,9 @@ public class Options {
                     + "    | " + COMMAND_UPDATE_DISPATCHERS + " dispatchers-file-name\n"
                     + "    | " + COMMAND_CUSTOMER_CARE_POST + " all-members-file\n"
                     + "    | " + COMMAND_FRREG + " all-members-file\n"
-                    + "    | " + COMMAND_RESTAURANT_TEMPLATE + "\n";
+                    + "    | " + COMMAND_RESTAURANT_TEMPLATE + "\n"
+                    + "    | " + COMMAND_ONE_KITCHEN_RESTAURANT_TEMPLATE + "\n"
+                    + "    | " + COMMAND_TEST_REQUEST + " all-members-file\n";
 
     private final String[] args;
     private String command;
@@ -111,6 +118,7 @@ public class Options {
             case COMMAND_DRIVER_ROUTES:
             case COMMAND_DRIVER_HISTORY:
             case COMMAND_RESTAURANT_TEMPLATE:
+            case COMMAND_ONE_KITCHEN_RESTAURANT_TEMPLATE:
                 setCommand(arg);
                 break;
             case COMMAND_WORK_REQUESTS:
@@ -122,6 +130,7 @@ public class Options {
             case COMMAND_DRIVER_MESSAGES:
             case COMMAND_ONE_KITCHEN_DRIVER_MESSAGES:
             case COMMAND_WORKFLOW:
+            case COMMAND_ONE_KITCHEN_WORKFLOW:
             case COMMAND_POST_ALL_MEMBERS:
             case COMMAND_POST_DRIVERS:
             case COMMAND_UPDATE_DISPATCHERS:
@@ -131,6 +140,7 @@ public class Options {
             case COMMAND_CUSTOMER_CARE_POST:
             case COMMAND_FRREG:
             case COMMAND_DRIVERS:
+            case COMMAND_TEST_REQUEST:
                 setCommand(arg);
                 if (index == args.length) {
                     dieMessage(USAGE_ERROR + arg + COMMAND_REQUIRES_FILE_NAME);

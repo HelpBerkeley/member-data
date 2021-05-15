@@ -168,7 +168,54 @@ public class UserExporter extends Exporter {
         if (restaurantBlock.isEmpty()) {
             rows.append(workflowHeaders());
         } else {
-            auditWorkflowData(restaurantBlock);
+            auditWorkflowData(restaurantBlock, workflowHeaders());
+            rows.append(restaurantBlock);
+        }
+
+        for (User user : tables.sortByConsumerThenDriverThenName()) {
+
+            DetailsPost details = deliveryDetails.get(user.getUserName());
+
+            rows.append(user.isConsumer());
+            rows.append(separator);
+            rows.append(user.isDriver());
+            rows.append(separator);
+            rows.append(escapeCommas(user.getName()));
+            rows.append(separator);
+            rows.append(user.getUserName());
+            rows.append(separator);
+            rows.append(user.getPhoneNumber());
+            rows.append(separator);
+            rows.append(user.getAltPhoneNumber());
+            rows.append(separator);
+            rows.append(escapeCommas(user.getNeighborhood()));
+            rows.append(separator);
+            rows.append(escapeCommas(user.getCity()));
+            rows.append(separator);
+            rows.append(escapeCommas(user.getFullAddress()));
+            rows.append(separator);
+            rows.append(user.isCondo());
+            rows.append(separator);
+            rows.append(details == null ? "" : escapeCommas(details.getDetails()));
+            rows.append(separator);
+            rows.append(separator);
+            rows.append(separator);
+            rows.append(separator);
+            rows.append('\n');
+        }
+
+        return rows.toString();
+    }
+
+    String oneKitchenWorkflow(final String restaurantBlock,
+                    Map<String, DetailsPost> deliveryDetails) throws IOException, CsvException {
+
+        StringBuilder rows = new StringBuilder();
+
+        if (restaurantBlock.isEmpty()) {
+            rows.append(workflowHeaders());
+        } else {
+            auditWorkflowData(restaurantBlock, oneKitchenWorkflowHeaders());
             rows.append(restaurantBlock);
         }
 
@@ -210,10 +257,10 @@ public class UserExporter extends Exporter {
     // Audit that all of the columns are expected column names are present, in the expected order
     // and that all of the rows contain the same number of columns.
     //
-    private void auditWorkflowData(final String workFlowData) throws IOException, CsvException {
+    private void auditWorkflowData(String workflowData, String headers) throws IOException, CsvException {
 
         // Normalize EOL - FIX THIS, DS: doe CSVReader do this already?
-        String csvData = workFlowData.replaceAll("\\r\\n?", "\n");
+        String csvData = workflowData.replaceAll("\\r\\n?", "\n");
         String[] lines = csvData.split("\n");
         assert lines.length != 0 : "missing work flow data";
 
@@ -222,8 +269,8 @@ public class UserExporter extends Exporter {
         assert ! rows.isEmpty() : "missing work flow data";
         String[] headerColumns = rows.get(0);
 
-        if (! workflowHeaders().equals(lines[0] + "\n")) {
-            throw new Error("Header mismatch: " + lines[0] + " != " + workflowHeaders());
+        if (! headers.equals(lines[0] + "\n")) {
+            throw new Error("Header mismatch: " + lines[0] + " != " + headers);
         }
 
         for (int row = 1; row < rows.size(); row++) {
@@ -283,6 +330,55 @@ public class UserExporter extends Exporter {
             + separator
             + "#orders"
             + '\n';
+    }
+
+    String oneKitchenWorkflowToFile(final String restaurantBlock, Map<String, DetailsPost> deliveryDetails,
+                          final String fileName) throws IOException, CsvException {
+
+        String outputFileName = generateFileName(fileName, "csv");
+        writeFile(outputFileName, oneKitchenWorkflow(restaurantBlock, deliveryDetails));
+
+        return outputFileName;
+    }
+
+    String oneKitchenWorkflowHeaders() {
+
+        return User.CONSUMER_COLUMN
+                + separator
+                + User.DRIVER_COLUMN
+                + separator
+                + User.NAME_COLUMN
+                + separator
+                + User.USERNAME_COLUMN
+                + separator
+                + User.PHONE_NUMBER_COLUMN
+                + separator
+                + User.ALT_PHONE_NUMBER_COLUMN
+                + separator
+                + User.NEIGHBORHOOD_COLUMN
+                + separator
+                + User.CITY_COLUMN
+                + separator
+                + User.ADDRESS_COLUMN
+                + separator
+                + User.CONDO_COLUMN
+                + separator
+                + Constants.WORKFLOW_DETAILS_COLUMN
+                + separator
+                + Constants.WORKFLOW_RESTAURANTS_COLUMN
+                + separator
+                + Constants.WORKFLOW_STD_MEALS_COLUMN
+                + separator
+                + Constants.WORKFLOW_ALT_MEALS_COLUMN
+                + separator
+                + Constants.WORKFLOW_TYPE_MEAL_COLUMN
+                + separator
+                + Constants.WORKFLOW_STD_GROCERY_COLUMN
+                + separator
+                + Constants.WORKFLOW_ALT_GROCERY_COLUMN
+                + separator
+                + Constants.WORKFLOW_TYPE_GROCERY_COLUMN
+                + '\n';
     }
 
     String inreach(OrderHistory orderHistory) {

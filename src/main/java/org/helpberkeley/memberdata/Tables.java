@@ -31,11 +31,11 @@ public class Tables {
 
     private final List<User> users;
 
-    Tables(List<User> users) {
+    public Tables(List<User> users) {
         this.users = users;
     }
 
-    Map<String, User> mapByUserName() {
+    public Map<String, User> mapByUserName() {
 
         Map<String, User> userMap = new HashMap<>();
         for (User user : users) {

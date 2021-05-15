@@ -1,5 +1,5 @@
 /*
-// Copyright (c) 2020-2021 helpberkeley.org
+ * Copyright (c) 2020-2021 helpberkeley.org
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,12 +24,10 @@ package org.helpberkeley.memberdata;
 
 import com.google.common.collect.Iterators;
 import com.google.common.collect.PeekingIterator;
-import com.opencsv.bean.CsvToBeanBuilder;
 
-import java.io.StringReader;
 import java.util.*;
 
-public class WorkflowParser {
+public abstract class WorkflowParser {
 
     public enum Mode {
         /** The CSV data is for passing to the routing software */
@@ -38,26 +36,58 @@ public class WorkflowParser {
         DRIVER_MESSAGE_REQUEST,
     }
 
-    private final Mode mode;
-    private final ControlBlock controlBlock = new ControlBlock();
-    private long lineNumber = 1;
-    private final PeekingIterator<WorkflowBean> iterator;
-    private final Map<String, Restaurant> globalRestaurants;
-    private String normalizedCSVData;
+    protected final Mode mode;
+    protected final ControlBlock controlBlock;
+    protected long lineNumber = 1;
+    protected final PeekingIterator<WorkflowBean> iterator;
+    protected Map<String, Restaurant> globalRestaurants;
+    protected final String normalizedCSVData;
 
-    WorkflowParser(Mode mode, Map<String, Restaurant> globalRestaurants, final String csvData) {
+    protected WorkflowParser(Mode mode, final String csvData) {
         this.mode = mode;
-        assert mode == Mode.DRIVER_MESSAGE_REQUEST : mode;
-        this.globalRestaurants = globalRestaurants;
+        // Normalize EOL
+        normalizedCSVData = csvData.replaceAll("\\r\\n?", "\n");
+        controlBlock = ControlBlock.create(normalizedCSVData);
         iterator = initializeIterator(csvData);
     }
 
-    public WorkflowParser(Mode mode, final String csvData) {
-        this.mode = mode;
-        assert mode == Mode.DRIVER_ROUTE_REQUEST : mode;
-        this.globalRestaurants = null;
-        iterator = initializeIterator(csvData);
+    public static WorkflowParser create(
+            Mode mode, Map<String, Restaurant> globalRestaurants, String csvData) {
+
+        ControlBlock controlBlock = ControlBlock.create(csvData);
+        WorkflowParser workflowParser;
+
+        switch (controlBlock.getVersion()) {
+            case Constants.CONTROL_BLOCK_VERSION_UNKNOWN:
+                throw new MemberDataException("Control block not found");
+            case Constants.CONTROL_BLOCK_VERSION_200:
+                workflowParser = new WorkflowParserV200(mode, csvData);
+                break;
+            case Constants.CONTROL_BLOCK_VERSION_300:
+                workflowParser = new WorkflowParserV300(mode, csvData);
+                break;
+            case Constants.CONTROL_BLOCK_VERSION_1:
+            default:
+                throw new MemberDataException(
+                        "Control block version " + controlBlock.getVersion() + " is not supported.\n");
+        }
+
+        workflowParser.globalRestaurants = globalRestaurants;
+        return workflowParser;
     }
+
+    abstract List<WorkflowBean> parse(String csvData);
+    /**
+     * Check for missing columns.
+     * @param csvData Normalized workflow spreadsheet data
+     * @throws MemberDataException If there are any missing columns.
+     */
+    abstract void auditColumnNames(final String csvData);
+
+    abstract List<Delivery> processDeliveries();
+    abstract void versionSpecificAudit(Driver driver);
+
+    abstract void auditPickupDeliveryMismatch(Driver driver);
 
     public String rawControlBlock() {
 
@@ -89,14 +119,10 @@ public class WorkflowParser {
     }
 
     private PeekingIterator<WorkflowBean> initializeIterator(final String csvData) {
-        // Normalize EOL
-        normalizedCSVData = csvData.replaceAll("\\r\\n?", "\n");
-        assert ! normalizedCSVData.isEmpty() : "empty workflow";
-        auditColumnNames(normalizedCSVData);
+        assert ! csvData.isEmpty() : "empty workflow";
+        auditColumnNames(csvData);
 
-        List<WorkflowBean> workflowBeans = new CsvToBeanBuilder<WorkflowBean>(new StringReader(normalizedCSVData))
-                .withType(WorkflowBean.class).build().parse();
-
+        List<WorkflowBean> workflowBeans = parse(csvData);
         return Iterators.peekingIterator(workflowBeans.iterator());
     }
 
@@ -105,7 +131,7 @@ public class WorkflowParser {
      * Increments current line number
      * @return Next bean, or null if at end.
      */
-    private WorkflowBean nextRow() {
+    protected final WorkflowBean nextRow() {
         if (iterator.hasNext()) {
             lineNumber++;
             return iterator.next();
@@ -118,7 +144,7 @@ public class WorkflowParser {
      * Does not increment current line number
      * @return Next bean, or null if at end.
      */
-    private WorkflowBean peekNextRow() {
+    protected final WorkflowBean peekNextRow() {
         if (! iterator.hasNext()) {
             return null;
         }
@@ -126,50 +152,10 @@ public class WorkflowParser {
         return iterator.peek();
     }
 
-    /**
-     * Check for missing columns.
-     * @param csvData Normalized workflow spreadsheet data
-     * @throws MemberDataException If there are any missing columns.
-     */
-    private void auditColumnNames(final String csvData) {
-        List<String> columnNames = List.of(
-                Constants.WORKFLOW_ADDRESS_COLUMN,
-                Constants.WORKFLOW_ALT_PHONE_COLUMN,
-                Constants.WORKFLOW_CITY_COLUMN,
-                Constants.WORKFLOW_CONDO_COLUMN,
-                Constants.WORKFLOW_CONSUMER_COLUMN,
-                Constants.WORKFLOW_DETAILS_COLUMN,
-                Constants.WORKFLOW_DRIVER_COLUMN,
-                Constants.WORKFLOW_NAME_COLUMN,
-                Constants.WORKFLOW_NEIGHBORHOOD_COLUMN,
-                Constants.WORKFLOW_NORMAL_COLUMN,
-                Constants.WORKFLOW_ORDERS_COLUMN,
-                Constants.WORKFLOW_PHONE_COLUMN,
-                Constants.WORKFLOW_RESTAURANTS_COLUMN,
-                Constants.WORKFLOW_USER_NAME_COLUMN,
-                Constants.WORKFLOW_VEGGIE_COLUMN);
+    protected final String getIntegerValue(String value) {
 
-        // get the header line
-        String header = csvData.substring(0, csvData.indexOf('\n'));
-
-        String[] columns = header.split(",");
-        Set<String> set = new HashSet<>(Arrays.asList(columns));
-
-        int numErrors = 0;
-        StringBuilder errors = new StringBuilder();
-        for (String columnName : columnNames) {
-            if (! set.contains(columnName)) {
-                errors.append("Missing column header: ").append(columnName).append("\n");
-                numErrors++;
-            }
-        }
-
-        if (numErrors == columnNames.size()) {
-            throw new MemberDataException("All column names missing. Line 1 does not look like a header row");
-        }
-        if (errors.length() > 0) {
-            throw new MemberDataException(errors.toString());
-        }
+        String newValue = value.trim();
+        return newValue.isEmpty() ? "0" : newValue;
     }
 
     public List<Driver> drivers() {
@@ -199,6 +185,7 @@ public class WorkflowParser {
 
             Driver driver = processDriver(bean);
             auditPickupDeliveryMismatch(driver);
+            versionSpecificAudit(driver);
             driverMap.put(driver.getUserName(), driver);
         }
 
@@ -209,9 +196,7 @@ public class WorkflowParser {
         return controlBlock;
     }
 
-    ControlBlock controlBlock() {
-
-        controlBlock.clear();
+    public ControlBlock controlBlock() {
 
         WorkflowBean bean;
 
@@ -399,7 +384,8 @@ public class WorkflowParser {
                 throw new MemberDataException("Driver " + driverUserName + " unrecognizable gmap URL");
             }
 
-            driver = new Driver(driverBean, restaurants, deliveries, gmapURL, controlBlock.lateArrivalAuditDisabled());
+            driver = Driver.createDriver(
+                    driverBean, restaurants, deliveries, gmapURL, controlBlock.lateArrivalAuditDisabled());
         } else {
             assert mode == Mode.DRIVER_ROUTE_REQUEST;
 
@@ -410,7 +396,7 @@ public class WorkflowParser {
                 throw new MemberDataException("Line " + lineNumber + " is not empty");
             }
 
-            driver = new Driver(driverBean, restaurants, deliveries);
+            driver = Driver.createDriver(driverBean, restaurants, deliveries);
         }
 
         return driver;
@@ -439,22 +425,19 @@ public class WorkflowParser {
                 errors += "missing address\n";
             }
             String details = bean.getDetails();
-            String orders = bean.getOrders();
-            if (orders.isEmpty()) {
-                errors += "missing orders";
-            }
+
+            Restaurant restaurant = Restaurant.createRestaurant(controlBlock, restaurantName);
+            errors += restaurant.setVersionSpecificFields(bean);
 
             if (! errors.isEmpty()) {
                 throw new MemberDataException("line " + lineNumber + " " + errors);
             }
 
-            Restaurant restaurant = new Restaurant(restaurantName);
             restaurant.setAddress(address);
             restaurant.setDetails(details);
-            restaurant.setOrders(orders);
 
             // FIX THIS, DS: refactor to a single map of restaurants
-            if (globalRestaurants != null) {
+            if (mode == Mode.DRIVER_MESSAGE_REQUEST) {
                 Restaurant globalRestaurant = globalRestaurants.get(restaurantName);
                 if (globalRestaurant == null) {
                     throw new MemberDataException("Restaurant " + restaurantName + ", line number " + lineNumber
@@ -467,138 +450,6 @@ public class WorkflowParser {
         }
 
         return restaurants;
-    }
-
-    private List<Delivery> processDeliveries() {
-        List<Delivery> deliveries = new ArrayList<>();
-        WorkflowBean bean;
-
-        while ((bean = peekNextRow()) != null) {
-            if (! bean.getConsumer().equalsIgnoreCase("TRUE")) {
-                break;
-            }
-
-            bean = nextRow();
-            assert bean != null;
-            String errors = "";
-
-            String consumerName = bean.getName();
-            if (consumerName.isEmpty()) {
-                errors += "missing consumer name\n";
-            }
-            String userName = bean.getUserName();
-            if (userName.isEmpty()) {
-                errors += "missing user name\n";
-            }
-            String phone = bean.getPhone();
-            if (phone.isEmpty()) {
-                errors += "missing phone\n";
-            }
-            String altPhone = bean.getAltPhone();
-            String neighborhood = bean.getNeighborhood();
-            String city = bean.getCity();
-            if (city.isEmpty()) {
-                errors += "missing city\n";
-            }
-            String address = bean.getAddress();
-            if (address.isEmpty()) {
-                errors += "missing address\n";
-            }
-            boolean isCondo = Boolean.parseBoolean(bean.getCondo());
-            String details = bean.getDetails();
-            String restaurantName = bean.getRestaurant();
-            if (restaurantName.isEmpty()) {
-                errors += "missing restaurant name\n";
-            }
-            String normalRations = bean.getNormal();
-            String veggieRations = bean.getVeggie();
-
-            if (normalRations.isEmpty() || veggieRations.isEmpty()) {
-                errors += "normal and/or veggie rations column is empty. "
-                        + "Please insert the the correct number(s) (e.g. 0). ";
-            }
-
-            if (! errors.isEmpty()) {
-                throw new MemberDataException("line " + lineNumber + " " + errors);
-            }
-
-            Delivery delivery = new Delivery(consumerName);
-            delivery.setUserName(userName);
-            delivery.setPhone(phone);
-            delivery.setAltPhone(altPhone);
-            delivery.setNeighborhood(neighborhood);
-            delivery.setCity(city);
-            delivery.setAddress(address);
-            delivery.setIsCondo(isCondo);
-            delivery.setDetails(details);
-            delivery.setRestaurant(restaurantName);
-            delivery.setNormalRations(normalRations.isEmpty() ? "0" : normalRations);
-            delivery.setVeggieRations(veggieRations.isEmpty() ? "0" : veggieRations);
-
-            deliveries.add(delivery);
-        }
-
-        return deliveries;
-    }
-
-    private void auditPickupDeliveryMismatch(Driver driver) {
-
-        // First build of map of deliveries (orders) per restaurant
-        Map<String, Long> deliveryOrders = new HashMap<>();
-        for (Delivery delivery : driver.getDeliveries()) {
-            String restaurantName = delivery.getRestaurant();
-
-            // Support for 0 order delivery (e.g. donation drop-off)
-            if (delivery.getNormalRations().equals("0") &&
-                    delivery.getVeggieRations().equals("0")) {
-                continue;
-            }
-
-            Long orders = deliveryOrders.getOrDefault(restaurantName, 0L);
-            orders++;
-            deliveryOrders.put(restaurantName, orders);
-        }
-
-        // Now build a map of orders to pickup per restaurant
-        Map<String, Long> pickupOrders = new HashMap<>();
-        for (Restaurant restaurant : driver.getPickups()) {
-            String restaurantName = restaurant.getName();
-
-            // FIX THIS, DS: too late to audit this here?
-            if (pickupOrders.containsKey(restaurantName)) {
-                throw new MemberDataException("Restaurant " + restaurantName
-                        + " appears more than once for driver " + driver.getUserName());
-            }
-
-            pickupOrders.put(restaurantName, restaurant.getOrders());
-        }
-
-        StringBuilder errors = new StringBuilder();
-
-        // Now check that the pickups match the deliveries
-        for (String restaurant : pickupOrders.keySet()) {
-
-            if (pickupOrders.get(restaurant) == 0L) {
-                if (deliveryOrders.containsKey(restaurant)){
-                    errors.append("deliveries for ").append(restaurant).append(", but 0 orders\n");
-                }
-            } else if (! deliveryOrders.containsKey(restaurant)) {
-                errors.append("orders for ").append(restaurant).append(" but no deliveries\n");
-            } else if (! deliveryOrders.get(restaurant).equals(pickupOrders.get(restaurant))) {
-                errors.append(pickupOrders.get(restaurant)).append(" orders for ").append(restaurant).append(" but ").append(deliveryOrders.get(restaurant)).append(" deliveries\n");
-            }
-        }
-
-        // And that each delivery order has a pickup
-        for (String restaurant : deliveryOrders.keySet()) {
-            if (! pickupOrders.containsKey(restaurant)) {
-                errors.append(deliveryOrders.get(restaurant)).append(" deliveries for ").append(restaurant).append(" but no orders\n");
-            }
-        }
-
-        if (errors.length() > 0) {
-            throw new MemberDataException("Driver " + driver.getUserName() + ": " + errors);
-        }
     }
 
     private boolean emptyRow(WorkflowBean bean) {

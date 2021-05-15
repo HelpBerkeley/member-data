@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020. helpberkeley.org
+ * Copyright (c) 2020-2021. helpberkeley.org
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -58,7 +58,7 @@ public class RestaurantTemplateTest extends TestBase {
                 + "Solano Route,,,,,,,,,,TRUE,Cafe Raj,:open_umbrella:,5:10 PM,10:00 PM\n"
                 + "Shattuck Route,,,,,,,,,,TRUE,Jot Mahal,,5:10 PM,9:00 PM\n";
 
-        RestaurantTemplateParser parser = new RestaurantTemplateParser(csvData);
+        RestaurantTemplateParser parser = RestaurantTemplateParser.create(csvData);
 
         Throwable thrown = catchThrowable(parser::restaurants);
         assertThat(thrown).isInstanceOf(MemberDataException.class);
@@ -68,21 +68,29 @@ public class RestaurantTemplateTest extends TestBase {
 
     @Test
     public void inactiveRestaurantTest() {
-        String templateData = readResourceFile("restaurant-template-v2-0-0.csv");
-        RestaurantTemplateParser parser = new RestaurantTemplateParser(templateData);
+        String templateData = readResourceFile("restaurant-template-v200.csv");
+        RestaurantTemplateParser parser = RestaurantTemplateParser.create(templateData);
 
         Map<String, Restaurant> restaurants = parser.restaurants();
-        assertThat(parser.getVersion()).isEqualTo(Constants.CONTROL_BLOCK_VERSION_2_0_0);
+        assertThat(parser.getVersion()).isEqualTo(Constants.CONTROL_BLOCK_VERSION_200);
         assertThat(restaurants).doesNotContainKey("Kaze Ramen");
     }
 
     @Test
     public void turkeyTemplateTest() {
         String templateData = readResourceFile("restaurant-template-turkey.csv");
-        RestaurantTemplateParser parser = new RestaurantTemplateParser(templateData);
+        RestaurantTemplateParser parser = RestaurantTemplateParser.create(templateData);
 
         Map<String, Restaurant> restaurants = parser.restaurants();
-        assertThat(parser.getVersion()).isEqualTo(Constants.CONTROL_BLOCK_VERSION_2_0_0);
+        assertThat(parser.getVersion()).isEqualTo(Constants.CONTROL_BLOCK_VERSION_200);
         assertThat(restaurants).containsKey("Nourish You!");
+    }
+
+    @Test
+    public void v1UnsupportedTest() {
+        String templateData = readResourceFile("restaurant-template-v1.csv");
+        Throwable thrown = catchThrowable(() -> RestaurantTemplateParser.create(templateData));
+        assertThat(thrown).isInstanceOf(MemberDataException.class);
+        assertThat(thrown).hasMessage("Control block version 1 is not supported for restaurant templates");
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020. helpberkeley.org
+ * Copyright (c) 2020-2021. helpberkeley.org
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -26,62 +26,37 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Restaurant {
-    private final String name;
-    private String address = "";
+public abstract class Restaurant {
+    protected final String name;
+    protected String address = "";
     private String startTime = "";
     private String closingTime = "";
     private int closingTimeValue = 0;
-    private String details = "";
+    protected String details = "";
     private String emoji = "";
     private String route = "";
-    private long orders = 0;
     private final Map<String, Driver> drivers = new HashMap<>();
-    private boolean noPics = false;
 
-    Restaurant(final String name) {
+    protected Restaurant(String name) {
         this.name = name;
     }
 
-    @Override
-    public String toString() {
-        return name + ", orders: " + orders + ", start:" + startTime + ", drivers:" + drivers.keySet();
-    }
-
-    // FIX THIS, DS: columns are hard wired
-    //
-    public String pickupRow() {
-        StringBuilder row = new StringBuilder();
-
-        // Consumer, Driver, Name, UserName, Phone, Alt Phone, Neighborhood, City
-        row.append("FALSE,,,,,,,,");
-
-        // Address
-        row.append('"').append(address).append('"').append(',');
-
-        // Condo
-        row.append("FALSE,");
-
-        // Details
-        if (! details.isEmpty()) {
-            row.append('"').append(details).append('"').append(',');
-        } else {
-            row.append(',');
+    public static Restaurant createRestaurant(ControlBlock controlBlock, String name) {
+        switch (controlBlock.getVersion()) {
+            case Constants.CONTROL_BLOCK_VERSION_200:
+                return new RestaurantV200(controlBlock, name);
+            case Constants.CONTROL_BLOCK_VERSION_300:
+                return new RestaurantV300(controlBlock, name);
+            default:
+                throw new MemberDataException("Control block version " + controlBlock.getVersion()
+                        + " is not supported for restaurant creation");
         }
-
-        // Restaurant
-        row.append('"').append(name).append('"').append(',');
-
-        // Empty columns for  normal and veggie
-        row.append(",,");
-
-        // Orders
-        row.append(orders);
-
-        row.append('\n');
-
-        return row.toString();
     }
+
+    protected abstract void setVersionSpecificFields(RestaurantBean restaurantBean);
+    protected abstract String setVersionSpecificFields(WorkflowBean workflowBean);
+    protected abstract void mergeInGlobalVersionSpecificFields(Restaurant globalRestaurant);
+    public abstract String pickupRow();
 
     void setStartTime(final String startTime) {
         this.startTime = startTime;
@@ -105,14 +80,6 @@ public class Restaurant {
     void setAddress(final String address) {
         this.address = address;
     }
-    void setOrders(final String orders) {
-
-        double numOrders = Double.parseDouble(orders.trim());
-        this.orders += Math.round(numOrders);
-    }
-    void addOrders(long orders) {
-        this.orders += orders;
-    }
     void addDriver(final Driver driver) {
         assert ! drivers.containsKey(driver.getUserName()) : driver.getUserName();
         drivers.put(driver.getUserName(), driver);
@@ -121,11 +88,7 @@ public class Restaurant {
         this.emoji = emoji;
     }
 
-    void setNoPics() {
-        noPics = true;
-    }
-
-    String getName() {
+    public String getName() {
         return name;
     }
 
@@ -141,7 +104,7 @@ public class Restaurant {
         return closingTime;
     }
 
-    String getDetails() {
+    public String getDetails() {
         return details;
     }
 
@@ -153,11 +116,7 @@ public class Restaurant {
         return emoji;
     }
 
-    long getOrders() {
-        return orders;
-    }
-
-    Map<String, Driver> getDrivers() {
+    public Map<String, Driver> getDrivers() {
         return Collections.unmodifiableMap(drivers);
     }
 
@@ -169,11 +128,7 @@ public class Restaurant {
         startTime = globalRestaurant.startTime;
         closingTime = globalRestaurant.closingTime;
         emoji = globalRestaurant.emoji;
-        noPics = globalRestaurant.noPics;
-    }
-
-    boolean getNoPics() {
-        return noPics;
+        mergeInGlobalVersionSpecificFields(globalRestaurant);
     }
 
     /**

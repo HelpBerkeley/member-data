@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-2021 helpberkeley.org
+ * Copyright (c) 2021. helpberkeley.org
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -20,30 +20,57 @@
  * SOFTWARE.
  *
  */
-package org.helpberkeley.memberdata;
+package org.helpberkeley.memberdata.v200;
 
+import org.helpberkeley.memberdata.*;
 import org.junit.Test;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
 
-public class WorkflowHBParserTest extends TestBase {
-
-    private final Map<String, User> users;
+public class WorkflowHBParserTest extends WorkflowHBParserBaseTest {
 
     public WorkflowHBParserTest() {
-        Loader loader = new Loader(createApiSimulator());
-        users = new Tables(loader.load()).mapByUserName();
+        super();
+    }
+
+    @Override
+    public List<String> getColumnNames() {
+        return List.of(
+                Constants.WORKFLOW_ADDRESS_COLUMN,
+                Constants.WORKFLOW_ALT_PHONE_COLUMN,
+                Constants.WORKFLOW_CITY_COLUMN,
+                Constants.WORKFLOW_CONDO_COLUMN,
+                Constants.WORKFLOW_CONSUMER_COLUMN,
+                Constants.WORKFLOW_DETAILS_COLUMN,
+                Constants.WORKFLOW_DRIVER_COLUMN,
+                Constants.WORKFLOW_NAME_COLUMN,
+                Constants.WORKFLOW_NORMAL_COLUMN,
+                Constants.WORKFLOW_ORDERS_COLUMN,
+                Constants.WORKFLOW_PHONE_COLUMN,
+                Constants.WORKFLOW_RESTAURANTS_COLUMN,
+                Constants.WORKFLOW_USER_NAME_COLUMN,
+                Constants.WORKFLOW_VEGGIE_COLUMN);
+    }
+
+    @Override
+    public String getMinimumControlBlock() {
+        return "FALSE,FALSE," + Constants.CONTROL_BLOCK_BEGIN + ",,,,,,,,,,,,\n" +
+                "FALSE,FALSE,,Version,,,,2-0-0,,,,,,,\n" +
+                "FALSE,FALSE," + Constants.CONTROL_BLOCK_END + ",,,,,,,,,,,,\n";
     }
 
     @Test
     public void splitRestaurantsTest() {
         String routedDeliveries = readResourceFile("routed-deliveries-with-split-restaurant.csv");
-        DriverPostFormat driverPostFormat = new DriverPostFormat(createApiSimulator(),
-                users, Constants.CONTROL_BLOCK_CURRENT_VERSION, routedDeliveries);
+        DriverPostFormat driverPostFormat = DriverPostFormat.create(createApiSimulator(), users, routedDeliveries,
+                Constants.QUERY_GET_CURRENT_VALIDATED_DRIVER_MESSAGE_RESTAURANT_TEMPLATE,
+                Constants.QUERY_GET_DRIVERS_POST_FORMAT_V23,
+                Constants.QUERY_GET_GROUP_INSTRUCTIONS_FORMAT_V22);
 
         List<Driver> drivers = driverPostFormat.getDrivers();
 
@@ -75,8 +102,11 @@ public class WorkflowHBParserTest extends TestBase {
     @Test
     public void deliveryErrorsTest() {
         String routedDeliveries = readResourceFile("routed-deliveries-delivery-errors.csv");
-        Throwable thrown = catchThrowable(() -> new DriverPostFormat(createApiSimulator(),
-                users, Constants.CONTROL_BLOCK_CURRENT_VERSION, routedDeliveries));
+        Throwable thrown = catchThrowable(() -> DriverPostFormat.create(createApiSimulator(), users,
+                routedDeliveries,
+                Constants.QUERY_GET_CURRENT_VALIDATED_DRIVER_MESSAGE_RESTAURANT_TEMPLATE,
+                Constants.QUERY_GET_DRIVERS_POST_FORMAT_V23,
+                Constants.QUERY_GET_GROUP_INSTRUCTIONS_FORMAT_V22));
         assertThat(thrown).isInstanceOf(MemberDataException.class);
         assertThat(thrown).hasMessageContainingAll("missing consumer name",
                 "missing user name", "missing phone", "missing city", "missing address",
@@ -86,8 +116,11 @@ public class WorkflowHBParserTest extends TestBase {
     @Test
     public void restaurantErrorsTest() {
         String routedDeliveries = readResourceFile("routed-deliveries-restaurant-errors.csv");
-        Throwable thrown = catchThrowable(() -> new DriverPostFormat(createApiSimulator(),
-                users, Constants.CONTROL_BLOCK_CURRENT_VERSION, routedDeliveries));
+        Throwable thrown = catchThrowable(() -> DriverPostFormat.create(createApiSimulator(), users,
+                routedDeliveries,
+                Constants.QUERY_GET_CURRENT_VALIDATED_DRIVER_MESSAGE_RESTAURANT_TEMPLATE,
+                Constants.QUERY_GET_DRIVERS_POST_FORMAT_V23,
+                Constants.QUERY_GET_GROUP_INSTRUCTIONS_FORMAT_V22));
         assertThat(thrown).isInstanceOf(MemberDataException.class);
         assertThat(thrown).hasMessageContainingAll("missing restaurant name",
                 "missing address", "missing orders");
@@ -96,8 +129,11 @@ public class WorkflowHBParserTest extends TestBase {
     @Test
     public void driverErrorsTest() {
         String routedDeliveries = readResourceFile("routed-deliveries-driver-errors.csv");
-        Throwable thrown = catchThrowable(() -> new DriverPostFormat(createApiSimulator(),
-                users, Constants.CONTROL_BLOCK_CURRENT_VERSION, routedDeliveries));
+        Throwable thrown = catchThrowable(() -> DriverPostFormat.create(createApiSimulator(), users,
+                routedDeliveries,
+                Constants.QUERY_GET_CURRENT_VALIDATED_DRIVER_MESSAGE_RESTAURANT_TEMPLATE,
+                Constants.QUERY_GET_DRIVERS_POST_FORMAT_V23,
+                Constants.QUERY_GET_GROUP_INSTRUCTIONS_FORMAT_V22));
         assertThat(thrown).isInstanceOf(MemberDataException.class);
         assertThat(thrown).hasMessageContainingAll("missing driver user name",
                 "missing driver phone number");
@@ -106,8 +142,11 @@ public class WorkflowHBParserTest extends TestBase {
     @Test
     public void missingGMapURLTest() {
         String routedDeliveries = readResourceFile("routed-deliveries-missing-gmap-url.csv");
-        Throwable thrown = catchThrowable(() -> new DriverPostFormat(createApiSimulator(),
-                users, Constants.CONTROL_BLOCK_CURRENT_VERSION, routedDeliveries));
+        Throwable thrown = catchThrowable(() -> DriverPostFormat.create(createApiSimulator(), users,
+                routedDeliveries,
+                Constants.QUERY_GET_CURRENT_VALIDATED_DRIVER_MESSAGE_RESTAURANT_TEMPLATE,
+                Constants.QUERY_GET_DRIVERS_POST_FORMAT_V23,
+                Constants.QUERY_GET_GROUP_INSTRUCTIONS_FORMAT_V22));
         assertThat(thrown).isInstanceOf(MemberDataException.class);
         assertThat(thrown).hasMessageContainingAll("missing gmap URL");
     }
@@ -115,65 +154,31 @@ public class WorkflowHBParserTest extends TestBase {
     @Test
     public void emptyGMapURLTest() {
         String routedDeliveries = readResourceFile("routed-deliveries-empty-gmap-url.csv");
-        Throwable thrown = catchThrowable(() -> new DriverPostFormat(createApiSimulator(),
-                users, Constants.CONTROL_BLOCK_CURRENT_VERSION, routedDeliveries));
+        Throwable thrown = catchThrowable(() -> DriverPostFormat.create(createApiSimulator(), users,
+                routedDeliveries,
+                Constants.QUERY_GET_CURRENT_VALIDATED_DRIVER_MESSAGE_RESTAURANT_TEMPLATE,
+                Constants.QUERY_GET_DRIVERS_POST_FORMAT_V23,
+                Constants.QUERY_GET_GROUP_INSTRUCTIONS_FORMAT_V22));
         assertThat(thrown).isInstanceOf(MemberDataException.class);
         assertThat(thrown).hasMessageContainingAll("empty gmap URL");
     }
 
-    @Test
-    public void missingHeaderRowTest() {
-        String routedDeliveries = readResourceFile("routed-deliveries-missing-header.csv");
-        Throwable thrown = catchThrowable(() -> new DriverPostFormat(createApiSimulator(),
-                users, Constants.CONTROL_BLOCK_CURRENT_VERSION, routedDeliveries));
-        assertThat(thrown).isInstanceOf(MemberDataException.class);
-        assertThat(thrown).hasMessage("All column names missing. Line 1 does not look like a header row");
-    }
-
-    @Test
-    public void missingHeaderColumnTest() {
-        List<String> columnNames = List.of(
-                Constants.WORKFLOW_ADDRESS_COLUMN,
-                Constants.WORKFLOW_ALT_PHONE_COLUMN,
-                Constants.WORKFLOW_CITY_COLUMN,
-                Constants.WORKFLOW_CONDO_COLUMN,
-                Constants.WORKFLOW_CONSUMER_COLUMN,
-                Constants.WORKFLOW_DETAILS_COLUMN,
-                Constants.WORKFLOW_DRIVER_COLUMN,
-                Constants.WORKFLOW_NAME_COLUMN,
-                Constants.WORKFLOW_NORMAL_COLUMN,
-                Constants.WORKFLOW_ORDERS_COLUMN,
-                Constants.WORKFLOW_PHONE_COLUMN,
-                Constants.WORKFLOW_RESTAURANTS_COLUMN,
-                Constants.WORKFLOW_USER_NAME_COLUMN,
-                Constants.WORKFLOW_VEGGIE_COLUMN);
-
-        for (int columnNum = 0; columnNum < columnNames.size(); columnNum++) {
-            // Build header with with columnNum column missing
-
-            StringBuilder header = new StringBuilder();
-            for (int index = 0; index < columnNames.size(); index++) {
-                if (index == columnNum) {
-                    continue;
-                }
-                header.append(columnNames.get(index)).append(',');
-            }
-            header.append('\n');
-
-            final String expected = header.toString();
-
-            Throwable thrown = catchThrowable(() ->
-                    new WorkflowParser(WorkflowParser.Mode.DRIVER_ROUTE_REQUEST, expected));
-            assertThat(thrown).isInstanceOf(MemberDataException.class);
-            assertThat(thrown).hasMessageContaining(columnNames.get(columnNum));
-        }
-    }
+//    @Test
+//    public void missingHeaderRowTest() {
+//        String routedDeliveries = readResourceFile("routed-deliveries-missing-header.csv");
+//        Throwable thrown = catchThrowable(() -> DriverPostFormat.create(createApiSimulator(), users, routedDeliveries));
+//        assertThat(thrown).isInstanceOf(MemberDataException.class);
+//        assertThat(thrown).hasMessage(ControlBlock.BAD_HEADER_ROW);
+//    }
 
     @Test
     public void pickupsAndDeliveriesMismatchTest() {
         String routedDeliveries = readResourceFile("routed-deliveries-order-mismatch.csv");
-        Throwable thrown = catchThrowable(() -> new DriverPostFormat(createApiSimulator(),
-                users, Constants.CONTROL_BLOCK_CURRENT_VERSION, routedDeliveries));
+        Throwable thrown = catchThrowable(() -> DriverPostFormat.create(createApiSimulator(), users,
+                routedDeliveries,
+                Constants.QUERY_GET_CURRENT_VALIDATED_DRIVER_MESSAGE_RESTAURANT_TEMPLATE,
+                Constants.QUERY_GET_DRIVERS_POST_FORMAT_V23,
+                Constants.QUERY_GET_GROUP_INSTRUCTIONS_FORMAT_V22));
         assertThat(thrown).isInstanceOf(MemberDataException.class);
         assertThat(thrown).hasMessageContaining(
                 "orders for Talavera but no deliveries");
@@ -188,8 +193,11 @@ public class WorkflowHBParserTest extends TestBase {
     @Test
     public void pickupsAndDeliveriesEmptyDeliveryMismatchTest() {
         String routedDeliveries = readResourceFile("routed-deliveries-order-mismatch-empty-delivery.csv");
-        Throwable thrown = catchThrowable(() -> new DriverPostFormat(createApiSimulator(),
-                users, Constants.CONTROL_BLOCK_CURRENT_VERSION, routedDeliveries));
+        Throwable thrown = catchThrowable(() -> DriverPostFormat.create(createApiSimulator(), users,
+                routedDeliveries,
+                Constants.QUERY_GET_CURRENT_VALIDATED_DRIVER_MESSAGE_RESTAURANT_TEMPLATE,
+                Constants.QUERY_GET_DRIVERS_POST_FORMAT_V23,
+                Constants.QUERY_GET_GROUP_INSTRUCTIONS_FORMAT_V22));
         assertThat(thrown).isInstanceOf(MemberDataException.class);
         assertThat(thrown).hasMessageContaining(
                 "orders for Talavera but no deliveries");
@@ -204,37 +212,40 @@ public class WorkflowHBParserTest extends TestBase {
     @Test
     public void unroutedWorkflowTest() {
         String unroutedDeliveries = readResourceFile("unrouted-deliveries.csv");
-        WorkflowParser workflowParser =
-                new WorkflowParser(WorkflowParser.Mode.DRIVER_ROUTE_REQUEST, unroutedDeliveries);
+        WorkflowParser workflowParser = WorkflowParser.create(
+                WorkflowParser.Mode.DRIVER_ROUTE_REQUEST, Map.of(), unroutedDeliveries);
         workflowParser.drivers();
     }
 
     @Test
     public void unroutedWorkflowMissingEmptyRowTest() {
         String unroutedDeliveries = readResourceFile("unrouted-deliveries-missing-empty.csv");
-        WorkflowParser workflowParser =
-                new WorkflowParser(WorkflowParser.Mode.DRIVER_ROUTE_REQUEST, unroutedDeliveries);
+        WorkflowParser workflowParser = WorkflowParser.create(
+                WorkflowParser.Mode.DRIVER_ROUTE_REQUEST, Collections.emptyMap(), unroutedDeliveries);
         Throwable thrown = catchThrowable(workflowParser::drivers);
         assertThat(thrown).isInstanceOf(MemberDataException.class);
-        assertThat(thrown).hasMessageContaining("Line 10 is not empty");
+        assertThat(thrown).hasMessageContaining("Line 13 is not empty");
     }
 
     @Test
     public void unroutedWorkflowUnterminatedDriverTest() {
         String unroutedDeliveries = readResourceFile("unrouted-deliveries-unterminated-driver.csv");
-        WorkflowParser workflowParser =
-                new WorkflowParser(WorkflowParser.Mode.DRIVER_ROUTE_REQUEST, unroutedDeliveries);
+        WorkflowParser workflowParser = WorkflowParser.create(
+                WorkflowParser.Mode.DRIVER_ROUTE_REQUEST, Collections.emptyMap(), unroutedDeliveries);
         Throwable thrown = catchThrowable(workflowParser::drivers);
         assertThat(thrown).isInstanceOf(MemberDataException.class);
-        assertThat(thrown).hasMessageContaining("Line 16 driver block for jsDriver missing closing driver row");
+        assertThat(thrown).hasMessageContaining("Line 19 driver block for jsDriver missing closing driver row");
     }
 
     @Test
     public void duplicateDriverDuplicateRestaurantsTest() {
         String routedDeliveries = readResourceFile("routed-deliveries-duplicate-driver.csv");
-        Throwable thrown = catchThrowable(() -> new DriverPostFormat(
-                createApiSimulator(), users, Constants.CONTROL_BLOCK_CURRENT_VERSION, routedDeliveries));
+        Throwable thrown = catchThrowable(() -> DriverPostFormat.create(createApiSimulator(), users,
+                routedDeliveries,
+                Constants.QUERY_GET_CURRENT_VALIDATED_DRIVER_MESSAGE_RESTAURANT_TEMPLATE,
+                Constants.QUERY_GET_DRIVERS_POST_FORMAT_V23,
+                Constants.QUERY_GET_GROUP_INSTRUCTIONS_FORMAT_V22));
         assertThat(thrown).isInstanceOf(MemberDataException.class);
-        assertThat(thrown).hasMessageContaining("Duplicate driver \"jbDriver\" at line 33");
+        assertThat(thrown).hasMessageContaining("Duplicate driver \"jbDriver\" at line 34");
     }
 }

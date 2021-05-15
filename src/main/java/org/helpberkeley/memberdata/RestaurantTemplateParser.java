@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020. helpberkeley.org
+ * Copyright (c) 2020-2021. helpberkeley.org
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,15 +23,13 @@
 package org.helpberkeley.memberdata;
 
 
-import com.opencsv.bean.CsvToBeanBuilder;
-
-import java.io.StringReader;
 import java.util.*;
 
-public class RestaurantTemplateParser {
+public abstract class RestaurantTemplateParser {
 
     static final String TEMPLATE_ERROR = "Restaurant Template Error: ";
     static final String ERROR_NO_DATA = "empty file";
+    static final String ERROR_MISSING_OR_UNSUPPORTED_VERSION = "Missing or unsupported version: ";
     static final String MISSING_COLUMN_ERROR = "missing column: ";
     static final String MISSING_EMPTY_ROW = "did not find empty row at line ";
     static final String MISSING_VALUE_ERROR = "missing value from column ";
@@ -41,36 +39,44 @@ public class RestaurantTemplateParser {
     private long lineNumber = 0;
     private final Iterator<RestaurantBean> iterator;
     private String version = Constants.CONTROL_BLOCK_VERSION_UNKNOWN;
+    private final ControlBlock controlBlock;
 
-    RestaurantTemplateParser(final String csvData) {
+    protected RestaurantTemplateParser(ControlBlock controlBlock, String csvData) {
 
-        // Normalize EOL
-        String normalizedData = csvData.replaceAll("\\r\\n?", "\n");
+        this.controlBlock = controlBlock;
+        auditColumns(csvData);
 
-        if (normalizedData.isEmpty()) {
-            throwTemplateError(ERROR_NO_DATA);
-        }
-
-        auditColumns(normalizedData);
-
-        List<RestaurantBean> restaurantBeans = new CsvToBeanBuilder<RestaurantBean>(new StringReader(normalizedData))
-                .withType(RestaurantBean.class).build().parse();
+        List<RestaurantBean> restaurantBeans = parse(csvData);
         iterator = restaurantBeans.iterator();
     }
 
-    static String getVersion(final String csvData) {
-        RestaurantTemplateParser parser = new RestaurantTemplateParser(csvData);
-        RestaurantBean bean;
+    public static RestaurantTemplateParser create(String csvData) {
 
-        while ((bean = parser.nextRow()) != null) {
+        // Normalize EOL
+        String normalizedCSV = csvData.replaceAll("\\r\\n?", "\n");
+        ControlBlock controlBlock;
 
-            if (parser.isControlBlockBeginRow(bean)) {
-                parser.processControlBlock();
-                return parser.getVersion();
-            }
+        if (csvData.isEmpty()) {
+            throw new MemberDataException(TEMPLATE_ERROR + ERROR_NO_DATA);
         }
 
-        throw new MemberDataException("Control block not found");
+        try {
+            controlBlock = ControlBlock.create(normalizedCSV);
+        } catch (MemberDataException ex) {
+            throw new MemberDataException(TEMPLATE_ERROR + "\n" + ex.getMessage());
+        }
+
+        switch (controlBlock.getVersion()) {
+            case Constants.CONTROL_BLOCK_VERSION_UNKNOWN:
+                throw new MemberDataException("Restaurant template is missing the control block");
+            case Constants.CONTROL_BLOCK_VERSION_200:
+                return new RestaurantTemplateParserV200(controlBlock, normalizedCSV);
+            case Constants.CONTROL_BLOCK_VERSION_300:
+                return new RestaurantTemplateParserV300(controlBlock, normalizedCSV);
+            default:
+                throw new MemberDataException("Control block version " + controlBlock.getVersion()
+                        + " is not supported for restaurant templates");
+        }
     }
 
     /**
@@ -87,43 +93,11 @@ public class RestaurantTemplateParser {
         return null;
     }
 
-    private void auditColumns(final String csvData) {
+    protected abstract void auditColumns(String csvData);
+    protected abstract List<RestaurantBean> parse(String csvData);
+    abstract boolean isAddressBlockMarker(RestaurantBean bean);
 
-        List<String> columnNames =  List.of(
-            Constants.WORKFLOW_CONSUMER_COLUMN,
-            Constants.WORKFLOW_DRIVER_COLUMN,
-            Constants.WORKFLOW_RESTAURANTS_COLUMN,
-            Constants.WORKFLOW_VEGGIE_COLUMN,
-            Constants.WORKFLOW_NORMAL_COLUMN,
-            Constants.WORKFLOW_ORDERS_COLUMN,
-            Constants.WORKFLOW_DETAILS_COLUMN,
-            Constants.WORKFLOW_CONDO_COLUMN);
-
-        // get the header line
-        String header = csvData.substring(0, csvData.indexOf('\n'));
-
-        String[] columns = header.split(",");
-        Set<String> set = new HashSet<>(Arrays.asList(columns));
-
-        int numErrors = 0;
-        StringBuilder errors = new StringBuilder();
-        for (String columnName : columnNames) {
-            if (! set.contains(columnName)) {
-                errors.append(MISSING_COLUMN_ERROR).append(columnName).append('\n');
-                numErrors++;
-            }
-        }
-
-        if (numErrors == columnNames.size()) {
-            throwTemplateError("All column names missing. Line 1 does not look like a header row");
-        }
-
-        if (errors.length() > 0) {
-            throwTemplateError(errors.toString());
-        }
-    }
-
-    Map<String, Restaurant> restaurants() {
+    public Map<String, Restaurant> restaurants() {
         Map<String, Restaurant> restaurants = new HashMap<>();
 
         RestaurantBean bean;
@@ -204,7 +178,6 @@ public class RestaurantTemplateParser {
 
     private void processControlBlock() {
         RestaurantBean bean;
-        ControlBlock controlBlock = new ControlBlock();
 
         while ((bean = nextRow()) != null) {
 
@@ -221,12 +194,12 @@ public class RestaurantTemplateParser {
 
         switch (version) {
             case Constants.CONTROL_BLOCK_VERSION_1:
-            case Constants.CONTROL_BLOCK_VERSION_2_0_0:
+            case Constants.CONTROL_BLOCK_VERSION_200:
+            case Constants.CONTROL_BLOCK_VERSION_300:
                 break;
             default:
                 throw new MemberDataException(
-                    "Unsupported control block version: " + version
-                        + "\nCurrent supported version is: " + Constants.CONTROL_BLOCK_CURRENT_VERSION + "\n");
+                        TEMPLATE_ERROR + "\n" + ERROR_MISSING_OR_UNSUPPORTED_VERSION + "\n");
         }
     }
 
@@ -242,23 +215,6 @@ public class RestaurantTemplateParser {
         return directive.isEmpty()
                 && bean.getControlBlockKey().isEmpty()
                 && bean.getControlBlockValue().isEmpty();
-    }
-
-    /**
-     * Is the passed in row the start of an restaurant address block?
-     * @param bean RestaurantBean row representation
-     * @return Whether or not the row is an address block start marker.
-     */
-    private boolean isAddressBlockMarker(final RestaurantBean bean) {
-
-        // An address block marker looks like:
-        //    FALSE,TRUE,,,,,,,,,,,,,
-        //
-        return ((! Boolean.parseBoolean(bean.getConsumer()))
-                && Boolean.parseBoolean(bean.getDriver())
-                && bean.getRestaurant().isEmpty()
-                && bean.getOrders().isEmpty()
-                && bean.getDetails().isEmpty());
     }
 
     /**
@@ -331,11 +287,9 @@ public class RestaurantTemplateParser {
                 throwMissingValue(bean.restaurantColumn());
             }
 
-            assert version.equals(Constants.CONTROL_BLOCK_VERSION_2_0_0) ||
-                    version.equals(Constants.CONTROL_BLOCK_VERSION_1) : version;
+            assert ! version.equals(Constants.CONTROL_BLOCK_VERSION_1);
 
-            if ((version.equals(Constants.CONTROL_BLOCK_VERSION_2_0_0))
-                && (! Boolean.parseBoolean(bean.getActive()))) {
+            if (! Boolean.parseBoolean(bean.getActive())) {
                 continue;
             }
 
@@ -356,21 +310,18 @@ public class RestaurantTemplateParser {
             if (restaurants.containsKey(restaurantName)) {
                 throwTemplateError(restaurantName + DUPLICATE_ROUTE_ERROR);
             }
-            Restaurant restaurant = new Restaurant(restaurantName);
+            Restaurant restaurant = Restaurant.createRestaurant(controlBlock, restaurantName);
             restaurants.put(restaurantName, restaurant);
             restaurant.setRoute(routeName);
             restaurant.setStartTime(startTime);
             restaurant.setClosingTime(closingTime);
             restaurant.setEmoji(emoji);
 
-            String noPics = bean.getNoPics();
-            if (noPics.equalsIgnoreCase(Constants.WORKFLOW_NO_PICS)) {
-                restaurant.setNoPics();
-            }
+            restaurant.setVersionSpecificFields(bean);
         } while ((bean = nextRow()) != null);
     }
 
-    private void throwTemplateError(final String message) {
+    protected void throwTemplateError(final String message) {
         throw new MemberDataException(TEMPLATE_ERROR + message);
     }
 

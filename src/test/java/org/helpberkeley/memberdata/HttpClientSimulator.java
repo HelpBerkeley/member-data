@@ -61,7 +61,7 @@ public class HttpClientSimulator extends HttpClient {
     static void setQueryResponseFile(int queryId, final String fileName) {
         queryResponseFiles.put(queryId, fileName);
     }
-    static void setQueryResponseData(int queryId, final String queryData) {
+    public static void setQueryResponseData(int queryId, final String queryData) {
         queryResponseData.put(queryId, queryData);
     }
 
@@ -183,8 +183,20 @@ public class HttpClientSimulator extends HttpClient {
             case Constants.QUERY_GET_ONE_KITCHEN_DRIVERS_POST_FORMAT_V1:
                 dataFile = "one-kitchen-driver-message-v10.json";
                 break;
+            case Constants.QUERY_GET_ONE_KITCHEN_DRIVERS_POST_FORMAT_V300:
+                dataFile = "one-kitchen-driver-message-v300.json";
+                break;
             case Constants.QUERY_GET_ONE_KITCHEN_GROUP_POST_FORMAT_V1:
                 dataFile = "one-kitchen-group-format-v10.json";
+                break;
+            case Constants.QUERY_GET_ONE_KITCHEN_GROUP_POST_FORMAT_V300:
+                dataFile = "one-kitchen-group-format-v300.json";
+                break;
+            case Constants.QUERY_GET_ONE_KITCHEN_DRIVERS_TABLE_POST_FORMAT_V300:
+                dataFile = "one-kitchen-drivers-format-v300.json";
+                break;
+            case Constants.QUERY_GET_ONE_KITCHEN_ORDERS_TABLE_POST_FORMAT_V300:
+                dataFile = "one-kitchen-orders-format-v300.json";
                 break;
             case Constants.QUERY_GET_LAST_REQUEST_DRIVER_MESSAGES_REPLY:
                 dataFile = "last-routed-workflow-reply.json";
@@ -201,8 +213,11 @@ public class HttpClientSimulator extends HttpClient {
             case Constants.QUERY_GET_LAST_RESTAURANT_TEMPLATE_REPLY:
                 dataFile = "restaurant-template-last-reply.json";
                 break;
-            case Constants.QUERY_GET_CURRENT_VALIDATED_RESTAURANT_TEMPLATE:
+            case Constants.QUERY_GET_CURRENT_VALIDATED_DRIVER_MESSAGE_RESTAURANT_TEMPLATE:
                 dataFile = "current-restaurant-template-post.json";
+                break;
+            case Constants.QUERY_GET_CURRENT_VALIDATED_ONE_KITCHEN_RESTAURANT_TEMPLATE:
+                dataFile = "current-one-kitchen-restaurant-template-post.json";
                 break;
             case Constants.QUERY_GET_LAST_COMPLETED_DAILY_ORDERS_REPLY:
                 dataFile = "last-completed-daily-orders-reply.json";
@@ -215,6 +230,9 @@ public class HttpClientSimulator extends HttpClient {
                 break;
             case Constants.QUERY_GET_LAST_REPLY_FROM_REQUEST_TOPICS:
                 dataFile = "last-replies-no-requests.json";
+                break;
+            case Constants.QUERY_GET_LAST_ONE_KITCHEN_RESTAURANT_TEMPLATE_REPLY:
+                dataFile = "one-kitchen-restaurant-template-last-reply.json";
                 break;
             default:
                 throw new RuntimeException("FIX THIS: query " + queryId + " not supported by the simulator");

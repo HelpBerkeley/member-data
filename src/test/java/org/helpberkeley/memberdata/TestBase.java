@@ -21,6 +21,7 @@
 //
 package org.helpberkeley.memberdata;
 
+import com.cedarsoftware.util.io.JsonWriter;
 import org.helpberkeley.memberdata.route.GMapApiClient;
 import org.helpberkeley.memberdata.route.GmapApiSimulatorFactory;
 import org.junit.BeforeClass;
@@ -31,9 +32,7 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.ZonedDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Properties;
+import java.util.*;
 
 import static java.time.temporal.ChronoUnit.*;
 
@@ -116,6 +115,8 @@ public class TestBase {
             Options.COMMAND_CUSTOMER_CARE_POST,
             Options.COMMAND_FRREG,
             Options.COMMAND_WORK_REQUESTS,
+            Options.COMMAND_TEST_REQUEST,
+            Options.COMMAND_ONE_KITCHEN_WORKFLOW,
     };
 
     static final String[] COMMANDS_WITH_NO_PARAMETERS = {
@@ -123,11 +124,10 @@ public class TestBase {
             Options.COMMAND_DRIVER_ROUTES,
             Options.COMMAND_DRIVER_HISTORY,
             Options.COMMAND_RESTAURANT_TEMPLATE,
+            Options.COMMAND_ONE_KITCHEN_RESTAURANT_TEMPLATE,
     };
 
     static final String TEST_FILE_NAME = "pom.xml";
-    static final String TEST_SECOND_FILE_NAME = "LICENSE.txt";
-    static final String TEST_THIRD_FILE_NAME = "README.md";
     static final String TEST_SHORT_URL = Constants.UPLOAD_URI_PREFIX + "ab34dezzAndSomethingY.csv";
 
     @BeforeClass
@@ -451,5 +451,26 @@ public class TestBase {
 
     String shortBoolean(boolean value) {
         return value ? "Y" : "N";
+    }
+
+    public String createMessageBlock(String contents) {
+        return new MessageBlockJSON(contents).toJSON();
+    }
+
+    static private class MessageBlockJSON {
+        final String[] columns;
+        final Object[][] rows;
+
+        MessageBlockJSON(String message) {
+            columns = new String[] { "post_number", "raw", "deleted_at" };
+            Object[] row = new Object[] { 1, "[Test]\n" + message, null };
+            rows = new Object[][] { row };
+        }
+
+        String toJSON() {
+            Map<String, Object> options = new HashMap<>();
+            options.put(JsonWriter.TYPE, Boolean.FALSE);
+            return JsonWriter.objectToJson(this, options);
+        }
     }
 }

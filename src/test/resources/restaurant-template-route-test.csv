@@ -4,7 +4,7 @@ FALSE,FALSE,Comment ,"This is a control block, where we can hand specific inform
 FALSE,FALSE,Comment ,"Each line starting with ""Comment"" in the Name column can be used for free-form comments",,,,,,,,,,,
 FALSE,FALSE,Comment ,Below is the version number for the specific version of this control block: it is important that it not be changed,,,,,,,,,,,
 FALSE,FALSE,,,,,,,,,,,,,
-FALSE,FALSE,,Version,,,,1,,,,,,,
+FALSE,FALSE,,Version,,,,2-0-0,,,,,,,
 FALSE,FALSE,,,,,,,,,,,,,
 FALSE,FALSE,Comment ,"As you can see, we can leave lines mostly  blank, but, for each line in the control block, they MUST start with FALSE/ FALSE",,,,,,,,,,,
 FALSE,FALSE,Comment ,"In order to pass information to the software, we must define the type of information we want to share in the UserName column, and the actual value in the City column",,,,,,,,,,,
@@ -55,25 +55,25 @@ FALSE,,,,,,,,"2261 Shattuck Ave, Berkeley",FALSE,,Angelina,,,
 FALSE,,,,,,,,"2384 Telegraph Ave, Berkeley",FALSE,"If no parking in front, double park and call them @ (510) 665-7895: they will bring orders and order form to the car.",Tacos Sinaloa,,,
 ,,,,,,,,,,,,,,
 ,,,,,,,,,,,,,,
-,,,,,,,,,Pics,,,Emojis,Starting,Closing
-Solano Route,,"(Note: every line with a start time needs a ""...Route"" in the Consumer column (for our sw)",,,,,,,,,Cafe Raj,:open_umbrella:,5:10 PM,10:00 PM
-Solano Route,,,,,,,,Closed Mondays,,,Kim's Cafe,:basketball:,5:10 PM,6:00 PM
-Solano Route,,,,,,,,,,,Fonda,:kiwi_fruit:,5:05 PM,5:15 PM
-Solano Route,,,,,,,,,,,Rivoli,:anchor:,4:50 PM,5:00 PM
-Solano Route,,,,,,,,,,,Talavera,:gloves:,5:00 PM,10:00 PM
-Solano Route,,,,,,,,,,,Nomad,:parachute:,5:10 PM,5:30 PM
-Solano Route,,,,,,,,,,,Vanessa,:teddy_bear:,5:00 PM,6:00 PM
-Solano Route,,,,,,,,,,,Sweet Basil,:lemon:,5:10 PM,8:00 PM
-Solano Route,,,,,,,,,,,Bopshop,:motor_scooter:,5:10 PM,9:00 PM
-Solano Route,,,,,,,,,,,Troy,:alarm_clock:,5:30 PM,9:00 PM
-Shattuck Route,,,,,,,,,,,Jot Mahal,:tractor:,5:10 PM,9:00 PM
-Shattuck Route,,,,,,,,,No pics,,Gregoire,:cyclone:,5:10 PM,9:00 PM
-Shattuck Route,,,,,,,,,,,Crepevine,:watermelon:,5:10 PM,9:00 PM
-Shattuck Route,,"Note: 5:15pm for 1 order, 5:20pm for more",,,,,,Closed Mondays,No pics,,Da Lian,:ping_pong:,5:20 PM,8:30 PM
-Shattuck Route,,,,,,,,Closed Wednesdays,,,Thai Delight,:earth_asia:,5:10 PM,8:30 PM
-Shattuck Route,,,,,,,,,,,Agrodolce,:guitar:,5:15 PM,5:30 PM
-Shattuck Route,,,,,,,,,,,Corso,:drum:,4:50 PM,5:00 PM
-Shattuck Route,,"Closes right at 5:00pm. On weekend, don't send a driver if no orders to pickup (they will upload directly).",,,,,,,,,V&A Cafe,:boot:,4:50 PM,5:00 PM
-Shattuck Route,,,,,,,,,,,Kaze Ramen,:shinto_shrine:,5:10 PM,8:00 PM
-Shattuck Route,,,,,,,,,,,Angelina,:fire_extinguisher:,5:20 PM,9:00 PM
-Shattuck Route,,,,,,,,,,,Tacos Sinaloa,:rainbow:,5:10 PM,6:00 PM
+,,,,,,,,,Pics,Active?,,Emojis,Starting,Closing
+Solano Route,,"(Note: every line with a start time needs a ""...Route"" in the Consumer column (for our sw)",,,,,,,,TRUE,Cafe Raj,:open_umbrella:,5:10 PM,10:00 PM
+Solano Route,,,,,,,,Closed Mondays,,TRUE,Kim's Cafe,:basketball:,5:10 PM,6:00 PM
+Solano Route,,,,,,,,,,TRUE,Fonda,:kiwi_fruit:,5:05 PM,5:15 PM
+Solano Route,,,,,,,,,,TRUE,Rivoli,:anchor:,4:50 PM,5:00 PM
+Solano Route,,,,,,,,,,TRUE,Talavera,:gloves:,5:00 PM,10:00 PM
+Solano Route,,,,,,,,,,TRUE,Nomad,:parachute:,5:10 PM,5:30 PM
+Solano Route,,,,,,,,,,TRUE,Vanessa,:teddy_bear:,5:00 PM,6:00 PM
+Solano Route,,,,,,,,,,TRUE,Sweet Basil,:lemon:,5:10 PM,8:00 PM
+Solano Route,,,,,,,,,,TRUE,Bopshop,:motor_scooter:,5:10 PM,9:00 PM
+Solano Route,,,,,,,,,,TRUE,Troy,:alarm_clock:,5:30 PM,9:00 PM
+Shattuck Route,,,,,,,,,,TRUE,Jot Mahal,:tractor:,5:10 PM,9:00 PM
+Shattuck Route,,,,,,,,,No pics,TRUE,Gregoire,:cyclone:,5:10 PM,9:00 PM
+Shattuck Route,,,,,,,,,,TRUE,Crepevine,:watermelon:,5:10 PM,9:00 PM
+Shattuck Route,,"Note: 5:15pm for 1 order, 5:20pm for more",,,,,,Closed Mondays,No pics,TRUE,Da Lian,:ping_pong:,5:20 PM,8:30 PM
+Shattuck Route,,,,,,,,Closed Wednesdays,,TRUE,Thai Delight,:earth_asia:,5:10 PM,8:30 PM
+Shattuck Route,,,,,,,,,,TRUE,Agrodolce,:guitar:,5:15 PM,5:30 PM
+Shattuck Route,,,,,,,,,,TRUE,Corso,:drum:,4:50 PM,5:00 PM
+Shattuck Route,,"Closes right at 5:00pm. On weekend, don't send a driver if no orders to pickup (they will upload directly).",,,,,,,,TRUE,V&A Cafe,:boot:,4:50 PM,5:00 PM
+Shattuck Route,,,,,,,,,,TRUE,Kaze Ramen,:shinto_shrine:,5:10 PM,8:00 PM
+Shattuck Route,,,,,,,,,,TRUE,Angelina,:fire_extinguisher:,5:20 PM,9:00 PM
+Shattuck Route,,,,,,,,,,TRUE,Tacos Sinaloa,:rainbow:,5:10 PM,6:00 PM

@@ -1,0 +1,20 @@
+{
+  "success": true,
+  "errors": [],
+  "duration": 0.7,
+  "result_count": 1,
+  "params": {},
+  "columns": [
+    "post_number",
+    "deleted_at",
+    "raw"
+  ],
+  "default_limit": 1000,
+  "rows": [
+    [
+      3,
+      null,
+      "2020/09/28\n\n[HelpBerkeleyDeliveries - TemplateV3-0-0.csv|attachment](upload://restaurant-template-v300.csv) (5.6 KB)"
+    ]
+  ]
+}

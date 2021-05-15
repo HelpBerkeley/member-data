@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020. helpberkeley.org
+ * Copyright (c) 2020-2021. helpberkeley.org
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -53,11 +53,13 @@ public class DriverStartTimeTest extends TestBase {
     private static final String VANESSA = "Vanessa";
     private static final String FONDA = "Fonda";
 
+    private final ControlBlock controlBlock;
     private final Map<String, Restaurant> restaurants;
 
     public DriverStartTimeTest() {
         String csvData = readResourceFile("restaurant-template-route-test.csv");
-        restaurants = new RestaurantTemplateParser(csvData).restaurants();
+        controlBlock = ControlBlock.create(csvData);
+        restaurants = RestaurantTemplateParser.create(csvData).restaurants();
     }
 
     /**
@@ -118,7 +120,7 @@ public class DriverStartTimeTest extends TestBase {
 
         TestData testData = new TestData(List.of(new Pickup(THAI_DELIGHT, 0), new Pickup(V_AND_A, 0)), "5:00 PM");
         List<String> expectedWarnings = List.of(
-                MessageFormat.format(Driver.WARNING_MAY_BE_REACHED_AFTER_CLOSING, V_AND_A));
+                MessageFormat.format(DriverV200.WARNING_MAY_BE_REACHED_AFTER_CLOSING, V_AND_A));
         checkStartTime(testData, expectedWarnings);
     }
 
@@ -157,8 +159,8 @@ public class DriverStartTimeTest extends TestBase {
                 new Pickup(DA_LIAN, 3)), "4:50 PM");
 
         List<String> expectedWarnings = List.of(
-                MessageFormat.format(Driver.WARNING_MAY_BE_REACHED_AFTER_CLOSING, V_AND_A),
-                MessageFormat.format(Driver.WARNING_MAY_BE_REACHED_AFTER_EXPECTED, V_AND_A));
+                MessageFormat.format(DriverV200.WARNING_MAY_BE_REACHED_AFTER_CLOSING, V_AND_A),
+                MessageFormat.format(DriverV200.WARNING_MAY_BE_REACHED_AFTER_EXPECTED, V_AND_A));
         checkStartTime(testData, expectedWarnings);
     }
 
@@ -188,7 +190,7 @@ public class DriverStartTimeTest extends TestBase {
                 new Pickup(BOPSHOP, 0),
                 new Pickup(DA_LIAN, 4)), "5:00 PM");
         List<String> expectedWarnings = List.of(
-                MessageFormat.format(Driver.WARNING_MAY_BE_REACHED_AFTER_EXPECTED, DA_LIAN));
+                MessageFormat.format(DriverV200.WARNING_MAY_BE_REACHED_AFTER_EXPECTED, DA_LIAN));
         checkStartTime(testData, expectedWarnings);
     }
 
@@ -201,8 +203,8 @@ public class DriverStartTimeTest extends TestBase {
                 new Pickup(V_AND_A, 0),
                 new Pickup(DA_LIAN, 4)), "5:00 PM");
         List<String> expectedWarnings = List.of(
-                MessageFormat.format(Driver.WARNING_MAY_BE_REACHED_AFTER_CLOSING, V_AND_A),
-                MessageFormat.format(Driver.WARNING_MAY_BE_REACHED_AFTER_EXPECTED, DA_LIAN));
+                MessageFormat.format(DriverV200.WARNING_MAY_BE_REACHED_AFTER_CLOSING, V_AND_A),
+                MessageFormat.format(DriverV200.WARNING_MAY_BE_REACHED_AFTER_EXPECTED, DA_LIAN));
         checkStartTime(testData, expectedWarnings);
     }
 
@@ -214,8 +216,8 @@ public class DriverStartTimeTest extends TestBase {
                 new Pickup(SWEET_BASIL, 0),
                 new Pickup(BOPSHOP, 2)), "5:00 PM");
         List<String> expectedWarnings = List.of(
-                MessageFormat.format(Driver.WARNING_MAY_BE_REACHED_AFTER_CLOSING, V_AND_A),
-                MessageFormat.format(Driver.WARNING_MAY_BE_REACHED_AFTER_EXPECTED, BOPSHOP));
+                MessageFormat.format(DriverV200.WARNING_MAY_BE_REACHED_AFTER_CLOSING, V_AND_A),
+                MessageFormat.format(DriverV200.WARNING_MAY_BE_REACHED_AFTER_EXPECTED, BOPSHOP));
         checkStartTime(testData, expectedWarnings);
     }
 
@@ -237,7 +239,7 @@ public class DriverStartTimeTest extends TestBase {
                 new Pickup(SWEET_BASIL, 0),
                 new Pickup(BOPSHOP, 0)), "5:00 PM");
         List<String> expectedWarnings = List.of(
-                MessageFormat.format(Driver.WARNING_MAY_BE_REACHED_AFTER_CLOSING, V_AND_A));
+                MessageFormat.format(DriverV200.WARNING_MAY_BE_REACHED_AFTER_CLOSING, V_AND_A));
         checkStartTime(testData, expectedWarnings);
     }
 
@@ -248,8 +250,8 @@ public class DriverStartTimeTest extends TestBase {
                 new Pickup(CORSO, 0),
                 new Pickup(V_AND_A, 0)), "4:50 PM");
         List<String> expectedWarnings = List.of(
-                MessageFormat.format(Driver.WARNING_MAY_BE_REACHED_AFTER_CLOSING, CORSO),
-                MessageFormat.format(Driver.WARNING_MAY_BE_REACHED_AFTER_CLOSING, V_AND_A));
+                MessageFormat.format(DriverV200.WARNING_MAY_BE_REACHED_AFTER_CLOSING, CORSO),
+                MessageFormat.format(DriverV200.WARNING_MAY_BE_REACHED_AFTER_CLOSING, V_AND_A));
         checkStartTime(testData, expectedWarnings);
     }
 
@@ -260,8 +262,8 @@ public class DriverStartTimeTest extends TestBase {
                 new Pickup(CORSO, 0),
                 new Pickup(V_AND_A, 0)), "5:00 PM");
         List<String> expectedWarnings = List.of(
-                MessageFormat.format(Driver.WARNING_MAY_BE_REACHED_AFTER_CLOSING, CORSO),
-                MessageFormat.format(Driver.WARNING_MAY_BE_REACHED_AFTER_CLOSING, V_AND_A));
+                MessageFormat.format(DriverV200.WARNING_MAY_BE_REACHED_AFTER_CLOSING, CORSO),
+                MessageFormat.format(DriverV200.WARNING_MAY_BE_REACHED_AFTER_CLOSING, V_AND_A));
         checkStartTime(testData, expectedWarnings);
     }
 
@@ -305,7 +307,7 @@ public class DriverStartTimeTest extends TestBase {
                 new Pickup(KAZE_RAMEN, 0),
                 new Pickup(ANGELINA, 2)), "5:00 PM");
         List<String> expectedWarnings = List.of(
-                MessageFormat.format(Driver.WARNING_MAY_BE_REACHED_AFTER_EXPECTED, ANGELINA));
+                MessageFormat.format(DriverV200.WARNING_MAY_BE_REACHED_AFTER_EXPECTED, ANGELINA));
         checkStartTime(testData, expectedWarnings);
     }
 
@@ -319,8 +321,8 @@ public class DriverStartTimeTest extends TestBase {
                 new Pickup(KAZE_RAMEN, 0),
                 new Pickup(ANGELINA, 2)), "5:00 PM");
         List<String> expectedWarnings = List.of(
-                MessageFormat.format(Driver.WARNING_MAY_BE_REACHED_AFTER_CLOSING, CORSO),
-                MessageFormat.format(Driver.WARNING_MAY_BE_REACHED_AFTER_EXPECTED, ANGELINA));
+                MessageFormat.format(DriverV200.WARNING_MAY_BE_REACHED_AFTER_CLOSING, CORSO),
+                MessageFormat.format(DriverV200.WARNING_MAY_BE_REACHED_AFTER_EXPECTED, ANGELINA));
         checkStartTime(testData, expectedWarnings);
     }
 
@@ -364,7 +366,7 @@ public class DriverStartTimeTest extends TestBase {
                 new Pickup(KAZE_RAMEN, 0),
                 new Pickup(ANGELINA, 2)), "4:50 PM");
         List<String> expectedWarnings = List.of(
-                MessageFormat.format(Driver.WARNING_MAY_BE_REACHED_AFTER_CLOSING, V_AND_A));
+                MessageFormat.format(DriverV200.WARNING_MAY_BE_REACHED_AFTER_CLOSING, V_AND_A));
         checkStartTime(testData, expectedWarnings);
     }
 
@@ -378,8 +380,8 @@ public class DriverStartTimeTest extends TestBase {
                 new Pickup(KAZE_RAMEN, 0),
                 new Pickup(ANGELINA, 2)), "4:50 PM");
         List<String> expectedWarnings = List.of(
-                MessageFormat.format(Driver.WARNING_MAY_BE_REACHED_AFTER_EXPECTED, ANGELINA),
-                MessageFormat.format(Driver.WARNING_MAY_BE_REACHED_AFTER_CLOSING, V_AND_A));
+                MessageFormat.format(DriverV200.WARNING_MAY_BE_REACHED_AFTER_EXPECTED, ANGELINA),
+                MessageFormat.format(DriverV200.WARNING_MAY_BE_REACHED_AFTER_CLOSING, V_AND_A));
         checkStartTime(testData, expectedWarnings);
     }
 
@@ -393,9 +395,9 @@ public class DriverStartTimeTest extends TestBase {
                 new Pickup(KAZE_RAMEN, 0),
                 new Pickup(ANGELINA, 2)), "4:50 PM");
         List<String> expectedWarnings = List.of(
-                MessageFormat.format(Driver.WARNING_MAY_BE_REACHED_AFTER_EXPECTED, ANGELINA),
-                MessageFormat.format(Driver.WARNING_MAY_BE_REACHED_AFTER_CLOSING, RIVOLI),
-                MessageFormat.format(Driver.WARNING_MAY_BE_REACHED_AFTER_CLOSING, V_AND_A));
+                MessageFormat.format(DriverV200.WARNING_MAY_BE_REACHED_AFTER_EXPECTED, ANGELINA),
+                MessageFormat.format(DriverV200.WARNING_MAY_BE_REACHED_AFTER_CLOSING, RIVOLI),
+                MessageFormat.format(DriverV200.WARNING_MAY_BE_REACHED_AFTER_CLOSING, V_AND_A));
         checkStartTime(testData, expectedWarnings);
     }
 
@@ -408,8 +410,8 @@ public class DriverStartTimeTest extends TestBase {
                 new Pickup(AGRODOLCE, 0),
                 new Pickup(V_AND_A, 2)), "4:50 PM");
         List<String> expectedWarnings = List.of(
-                MessageFormat.format(Driver.WARNING_MAY_BE_REACHED_AFTER_EXPECTED, V_AND_A),
-                MessageFormat.format(Driver.WARNING_MAY_BE_REACHED_AFTER_CLOSING, V_AND_A));
+                MessageFormat.format(DriverV200.WARNING_MAY_BE_REACHED_AFTER_EXPECTED, V_AND_A),
+                MessageFormat.format(DriverV200.WARNING_MAY_BE_REACHED_AFTER_CLOSING, V_AND_A));
         checkStartTime(testData, expectedWarnings);
     }
 
@@ -422,10 +424,10 @@ public class DriverStartTimeTest extends TestBase {
                 new Pickup(THAI_DELIGHT, 0),
                 new Pickup(V_AND_A, 2)), "4:50 PM");
         List<String> expectedWarnings = List.of(
-                MessageFormat.format(Driver.WARNING_MAY_BE_REACHED_AFTER_CLOSING, CORSO),
-                MessageFormat.format(Driver.WARNING_MAY_BE_REACHED_AFTER_CLOSING, RIVOLI),
-                MessageFormat.format(Driver.WARNING_MAY_BE_REACHED_AFTER_CLOSING, V_AND_A),
-                MessageFormat.format(Driver.WARNING_MAY_BE_REACHED_AFTER_EXPECTED, V_AND_A));
+                MessageFormat.format(DriverV200.WARNING_MAY_BE_REACHED_AFTER_CLOSING, CORSO),
+                MessageFormat.format(DriverV200.WARNING_MAY_BE_REACHED_AFTER_CLOSING, RIVOLI),
+                MessageFormat.format(DriverV200.WARNING_MAY_BE_REACHED_AFTER_CLOSING, V_AND_A),
+                MessageFormat.format(DriverV200.WARNING_MAY_BE_REACHED_AFTER_EXPECTED, V_AND_A));
         checkStartTime(testData, expectedWarnings);
     }
 
@@ -438,9 +440,9 @@ public class DriverStartTimeTest extends TestBase {
                 new Pickup(AGRODOLCE, 0),
                 new Pickup(V_AND_A, 2)), "4:50 PM");
         List<String> expectedWarnings = List.of(
-                MessageFormat.format(Driver.WARNING_MAY_BE_REACHED_AFTER_CLOSING, RIVOLI),
-                MessageFormat.format(Driver.WARNING_MAY_BE_REACHED_AFTER_CLOSING, V_AND_A),
-                MessageFormat.format(Driver.WARNING_MAY_BE_REACHED_AFTER_EXPECTED, V_AND_A));
+                MessageFormat.format(DriverV200.WARNING_MAY_BE_REACHED_AFTER_CLOSING, RIVOLI),
+                MessageFormat.format(DriverV200.WARNING_MAY_BE_REACHED_AFTER_CLOSING, V_AND_A),
+                MessageFormat.format(DriverV200.WARNING_MAY_BE_REACHED_AFTER_EXPECTED, V_AND_A));
         checkStartTime(testData, expectedWarnings);
     }
 
@@ -453,9 +455,9 @@ public class DriverStartTimeTest extends TestBase {
                 new Pickup(V_AND_A, 0),
                 new Pickup(AGRODOLCE, 2)), "4:50 PM");
         List<String> expectedWarnings = List.of(
-                MessageFormat.format(Driver.WARNING_MAY_BE_REACHED_AFTER_CLOSING, RIVOLI),
-                MessageFormat.format(Driver.WARNING_MAY_BE_REACHED_AFTER_CLOSING, V_AND_A),
-                MessageFormat.format(Driver.WARNING_MAY_BE_REACHED_AFTER_EXPECTED, AGRODOLCE));
+                MessageFormat.format(DriverV200.WARNING_MAY_BE_REACHED_AFTER_CLOSING, RIVOLI),
+                MessageFormat.format(DriverV200.WARNING_MAY_BE_REACHED_AFTER_CLOSING, V_AND_A),
+                MessageFormat.format(DriverV200.WARNING_MAY_BE_REACHED_AFTER_EXPECTED, AGRODOLCE));
         checkStartTime(testData, expectedWarnings);
     }
 
@@ -468,10 +470,10 @@ public class DriverStartTimeTest extends TestBase {
                 new Pickup(V_AND_A, 0),
                 new Pickup(AGRODOLCE, 2)), "5:00 PM");
         List<String> expectedWarnings = List.of(
-                MessageFormat.format(Driver.WARNING_MAY_BE_REACHED_AFTER_CLOSING, CORSO),
-                MessageFormat.format(Driver.WARNING_MAY_BE_REACHED_AFTER_CLOSING, RIVOLI),
-                MessageFormat.format(Driver.WARNING_MAY_BE_REACHED_AFTER_CLOSING, V_AND_A),
-                MessageFormat.format(Driver.WARNING_MAY_BE_REACHED_AFTER_EXPECTED, AGRODOLCE));
+                MessageFormat.format(DriverV200.WARNING_MAY_BE_REACHED_AFTER_CLOSING, CORSO),
+                MessageFormat.format(DriverV200.WARNING_MAY_BE_REACHED_AFTER_CLOSING, RIVOLI),
+                MessageFormat.format(DriverV200.WARNING_MAY_BE_REACHED_AFTER_CLOSING, V_AND_A),
+                MessageFormat.format(DriverV200.WARNING_MAY_BE_REACHED_AFTER_EXPECTED, AGRODOLCE));
         checkStartTime(testData, expectedWarnings);
     }
 
@@ -484,7 +486,7 @@ public class DriverStartTimeTest extends TestBase {
                 new Pickup(AGRODOLCE, 0),
                 new Pickup(ANGELINA, 2)), "5:00 PM");
         List<String> expectedWarnings = List.of(
-                MessageFormat.format(Driver.WARNING_MAY_BE_REACHED_AFTER_EXPECTED, ANGELINA));
+                MessageFormat.format(DriverV200.WARNING_MAY_BE_REACHED_AFTER_EXPECTED, ANGELINA));
         checkStartTime(testData, expectedWarnings);
     }
 
@@ -506,8 +508,8 @@ public class DriverStartTimeTest extends TestBase {
                 new Pickup(AGRODOLCE, 0),
                 new Pickup(ANGELINA, 2)), "5:00 PM");
         List<String> expectedWarnings = List.of(
-                MessageFormat.format(Driver.WARNING_MAY_BE_REACHED_AFTER_CLOSING, FONDA),
-                MessageFormat.format(Driver.WARNING_MAY_BE_REACHED_AFTER_EXPECTED, ANGELINA));
+                MessageFormat.format(DriverV200.WARNING_MAY_BE_REACHED_AFTER_CLOSING, FONDA),
+                MessageFormat.format(DriverV200.WARNING_MAY_BE_REACHED_AFTER_EXPECTED, ANGELINA));
         checkStartTime(testData, expectedWarnings);
     }
 
@@ -518,7 +520,7 @@ public class DriverStartTimeTest extends TestBase {
                 new Pickup(FONDA, 0),
                 new Pickup(ANGELINA, 2)), "5:00 PM");
         List<String> expectedWarnings = List.of(
-                MessageFormat.format(Driver.WARNING_MAY_BE_REACHED_AFTER_CLOSING, FONDA));
+                MessageFormat.format(DriverV200.WARNING_MAY_BE_REACHED_AFTER_CLOSING, FONDA));
         checkStartTime(testData, expectedWarnings);
     }
 
@@ -551,7 +553,7 @@ public class DriverStartTimeTest extends TestBase {
                 new Pickup(GREGOIRE, 0),
                 new Pickup(ANGELINA, 2)), "4:50 PM");
         List<String> expectedWarnings = List.of(
-                MessageFormat.format(Driver.WARNING_MAY_BE_REACHED_AFTER_CLOSING, CORSO));
+                MessageFormat.format(DriverV200.WARNING_MAY_BE_REACHED_AFTER_CLOSING, CORSO));
         checkStartTime(testData, expectedWarnings);
     }
 
@@ -564,8 +566,8 @@ public class DriverStartTimeTest extends TestBase {
                 new Pickup(ANGELINA, 0),
                 new Pickup(GREGOIRE, 2)), "4:50 PM");
         List<String> expectedWarnings = List.of(
-                MessageFormat.format(Driver.WARNING_MAY_BE_REACHED_AFTER_CLOSING, CORSO),
-                MessageFormat.format(Driver.WARNING_MAY_BE_REACHED_AFTER_EXPECTED, GREGOIRE));
+                MessageFormat.format(DriverV200.WARNING_MAY_BE_REACHED_AFTER_CLOSING, CORSO),
+                MessageFormat.format(DriverV200.WARNING_MAY_BE_REACHED_AFTER_EXPECTED, GREGOIRE));
         checkStartTime(testData, expectedWarnings);
     }
 
@@ -578,8 +580,8 @@ public class DriverStartTimeTest extends TestBase {
                 new Pickup(BOPSHOP, 0),
                 new Pickup(ANGELINA, 2)), "4:50 PM");
         List<String> expectedWarnings = List.of(
-                MessageFormat.format(Driver.WARNING_MAY_BE_REACHED_AFTER_CLOSING, CORSO),
-                MessageFormat.format(Driver.WARNING_MAY_BE_REACHED_AFTER_EXPECTED, ANGELINA));
+                MessageFormat.format(DriverV200.WARNING_MAY_BE_REACHED_AFTER_CLOSING, CORSO),
+                MessageFormat.format(DriverV200.WARNING_MAY_BE_REACHED_AFTER_EXPECTED, ANGELINA));
         checkStartTime(testData, expectedWarnings);
     }
 
@@ -592,13 +594,13 @@ public class DriverStartTimeTest extends TestBase {
                 new Pickup(ANGELINA, 0),
                 new Pickup(BOPSHOP, 2)), "4:50 PM");
         List<String> expectedWarnings = List.of(
-                MessageFormat.format(Driver.WARNING_MAY_BE_REACHED_AFTER_CLOSING, CORSO),
-                MessageFormat.format(Driver.WARNING_MAY_BE_REACHED_AFTER_EXPECTED, BOPSHOP));
+                MessageFormat.format(DriverV200.WARNING_MAY_BE_REACHED_AFTER_CLOSING, CORSO),
+                MessageFormat.format(DriverV200.WARNING_MAY_BE_REACHED_AFTER_EXPECTED, BOPSHOP));
         checkStartTime(testData, expectedWarnings);
     }
 
     private void checkStartTime(TestData testData) {
-        Driver driver = buildDriver(testData, false);
+        DriverV200 driver = buildDriver(testData, false);
         assertThat(driver.getStartTime())
                 .as(testData.toString())
                 .isEqualTo(testData.expectedStartTime);
@@ -606,7 +608,7 @@ public class DriverStartTimeTest extends TestBase {
     }
 
     private void checkStartTimeDisableAudit(TestData testData) {
-        Driver driver = buildDriver(testData, true);
+        DriverV200 driver = buildDriver(testData, true);
         assertThat(driver.getStartTime())
                 .as(testData.toString())
                 .isEqualTo(testData.expectedStartTime);
@@ -614,7 +616,7 @@ public class DriverStartTimeTest extends TestBase {
     }
 
     private void checkStartTime(TestData testData, List<String> expectedWarnings) {
-        Driver driver = buildDriver(testData, false);
+        DriverV200 driver = buildDriver(testData, false);
         assertThat(driver.getStartTime())
                 .as(testData.toString())
                 .isEqualTo(testData.expectedStartTime);
@@ -622,23 +624,26 @@ public class DriverStartTimeTest extends TestBase {
                 .as(testData.toString()).containsOnlyOnceElementsOf(expectedWarnings);
     }
 
-    private Driver buildDriver(TestData testData, boolean disableLateStartAudit) {
+    private DriverV200 buildDriver(TestData testData, boolean disableLateStartAudit) {
 
         List<Restaurant> pickupRestaurants = new ArrayList<>();
 
         for (Pickup pickup : testData.pickups) {
 
-            Restaurant restaurant = new Restaurant(pickup.restaurantName);
+            RestaurantV200 restaurant = (RestaurantV200)
+                    Restaurant.createRestaurant(controlBlock, pickup.restaurantName);
             restaurant.mergeGlobal(restaurants.get(restaurant.getName()));
             restaurant.addOrders(pickup.numOrders);
 
             pickupRestaurants.add(restaurant);
         }
 
-        WorkflowBean driverBean = new WorkflowBean();
+        // FIX THIS, DS; use WorkflowBean
+        WorkflowBeanV200 driverBean = new WorkflowBeanV200();
         driverBean.setUserName("jb");
 
-        return new Driver(driverBean, pickupRestaurants, null, "https://something", disableLateStartAudit);
+        return (DriverV200) Driver.createDriver(
+                driverBean, pickupRestaurants, List.of(), "https://something", disableLateStartAudit);
     }
 
     static class TestData {
