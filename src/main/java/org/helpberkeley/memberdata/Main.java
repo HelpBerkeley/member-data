@@ -85,11 +85,6 @@ public class Main {
 //    static final long DELIVERY_DETAILS_TOPIC_ID = 1818;
 //    static final long DRIVERS_POST_FORMAT_TOPIC_ID = 1967;
 
-    enum CombinationDriverPost {
-        GENERATE_COMBINATION_POST,
-        SKIP_COMBINATION_POST
-    };
-
     public static void main(String[] args) throws IOException, CsvException {
 
         Options options = new Options(args);
@@ -681,9 +676,6 @@ public class Main {
         long topic = (request.topic != null) ? request.topic : DRIVERS_POST_STAGING_TOPIC_ID;
 
         String version = request.version;
-        if (version == null) {
-            version = Constants.CONTROL_BLOCK_CURRENT_VERSION;
-        }
 
         // Download file
         String routedDeliveries = apiClient.downloadFile(request.uploadFile.getFileName());
