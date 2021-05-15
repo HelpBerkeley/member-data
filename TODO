@@ -51,3 +51,5 @@ Use Discourse ids to identify groups, to insulate against
 changes to group names.
 
 Add a heart beat post update, to show the back end running
+
+Update user names to audit case-insensitive

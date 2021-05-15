@@ -847,6 +847,8 @@ public class Main {
             statusMessages.append("\n[Group Instructions](").append(groupPostURL).append(")");
         }
 
+        statusMessages.append("\n\n");
+
         for (String url : postURLs) {
             statusMessages.append(url).append("\n");
         }
