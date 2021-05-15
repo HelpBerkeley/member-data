@@ -1264,10 +1264,10 @@ public class Main {
     }
 
     private static void workRequests(ApiClient apiClient, String usersFile) throws IOException, CsvException {
-        String json = apiClient.runQuery(Constants.QUERY_GET_LAST_REPLY_FROM_REQUEST_TOPICS);
+        String json = apiClient.runQuery(Constants.QUERY_GET_LAST_REPLY_FROM_REQUEST_TOPICS_V20);
         ApiQueryResult apiQueryResult = HBParser.parseQueryResult(json);
 
-        assert apiQueryResult.rows.length == 5 : apiQueryResult.rows.length;
+        assert apiQueryResult.rows.length == 6 : apiQueryResult.rows.length;
         Integer postNumberIndex = apiQueryResult.getColumnIndex(Constants.DISCOURSE_COLUMN_POST_NUMBER);
         assert postNumberIndex != null;
         Integer rawIndex = apiQueryResult.getColumnIndex(Constants.DISCOURSE_COLUMN_RAW);
@@ -1311,6 +1311,9 @@ public class Main {
                 doCompletedDailyOrders(apiClient, request, users);
             } else if (topicId == Constants.TOPIC_REQUEST_SINGLE_RESTAURANT_DRIVER_MESSAGES.getId()) {
                 doOneKitchenDriverMessages(apiClient, request, users);
+            } else if (topicId == Constants.TOPIC_POST_ONE_KITCHEN_RESTAURANT_TEMPLATE.getId()) {
+                doRestaurantTemplate(apiClient, request,
+                        Constants.TOPIC_POST_ONE_KITCHEN_RESTAURANT_TEMPLATE.getId());
             } else if (topicId == Constants.TOPIC_POST_RESTAURANT_TEMPLATE.getId()) {
                 doRestaurantTemplate(apiClient, request, Constants.TOPIC_POST_RESTAURANT_TEMPLATE.getId());
             } else {

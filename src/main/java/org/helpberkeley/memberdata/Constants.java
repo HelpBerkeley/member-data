@@ -63,7 +63,8 @@ public class Constants {
     public static final int QUERY_GET_ORDER_HISTORY_DATA_POSTS = 45;
     public static final int QUERY_GET_DRIVER_DETAILS = 46;
     public static final int QUERY_GET_CURRENT_VALIDATED_DRIVER_MESSAGE_RESTAURANT_TEMPLATE = 49;
-    public static final int QUERY_GET_LAST_REPLY_FROM_REQUEST_TOPICS = 50;
+    public static final int QUERY_GET_LAST_REPLY_FROM_REQUEST_TOPICS_V10 = 50;
+    public static final int QUERY_GET_LAST_REPLY_FROM_REQUEST_TOPICS_V20 = 58;
     public static final int QUERY_GET_CURRENT_VALIDATED_ONE_KITCHEN_RESTAURANT_TEMPLATE = 51;
     public static final int QUERY_GET_LAST_TEST_REQUEST = 52;
     public static final int QUERY_GET_ONE_KITCHEN_DRIVERS_POST_FORMAT_V300 = 53;
