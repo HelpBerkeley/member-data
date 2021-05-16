@@ -75,3 +75,4 @@ DIGIT         : [0-9] ;
 WHITESPACE    : [ \t\r\n]+ -> skip ;
 QUOTED_STRING : '"' (~'"')* '"' ;
 CODE_ESCAPE   : '```' -> skip ;
+LINE_COMMENT  : '//' .*? '\r'? '\n' -> skip ;

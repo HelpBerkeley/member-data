@@ -338,4 +338,49 @@ public class MessageBlockTest extends TestBase {
         assertThat(listRef.getListName()).isEqualTo("LoopVar");
         assertThat(listRef.getName()).isEqualTo("LoopVar.v1");
     }
+
+    @Test
+    public void lineCommentsOnlyTest() {
+        String block =
+                "[lineCommentsOnlyTest]\n" +
+                    "// This is a comment\n" +
+                    "// as well as this.\n";
+        MessageBlock messageBlock = new MessageBlock(0, block);
+        messageBlock.parse();
+        assertThat(messageBlock.getElements()).hasSize(0);
+    }
+
+    @Test
+    public void interspersedLineCommentsTest() {
+        String block =
+                "[interspersedLineComnmentsTest]\n" +
+                    "// This is a comment\n" +
+                    "${someVar}" +
+                    "// This is another comment\n" +
+                    "&{someOtherVar.something}";
+
+        MessageBlock messageBlock = new MessageBlock(0, block);
+        messageBlock.parse();
+        assertThat(messageBlock.getElements()).hasSize(2);
+        assertThat(messageBlock.getElements().get(0)).isInstanceOf(MessageBlockSimpleRef.class);
+        assertThat(messageBlock.getElements().get(1)).isInstanceOf(MessageBlockListRef.class);
+    }
+
+    @Test
+    public void ignoreQuotedCommentsTest() {
+        String quotedComment = "This // is // not//a// comment//line\n";
+        String block =
+                "[ignoreQuotedCommentsTest]\n" +
+                    "\"" +
+                    quotedComment +
+                    "\"";
+
+
+        MessageBlock messageBlock = new MessageBlock(0, block);
+        messageBlock.parse();
+        assertThat(messageBlock.getElements()).hasSize(1);
+        assertThat(messageBlock.getElements().get(0)).isInstanceOf(MessageBlockQuotedString.class);
+        MessageBlockQuotedString qs = (MessageBlockQuotedString)messageBlock.getElements().get(0);
+        assertThat(qs.getValue()).isEqualTo(quotedComment);
+    }
 }
