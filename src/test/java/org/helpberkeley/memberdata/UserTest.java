@@ -775,6 +775,34 @@ public class UserTest extends TestBase {
     }
 
     @Test
+    public void groupMondayFFReg() throws UserException {
+        User u1 = createUserWithGroup("u1", Constants.GROUP_MONDAY_FRREG);
+        User u2 = createUserWithGroup("u1", Constants.GROUP_MONDAY_FRREG);
+        User u3 = createUser();
+
+        assertThat(u1.isMondayFrreg()).isTrue();
+        assertThat(u1.isThursdayFrreg()).isFalse();
+        assertThat(u1).isEqualTo(u2);
+        assertThat(u1).isNotEqualTo(u3);
+        assertThat(u3.isMondayFrreg()).isFalse();
+        assertThat(u3.isThursdayFrreg()).isFalse();
+    }
+
+    @Test
+    public void groupThursdayFFReg() throws UserException {
+        User u1 = createUserWithGroup("u1", Constants.GROUP_THURSDAY_FRREG);
+        User u2 = createUserWithGroup("u1", Constants.GROUP_THURSDAY_FRREG);
+        User u3 = createUser();
+
+        assertThat(u1.isThursdayFrreg()).isTrue();
+        assertThat(u1.isMondayFrreg()).isFalse();
+        assertThat(u1).isEqualTo(u2);
+        assertThat(u1).isNotEqualTo(u3);
+        assertThat(u3.isMondayFrreg()).isFalse();
+        assertThat(u3.isThursdayFrreg()).isFalse();
+    }
+
+    @Test
     public void nameWithCommaTest() throws UserException {
         String name = "J, Alfred, Prufrock";
         User u1 = createUserWithName(name);

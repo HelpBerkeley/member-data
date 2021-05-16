@@ -612,7 +612,7 @@ public class UserExporter extends Exporter {
 
         for (User user : tables.sortByUserName()) {
 
-            if (user.isFrreg()) {
+            if (user.isMondayFrreg() || user.isThursdayFrreg()) {
                 output.append(user.getUserName());
                 output.append('|');
                 output.append(user.getName());

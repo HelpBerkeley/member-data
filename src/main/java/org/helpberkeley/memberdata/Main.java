@@ -269,7 +269,7 @@ public class Main {
             postRaw.append('|');
             postRaw.append(user.getEmailVerified());
             postRaw.append('|');
-            postRaw.append(user.isFrreg() ? ":fire:" : "");
+            postRaw.append((user.isMondayFrreg() || user.isThursdayFrreg()) ? ":fire:" : "");
             postRaw.append('|');
             postRaw.append(user.getCity());
             postRaw.append('|');

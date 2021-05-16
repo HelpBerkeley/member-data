@@ -78,7 +78,8 @@ public class User {
     static final String ADMIN_COLUMN = "Admin";
     static final String EMAIL_VERIFIED_COLUMN = "Verified";
     static final String GROUPS_OWNED_COLUMN = "groups-owned";
-    static final String FRREG_COLUMN = "frreg";
+    static final String MONDAY_FRREG_COLUMN = "MOfrreg";
+    static final String THURSDAY_FRREG_COLUMN = "THfrreg";
     static final String FRVOICEONLY_COLUMN = "FRVoiceOnly";
 
     static final String SHORT_ID_COLUMN = "ID";
@@ -400,8 +401,12 @@ public class User {
         return groupMembership.contains(Constants.GROUP_EVENT_DRIVERS);
     }
 
-    Boolean isFrreg() {
-        return groupMembership.contains(Constants.GROUP_FRREG);
+    Boolean isMondayFrreg() {
+        return groupMembership.contains(Constants.GROUP_MONDAY_FRREG);
+    }
+
+    Boolean isThursdayFrreg() {
+        return groupMembership.contains(Constants.GROUP_THURSDAY_FRREG);
     }
 
     Boolean isTrainedEventDriver() {
@@ -1261,7 +1266,8 @@ public class User {
                 + OTHER_DRIVERS_COLUMN + Constants.CSV_SEPARATOR
                 + ADMIN_COLUMN + Constants.CSV_SEPARATOR
                 + GROUPS_OWNED_COLUMN + Constants.CSV_SEPARATOR
-                + FRREG_COLUMN
+                + MONDAY_FRREG_COLUMN + Constants.CSV_SEPARATOR
+                + THURSDAY_FRREG_COLUMN
                 + "\n";
     }
 
@@ -1314,7 +1320,8 @@ public class User {
                 isOtherDrivers() + Constants.CSV_SEPARATOR +
                 isAdmin() + Constants.CSV_SEPARATOR +
                 groupsOwned() + Constants.CSV_SEPARATOR +
-                isFrreg() +
+                isMondayFrreg() + Constants.CSV_SEPARATOR +
+                isThursdayFrreg() +
                 '\n';
     }
 

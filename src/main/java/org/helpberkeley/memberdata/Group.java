@@ -130,7 +130,8 @@ public class Group {
             case Constants.GROUP_TRAINED_EVENT_DRIVERS:
             case Constants.GROUP_GONE:
             case Constants.GROUP_OTHER_DRIVERS:
-            case Constants.GROUP_FRREG:
+            case Constants.GROUP_MONDAY_FRREG:
+            case Constants.GROUP_THURSDAY_FRREG:
             case Constants.GROUP_FRVOICEONLY:
                 return true;
             default:
