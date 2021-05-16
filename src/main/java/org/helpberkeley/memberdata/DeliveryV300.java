@@ -44,11 +44,11 @@ public class DeliveryV300 extends Delivery {
     }
 
     public void setStdMeals(String stdMeals) {
-        this.stdMeals = Integer.valueOf(stdMeals);
+        this.stdMeals = Integer.parseInt(stdMeals);
     }
 
     public void setAltMeals(String altMeals) {
-        this.altMeals = Integer.valueOf(altMeals);
+        this.altMeals = Integer.parseInt(altMeals);
     }
 
     public void setTypeMeal(String typeMeal) {
@@ -56,11 +56,11 @@ public class DeliveryV300 extends Delivery {
     }
 
     public void setStdGrocery(String stdGrocery) {
-        this.stdGrocery = Integer.valueOf(stdGrocery);
+        this.stdGrocery = Integer.parseInt(stdGrocery);
     }
 
     public void setAltGrocery(String altGrocery) {
-        this.altGrocery = Integer.valueOf(altGrocery);
+        this.altGrocery = Integer.parseInt(altGrocery);
     }
 
     public void setTypeGrocery(String typeGrocery) {

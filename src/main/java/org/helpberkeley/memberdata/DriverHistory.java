@@ -95,9 +95,6 @@ public class DriverHistory {
     /**
      * Generate a table of all driver history:
      *     DriverName, DeliveryDate
-     *
-     * @param apiClient
-     * @return CSV table
      */
     public static String generateDriverHistory(ApiClient apiClient) throws IOException, CsvException {
         // Get the order history data posts

@@ -80,11 +80,6 @@ public class Main {
     static final long CUSTOMER_CARE_MEMBER_DATA_POST_ID = 52234;
     static final long FRREG_POST_ID = 52427;
 
-    // FIX THIS, DS: uncomment when we can past parameters to queries
-//    static final long ORDER_HISTORY_TOPIC = 1440;
-//    static final long DELIVERY_DETAILS_TOPIC_ID = 1818;
-//    static final long DRIVERS_POST_FORMAT_TOPIC_ID = 1967;
-
     public static void main(String[] args) throws IOException, CsvException {
 
         Options options = new Options(args);

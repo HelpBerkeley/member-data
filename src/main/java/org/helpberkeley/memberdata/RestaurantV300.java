@@ -24,27 +24,25 @@ package org.helpberkeley.memberdata;
 
 import java.util.HashSet;
 import java.util.LinkedHashSet;
-import java.util.Set;
 
 public class RestaurantV300 extends Restaurant {
 
-    private final ControlBlockV300 controlBlock;
     private final HashSet<String> alternateMealTypes = new LinkedHashSet<>();
     private final HashSet<String> alternateGroceryTypes = new LinkedHashSet<>();
 
     RestaurantV300(ControlBlock controlBlock, String name) {
         super(name);
-        this.controlBlock = (ControlBlockV300) controlBlock;
+        ControlBlockV300 controlBlock1 = (ControlBlockV300) controlBlock;
 
-        if (this.controlBlock.getMealSource().equals(name)) {
-            if (this.controlBlock.getAltMealOptions() != null) {
-                alternateMealTypes.addAll(this.controlBlock.getAltMealOptions());
+        if (controlBlock1.getMealSource().equals(name)) {
+            if (controlBlock1.getAltMealOptions() != null) {
+                alternateMealTypes.addAll(controlBlock1.getAltMealOptions());
             }
         }
 
-        if (this.controlBlock.getGrocerySource().equals(name)) {
-            if (this.controlBlock.getAltGroceryOptions() != null) {
-                alternateGroceryTypes.addAll(this.controlBlock.getAltGroceryOptions());
+        if (controlBlock1.getGrocerySource().equals(name)) {
+            if (controlBlock1.getAltGroceryOptions() != null) {
+                alternateGroceryTypes.addAll(controlBlock1.getAltGroceryOptions());
             }
         }
     }

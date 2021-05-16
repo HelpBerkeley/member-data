@@ -550,12 +550,11 @@ public class DriverPostFormatV300 extends DriverPostFormat {
         String refName = listRef.getName();
         String value;
 
-        switch (refName) {
-            case "PickupManager.UserName":
-                value = context.getPickupManager();
-                break;
-            default:
-                throw new MemberDataException(context.formatException("unknown list variable &{" + refName + "}"));
+        if ("PickupManager.UserName".equals(refName)) {
+            value = context.getPickupManager();
+        } else {
+            throw new MemberDataException(context.formatException(
+                    "unknown list variable &{" + refName + "}"));
         }
 
         LOGGER.trace("${{}} = \"{}\"", refName, value);
@@ -806,7 +805,7 @@ public class DriverPostFormatV300 extends DriverPostFormat {
         // FIX THIS, DS: we are hitting this from two different contexts
 
         if (restaurant == null) {
-            restaurantName = ((ControlBlockV300)controlBlock).getMealSource();
+            restaurantName = controlBlock.getMealSource();
         } else {
             restaurantName = restaurant.getName();
         }
@@ -832,7 +831,7 @@ public class DriverPostFormatV300 extends DriverPostFormat {
         // FIX THIS, DS: we are hitting this from two different contexts
 
         if (restaurant == null) {
-            restaurantName = ((ControlBlockV300)controlBlock).getGrocerySource();
+            restaurantName = controlBlock.getGrocerySource();
         } else {
             restaurantName = restaurant.getName();
         }

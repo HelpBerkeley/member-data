@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020. helpberkeley.org
+ * Copyright (c) 2020-2021. helpberkeley.org
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -58,9 +58,6 @@ public class Route {
         // FIX THIS, DS: remove duplicate locations
 
         List<DeliveryLocation> deliveryLocations = getLocations(deliveries);
-
-//        List<DeliveryLocation> uniqueLocations = new ArrayList<>(new LinkedHashSet<>(locations));
-//        return uniqueLocations;
 
         Location[] route = new Location[deliveryLocations.size() + 2];
         route[0] = lastPickupLocation;

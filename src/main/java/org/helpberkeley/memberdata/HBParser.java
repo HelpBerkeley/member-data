@@ -409,6 +409,7 @@ public class HBParser {
             String groupsOwned = columns[index++];
             List<String> groupsOwnedList = Arrays.asList(groupsOwned.split(Constants.CSV_SEPARATOR));
 
+            //noinspection UnusedAssignment
             if (Boolean.parseBoolean(columns[index++])) {
                 groups.add(Constants.GROUP_FRREG);
             }

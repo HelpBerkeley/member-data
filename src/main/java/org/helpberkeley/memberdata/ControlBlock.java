@@ -64,7 +64,6 @@ public abstract class ControlBlock {
     public static final String UNSUPPORTED =
             "{0} (line {1}) is not supported in control block version {2}\n";
 
-    private final String header;
     private final Set<String> columnNames;
     private final List<OpsManager> opsManagers = new ArrayList<>();
     private final Map<String, SplitRestaurant> splitRestaurantMap = new HashMap<>();
@@ -76,7 +75,6 @@ public abstract class ControlBlock {
     final StringBuilder warnings = new StringBuilder();
 
     protected ControlBlock(String header) {
-        this.header = header;
 
         try {
             columnNames = Set.of(header.split(Constants.CSV_SEPARATOR));

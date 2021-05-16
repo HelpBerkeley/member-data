@@ -209,12 +209,6 @@ public class ApiClient {
 
         String endpoint = QUERY_BASE + queryId + "/run";
 
-//        // {"paraName":"paramValue"}
-//        String params = "{\"" + paramName + "\":\"" + paramValue + "\"}";
-//
-//        MultiPartBodyPublisher publisher = new MultiPartBodyPublisher()
-//                .addParameterPart("params", new String(params.getBytes(Charset.defaultCharset()), StandardCharsets.UTF_8));
-
         MultiPartBodyPublisher publisher = new MultiPartBodyPublisher()
                 .addParamPart(paramName, paramValue);
         try {

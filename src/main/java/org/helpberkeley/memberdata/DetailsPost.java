@@ -24,12 +24,10 @@ package org.helpberkeley.memberdata;
 
 public class DetailsPost {
 
-    private final String userName;
     private long latestPostNumber = 0;
     private String details;
 
     public DetailsPost(String userName) {
-        this.userName = userName;
     }
 
     public String getDetails() {
