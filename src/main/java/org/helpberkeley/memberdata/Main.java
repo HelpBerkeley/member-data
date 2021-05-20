@@ -821,6 +821,8 @@ public class Main {
                 apiClient, driverPostFormat, topic, statusMessages);
         String ordersTableURL = generateOrdersTablePost(
                 apiClient, driverPostFormat, topic, statusMessages);
+        String backupDriversPostURL = generateBackupDriversPost(
+                apiClient, driverPostFormat, topic, statusMessages);
 
         statusMessages.append(driverPostFormat.statusMessages());
         statusMessages.append("\n\n");
@@ -848,6 +850,10 @@ public class Main {
 
         for (String url : postURLs) {
             statusMessages.append(url).append("\n");
+        }
+
+        if (backupDriversPostURL != null) {
+            statusMessages.append("\n[Backup Drivers Message](").append(backupDriversPostURL).append(")");
         }
 
         return statusMessages.toString();
@@ -911,6 +917,41 @@ public class Main {
 
         if (response.statusCode() != HTTP_OK) {
             statusMessages.append("Failed posting pickup manager message: ")
+                    .append(response.statusCode()).append(": ").append(response.body()).append("\n");
+        } else {
+            PostResponse postResponse = HBParser.postResponse((String)response.body());
+            return "https://go.helpberkeley.org/t/"
+                    + postResponse.topicSlug
+                    + '/'
+                    + postResponse.topicId
+                    + '/'
+                    + postResponse.postNumber;
+        }
+
+        return null;
+    }
+
+    private static String generateBackupDriversPost(ApiClient apiClient, DriverPostFormat driverPostFormat,
+                                                  long topic, StringBuilder statusMessages) {
+
+        if (! (driverPostFormat instanceof DriverPostFormatV200)) {
+            return null;
+        }
+
+        DriverPostFormatV200 driverPostFormatV200 = (DriverPostFormatV200) driverPostFormat;
+        Post post = new Post();
+        post.title = "Generated Backup Driver Post";
+        post.topic_id = topic;
+        post.raw = driverPostFormat.generateBackupDriverPost();
+        post.createdAt = ZonedDateTime.now(ZoneId.systemDefault())
+                .format(DateTimeFormatter.ofPattern("uuuu.MM.dd.HH.mm.ss"));
+
+        HttpResponse<?> response = response = apiClient.post(post.toJson());
+        LOGGER.info("generateBackupDriverPost {}", response.statusCode() == HTTP_OK ?
+                "" : "failed " + response.statusCode() + ": " + response.body());
+
+        if (response.statusCode() != HTTP_OK) {
+            statusMessages.append("Failed posting backup driver message: ")
                     .append(response.statusCode()).append(": ").append(response.body()).append("\n");
         } else {
             PostResponse postResponse = HBParser.postResponse((String)response.body());
