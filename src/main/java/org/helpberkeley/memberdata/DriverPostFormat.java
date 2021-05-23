@@ -29,6 +29,11 @@ import java.util.*;
 
 public abstract class DriverPostFormat {
 
+    enum RequestType {
+        MessageGeneration,
+        Routing
+    }
+
     public static final String ERROR_CONTINUE_WITHOUT_LOOP = "CONTINUE without an enclosing loop";
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DriverPostFormat.class);
@@ -44,47 +49,20 @@ public abstract class DriverPostFormat {
     protected final List<MessageBlock> groupInstructionMessageBlocks = new ArrayList<>();
     protected final List<MessageBlock> backupDriverMessageBlocks = new ArrayList<>();
 
-    private int driverTemplateQuery = 0;
-    private int groupTemplateQuery = 0;
-    private int restaurantTemplateQuery = 0;
-
     public static DriverPostFormat create(
             ApiClient apiClient, Map<String, User> users, String routedDeliveries) {
 
-        // Normalize lines
-        String normalized = routedDeliveries.replaceAll("\\r\\n?", "\n");
-
-        ControlBlock controlBlock = ControlBlock.create(normalized);
-
-        // FIX THIS, DS: check warnings here?
-
-        DriverPostFormat driverPostFormat;
-
-        switch (controlBlock.getVersion()) {
-            case Constants.CONTROL_BLOCK_VERSION_UNKNOWN:
-                throw new MemberDataException("Control block not found");
-            case Constants.CONTROL_BLOCK_VERSION_200:
-                driverPostFormat = new DriverPostFormatV200();
-                break;
-            case Constants.CONTROL_BLOCK_VERSION_300:
-                driverPostFormat = new DriverPostFormatV300();
-                break;
-            case Constants.CONTROL_BLOCK_VERSION_1:
-            default:
-                throw new MemberDataException(
-                        "Control block version " + controlBlock.getVersion() + " is not supported.\n");
-        }
-
-        driverPostFormat.apiClient = apiClient;
-        driverPostFormat.users = users;
-        driverPostFormat.initialize(routedDeliveries);
-        return driverPostFormat;
+        return doCreate(apiClient, users, routedDeliveries, RequestType.MessageGeneration);
     }
 
-    // FIX THIS, DS: cleanup duplicated code in ctor
-    public static DriverPostFormat create(ApiClient apiClient, Map<String, User> users,
-            String routedDeliveries, int restaurantTemplateQuery,
-            int driverTemplateQuery, int groupTemplateQuery) {
+    public static DriverPostFormat createForRouteRequest(
+            ApiClient apiClient, Map<String, User> users, String routedDeliveries) {
+
+        return doCreate(apiClient, users, routedDeliveries, RequestType.Routing);
+    }
+
+    private static DriverPostFormat doCreate(ApiClient apiClient,
+         Map<String, User> users, String routedDeliveries, RequestType requestType) {
 
         // Normalize lines
         String normalized = routedDeliveries.replaceAll("\\r\\n?", "\n");
@@ -112,11 +90,7 @@ public abstract class DriverPostFormat {
 
         driverPostFormat.apiClient = apiClient;
         driverPostFormat.users = users;
-        driverPostFormat.restaurantTemplateQuery = restaurantTemplateQuery;
-        driverPostFormat.driverTemplateQuery = driverTemplateQuery;
-        driverPostFormat.groupTemplateQuery = groupTemplateQuery;
-
-        driverPostFormat.initialize(routedDeliveries);
+        driverPostFormat.initialize(routedDeliveries, requestType);
         return driverPostFormat;
     }
 
@@ -124,7 +98,10 @@ public abstract class DriverPostFormat {
     }
 
     abstract ControlBlock getControlBlock();
-    abstract void initialize(String routedDeliveries);
+    abstract void initialize(String routedDeliveries, RequestType requestType);
+    abstract int restaurantTemplateQueryID();
+    abstract int driverTemplateQueryID();
+    abstract int groupTemplateQueryID();
     public abstract List<Driver> getDrivers();
     abstract String statusMessages();
     public abstract String generateSummary();
@@ -208,7 +185,7 @@ public abstract class DriverPostFormat {
     }
 
     protected final void loadLastRestaurantTemplate() {
-        String  json = apiClient.runQuery(restaurantTemplateQuery);
+        String  json = apiClient.runQuery(restaurantTemplateQueryID());
         ApiQueryResult apiQueryResult = HBParser.parseQueryResult(json);
         assert apiQueryResult.rows.length == 1;
 
@@ -222,7 +199,7 @@ public abstract class DriverPostFormat {
     }
 
     protected final void loadDriverPostFormat() {
-        String json = apiClient.runQuery(driverTemplateQuery);
+        String json = apiClient.runQuery(driverTemplateQueryID());
         ApiQueryResult apiQueryResult = HBParser.parseQueryResult(json);
 
         for (Object rowObj : apiQueryResult.rows) {
@@ -237,7 +214,7 @@ public abstract class DriverPostFormat {
     }
 
     protected final void loadGroupPostFormat() {
-        String json = apiClient.runQuery(groupTemplateQuery);
+        String json = apiClient.runQuery(groupTemplateQueryID());
         ApiQueryResult apiQueryResult = HBParser.parseQueryResult(json);
 
         for (Object rowObj : apiQueryResult.rows) {

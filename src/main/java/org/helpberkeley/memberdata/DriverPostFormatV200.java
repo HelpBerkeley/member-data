@@ -40,13 +40,28 @@ public class DriverPostFormatV200 extends DriverPostFormat {
     }
 
     @Override
-    void initialize(String routedDeliveries) {
+    void initialize(String routedDeliveries, RequestType requestType) {
         loadLastRestaurantTemplate();
         loadDriverPostFormat();
         loadGroupPostFormat();
         loadBackupDriverPostFormat();
         loadRoutedDeliveries(routedDeliveries);
         auditControlBlock();
+    }
+
+    @Override
+    int restaurantTemplateQueryID() {
+        return Constants.QUERY_GET_CURRENT_VALIDATED_DRIVER_MESSAGE_RESTAURANT_TEMPLATE;
+    }
+
+    @Override
+    int driverTemplateQueryID() {
+        return Constants.QUERY_GET_DRIVERS_POST_FORMAT;
+    }
+
+    @Override
+    int groupTemplateQueryID() {
+        return Constants.QUERY_GET_GROUP_INSTRUCTIONS_FORMAT;
     }
 
     @Override

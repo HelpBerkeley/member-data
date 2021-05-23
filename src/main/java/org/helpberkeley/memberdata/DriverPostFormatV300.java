@@ -66,7 +66,7 @@ public class DriverPostFormatV300 extends DriverPostFormat {
     }
 
     @Override
-    void initialize(String routedDeliveries) {
+    void initialize(String routedDeliveries, RequestType requestType) {
         loadLastRestaurantTemplate();
         loadDriverPostFormat();
         loadGroupPostFormat();
@@ -76,6 +76,21 @@ public class DriverPostFormatV300 extends DriverPostFormat {
         loadRoutedDeliveries(routedDeliveries);
         auditControlBlock();
         setDriverStartTimes();
+    }
+
+    @Override
+    int restaurantTemplateQueryID() {
+        return Constants.QUERY_GET_CURRENT_VALIDATED_ONE_KITCHEN_RESTAURANT_TEMPLATE;
+    }
+
+    @Override
+    int driverTemplateQueryID() {
+        return Constants.QUERY_GET_ONE_KITCHEN_DRIVERS_POST_FORMAT_V300;
+    }
+
+    @Override
+    int groupTemplateQueryID() {
+        return Constants.QUERY_GET_ONE_KITCHEN_GROUP_POST_FORMAT_V300;
     }
 
     @Override

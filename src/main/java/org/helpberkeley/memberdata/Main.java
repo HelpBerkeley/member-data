@@ -677,10 +677,7 @@ public class Main {
         request.postStatus(WorkRequestHandler.RequestStatus.Processing, "");
 
         try {
-            String statusMessage = generateDriverPosts(apiClient, users, routedDeliveries, topic,
-                    Constants.QUERY_GET_CURRENT_VALIDATED_DRIVER_MESSAGE_RESTAURANT_TEMPLATE,
-                    Constants.QUERY_GET_DRIVERS_POST_FORMAT,
-                    Constants.QUERY_GET_GROUP_INSTRUCTIONS_FORMAT);
+            String statusMessage = generateDriverPosts(apiClient, users, routedDeliveries, topic);
             request.postStatus(WorkRequestHandler.RequestStatus.Succeeded, statusMessage);
         } catch (MemberDataException ex) {
             String reason = ex.getCause() != null ? ex.getCause().getMessage() : ex.getMessage();
@@ -736,11 +733,7 @@ public class Main {
         request.postStatus(WorkRequestHandler.RequestStatus.Processing, "");
 
         try {
-            String statusMessage = generateDriverPosts(
-                    apiClient, users, routedDeliveries, topic,
-                    Constants.QUERY_GET_CURRENT_VALIDATED_ONE_KITCHEN_RESTAURANT_TEMPLATE,
-                    Constants.QUERY_GET_ONE_KITCHEN_DRIVERS_POST_FORMAT_V300,
-                    Constants.QUERY_GET_ONE_KITCHEN_GROUP_POST_FORMAT_V300);
+            String statusMessage = generateDriverPosts(apiClient, users, routedDeliveries, topic);
             request.postStatus(WorkRequestHandler.RequestStatus.Succeeded, statusMessage);
         } catch (MemberDataException ex) {
             String reason = ex.getCause() != null ? ex.getCause().getMessage() : ex.getMessage();
@@ -750,15 +743,14 @@ public class Main {
     }
 
     private static String generateDriverPosts(ApiClient apiClient, Map<String, User> users,
-          String routedDeliveries, long topic, int restaurantTemplateQuery,
-          int driverFormatQuery, int groupFormatQuery) {
+          String routedDeliveries, long topic) {
 
         StringBuilder statusMessages = new StringBuilder();
         List<String> postURLs = new ArrayList<>();
         String groupPostURL = null;
 
-        DriverPostFormat driverPostFormat = DriverPostFormat.create(apiClient, users, routedDeliveries,
-                restaurantTemplateQuery, driverFormatQuery, groupFormatQuery);
+        DriverPostFormat driverPostFormat =
+                DriverPostFormat.create(apiClient, users, routedDeliveries);
 
         List<String> posts = driverPostFormat.generateDriverPosts();
         Iterator<Driver> driverIterator = driverPostFormat.getDrivers().iterator();
@@ -1038,9 +1030,7 @@ public class Main {
             String completedDeliveries = apiClient.downloadFile(request.uploadFile.getFileName());
 
             // Validate
-            DriverPostFormat.create(apiClient, users, completedDeliveries,
-                    Constants.QUERY_GET_CURRENT_VALIDATED_DRIVER_MESSAGE_RESTAURANT_TEMPLATE,
-                    Constants.QUERY_GET_DRIVERS_POST_FORMAT, Constants.QUERY_GET_GROUP_INSTRUCTIONS_FORMAT);
+            DriverPostFormat.create(apiClient, users, completedDeliveries);
 
         } catch (MemberDataException ex) {
             String reason = ex.getCause() != null ? ex.getCause().getMessage() : ex.getMessage();

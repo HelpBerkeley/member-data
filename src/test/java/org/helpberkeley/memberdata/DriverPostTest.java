@@ -50,10 +50,8 @@ public abstract class DriverPostTest extends TestBase {
     public void emptyTest() {
         HttpClientSimulator.setQueryResponseData(getDriverPostFormatQuery(), createMessageBlock(""));
         String routedDeliveries = readResourceFile(getRoutedDeliveriesFileName());
-        DriverPostFormat driverPostFormat = DriverPostFormat.create(createApiSimulator(), users, routedDeliveries,
-                getRestaurantTemplateQuery(),
-                getDriverPostFormatQuery(),
-                getGroupInstructionsFormatQuery());
+        DriverPostFormat driverPostFormat =
+                DriverPostFormat.create(createApiSimulator(), users, routedDeliveries);
         for (String post : driverPostFormat.generateDriverPosts()) {
             assertThat(post).isEqualTo("");
         }
@@ -65,10 +63,8 @@ public abstract class DriverPostTest extends TestBase {
 
         HttpClientSimulator.setQueryResponseData(getDriverPostFormatQuery(), createMessageBlock(quote(literal)));
         String routedDeliveries = readResourceFile(getRoutedDeliveriesFileName());
-        DriverPostFormat driverPostFormat = DriverPostFormat.create(createApiSimulator(), users, routedDeliveries,
-                getRestaurantTemplateQuery(),
-                getDriverPostFormatQuery(),
-                getGroupInstructionsFormatQuery());
+        DriverPostFormat driverPostFormat =
+                DriverPostFormat.create(createApiSimulator(), users, routedDeliveries);
         for (String post : driverPostFormat.generateDriverPosts()) {
             assertThat(post).isEqualTo(literal);
         }
@@ -94,10 +90,8 @@ public abstract class DriverPostTest extends TestBase {
                 + " }";
         HttpClientSimulator.setQueryResponseData(getDriverPostFormatQuery(), createMessageBlock(format));
         String routedDeliveries = readResourceFile(getRoutedDeliveriesFileName());
-        DriverPostFormat driverPostFormat = DriverPostFormat.create(createApiSimulator(), users, routedDeliveries,
-                getRestaurantTemplateQuery(),
-                getDriverPostFormatQuery(),
-                getGroupInstructionsFormatQuery());
+        DriverPostFormat driverPostFormat =
+                DriverPostFormat.create(createApiSimulator(), users, routedDeliveries);
         List<String> posts = driverPostFormat.generateDriverPosts();
         checkExpectedDeliveries(posts);
     }
@@ -107,10 +101,8 @@ public abstract class DriverPostTest extends TestBase {
 
         HttpClientSimulator.setQueryResponseData(getDriverPostFormatQuery(), createMessageBlock("CONTINUE"));
         String routedDeliveries = readResourceFile(getRoutedDeliveriesFileName());
-        DriverPostFormat driverPostFormat = DriverPostFormat.create(createApiSimulator(), users, routedDeliveries,
-                getRestaurantTemplateQuery(),
-                getDriverPostFormatQuery(),
-                getGroupInstructionsFormatQuery());
+        DriverPostFormat driverPostFormat =
+                DriverPostFormat.create(createApiSimulator(), users, routedDeliveries);
         Throwable thrown = catchThrowable(driverPostFormat::generateDriverPosts);
         assertThat(thrown).isInstanceOf(MemberDataException.class);
         assertThat(thrown).hasMessageContaining(DriverPostFormat.ERROR_CONTINUE_WITHOUT_LOOP);
@@ -125,10 +117,8 @@ public abstract class DriverPostTest extends TestBase {
                 + " }";
         HttpClientSimulator.setQueryResponseData(getDriverPostFormatQuery(), createMessageBlock(format));
         String routedDeliveries = readResourceFile(getRoutedDeliveriesFileName());
-        DriverPostFormat driverPostFormat = DriverPostFormat.create(createApiSimulator(), users, routedDeliveries,
-                getRestaurantTemplateQuery(),
-                getDriverPostFormatQuery(),
-                getGroupInstructionsFormatQuery());
+        DriverPostFormat driverPostFormat =
+                DriverPostFormat.create(createApiSimulator(), users, routedDeliveries);
         List<String> posts = driverPostFormat.generateDriverPosts();
         checkCondoConsumers(posts);
     }

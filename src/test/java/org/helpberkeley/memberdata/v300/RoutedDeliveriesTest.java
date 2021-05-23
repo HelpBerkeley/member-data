@@ -45,10 +45,7 @@ public class RoutedDeliveriesTest extends TestBase {
     public void singleDriverTest() {
         String csvData = readResourceFile("routed-deliveries-v300.csv");
 
-        DriverPostFormat driverPostFormat = DriverPostFormat.create(createApiSimulator(), users, csvData,
-                Constants.QUERY_GET_CURRENT_VALIDATED_ONE_KITCHEN_RESTAURANT_TEMPLATE,
-                Constants.QUERY_GET_ONE_KITCHEN_DRIVERS_POST_FORMAT_V300,
-                Constants.QUERY_GET_ONE_KITCHEN_GROUP_POST_FORMAT_V300);
+        DriverPostFormat driverPostFormat = DriverPostFormat.create(createApiSimulator(), users, csvData);
         List<Driver> drivers = driverPostFormat.getDrivers();
 
         assertThat(drivers).hasSize(1);
@@ -200,10 +197,7 @@ public class RoutedDeliveriesTest extends TestBase {
     public void multiDriverTest() {
         String csvData = readResourceFile("routed-deliveries-multi-driver-v300.csv");
 
-        DriverPostFormat driverPostFormat = DriverPostFormat.create(createApiSimulator(), users, csvData,
-                Constants.QUERY_GET_CURRENT_VALIDATED_ONE_KITCHEN_RESTAURANT_TEMPLATE,
-                Constants.QUERY_GET_ONE_KITCHEN_DRIVERS_POST_FORMAT_V300,
-                Constants.QUERY_GET_ONE_KITCHEN_GROUP_POST_FORMAT_V300);
+        DriverPostFormat driverPostFormat = DriverPostFormat.create(createApiSimulator(), users, csvData);
 
         List<Driver> drivers = driverPostFormat.getDrivers();
 
@@ -373,10 +367,8 @@ public class RoutedDeliveriesTest extends TestBase {
     public void missingPickupTest() {
         String csvData = readResourceFile("routed-deliveries-missing-pickup-v300.csv");
 
-        Throwable thrown = catchThrowable(() -> DriverPostFormat.create(createApiSimulator(), users, csvData,
-                Constants.QUERY_GET_CURRENT_VALIDATED_ONE_KITCHEN_RESTAURANT_TEMPLATE,
-                Constants.QUERY_GET_ONE_KITCHEN_DRIVERS_POST_FORMAT_V300,
-                Constants.QUERY_GET_ONE_KITCHEN_GROUP_POST_FORMAT_V300));
+        Throwable thrown = catchThrowable(() ->
+                DriverPostFormat.create(createApiSimulator(), users, csvData));
         assertThat(thrown).isInstanceOf(MemberDataException.class);
         assertThat(thrown).hasMessageContaining(MessageFormat.format(
                 WorkflowParserV300.MISSING_MEAL_PICKUP, 24, "jsDriver", "Bauman Meals/Groceries"));
@@ -392,10 +384,8 @@ public class RoutedDeliveriesTest extends TestBase {
     public void singleDriverMultiPickupTest() {
         String csvData = readResourceFile("routed-deliveries-multi-pickup-v300.csv");
 
-        DriverPostFormat driverPostFormat = DriverPostFormat.create(createApiSimulator(), users, csvData,
-                Constants.QUERY_GET_CURRENT_VALIDATED_ONE_KITCHEN_RESTAURANT_TEMPLATE,
-                Constants.QUERY_GET_ONE_KITCHEN_DRIVERS_POST_FORMAT_V300,
-                Constants.QUERY_GET_ONE_KITCHEN_GROUP_POST_FORMAT_V300);
+        DriverPostFormat driverPostFormat =
+                DriverPostFormat.create(createApiSimulator(), users, csvData);
         List<Driver> drivers = driverPostFormat.getDrivers();
 
         assertThat(drivers).hasSize(1);

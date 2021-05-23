@@ -75,10 +75,8 @@ public class DriverPostTest extends org.helpberkeley.memberdata.DriverPostTest {
     @Test
     public void singleDriverMessageTest() {
         String routedDeliveries = readResourceFile("routed-deliveries-single.csv");
-        DriverPostFormat driverPostFormat = DriverPostFormat.create(createApiSimulator(), users, routedDeliveries,
-                Constants.QUERY_GET_CURRENT_VALIDATED_DRIVER_MESSAGE_RESTAURANT_TEMPLATE,
-                Constants.QUERY_GET_DRIVERS_POST_FORMAT_V23,
-                Constants.QUERY_GET_GROUP_INSTRUCTIONS_FORMAT_V22);
+        DriverPostFormat driverPostFormat =
+                DriverPostFormat.create(createApiSimulator(), users, routedDeliveries);
         List<String> posts = driverPostFormat.generateDriverPosts();
         assertThat(posts).hasSize(1);
         String post = posts.get(0);
@@ -95,10 +93,8 @@ public class DriverPostTest extends org.helpberkeley.memberdata.DriverPostTest {
     @Test
     public void multiDriverMessageTest() {
         String routedDeliveries = readResourceFile("routed-deliveries-v200.csv");
-        DriverPostFormat driverPostFormat = DriverPostFormat.create(createApiSimulator(), users, routedDeliveries,
-                Constants.QUERY_GET_CURRENT_VALIDATED_DRIVER_MESSAGE_RESTAURANT_TEMPLATE,
-                Constants.QUERY_GET_DRIVERS_POST_FORMAT_V23,
-                Constants.QUERY_GET_GROUP_INSTRUCTIONS_FORMAT_V22);
+        DriverPostFormat driverPostFormat =
+                DriverPostFormat.create(createApiSimulator(), users, routedDeliveries);
 
         List<String> posts = driverPostFormat.generateDriverPosts();
         assertThat(posts).hasSize(2);
@@ -134,10 +130,8 @@ public class DriverPostTest extends org.helpberkeley.memberdata.DriverPostTest {
 
     @Test public void multiDriverWithSplitMessageTest() {
         String routedDeliveries = readResourceFile("routed-deliveries-with-split-restaurant.csv");
-        DriverPostFormat driverPostFormat = DriverPostFormat.create(createApiSimulator(), users, routedDeliveries,
-                Constants.QUERY_GET_CURRENT_VALIDATED_DRIVER_MESSAGE_RESTAURANT_TEMPLATE,
-                Constants.QUERY_GET_DRIVERS_POST_FORMAT_V23,
-                Constants.QUERY_GET_GROUP_INSTRUCTIONS_FORMAT_V22);
+        DriverPostFormat driverPostFormat =
+                DriverPostFormat.create(createApiSimulator(), users, routedDeliveries);
 
         List<String> posts = driverPostFormat.generateDriverPosts();
         assertThat(posts).hasSize(4);
@@ -145,9 +139,8 @@ public class DriverPostTest extends org.helpberkeley.memberdata.DriverPostTest {
 
     @Test public void multiDriverWithMultiSplitsMessageTest() {
         String routedDeliveries = readResourceFile("routed-deliveries-with-split-restaurants.csv");
-        DriverPostFormat driverPostFormat = DriverPostFormat.create(createApiSimulator(), users, routedDeliveries,
-                Constants.QUERY_GET_CURRENT_VALIDATED_DRIVER_MESSAGE_RESTAURANT_TEMPLATE,
-                Constants.QUERY_GET_DRIVERS_POST_FORMAT, Constants.QUERY_GET_GROUP_INSTRUCTIONS_FORMAT);
+        DriverPostFormat driverPostFormat =
+                DriverPostFormat.create(createApiSimulator(), users, routedDeliveries);
 
         List<String> posts = driverPostFormat.generateDriverPosts();
         assertThat(posts).hasSize(2);
@@ -170,10 +163,8 @@ public class DriverPostTest extends org.helpberkeley.memberdata.DriverPostTest {
     @Test public void multiDriverWithMultiSplitsMessageDisableRestaurantAuditTest() {
         String routedDeliveries =
                 readResourceFile("routed-deliveries-with-split-restaurants-audit-disabled.csv");
-        DriverPostFormat driverPostFormat = DriverPostFormat.create(createApiSimulator(), users, routedDeliveries,
-                Constants.QUERY_GET_CURRENT_VALIDATED_DRIVER_MESSAGE_RESTAURANT_TEMPLATE,
-                Constants.QUERY_GET_DRIVERS_POST_FORMAT_V23,
-                Constants.QUERY_GET_GROUP_INSTRUCTIONS_FORMAT_V22);
+        DriverPostFormat driverPostFormat =
+                DriverPostFormat.create(createApiSimulator(), users, routedDeliveries);
 
         List<String> posts = driverPostFormat.generateDriverPosts();
         assertThat(posts).hasSize(2);
@@ -184,10 +175,8 @@ public class DriverPostTest extends org.helpberkeley.memberdata.DriverPostTest {
     @Test
     public void generateGroupInstructionsNoSplitsPostTest() {
         String routedDeliveries = readResourceFile("routed-deliveries-v200.csv");
-        DriverPostFormat driverPostFormat = DriverPostFormat.create(createApiSimulator(), users, routedDeliveries,
-                Constants.QUERY_GET_CURRENT_VALIDATED_DRIVER_MESSAGE_RESTAURANT_TEMPLATE,
-                Constants.QUERY_GET_DRIVERS_POST_FORMAT_V23,
-                Constants.QUERY_GET_GROUP_INSTRUCTIONS_FORMAT_V22);
+        DriverPostFormat driverPostFormat =
+                DriverPostFormat.create(createApiSimulator(), users, routedDeliveries);
 
         String post = driverPostFormat.generateGroupInstructionsPost();
 //        System.out.println(post);
@@ -198,10 +187,8 @@ public class DriverPostTest extends org.helpberkeley.memberdata.DriverPostTest {
     @Test
     public void generateGroupInstructionsWithSplitsPostTest() {
         String routedDeliveries = readResourceFile("routed-deliveries-with-split-restaurant.csv");
-        DriverPostFormat driverPostFormat = DriverPostFormat.create(createApiSimulator(), users, routedDeliveries,
-                Constants.QUERY_GET_CURRENT_VALIDATED_DRIVER_MESSAGE_RESTAURANT_TEMPLATE,
-                Constants.QUERY_GET_DRIVERS_POST_FORMAT_V23,
-                Constants.QUERY_GET_GROUP_INSTRUCTIONS_FORMAT_V22);
+        DriverPostFormat driverPostFormat =
+                DriverPostFormat.create(createApiSimulator(), users, routedDeliveries);
 
         String post = driverPostFormat.generateGroupInstructionsPost();
 //        System.out.println(post);
@@ -214,10 +201,8 @@ public class DriverPostTest extends org.helpberkeley.memberdata.DriverPostTest {
     @Test
     public void generateBackupDriverPostTest() {
         String routedDeliveries = readResourceFile("routed-deliveries-v200.csv");
-        DriverPostFormat driverPostFormat = DriverPostFormat.create(createApiSimulator(), users, routedDeliveries,
-                Constants.QUERY_GET_CURRENT_VALIDATED_DRIVER_MESSAGE_RESTAURANT_TEMPLATE,
-                Constants.QUERY_GET_DRIVERS_POST_FORMAT_V23,
-                Constants.QUERY_GET_GROUP_INSTRUCTIONS_FORMAT_V22);
+        DriverPostFormat driverPostFormat =
+                DriverPostFormat.create(createApiSimulator(), users, routedDeliveries);
 
         String post = driverPostFormat.generateBackupDriverPost();
 //        System.out.println(post);
@@ -226,10 +211,8 @@ public class DriverPostTest extends org.helpberkeley.memberdata.DriverPostTest {
     @Test
     public void noDeliveriesTest() {
         String routedDeliveries = readResourceFile("routed-deliveries-pickup-only.csv");
-        DriverPostFormat driverPostFormat = DriverPostFormat.create(createApiSimulator(), users, routedDeliveries,
-                Constants.QUERY_GET_CURRENT_VALIDATED_DRIVER_MESSAGE_RESTAURANT_TEMPLATE,
-                Constants.QUERY_GET_DRIVERS_POST_FORMAT_V23,
-                Constants.QUERY_GET_GROUP_INSTRUCTIONS_FORMAT_V22);
+        DriverPostFormat driverPostFormat =
+                DriverPostFormat.create(createApiSimulator(), users, routedDeliveries);
 
         assertThat(driverPostFormat.getDrivers()).hasSize(1);
         Driver driver = driverPostFormat.getDrivers().get(0);
@@ -243,11 +226,8 @@ public class DriverPostTest extends org.helpberkeley.memberdata.DriverPostTest {
     @Test
     public void missingRationTypeCountTest() {
         String routedDeliveries = readResourceFile("routed-deliveries-missing-ration-type-count.csv");
-        Throwable thrown = catchThrowable(() -> DriverPostFormat.create(createApiSimulator(),
-                users, routedDeliveries,
-                Constants.QUERY_GET_CURRENT_VALIDATED_DRIVER_MESSAGE_RESTAURANT_TEMPLATE,
-                Constants.QUERY_GET_DRIVERS_POST_FORMAT_V23,
-                Constants.QUERY_GET_GROUP_INSTRUCTIONS_FORMAT_V22));
+        Throwable thrown = catchThrowable(() ->
+                DriverPostFormat.create(createApiSimulator(), users, routedDeliveries));
         assertThat(thrown).isInstanceOf(MemberDataException.class);
         assertThat(thrown).hasMessageContaining("normal and/or veggie rations column is empty");
     }
@@ -277,10 +257,8 @@ public class DriverPostTest extends org.helpberkeley.memberdata.DriverPostTest {
                 + " }";
         HttpClientSimulator.setQueryResponseData(getDriverPostFormatQuery(), createMessageBlock(format));
         String routedDeliveries = readResourceFile(getRoutedDeliveriesFileName());
-        DriverPostFormat driverPostFormat = DriverPostFormat.create(createApiSimulator(), users, routedDeliveries,
-                getRestaurantTemplateQuery(),
-                getDriverPostFormatQuery(),
-                getGroupInstructionsFormatQuery());
+        DriverPostFormat driverPostFormat =
+                DriverPostFormat.create(createApiSimulator(), users, routedDeliveries);
         List<String> posts = driverPostFormat.generateDriverPosts();
         assertThat(posts).hasSize(2);
         assertThat(posts.get(0)).isEqualTo("Talavera|:gloves:|1561 Solano Ave, Berkeley||1|0|NotSplit|Pics\n"
@@ -304,10 +282,8 @@ public class DriverPostTest extends org.helpberkeley.memberdata.DriverPostTest {
                 + " }";
         HttpClientSimulator.setQueryResponseData(getDriverPostFormatQuery(), createMessageBlock(format));
         String routedDeliveries = readResourceFile(getRoutedDeliveriesFileName());
-        DriverPostFormat driverPostFormat = DriverPostFormat.create(createApiSimulator(), users, routedDeliveries,
-                getRestaurantTemplateQuery(),
-                getDriverPostFormatQuery(),
-                getGroupInstructionsFormatQuery());
+        DriverPostFormat driverPostFormat =
+                DriverPostFormat.create(createApiSimulator(), users, routedDeliveries);
         List<String> posts = driverPostFormat.generateDriverPosts();
         assertThat(posts).hasSize(2);
         assertThat(posts).containsExactly("Sweet Basil|Cust Name 2|Cust2\n"
@@ -341,10 +317,8 @@ public class DriverPostTest extends org.helpberkeley.memberdata.DriverPostTest {
                 + " }";
         HttpClientSimulator.setQueryResponseData(getDriverPostFormatQuery(), createMessageBlock(format));
         String routedDeliveries = readResourceFile(getRoutedDeliveriesFileName());
-        DriverPostFormat driverPostFormat = DriverPostFormat.create(createApiSimulator(), users, routedDeliveries,
-                getRestaurantTemplateQuery(),
-                getDriverPostFormatQuery(),
-                getGroupInstructionsFormatQuery());
+        DriverPostFormat driverPostFormat =
+                DriverPostFormat.create(createApiSimulator(), users, routedDeliveries);
         List<String> posts = driverPostFormat.generateDriverPosts();
         assertThat(posts).containsExactly("Cust Name 1|(555) 555.1112|(111) 222.3333|"
                 + "123 456th Ave|NoCondo|:motor_scooter:|\n"
