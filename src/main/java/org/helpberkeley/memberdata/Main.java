@@ -946,7 +946,7 @@ public class Main {
         post.createdAt = ZonedDateTime.now(ZoneId.systemDefault())
                 .format(DateTimeFormatter.ofPattern("uuuu.MM.dd.HH.mm.ss"));
 
-        HttpResponse<?> response = response = apiClient.post(post.toJson());
+        HttpResponse<?> response = apiClient.post(post.toJson());
         LOGGER.info("generateBackupDriverPost {}", response.statusCode() == HTTP_OK ?
                 "" : "failed " + response.statusCode() + ": " + response.body());
 

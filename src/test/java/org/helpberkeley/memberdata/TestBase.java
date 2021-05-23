@@ -438,6 +438,10 @@ public class TestBase {
         }
     }
 
+    public String quote(String quotable) {
+        return "\"" + quotable + "\"";
+    }
+
     String findResourceFile(final String fileName) {
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
         URL url = classLoader.getResource(fileName);

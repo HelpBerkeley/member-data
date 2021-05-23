@@ -410,6 +410,8 @@ Who:           Driver is listed if driver has any details posts
                (drivers == TRUE) AND (trained_drivers == TRUE) 
                AND (event_drivers == FALSE) AND (GONE == FALSE) AND (OUT == FALSE) AND (OTHER ==FALSE)
 
+	       and have details
+
 Note: this driver table will be difficult to keep very compact but needs to display many columns,
               and be readable at a glance. 
               To this purpose we will need to use emojis instead of regular Booleans.

@@ -46,19 +46,6 @@ public class ControlBlockTest extends ControlBlockTestBase {
     public static final String  CONTROL_BLOCK_END_ROW =   "FALSE,FALSE,ControlEnd  ,,,,,,,,,,,,,,,\n";
     public static final String  CONTROL_BLOCK_VERSION_ROW = "FALSE,FALSE,,Version ,,,,3-0-0,,,,,,,,,,\n";
 
-    private final String opsManagerKey = Constants.CONTROL_BLOCK_OPS_MANAGER;
-    private final String opsManagerValue = "JVol|123-456-7890";
-    private final String foodSourcesKey = Constants.CONTROL_BLOCK_FOOD_SOURCES;
-    private final String foodSourcesValue = "WeBeSammiges|Bagzzz";
-    private final String startTimesKey = Constants.CONTROL_BLOCK_START_TIMES;
-    private final String startTimesValue = "\"1:00, 1:01, 1:59\"";
-    private final String altMealOptionsKey = Constants.CONTROL_BLOCK_ALT_MEAL_OPTIONS;
-    private final String altMealOptionsValue = "\"only-purple, no-emu\"";
-    private final String altGroceryOptionsKey = Constants.CONTROL_BLOCK_ALT_GROCERY_OPTIONS;
-    private final String altGroceryOptionsValue = "\"Mac'n'Cheese only, piscivorous\"";
-    private final String pickupManagersKey = Constants.CONTROL_BLOCK_PICKUP_MANAGER;
-    private final String pickupManagersValue = "ZZZ";
-
     public ControlBlockTest() {
         List<User> userList = new Loader(createApiSimulator()).load();
         users = new Tables(userList).mapByUserName();
@@ -115,12 +102,16 @@ public class ControlBlockTest extends ControlBlockTestBase {
 
     @Override
     public String addVersionSpecificRequiredVariables() {
-        return getKeyValueRow(foodSourcesKey, foodSourcesValue)
-                + getKeyValueRow(pickupManagersKey, pickupManagersValue)
-                + getKeyValueRow(startTimesKey, startTimesValue)
-                + getKeyValueRow(altMealOptionsKey, altMealOptionsKey)
-                + getKeyValueRow(altGroceryOptionsKey, altGroceryOptionsValue);
-
+        return getKeyValueRow(Constants.CONTROL_BLOCK_FOOD_SOURCES,
+                    quote(ControlBlockBuilder.DEFAULT_FOOD_SOURCES))
+                + getKeyValueRow(Constants.CONTROL_BLOCK_PICKUP_MANAGER, ControlBlockBuilder.DEFAULT_PICKUP_MANAGER)
+                + getKeyValueRow(Constants.CONTROL_BLOCK_START_TIMES,
+                    quote(ControlBlockBuilder.DEFAULT_START_TIMES))
+                + getKeyValueRow(Constants.CONTROL_BLOCK_ALT_MEAL_OPTIONS,
+                    quote(ControlBlockBuilder.DEFAULT_ALT_MEAL_OPTIONS))
+                + getKeyValueRow(Constants.CONTROL_BLOCK_ALT_GROCERY_OPTIONS,
+                    quote((ControlBlockBuilder.DEFAULT_ALT_GROCERY_OPTIONS)))
+                + getKeyValueRow(Constants.CONTROL_BLOCK_MESSAGE_FORMAT, ControlBlockBuilder.DEFAULT_MESSAGE_FORMAT);
     }
 
     @Test
@@ -159,20 +150,8 @@ public class ControlBlockTest extends ControlBlockTestBase {
 
     @Test
     public void altGroceryOptionsTest() {
-        String key = Constants.CONTROL_BLOCK_ALT_GROCERY_OPTIONS;
-        String value = "\"none, veg, custom pick\"";
-
-        String workFlowData = HEADER
-                + CONTROL_BLOCK_BEGIN_ROW
-                + CONTROL_BLOCK_VERSION_ROW
-                + getKeyValueRow(key, value)
-                + getKeyValueRow(altMealOptionsKey, altMealOptionsValue)
-                + getKeyValueRow(startTimesKey, startTimesValue)
-                + getKeyValueRow(opsManagerKey, opsManagerValue)
-                + getKeyValueRow(foodSourcesKey, foodSourcesValue)
-                + getKeyValueRow(pickupManagersKey, pickupManagersValue)
-                + CONTROL_BLOCK_END_ROW;
-
+        String value = "none, veg, custom pick";
+        String workFlowData = new ControlBlockBuilder().withAltGroceryOptions(value).build();
         WorkflowParser workflowParser = WorkflowParser.create(
                 WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, Map.of(), workFlowData);
         ControlBlockV300 controlBlock = (ControlBlockV300) workflowParser.controlBlock();
@@ -199,22 +178,10 @@ public class ControlBlockTest extends ControlBlockTestBase {
 
     @Test
     public void foodSourcesTest() {
-        String key = Constants.CONTROL_BLOCK_FOOD_SOURCES;
         String mealSource = "Meals'R'Us";
         String grocerySource = "Groceryland";
         String value = mealSource + '|' + grocerySource;
-
-        String workFlowData = HEADER
-                + CONTROL_BLOCK_BEGIN_ROW
-                + CONTROL_BLOCK_VERSION_ROW
-                + getKeyValueRow(key, value)
-                + getKeyValueRow(opsManagerKey, opsManagerValue)
-                + getKeyValueRow(startTimesKey, startTimesValue)
-                + getKeyValueRow(altMealOptionsKey, altMealOptionsKey)
-                + getKeyValueRow(altGroceryOptionsKey, altGroceryOptionsKey)
-                + getKeyValueRow(pickupManagersKey, pickupManagersValue)
-                + CONTROL_BLOCK_END_ROW;
-
+        String workFlowData = new ControlBlockBuilder().withFoodSources(value).build();
         WorkflowParser workflowParser = WorkflowParser.create(
                 WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, Map.of(), workFlowData);
         ControlBlockV300 controlBlock = (ControlBlockV300) workflowParser.controlBlock();
@@ -225,45 +192,21 @@ public class ControlBlockTest extends ControlBlockTestBase {
 
     @Test
     public void foodSourcesBadValueTest() {
-        String key = Constants.CONTROL_BLOCK_FOOD_SOURCES;
         String mealSource = "Meals'R'Us";
         String grocerySource = "Groceryland";
         String value = mealSource + ':' + grocerySource;
-
-        String workFlowData = HEADER
-                + CONTROL_BLOCK_BEGIN_ROW
-                + CONTROL_BLOCK_VERSION_ROW
-                + getKeyValueRow(key, value)
-                + getKeyValueRow(opsManagerKey, opsManagerValue)
-                + getKeyValueRow(startTimesKey, startTimesValue)
-                + getKeyValueRow(altMealOptionsKey, altMealOptionsKey)
-                + getKeyValueRow(altGroceryOptionsKey, altGroceryOptionsKey)
-                + getKeyValueRow(pickupManagersKey, pickupManagersValue)
-                + CONTROL_BLOCK_END_ROW;
-
+        String workFlowData = new ControlBlockBuilder().withFoodSources(value).build();
         WorkflowParser workflowParser = WorkflowParser.create(
                 WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, Map.of(), workFlowData);
         Throwable thrown = catchThrowable(() -> workflowParser.controlBlock());
         assertThat(thrown).isInstanceOf(MemberDataException.class);
-        assertThat(thrown).hasMessage(MessageFormat.format(ControlBlockV300.FOOD_SOURCES_BAD_VALUE, value, 4));
+        assertThat(thrown).hasMessage(MessageFormat.format(ControlBlockV300.FOOD_SOURCES_BAD_VALUE, value, 8));
     }
 
     @Test
     public void startTimesTest() {
-        String key = Constants.CONTROL_BLOCK_START_TIMES;
-        String value = "\"3:00, 3:10, 3:15\"";
-
-        String workFlowData = HEADER
-                + CONTROL_BLOCK_BEGIN_ROW
-                + CONTROL_BLOCK_VERSION_ROW
-                + getKeyValueRow(key, value)
-                + getKeyValueRow(altMealOptionsKey, altMealOptionsValue)
-                + getKeyValueRow(altGroceryOptionsKey, altGroceryOptionsValue)
-                + getKeyValueRow(opsManagerKey, opsManagerValue)
-                + getKeyValueRow(foodSourcesKey, foodSourcesValue)
-                + getKeyValueRow(pickupManagersKey, pickupManagersValue)
-                + CONTROL_BLOCK_END_ROW;
-
+        String value = "3:00, 3:10, 3:15";
+        String workFlowData = new ControlBlockBuilder().withStartTimes(value).build();
         WorkflowParser workflowParser = WorkflowParser.create(
                 WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, Map.of(), workFlowData);
         ControlBlockV300 controlBlock = (ControlBlockV300) workflowParser.controlBlock();
@@ -273,24 +216,14 @@ public class ControlBlockTest extends ControlBlockTestBase {
 
     @Test
     public void pickupManagersTest() {
-        String key = Constants.CONTROL_BLOCK_PICKUP_MANAGER;
         String value1 = "ZZZ";
         String value2 = "ThirdPerson";
         String value3 = "JVol";
 
-        String workFlowData = HEADER
-                + CONTROL_BLOCK_BEGIN_ROW
-                + CONTROL_BLOCK_VERSION_ROW
-                + getKeyValueRow(key, value1)
-                + getKeyValueRow(key, value2)
-                + getKeyValueRow(key, value3)
-                + getKeyValueRow(altMealOptionsKey, altMealOptionsValue)
-                + getKeyValueRow(altGroceryOptionsKey, altGroceryOptionsValue)
-                + getKeyValueRow(startTimesKey, startTimesValue)
-                + getKeyValueRow(opsManagerKey, opsManagerValue)
-                + getKeyValueRow(foodSourcesKey, foodSourcesValue)
-                + CONTROL_BLOCK_END_ROW;
-
+        String workFlowData = new ControlBlockBuilder()
+                .withPickupManager(value1)
+                .withPickupManager(value2)
+                .withPickupManager(value3).build();
         WorkflowParser workflowParser = WorkflowParser.create(
                 WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, Map.of(), workFlowData);
         ControlBlockV300 controlBlock = (ControlBlockV300) workflowParser.controlBlock();
@@ -300,20 +233,8 @@ public class ControlBlockTest extends ControlBlockTestBase {
 
     @Test
     public void startTimesAuditWarningsTest() {
-        String key = Constants.CONTROL_BLOCK_START_TIMES;
-        String value = "\"3:00, 3:10, 3:15\"";
-
-        String workFlowData = HEADER
-                + CONTROL_BLOCK_BEGIN_ROW
-                + CONTROL_BLOCK_VERSION_ROW
-                + getKeyValueRow(key, value)
-                + getKeyValueRow(opsManagerKey, opsManagerValue)
-                + getKeyValueRow(foodSourcesKey, foodSourcesKey)
-                + getKeyValueRow(altMealOptionsKey, altMealOptionsValue)
-                + getKeyValueRow(altGroceryOptionsKey, altGroceryOptionsValue)
-                + getKeyValueRow(pickupManagersKey, pickupManagersValue)
-                + CONTROL_BLOCK_END_ROW;
-
+        String value = "3:00, 3:10, 3:15";
+        String workFlowData = new ControlBlockBuilder().withStartTimes(value).build();
         WorkflowParser workflowParser = WorkflowParser.create(
                 WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, Map.of(), workFlowData);
         ControlBlockV300 controlBlock = (ControlBlockV300) workflowParser.controlBlock();
@@ -330,21 +251,10 @@ public class ControlBlockTest extends ControlBlockTestBase {
         };
 
         for (String value : values) {
-            String workFlowData = HEADER
-                    + CONTROL_BLOCK_BEGIN_ROW
-                    + CONTROL_BLOCK_VERSION_ROW
-                    + getKeyValueRow(key, value)
-                    + getKeyValueRow(opsManagerKey, opsManagerValue)
-                    + getKeyValueRow(foodSourcesKey, foodSourcesValue)
-                    + getKeyValueRow(altMealOptionsKey, altMealOptionsKey)
-                    + getKeyValueRow(altGroceryOptionsKey, altGroceryOptionsValue)
-                    + getKeyValueRow(pickupManagersKey, pickupManagersValue)
-                    + CONTROL_BLOCK_END_ROW;
-
+            String workFlowData = new ControlBlockBuilder().withStartTimes(value).build();
             WorkflowParser workflowParser = WorkflowParser.create(
                     WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, Map.of(), workFlowData);
             ControlBlockV300 controlBlock = (ControlBlockV300) workflowParser.controlBlock();
-
             Throwable thrown = catchThrowable(() -> controlBlock.audit(users, List.of()));
             assertThat(thrown).isInstanceOf(MemberDataException.class);
             assertThat(thrown).hasMessage(MessageFormat.format(ControlBlockV300.INVALID_START_TIME, value));
@@ -353,23 +263,12 @@ public class ControlBlockTest extends ControlBlockTestBase {
 
     @Test
     public void validStartTimesTest() {
-        String key = Constants.CONTROL_BLOCK_START_TIMES;
         String[] values = {
                 "3:59", "03:11", "4:19 PM", "21:42"
         };
 
         for (String value : values) {
-            String workFlowData = HEADER
-                    + CONTROL_BLOCK_BEGIN_ROW
-                    + CONTROL_BLOCK_VERSION_ROW
-                    + getKeyValueRow(key, value)
-                    + getKeyValueRow(altMealOptionsKey, altMealOptionsValue)
-                    + getKeyValueRow(altGroceryOptionsKey, altGroceryOptionsValue)
-                    + getKeyValueRow(opsManagerKey, opsManagerValue)
-                    + getKeyValueRow(foodSourcesKey, foodSourcesValue)
-                    + getKeyValueRow(pickupManagersKey, pickupManagersValue)
-                    + CONTROL_BLOCK_END_ROW;
-
+            String workFlowData = new ControlBlockBuilder().withStartTimes(value).build();
             WorkflowParser workflowParser = WorkflowParser.create(
                     WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, Map.of(), workFlowData);
             ControlBlockV300 controlBlock = (ControlBlockV300) workflowParser.controlBlock();
@@ -380,47 +279,31 @@ public class ControlBlockTest extends ControlBlockTestBase {
 
     @Test
     public void tooManyStartTimesTest() {
-        String key = Constants.CONTROL_BLOCK_START_TIMES;
-        String[] values = {
-                "3:59", "03:11", "4:19 PM", "21:42"
-        };
+        String startTimes = "3:59";
 
-        for (String value : values) {
-            String workFlowData = HEADER
-                    + CONTROL_BLOCK_BEGIN_ROW
-                    + CONTROL_BLOCK_VERSION_ROW
-                    + getKeyValueRow(key, value)
-                    + getKeyValueRow(opsManagerKey, opsManagerValue)
-                    + getKeyValueRow(key, value)
-                    + CONTROL_BLOCK_END_ROW;
-
-            WorkflowParser workflowParser = WorkflowParser.create(
-                    WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, Map.of(), workFlowData);
-            Throwable thrown = catchThrowable(() -> workflowParser.controlBlock());
-            assertThat(thrown).isInstanceOf(MemberDataException.class);
-            assertThat(thrown).hasMessage(ControlBlockV300.TOO_MANY_START_TIMES_VARIABLES);
-        }
+        String workFlowData = new ControlBlockBuilder()
+                .withStartTimes(startTimes)
+                .withStartTimes(startTimes)
+                .build();
+        WorkflowParser workflowParser = WorkflowParser.create(
+                WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, Map.of(), workFlowData);
+        Throwable thrown = catchThrowable(() -> workflowParser.controlBlock());
+        assertThat(thrown).isInstanceOf(MemberDataException.class);
+        assertThat(thrown).hasMessage(ControlBlockV300.TOO_MANY_START_TIMES_VARIABLES);
     }
 
     @Test
     public void missingStartTimesTest() {
 
-        String workFlowData = HEADER
-                + CONTROL_BLOCK_BEGIN_ROW
-                + CONTROL_BLOCK_VERSION_ROW
-                + getKeyValueRow(opsManagerKey, opsManagerValue)
-                + getKeyValueRow(foodSourcesKey, foodSourcesValue)
-                + getKeyValueRow(altMealOptionsKey, altMealOptionsKey)
-                + getKeyValueRow(altGroceryOptionsKey, altGroceryOptionsValue)
-                + getKeyValueRow(pickupManagersKey, pickupManagersValue)
-                + CONTROL_BLOCK_END_ROW;
+        String workFlowData = new ControlBlockBuilder().withoutStartTimes().build();
 
         WorkflowParser workflowParser = WorkflowParser.create(
                 WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, Map.of(), workFlowData);
         ControlBlock controlBlock = workflowParser.controlBlock();
         Throwable thrown = catchThrowable(() -> audit(controlBlock));
         assertThat(thrown).isInstanceOf(MemberDataException.class);
-        assertThat(thrown).hasMessage(ControlBlockV300.MISSING_START_TIMES_VARIABLE);
+        assertThat(thrown).hasMessage(MessageFormat.format(
+                ControlBlockV300.MISSING_REQUIRED_VARIABLE, Constants.CONTROL_BLOCK_START_TIMES));
     }
 
     @Test
@@ -447,58 +330,38 @@ public class ControlBlockTest extends ControlBlockTestBase {
     @Test
     public void missingFoodSourcesTest() {
 
-        String workFlowData = HEADER
-                + CONTROL_BLOCK_BEGIN_ROW
-                + CONTROL_BLOCK_VERSION_ROW
-                + getKeyValueRow(opsManagerKey, opsManagerValue)
-                + getKeyValueRow(startTimesKey, startTimesValue)
-                + getKeyValueRow(altMealOptionsKey, altMealOptionsKey)
-                + getKeyValueRow(altGroceryOptionsKey, altGroceryOptionsValue)
-                + getKeyValueRow(pickupManagersKey, pickupManagersValue)
-                + CONTROL_BLOCK_END_ROW;
-
+        String workFlowData = new ControlBlockBuilder().withoutFoodSources().build();
         WorkflowParser workflowParser = WorkflowParser.create(
                 WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, Map.of(), workFlowData);
         ControlBlock controlBlock = workflowParser.controlBlock();
         Throwable thrown = catchThrowable(() -> audit(controlBlock));
         assertThat(thrown).isInstanceOf(MemberDataException.class);
-        assertThat(thrown).hasMessage(ControlBlockV300.MISSING_FOOD_SOURCES_VARIABLE);
+        assertThat(thrown).hasMessage(MessageFormat.format(
+                ControlBlockV300.MISSING_REQUIRED_VARIABLE, Constants.CONTROL_BLOCK_FOOD_SOURCES));
     }
 
     @Test
     public void missingAltMealOptionsTest() {
 
-        String workFlowData = HEADER
-                + CONTROL_BLOCK_BEGIN_ROW
-                + CONTROL_BLOCK_VERSION_ROW
-                + getKeyValueRow(opsManagerKey, opsManagerValue)
-                + getKeyValueRow(foodSourcesKey, foodSourcesValue)
-                + getKeyValueRow(altGroceryOptionsKey, altGroceryOptionsValue)
-                + getKeyValueRow(startTimesKey, startTimesValue)
-                + getKeyValueRow(pickupManagersKey, pickupManagersValue)
-                + CONTROL_BLOCK_END_ROW;
-
+        String workFlowData = new ControlBlockBuilder().withoutAltMealOptions().build();
         WorkflowParser workflowParser = WorkflowParser.create(
                 WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, Map.of(), workFlowData);
         ControlBlock controlBlock = workflowParser.controlBlock();
         Throwable thrown = catchThrowable(() -> audit(controlBlock));
         assertThat(thrown).isInstanceOf(MemberDataException.class);
-        assertThat(thrown).hasMessage(ControlBlockV300.MISSING_ALT_MEAL_OPTIONS_VARIABLE);
+        assertThat(thrown).hasMessage(MessageFormat.format(
+                ControlBlockV300.MISSING_REQUIRED_VARIABLE, Constants.CONTROL_BLOCK_ALT_MEAL_OPTIONS));
     }
 
     @Test
     public void tooManyAltMealOptionsTest() {
 
-        String workFlowData = HEADER
-                + CONTROL_BLOCK_BEGIN_ROW
-                + CONTROL_BLOCK_VERSION_ROW
-                + getKeyValueRow(opsManagerKey, opsManagerValue)
-                + getKeyValueRow(startTimesKey, startTimesValue)
-                + getKeyValueRow(foodSourcesKey, foodSourcesValue)
-                + getKeyValueRow(altMealOptionsKey, altMealOptionsKey)
-                + getKeyValueRow(altGroceryOptionsKey, altGroceryOptionsKey)
-                + getKeyValueRow(altMealOptionsKey, altMealOptionsKey)
-                + CONTROL_BLOCK_END_ROW;
+        String altMealOptions = ControlBlockBuilder.DEFAULT_ALT_MEAL_OPTIONS;
+
+        String workFlowData = new ControlBlockBuilder()
+                .withAltMealOptions(altMealOptions)
+                .withAltMealOptions(altMealOptions)
+                .build();
         WorkflowParser workflowParser = WorkflowParser.create(
                 WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, Map.of(), workFlowData);
         Throwable thrown = catchThrowable(() -> workflowParser.controlBlock());
@@ -509,37 +372,24 @@ public class ControlBlockTest extends ControlBlockTestBase {
     @Test
     public void missingAltGroceryOptionsTest() {
 
-        String workFlowData = HEADER
-                + CONTROL_BLOCK_BEGIN_ROW
-                + CONTROL_BLOCK_VERSION_ROW
-                + getKeyValueRow(opsManagerKey, opsManagerValue)
-                + getKeyValueRow(startTimesKey, startTimesValue)
-                + getKeyValueRow(foodSourcesKey, foodSourcesValue)
-                + getKeyValueRow(altMealOptionsKey, altMealOptionsKey)
-                + getKeyValueRow(pickupManagersKey, pickupManagersValue)
-                + CONTROL_BLOCK_END_ROW;
-
+        String workFlowData = new ControlBlockBuilder().withoutAltGroceryOptions().build();
         WorkflowParser workflowParser = WorkflowParser.create(
                 WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, Map.of(), workFlowData);
         ControlBlock controlBlock = workflowParser.controlBlock();
         Throwable thrown = catchThrowable(() -> audit(controlBlock));
         assertThat(thrown).isInstanceOf(MemberDataException.class);
-        assertThat(thrown).hasMessage(ControlBlockV300.MISSING_ALT_GROCERY_OPTIONS_VARIABLE);
+        assertThat(thrown).hasMessage(MessageFormat.format(
+                ControlBlockV300.MISSING_REQUIRED_VARIABLE, Constants.CONTROL_BLOCK_ALT_GROCERY_OPTIONS));
     }
 
     @Test
     public void tooManyAltGroceryOptionsTest() {
 
-        String workFlowData = HEADER
-                + CONTROL_BLOCK_BEGIN_ROW
-                + CONTROL_BLOCK_VERSION_ROW
-                + getKeyValueRow(opsManagerKey, opsManagerValue)
-                + getKeyValueRow(startTimesKey, startTimesValue)
-                + getKeyValueRow(foodSourcesKey, foodSourcesValue)
-                + getKeyValueRow(altGroceryOptionsKey, altGroceryOptionsKey)
-                + getKeyValueRow(altMealOptionsKey, altMealOptionsKey)
-                + getKeyValueRow(altGroceryOptionsKey, altGroceryOptionsKey)
-                + CONTROL_BLOCK_END_ROW;
+        String altGroceryOptions = "x, y, z";
+        String workFlowData = new ControlBlockBuilder()
+                .withAltGroceryOptions(altGroceryOptions)
+                .withAltGroceryOptions(altGroceryOptions)
+                .build();
         WorkflowParser workflowParser = WorkflowParser.create(
                 WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, Map.of(), workFlowData);
         Throwable thrown = catchThrowable(() -> workflowParser.controlBlock());
@@ -550,22 +400,38 @@ public class ControlBlockTest extends ControlBlockTestBase {
     @Test
     public void missingPickupManagersTest() {
 
-        String workFlowData = HEADER
-                + CONTROL_BLOCK_BEGIN_ROW
-                + CONTROL_BLOCK_VERSION_ROW
-                + getKeyValueRow(opsManagerKey, opsManagerValue)
-                + getKeyValueRow(startTimesKey, startTimesValue)
-                + getKeyValueRow(foodSourcesKey, foodSourcesValue)
-                + getKeyValueRow(altMealOptionsKey, altMealOptionsKey)
-                + getKeyValueRow(altGroceryOptionsKey, altGroceryOptionsKey)
-                + CONTROL_BLOCK_END_ROW;
-
+        String workFlowData = new ControlBlockBuilder().withoutPickupManager().build();
         WorkflowParser workflowParser = WorkflowParser.create(
                 WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, Map.of(), workFlowData);
         ControlBlock controlBlock = workflowParser.controlBlock();
         Throwable thrown = catchThrowable(() -> audit(controlBlock));
         assertThat(thrown).isInstanceOf(MemberDataException.class);
-        assertThat(thrown).hasMessage(ControlBlockV300.MISSING_PICKUP_MANAGERS_VARIABLE);
+        assertThat(thrown).hasMessage(MessageFormat.format(
+                ControlBlockV300.MISSING_REQUIRED_VARIABLE, Constants.CONTROL_BLOCK_PICKUP_MANAGER));
     }
 
+    @Test
+    public void missingMessageFormatTest() {
+
+        String workFlowData = new ControlBlockBuilder().withoutMessageFormat().build();
+        WorkflowParser workflowParser = WorkflowParser.create(
+                WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, Map.of(), workFlowData);
+        ControlBlock controlBlock = workflowParser.controlBlock();
+        Throwable thrown = catchThrowable(() -> audit(controlBlock));
+        assertThat(thrown).isInstanceOf(MemberDataException.class);
+        assertThat(thrown).hasMessage(MessageFormat.format(
+                ControlBlockV300.MISSING_REQUIRED_VARIABLE, Constants.CONTROL_BLOCK_MESSAGE_FORMAT));
+    }
+
+    @Test
+    public void invalidMessageFormatTest() {
+        String badFormat = "TuesdayWeld";
+        String workFlowData = new ControlBlockBuilder().withMessageFormat(badFormat).build();
+        WorkflowParser workflowParser = WorkflowParser.create(
+                WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, Map.of(), workFlowData);
+        ControlBlock controlBlock = workflowParser.controlBlock();
+        Throwable thrown = catchThrowable(() -> audit(controlBlock));
+        assertThat(thrown).isInstanceOf(MemberDataException.class);
+        assertThat(thrown).hasMessage(MessageFormat.format(ControlBlockV300.INVALID_MESSAGE_FORMAT, badFormat));
+    }
 }

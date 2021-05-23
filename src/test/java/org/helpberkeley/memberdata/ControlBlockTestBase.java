@@ -22,6 +22,7 @@
  */
 package org.helpberkeley.memberdata;
 
+import org.helpberkeley.memberdata.v300.ControlBlockBuilder;
 import org.junit.Test;
 
 import java.text.MessageFormat;
@@ -239,6 +240,7 @@ public abstract class ControlBlockTestBase extends TestBase {
                 + getBeginRow()
                 + getVersionRow()
                 + getKeyValueRow(key, value)
+                + addVersionSpecificRequiredVariables()
                 + getEndRow();
 
         WorkflowParser workflowParser = WorkflowParser.create(
@@ -498,16 +500,16 @@ public abstract class ControlBlockTestBase extends TestBase {
     }
 
     @Test
-    public void auditNoOpsManagerTest() {
+    public void missingOpsManagerTest() {
 
         String workFlowData = getHeader()
                 + getBeginRow()
                 + getVersionRow()
+                + addVersionSpecificRequiredVariables()
                 + getEndRow();
 
         WorkflowParser workflowParser = WorkflowParser.create(
                 WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, Map.of(), workFlowData);
-
         Throwable thrown = catchThrowable(() -> audit(workflowParser.controlBlock()));
         assertThat(thrown).isInstanceOf(MemberDataException.class);
         assertThat(thrown).hasMessageContaining(ControlBlock.ERROR_MISSING_OPS_MANAGER);
@@ -641,7 +643,6 @@ public abstract class ControlBlockTestBase extends TestBase {
 
         WorkflowParser workflowParser = WorkflowParser.create(
                 WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, Map.of(), workFlowData);
-
         ControlBlock controlBlock = workflowParser.controlBlock();
         audit(controlBlock);
         assertThat(controlBlock.getWarnings()).contains("No BackupDriverUserName set in the control block.\n");
@@ -677,15 +678,15 @@ public abstract class ControlBlockTestBase extends TestBase {
                 + getVersionRow()
                 + getKeyValueRow(opsKey, opsValue)
                 + getKeyValueRow(backupDriverKey, backupDriverValue)
+                + addVersionSpecificRequiredVariables()
                 + getEndRow();
 
         WorkflowParser workflowParser = WorkflowParser.create(
                 WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, Map.of(), workFlowData);
-
         Throwable thrown = catchThrowable(() -> audit(workflowParser.controlBlock()));
         assertThat(thrown).isInstanceOf(MemberDataException.class);
         assertThat(thrown).hasMessageContaining(
-                MessageFormat.format(ControlBlock.UNKNOWN_BACKUP_DRIVER, "NotAMemberDude"));
+                MessageFormat.format(ControlBlock.UNKNOWN_BACKUP_DRIVER, backupDriverValue));
     }
 
     /** Verify audit warning for backup not being a driver */
@@ -707,7 +708,6 @@ public abstract class ControlBlockTestBase extends TestBase {
 
         WorkflowParser workflowParser = WorkflowParser.create(
                 WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, Map.of(), workFlowData);
-
         ControlBlock controlBlock = workflowParser.controlBlock();
         audit(controlBlock);
         assertThat(controlBlock.getWarnings()).contains(

@@ -299,6 +299,9 @@ public abstract class ControlBlock {
             case Constants.CONTROL_BLOCK_FOOD_SOURCES:
                 processFoodSources(value, lineNumber);
                 break;
+            case Constants.CONTROL_BLOCK_MESSAGE_FORMAT:
+                processMessageFormat(value, lineNumber);
+                break;
             default:
                 warnings.append("Unknown key \"")
                         .append(variable)
@@ -550,6 +553,10 @@ public abstract class ControlBlock {
 
     void processPickupManager(String value, long lineNumber) {
         unsupported(lineNumber, Constants.CONTROL_BLOCK_PICKUP_MANAGER);
+    }
+
+    void processMessageFormat(String value, long lineNumber) {
+        unsupported(lineNumber, Constants.CONTROL_BLOCK_MESSAGE_FORMAT);
     }
 
     static class SplitRestaurant {

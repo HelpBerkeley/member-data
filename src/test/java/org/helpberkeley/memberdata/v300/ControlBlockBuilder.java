@@ -23,6 +23,10 @@
 package org.helpberkeley.memberdata.v300;
 
 import org.helpberkeley.memberdata.Constants;
+import org.helpberkeley.memberdata.MessageSpecFormat;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.helpberkeley.memberdata.v300.ControlBlockTest.EMPTY_ROW;
 
@@ -34,13 +38,21 @@ public class ControlBlockBuilder {
     public static final String DEFAULT_OPS_MANAGER = "JVol|123-456-7890";
     public static final String DEFAULT_ALT_MEAL_OPTIONS = "veggie, noPork";
     public static final String DEFAULT_ALT_GROCERY_OPTIONS = "veg, custom pick";
+    public static final String DEFAULT_MESSAGE_FORMAT = MessageSpecFormat.MONDAY.getFormat();
 
-    private String startTimes = DEFAULT_START_TIMES;
-    private String pickupManager = DEFAULT_PICKUP_MANAGER;
+    private final List<String> DEFAULT_PICKUP_MANAGERS_LIST = List.of(DEFAULT_PICKUP_MANAGER);
+    private final List<String> DEFAULT_ALT_MEAL_OPTIONS_LIST = List.of(DEFAULT_ALT_MEAL_OPTIONS);
+    private final List<String> DEFAULT_ALT_GROCERY_OPTIONS_LIST = List.of(DEFAULT_ALT_GROCERY_OPTIONS);
+    private final List<String> DEFAULT_START_TIMES_LIST = List.of(DEFAULT_START_TIMES);
+
+    private List<String> startTimes = DEFAULT_START_TIMES_LIST;
     private String opsManager = DEFAULT_OPS_MANAGER;
     private String foodSources = DEFAULT_FOOD_SOURCES;
-    private String altMealOptions = DEFAULT_ALT_MEAL_OPTIONS;
-    private String altGroceryOptions = DEFAULT_ALT_GROCERY_OPTIONS;
+    private List<String> altMealOptions = DEFAULT_ALT_MEAL_OPTIONS_LIST;
+    private List<String> altGroceryOptions = DEFAULT_ALT_GROCERY_OPTIONS_LIST;
+    private String messageFormat = DEFAULT_MESSAGE_FORMAT;
+    private String backupDriver = null;
+    private List<String> pickupManagers = DEFAULT_PICKUP_MANAGERS_LIST;
 
     @Override
     public String toString() {
@@ -53,14 +65,43 @@ public class ControlBlockBuilder {
         controlBlock.append(ControlBlockTest.HEADER);
         controlBlock.append(ControlBlockTest.CONTROL_BLOCK_BEGIN_ROW);
         controlBlock.append(ControlBlockTest.CONTROL_BLOCK_VERSION_ROW);
-        controlBlock.append(getKeyValueRow(Constants.CONTROL_BLOCK_START_TIMES, quote(startTimes)));
-        controlBlock.append(getKeyValueRow(Constants.CONTROL_BLOCK_OPS_MANAGER, opsManager));
-        controlBlock.append(getKeyValueRow(Constants.CONTROL_BLOCK_PICKUP_MANAGER, pickupManager));
-        controlBlock.append(getKeyValueRow(Constants.CONTROL_BLOCK_FOOD_SOURCES, foodSources));
-        controlBlock.append(getKeyValueRow(Constants.CONTROL_BLOCK_ALT_MEAL_OPTIONS,
-                altMealOptions.isEmpty() ? altMealOptions : quote(altMealOptions)));
-        controlBlock.append(getKeyValueRow(Constants.CONTROL_BLOCK_ALT_GROCERY_OPTIONS,
-                altGroceryOptions.isEmpty() ? altGroceryOptions : quote(altGroceryOptions)));
+
+        if (messageFormat != null) {
+            controlBlock.append(getKeyValueRow(Constants.CONTROL_BLOCK_MESSAGE_FORMAT, messageFormat));
+        }
+        if (startTimes != null) {
+            startTimes.forEach((s) -> controlBlock.append(
+                    getKeyValueRow(Constants.CONTROL_BLOCK_START_TIMES, quote(s))));
+        }
+        if (opsManager != null) {
+            controlBlock.append(getKeyValueRow(Constants.CONTROL_BLOCK_OPS_MANAGER, opsManager));
+        }
+        if (pickupManagers != null) {
+            pickupManagers.forEach((p) -> controlBlock.append(
+                    getKeyValueRow(Constants.CONTROL_BLOCK_PICKUP_MANAGER, p)));
+        }
+        if (foodSources != null) {
+            controlBlock.append(getKeyValueRow(Constants.CONTROL_BLOCK_FOOD_SOURCES, foodSources));
+        }
+        if (altMealOptions != null) {
+            if (altMealOptions.isEmpty()) {
+                controlBlock.append(getKeyValueRow(Constants.CONTROL_BLOCK_ALT_MEAL_OPTIONS, ""));
+            } else {
+                altMealOptions.forEach((o) -> controlBlock.append(
+                        getKeyValueRow(Constants.CONTROL_BLOCK_ALT_MEAL_OPTIONS, quote(o))));
+            }
+        }
+        if (altGroceryOptions != null) {
+            if (altGroceryOptions.isEmpty()) {
+                controlBlock.append(getKeyValueRow(Constants.CONTROL_BLOCK_ALT_GROCERY_OPTIONS, ""));
+            } else {
+                altGroceryOptions.forEach((o) -> controlBlock.append(
+                        getKeyValueRow(Constants.CONTROL_BLOCK_ALT_GROCERY_OPTIONS, quote(o))));
+            }
+        }
+        if (backupDriver != null) {
+            controlBlock.append(getKeyValueRow(Constants.CONTROL_BLOCK_BACKUP_DRIVER, backupDriver));
+        }
         controlBlock.append(ControlBlockTest.CONTROL_BLOCK_END_ROW);
         controlBlock.append(EMPTY_ROW);
 
@@ -68,22 +109,54 @@ public class ControlBlockBuilder {
     }
 
     public ControlBlockBuilder withStartTimes(String startTimes) {
-        this.startTimes = startTimes;
+        if (this.startTimes == DEFAULT_START_TIMES_LIST) {
+            this.startTimes = new ArrayList<>();
+        }
+        this.startTimes.add(startTimes);
+        return this;
+    }
+
+    public ControlBlockBuilder withoutStartTimes() {
+        this.startTimes = null;
         return this;
     }
 
     public ControlBlockBuilder withAltMealOptions(String mealOptions) {
-        this.altMealOptions = mealOptions;
+        if (altMealOptions == DEFAULT_ALT_MEAL_OPTIONS_LIST) {
+            altMealOptions = new ArrayList<>();
+        }
+        altMealOptions.add(mealOptions);
+        return this;
+    }
+
+    public ControlBlockBuilder withoutAltMealOptions() {
+        this.altMealOptions = null;
         return this;
     }
 
     public ControlBlockBuilder withAltGroceryOptions(String groceryOptions) {
-        this.altGroceryOptions = groceryOptions;
+        if (altGroceryOptions == DEFAULT_ALT_GROCERY_OPTIONS_LIST) {
+            altGroceryOptions = new ArrayList<>();
+        }
+        altGroceryOptions.add(groceryOptions);
+        return this;
+    }
+
+    public ControlBlockBuilder withoutAltGroceryOptions() {
+        this.altGroceryOptions = null;
         return this;
     }
 
     public ControlBlockBuilder withPickupManager(String pickupManager) {
-        this.pickupManager = pickupManager;
+        if (pickupManagers == DEFAULT_PICKUP_MANAGERS_LIST) {
+            pickupManagers = new ArrayList<>();
+        }
+        pickupManagers.add(pickupManager);
+        return this;
+    }
+
+    public ControlBlockBuilder withoutPickupManager() {
+        this.pickupManagers = null;
         return this;
     }
 
@@ -92,8 +165,33 @@ public class ControlBlockBuilder {
         return this;
     }
 
+    public ControlBlockBuilder withoutFoodSources() {
+        this.foodSources = null;
+        return this;
+    }
+
     public ControlBlockBuilder withOpsManager(String opsManager) {
         this.opsManager = opsManager;
+        return this;
+    }
+
+    public ControlBlockBuilder withoutOpsManager() {
+        this.opsManager = null;
+        return this;
+    }
+
+    public ControlBlockBuilder withMessageFormat(String format) {
+        this.messageFormat = format;
+        return this;
+    }
+
+    public ControlBlockBuilder withoutMessageFormat() {
+        this.messageFormat = null;
+        return this;
+    }
+
+    public ControlBlockBuilder withBackupDriver(String backupDriver) {
+        this.backupDriver = backupDriver;
         return this;
     }
 

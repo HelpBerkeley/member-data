@@ -57,3 +57,5 @@ name of Joe "Billy Bob" Thorton
 Add a heart beat post update, to show the back end running
 
 Update user names to audit case-insensitive
+
+Audits for ReplaceThisBy in new control block

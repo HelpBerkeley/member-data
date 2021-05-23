@@ -48,16 +48,10 @@ public class ControlBlockV300 extends ControlBlock {
             + " is defined more than once in the control block.\n";
     public static final String TOO_MANY_ALT_GROCERY_OPTIONS_VARIABLES = Constants.CONTROL_BLOCK_ALT_GROCERY_OPTIONS
             + " is defined more than once in the control block.\n";
-    public static final String MISSING_FOOD_SOURCES_VARIABLE =
-            "Required " + Constants.CONTROL_BLOCK_FOOD_SOURCES + " control block variable is missing.\n";
-    public static final String MISSING_START_TIMES_VARIABLE =
-            "Required " + Constants.CONTROL_BLOCK_START_TIMES + " control block variable is missing.\n";
-    public static final String MISSING_ALT_MEAL_OPTIONS_VARIABLE =
-            "Required " + Constants.CONTROL_BLOCK_ALT_MEAL_OPTIONS + " control block variable is missing.\n";
-    public static final String MISSING_ALT_GROCERY_OPTIONS_VARIABLE =
-            "Required " + Constants.CONTROL_BLOCK_ALT_GROCERY_OPTIONS + " control block variable is missing.\n";
-    public static final String MISSING_PICKUP_MANAGERS_VARIABLE =
-            "Required " + Constants.CONTROL_BLOCK_PICKUP_MANAGER + " control block variable is missing.\n";
+    public static final String TOO_MANY_MESSAGE_FORMAT_VARIABLES = Constants.CONTROL_BLOCK_MESSAGE_FORMAT
+            + " is defined more than once in the control block.\n";
+
+    public static final String MISSING_REQUIRED_VARIABLE = "Required {0} control block variable is missing.\n";
     public static final String UNKNOWN_PICKUP_MANAGER =
             Constants.CONTROL_BLOCK_PICKUP_MANAGER + " {0} is not a member. Misspelling?\n";
     public static final String EMPTY_GROCERY_SOURCE =
@@ -68,6 +62,8 @@ public class ControlBlockV300 extends ControlBlock {
             + " value \"{0}\" at line {1} does not match \"Meal source | Grocery source\".\n";
     public static final String INVALID_NONE_ALT = "\"{0}\" is not valid for control block {1}. "
             + "Leave the value column empty if there are no alternate choices.\n";
+    public static final String INVALID_MESSAGE_FORMAT = "\"{0}\" is not valid for "
+            + Constants.CONTROL_BLOCK_MESSAGE_FORMAT + "\n";
 
     private List<String> pickupManagers = null;
     private List<String> altMealOptions = null;
@@ -75,6 +71,7 @@ public class ControlBlockV300 extends ControlBlock {
     private final List<String> startTimes = new ArrayList<>();
     private String mealSource = "";
     private String grocerySource = "";
+    private String messageFormat = null;
 
     ControlBlockV300(String header) {
          super(header);
@@ -83,6 +80,7 @@ public class ControlBlockV300 extends ControlBlock {
     public void audit(Map<String, User> users, List<Driver> drivers) {
         StringBuilder errors = new StringBuilder();
 
+        auditMessageFormat(errors);
         auditOpsManager(errors, users);
         auditBackupDrivers(errors, users);
         auditStartTimes(errors, drivers);
@@ -143,6 +141,14 @@ public class ControlBlockV300 extends ControlBlock {
         pickupManagers.add(value.trim());
     }
 
+    @Override
+    void processMessageFormat(String value, long lineNumber) {
+        if (messageFormat != null) {
+            throw new MemberDataException(TOO_MANY_MESSAGE_FORMAT_VARIABLES);
+        }
+
+        messageFormat = value;
+    }
 
     //
     // A FoodSources data field should look like "meal source  | grocery source"
@@ -206,7 +212,7 @@ public class ControlBlockV300 extends ControlBlock {
     private void auditStartTimes(StringBuilder errors, List<Driver> drivers) {
 
         if (startTimes.isEmpty()) {
-            errors.append(MISSING_START_TIMES_VARIABLE);
+            errors.append(MessageFormat.format(MISSING_REQUIRED_VARIABLE, Constants.CONTROL_BLOCK_START_TIMES));
             return;
         }
 
@@ -237,13 +243,13 @@ public class ControlBlockV300 extends ControlBlock {
 
     private void auditFoodSources(StringBuilder errors) {
         if (mealSource.isEmpty() && grocerySource.isEmpty()) {
-            errors.append(MISSING_FOOD_SOURCES_VARIABLE);
+            errors.append(MessageFormat.format(MISSING_REQUIRED_VARIABLE, Constants.CONTROL_BLOCK_FOOD_SOURCES));
         }
     }
 
     private void auditAltMealOptions(StringBuilder errors) {
         if (altMealOptions == null) {
-            errors.append(MISSING_ALT_MEAL_OPTIONS_VARIABLE);
+            errors.append(MessageFormat.format(MISSING_REQUIRED_VARIABLE, Constants.CONTROL_BLOCK_ALT_MEAL_OPTIONS));
         } else if ((altMealOptions.size() == 1) &&
                 altMealOptions.get(0).equalsIgnoreCase(Constants.ALT_TYPE_NONE)) {
             errors.append(MessageFormat.format(INVALID_NONE_ALT,
@@ -253,7 +259,7 @@ public class ControlBlockV300 extends ControlBlock {
 
     private void auditAltGroceryOptions(StringBuilder errors) {
         if (altGroceryOptions == null) {
-            errors.append(MISSING_ALT_GROCERY_OPTIONS_VARIABLE);
+            errors.append(MessageFormat.format(MISSING_REQUIRED_VARIABLE, Constants.CONTROL_BLOCK_ALT_GROCERY_OPTIONS));
         } else if ((altGroceryOptions.size() == 1) &&
             altGroceryOptions.get(0).equalsIgnoreCase(Constants.ALT_TYPE_NONE)) {
             errors.append(MessageFormat.format(INVALID_NONE_ALT,
@@ -263,7 +269,7 @@ public class ControlBlockV300 extends ControlBlock {
 
     private void auditPickupManagers(StringBuilder errors, Map<String, User> users) {
         if (pickupManagers == null) {
-            errors.append(MISSING_PICKUP_MANAGERS_VARIABLE);
+            errors.append(MessageFormat.format(MISSING_REQUIRED_VARIABLE, Constants.CONTROL_BLOCK_PICKUP_MANAGER));
             return;
         }
 
@@ -275,6 +281,17 @@ public class ControlBlockV300 extends ControlBlock {
                 errors.append(MessageFormat.format(UNKNOWN_PICKUP_MANAGER, pickupManager));
             }
             // FIX THIS, DS: add group audit warning?
+        }
+    }
+
+    private void auditMessageFormat(StringBuilder errors) {
+        if (messageFormat == null) {
+            throw new MemberDataException(MessageFormat.format(
+                    MISSING_REQUIRED_VARIABLE, Constants.CONTROL_BLOCK_MESSAGE_FORMAT));
+        }
+
+        if (! MessageSpecFormat.validFormat(messageFormat)) {
+            throw new MemberDataException(MessageFormat.format(INVALID_MESSAGE_FORMAT, messageFormat));
         }
     }
 }

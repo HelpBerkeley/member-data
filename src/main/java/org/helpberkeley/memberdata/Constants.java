@@ -203,6 +203,7 @@ public class Constants {
     public static final String CONTROL_BLOCK_START_TIMES = "StartTimes()";
     public static final String CONTROL_BLOCK_PICKUP_MANAGER = "PickupManagerUserName";
     public static final String CONTROL_BLOCK_FOOD_SOURCES = "FoodSources(Meal|Grocery)";
+    public static final String CONTROL_BLOCK_MESSAGE_FORMAT = "MessageFormat(Monday|Thursday)";
 
     public static final String CONTROL_BLOCK_VALUE_DEFAULT_PREFIX = "ReplaceThisBy";
     public static final String CONTROL_BLOCK_VERSION_UNKNOWN = "0";

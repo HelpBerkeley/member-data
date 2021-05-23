@@ -134,8 +134,4 @@ public abstract class DriverPostTest extends TestBase {
         List<String> posts = driverPostFormat.generateDriverPosts();
         checkCondoConsumers(posts);
     }
-
-    protected String quote(String quotable) {
-        return "\"" + quotable + "\"";
-    }
 }
