@@ -22,7 +22,6 @@
  */
 package org.helpberkeley.memberdata;
 
-import org.helpberkeley.memberdata.v300.ControlBlockBuilder;
 import org.junit.Test;
 
 import java.text.MessageFormat;

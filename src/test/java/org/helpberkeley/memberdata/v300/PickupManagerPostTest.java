@@ -23,7 +23,6 @@
 package org.helpberkeley.memberdata.v300;
 
 import org.helpberkeley.memberdata.*;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.Map;

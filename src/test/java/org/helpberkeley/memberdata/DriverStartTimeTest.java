@@ -668,7 +668,7 @@ public class DriverStartTimeTest extends TestBase {
                 builder.append(")");
             }
 
-            return "Expected Start: " + expectedStartTime + ", Pickups: " + builder.toString();
+            return "Expected Start: " + expectedStartTime + ", Pickups: " + builder;
         }
     }
 

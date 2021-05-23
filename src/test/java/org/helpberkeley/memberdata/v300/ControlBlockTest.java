@@ -23,7 +23,6 @@
 package org.helpberkeley.memberdata.v300;
 
 import org.helpberkeley.memberdata.*;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.text.MessageFormat;
@@ -198,7 +197,7 @@ public class ControlBlockTest extends ControlBlockTestBase {
         String workFlowData = new ControlBlockBuilder().withFoodSources(value).build();
         WorkflowParser workflowParser = WorkflowParser.create(
                 WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, Map.of(), workFlowData);
-        Throwable thrown = catchThrowable(() -> workflowParser.controlBlock());
+        Throwable thrown = catchThrowable(workflowParser::controlBlock);
         assertThat(thrown).isInstanceOf(MemberDataException.class);
         assertThat(thrown).hasMessage(MessageFormat.format(ControlBlockV300.FOOD_SOURCES_BAD_VALUE, value, 8));
     }
@@ -287,7 +286,7 @@ public class ControlBlockTest extends ControlBlockTestBase {
                 .build();
         WorkflowParser workflowParser = WorkflowParser.create(
                 WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, Map.of(), workFlowData);
-        Throwable thrown = catchThrowable(() -> workflowParser.controlBlock());
+        Throwable thrown = catchThrowable(workflowParser::controlBlock);
         assertThat(thrown).isInstanceOf(MemberDataException.class);
         assertThat(thrown).hasMessage(ControlBlockV300.TOO_MANY_START_TIMES_VARIABLES);
     }
@@ -322,7 +321,7 @@ public class ControlBlockTest extends ControlBlockTestBase {
 
         WorkflowParser workflowParser = WorkflowParser.create(
                 WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, Map.of(), workFlowData);
-        Throwable thrown = catchThrowable(() -> workflowParser.controlBlock());
+        Throwable thrown = catchThrowable(workflowParser::controlBlock);
         assertThat(thrown).isInstanceOf(MemberDataException.class);
         assertThat(thrown).hasMessage(ControlBlockV300.TOO_MANY_FOOD_SOURCES_VARIABLES);
     }
@@ -364,7 +363,7 @@ public class ControlBlockTest extends ControlBlockTestBase {
                 .build();
         WorkflowParser workflowParser = WorkflowParser.create(
                 WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, Map.of(), workFlowData);
-        Throwable thrown = catchThrowable(() -> workflowParser.controlBlock());
+        Throwable thrown = catchThrowable(workflowParser::controlBlock);
         assertThat(thrown).isInstanceOf(MemberDataException.class);
         assertThat(thrown).hasMessage(ControlBlockV300.TOO_MANY_ALT_MEAL_OPTIONS_VARIABLES);
     }
@@ -392,7 +391,7 @@ public class ControlBlockTest extends ControlBlockTestBase {
                 .build();
         WorkflowParser workflowParser = WorkflowParser.create(
                 WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, Map.of(), workFlowData);
-        Throwable thrown = catchThrowable(() -> workflowParser.controlBlock());
+        Throwable thrown = catchThrowable(workflowParser::controlBlock);
         assertThat(thrown).isInstanceOf(MemberDataException.class);
         assertThat(thrown).hasMessage(ControlBlockV300.TOO_MANY_ALT_GROCERY_OPTIONS_VARIABLES);
     }

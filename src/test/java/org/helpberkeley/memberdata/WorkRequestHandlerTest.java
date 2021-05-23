@@ -108,7 +108,7 @@ public class WorkRequestHandlerTest extends TestBase {
         Query query = new Query(queryId, Constants.TOPIC_REQUEST_DRIVER_MESSAGES);
         WorkRequestHandler requestHandler = new WorkRequestHandler(apiClient, query);
 
-        Throwable thrown = catchThrowable(() -> requestHandler.getLastReply());
+        Throwable thrown = catchThrowable(requestHandler::getLastReply);
         assertThat(thrown).isInstanceOf(MemberDataException.class);
         assertThat(thrown).hasMessageContaining(WorkRequestHandler.TOPIC_DIRECTIVE_NOT_SUPPORTED);
 

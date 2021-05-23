@@ -27,10 +27,10 @@ import java.util.List;
 
 public class DriverBlockBuilder {
 
-    private List<RestaurantBuilder> restaurants = new ArrayList<>();
-    private List<DeliveryBuilder> deliveries = new ArrayList<>();
+    private final List<RestaurantBuilder> restaurants = new ArrayList<>();
+    private final List<DeliveryBuilder> deliveries = new ArrayList<>();
     private DriverBuilder driver = new DriverBuilder();
-    private String gmapURL = WorkflowBuilder.DEFAULT_GMAP_URL;
+    private final String gmapURL = WorkflowBuilder.DEFAULT_GMAP_URL;
 
     @Override
     public String toString() {

@@ -69,7 +69,7 @@ public class RoutedDeliveriesTest extends TestBase {
         List<Delivery> deliveries = driver.getDeliveries();
         assertThat(deliveries).hasSize(7);
 
-        Delivery delivery = (DeliveryV300) deliveries.get(0);
+        Delivery delivery = deliveries.get(0);
         assertThat(delivery.getName()).isEqualTo("Cust Name 1");
         assertThat(delivery.getUserName()).isEqualTo("Cust1");
         assertThat(delivery.getPhone()).isEqualTo("555-555-1112");

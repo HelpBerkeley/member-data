@@ -237,7 +237,7 @@ public class MainTest extends TestBase {
 
         Post statusPost = WorkRequestHandler.getLastStatusPost();
         assertThat(statusPost).isNotNull();
-        assertThat(statusPost.raw).contains("Status: " + WorkRequestHandler.RequestStatus.Failed.toString());
+        assertThat(statusPost.raw).contains("Status: " + WorkRequestHandler.RequestStatus.Failed);
         assertThat(statusPost.raw).contains(WorkRequestHandler.ERROR_INVALID_DATE);
         assertThat(statusPost.topic_id).isEqualTo(Main.COMPLETED_DAILY_DELIVERIES_TOPIC);
     }
@@ -264,7 +264,7 @@ public class MainTest extends TestBase {
 
         Post statusPost = WorkRequestHandler.getLastStatusPost();
         assertThat(statusPost).isNotNull();
-        assertThat(statusPost.raw).contains("Status: " + WorkRequestHandler.RequestStatus.Failed.toString());
+        assertThat(statusPost.raw).contains("Status: " + WorkRequestHandler.RequestStatus.Failed);
         assertThat(statusPost.raw).contains("Invalid date");
         assertThat(statusPost.raw).contains("is in the future.");
         assertThat(statusPost.topic_id).isEqualTo(Main.COMPLETED_DAILY_DELIVERIES_TOPIC);
@@ -292,7 +292,7 @@ public class MainTest extends TestBase {
 
         Post statusPost = WorkRequestHandler.getLastStatusPost();
         assertThat(statusPost).isNotNull();
-        assertThat(statusPost.raw).contains("Status: " + WorkRequestHandler.RequestStatus.Failed.toString());
+        assertThat(statusPost.raw).contains("Status: " + WorkRequestHandler.RequestStatus.Failed);
         assertThat(statusPost.raw).contains("Invalid date");
         assertThat(statusPost.raw).contains("is more than one week ago.");
         assertThat(statusPost.topic_id).isEqualTo(Main.COMPLETED_DAILY_DELIVERIES_TOPIC);
@@ -320,7 +320,7 @@ public class MainTest extends TestBase {
 
         Post statusPost = WorkRequestHandler.getLastStatusPost();
         assertThat(statusPost).isNotNull();
-        assertThat(statusPost.raw).contains("Status: " + WorkRequestHandler.RequestStatus.Succeeded.toString());
+        assertThat(statusPost.raw).contains("Status: " + WorkRequestHandler.RequestStatus.Succeeded);
         assertThat(statusPost.topic_id).isEqualTo(Main.COMPLETED_DAILY_DELIVERIES_TOPIC);
     }
 

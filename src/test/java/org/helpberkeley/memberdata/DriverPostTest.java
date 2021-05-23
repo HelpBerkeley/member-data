@@ -22,10 +22,8 @@
  */
 package org.helpberkeley.memberdata;
 
-import com.cedarsoftware.util.io.JsonWriter;
 import org.junit.Test;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -113,7 +111,7 @@ public abstract class DriverPostTest extends TestBase {
                 getRestaurantTemplateQuery(),
                 getDriverPostFormatQuery(),
                 getGroupInstructionsFormatQuery());
-        Throwable thrown = catchThrowable(() -> driverPostFormat.generateDriverPosts());
+        Throwable thrown = catchThrowable(driverPostFormat::generateDriverPosts);
         assertThat(thrown).isInstanceOf(MemberDataException.class);
         assertThat(thrown).hasMessageContaining(DriverPostFormat.ERROR_CONTINUE_WITHOUT_LOOP);
     }

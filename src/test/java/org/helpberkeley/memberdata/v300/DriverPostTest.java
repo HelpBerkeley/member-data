@@ -22,8 +22,6 @@
  */
 package org.helpberkeley.memberdata.v300;
 
-import org.assertj.core.api.AssertionsForClassTypes;
-import org.assertj.core.api.ThrowableAssert;
 import org.helpberkeley.memberdata.*;
 import org.junit.Test;
 

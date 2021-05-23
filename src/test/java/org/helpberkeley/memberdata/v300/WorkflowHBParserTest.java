@@ -23,7 +23,6 @@
 package org.helpberkeley.memberdata.v300;
 
 import org.helpberkeley.memberdata.*;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.text.MessageFormat;
@@ -93,7 +92,7 @@ public class WorkflowHBParserTest extends WorkflowHBParserBaseTest {
         WorkflowParser parser = WorkflowParser.create(
                 WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, restaurants, workflowBuilder.build());
         auditControlBlock(parser.controlBlock());
-        Throwable thrown = catchThrowable(() -> parser.drivers());
+        Throwable thrown = catchThrowable(parser::drivers);
         assertThat(thrown).isInstanceOf(MemberDataException.class);
         assertThat(thrown).hasMessage(MessageFormat.format(
                 WorkflowParserV300.INVALID_COUNT_VALUE, 15, badCount, Constants.WORKFLOW_STD_MEALS_COLUMN));
@@ -115,7 +114,7 @@ public class WorkflowHBParserTest extends WorkflowHBParserBaseTest {
                 WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, restaurants, workflowBuilder.build());
         auditControlBlock(parser.controlBlock());
 
-        Throwable thrown = catchThrowable(() -> parser.drivers());
+        Throwable thrown = catchThrowable(parser::drivers);
         assertThat(thrown).isInstanceOf(MemberDataException.class);
         assertThat(thrown).hasMessage(MessageFormat.format(
                 WorkflowParserV300.INVALID_COUNT_VALUE, 15, badCount, Constants.WORKFLOW_ALT_MEALS_COLUMN));
@@ -134,7 +133,7 @@ public class WorkflowHBParserTest extends WorkflowHBParserBaseTest {
         WorkflowParser parser = WorkflowParser.create(
                 WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, restaurants, workflowBuilder.build());
         auditControlBlock(parser.controlBlock());
-        Throwable thrown = catchThrowable(() -> parser.drivers());
+        Throwable thrown = catchThrowable(parser::drivers);
         assertThat(thrown).isInstanceOf(MemberDataException.class);
         assertThat(thrown).hasMessage(MessageFormat.format(
                 WorkflowParserV300.MISSING_ALT_TYPE, 15, Constants.WORKFLOW_TYPE_MEAL_COLUMN));
@@ -155,7 +154,7 @@ public class WorkflowHBParserTest extends WorkflowHBParserBaseTest {
                 WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, restaurants, workflowBuilder.build());
         auditControlBlock(parser.controlBlock());
 
-        Throwable thrown = catchThrowable(() -> parser.drivers());
+        Throwable thrown = catchThrowable(parser::drivers);
         assertThat(thrown).isInstanceOf(MemberDataException.class);
         assertThat(thrown).hasMessage(MessageFormat.format(WorkflowParserV300.ALT_MEAL_MISMATCH,
                 17, unknownMealType, ControlBlockBuilder.DEFAULT_ALT_MEAL_OPTIONS));
@@ -177,7 +176,7 @@ public class WorkflowHBParserTest extends WorkflowHBParserBaseTest {
                 WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, restaurants, workflowBuilder.build());
         auditControlBlock(parser.controlBlock());
 
-        Throwable thrown = catchThrowable(() -> parser.drivers());
+        Throwable thrown = catchThrowable(parser::drivers);
         assertThat(thrown).isInstanceOf(MemberDataException.class);
         assertThat(thrown).hasMessage(MessageFormat.format(WorkflowParserV300.EMPTY_ALT_MEAL, 17, mealType));
     }
@@ -198,7 +197,7 @@ public class WorkflowHBParserTest extends WorkflowHBParserBaseTest {
                 WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, restaurants, workflowBuilder.build());
         auditControlBlock(parser.controlBlock());
 
-        Throwable thrown = catchThrowable(() -> parser.drivers());
+        Throwable thrown = catchThrowable(parser::drivers);
         assertThat(thrown).isInstanceOf(MemberDataException.class);
         assertThat(thrown).hasMessage(MessageFormat.format(
                 WorkflowParserV300.EMPTY_ALT_GROCERY, 17, groceryType));
@@ -220,7 +219,7 @@ public class WorkflowHBParserTest extends WorkflowHBParserBaseTest {
         WorkflowParser parser = WorkflowParser.create(
                 WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, restaurants, workflowBuilder.build());
         auditControlBlock(parser.controlBlock());
-        Throwable thrown = catchThrowable(() -> parser.drivers());
+        Throwable thrown = catchThrowable(parser::drivers);
         assertThat(thrown).isInstanceOf(MemberDataException.class);
         assertThat(thrown).hasMessage(MessageFormat.format(
                 WorkflowParserV300.INVALID_COUNT_VALUE, 15, badCount, Constants.WORKFLOW_STD_GROCERY_COLUMN));
@@ -241,7 +240,7 @@ public class WorkflowHBParserTest extends WorkflowHBParserBaseTest {
         WorkflowParser parser = WorkflowParser.create(
                 WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, restaurants, workflowBuilder.build());
         auditControlBlock(parser.controlBlock());
-        Throwable thrown = catchThrowable(() -> parser.drivers());
+        Throwable thrown = catchThrowable(parser::drivers);
         assertThat(thrown).isInstanceOf(MemberDataException.class);
         assertThat(thrown).hasMessage(MessageFormat.format(
                 WorkflowParserV300.INVALID_COUNT_VALUE, 15, badCount, Constants.WORKFLOW_ALT_GROCERY_COLUMN));
@@ -262,7 +261,7 @@ public class WorkflowHBParserTest extends WorkflowHBParserBaseTest {
                 WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, restaurants, workflowBuilder.build());
         auditControlBlock(parser.controlBlock());
 
-        Throwable thrown = catchThrowable(() -> parser.drivers());
+        Throwable thrown = catchThrowable(parser::drivers);
         assertThat(thrown).isInstanceOf(MemberDataException.class);
         assertThat(thrown).hasMessage(MessageFormat.format(
                 WorkflowParserV300.MISSING_ALT_TYPE, 15, Constants.WORKFLOW_TYPE_GROCERY_COLUMN));
@@ -283,7 +282,7 @@ public class WorkflowHBParserTest extends WorkflowHBParserBaseTest {
                 WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, restaurants, workflowBuilder.build());
         auditControlBlock(parser.controlBlock());
 
-        Throwable thrown = catchThrowable(() -> parser.drivers());
+        Throwable thrown = catchThrowable(parser::drivers);
         assertThat(thrown).isInstanceOf(MemberDataException.class);
         assertThat(thrown).hasMessage(MessageFormat.format(WorkflowParserV300.ALT_GROCERY_MISMATCH,
                 17, unknownGroceryType, ControlBlockBuilder.DEFAULT_ALT_GROCERY_OPTIONS));
@@ -301,7 +300,7 @@ public class WorkflowHBParserTest extends WorkflowHBParserBaseTest {
                 WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, restaurants, workflowBuilder.build());
         auditControlBlock(parser.controlBlock());
 
-        Throwable thrown = catchThrowable(() -> parser.drivers());
+        Throwable thrown = catchThrowable(parser::drivers);
         assertThat(thrown).isInstanceOf(MemberDataException.class);
         assertThat(thrown).hasMessage(MessageFormat.format(WorkflowParserV300.MISSING_CONSUMER_NAME, 15));
     }
@@ -318,7 +317,7 @@ public class WorkflowHBParserTest extends WorkflowHBParserBaseTest {
                 WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, restaurants, workflowBuilder.build());
         auditControlBlock(parser.controlBlock());
 
-        Throwable thrown = catchThrowable(() -> parser.drivers());
+        Throwable thrown = catchThrowable(parser::drivers);
         assertThat(thrown).isInstanceOf(MemberDataException.class);
         assertThat(thrown).hasMessage(MessageFormat.format(
                 WorkflowParserV300.MISSING_CONSUMER_USER_NAME, 15));
@@ -336,7 +335,7 @@ public class WorkflowHBParserTest extends WorkflowHBParserBaseTest {
                 WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, restaurants, workflowBuilder.build());
         auditControlBlock(parser.controlBlock());
 
-        Throwable thrown = catchThrowable(() -> parser.drivers());
+        Throwable thrown = catchThrowable(parser::drivers);
         assertThat(thrown).isInstanceOf(MemberDataException.class);
         assertThat(thrown).hasMessage(MessageFormat.format(
                 WorkflowParserV300.MISSING_CITY, 15));
@@ -354,7 +353,7 @@ public class WorkflowHBParserTest extends WorkflowHBParserBaseTest {
                 WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, restaurants, workflowBuilder.build());
         auditControlBlock(parser.controlBlock());
 
-        Throwable thrown = catchThrowable(() -> parser.drivers());
+        Throwable thrown = catchThrowable(parser::drivers);
         assertThat(thrown).isInstanceOf(MemberDataException.class);
         assertThat(thrown).hasMessage(MessageFormat.format(
                 WorkflowParserV300.MISSING_ADDRESS, 15));
@@ -372,7 +371,7 @@ public class WorkflowHBParserTest extends WorkflowHBParserBaseTest {
                 WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, restaurants, workflowBuilder.build());
         auditControlBlock(parser.controlBlock());
 
-        Throwable thrown = catchThrowable(() -> parser.drivers());
+        Throwable thrown = catchThrowable(parser::drivers);
         assertThat(thrown).isInstanceOf(MemberDataException.class);
         assertThat(thrown).hasMessage(MessageFormat.format(
                 WorkflowParserV300.MISSING_PHONE, 15));
@@ -438,7 +437,7 @@ public class WorkflowHBParserTest extends WorkflowHBParserBaseTest {
         WorkflowParser parser = WorkflowParser.create(
                 WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, restaurants, workflowBuilder.build());
         auditControlBlock(parser.controlBlock());
-        Throwable thrown = catchThrowable(() -> parser.drivers());
+        Throwable thrown = catchThrowable(parser::drivers);
         assertThat(thrown).isInstanceOf(MemberDataException.class);
         assertThat(thrown).hasMessage(MessageFormat.format(WorkflowParserV300.DUPLICATE_PICKUP,
                 WorkflowBuilder.DEFAULT_RESTAURANT_NAME, WorkflowBuilder.DEFAULT_DRIVER_USER_NAME));
