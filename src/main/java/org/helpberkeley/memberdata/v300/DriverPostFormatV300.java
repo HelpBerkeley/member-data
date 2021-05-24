@@ -69,14 +69,14 @@ public class DriverPostFormatV300 extends DriverPostFormat {
     @Override
     protected void initialize(String routedDeliveries, RequestType requestType) {
         loadLastRestaurantTemplate();
+        loadRoutedDeliveries(routedDeliveries);
+        auditControlBlock();
+        setDriverStartTimes();
         loadDriverPostFormat();
         loadGroupPostFormat();
         loadBackupDriverPostFormat();
         loadOrdersTablePostFormat();
         loadDriversTablePostFormat();
-        loadRoutedDeliveries(routedDeliveries);
-        auditControlBlock();
-        setDriverStartTimes();
     }
 
     @Override
@@ -86,12 +86,52 @@ public class DriverPostFormatV300 extends DriverPostFormat {
 
     @Override
     protected int driverTemplateQueryID() {
-        return Constants.QUERY_GET_ONE_KITCHEN_DRIVERS_POST_FORMAT_V300;
+        if (controlBlock.getMessageFormat().equalsIgnoreCase(MessageSpecFormat.MONDAY.getFormat())) {
+            return Constants.QUERY_GET_ONE_KITCHEN_DRIVERS_POST_FORMAT_V300;
+        } else if (controlBlock.getMessageFormat().equalsIgnoreCase(
+                MessageSpecFormat.THURSDAY.getFormat())) {
+            return Constants.QUERY_GET_THURSDAY_ONE_KITCHEN_DRIVERS_POST_FORMAT_V300;
+        } else {
+            throw new MemberDataException(
+                    "MessageFormat " + controlBlock.getMessageFormat() + " not supported\n");
+        }
     }
 
     @Override
     protected int groupTemplateQueryID() {
-        return Constants.QUERY_GET_ONE_KITCHEN_GROUP_POST_FORMAT_V300;
+        if (controlBlock.getMessageFormat().equalsIgnoreCase(MessageSpecFormat.MONDAY.getFormat())) {
+            return Constants.QUERY_GET_ONE_KITCHEN_GROUP_POST_FORMAT_V300;
+        } else if (controlBlock.getMessageFormat().equalsIgnoreCase(
+                MessageSpecFormat.THURSDAY.getFormat())) {
+            return Constants.QUERY_GET_THURSDAY_ONE_KITCHEN_GROUP_POST_FORMAT_V300;
+        } else {
+            throw new MemberDataException(
+                    "MessageFormat " + controlBlock.getMessageFormat() + " not supported\n");
+        }
+    }
+
+    private int driversTableTemplateQueryID() {
+        if (controlBlock.getMessageFormat().equalsIgnoreCase(MessageSpecFormat.MONDAY.getFormat())) {
+            return Constants.QUERY_GET_ONE_KITCHEN_DRIVERS_TABLE_POST_FORMAT_V300;
+        } else if (controlBlock.getMessageFormat().equalsIgnoreCase(
+                MessageSpecFormat.THURSDAY.getFormat())) {
+            return Constants.QUERY_GET_THURSDAY_ONE_KITCHEN_DRIVERS_TABLE_POST_FORMAT_V300;
+        } else {
+            throw new MemberDataException(
+                    "MessageFormat " + controlBlock.getMessageFormat() + " not supported\n");
+        }
+    }
+
+    private int ordersTableTemplateQueryID() {
+        if (controlBlock.getMessageFormat().equalsIgnoreCase(MessageSpecFormat.MONDAY.getFormat())) {
+            return Constants.QUERY_GET_ONE_KITCHEN_ORDERS_TABLE_POST_FORMAT_V300;
+        } else if (controlBlock.getMessageFormat().equalsIgnoreCase(
+                MessageSpecFormat.THURSDAY.getFormat())) {
+            return Constants.QUERY_GET_THURSDAY_ONE_KITCHEN_ORDERS_TABLE_POST_FORMAT_V300;
+        } else {
+            throw new MemberDataException(
+                    "MessageFormat " + controlBlock.getMessageFormat() + " not supported\n");
+        }
     }
 
     @Override
@@ -876,8 +916,7 @@ public class DriverPostFormatV300 extends DriverPostFormat {
     }
 
     private void loadDriversTablePostFormat() {
-        // FIX THIS, DS: refactor
-        String json = apiClient.runQuery(Constants.QUERY_GET_ONE_KITCHEN_DRIVERS_TABLE_POST_FORMAT_V300);
+        String json = apiClient.runQuery(driversTableTemplateQueryID());
 
         ApiQueryResult apiQueryResult = HBParser.parseQueryResult(json);
 
@@ -893,8 +932,7 @@ public class DriverPostFormatV300 extends DriverPostFormat {
     }
 
     private void loadOrdersTablePostFormat() {
-        // FIX THIS, DS: refactor
-        String json = apiClient.runQuery(Constants.QUERY_GET_ONE_KITCHEN_ORDERS_TABLE_POST_FORMAT_V300);
+        String json = apiClient.runQuery(ordersTableTemplateQueryID());
 
         ApiQueryResult apiQueryResult = HBParser.parseQueryResult(json);
 

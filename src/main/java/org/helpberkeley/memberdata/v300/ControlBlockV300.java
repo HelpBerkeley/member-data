@@ -206,6 +206,10 @@ public class ControlBlockV300 extends ControlBlock {
         return pickupManagers;
     }
 
+    public String getMessageFormat() {
+        return messageFormat;
+    }
+
     private List<String> processList(String value) {
         // FIX THIS, DS: is there auditing to do here?
          return Arrays.asList(value.split("\\s*,\\s*"));
