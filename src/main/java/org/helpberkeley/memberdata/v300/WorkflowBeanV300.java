@@ -20,13 +20,14 @@
  * SOFTWARE.
  *
  */
-package org.helpberkeley.memberdata;
+package org.helpberkeley.memberdata.v300;
 
 import com.opencsv.bean.CsvBindByName;
+import org.helpberkeley.memberdata.Constants;
+import org.helpberkeley.memberdata.MemberDataException;
+import org.helpberkeley.memberdata.WorkflowBean;
 
-public class WorkflowBeanV200 implements WorkflowBean {
-
-    // Consumer,Driver,Name,User Name,Phone #,Phone2 #,Neighborhood,City,Address,Condo,Details,Restaurants,normal,veggie,#orders
+public class WorkflowBeanV300 implements WorkflowBean {
 
     @CsvBindByName(column = Constants.WORKFLOW_CONSUMER_COLUMN)
     private String consumer;
@@ -52,19 +53,33 @@ public class WorkflowBeanV200 implements WorkflowBean {
     private String details;
     @CsvBindByName(column = Constants.WORKFLOW_RESTAURANTS_COLUMN)
     private String restaurant;
-    @CsvBindByName(column = Constants.WORKFLOW_NORMAL_COLUMN)
-    private String normal;
-    @CsvBindByName(column = Constants.WORKFLOW_VEGGIE_COLUMN)
-    private String veggie;
-    @CsvBindByName(column = Constants.WORKFLOW_ORDERS_COLUMN)
-    private String orders;
+    @CsvBindByName(column = Constants.WORKFLOW_STD_MEALS_COLUMN)
+    private String stdMeals;
+    @CsvBindByName(column = Constants.WORKFLOW_ALT_MEALS_COLUMN)
+    private String altMeals;
+    @CsvBindByName(column = Constants.WORKFLOW_TYPE_MEAL_COLUMN)
+    private String typeMeal;
+    @CsvBindByName(column = Constants.WORKFLOW_STD_GROCERY_COLUMN)
+    private String stdGrocery;
+    @CsvBindByName(column = Constants.WORKFLOW_ALT_GROCERY_COLUMN)
+    private String altGrocery;
+    @CsvBindByName(column = Constants.WORKFLOW_TYPE_GROCERY_COLUMN)
+    private String typeGrocery;
 
-    public WorkflowBeanV200() {
+    public WorkflowBeanV300() {
 
     }
 
     public String getVersion() {
-        return Constants.CONTROL_BLOCK_VERSION_200;
+        return Constants.CONTROL_BLOCK_VERSION_300;
+    }
+
+    // Unsupported in this version
+    public String getVeggie() {
+        return unsupported(Constants.WORKFLOW_VEGGIE_COLUMN);
+    }
+    public String getNormal() {
+        return unsupported(Constants.WORKFLOW_NORMAL_COLUMN);
     }
 
     // Accessors for overloaded columns
@@ -121,9 +136,12 @@ public class WorkflowBeanV200 implements WorkflowBean {
             && condo.isEmpty()
             && details.isEmpty()
             && restaurant.isEmpty()
-            && normal.isEmpty()
-            && veggie.isEmpty()
-            && orders.isEmpty();
+            && stdMeals.isEmpty()
+            && altMeals.isEmpty()
+            && typeMeal.isEmpty()
+            && stdGrocery.isEmpty()
+            && altGrocery.isEmpty()
+            && typeGrocery.isEmpty();
     }
 
     // Annotated accessors for CSV parser
@@ -224,27 +242,57 @@ public class WorkflowBeanV200 implements WorkflowBean {
         this.restaurant = restaurant;
     }
 
-    public String getNormal() {
-        return normal.trim();
+    public String getStdMeals() {
+        return stdMeals.trim();
     }
 
-    public void setNormal(String normal) {
-        this.normal = normal;
+    public void setStdMeals(String stdMeals) {
+        this.stdMeals = stdMeals;
     }
 
-    public String getVeggie() {
-        return veggie.trim();
+    public String getAltMeals() {
+        return altMeals.trim();
     }
 
-    public void setVeggie(String veggie) {
-        this.veggie = veggie;
+    public void setAltMeals(String altMeals) {
+        this.altMeals = altMeals;
     }
 
+    public String getTypeMeal() {
+        return typeMeal;
+    }
+
+    public void setTypeMeal(String typeMeal) {
+        this.typeMeal = typeMeal;
+    }
+
+    public String getStdGrocery() {
+        return stdGrocery.trim();
+    }
+
+    public void setStdGrocery(String stdGrocery) {
+        this.stdGrocery = stdGrocery;
+    }
+
+    public String getAltGrocery() {
+        return altGrocery.trim();
+    }
+
+    public void setAltGrocery(String altGrocery) {
+        this.altGrocery = altGrocery;
+    }
+
+    public String getTypeGrocery() {
+        return typeGrocery;
+    }
+
+    public void setTypeGrocery(String typeGrocery) {
+        this.typeGrocery = typeGrocery;
+    }
+
+    @Override
     public String getOrders() {
-        return orders.trim();
-    }
-
-    public void setOrders(String orders) {
-        this.orders = orders;
+        throw new MemberDataException(
+                "getOrders() not supported in version " + Constants.CONTROL_BLOCK_VERSION_300);
     }
 }

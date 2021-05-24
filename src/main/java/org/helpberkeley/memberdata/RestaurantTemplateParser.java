@@ -23,6 +23,9 @@
 package org.helpberkeley.memberdata;
 
 
+import org.helpberkeley.memberdata.v200.RestaurantTemplateParserV200;
+import org.helpberkeley.memberdata.v300.RestaurantTemplateParserV300;
+
 import java.util.*;
 
 public abstract class RestaurantTemplateParser {
@@ -30,7 +33,7 @@ public abstract class RestaurantTemplateParser {
     static final String TEMPLATE_ERROR = "Restaurant Template Error: ";
     static final String ERROR_NO_DATA = "empty file";
     static final String ERROR_MISSING_OR_UNSUPPORTED_VERSION = "Missing or unsupported version: ";
-    static final String MISSING_COLUMN_ERROR = "missing column: ";
+    public static final String MISSING_COLUMN_ERROR = "missing column: ";
     static final String MISSING_EMPTY_ROW = "did not find empty row at line ";
     static final String MISSING_VALUE_ERROR = "missing value from column ";
     static final String DUPLICATE_ROUTE_ERROR = " appears more than once in the route block";
@@ -95,7 +98,7 @@ public abstract class RestaurantTemplateParser {
 
     protected abstract void auditColumns(String csvData);
     protected abstract List<RestaurantBean> parse(String csvData);
-    abstract boolean isAddressBlockMarker(RestaurantBean bean);
+    protected abstract boolean isAddressBlockMarker(RestaurantBean bean);
 
     public Map<String, Restaurant> restaurants() {
         Map<String, Restaurant> restaurants = new HashMap<>();

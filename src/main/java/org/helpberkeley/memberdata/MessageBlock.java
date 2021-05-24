@@ -33,7 +33,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
 
-class MessageBlock implements MessageBlockScope {
+public class MessageBlock implements MessageBlockScope {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MessageBlock.class);
 
@@ -44,7 +44,7 @@ class MessageBlock implements MessageBlockScope {
     private final Stack<MessageBlockScope> scopeStack = new Stack<>();
     private final List<MessageBlockElement> elements = new ArrayList<>();
 
-    MessageBlock(long postNumber, final String raw) {
+    public MessageBlock(long postNumber, final String raw) {
         this.postNumber = postNumber;
         // Normalize EOL
         this.raw = raw.replaceAll("\\r\\n?", "\n");
@@ -61,7 +61,7 @@ class MessageBlock implements MessageBlockScope {
         scopeStack.push(this);
     }
 
-    void parse() {
+    public void parse() {
         // create a lexer that feeds off of input CharStream
         MessageBlockLexer lexer = new MessageBlockBailLexer(name, postNumber, CharStreams.fromString(raw));
 
@@ -98,11 +98,11 @@ class MessageBlock implements MessageBlockScope {
         this.name = name;
     }
 
-    String getName() {
+    public String getName() {
         return name;
     }
 
-    long getPostNumber() {
+    public long getPostNumber() {
         return postNumber;
     }
 

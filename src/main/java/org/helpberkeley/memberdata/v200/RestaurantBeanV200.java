@@ -20,11 +20,14 @@
  * SOFTWARE.
  *
  */
-package org.helpberkeley.memberdata;
+package org.helpberkeley.memberdata.v200;
 
 import com.opencsv.bean.CsvBindByName;
+import org.helpberkeley.memberdata.Constants;
+import org.helpberkeley.memberdata.MemberDataException;
+import org.helpberkeley.memberdata.RestaurantBean;
 
-public class RestaurantBeanV300 implements RestaurantBean {
+public class RestaurantBeanV200 implements RestaurantBean {
 
     @CsvBindByName(column = Constants.WORKFLOW_CONSUMER_COLUMN)
     private String consumer;
@@ -47,41 +50,24 @@ public class RestaurantBeanV300 implements RestaurantBean {
     @CsvBindByName(column = Constants.WORKFLOW_CONDO_COLUMN)
     private String condo;
 
-    @CsvBindByName(column = Constants.WORKFLOW_STD_MEALS_COLUMN)
-    private String stdMeals;
+    @CsvBindByName(column = Constants.WORKFLOW_NORMAL_COLUMN)
+    private String normal;
 
-    @CsvBindByName(column = Constants.WORKFLOW_ALT_MEALS_COLUMN)
-    private String altMeals;
+    @CsvBindByName(column = Constants.WORKFLOW_VEGGIE_COLUMN)
+    private String veggie;
 
-    @CsvBindByName(column = Constants.WORKFLOW_TYPE_MEAL_COLUMN)
-    private String typeMeal;
-
-    @CsvBindByName(column = Constants.WORKFLOW_STD_GROCERY_COLUMN)
-    private String stdGrocery;
-
-    @CsvBindByName(column = Constants.WORKFLOW_ALT_GROCERY_COLUMN)
-    private String altGrocery;
-
-    @CsvBindByName(column = Constants.WORKFLOW_TYPE_GROCERY_COLUMN)
-    private String typeGrocery;
+    @CsvBindByName(column = Constants.WORKFLOW_ORDERS_COLUMN)
+    private String orders;
 
     @CsvBindByName(column = Constants.WORKFLOW_DETAILS_COLUMN)
     private String details;
 
-    public RestaurantBeanV300() {
+    public RestaurantBeanV200() {
 
     }
 
     public String getVersion() {
-        return Constants.CONTROL_BLOCK_VERSION_300;
-    }
-
-    // Unsupported in this version
-    public String getVeggie() {
-        return unsupported(Constants.WORKFLOW_VEGGIE_COLUMN);
-    }
-    public String getNormal() {
-        return unsupported(Constants.WORKFLOW_NORMAL_COLUMN);
+        return Constants.CONTROL_BLOCK_VERSION_200;
     }
 
     // Accessors for overloaded columns
@@ -97,34 +83,38 @@ public class RestaurantBeanV300 implements RestaurantBean {
     }
 
     /**
-     * In the route block the type grocery column is used for the start time
+     * In the restaurant template, V1 and later, in the route block,
+     * the veggie column is used for the start time
      *
      * @return start time
      */
     public String getStartTime() {
-        return getAltMeals();
+        return getVeggie();
     }
 
     /**
-     * In the route block the orders column is used for the closing time
+     * In the restaurant template, V1 and later, in the route block,
+     * the orders column is used for the closing time
      *
      * @return closing time
      */
     public String getClosingTime() {
-        return getTypeMeal();
+        return getOrders();
     }
 
     /**
-     * In the restaurant template the condo column is used for No Pics
+     * In the restaurant template, in the route block, the
+     * condo column is used for No Pics
      *
      * @return No Pics
      */
     public String getNoPics() {
-        return getAltMeals();
+        return getCondo();
     }
 
     /**
-     * In the restaurant template the details column is used for the status of the restaurant
+     * In the restaurant template, in the route block, the
+     * details column is used for the status of the restaurant
      *
      * @return Restaurant active of retired
      */
@@ -133,13 +123,16 @@ public class RestaurantBeanV300 implements RestaurantBean {
     }
 
     /**
-     * In the restaurant template the alt grocery column is used for the restaurant emoji
+     * In the restaurant template, V1 and later, in the route block,
+     * the normal column is used for the restaurant emoji
      *
      * @return start time
      */
     public String getEmoji() {
-        return getStdMeals().trim();
+        return getNormal();
     }
+
+    // Accessors for overloaded columns
 
     /**
      * In control blocks, the Name column is used for the directive
@@ -168,35 +161,31 @@ public class RestaurantBeanV300 implements RestaurantBean {
     // Column name accessors
 
     public String consumerColumn() {
-        return getColumnName(Constants.WORKFLOW_CONSUMER_COLUMN);
+        return getColumnName("consumer");
     }
 
     public String restaurantColumn() {
-        return getColumnName(Constants.WORKFLOW_RESTAURANTS_COLUMN);
+        return getColumnName("restaurant");
     }
 
-    public String stdMealsColumn() {
-        return getColumnName(Constants.WORKFLOW_STD_MEALS_COLUMN);
+    public String ordersColumn() {
+        return getColumnName("orders");
     }
 
-    public String altMealsColumn() {
-        return getColumnName(Constants.WORKFLOW_ALT_MEALS_COLUMN);
+    public String normalColumn() {
+        return getColumnName("normal");
     }
 
-    public String typeMealColumn() {
-        return getColumnName(Constants.WORKFLOW_TYPE_MEAL_COLUMN);
-    }
-
-    public String altGroceryColumn() {
-        return getColumnName(Constants.WORKFLOW_ALT_GROCERY_COLUMN);
+    public String veggieColumn() {
+        return getColumnName("veggie");
     }
 
     public String startTimeColumn() {
-        return altMealsColumn();
+        return veggieColumn();
     }
 
     public String closingTimeColumn() {
-        return typeMealColumn();
+        return ordersColumn();
     }
 
     public String routeColumn() {
@@ -204,14 +193,14 @@ public class RestaurantBeanV300 implements RestaurantBean {
     }
 
     public String emojiColumn() {
-        return stdMealsColumn();
+        return normalColumn();
     }
 
 
     private String getColumnName(final String fieldName) {
         try {
             CsvBindByName bindByName =
-                    RestaurantBeanV300.class.getDeclaredField(fieldName).getAnnotation(CsvBindByName.class);
+                    RestaurantBeanV200.class.getDeclaredField(fieldName).getAnnotation(CsvBindByName.class);
             return bindByName.column();
         } catch (NoSuchFieldException e) {
             throw new MemberDataException(e.getMessage());
@@ -226,12 +215,8 @@ public class RestaurantBeanV300 implements RestaurantBean {
                 && driver.isEmpty()
                 && restaurant.isEmpty()
                 && condo.isEmpty()
-                && stdMeals.isEmpty()
-                && altMeals.isEmpty()
-                && typeMeal.isEmpty()
-                && stdGrocery.isEmpty()
-                && altGrocery.isEmpty()
-                && typeGrocery.isEmpty()
+                && veggie.isEmpty()
+                && orders.isEmpty()
                 && details.isEmpty();
     }
 
@@ -293,52 +278,28 @@ public class RestaurantBeanV300 implements RestaurantBean {
         this.condo = condo;
     }
 
-    public String getStdMeals() {
-        return stdMeals.trim();
+    public String getNormal() {
+        return normal.trim();
     }
 
-    public void setStdMeals(String stdMeals) {
-        this.stdMeals = stdMeals;
+    public void setNormal(String normal) {
+        this.normal = normal;
     }
 
-    public String getAltMeals() {
-        return altMeals.trim();
+    public String getVeggie() {
+        return veggie.trim();
     }
 
-    public void setAltMeals(String altMeals) {
-        this.altMeals = altMeals;
+    public void setVeggie(String veggie) {
+        this.veggie = veggie;
     }
 
-    public String getTypeMeal() {
-        return typeMeal.trim();
+    public String getOrders() {
+        return orders.trim();
     }
 
-    public void setTypeMeal(String typeMeal) {
-        this.typeMeal = typeMeal;
-    }
-
-    public String getStdGrocery() {
-        return stdGrocery.trim();
-    }
-
-    public void setStdGrocery(String stdGrocery) {
-        this.stdGrocery = stdGrocery;
-    }
-
-    public String getAltGrocery() {
-        return altGrocery.trim();
-    }
-
-    public void setAltGrocery(String altGrocery) {
-        this.altGrocery = altGrocery;
-    }
-
-    public String getTypeGrocery() {
-        return typeGrocery.trim();
-    }
-
-    public void setTypeGrocery(String typeGrocery) {
-        this.typeGrocery = typeGrocery;
+    public void setOrders(String orders) {
+        this.orders = orders;
     }
 
     public String getDetails() {

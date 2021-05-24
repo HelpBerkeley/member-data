@@ -22,6 +22,9 @@
  */
 package org.helpberkeley.memberdata;
 
+import org.helpberkeley.memberdata.v200.RestaurantV200;
+import org.helpberkeley.memberdata.v300.RestaurantV300;
+
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -80,7 +83,7 @@ public abstract class Restaurant {
     void setAddress(final String address) {
         this.address = address;
     }
-    void addDriver(final Driver driver) {
+    public void addDriver(final Driver driver) {
         assert ! drivers.containsKey(driver.getUserName()) : driver.getUserName();
         drivers.put(driver.getUserName(), driver);
     }
@@ -92,15 +95,15 @@ public abstract class Restaurant {
         return name;
     }
 
-    String getRoute() {
+    public String getRoute() {
         return route;
     }
 
-    String getStartTime() {
+    public String getStartTime() {
         return startTime;
     }
 
-    String getClosingTime() {
+    public String getClosingTime() {
         return closingTime;
     }
 
@@ -112,7 +115,7 @@ public abstract class Restaurant {
         return address;
     }
 
-    String getEmoji() {
+    public String getEmoji() {
         return emoji;
     }
 
@@ -120,7 +123,7 @@ public abstract class Restaurant {
         return Collections.unmodifiableMap(drivers);
     }
 
-    void mergeGlobal(Restaurant globalRestaurant) {
+    protected void mergeGlobal(Restaurant globalRestaurant) {
 
         // FIX THIS, DS: add enough data to audit address against template?
 
@@ -136,7 +139,7 @@ public abstract class Restaurant {
      * @param closingTime 545 means 5:45 PM, 700, 7:00 PM, etc...
      * @return Does this restaurant close before the passed in time?
      */
-    boolean closesBefore(int closingTime) {
+    public boolean closesBefore(int closingTime) {
         return closingTimeValue < closingTime;
     }
 }

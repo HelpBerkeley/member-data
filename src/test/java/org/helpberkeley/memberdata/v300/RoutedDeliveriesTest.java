@@ -537,9 +537,4 @@ public class RoutedDeliveriesTest extends TestBase {
         assertThat(deliveryV300.getAltGrocery()).isEqualTo(1);
         assertThat(deliveryV300.getTypeGrocery()).isEqualTo("custom pick");
     }
-
-    @Test
-    public void invalidStandardMealsTest() {
-
-    }
 }

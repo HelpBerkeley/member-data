@@ -20,9 +20,13 @@
  * SOFTWARE.
  *
  */
-package org.helpberkeley.memberdata;
+package org.helpberkeley.memberdata.v300;
 
 import com.opencsv.bean.CsvToBeanBuilder;
+import org.helpberkeley.memberdata.Constants;
+import org.helpberkeley.memberdata.ControlBlock;
+import org.helpberkeley.memberdata.RestaurantBean;
+import org.helpberkeley.memberdata.RestaurantTemplateParser;
 
 import java.io.StringReader;
 import java.util.Arrays;
@@ -30,9 +34,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-class RestaurantTemplateParserV300 extends RestaurantTemplateParser {
+public class RestaurantTemplateParserV300 extends RestaurantTemplateParser {
 
-    RestaurantTemplateParserV300(ControlBlock controlBlock, String csvData) {
+    public RestaurantTemplateParserV300(ControlBlock controlBlock, String csvData) {
         super(controlBlock, csvData);
     }
 
@@ -44,7 +48,7 @@ class RestaurantTemplateParserV300 extends RestaurantTemplateParser {
     }
 
     @Override
-    boolean isAddressBlockMarker(final RestaurantBean bean) {
+    protected boolean isAddressBlockMarker(final RestaurantBean bean) {
         assert bean instanceof RestaurantBeanV300;
 
         // An address block marker looks like:

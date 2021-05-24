@@ -23,6 +23,10 @@
 package org.helpberkeley.memberdata;
 
 import org.helpberkeley.memberdata.route.Location;
+import org.helpberkeley.memberdata.v200.DriverV200;
+import org.helpberkeley.memberdata.v200.WorkflowBeanV200;
+import org.helpberkeley.memberdata.v300.DriverV300;
+import org.helpberkeley.memberdata.v300.WorkflowBeanV300;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -67,10 +71,10 @@ public abstract class Driver {
         return driver;
     }
 
-    abstract void initialize();
+    protected abstract void initialize();
     public abstract List<Delivery> getDeliveries();
-    abstract void resetDeliveries(List<Delivery> deliveries);
-    abstract String getStartTime();
+    protected abstract void resetDeliveries(List<Delivery> deliveries);
+    public abstract String getStartTime();
 
     public static Driver createDriver(WorkflowBean driverBean, List<Restaurant> pickups, List<Delivery> deliveries) {
 

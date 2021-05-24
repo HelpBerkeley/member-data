@@ -74,6 +74,7 @@ public class HttpClientSimulator extends HttpClient {
         getFileName = fileName;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public <T> HttpResponse<T> send(HttpRequest request,
             HttpResponse.BodyHandler<T> responseBodyHandler) throws IOException {

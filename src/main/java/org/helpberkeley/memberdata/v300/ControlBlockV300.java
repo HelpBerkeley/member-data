@@ -21,7 +21,9 @@
  *
  */
 
-package org.helpberkeley.memberdata;
+package org.helpberkeley.memberdata.v300;
+
+import org.helpberkeley.memberdata.*;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -73,7 +75,7 @@ public class ControlBlockV300 extends ControlBlock {
     private String grocerySource = "";
     private String messageFormat = null;
 
-    ControlBlockV300(String header) {
+    public ControlBlockV300(String header) {
          super(header);
     }
 
@@ -100,7 +102,7 @@ public class ControlBlockV300 extends ControlBlock {
     }
 
     @Override
-    void processAltMealOptions(String value, long lineNumber) {
+    public void processAltMealOptions(String value, long lineNumber) {
 
         if (altMealOptions != null) {
             throw new MemberDataException(TOO_MANY_ALT_MEAL_OPTIONS_VARIABLES);
@@ -114,7 +116,7 @@ public class ControlBlockV300 extends ControlBlock {
     }
 
     @Override
-    void processAltGroceryOptions(String value, long lineNumber) {
+    public void processAltGroceryOptions(String value, long lineNumber) {
         if (altGroceryOptions != null) {
             throw new MemberDataException(TOO_MANY_ALT_GROCERY_OPTIONS_VARIABLES);
         }
@@ -125,7 +127,7 @@ public class ControlBlockV300 extends ControlBlock {
     }
 
     @Override
-    void processStartTimes(String value, long lineNumber) {
+    public void processStartTimes(String value, long lineNumber) {
         if (! startTimes.isEmpty()) {
             throw new MemberDataException(TOO_MANY_START_TIMES_VARIABLES);
         }
@@ -134,7 +136,7 @@ public class ControlBlockV300 extends ControlBlock {
     }
 
     @Override
-    void processPickupManager(String value, long lineNumber) {
+    public void processPickupManager(String value, long lineNumber) {
         if (pickupManagers == null) {
             pickupManagers = new ArrayList<>();
         }
@@ -142,7 +144,7 @@ public class ControlBlockV300 extends ControlBlock {
     }
 
     @Override
-    void processMessageFormat(String value, long lineNumber) {
+    public void processMessageFormat(String value, long lineNumber) {
         if (messageFormat != null) {
             throw new MemberDataException(TOO_MANY_MESSAGE_FORMAT_VARIABLES);
         }
@@ -154,7 +156,7 @@ public class ControlBlockV300 extends ControlBlock {
     // A FoodSources data field should look like "meal source  | grocery source"
     //
     @Override
-    void processFoodSources(String value, long lineNumber) {
+    public void processFoodSources(String value, long lineNumber) {
 
          if (! (mealSource.isEmpty() && grocerySource.isEmpty())) {
              throw new MemberDataException(TOO_MANY_FOOD_SOURCES_VARIABLES);
@@ -286,12 +288,10 @@ public class ControlBlockV300 extends ControlBlock {
 
     private void auditMessageFormat(StringBuilder errors) {
         if (messageFormat == null) {
-            throw new MemberDataException(MessageFormat.format(
+            errors.append(MessageFormat.format(
                     MISSING_REQUIRED_VARIABLE, Constants.CONTROL_BLOCK_MESSAGE_FORMAT));
-        }
-
-        if (! MessageSpecFormat.validFormat(messageFormat)) {
-            throw new MemberDataException(MessageFormat.format(INVALID_MESSAGE_FORMAT, messageFormat));
+        } else if (! MessageSpecFormat.validFormat(messageFormat)) {
+            errors.append(MessageFormat.format(INVALID_MESSAGE_FORMAT, messageFormat));
         }
     }
 }

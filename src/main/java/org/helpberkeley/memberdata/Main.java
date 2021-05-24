@@ -23,6 +23,8 @@ package org.helpberkeley.memberdata;
 
 import com.opencsv.exceptions.CsvException;
 import org.helpberkeley.memberdata.route.Route;
+import org.helpberkeley.memberdata.v200.DriverPostFormatV200;
+import org.helpberkeley.memberdata.v300.DriverPostFormatV300;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

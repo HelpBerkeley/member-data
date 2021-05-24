@@ -22,6 +22,7 @@
  */
 package org.helpberkeley.memberdata;
 
+import org.helpberkeley.memberdata.v200.RestaurantV200;
 import org.junit.Test;
 
 import java.util.List;

@@ -22,12 +22,15 @@
  */
 package org.helpberkeley.memberdata;
 
+import org.helpberkeley.memberdata.v200.ControlBlockV200;
+import org.helpberkeley.memberdata.v300.ControlBlockV300;
+
 import java.text.MessageFormat;
 import java.util.*;
 
 public abstract class ControlBlock {
 
-    static final String INTRA_FIELD_SEPARATOR = "|";
+    public static final String INTRA_FIELD_SEPARATOR = "|";
     static final String ERROR_MISSING_OPS_MANAGER =
             "Control block missing a " + Constants.CONTROL_BLOCK_OPS_MANAGER + " entry.\n";
 
@@ -72,7 +75,7 @@ public abstract class ControlBlock {
     private boolean disableSplitRestaurantAudits = false;
     private boolean disableRestaurantsAudit = false;
 
-    final StringBuilder warnings = new StringBuilder();
+    protected final StringBuilder warnings = new StringBuilder();
 
     protected ControlBlock(String header) {
 
@@ -132,11 +135,11 @@ public abstract class ControlBlock {
         return disableLateArrivalAudit;
     }
 
-    boolean splitRestaurantAuditsDisabled() {
+    public boolean splitRestaurantAuditsDisabled() {
         return disableSplitRestaurantAudits;
     }
 
-    boolean restaurantsAuditDisabled() {
+    public boolean restaurantsAuditDisabled() {
         return disableRestaurantsAudit;
     }
 
@@ -233,7 +236,7 @@ public abstract class ControlBlock {
         return opsManagers;
     }
 
-    OpsManager getFirstOpsManager() {
+    public OpsManager getFirstOpsManager() {
         if (opsManagers.size() == 0) {
             throw new MemberDataException("No OpsManager found");
         }
@@ -245,7 +248,7 @@ public abstract class ControlBlock {
         return new ArrayList<>(splitRestaurantMap.values());
     }
 
-    SplitRestaurant getSplitRestaurant(String restaurantName) {
+    public SplitRestaurant getSplitRestaurant(String restaurantName) {
 
         SplitRestaurant splitRestaurant = splitRestaurantMap.get(restaurantName);
 
@@ -535,31 +538,31 @@ public abstract class ControlBlock {
         backupDrivers.add(backupDriver);
     }
 
-    void processAltMealOptions(String value, long lineNumber) {
+    public void processAltMealOptions(String value, long lineNumber) {
         unsupported(lineNumber, Constants.CONTROL_BLOCK_ALT_MEAL_OPTIONS);
     }
 
-    void processAltGroceryOptions(String value, long lineNumber) {
+    public void processAltGroceryOptions(String value, long lineNumber) {
         unsupported(lineNumber, Constants.CONTROL_BLOCK_ALT_GROCERY_OPTIONS);
     }
 
-    void processStartTimes(String value, long lineNumber) {
+    public void processStartTimes(String value, long lineNumber) {
         unsupported(lineNumber, Constants.CONTROL_BLOCK_START_TIMES);
     }
 
-    void processFoodSources(String value, long lineNumber) {
+    public void processFoodSources(String value, long lineNumber) {
         unsupported(lineNumber, Constants.CONTROL_BLOCK_FOOD_SOURCES);
     }
 
-    void processPickupManager(String value, long lineNumber) {
+    public void processPickupManager(String value, long lineNumber) {
         unsupported(lineNumber, Constants.CONTROL_BLOCK_PICKUP_MANAGER);
     }
 
-    void processMessageFormat(String value, long lineNumber) {
+    public void processMessageFormat(String value, long lineNumber) {
         unsupported(lineNumber, Constants.CONTROL_BLOCK_MESSAGE_FORMAT);
     }
 
-    static class SplitRestaurant {
+    public static class SplitRestaurant {
         private final String name;
         private final String cleanupDriverUserName;
 

@@ -20,9 +20,10 @@
  * SOFTWARE.
  *
  */
-package org.helpberkeley.memberdata;
+package org.helpberkeley.memberdata.v200;
 
 import com.opencsv.bean.CsvToBeanBuilder;
+import org.helpberkeley.memberdata.*;
 
 import java.io.StringReader;
 import java.util.*;
@@ -85,7 +86,7 @@ public class WorkflowParserV200 extends WorkflowParser {
     }
 
     @Override
-    List<Delivery> processDeliveries() {
+    protected List<Delivery> processDeliveries() {
         List<Delivery> deliveries = new ArrayList<>();
         WorkflowBean bean;
 
@@ -158,7 +159,7 @@ public class WorkflowParserV200 extends WorkflowParser {
     }
 
     @Override
-    void auditPickupDeliveryMismatch(Driver driver) {
+    protected void auditPickupDeliveryMismatch(Driver driver) {
 
         // First build of map of deliveries (orders) per restaurant
         Map<String, Long> deliveryOrders = new HashMap<>();
@@ -220,6 +221,6 @@ public class WorkflowParserV200 extends WorkflowParser {
     }
 
     @Override
-    void versionSpecificAudit(Driver driver) {
+    protected void versionSpecificAudit(Driver driver) {
     }
 }

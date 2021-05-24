@@ -33,7 +33,7 @@ public class MessageBlockListRef implements MessageBlockElement {
         this.listName = name.substring(0, name.indexOf('.'));
     }
 
-    String getListName() {
+    public String getListName() {
         return listName;
     }
 

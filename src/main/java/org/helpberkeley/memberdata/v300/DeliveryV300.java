@@ -20,52 +20,79 @@
  * SOFTWARE.
  *
  */
-package org.helpberkeley.memberdata;
+package org.helpberkeley.memberdata.v300;
 
-public class DeliveryV200 extends Delivery {
+import org.helpberkeley.memberdata.Delivery;
 
-    private String normalRations;
-    private String veggieRations;
-    private String restaurant;
+public class DeliveryV300 extends Delivery {
 
-    public DeliveryV200(String name, long lineNumber) {
-        super(name, lineNumber);
-    }
+    private int stdMeals;
+    private int altMeals;
+    private String typeMeal;
+    private int stdGrocery;
+    private int altGrocery;
+    private String typeGrocery;
 
     @Override
     public String toString() {
         return getUserName()
                 + ", condo:" + isCondo
-                + ", restaurant: " + getRestaurant()
-                + ", rations: " + getNormalRations() + ":" + getVeggieRations();
+                + ", meals:" + getStdMeals() + ':' + getAltMeals()
+                + ", grocery:" + getStdGrocery() + ':' + getAltGrocery();
     }
 
-
-    public void setRestaurant(String restaurant) {
-        this.restaurant = restaurant;
+    public DeliveryV300(String name, long lineNumber) {
+        super(name, lineNumber);
     }
 
-    public void setNormalRations(String normalRations) {
-        this.normalRations = normalRations;
+    public void setStdMeals(String stdMeals) {
+        this.stdMeals = Integer.parseInt(stdMeals);
     }
 
-    public void setVeggieRations(String veggieRations) {
-        this.veggieRations = veggieRations;
+    public void setAltMeals(String altMeals) {
+        this.altMeals = Integer.parseInt(altMeals);
     }
 
-    public String getNormalRations() {
-        return normalRations;
+    public void setTypeMeal(String typeMeal) {
+        this.typeMeal = typeMeal;
     }
 
-    public String getVeggieRations() {
-        return veggieRations;
+    public void setStdGrocery(String stdGrocery) {
+        this.stdGrocery = Integer.parseInt(stdGrocery);
     }
 
-    public String getRestaurant() {
-        return restaurant;
+    public void setAltGrocery(String altGrocery) {
+        this.altGrocery = Integer.parseInt(altGrocery);
     }
 
-    @Override
+    public void setTypeGrocery(String typeGrocery) {
+        this.typeGrocery = typeGrocery;
+    }
+
+    public int getStdMeals() {
+        return stdMeals;
+    }
+
+    public int getAltMeals() {
+        return altMeals;
+    }
+
+    public String getTypeMeal() {
+        return typeMeal;
+    }
+
+    public int getStdGrocery() {
+        return stdGrocery;
+    }
+
+    public int getAltGrocery() {
+        return altGrocery;
+    }
+
+    public String getTypeGrocery() {
+        return typeGrocery;
+    }
+
     public String deliveryRow() {
         StringBuilder row = new StringBuilder();
         String value;
@@ -97,6 +124,7 @@ public class DeliveryV200 extends Delivery {
         value = csvEscapeCommas(city);
         row.append(value).append(",");
 
+
         // Address
         value = csvEscapeCommas(address);
         row.append(value).append(",");
@@ -109,14 +137,25 @@ public class DeliveryV200 extends Delivery {
         row.append(value).append(",");
 
         // Restaurant
-        value = csvEscapeCommas(restaurant);
         row.append(value).append(",");
 
-        // normal
-        row.append(normalRations).append(",");
+        // std meals
+        row.append(stdMeals).append(",");
 
-        // veggie
-        row.append(veggieRations).append(",");
+        // alt meals
+        row.append(altMeals).append(",");
+
+        // type alt meals
+        row.append(typeMeal).append(",");
+
+        // std grocery
+        row.append(stdGrocery).append(",");
+
+        // alt grocery
+        row.append(altGrocery).append(",");
+
+        // type alt grocery
+        row.append(typeGrocery).append(",");
 
         // Orders - empty last column
 

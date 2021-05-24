@@ -20,18 +20,21 @@
  * SOFTWARE.
  *
  */
-package org.helpberkeley.memberdata;
+package org.helpberkeley.memberdata.v300;
+
+import org.helpberkeley.memberdata.Delivery;
+import org.helpberkeley.memberdata.Driver;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-class DriverV300 extends Driver {
+public class DriverV300 extends Driver {
 
     private final List<DeliveryV300> deliveries = new ArrayList<>();
     private String startTime;
 
-    DriverV300(List<Delivery> deliveries) {
+    public DriverV300(List<Delivery> deliveries) {
         for (Delivery delivery : deliveries) {
             assert delivery instanceof DeliveryV300;
             this.deliveries.add((DeliveryV300) delivery);
@@ -48,7 +51,7 @@ class DriverV300 extends Driver {
     }
 
     @Override
-    void resetDeliveries(List<Delivery> deliveries) {
+    protected void resetDeliveries(List<Delivery> deliveries) {
         this.deliveries.clear();
         for (Delivery delivery : deliveries) {
             assert delivery instanceof DeliveryV300;
@@ -57,7 +60,7 @@ class DriverV300 extends Driver {
     }
 
     @Override
-    void initialize() {
+    protected void initialize() {
 
     }
 
@@ -66,7 +69,7 @@ class DriverV300 extends Driver {
     }
 
     @Override
-    String getStartTime() {
+    public String getStartTime() {
         assert startTime != null;
         return startTime;
     }

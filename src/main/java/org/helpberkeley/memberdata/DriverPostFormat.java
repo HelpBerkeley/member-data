@@ -22,6 +22,8 @@
  */
 package org.helpberkeley.memberdata;
 
+import org.helpberkeley.memberdata.v200.DriverPostFormatV200;
+import org.helpberkeley.memberdata.v300.DriverPostFormatV300;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,7 +31,7 @@ import java.util.*;
 
 public abstract class DriverPostFormat {
 
-    enum RequestType {
+    public enum RequestType {
         MessageGeneration,
         Routing
     }
@@ -97,22 +99,22 @@ public abstract class DriverPostFormat {
     protected DriverPostFormat() {
     }
 
-    abstract ControlBlock getControlBlock();
-    abstract void initialize(String routedDeliveries, RequestType requestType);
-    abstract int restaurantTemplateQueryID();
-    abstract int driverTemplateQueryID();
-    abstract int groupTemplateQueryID();
+    public abstract ControlBlock getControlBlock();
+    protected abstract void initialize(String routedDeliveries, RequestType requestType);
+    protected abstract int restaurantTemplateQueryID();
+    protected abstract int driverTemplateQueryID();
+    protected abstract int groupTemplateQueryID();
     public abstract List<Driver> getDrivers();
-    abstract String statusMessages();
+    protected abstract String statusMessages();
     public abstract String generateSummary();
-    abstract ProcessingReturnValue processStructRef(MessageBlockStructRef structRef, MessageBlockContext context);
-    abstract boolean processBooleanSimpleRef(MessageBlockSimpleRef element, MessageBlockContext context);
-    abstract boolean processBooleanListRef(MessageBlockListRef listRef, MessageBlockContext context);
-    abstract ProcessingReturnValue processListRef(MessageBlockListRef listRef, MessageBlockContext context);
-    abstract ProcessingReturnValue processLoopListRef(
+    protected abstract ProcessingReturnValue processStructRef(MessageBlockStructRef structRef, MessageBlockContext context);
+    protected abstract boolean processBooleanSimpleRef(MessageBlockSimpleRef element, MessageBlockContext context);
+    protected abstract boolean processBooleanListRef(MessageBlockListRef listRef, MessageBlockContext context);
+    protected abstract ProcessingReturnValue processListRef(MessageBlockListRef listRef, MessageBlockContext context);
+    protected abstract ProcessingReturnValue processLoopListRef(
             MessageBlockLoop loop, MessageBlockListRef listRef, MessageBlockContext context);
-    abstract String versionSpecificSimpleRef(MessageBlockContext context, String varName);
-    abstract String versionSpecificDriverListRef(MessageBlockContext context, String varName);
+    protected abstract String versionSpecificSimpleRef(MessageBlockContext context, String varName);
+    protected abstract String versionSpecificDriverListRef(MessageBlockContext context, String varName);
 
     public final List<String> generateDriverPosts() {
 
@@ -616,20 +618,27 @@ public abstract class DriverPostFormat {
         return compactPhone;
     }
 
-    enum ProcessingStatus {
+    public enum ProcessingStatus {
         COMPLETE,
         CONTINUE
     }
 
-    static class ProcessingReturnValue {
+    public static class ProcessingReturnValue {
 
-        final ProcessingStatus status;
-        final String output;
+        private final ProcessingStatus status;
+        private final String output;
 
-        ProcessingReturnValue(ProcessingStatus status, String output) {
+        public ProcessingReturnValue(ProcessingStatus status, String output) {
             this.status = status;
             this.output = output;
         }
 
+        public ProcessingStatus getStatus() {
+            return status;
+        }
+
+        public String getOutput() {
+            return output;
+        }
     }
 }

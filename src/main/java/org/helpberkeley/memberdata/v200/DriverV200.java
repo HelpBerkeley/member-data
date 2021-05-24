@@ -20,7 +20,12 @@
  * SOFTWARE.
  *
  */
-package org.helpberkeley.memberdata;
+package org.helpberkeley.memberdata.v200;
+
+import org.helpberkeley.memberdata.Delivery;
+import org.helpberkeley.memberdata.Driver;
+import org.helpberkeley.memberdata.MemberDataException;
+import org.helpberkeley.memberdata.Restaurant;
 
 import java.text.MessageFormat;
 import java.time.LocalTime;
@@ -29,11 +34,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-class DriverV200 extends Driver {
+public class DriverV200 extends Driver {
 
-    static final String WARNING_MAY_BE_REACHED_AFTER_CLOSING =
+    public static final String WARNING_MAY_BE_REACHED_AFTER_CLOSING =
             "restaurant {0} may be reached after closing time";
-    static final String WARNING_MAY_BE_REACHED_AFTER_EXPECTED =
+    public static final String WARNING_MAY_BE_REACHED_AFTER_EXPECTED =
             "restaurant {0}  may be reached later than when the driver is expected";
 
     private static final LocalTime FIVE_PM = LocalTime.of(5, 0);
@@ -42,7 +47,7 @@ class DriverV200 extends Driver {
     private String startTime;
     private final List<DeliveryV200> deliveries = new ArrayList<>();
 
-    DriverV200(List<Delivery> deliveries) {
+    public DriverV200(List<Delivery> deliveries) {
         for (Delivery delivery : deliveries) {
             assert delivery instanceof DeliveryV200;
             this.deliveries.add((DeliveryV200) delivery);
@@ -55,7 +60,7 @@ class DriverV200 extends Driver {
     }
 
     @Override
-    void resetDeliveries(List<Delivery> deliveries) {
+    protected void resetDeliveries(List<Delivery> deliveries) {
         this.deliveries.clear();
         for (Delivery delivery : deliveries) {
             assert delivery instanceof DeliveryV200;
@@ -77,7 +82,7 @@ class DriverV200 extends Driver {
     }
 
     @Override
-    void initialize() {
+    protected void initialize() {
 
         setStartTime();
     }
@@ -221,11 +226,11 @@ class DriverV200 extends Driver {
         return formatTime(firstOrderRestaurantStartTime);
     }
 
-    String getStartTime() {
+    public String getStartTime() {
         return startTime;
     }
 
-    String getOriginalStartTime() {
+    public String getOriginalStartTime() {
         return originalStartTime;
     }
 

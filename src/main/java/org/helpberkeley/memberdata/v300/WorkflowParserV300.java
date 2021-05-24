@@ -20,9 +20,10 @@
  * SOFTWARE.
  *
  */
-package org.helpberkeley.memberdata;
+package org.helpberkeley.memberdata.v300;
 
 import com.opencsv.bean.CsvToBeanBuilder;
+import org.helpberkeley.memberdata.*;
 
 import java.io.StringReader;
 import java.text.MessageFormat;
@@ -125,7 +126,7 @@ public class WorkflowParserV300 extends WorkflowParser {
     }
 
     @Override
-    List<Delivery> processDeliveries() {
+    protected List<Delivery> processDeliveries() {
         List<Delivery> deliveries = new ArrayList<>();
         WorkflowBeanV300 bean;
 
@@ -202,7 +203,7 @@ public class WorkflowParserV300 extends WorkflowParser {
     }
 
     @Override
-    void auditPickupDeliveryMismatch(Driver driver) {
+    protected void auditPickupDeliveryMismatch(Driver driver) {
 
         // Build a Set of pickup restaurants
 
@@ -260,7 +261,7 @@ public class WorkflowParserV300 extends WorkflowParser {
     }
 
     @Override
-    void versionSpecificAudit(Driver driver) {
+    protected void versionSpecificAudit(Driver driver) {
 
         ControlBlockV300 controlBlockV300 = (ControlBlockV300) controlBlock;
 

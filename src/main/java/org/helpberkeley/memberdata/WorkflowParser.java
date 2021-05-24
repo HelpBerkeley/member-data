@@ -24,6 +24,8 @@ package org.helpberkeley.memberdata;
 
 import com.google.common.collect.Iterators;
 import com.google.common.collect.PeekingIterator;
+import org.helpberkeley.memberdata.v200.WorkflowParserV200;
+import org.helpberkeley.memberdata.v300.WorkflowParserV300;
 
 import java.util.*;
 
@@ -76,18 +78,18 @@ public abstract class WorkflowParser {
         return workflowParser;
     }
 
-    abstract List<WorkflowBean> parse(String csvData);
+    protected abstract List<WorkflowBean> parse(String csvData);
     /**
      * Check for missing columns.
      * @param csvData Normalized workflow spreadsheet data
      * @throws MemberDataException If there are any missing columns.
      */
-    abstract void auditColumnNames(final String csvData);
+    protected abstract void auditColumnNames(final String csvData);
 
-    abstract List<Delivery> processDeliveries();
-    abstract void versionSpecificAudit(Driver driver);
+    protected abstract List<Delivery> processDeliveries();
+    protected abstract void versionSpecificAudit(Driver driver);
 
-    abstract void auditPickupDeliveryMismatch(Driver driver);
+    protected abstract void auditPickupDeliveryMismatch(Driver driver);
 
     public String rawControlBlock() {
 
@@ -192,7 +194,7 @@ public abstract class WorkflowParser {
         return new ArrayList<>(driverMap.values());
     }
 
-    ControlBlock getControlBlock() {
+    public ControlBlock getControlBlock() {
         return controlBlock;
     }
 

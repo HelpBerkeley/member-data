@@ -430,4 +430,12 @@ public class DriverPostTest extends org.helpberkeley.memberdata.DriverPostTest {
         assertThat(post).isEqualTo(MessageFormat.format(WorkflowParserV300.EMPTY_DELIVERY, 16,
                 WorkflowBuilder.DEFAULT_DRIVER_NAME, DeliveryBuilder.DEFAULT_CONSUMER_NAME));
     }
+
+    @Test
+    public void messageFormatTest() {
+        String routedDeliveries = readResourceFile("routed-deliveries-thursday-v300.csv");
+        DriverPostFormat driverPostFormat =
+                DriverPostFormat.create(createApiSimulator(), users, routedDeliveries);
+        driverPostFormat.generateDriverPosts();
+    }
 }

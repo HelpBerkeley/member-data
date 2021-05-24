@@ -20,7 +20,9 @@
  * SOFTWARE.
  *
  */
-package org.helpberkeley.memberdata;
+package org.helpberkeley.memberdata.v300;
+
+import org.helpberkeley.memberdata.*;
 
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -30,7 +32,7 @@ public class RestaurantV300 extends Restaurant {
     private final HashSet<String> alternateMealTypes = new LinkedHashSet<>();
     private final HashSet<String> alternateGroceryTypes = new LinkedHashSet<>();
 
-    RestaurantV300(ControlBlock controlBlock, String name) {
+    public RestaurantV300(ControlBlock controlBlock, String name) {
         super(name);
         ControlBlockV300 controlBlock1 = (ControlBlockV300) controlBlock;
 

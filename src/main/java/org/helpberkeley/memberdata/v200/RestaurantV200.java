@@ -20,14 +20,16 @@
  * SOFTWARE.
  *
  */
-package org.helpberkeley.memberdata;
+package org.helpberkeley.memberdata.v200;
+
+import org.helpberkeley.memberdata.*;
 
 public class RestaurantV200 extends Restaurant {
 
     private boolean noPics = false;
     private long orders = 0;
 
-    RestaurantV200(ControlBlock controlBlock, String name) {
+    public RestaurantV200(ControlBlock controlBlock, String name) {
         super(name);
         ControlBlockV200 controlBlock1 = (ControlBlockV200) controlBlock;
     }
@@ -105,7 +107,7 @@ public class RestaurantV200 extends Restaurant {
         noPics = globalRestaurant.noPics;
     }
 
-    void addOrders(long orders) {
+    public void addOrders(long orders) {
         this.orders += orders;
     }
 

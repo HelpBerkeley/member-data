@@ -21,14 +21,16 @@
  *
  */
 
-package org.helpberkeley.memberdata;
+package org.helpberkeley.memberdata.v200;
+
+import org.helpberkeley.memberdata.*;
 
 import java.util.List;
 import java.util.Map;
 
 public class ControlBlockV200 extends ControlBlock {
 
-     ControlBlockV200(String header) {
+     public ControlBlockV200(String header) {
          super(header);
     }
 

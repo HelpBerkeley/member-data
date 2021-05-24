@@ -20,8 +20,9 @@
  * SOFTWARE.
  *
  */
-package org.helpberkeley.memberdata;
+package org.helpberkeley.memberdata.v200;
 
+import org.helpberkeley.memberdata.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,12 +36,12 @@ public class DriverPostFormatV200 extends DriverPostFormat {
     private final StringBuilder statusMessages = new StringBuilder();
     private ControlBlockV200 controlBlock;
 
-    DriverPostFormatV200() {
+    public DriverPostFormatV200() {
         super();
     }
 
     @Override
-    void initialize(String routedDeliveries, RequestType requestType) {
+    protected void initialize(String routedDeliveries, RequestType requestType) {
         loadLastRestaurantTemplate();
         loadDriverPostFormat();
         loadGroupPostFormat();
@@ -50,22 +51,22 @@ public class DriverPostFormatV200 extends DriverPostFormat {
     }
 
     @Override
-    int restaurantTemplateQueryID() {
+    protected int restaurantTemplateQueryID() {
         return Constants.QUERY_GET_CURRENT_VALIDATED_DRIVER_MESSAGE_RESTAURANT_TEMPLATE;
     }
 
     @Override
-    int driverTemplateQueryID() {
+    protected int driverTemplateQueryID() {
         return Constants.QUERY_GET_DRIVERS_POST_FORMAT;
     }
 
     @Override
-    int groupTemplateQueryID() {
+    protected int groupTemplateQueryID() {
         return Constants.QUERY_GET_GROUP_INSTRUCTIONS_FORMAT;
     }
 
     @Override
-    ControlBlock getControlBlock() {
+    public ControlBlock getControlBlock() {
         return controlBlock;
     }
 
@@ -75,7 +76,7 @@ public class DriverPostFormatV200 extends DriverPostFormat {
     }
 
     @Override
-    String statusMessages() {
+    protected String statusMessages() {
         return statusMessages.toString();
     }
 
@@ -230,7 +231,7 @@ public class DriverPostFormatV200 extends DriverPostFormat {
     }
 
     @Override
-    ProcessingReturnValue processStructRef(MessageBlockStructRef structRef, MessageBlockContext context) {
+    protected ProcessingReturnValue processStructRef(MessageBlockStructRef structRef, MessageBlockContext context) {
         String refName = structRef.getName();
         String value;
 
@@ -255,7 +256,7 @@ public class DriverPostFormatV200 extends DriverPostFormat {
     }
 
     @Override
-    ProcessingReturnValue processListRef(MessageBlockListRef listRef, MessageBlockContext context) {
+    protected ProcessingReturnValue processListRef(MessageBlockListRef listRef, MessageBlockContext context) {
         String listName = listRef.getListName();
         String refName = listRef.getName();
         ProcessingReturnValue returnValue;
@@ -281,7 +282,7 @@ public class DriverPostFormatV200 extends DriverPostFormat {
                         "unknown list name &{" + listName + "} in " + "&{" + refName + "}"));
         }
 
-        LOGGER.trace("&{{}} = \"{}\"", refName, returnValue.output);
+        LOGGER.trace("&{{}} = \"{}\"", refName, returnValue.getOutput());
         return returnValue;
     }
 
@@ -324,7 +325,7 @@ public class DriverPostFormatV200 extends DriverPostFormat {
     }
 
     @Override
-    String versionSpecificDriverListRef(MessageBlockContext context, String refName) {
+    protected String versionSpecificDriverListRef(MessageBlockContext context, String refName) {
 
         String value;
 
@@ -463,7 +464,7 @@ public class DriverPostFormatV200 extends DriverPostFormat {
     }
 
     @Override
-    ProcessingReturnValue processLoopListRef(
+    protected ProcessingReturnValue processLoopListRef(
             MessageBlockLoop loop, MessageBlockListRef listRef, MessageBlockContext context) {
 
         String refName = listRef.getName();
@@ -482,7 +483,7 @@ public class DriverPostFormatV200 extends DriverPostFormat {
                 throw new MemberDataException(context.formatException("unknown loop list ref &{" + listRef + "}"));
         }
 
-        LOGGER.trace("${{}} = \"{}\"", refName, returnValue.output);
+        LOGGER.trace("${{}} = \"{}\"", refName, returnValue.getOutput());
         return returnValue;
     }
 
@@ -499,9 +500,9 @@ public class DriverPostFormatV200 extends DriverPostFormat {
 
             for (MessageBlockElement element : loop.getElements()) {
                 ProcessingReturnValue returnValue = processElement(element, driverContext);
-                processedLoop.append(returnValue.output);
+                processedLoop.append(returnValue.getOutput());
 
-                if (returnValue.status == ProcessingStatus.CONTINUE) {
+                if (returnValue.getStatus() == ProcessingStatus.CONTINUE) {
                     break;
                 }
             }
@@ -512,7 +513,7 @@ public class DriverPostFormatV200 extends DriverPostFormat {
     }
 
     @Override
-    boolean processBooleanSimpleRef(MessageBlockSimpleRef element, MessageBlockContext context) {
+    protected boolean processBooleanSimpleRef(MessageBlockSimpleRef element, MessageBlockContext context) {
         String refName = element.getName();
         Driver driver = context.getDriver();
         boolean value;
@@ -543,7 +544,7 @@ public class DriverPostFormatV200 extends DriverPostFormat {
     // Do simple variable replacement
     //
     @Override
-    String  versionSpecificSimpleRef(MessageBlockContext context, String varName) {
+    protected String  versionSpecificSimpleRef(MessageBlockContext context, String varName) {
         String value;
 
         final String firstRestaurant = context.getDriver().getFirstRestaurantName();
@@ -567,7 +568,7 @@ public class DriverPostFormatV200 extends DriverPostFormat {
     }
 
     @Override
-    boolean processBooleanListRef(MessageBlockListRef listRef, MessageBlockContext context) {
+    protected boolean processBooleanListRef(MessageBlockListRef listRef, MessageBlockContext context) {
         String listName = listRef.getListName();
         String refName = listRef.getName();
         boolean value;
@@ -649,9 +650,9 @@ public class DriverPostFormatV200 extends DriverPostFormat {
                 context.setDelivery(delivery);
                 for (MessageBlockElement loopElement : loop.getElements()) {
                     ProcessingReturnValue returnValue = processElement(loopElement, deliveryContext);
-                    output.append(returnValue.output);
+                    output.append(returnValue.getOutput());
 
-                    if (returnValue.status == ProcessingStatus.CONTINUE) {
+                    if (returnValue.getStatus() == ProcessingStatus.CONTINUE) {
                         break;
                     }
                 }

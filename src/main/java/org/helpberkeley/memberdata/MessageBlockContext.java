@@ -22,7 +22,7 @@
  */
 package org.helpberkeley.memberdata;
 
-class MessageBlockContext {
+public class MessageBlockContext {
     private final String name;
     private final MessageBlockContext parent;
 
@@ -36,7 +36,7 @@ class MessageBlockContext {
     private String alternateType;
     private String pickupManager;
 
-    MessageBlockContext(String name, MessageBlockContext parent) {
+    public MessageBlockContext(String name, MessageBlockContext parent) {
         this.name = name;
         this.parent = parent;
     }
@@ -72,16 +72,16 @@ class MessageBlockContext {
         return string.toString();
     }
 
-    void setMessageBlockContext(long postNumber, String name) {
+    public void setMessageBlockContext(long postNumber, String name) {
         messageBlockName = name;
         messageBlockPost = postNumber;
     }
 
-    void setDriver(Driver driver) {
+    public void setDriver(Driver driver) {
         this.driver = driver;
     }
 
-    void setDelivery(Delivery delivery) {
+    public void setDelivery(Delivery delivery) {
         this.delivery = delivery;
     }
 
@@ -89,7 +89,7 @@ class MessageBlockContext {
         this.splitRestaurant = splitRestaurant;
     }
 
-    void setPickupRestaurant(Restaurant pickupRestaurant) {
+    public void setPickupRestaurant(Restaurant pickupRestaurant) {
         this.pickupRestaurant = pickupRestaurant;
     }
 
@@ -97,11 +97,11 @@ class MessageBlockContext {
         this.backupDriver = backupDriver;
     }
 
-    void setAlternateType(String alternateType) {
+    public void setAlternateType(String alternateType) {
         this.alternateType = alternateType;
     }
 
-    void setPickupManager(String pickupManager) {
+    public void setPickupManager(String pickupManager) {
         this.pickupManager = pickupManager;
     }
 
@@ -129,7 +129,7 @@ class MessageBlockContext {
         return baseContext.messageBlockPost;
     }
 
-    Driver getDriver() {
+    public Driver getDriver() {
         if (driver != null) {
             return driver;
         }
@@ -141,7 +141,7 @@ class MessageBlockContext {
         return null;
     }
 
-    Restaurant getSplitRestaurant() {
+    public Restaurant getSplitRestaurant() {
         if (splitRestaurant != null) {
             return splitRestaurant;
         }
@@ -153,7 +153,7 @@ class MessageBlockContext {
         return null;
     }
 
-    Restaurant getPickupRestaurant() {
+    public Restaurant getPickupRestaurant() {
         if (pickupRestaurant != null) {
             return pickupRestaurant;
         }
@@ -165,7 +165,7 @@ class MessageBlockContext {
         return null;
     }
 
-    Delivery getDelivery() {
+    public Delivery getDelivery() {
         if (delivery != null) {
             return delivery;
         }
@@ -177,7 +177,7 @@ class MessageBlockContext {
         return null;
     }
 
-    String getBackupDriver() {
+    public String getBackupDriver() {
         if (backupDriver != null) {
             return backupDriver;
         }
@@ -189,7 +189,7 @@ class MessageBlockContext {
         return null;
     }
 
-    String getPickupManager() {
+    public String getPickupManager() {
         if (pickupManager != null) {
             return pickupManager;
         }
@@ -201,12 +201,12 @@ class MessageBlockContext {
         return null;
     }
 
-    String getAlternateType() {
+    public String getAlternateType() {
         return alternateType;
     }
 
     // FIX THIS, DS: pass in an element and get the line number from it.
-    String formatException(String message) {
+    public String formatException(String message) {
         String blockName = getBlockName();
         long postNumber = getPostNumber();
 
