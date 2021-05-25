@@ -20,27 +20,17 @@
  * SOFTWARE.
  *
  */
+package org.helpberkeley.memberdata.v300;
 
-package org.helpberkeley.memberdata;
+import org.helpberkeley.memberdata.RestaurantTemplateParser;
+import org.helpberkeley.memberdata.TestBase;
+import org.junit.Test;
 
-public enum MessageSpecFormat {
-
-    MONDAY("MondayFreeRun"),
-    THURSDAY("ThursdayFreeRun");
-
-    private final String format;
-
-    MessageSpecFormat(String format) {
-        this.format = format;
-    }
-
-    public String getFormat() {
-        return format;
-    }
-
-    public static boolean validFormat(String value) {
-
-        return MONDAY.format.equalsIgnoreCase(value)
-                || THURSDAY.format.equalsIgnoreCase(value);
+public class RestaurantTemplateTest extends TestBase {
+    @Test
+    public void testTemplateValidation() {
+        String template = readResourceFile("restaurant-template-v300.csv");
+        RestaurantTemplateParser parser = RestaurantTemplateParser.create(template);
+        parser.restaurants();
     }
 }

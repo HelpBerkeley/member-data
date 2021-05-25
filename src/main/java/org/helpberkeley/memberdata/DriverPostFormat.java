@@ -182,6 +182,10 @@ public abstract class DriverPostFormat {
         return post.toString();
     }
 
+    public String statusTitle() {
+        return "";
+    }
+
     public Map<String, Restaurant> getRestaurants() {
         return restaurants;
     }

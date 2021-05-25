@@ -174,6 +174,10 @@ public class DriverPostFormatV300 extends DriverPostFormat {
         return "";
     }
 
+    public String statusTitle() {
+        return "**" + controlBlock.getMessageFormat() + "** messages generated.\n\n";
+    }
+
     public String generateDriversTablePost() {
 
         StringBuilder post = new StringBuilder();

@@ -818,6 +818,8 @@ public class Main {
         String backupDriversPostURL = generateBackupDriversPost(
                 apiClient, driverPostFormat, topic, statusMessages);
 
+        statusMessages.append(driverPostFormat.statusTitle());
+
         statusMessages.append(driverPostFormat.statusMessages());
         statusMessages.append("\n\n");
 
