@@ -754,38 +754,10 @@ public class Main {
         DriverPostFormat driverPostFormat =
                 DriverPostFormat.create(apiClient, users, routedDeliveries);
 
-        List<String> posts = driverPostFormat.generateDriverPosts();
-        Iterator<Driver> driverIterator = driverPostFormat.getDrivers().iterator();
-        for (String rawPost : posts) {
-            Post post = new Post();
-            post.title = "Generated Driver Post";
-            post.topic_id = topic;
-            post.raw = rawPost;
-            post.createdAt = ZonedDateTime.now(ZoneId.systemDefault())
-                    .format(DateTimeFormatter.ofPattern("uuuu.MM.dd.HH.mm.ss"));
-
-            HttpResponse<?> response = apiClient.post(post.toJson());
-
-            LOGGER.info("generateDriversPosts {}", response.statusCode() == HTTP_OK ?
-                    "" : "failed " + response.statusCode() + ": " + response.body());
-
-            if (response.statusCode() != HTTP_OK) {
-                statusMessages.append("Failed posting driver's message: ")
-                        .append(response.statusCode()).append(": ").append(response.body()).append("\n");
-            } else {
-                PostResponse postResponse = HBParser.postResponse((String)response.body());
-                postURLs.add(
-                        "["
-                        + driverIterator.next().getUserName()
-                        + " message](https://go.helpberkeley.org/t/"
-                        + postResponse.topicSlug
-                        + '/'
-                        + postResponse.topicId
-                        + '/'
-                        + postResponse.postNumber
-                        + ')');
-            }
-        }
+        String driversTableURL = generateDriversTablePost(
+                apiClient, driverPostFormat, topic, statusMessages);
+        String ordersTableURL = generateOrdersTablePost(
+                apiClient, driverPostFormat, topic, statusMessages);
 
         Post post = new Post();
         post.title = "Generated Group Instructions Post";
@@ -811,10 +783,39 @@ public class Main {
                     + postResponse.postNumber);
         }
 
-        String driversTableURL = generateDriversTablePost(
-                apiClient, driverPostFormat, topic, statusMessages);
-        String ordersTableURL = generateOrdersTablePost(
-                apiClient, driverPostFormat, topic, statusMessages);
+        List<String> posts = driverPostFormat.generateDriverPosts();
+        Iterator<Driver> driverIterator = driverPostFormat.getDrivers().iterator();
+        for (String rawPost : posts) {
+            post = new Post();
+            post.title = "Generated Driver Post";
+            post.topic_id = topic;
+            post.raw = rawPost;
+            post.createdAt = ZonedDateTime.now(ZoneId.systemDefault())
+                    .format(DateTimeFormatter.ofPattern("uuuu.MM.dd.HH.mm.ss"));
+
+            response = apiClient.post(post.toJson());
+
+            LOGGER.info("generateDriversPosts {}", response.statusCode() == HTTP_OK ?
+                    "" : "failed " + response.statusCode() + ": " + response.body());
+
+            if (response.statusCode() != HTTP_OK) {
+                statusMessages.append("Failed posting driver's message: ")
+                        .append(response.statusCode()).append(": ").append(response.body()).append("\n");
+            } else {
+                PostResponse postResponse = HBParser.postResponse((String)response.body());
+                postURLs.add(
+                        "["
+                        + driverIterator.next().getUserName()
+                        + " message](https://go.helpberkeley.org/t/"
+                        + postResponse.topicSlug
+                        + '/'
+                        + postResponse.topicId
+                        + '/'
+                        + postResponse.postNumber
+                        + ')');
+            }
+        }
+
         String backupDriversPostURL = generateBackupDriversPost(
                 apiClient, driverPostFormat, topic, statusMessages);
 
@@ -1228,6 +1229,8 @@ public class Main {
     private static void doRestaurantTemplate(
             ApiClient apiClient, WorkRequestHandler.WorkRequest request, int topicId) {
 
+        LOGGER.info("Downloading restaurant template update {}",
+                request.uploadFile.getOriginalFileName());
         try {
             // Download file
             String restaurantTemplate = apiClient.downloadFile(request.uploadFile.getFileName());
@@ -1250,15 +1253,22 @@ public class Main {
 
         HttpResponse<String> response = apiClient.post(post.toJson());
 
+        String statusMessage = "Archive of "
+                + request.uploadFile.getOriginalFileName() + " to topic " + topicId + " ";
         if (response.statusCode() != HTTP_OK) {
+            statusMessage += "failed: ";
+            statusMessage += response.body();
+
             // Send status message
-            request.postStatus(WorkRequestHandler.RequestStatus.Failed,
-                    "Archive of " + request.uploadFile.getOriginalFileName() + " failed: " + response.body());
+            request.postStatus(WorkRequestHandler.RequestStatus.Failed, statusMessage);
         } else {
+            statusMessage += "validated and archived.";
+
             // Send status message
-            request.postStatus(WorkRequestHandler.RequestStatus.Succeeded,
-                    request.uploadFile.getOriginalFileName() + " validated and archived for " + request.date);
+            request.postStatus(WorkRequestHandler.RequestStatus.Succeeded, statusMessage);
         }
+
+        LOGGER.info(statusMessage);
     }
 
     private static void customerCarePost(
@@ -1343,9 +1353,9 @@ public class Main {
                 doOneKitchenDriverMessages(apiClient, request, users);
             } else if (topicId == Constants.TOPIC_POST_ONE_KITCHEN_RESTAURANT_TEMPLATE.getId()) {
                 doRestaurantTemplate(apiClient, request,
-                        Constants.TOPIC_POST_ONE_KITCHEN_RESTAURANT_TEMPLATE.getId());
+                        Constants.TOPIC_ONE_KITCHEN_RESTAURANT_TEMPLATE_STORAGE.getId());
             } else if (topicId == Constants.TOPIC_POST_RESTAURANT_TEMPLATE.getId()) {
-                doRestaurantTemplate(apiClient, request, Constants.TOPIC_POST_RESTAURANT_TEMPLATE.getId());
+                doRestaurantTemplate(apiClient, request, Constants.TOPIC_RESTAURANT_TEMPLATE_STORAGE.getId());
             } else {
                 assert topicId == Constants.TOPIC_REQUEST_DRIVER_ROUTES.getId() : topicId;
                 doDriverRoutes(apiClient, request);
