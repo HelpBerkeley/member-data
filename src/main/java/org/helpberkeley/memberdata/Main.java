@@ -174,6 +174,9 @@ public class Main {
             case Options.COMMAND_COMPLETED_DAILY_ORDERS:
                 completedDailyOrders(apiClient, options.getFileName());
                 break;
+            case Options.COMMAND_COMPLETED_ONEKITCHEN_ORDERS:
+                completedOneKitchenOrders(apiClient, options.getFileName());
+                break;
             case Options.COMMAND_TEST_REQUEST:
                 testRequest(apiClient, options.getFileName());
                 break;
@@ -1084,6 +1087,82 @@ public class Main {
         }
     }
 
+    // Process the last request in the Post completed daily orders topic
+    private static void completedOneKitchenOrders(
+            ApiClient apiClient, String allMembersFile) throws IOException, CsvException {
+        Query query = new Query(Constants.QUERY_GET_LAST_COMPLETED_ONEKITCHEN_ORDERS_REPLY,
+                Constants.TOPIC_POST_COMPLETED_ONEKITCHEN_ORDERS);
+        WorkRequestHandler requestHandler = new WorkRequestHandler(apiClient, query);
+
+        WorkRequestHandler.Reply reply;
+
+        try {
+            reply = requestHandler.getLastReply();
+        } catch (MemberDataException ex) {
+            LOGGER.warn("getLastReply failed: " + ex + "\n" + ex.getMessage());
+            requestHandler.postStatus(WorkRequestHandler.RequestStatus.Failed, ex.getMessage());
+            return;
+        }
+
+        if (reply instanceof WorkRequestHandler.Status) {
+            return;
+        }
+
+        WorkRequestHandler.WorkRequest request = (WorkRequestHandler.WorkRequest) reply;
+
+        // Read users file
+        String csvData = Files.readString(Paths.get(allMembersFile));
+        // Parse users
+        List<User> userList = HBParser.users(csvData);
+        // Build a map of users by user name.
+        Map<String, User> users = new Tables(userList).mapByUserName();
+
+        doCompletedOneKitchenOrders(apiClient, request, users);
+    }
+
+    private static void doCompletedOneKitchenOrders(
+            ApiClient apiClient, WorkRequestHandler.WorkRequest request, Map<String, User> users) {
+
+        try {
+            if (! request.disableDateAudit) {
+                // Check that the date is recent
+                auditCompletedOrdersDate(request.date);
+            }
+
+            // Download file
+            String completedDeliveries = apiClient.downloadFile(request.uploadFile.getFileName());
+
+            // Validate
+            DriverPostFormat.create(apiClient, users, completedDeliveries);
+
+        } catch (MemberDataException ex) {
+            String reason = ex.getCause() != null ? ex.getCause().getMessage() : ex.getMessage();
+            request.postStatus(WorkRequestHandler.RequestStatus.Failed, reason);
+            return;
+        }
+
+        // Copy post to OneKitchen Order History Data
+
+        Post post = new Post();
+        post.title = request.date;
+        post.topic_id = Constants.TOPIC_ONEKITCHEN_ORDER_HISTORY_DATA.getId();
+        post.raw = request.raw;
+        post.createdAt = ZonedDateTime.now(ZoneId.systemDefault())
+                .format(DateTimeFormatter.ofPattern("uuuu.MM.dd.HH.mm.ss"));
+
+        HttpResponse<String> response = apiClient.post(post.toJson());
+
+        if (response.statusCode() != HTTP_OK) {
+            // Send status message
+            request.postStatus(WorkRequestHandler.RequestStatus.Failed,
+                    "Archive of " + request.uploadFile.getOriginalFileName() + " failed: " + response.body());
+        } else {
+            // Send status message
+            request.postStatus(WorkRequestHandler.RequestStatus.Succeeded,
+                    request.uploadFile.getOriginalFileName() + " validated and archived for " + request.date);
+        }
+    }
+
     private static void orderHistory(ApiClient apiClient, String usersFile)
             throws IOException, CsvException {
 
@@ -1304,7 +1383,7 @@ public class Main {
     }
 
     private static void workRequests(ApiClient apiClient, String usersFile) throws IOException, CsvException {
-        String json = apiClient.runQuery(Constants.QUERY_GET_LAST_REPLY_FROM_REQUEST_TOPICS_V20);
+        String json = apiClient.runQuery(Constants.QUERY_GET_LAST_REPLY_FROM_REQUEST_TOPICS_V21);
         ApiQueryResult apiQueryResult = HBParser.parseQueryResult(json);
 
         assert apiQueryResult.rows.length == 6 : apiQueryResult.rows.length;
@@ -1356,6 +1435,8 @@ public class Main {
                         Constants.TOPIC_ONE_KITCHEN_RESTAURANT_TEMPLATE_STORAGE.getId());
             } else if (topicId == Constants.TOPIC_POST_RESTAURANT_TEMPLATE.getId()) {
                 doRestaurantTemplate(apiClient, request, Constants.TOPIC_RESTAURANT_TEMPLATE_STORAGE.getId());
+            } else if (topicId == Constants.TOPIC_POST_COMPLETED_ONEKITCHEN_ORDERS.getId()) {
+                doCompletedOneKitchenOrders(apiClient, request, users);
             } else {
                 assert topicId == Constants.TOPIC_REQUEST_DRIVER_ROUTES.getId() : topicId;
                 doDriverRoutes(apiClient, request);

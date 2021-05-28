@@ -65,6 +65,7 @@ public class Constants {
     public static final int QUERY_GET_CURRENT_VALIDATED_DRIVER_MESSAGE_RESTAURANT_TEMPLATE = 49;
     public static final int QUERY_GET_LAST_REPLY_FROM_REQUEST_TOPICS_V10 = 50;
     public static final int QUERY_GET_LAST_REPLY_FROM_REQUEST_TOPICS_V20 = 58;
+    public static final int QUERY_GET_LAST_REPLY_FROM_REQUEST_TOPICS_V21 = 64;
     public static final int QUERY_GET_CURRENT_VALIDATED_ONE_KITCHEN_RESTAURANT_TEMPLATE = 51;
     public static final int QUERY_GET_LAST_TEST_REQUEST = 52;
     public static final int QUERY_GET_ONE_KITCHEN_DRIVERS_POST_FORMAT_V300 = 53;
@@ -76,6 +77,7 @@ public class Constants {
     public static final int QUERY_GET_THURSDAY_ONE_KITCHEN_DRIVERS_POST_FORMAT_V300 = 60;
     public static final int QUERY_GET_THURSDAY_ONE_KITCHEN_GROUP_POST_FORMAT_V300 = 61;
     public static final int QUERY_GET_THURSDAY_ONE_KITCHEN_ORDERS_TABLE_POST_FORMAT_V300 = 62;
+    public static final int QUERY_GET_LAST_COMPLETED_ONEKITCHEN_ORDERS_REPLY = 63;
 
     // Current spec version for these queries
     public static final int QUERY_GET_DRIVERS_POST_FORMAT = QUERY_GET_DRIVERS_POST_FORMAT_V23;
@@ -89,6 +91,7 @@ public class Constants {
     public static final Topic TOPIC_REQUEST_SINGLE_RESTAURANT_DRIVER_MESSAGES =
             new Topic("Request Single Restaurant Driver Messages", 4878);
     public static final Topic TOPIC_ORDER_HISTORY_DATA = new Topic("Order History Data", 5234);
+    public static final Topic TOPIC_ONEKITCHEN_ORDER_HISTORY_DATA = new Topic("OneKitchen Order History Data", 6923);
     public static final Topic TOPIC_POST_COMPLETED_DAILY_ORDERS = new Topic("Post completed daily orders", 859);
     public static final Topic TOPIC_DRIVER_TRAINING_TABLE = new Topic("Post completed daily orders", 5355);
     public static final Topic TOPIC_RESTAURANT_TEMPLATE_STORAGE = new Topic("Restaurant Template Storage", 6055);
@@ -96,6 +99,8 @@ public class Constants {
             new Topic("One Kitchen Restaurant Template Storage", 6547);
     public static final Topic TOPIC_POST_ONE_KITCHEN_RESTAURANT_TEMPLATE =
             new Topic("Post One Kitchen Restaurant Template", 6548);
+    public static final Topic TOPIC_POST_COMPLETED_ONEKITCHEN_ORDERS =
+            new Topic("Post completed OneKitchen orders", 6889);
 
     public static final String COLUMN_ID = "id";
     public static final String COLUMN_NAME = "name";

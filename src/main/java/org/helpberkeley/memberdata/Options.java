@@ -44,6 +44,7 @@ public class Options {
     static final String COMMAND_ONE_KITCHEN_DRIVER_MESSAGES = "one-kitchen-driver-messages";
     static final String COMMAND_DRIVER_ROUTES = "driver-routes";
     static final String COMMAND_COMPLETED_DAILY_ORDERS = "completed-daily-orders";
+    static final String COMMAND_COMPLETED_ONEKITCHEN_ORDERS = "completed-onekitchen-orders";
     static final String COMMAND_DRIVERS = "drivers";
     static final String COMMAND_DRIVER_HISTORY = "driver-history";
     static final String COMMAND_RESTAURANT_TEMPLATE = "restaurant-template";
@@ -66,6 +67,7 @@ public class Options {
             "Usage: " + COMMAND_FETCH + "\n"
                     + "    | " + COMMAND_WORK_REQUESTS + " all-members-file\n"
                     + "    | " + COMMAND_COMPLETED_DAILY_ORDERS + " all-members-file\n"
+                    + "    | " + COMMAND_COMPLETED_ONEKITCHEN_ORDERS + " all-members-file\n"
                     + "    | " + COMMAND_DRIVER_MESSAGES + " all-members-file\n"
                     + "    | " + COMMAND_ONE_KITCHEN_DRIVER_MESSAGES + " all-members-file\n"
                     + "    | " + COMMAND_DRIVER_ROUTES + "\n"
@@ -136,6 +138,7 @@ public class Options {
             case COMMAND_UPDATE_DISPATCHERS:
             case COMMAND_ORDER_HISTORY:
             case COMMAND_COMPLETED_DAILY_ORDERS:
+            case COMMAND_COMPLETED_ONEKITCHEN_ORDERS:
             case COMMAND_INREACH:
             case COMMAND_CUSTOMER_CARE_POST:
             case COMMAND_FRREG:

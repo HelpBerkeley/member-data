@@ -325,6 +325,31 @@ public class MainTest extends TestBase {
     }
 
     @Test
+    public void completedOneKitchenOrdersTest() throws IOException, CsvException {
+        LocalDate yesterday = LocalDate.now(Constants.TIMEZONE).minusDays(1);
+        DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy/MM/dd");
+        String yesterdayStr = yesterday.format(format);
+
+        String completedOneKitchenOrdersRequest =
+                "{ \"success\": true, \"columns\": [ \"post_number\", \"deleted_at\", \"raw\" ], "
+                        + "\"rows\": [ "
+                        + "[ 42, null, \""
+                        + yesterdayStr
+                        + "\n[xyzzy.csv|attachment](upload://routed-deliveries-v300.csv) (5.8 KB)\" ] "
+                        + "] }";
+        HttpClientSimulator.setQueryResponseData(
+                Constants.QUERY_GET_LAST_COMPLETED_ONEKITCHEN_ORDERS_REPLY, completedOneKitchenOrdersRequest);
+        String usersFile = findFile(Constants.MEMBERDATA_RAW_FILE, "csv");
+        String[] args = { Options.COMMAND_COMPLETED_ONEKITCHEN_ORDERS, usersFile };
+        WorkRequestHandler.clearLastStatusPost();
+        Main.main(args);
+
+        Post statusPost = WorkRequestHandler.getLastStatusPost();
+        assertThat(statusPost).isNotNull();
+        assertThat(statusPost.raw).contains("Status: Succeeded");
+    }
+
+    @Test
     public void orderHistoryTest() throws IOException, CsvException {
         String usersFile = findFile(Constants.MEMBERDATA_RAW_FILE, "csv");
         String[] args = { Options.COMMAND_ORDER_HISTORY, usersFile };
@@ -380,7 +405,7 @@ public class MainTest extends TestBase {
     @Test
     public void workRequestsAllRequestsTest() throws IOException, CsvException {
         HttpClientSimulator.setQueryResponseFile(
-                Constants.QUERY_GET_LAST_REPLY_FROM_REQUEST_TOPICS_V10, "last-replies-all-requests.json");
+                Constants.QUERY_GET_LAST_REPLY_FROM_REQUEST_TOPICS_V21, "last-replies-all-requests.json");
         String usersFile = findFile(Constants.MEMBERDATA_RAW_FILE, "csv");
         String[] args = { Options.COMMAND_WORK_REQUESTS, usersFile };
         Main.main(args);

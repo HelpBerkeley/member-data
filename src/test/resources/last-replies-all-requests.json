@@ -8,7 +8,8 @@
     "request_driver_messages": "2504",
     "request_one_kitchen_driver_messages": "4878",
     "post_restaurant_template": "1860",
-    "post_completed_daily_orders": "859"
+    "post_completed_daily_orders": "859",
+    "post_completed_onekitchen_orders": "6889"
   },
   "columns": [
     "topic_id",
@@ -47,6 +48,12 @@
       460,
       null,
       "2020/12/31\n\n[HelpBerkeleyDeliveries - 12_31.csv|attachment](upload://routed-deliveries-v200.csv) (8.2 KB)"
+    ],
+    [
+      6889,
+      460,
+      null,
+      "2020/12/31\n\n[HelpBerkeleyDeliveries - 12_31.csv|attachment](upload://routed-deliveries-v300.csv) (8.2 KB)"
     ]
   ]
 }
