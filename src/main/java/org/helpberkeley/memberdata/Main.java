@@ -1386,7 +1386,7 @@ public class Main {
         String json = apiClient.runQuery(Constants.QUERY_GET_LAST_REPLY_FROM_REQUEST_TOPICS_V21);
         ApiQueryResult apiQueryResult = HBParser.parseQueryResult(json);
 
-        assert apiQueryResult.rows.length == 6 : apiQueryResult.rows.length;
+        assert apiQueryResult.rows.length == 7 : apiQueryResult.rows.length;
         Integer postNumberIndex = apiQueryResult.getColumnIndex(Constants.DISCOURSE_COLUMN_POST_NUMBER);
         assert postNumberIndex != null;
         Integer rawIndex = apiQueryResult.getColumnIndex(Constants.DISCOURSE_COLUMN_RAW);
