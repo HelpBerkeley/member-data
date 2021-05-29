@@ -36,7 +36,8 @@ public class OrderHistoryDataPostsTest extends TestBase {
     @Test
     public void simpleTest() {
 
-        OrderHistoryDataPosts orderHistoryDataPosts = new OrderHistoryDataPosts(createApiSimulator());
+        OrderHistoryDataPosts orderHistoryDataPosts =
+                new OrderHistoryDataPosts(createApiSimulator(), Constants.QUERY_GET_ORDER_HISTORY_DATA_POSTS);
         SortedMap<String, OrderHistoryData> newPosts = orderHistoryDataPosts.getNewPosts();
         assertThat(newPosts).hasSize(3);
         assertThat(newPosts.firstKey()).isEqualTo("2020/12/30");

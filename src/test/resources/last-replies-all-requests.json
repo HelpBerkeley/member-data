@@ -2,12 +2,13 @@
   "success": true,
   "errors": [],
   "duration": 7.9,
-  "result_count": 5,
+  "result_count": 7,
   "params": {
     "request_driver_routes": "2844",
     "request_driver_messages": "2504",
     "request_one_kitchen_driver_messages": "4878",
     "post_restaurant_template": "1860",
+    "post_onekitchen_restaurant_template": "6548",
     "post_completed_daily_orders": "859",
     "post_completed_onekitchen_orders": "6889"
   },
@@ -42,6 +43,12 @@
       30,
       null,
       "2020/09/28\n\n[HelpBerkeleyDeliveries - TemplateV2-0-0.csv|attachment](upload://restaurant-template-v200.csv) (5.6 KB)"
+    ],
+    [
+      6548,
+      2,
+      null,
+      "2020/09/28\n\n[HelpBerkeleyDeliveries - TemplateV2-0-0.csv|attachment](upload://restaurant-template-v300.csv) (5.6 KB)"
     ],
     [
       859,

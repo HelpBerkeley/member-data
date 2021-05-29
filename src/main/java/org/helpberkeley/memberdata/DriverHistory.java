@@ -98,7 +98,8 @@ public class DriverHistory {
      */
     public static String generateDriverHistory(ApiClient apiClient) throws IOException, CsvException {
         // Get the order history data posts
-        OrderHistoryDataPosts orderHistoryDataPosts = new OrderHistoryDataPosts(apiClient);
+        OrderHistoryDataPosts orderHistoryDataPosts =
+                new OrderHistoryDataPosts(apiClient, Constants.QUERY_GET_ORDER_HISTORY_DATA_POSTS);
         Collection<OrderHistoryData> postsToProcess = orderHistoryDataPosts.getAllPosts().values();
 
         // If a reset of the order history has been done, we are going to download
@@ -121,6 +122,51 @@ public class DriverHistory {
 
                 Collection<String> drivers =
                         HBParser.parseDeliveryDrivers(uploadFile.getOriginalFileName(), deliveries);
+
+                final String deliveryDate = orderHistoryData.getDate();
+                for (String driverName : drivers) {
+                    output.append(driverName).append(Constants.CSV_SEPARATOR).append(deliveryDate).append('\n');
+                }
+            }
+
+            try {
+                Thread.sleep(napTime);
+            } catch (InterruptedException ignored) { }
+        }
+
+        return output.toString();
+    }
+
+    /**
+     * Generate a table of all OneKitchen driver history:
+     *     DriverName, DeliveryDate
+     */
+    public static String generateOneKitchenDriverHistory(ApiClient apiClient) throws IOException, CsvException {
+        // Get the OneKitchen order history data posts
+        OrderHistoryDataPosts orderHistoryDataPosts =
+                new OrderHistoryDataPosts(apiClient, Constants.QUERY_GET_ONE_KITCHEN_ORDER_HISTORY_DATA_POSTS);
+        Collection<OrderHistoryData> postsToProcess = orderHistoryDataPosts.getAllPosts().values();
+
+        // If a reset of the order history has been done, we are going to download
+        // all of the delivery files.  Avoid getting rate limited by Discourse, which
+        // occurs when there are more than 60 requests per minute on a connection.
+        long napTime = (postsToProcess.size() > 10) ? TimeUnit.SECONDS.toMillis(1) : 0;
+
+        StringBuilder output = new StringBuilder();
+        output.append(DRIVER_HISTORY_HEADER);
+
+        for (OrderHistoryData orderHistoryData : postsToProcess) {
+            // Download the delivery file
+            UploadFile uploadFile = orderHistoryData.getUploadFile();
+            String deliveries = apiClient.downloadFile(uploadFile.getFileName());
+
+            if (isBlacklisted(uploadFile.getOriginalFileName())) {
+                LOGGER.info("Skipping blacklisted {}", uploadFile.getOriginalFileName());
+            } else {
+                LOGGER.debug("Processing drivers from " + orderHistoryData.getDate());
+
+                Collection<String> drivers =
+                        HBParser.parseOneKitchenDeliveryDrivers(uploadFile.getOriginalFileName(), deliveries);
 
                 final String deliveryDate = orderHistoryData.getDate();
                 for (String driverName : drivers) {

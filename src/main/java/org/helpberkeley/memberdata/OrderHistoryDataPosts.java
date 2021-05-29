@@ -40,14 +40,16 @@ public class OrderHistoryDataPosts {
         + LAST_POST_PROCESSED;
 
     private final ApiClient apiClient;
+    private final int queryId;
     private final long previousLastPostProcessed;
     private final long currentLastPostProcessed;
     private final SortedMap<String, OrderHistoryData> allPosts = new TreeMap<>();
     private final SortedMap<String, OrderHistoryData> newPosts = new TreeMap<>();
 
-    public OrderHistoryDataPosts(ApiClient apiClient) {
+    public OrderHistoryDataPosts(ApiClient apiClient, int queryId) {
         this.apiClient = apiClient;
-        String json = apiClient.runQuery(Constants.QUERY_GET_ORDER_HISTORY_DATA_POSTS);
+        this.queryId = queryId;
+        String json = apiClient.runQuery(queryId);
         ApiQueryResult apiQueryResult = HBParser.parseQueryResult(json);
         previousLastPostProcessed = parseLastProcessedPost(apiQueryResult);
         currentLastPostProcessed = loadPosts(apiQueryResult);

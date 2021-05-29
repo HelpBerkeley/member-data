@@ -79,6 +79,7 @@ public class Main {
     static final long DRIVERS_TABLE_SHORT_POST_ID = 44847;
     static final long DRIVERS_TABLE_LONG_POST_ID = 44959;
     static final long DRIVER_HISTORY_POST_ID = 48019;
+    static final long ONE_KITCHEN_DRIVER_HISTORY_POST_ID = 64316;
     static final long CUSTOMER_CARE_MEMBER_DATA_POST_ID = 52234;
     static final long FRREG_POST_ID = 52427;
 
@@ -124,6 +125,9 @@ public class Main {
                 break;
             case Options.COMMAND_DRIVER_HISTORY:
                 driverHistory(apiClient);
+                break;
+            case Options.COMMAND_ONEKITCHEN_DRIVER_HISTORY:
+                oneKitchenDriverHistory(apiClient);
                 break;
             case Options.COMMAND_RESTAURANT_TEMPLATE:
                 restaurantTemplate(apiClient);
@@ -1176,7 +1180,8 @@ public class Main {
         OrderHistory orderHistory = OrderHistory.getOrderHistory(apiClient);
 
         // Get the order history data posts
-        OrderHistoryDataPosts orderHistoryDataPosts = new OrderHistoryDataPosts(apiClient);
+        OrderHistoryDataPosts orderHistoryDataPosts =
+                new OrderHistoryDataPosts(apiClient, Constants.QUERY_GET_ORDER_HISTORY_DATA_POSTS);
 
         // Merge in the new data
         orderHistory.merge(orderHistoryDataPosts, usersByUserName);
@@ -1253,6 +1258,22 @@ public class Main {
         // Update order history post
         updateFile(apiClient, upload.getFileName(), upload.getShortURL(),
                 DRIVER_HISTORY_TITLE, DRIVER_HISTORY_POST_ID);
+    }
+
+    private static void oneKitchenDriverHistory(ApiClient apiClient) throws IOException, CsvException {
+
+        // Generate the OneKitchen driver history table
+        String driverHistoryTable = DriverHistory.generateOneKitchenDriverHistory(apiClient);
+
+        // Export updated order history
+        String fileName = new DriverHistoryExporter(driverHistoryTable).driverHistoryToFile();
+
+        // Upload new driver history
+        Upload upload = new Upload(apiClient, fileName);
+
+        // Update OneKitchen order history post
+        updateFile(apiClient, upload.getFileName(), upload.getShortURL(),
+                DRIVER_HISTORY_TITLE, ONE_KITCHEN_DRIVER_HISTORY_POST_ID);
     }
 
     private static void restaurantTemplate(ApiClient apiClient) {

@@ -61,6 +61,7 @@ public class Constants {
     public static final int QUERY_GET_ONE_KITCHEN_GROUP_POST_FORMAT_V1 = 43;
     public static final int QUERY_GET_LAST_COMPLETED_DAILY_ORDERS_REPLY = 44;
     public static final int QUERY_GET_ORDER_HISTORY_DATA_POSTS = 45;
+    public static final int QUERY_GET_ONE_KITCHEN_ORDER_HISTORY_DATA_POSTS = 65;
     public static final int QUERY_GET_DRIVER_DETAILS = 46;
     public static final int QUERY_GET_CURRENT_VALIDATED_DRIVER_MESSAGE_RESTAURANT_TEMPLATE = 49;
     public static final int QUERY_GET_LAST_REPLY_FROM_REQUEST_TOPICS_V10 = 50;

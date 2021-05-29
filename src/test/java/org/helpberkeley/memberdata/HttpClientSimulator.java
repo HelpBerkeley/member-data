@@ -226,6 +226,9 @@ public class HttpClientSimulator extends HttpClient {
             case Constants.QUERY_GET_ORDER_HISTORY_DATA_POSTS:
                 dataFile = "order-history-data.json";
                 break;
+            case Constants.QUERY_GET_ONE_KITCHEN_ORDER_HISTORY_DATA_POSTS:
+                dataFile = "onekitchen-order-history-data.json";
+                break;
             case Constants.QUERY_GET_DRIVER_DETAILS:
                 dataFile = "driver-details-posts.json";
                 break;

@@ -370,6 +370,12 @@ public class MainTest extends TestBase {
     }
 
     @Test
+    public void oneKitchenDriverHistoryTest() throws IOException, CsvException {
+        String[] args = { Options.COMMAND_ONEKITCHEN_DRIVER_HISTORY };
+        Main.main(args);
+    }
+
+    @Test
     public void restaurantTemplateTest() throws IOException, CsvException {
         String[] args = { Options.COMMAND_RESTAURANT_TEMPLATE };
         Main.main(args);
@@ -414,7 +420,7 @@ public class MainTest extends TestBase {
     @Test
     public void workRequestsBadRequestTest() throws IOException, CsvException {
         HttpClientSimulator.setQueryResponseFile(
-                Constants.QUERY_GET_LAST_REPLY_FROM_REQUEST_TOPICS_V20, "last-replies-bad-request.json");
+                Constants.QUERY_GET_LAST_REPLY_FROM_REQUEST_TOPICS_V21, "last-replies-bad-request.json");
         String usersFile = findFile(Constants.MEMBERDATA_RAW_FILE, "csv");
         String[] args = { Options.COMMAND_WORK_REQUESTS, usersFile };
         Main.main(args);
