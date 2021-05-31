@@ -78,6 +78,8 @@ public class Main {
     static final long DRIVERS_POST_STAGING_TOPIC_ID = 2123;
     static final long DRIVERS_TABLE_SHORT_POST_ID = 44847;
     static final long DRIVERS_TABLE_LONG_POST_ID = 44959;
+    static final long EVENT_DRIVERS_TABLE_SHORT_POST_ID = 64471;
+    static final long EVENT_DRIVERS_TABLE_LONG_POST_ID = 64469;
     static final long DRIVER_HISTORY_POST_ID = 48019;
     static final long ONE_KITCHEN_DRIVER_HISTORY_POST_ID = 64316;
     static final long CUSTOMER_CARE_MEMBER_DATA_POST_ID = 52234;
@@ -248,10 +250,10 @@ public class Main {
         Map<String, DetailsPost> driverDetails = HBParser.driverDetails(apiQueryResult);
 
         // Fetch driver history
-        Map<String, DriverHistory> driverHistory = DriverHistory.getDriverHistory(apiClient);
+        Map<String, DriverHistory> history = DriverHistory.getDriverHistory(apiClient);
 
         // Export drivers
-        new DriverExporter(users, driverHistory, driverDetails).driversToFile();
+        new DriverExporter(users, history, driverDetails).driversToFile();
     }
 
     private static void postConsumerRequests(ApiClient apiClient, final String fileName)
@@ -1233,6 +1235,20 @@ public class Main {
         post = driverExporter.longPost();
         // update the posting
         response = apiClient.updatePost(DRIVERS_TABLE_LONG_POST_ID, post);
+        // FIX THIS, DS: what to do with this error?
+        assert response.statusCode() == HTTP_OK : "failed " + response.statusCode() + ": " + response.body();
+
+        // Generate event drivers short table post
+        post = driverExporter.eventDriversShortPost();
+        // update the posting
+        response = apiClient.updatePost(EVENT_DRIVERS_TABLE_SHORT_POST_ID, post);
+        // FIX THIS, DS: what to do with this error?
+        assert response.statusCode() == HTTP_OK : "failed " + response.statusCode() + ": " + response.body();
+
+        // Generate event drivers long table post
+        post = driverExporter.eventDriversLongPost();
+        // update the posting
+        response = apiClient.updatePost(EVENT_DRIVERS_TABLE_LONG_POST_ID, post);
         // FIX THIS, DS: what to do with this error?
         assert response.statusCode() == HTTP_OK : "failed " + response.statusCode() + ": " + response.body();
 

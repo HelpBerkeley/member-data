@@ -422,8 +422,11 @@ public class User {
     }
 
     Boolean isAvailableDriver() {
-
         return isDriver() && ! (isGone() || isOut() || isOtherDrivers() || isEventDriver());
+    }
+
+    Boolean isAvailableEventDriver() {
+        return isEventDriver() && ! (isGone() || isOut() || isOtherDrivers());
     }
 
     Boolean groupOwner(String groupName) {

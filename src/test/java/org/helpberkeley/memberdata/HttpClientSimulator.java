@@ -280,6 +280,8 @@ public class HttpClientSimulator extends HttpClient {
             fileName = "restaurant-template-post.json";
         } else if  (fileName.equals(Main.DRIVER_HISTORY_POST_ID + ".json")) {
             fileName = "driver-history-post.json";
+        } else if (fileName.equals(Main.ONE_KITCHEN_DRIVER_HISTORY_POST_ID + ".json")) {
+            fileName = "driver-history-post.json";
         }
 
         try {

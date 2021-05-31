@@ -220,6 +220,42 @@ public class DriverExporter extends Exporter {
         return detailedDrivers;
     }
 
+    List<DetailedDriver> availableEventDriversWithDetailsPosts() {
+
+        // Create a list of available DetailedDrivers with details posts
+        List<DetailedDriver> detailedDrivers = new ArrayList<>();
+        for (User driver : tables.availableEventDrivers()) {
+
+            DetailsPost detailsPost = driverDetails.get(driver.getUserName());
+
+            if (detailsPost != null) {
+                detailedDrivers.add(new DetailedDriver(driver, detailsPost));
+            }
+        }
+
+        // Sort by those with details, then alphabetically by user name
+        detailedDrivers.sort(
+                Comparator.comparing(DetailedDriver::getLatestDetailsPostNumber, Comparator.reverseOrder())
+                        .thenComparing(DetailedDriver::getUserName));
+
+        return detailedDrivers;
+    }
+
+    List<DetailedDriver> availableDetailedEventDriversByReverseCreationDate() {
+
+        // Create a list of available DetailedDrivers
+        List<DetailedDriver> detailedDrivers = new ArrayList<>();
+        for (User driver : tables.availableEventDrivers()) {
+            detailedDrivers.add(new DetailedDriver(driver, driverDetails.get(driver.getUserName())));
+
+        }
+
+        // Sort by those with details, then alphabetically by user name
+        detailedDrivers.sort(Comparator.comparing(DetailedDriver::getCreateDate, Comparator.reverseOrder()));
+
+        return detailedDrivers;
+    }
+
     String shortPost() {
 
         // get available  DetailedDrivers
@@ -284,6 +320,125 @@ public class DriverExporter extends Exporter {
 
         // get available  DetailedDrivers
         List<DetailedDriver> detailedDrivers = availableDriversWithDetailsPosts();
+
+        StringBuilder output = new StringBuilder();
+
+        String timeStamp = ZonedDateTime.now(ZoneId.systemDefault())
+                .format(DateTimeFormatter.ofPattern("uuuu/MM/dd HH:mm:ss"));
+        output.append("Updated: ").append(timeStamp).append("\n");
+
+        output.append("|UserName|phn .#|l i m i t e d|a t - r i s k|b i k e|r u n s|3 2|1 0|details|\n");
+        output.append("|---|---|---|---|---|---|---|---|---|\n");
+
+        for (DetailedDriver detailedDriver : detailedDrivers) {
+
+            DriverHistory history = driverHistory.get(detailedDriver.getUserName());
+
+            String recentRuns32;
+            String recentRuns10;
+            String totalRuns = "0";
+
+            if (history != null) {
+                List<Integer> weeklyRuns = history.getWeeklyRunTotals();
+
+                recentRuns32 = (weeklyRuns.get(3) > 0 ? ":green_circle:" : ":red_circle:")
+                        + (weeklyRuns.get(2) > 0 ? ":green_circle:" : ":red_circle:");
+                recentRuns10 = (weeklyRuns.get(1) > 0 ? ":green_circle:" : ":red_circle:")
+                        + (weeklyRuns.get(0) > 0 ? ":green_circle:" : ":red_circle:");
+
+                totalRuns = Long.toString(history.totalRuns());
+            } else {
+                recentRuns32 = ":red_circle::red_circle:";
+                recentRuns10 = ":red_circle::red_circle:";
+            }
+
+            output.append(detailedDriver.getUserName());
+            output.append('|');
+            output.append(detailedDriver.getPhoneNumber());
+            output.append('|');
+            output.append(detailedDriver.isLimitedRuns() ? Constants.LIMITED_RUNS_EMOJI : "");
+            output.append('|');
+            output.append(detailedDriver.isAtRisk() ? Constants.AT_RISK_EMOJI : "");
+            output.append('|');
+            output.append(detailedDriver.isBiker() ? Constants.BIKE_EMOJI : "");
+            output.append('|');
+            output.append(totalRuns);
+            output.append('|');
+            output.append(recentRuns32);
+            output.append('|');
+            output.append(recentRuns10);
+            output.append('|');
+            output.append(detailedDriver.getDetails());
+            output.append("|\n");
+        }
+
+        return output.toString();
+    }
+
+    String eventDriversShortPost() {
+
+        // get available  DetailedDrivers
+        List<DetailedDriver> detailedDrivers = availableDetailedEventDriversByReverseCreationDate();
+
+        StringBuilder output = new StringBuilder();
+
+        String timeStamp = ZonedDateTime.now(ZoneId.systemDefault())
+                .format(DateTimeFormatter.ofPattern("uuuu/MM/dd HH:mm:ss"));
+        output.append("Updated: ").append(timeStamp).append("\n");
+
+        output.append("|UserName|Full Name|phn .#|lt|ar|bk|rn|3. 2. 1. 0|\n");
+        output.append("|---|---|---|---|---|---|---|---|---|---|---|---|---|\n");
+
+        for (DetailedDriver detailedDriver : detailedDrivers) {
+
+            DriverHistory history = driverHistory.get(detailedDriver.getUserName());
+
+            String recentRuns;
+            String totalRuns = "0";
+
+            if (history != null) {
+                List<Integer> weeklyRuns = history.getWeeklyRunTotals();
+
+                recentRuns = (weeklyRuns.get(3) > 0 ? ":green_circle:" : ":red_circle:")
+                        + (weeklyRuns.get(2) > 0 ? ":green_circle:" : ":red_circle:")
+                        + (weeklyRuns.get(1) > 0 ? ":green_circle:" : ":red_circle:")
+                        + (weeklyRuns.get(0) > 0 ? ":green_circle:" : ":red_circle:");
+                totalRuns = Long.toString(history.totalRuns());
+            } else {
+                recentRuns = ":red_circle::red_circle::red_circle::red_circle:";
+            }
+
+            String name = detailedDriver.getName();
+            if (name.length() > 19) {
+                name = name.substring(0, 18);
+                name += '.';
+            }
+
+            output.append(detailedDriver.getUserName());
+            output.append('|');
+            output.append(name);
+            output.append('|');
+            output.append(detailedDriver.getPhoneNumber());
+            output.append('|');
+            output.append(detailedDriver.isLimitedRuns() ? Constants.LIMITED_RUNS_EMOJI : "");
+            output.append('|');
+            output.append(detailedDriver.isAtRisk() ? Constants.AT_RISK_EMOJI : "");
+            output.append('|');
+            output.append(detailedDriver.isBiker() ? Constants.BIKE_EMOJI : "");
+            output.append('|');
+            output.append(totalRuns);
+            output.append('|');
+            output.append(recentRuns);
+            output.append("|\n");
+        }
+
+        return output.toString();
+    }
+
+    String eventDriversLongPost() {
+
+        // get available  DetailedDrivers
+        List<DetailedDriver> detailedDrivers = availableEventDriversWithDetailsPosts();
 
         StringBuilder output = new StringBuilder();
 

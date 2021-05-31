@@ -203,10 +203,20 @@ public class DriverHistory {
         return BLACKLIST.contains(fileName);
     }
 
-    public static Map<String, DriverHistory> getDriverHistory(ApiClient apiClient) throws IOException, CsvException {
-        String driverRuns = getDriverRuns(apiClient);
+    public static Map<String, DriverHistory> getDriverHistory(
+            ApiClient apiClient) throws IOException, CsvException {
 
-        Map<String, DriverHistory> driverHistory = new HashMap<>();
+        Map<String, DriverHistory> history = new HashMap<>();
+        doGetDriverHistory(apiClient, Main.DRIVER_HISTORY_POST_ID, history);
+        doGetDriverHistory(apiClient, Main.ONE_KITCHEN_DRIVER_HISTORY_POST_ID, history);
+
+        return history;
+    }
+
+    private static void doGetDriverHistory(ApiClient apiClient,
+           long postID, Map<String, DriverHistory> driverHistory) throws IOException, CsvException {
+
+        String driverRuns = getDriverRuns(apiClient, postID);
 
         CSVReader cvsReader = new CSVReader(new StringReader(driverRuns));
         List<String[]> lines = cvsReader.readAll();
@@ -223,13 +233,11 @@ public class DriverHistory {
             DriverHistory driver = driverHistory.computeIfAbsent(columns[0], DriverHistory::new);
             driver.addRun(columns[1]);
         }
-
-        return driverHistory;
     }
 
-    private static String getDriverRuns(ApiClient apiClient) {
+    private static String getDriverRuns(ApiClient apiClient, long postID) {
         // Get Driver history post
-        String driverHistoryPost = apiClient.getPost(Main.DRIVER_HISTORY_POST_ID);
+        String driverHistoryPost = apiClient.getPost(postID);
         // Get file link to download
         UploadFile driverHistoryFile = HBParser.parseFileFromPost(driverHistoryPost);
         // Download it.

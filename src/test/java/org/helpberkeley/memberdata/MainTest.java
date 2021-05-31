@@ -361,6 +361,11 @@ public class MainTest extends TestBase {
         String usersFile = findFile(Constants.MEMBERDATA_RAW_FILE, "csv");
         String[] args = { Options.COMMAND_DRIVERS, usersFile };
         Main.main(args);
+
+        String driversFile = readFile(findFile(Constants.DRIVERS_FILE, "csv"));
+        assertThat(driversFile).contains("jbDriver");
+        assertThat(driversFile).contains("jsDriver");
+        assertThat(driversFile).contains("Xyzzy");
     }
 
     @Test

@@ -234,6 +234,21 @@ public class Tables {
     }
 
     /**
+     * Get a list of available event drivers
+     * @return List of drivers.
+     */
+    List<User> availableEventDrivers() {
+        List<User> drivers = new ArrayList<>();
+
+        for (User user : users) {
+            if (user.isAvailableEventDriver() && user.isTrainedEventDriver()) {
+                drivers.add(user);
+            }
+        }
+        return drivers;
+    }
+
+    /**
      * Get a list of dispatchers, sorted by create time
      * @return List of dispatchers
      */
