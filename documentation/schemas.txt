@@ -1,7 +1,7 @@
 Help Berkeley Schemas
 =====================
 
-Version: 2.0.11
+Version: 3.0.0
 
 Full Member Record
 ------------------
@@ -27,7 +27,7 @@ Consumer,Boolean,In consumers group,
 Voiceonly,Boolean,In voiceonly group,
 FRVoiceonly,Boolean,In FRvoiceonly group,
 Driver,Boolean,In drivers group,
-trainedD, Boolean, In trained_drivers,
+Dtrain'd, Boolean, In trained_drivers,
 Dispatcher,Boolean,In dispatchers group,
 Workflow,Boolean,In workflow group,
 Inreach,Boolean,In inreach group,
@@ -50,8 +50,8 @@ limited, Boolean, In limited,
 at-risk, Boolean, In at-risk,
 biker, Boolean, In bikers,
 out, Boolean, In out_volunteers,
-eventsD, Boolean, In events_only,
-trainedED, Boolean, In trained_edrivers
+event, Boolean, In events_only,
+Etrain'd, Boolean, In trained_edrivers
 gone, Boolean, In gone_volunteers,
 other, Boolean, In other_drivers,
 Admin,Boolean,In admin group,
@@ -70,7 +70,7 @@ ID,Long Integer,Discourse user ID,
 Created,String,YYYY/MM/DD HH:MM:SS (HH is 0-23)
 Name,String,Full name
 UserName,String,Discourse user name,
-EMail,String,,
+EMail,String,primary email address
 Phone #,String,,
 Phone2 #,String,,
 Neighborhood,String,,
@@ -82,7 +82,7 @@ Consumer,Boolean,In consumers group,
 Voiceonly,Boolean,In voiceonly group,
 FRVoiceonly,Boolean,In FRvoiceonly group,
 Driver,Boolean,In drivers group,
-trainedD, Boolean, In trained_drivers,
+Dtrain'd, Boolean, In trained_drivers,
 Dispatcher,Boolean,In dispatchers group,
 Workflow,Boolean,In workflow group,
 Inreach,Boolean,In inreach group,
@@ -94,9 +94,9 @@ trainedCCB, Boolean, In trained_CCB
 Marktg,Boolean,In Marketing group,
 Mods,Boolean,In mod group,
 Trust4,Boolean,In trust_level_4 group,
+Specs,Boolean,In specialist group,
 Packer,Boolean,In HB_Packers group,
 BHS,Boolean,In Berkeley High School Students group,
-Packer,Boolean,In HB_Packers group,
 CustInf,Boolean,In customerinfo group,
 Advsr,Boolean,In advisors group,
 Board, Boolean, In boardmembers group,
@@ -105,21 +105,22 @@ limited, Boolean, In limited,
 at-risk, Boolean, In at-risk,
 biker, Boolean, In bikers,
 out, Boolean, In out_volunteers,
-events, Boolean, In events_only,
-trainedED, Boolean, In trained_edrivers
+event, Boolean, In events_only,
+Etrain'd, Boolean, In trained_edrivers
 gone, Boolean, In gone_volunteers,
 other, Boolean, In other_drivers,
 Admin,Boolean,In admin group,
 ConsReq,Boolean,Made request for meals and not yet in consumers group,
-Volunteer Request,String,Volunteer request type and not yet in a drivers, dispatchers or specialists group,
+Volunteer Request,String,Volunteer request type and not yet in a drivers dispatchers or specialists group,
 
-Workflow data
-------------------
+Workflow data v2.0.0
+--------------------
 
 Posting type:  Reply, containing attached CSV file 
 Sort type:     User name.
 Where:         https://go.helpberkeley.org/t/workflow-data/824
-When:          Daily at 6:30pm and 8:30pm.
+Topic:         Get workflow data
+When:          Daily at 5:00pm and 8:00pm.
 
 Sorted by Consumer True->False, then by driver True->False..
 
@@ -140,13 +141,52 @@ normal, Int,,
 veggie, Int,,
 #orders, Int,,
 
-Restaurant Template
-------------------
+Workflow data v3.0.0
+--------------------
+
+Posting type:  Reply, containing attached CSV file 
+Sort type:     User name.
+Where:         https://go.helpberkeley.org/t/get-onekitchen-workflow-data/6658
+Topic:         Get OneKitchen workflow data
+When:          Daily at 12:00am
+
+Sorted by Consumer True->False, then by driver True->False..
+
+Column Name,Usage
+Consumer,Boolean,In consumers group,
+Driver,Boolean,In drivers group,
+Name,String,Full name
+User Name,String,Discourse user name,
+Phone #,String,,
+Phone2 #,String,,
+Neighborhood,String,,
+City,String,,
+Address,String,,
+Condo,Boolean,In non-single family dwelling,
+Details,String,,
+Restaurants,String,,
+std meals,Int,,
+alt meals,Int,,
+type meal,String,
+std grocery,Int,,
+alt grocery,Int,,
+type grocery,String,
+
+Restaurant Template v2.0.0
+--------------------------
 
 Location:      Closet/HushWorkflow
-Link:          https://go.helpberkeley.org/t/software-input-controlBlockRestaurant-template/1860/1
-Schema Used:   Workflow data
+Link:          https://go.helpberkeley.org/t/post-restaurant-template-for-driver-messages/1860
+Schema Used:   Workflow v2.0.0 with modifications.
 
+The column names from the Workflow v2.0.0 schema are used, but with some
+column values have overridden meanings, and some column values being
+ignored in different zones of the table.
+
+The layout of the template is:
+
+Control Block
+Empty Row
 Restaurant Block Marker
 Empty Row
 Restaurant Address Rows - Solano
@@ -160,7 +200,6 @@ Empty Row
 Empty Row
 Restaurant Route Rows - Shattuck Route
 
-
 Restaurant Block Marker  - FALSE,TRUE,,,,,,,,,,,,,
 Empty Row - ,,,,,,,,,,,,,,
 Example Solano Address row - FALSE,,,,,,,,"1158 Solano Ave, Albany",FALSE,,Cafe Raj,,,
@@ -168,12 +207,94 @@ Example Shattuck Address row - FALSE,,,,,,,,"2521 Hearst Ave, Berkeley, CA 94709
 Example Solano Route row - Solano Route,,,,,,,,Closed Mondays,,,Kim's,,,5:10 PM
 Example Shattuck Route row - Shattuck Route,,Closes right at 5:00pm,,,,,,,,,V & A Cafe,,,4:55 PM
 
-Routed Workflow
----------------
+Control Block:
+    - Must be present and be the first section.
+    - Must start with a ControlBegin row
+    - Must end with a ControlEnd row.
+    - All rows must have FALSE,FALSE, in the first two columns.
+    - Must have valid version row.
+
+The Control Block ignores the values from all columns except:
+
+Consumer
+Driver
+Name
+User Name
+City
+
+Control Block column value overrides:
+
+Name -> Control Block directive
+User Name -> Control Block variable key
+City -> Control Block variable value
+
+Within a route block the following column meanings are changed:
+
+Consumer -> Route - String, route name.
+Condo ->  Pics - String, Contains "No pics" if pics are not required. Empty means that pics are required.
+Details -> Active? - Boolean, whether or not the restaurant is currently active.
+normal -> Emojis - String, emoji.
+veggie -> Starting - String, starting time.
+#orders -> Closing - String, closing time.
+
+Restaurant Template v3.0.0
+--------------------------
 
 Location:      Closet/HushWorkflow
-Link:          https://go.helpberkeley.org/t/software-input-controlBlockRestaurant-template/1860/1
-Schema Used:   Workflow data
+Link:          https://go.helpberkeley.org/t/post-restaurant-template-for-onekitchen-driver-messages/6548
+Schema Used:   Workflow v3.0.0 with modifications.
+
+The column names from the Workflow v3.0.0 schema are used, but with some
+column values have overridden meanings, and some column values being
+ignored in different zones of the table.
+
+The layout of the template is:
+
+Control Block
+Empty Row
+Restaurant Block Marker
+Empty Row
+Restaurant Address Rows
+Restaurant Block Marker
+Empty Row
+Empty Row
+Restaurant Route Rows
+Empty Row
+Empty Row
+
+Restaurant Block Marker  - FALSE,TRUE,,,,,,,,,,,,,,,,
+Empty Row - ,,,,,,,,,,,,,,,,,
+Example Address row - FALSE,,,,,,,,"1955 Ninth St., Berkeley, CA",FALSE,"details string",Bauman Meals/Groceries,,,,,,
+Example Route row - Shattuck Route,,Partner commercial kitchen for Free Meals Runs on Mondays,,"Only on Mondays, 3:00pm-4:00pm",,,,,No pics,TRUE,Bauman Meals/Groceries,:frog:,3:00 PM,4:00 PM,,,
+
+Control Block:
+    - Must be present and be the first section.
+    - Must start with a ControlBegin row
+    - Must end with a ControlEnd row.
+    - All rows must have FALSE,FALSE, in the first two columns.
+    - Must have valid version row.
+
+The Control Block ignores the values from all columns except:
+
+Consumer
+Driver
+Name
+User Name
+City
+
+Control Block column value overrides:
+
+Name -> Control Block directive
+User Name -> Control Block variable key
+City -> Control Block variable value
+
+Within a route block the following column meanings are changed:
+
+Consumer -> Route - String, route name.
+alt meals -> Starting - String, starting time.
+type meal -> Closing - String, closing time.
+Details -> Active? - Boolean, whether or not the restaurant is currently active.
+std meals -> Emojis - String, emoji.
 
 Inreach consumer data
 ---------------------
@@ -464,10 +585,10 @@ Who:           Driver is listed if:
                  (drivers == TRUE) AND (trained_drivers == TRUE) 
                  AND (event_drivers == FALSE) AND (GONE == FALSE) AND (OUT == FALSE) AND (OTHER ==FALSE)
 
-Note: this driver table will be difficult to keep very compact but needs to display many columns,
-         and be readable at a glance. 
-      To this purpose we will need to use emojis instead of regular Booleans.
-	  
+Note: this driver table will be difficult to keep very compact but needs
+to display many columns, and be readable at a glance.  To this purpose
+we will need to use emojis instead of regular Booleans.
+  
 Possible legend (to be revisited later):
 lt = Limited, true if 
 ar = at-risk, true if
