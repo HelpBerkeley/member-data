@@ -35,6 +35,7 @@ import java.net.http.HttpResponse;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.text.MessageFormat;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -85,6 +86,12 @@ public class Main {
     static final long CUSTOMER_CARE_MEMBER_DATA_POST_ID = 52234;
     static final long FRREG_POST_ID = 52427;
     static final long OUT_DRIVERS_POST_ID =  64492;
+
+    static final String WRONG_DRIVER_MESSAGE_REQUEST_TOPIC =
+            "Control block version {0} is not supported in {1}. Did you mean to send this to {2} ?\n";
+    static final String UNSUPPORTED_CONTROL_BLOCK_VERSION =
+            "Control block version {0} is not supported. {1} requires control block version {2}\n";
+
 
     public static void main(String[] args) throws IOException, CsvException {
 
@@ -682,14 +689,23 @@ public class Main {
 
         long topic = (request.topic != null) ? request.topic : DRIVERS_POST_STAGING_TOPIC_ID;
 
-        String version = request.version;
-
         // Download file
         String routedDeliveries = apiClient.downloadFile(request.uploadFile.getFileName());
         request.postStatus(WorkRequestHandler.RequestStatus.Processing, "");
 
         try {
-            String statusMessage = generateDriverPosts(apiClient, users, routedDeliveries, topic);
+            String version = ControlBlock.create(routedDeliveries).getVersion();
+            if (version.equals(Constants.CONTROL_BLOCK_VERSION_300)) {
+                throw new MemberDataException(MessageFormat.format(WRONG_DRIVER_MESSAGE_REQUEST_TOPIC,
+                        version, buildTopicURL(Constants.TOPIC_REQUEST_DRIVER_MESSAGES),
+                        buildTopicURL(Constants.TOPIC_REQUEST_ONE_KITCHEN_DRIVER_MESSAGES)));
+            } else if (! version.equals(Constants.CONTROL_BLOCK_VERSION_200)) {
+                throw new MemberDataException(MessageFormat.format(UNSUPPORTED_CONTROL_BLOCK_VERSION,
+                        version, buildTopicURL(Constants.TOPIC_REQUEST_DRIVER_MESSAGES),
+                        Constants.CONTROL_BLOCK_VERSION_200));
+            }
+            DriverPostFormat driverPostFormat = DriverPostFormat.create(apiClient, users, routedDeliveries);
+            String statusMessage = generateDriverPosts(apiClient, driverPostFormat, topic);
             request.postStatus(WorkRequestHandler.RequestStatus.Succeeded, statusMessage);
         } catch (MemberDataException ex) {
             String reason = ex.getCause() != null ? ex.getCause().getMessage() : ex.getMessage();
@@ -708,7 +724,7 @@ public class Main {
             throws IOException, CsvException {
         Query query = new Query(
                 Constants.QUERY_GET_LAST_REQUEST_ONE_KITCHEN_DRIVER_MESSAGES_REPLY,
-                Constants.TOPIC_REQUEST_SINGLE_RESTAURANT_DRIVER_MESSAGES);
+                Constants.TOPIC_REQUEST_ONE_KITCHEN_DRIVER_MESSAGES);
         WorkRequestHandler requestHandler = new WorkRequestHandler(apiClient, query);
 
         WorkRequestHandler.Reply reply;
@@ -745,7 +761,18 @@ public class Main {
         request.postStatus(WorkRequestHandler.RequestStatus.Processing, "");
 
         try {
-            String statusMessage = generateDriverPosts(apiClient, users, routedDeliveries, topic);
+            String version = ControlBlock.create(routedDeliveries).getVersion();
+            if (version.equals(Constants.CONTROL_BLOCK_VERSION_200)) {
+                throw new MemberDataException(MessageFormat.format(WRONG_DRIVER_MESSAGE_REQUEST_TOPIC,
+                        version, buildTopicURL(Constants.TOPIC_REQUEST_ONE_KITCHEN_DRIVER_MESSAGES),
+                        buildTopicURL(Constants.TOPIC_REQUEST_DRIVER_MESSAGES)));
+            } else if (! version.equals(Constants.CONTROL_BLOCK_VERSION_300)) {
+                throw new MemberDataException(MessageFormat.format(UNSUPPORTED_CONTROL_BLOCK_VERSION,
+                        version, buildTopicURL(Constants.TOPIC_REQUEST_ONE_KITCHEN_DRIVER_MESSAGES),
+                        Constants.CONTROL_BLOCK_VERSION_300));
+            }
+            DriverPostFormat driverPostFormat = DriverPostFormat.create(apiClient, users, routedDeliveries);
+            String statusMessage = generateDriverPosts(apiClient, driverPostFormat, topic);
             request.postStatus(WorkRequestHandler.RequestStatus.Succeeded, statusMessage);
         } catch (MemberDataException ex) {
             String reason = ex.getCause() != null ? ex.getCause().getMessage() : ex.getMessage();
@@ -754,15 +781,20 @@ public class Main {
         }
     }
 
-    private static String generateDriverPosts(ApiClient apiClient, Map<String, User> users,
-          String routedDeliveries, long topic) {
+    static String buildTopicURL(Topic topic) {
+        return "["
+                + topic.getName()
+                + "](https://go.helpberkeley.org/t/"
+                + topic.getId()
+                + ")";
+    }
+
+    private static String generateDriverPosts(
+            ApiClient apiClient, DriverPostFormat driverPostFormat, long topic) {
 
         StringBuilder statusMessages = new StringBuilder();
         List<String> postURLs = new ArrayList<>();
         String groupPostURL = null;
-
-        DriverPostFormat driverPostFormat =
-                DriverPostFormat.create(apiClient, users, routedDeliveries);
 
         String driversTableURL = generateDriversTablePost(
                 apiClient, driverPostFormat, topic, statusMessages);
@@ -1480,7 +1512,7 @@ public class Main {
                 doDriverMessages(apiClient, request, users);
             } else if (topicId == Constants.TOPIC_POST_COMPLETED_DAILY_ORDERS.getId()) {
                 doCompletedDailyOrders(apiClient, request, users);
-            } else if (topicId == Constants.TOPIC_REQUEST_SINGLE_RESTAURANT_DRIVER_MESSAGES.getId()) {
+            } else if (topicId == Constants.TOPIC_REQUEST_ONE_KITCHEN_DRIVER_MESSAGES.getId()) {
                 doOneKitchenDriverMessages(apiClient, request, users);
             } else if (topicId == Constants.TOPIC_POST_ONE_KITCHEN_RESTAURANT_TEMPLATE.getId()) {
                 doRestaurantTemplate(apiClient, request,

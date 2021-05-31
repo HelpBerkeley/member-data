@@ -89,8 +89,8 @@ public class Constants {
     public static final Topic TOPIC_REQUEST_DRIVER_MESSAGES = new Topic("Request Driver Messages", 2504);
     public static final Topic TOPIC_REQUEST_DRIVER_ROUTES = new Topic("Request Driver Routes", 2844);
     public static final Topic TOPIC_POST_RESTAURANT_TEMPLATE = new Topic("Post restaurant template", 1860);
-    public static final Topic TOPIC_REQUEST_SINGLE_RESTAURANT_DRIVER_MESSAGES =
-            new Topic("Request Single Restaurant Driver Messages", 4878);
+    public static final Topic TOPIC_REQUEST_ONE_KITCHEN_DRIVER_MESSAGES =
+            new Topic("Request OneKitchen Driver Messages", 4878);
     public static final Topic TOPIC_ORDER_HISTORY_DATA = new Topic("Order History Data", 5234);
     public static final Topic TOPIC_ONEKITCHEN_ORDER_HISTORY_DATA = new Topic("OneKitchen Order History Data", 6923);
     public static final Topic TOPIC_POST_COMPLETED_DAILY_ORDERS = new Topic("Post completed daily orders", 859);

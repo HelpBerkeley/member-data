@@ -29,6 +29,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.text.MessageFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
@@ -170,10 +171,73 @@ public class MainTest extends TestBase {
     }
 
     @Test
+    public void driverMessagesV300SheetTest() throws IOException, CsvException {
+        String request = readResourceFile(REQUEST_TEMPLATE)
+                .replaceAll("REPLACE_FILENAME", "routed-deliveries-v300.csv");
+        HttpClientSimulator.setQueryResponseData(Constants.QUERY_GET_LAST_REQUEST_DRIVER_MESSAGES_REPLY, request);
+        String usersFile = findFile(Constants.MEMBERDATA_RAW_FILE, "csv");
+        String[] args = { Options.COMMAND_DRIVER_MESSAGES, usersFile };
+        Main.main(args);
+        assertThat(WorkRequestHandler.getLastStatusPost().raw).contains("Status: Fail");
+        assertThat(WorkRequestHandler.getLastStatusPost().raw).contains(MessageFormat.format(
+                Main.WRONG_DRIVER_MESSAGE_REQUEST_TOPIC, Constants.CONTROL_BLOCK_VERSION_300,
+                Main.buildTopicURL(Constants.TOPIC_REQUEST_DRIVER_MESSAGES),
+                Main.buildTopicURL(Constants.TOPIC_REQUEST_ONE_KITCHEN_DRIVER_MESSAGES)));
+    }
+
+    @Test
+    public void driverMessagesUnsupportedVersionTest() throws IOException, CsvException {
+        String request = readResourceFile(REQUEST_TEMPLATE)
+                .replaceAll("REPLACE_FILENAME", "routed-deliveries-v1.csv");
+        HttpClientSimulator.setQueryResponseData(
+                Constants.QUERY_GET_LAST_REQUEST_DRIVER_MESSAGES_REPLY, request);
+        String usersFile = findFile(Constants.MEMBERDATA_RAW_FILE, "csv");
+        String[] args = { Options.COMMAND_DRIVER_MESSAGES, usersFile };
+        Main.main(args);
+        assertThat(WorkRequestHandler.getLastStatusPost().raw).contains("Status: Fail");
+        assertThat(WorkRequestHandler.getLastStatusPost().raw).contains(MessageFormat.format(
+                Main.UNSUPPORTED_CONTROL_BLOCK_VERSION, "0",
+                Main.buildTopicURL(Constants.TOPIC_REQUEST_DRIVER_MESSAGES),
+                Constants.CONTROL_BLOCK_VERSION_200));
+    }
+
+    @Test
     public void oneKitchenDriverMessagesTest() throws IOException, CsvException {
         String usersFile = findFile(Constants.MEMBERDATA_RAW_FILE, "csv");
         String[] args = { Options.COMMAND_ONE_KITCHEN_DRIVER_MESSAGES, usersFile };
         Main.main(args);
+    }
+
+    @Test
+    public void oneKitchenDriverMessagesV200SheetTest() throws IOException, CsvException {
+        String request = readResourceFile(REQUEST_TEMPLATE)
+                .replaceAll("REPLACE_FILENAME", "routed-deliveries-v200.csv");
+        HttpClientSimulator.setQueryResponseData(
+                Constants.QUERY_GET_LAST_REQUEST_ONE_KITCHEN_DRIVER_MESSAGES_REPLY, request);
+        String usersFile = findFile(Constants.MEMBERDATA_RAW_FILE, "csv");
+        String[] args = { Options.COMMAND_ONE_KITCHEN_DRIVER_MESSAGES, usersFile };
+        Main.main(args);
+        assertThat(WorkRequestHandler.getLastStatusPost().raw).contains("Status: Fail");
+        assertThat(WorkRequestHandler.getLastStatusPost().raw).contains(MessageFormat.format(
+                Main.WRONG_DRIVER_MESSAGE_REQUEST_TOPIC, Constants.CONTROL_BLOCK_VERSION_200,
+                Main.buildTopicURL(Constants.TOPIC_REQUEST_ONE_KITCHEN_DRIVER_MESSAGES),
+            Main.buildTopicURL(Constants.TOPIC_REQUEST_DRIVER_MESSAGES)));
+    }
+
+    @Test
+    public void oneKitchenDriverMessagesUnsupportedVersionTest() throws IOException, CsvException {
+        String request = readResourceFile(REQUEST_TEMPLATE)
+                .replaceAll("REPLACE_FILENAME", "routed-deliveries-v1.csv");
+        HttpClientSimulator.setQueryResponseData(
+                Constants.QUERY_GET_LAST_REQUEST_ONE_KITCHEN_DRIVER_MESSAGES_REPLY, request);
+        String usersFile = findFile(Constants.MEMBERDATA_RAW_FILE, "csv");
+        String[] args = { Options.COMMAND_ONE_KITCHEN_DRIVER_MESSAGES, usersFile };
+        Main.main(args);
+        assertThat(WorkRequestHandler.getLastStatusPost().raw).contains("Status: Fail");
+        assertThat(WorkRequestHandler.getLastStatusPost().raw).contains(MessageFormat.format(
+                Main.UNSUPPORTED_CONTROL_BLOCK_VERSION, "0",
+                Main.buildTopicURL(Constants.TOPIC_REQUEST_ONE_KITCHEN_DRIVER_MESSAGES),
+                Constants.CONTROL_BLOCK_VERSION_300));
     }
 
     @Test

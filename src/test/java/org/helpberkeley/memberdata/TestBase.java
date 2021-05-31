@@ -132,6 +132,8 @@ public class TestBase {
     static final String TEST_FILE_NAME = "pom.xml";
     static final String TEST_SHORT_URL = Constants.UPLOAD_URI_PREFIX + "ab34dezzAndSomethingY.csv";
 
+    static final String REQUEST_TEMPLATE = "request-template.json";
+
     @BeforeClass
     public static void installHttpClientSimulatorFactory() {
         ApiClient.httpClientFactory = new HttpClientSimulatorFactory();
