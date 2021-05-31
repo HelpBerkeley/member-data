@@ -118,15 +118,6 @@ public class RestaurantBeanV300 implements RestaurantBean {
     }
 
     /**
-     * In the restaurant template the condo column is used for No Pics
-     *
-     * @return No Pics
-     */
-    public String getNoPics() {
-        return getAltMeals();
-    }
-
-    /**
      * In the restaurant template the details column is used for the status of the restaurant
      *
      * @return Restaurant active of retired

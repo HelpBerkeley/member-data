@@ -249,6 +249,28 @@ public class Tables {
     }
 
     /**
+     * Get a list of trained but out (not gone) drivers and event drivers
+     * @return List of drivers.
+     */
+    List<User> outDrivers() {
+        List<User> drivers = new ArrayList<>();
+
+        for (User user : users) {
+
+            if (user.isGone()) {
+                continue;
+            }
+
+            if ((user.isDriver() && user.isTrainedDriver())
+                || (user.isEventDriver() && user.isTrainedEventDriver())) {
+                drivers.add(user);
+            }
+        }
+
+        return drivers;
+    }
+
+    /**
      * Get a list of dispatchers, sorted by create time
      * @return List of dispatchers
      */

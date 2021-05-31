@@ -256,6 +256,20 @@ public class DriverExporter extends Exporter {
         return detailedDrivers;
     }
 
+    List<DetailedDriver> outDrivers() {
+
+        List<DetailedDriver> outDrivers = new ArrayList<>();
+
+        for (User driver : tables.outDrivers()) {
+            outDrivers.add(new DetailedDriver(driver, driverDetails.get(driver.getUserName())));
+        }
+
+        // Sort by user name
+        outDrivers.sort(Comparator.comparing(DetailedDriver::getUserName, String.CASE_INSENSITIVE_ORDER));
+
+        return outDrivers;
+    }
+
     String shortPost() {
 
         // get available  DetailedDrivers
@@ -566,5 +580,39 @@ public class DriverExporter extends Exporter {
         post.createdAt = timeStamp;
 
         return Optional.of(post);
+    }
+
+    String outPost() {
+
+        List<DetailedDriver> outDrivers = outDrivers();
+
+        if (outDrivers.isEmpty()) {
+            return "";
+        }
+
+        StringBuilder output = new StringBuilder();
+        output.append("|User Name|Name|Phone #|Event|Details|\n");
+        output.append("|---|---|---|---|---|\n");
+
+        ZonedDateTime now = ZonedDateTime.now();
+
+        for (DetailedDriver detailedDriver : outDrivers) {
+
+            ZonedDateTime createTime = ZonedDateTime.parse(detailedDriver.getCreateTime());
+
+            output.append('@');
+            output.append(detailedDriver.getUserName());
+            output.append('|');
+            output.append(detailedDriver.getName());
+            output.append('|');
+            output.append(detailedDriver.getPhoneNumber());
+            output.append('|');
+            output.append(detailedDriver.isEventDriver() ? Constants.GIFT_EMOJI : "");
+            output.append('|');
+            output.append(detailedDriver.getDetails());
+            output.append("|\n");
+        }
+
+        return output.toString();
     }
 }
