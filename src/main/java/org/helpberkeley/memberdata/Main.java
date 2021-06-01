@@ -1271,59 +1271,57 @@ public class Main {
 
         DriverExporter driverExporter = new DriverExporter(users, driverHistory, driverDetails);
 
-//        // Export drivers
-//        String fileName = driverExporter.driversToFile();
-//
-//        // Upload it to Discourse
-//        Upload upload = new Upload(apiClient, fileName);
-//        // Post
-//        postFile(apiClient, fileName, upload.getShortURL(), DRIVERS_TITLE, DRIVERS_POST_TOPIC);
-//
-//        // Generate short table post
-//        String post = driverExporter.shortPost();
-//        // update the posting
-//        HttpResponse<?> response = apiClient.updatePost(DRIVERS_TABLE_SHORT_POST_ID, post);
-//        // FIX THIS, DS: what to do with this error?
-//        assert response.statusCode() == HTTP_OK : "failed " + response.statusCode() + ": " + response.body();
-//
-//        // Generate long table post
-//        post = driverExporter.longPost();
-//        // update the posting
-//        response = apiClient.updatePost(DRIVERS_TABLE_LONG_POST_ID, post);
-//        // FIX THIS, DS: what to do with this error?
-//        assert response.statusCode() == HTTP_OK : "failed " + response.statusCode() + ": " + response.body();
-//
-//        // Generate event drivers short table post
-//        post = driverExporter.eventDriversShortPost();
-//        // update the posting
-//        response = apiClient.updatePost(EVENT_DRIVERS_TABLE_SHORT_POST_ID, post);
-//        // FIX THIS, DS: what to do with this error?
-//        assert response.statusCode() == HTTP_OK : "failed " + response.statusCode() + ": " + response.body();
-//
-//        // Generate event drivers long table post
-//        post = driverExporter.eventDriversLongPost();
-//        // update the posting
-//        response = apiClient.updatePost(EVENT_DRIVERS_TABLE_LONG_POST_ID, post);
-//        // FIX THIS, DS: what to do with this error?
-//        assert response.statusCode() == HTTP_OK : "failed " + response.statusCode() + ": " + response.body();
-//
-//        // Generate the drivers who need training post.
-//        Optional<Post> value = driverExporter.needsTraining();
-//        // Post it, if there are any
-//        if (value.isPresent()) {
-//            // post it
-//            response = apiClient.post(value.get().toJson());
-//            // FIX THIS, DS: what to do with this error?
-//            assert response.statusCode() == HTTP_OK : "failed " + response.statusCode() + ": " + response.body();
-//        }
+        // Export drivers
+        String fileName = driverExporter.driversToFile();
+
+        // Upload it to Discourse
+        Upload upload = new Upload(apiClient, fileName);
+        // Post
+        postFile(apiClient, fileName, upload.getShortURL(), DRIVERS_TITLE, DRIVERS_POST_TOPIC);
+
+        // Generate short table post
+        String post = driverExporter.shortPost();
+        // update the posting
+        HttpResponse<?> response = apiClient.updatePost(DRIVERS_TABLE_SHORT_POST_ID, post);
+        // FIX THIS, DS: what to do with this error?
+        assert response.statusCode() == HTTP_OK : "failed " + response.statusCode() + ": " + response.body();
+
+        // Generate long table post
+        post = driverExporter.longPost();
+        // update the posting
+        response = apiClient.updatePost(DRIVERS_TABLE_LONG_POST_ID, post);
+        // FIX THIS, DS: what to do with this error?
+        assert response.statusCode() == HTTP_OK : "failed " + response.statusCode() + ": " + response.body();
+
+        // Generate event drivers short table post
+        post = driverExporter.eventDriversShortPost();
+        // update the posting
+        response = apiClient.updatePost(EVENT_DRIVERS_TABLE_SHORT_POST_ID, post);
+        // FIX THIS, DS: what to do with this error?
+        assert response.statusCode() == HTTP_OK : "failed " + response.statusCode() + ": " + response.body();
+
+        // Generate event drivers long table post
+        post = driverExporter.eventDriversLongPost();
+        // update the posting
+        response = apiClient.updatePost(EVENT_DRIVERS_TABLE_LONG_POST_ID, post);
+        // FIX THIS, DS: what to do with this error?
+        assert response.statusCode() == HTTP_OK : "failed " + response.statusCode() + ": " + response.body();
+
+        // Generate the drivers who need training post.
+        Optional<Post> value = driverExporter.needsTraining();
+        // Post it, if there are any
+        if (value.isPresent()) {
+            // post it
+            response = apiClient.post(value.get().toJson());
+            // FIX THIS, DS: what to do with this error?
+            assert response.statusCode() == HTTP_OK : "failed " + response.statusCode() + ": " + response.body();
+        }
 
         // Generate the drivers who are out post
-        String
         post = driverExporter.outPost();
         // Post it, if there are any
         if (! post.isEmpty()) {
             // post it
-            HttpResponse<?>
             response = apiClient.updatePost(OUT_DRIVERS_POST_ID, post);
             // FIX THIS, DS: what to do with this error?
             assert response.statusCode() == HTTP_OK : "failed " + response.statusCode() + ": " + response.body();
