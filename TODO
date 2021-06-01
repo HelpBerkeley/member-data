@@ -59,8 +59,3 @@ Add a heart beat post update, to show the back end running
 Update user names to audit case-insensitive
 
 Audits for ReplaceThisBy in new control block
-
-Make posts in get driver messages match the summary order.
-
-Reject one-kitchen sheets from driver request
-and driver requests from one kitchen...

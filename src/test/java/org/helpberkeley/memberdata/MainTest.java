@@ -173,6 +173,7 @@ public class MainTest extends TestBase {
     @Test
     public void driverMessagesV300SheetTest() throws IOException, CsvException {
         String request = readResourceFile(REQUEST_TEMPLATE)
+                .replace("REPLACE_DATE", yesterday())
                 .replaceAll("REPLACE_FILENAME", "routed-deliveries-v300.csv");
         HttpClientSimulator.setQueryResponseData(Constants.QUERY_GET_LAST_REQUEST_DRIVER_MESSAGES_REPLY, request);
         String usersFile = findFile(Constants.MEMBERDATA_RAW_FILE, "csv");
@@ -180,7 +181,7 @@ public class MainTest extends TestBase {
         Main.main(args);
         assertThat(WorkRequestHandler.getLastStatusPost().raw).contains("Status: Fail");
         assertThat(WorkRequestHandler.getLastStatusPost().raw).contains(MessageFormat.format(
-                Main.WRONG_DRIVER_MESSAGE_REQUEST_TOPIC, Constants.CONTROL_BLOCK_VERSION_300,
+                Main.WRONG_REQUEST_TOPIC, Constants.CONTROL_BLOCK_VERSION_300,
                 Main.buildTopicURL(Constants.TOPIC_REQUEST_DRIVER_MESSAGES),
                 Main.buildTopicURL(Constants.TOPIC_REQUEST_ONE_KITCHEN_DRIVER_MESSAGES)));
     }
@@ -188,6 +189,7 @@ public class MainTest extends TestBase {
     @Test
     public void driverMessagesUnsupportedVersionTest() throws IOException, CsvException {
         String request = readResourceFile(REQUEST_TEMPLATE)
+                .replace("REPLACE_DATE", yesterday())
                 .replaceAll("REPLACE_FILENAME", "routed-deliveries-v1.csv");
         HttpClientSimulator.setQueryResponseData(
                 Constants.QUERY_GET_LAST_REQUEST_DRIVER_MESSAGES_REPLY, request);
@@ -211,6 +213,7 @@ public class MainTest extends TestBase {
     @Test
     public void oneKitchenDriverMessagesV200SheetTest() throws IOException, CsvException {
         String request = readResourceFile(REQUEST_TEMPLATE)
+                .replace("REPLACE_DATE", yesterday())
                 .replaceAll("REPLACE_FILENAME", "routed-deliveries-v200.csv");
         HttpClientSimulator.setQueryResponseData(
                 Constants.QUERY_GET_LAST_REQUEST_ONE_KITCHEN_DRIVER_MESSAGES_REPLY, request);
@@ -219,7 +222,7 @@ public class MainTest extends TestBase {
         Main.main(args);
         assertThat(WorkRequestHandler.getLastStatusPost().raw).contains("Status: Fail");
         assertThat(WorkRequestHandler.getLastStatusPost().raw).contains(MessageFormat.format(
-                Main.WRONG_DRIVER_MESSAGE_REQUEST_TOPIC, Constants.CONTROL_BLOCK_VERSION_200,
+                Main.WRONG_REQUEST_TOPIC, Constants.CONTROL_BLOCK_VERSION_200,
                 Main.buildTopicURL(Constants.TOPIC_REQUEST_ONE_KITCHEN_DRIVER_MESSAGES),
             Main.buildTopicURL(Constants.TOPIC_REQUEST_DRIVER_MESSAGES)));
     }
@@ -227,6 +230,7 @@ public class MainTest extends TestBase {
     @Test
     public void oneKitchenDriverMessagesUnsupportedVersionTest() throws IOException, CsvException {
         String request = readResourceFile(REQUEST_TEMPLATE)
+                .replace("REPLACE_DATE", yesterday())
                 .replaceAll("REPLACE_FILENAME", "routed-deliveries-v1.csv");
         HttpClientSimulator.setQueryResponseData(
                 Constants.QUERY_GET_LAST_REQUEST_ONE_KITCHEN_DRIVER_MESSAGES_REPLY, request);
@@ -493,6 +497,76 @@ public class MainTest extends TestBase {
         String usersFile = findFile(Constants.MEMBERDATA_RAW_FILE, "csv");
         String[] args = { Options.COMMAND_WORK_REQUESTS, usersFile };
         Main.main(args);
+    }
+
+    @Test
+    public void completedOneKitchenV200Test() throws IOException, CsvException {
+        String request = readResourceFile(REQUEST_TEMPLATE)
+                .replaceAll("REPLACE_FILENAME", "routed-deliveries-v200.csv")
+                .replace("REPLACE_DATE", yesterday());
+        HttpClientSimulator.setQueryResponseData(
+                Constants.QUERY_GET_LAST_COMPLETED_ONEKITCHEN_ORDERS_REPLY, request);
+        String usersFile = findFile(Constants.MEMBERDATA_RAW_FILE, "csv");
+        String[] args = { Options.COMMAND_COMPLETED_ONEKITCHEN_ORDERS, usersFile };
+        Main.main(args);
+        System.out.println(WorkRequestHandler.getLastStatusPost().raw);
+        assertThat(WorkRequestHandler.getLastStatusPost().raw).contains("Status: Fail");
+        assertThat(WorkRequestHandler.getLastStatusPost().raw).contains(MessageFormat.format(
+                Main.WRONG_REQUEST_TOPIC, Constants.CONTROL_BLOCK_VERSION_200,
+                Main.buildTopicURL(Constants.TOPIC_POST_COMPLETED_ONEKITCHEN_ORDERS),
+                Main.buildTopicURL(Constants.TOPIC_POST_COMPLETED_DAILY_ORDERS)));
+    }
+
+    @Test
+    public void completedDailyOrdersV300Test() throws IOException, CsvException {
+        String request = readResourceFile(REQUEST_TEMPLATE)
+                .replaceAll("REPLACE_FILENAME", "routed-deliveries-v300.csv")
+                .replace("REPLACE_DATE", yesterday());
+        HttpClientSimulator.setQueryResponseData(
+                Constants.QUERY_GET_LAST_COMPLETED_DAILY_ORDERS_REPLY, request);
+        String usersFile = findFile(Constants.MEMBERDATA_RAW_FILE, "csv");
+        String[] args = { Options.COMMAND_COMPLETED_DAILY_ORDERS, usersFile };
+        Main.main(args);
+        System.out.println(WorkRequestHandler.getLastStatusPost().raw);
+        assertThat(WorkRequestHandler.getLastStatusPost().raw).contains("Status: Fail");
+        assertThat(WorkRequestHandler.getLastStatusPost().raw).contains(MessageFormat.format(
+                Main.WRONG_REQUEST_TOPIC, Constants.CONTROL_BLOCK_VERSION_300,
+                Main.buildTopicURL(Constants.TOPIC_POST_COMPLETED_DAILY_ORDERS),
+                Main.buildTopicURL(Constants.TOPIC_POST_COMPLETED_ONEKITCHEN_ORDERS)));
+    }
+
+    @Test
+    public void postOneKitchenRestaurantTemplateV200Test() throws IOException, CsvException {
+        String request = readResourceFile(REQUEST_TEMPLATE)
+                .replaceAll("REPLACE_FILENAME", "restaurant-template-v200.csv")
+                .replace("REPLACE_DATE", yesterday());
+        HttpClientSimulator.setQueryResponseData(
+                Constants.QUERY_GET_LAST_ONE_KITCHEN_RESTAURANT_TEMPLATE_REPLY, request);
+        String[] args = { Options.COMMAND_ONE_KITCHEN_RESTAURANT_TEMPLATE };
+        Main.main(args);
+        System.out.println(WorkRequestHandler.getLastStatusPost().raw);
+        assertThat(WorkRequestHandler.getLastStatusPost().raw).contains("Status: Fail");
+        assertThat(WorkRequestHandler.getLastStatusPost().raw).contains(MessageFormat.format(
+                Main.WRONG_REQUEST_TOPIC, Constants.CONTROL_BLOCK_VERSION_200,
+                Main.buildTopicURL(Constants.TOPIC_POST_ONE_KITCHEN_RESTAURANT_TEMPLATE),
+                Main.buildTopicURL(Constants.TOPIC_POST_RESTAURANT_TEMPLATE)));
+    }
+
+    @Test
+    public void postRestaurantTemplateV300Test() throws IOException, CsvException {
+        String request = readResourceFile(REQUEST_TEMPLATE)
+                .replaceAll("REPLACE_FILENAME", "restaurant-template-v300.csv")
+                .replace("REPLACE_DATE", yesterday());
+        HttpClientSimulator.setQueryResponseData(
+                Constants.QUERY_GET_LAST_RESTAURANT_TEMPLATE_REPLY, request);
+        String[] args = { Options.COMMAND_RESTAURANT_TEMPLATE };
+        Main.main(args);
+        System.out.println(WorkRequestHandler.getLastStatusPost().raw);
+        assertThat(WorkRequestHandler.getLastStatusPost().raw).contains("Status: Fail");
+        assertThat(WorkRequestHandler.getLastStatusPost().raw).contains(MessageFormat.format(
+                Main.WRONG_REQUEST_TOPIC, Constants.CONTROL_BLOCK_VERSION_300,
+                Main.buildTopicURL(Constants.TOPIC_POST_RESTAURANT_TEMPLATE),
+                Main.buildTopicURL(Constants.TOPIC_POST_ONE_KITCHEN_RESTAURANT_TEMPLATE)));
     }
 
     private String findFile(final String prefix, final String suffix) {

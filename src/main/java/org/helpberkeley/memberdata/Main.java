@@ -87,7 +87,7 @@ public class Main {
     static final long FRREG_POST_ID = 52427;
     static final long OUT_DRIVERS_POST_ID =  64492;
 
-    static final String WRONG_DRIVER_MESSAGE_REQUEST_TOPIC =
+    static final String WRONG_REQUEST_TOPIC =
             "Control block version {0} is not supported in {1}. Did you mean to send this to {2} ?\n";
     static final String UNSUPPORTED_CONTROL_BLOCK_VERSION =
             "Control block version {0} is not supported. {1} requires control block version {2}\n";
@@ -696,7 +696,7 @@ public class Main {
         try {
             String version = ControlBlock.create(routedDeliveries).getVersion();
             if (version.equals(Constants.CONTROL_BLOCK_VERSION_300)) {
-                throw new MemberDataException(MessageFormat.format(WRONG_DRIVER_MESSAGE_REQUEST_TOPIC,
+                throw new MemberDataException(MessageFormat.format(WRONG_REQUEST_TOPIC,
                         version, buildTopicURL(Constants.TOPIC_REQUEST_DRIVER_MESSAGES),
                         buildTopicURL(Constants.TOPIC_REQUEST_ONE_KITCHEN_DRIVER_MESSAGES)));
             } else if (! version.equals(Constants.CONTROL_BLOCK_VERSION_200)) {
@@ -763,7 +763,7 @@ public class Main {
         try {
             String version = ControlBlock.create(routedDeliveries).getVersion();
             if (version.equals(Constants.CONTROL_BLOCK_VERSION_200)) {
-                throw new MemberDataException(MessageFormat.format(WRONG_DRIVER_MESSAGE_REQUEST_TOPIC,
+                throw new MemberDataException(MessageFormat.format(WRONG_REQUEST_TOPIC,
                         version, buildTopicURL(Constants.TOPIC_REQUEST_ONE_KITCHEN_DRIVER_MESSAGES),
                         buildTopicURL(Constants.TOPIC_REQUEST_DRIVER_MESSAGES)));
             } else if (! version.equals(Constants.CONTROL_BLOCK_VERSION_300)) {
@@ -1076,6 +1076,17 @@ public class Main {
             // Download file
             String completedDeliveries = apiClient.downloadFile(request.uploadFile.getFileName());
 
+            String version = ControlBlock.create(completedDeliveries).getVersion();
+            if (version.equals(Constants.CONTROL_BLOCK_VERSION_300)) {
+                throw new MemberDataException(MessageFormat.format(WRONG_REQUEST_TOPIC,
+                        version, buildTopicURL(Constants.TOPIC_POST_COMPLETED_DAILY_ORDERS),
+                        buildTopicURL(Constants.TOPIC_POST_COMPLETED_ONEKITCHEN_ORDERS)));
+            } else if (! version.equals(Constants.CONTROL_BLOCK_VERSION_200)) {
+                throw new MemberDataException(MessageFormat.format(UNSUPPORTED_CONTROL_BLOCK_VERSION,
+                        version, buildTopicURL(Constants.TOPIC_POST_COMPLETED_DAILY_ORDERS),
+                        Constants.CONTROL_BLOCK_VERSION_200));
+            }
+
             // Validate
             DriverPostFormat.create(apiClient, users, completedDeliveries);
 
@@ -1170,6 +1181,17 @@ public class Main {
 
             // Download file
             String completedDeliveries = apiClient.downloadFile(request.uploadFile.getFileName());
+
+            String version = ControlBlock.create(completedDeliveries).getVersion();
+            if (version.equals(Constants.CONTROL_BLOCK_VERSION_200)) {
+                throw new MemberDataException(MessageFormat.format(WRONG_REQUEST_TOPIC,
+                        version, buildTopicURL(Constants.TOPIC_POST_COMPLETED_ONEKITCHEN_ORDERS),
+                        buildTopicURL(Constants.TOPIC_POST_COMPLETED_DAILY_ORDERS)));
+            } else if (! version.equals(Constants.CONTROL_BLOCK_VERSION_300)) {
+                throw new MemberDataException(MessageFormat.format(UNSUPPORTED_CONTROL_BLOCK_VERSION,
+                        version, buildTopicURL(Constants.TOPIC_POST_COMPLETED_ONEKITCHEN_ORDERS),
+                        Constants.CONTROL_BLOCK_VERSION_300));
+            }
 
             // Validate
             DriverPostFormat.create(apiClient, users, completedDeliveries);
@@ -1361,7 +1383,7 @@ public class Main {
         }
 
         WorkRequestHandler.WorkRequest request = (WorkRequestHandler.WorkRequest) reply;
-        doRestaurantTemplate(apiClient, request, Constants.TOPIC_RESTAURANT_TEMPLATE_STORAGE.getId());
+        doRestaurantTemplate(apiClient, request);
     }
 
     private static void oneKitchenRestaurantTemplate(ApiClient apiClient) {
@@ -1386,17 +1408,30 @@ public class Main {
         }
 
         WorkRequestHandler.WorkRequest request = (WorkRequestHandler.WorkRequest) reply;
-        doRestaurantTemplate(apiClient, request, Constants.TOPIC_ONE_KITCHEN_RESTAURANT_TEMPLATE_STORAGE.getId());
+        doOneKitchenRestaurantTemplate(apiClient, request);
     }
 
     private static void doRestaurantTemplate(
-            ApiClient apiClient, WorkRequestHandler.WorkRequest request, int topicId) {
+            ApiClient apiClient, WorkRequestHandler.WorkRequest request) {
 
         LOGGER.info("Downloading restaurant template update {}",
                 request.uploadFile.getOriginalFileName());
         try {
             // Download file
             String restaurantTemplate = apiClient.downloadFile(request.uploadFile.getFileName());
+
+            // Check that it is the expected V200 version
+            String version = ControlBlock.create(restaurantTemplate).getVersion();
+            if (version.equals(Constants.CONTROL_BLOCK_VERSION_300)) {
+                throw new MemberDataException(MessageFormat.format(WRONG_REQUEST_TOPIC,
+                        version, buildTopicURL(Constants.TOPIC_POST_RESTAURANT_TEMPLATE),
+                        buildTopicURL(Constants.TOPIC_POST_ONE_KITCHEN_RESTAURANT_TEMPLATE)));
+            } else if (! version.equals(Constants.CONTROL_BLOCK_VERSION_200)) {
+                throw new MemberDataException(MessageFormat.format(UNSUPPORTED_CONTROL_BLOCK_VERSION,
+                        version, buildTopicURL(Constants.TOPIC_POST_RESTAURANT_TEMPLATE),
+                        Constants.CONTROL_BLOCK_VERSION_200));
+            }
+            // Validate the contents
             RestaurantTemplateParser.create(restaurantTemplate).restaurants();
 
         } catch (MemberDataException ex) {
@@ -1409,15 +1444,73 @@ public class Main {
 
         Post post = new Post();
         post.title = request.date;
-        post.topic_id = topicId;
+        post.topic_id = Constants.TOPIC_RESTAURANT_TEMPLATE_STORAGE.getId();
         post.raw = request.raw;
         post.createdAt = ZonedDateTime.now(ZoneId.systemDefault())
                 .format(DateTimeFormatter.ofPattern("uuuu.MM.dd.HH.mm.ss"));
 
         HttpResponse<String> response = apiClient.post(post.toJson());
 
-        String statusMessage = "Archive of "
-                + request.uploadFile.getOriginalFileName() + " to topic " + topicId + " ";
+        String statusMessage = "Archive of " + request.uploadFile.getOriginalFileName()
+                + " to topic " + Constants.TOPIC_RESTAURANT_TEMPLATE_STORAGE.getId() + " ";
+        if (response.statusCode() != HTTP_OK) {
+            statusMessage += "failed: ";
+            statusMessage += response.body();
+
+            // Send status message
+            request.postStatus(WorkRequestHandler.RequestStatus.Failed, statusMessage);
+        } else {
+            statusMessage += "validated and archived.";
+
+            // Send status message
+            request.postStatus(WorkRequestHandler.RequestStatus.Succeeded, statusMessage);
+        }
+
+        LOGGER.info(statusMessage);
+    }
+
+    private static void doOneKitchenRestaurantTemplate(
+            ApiClient apiClient, WorkRequestHandler.WorkRequest request) {
+
+        LOGGER.info("Downloading one kitchen restaurant template update {}",
+                request.uploadFile.getOriginalFileName());
+        try {
+            // Download file
+            String restaurantTemplate = apiClient.downloadFile(request.uploadFile.getFileName());
+
+            // Check that it is the expected V300 version
+            String version = ControlBlock.create(restaurantTemplate).getVersion();
+            if (version.equals(Constants.CONTROL_BLOCK_VERSION_200)) {
+                throw new MemberDataException(MessageFormat.format(WRONG_REQUEST_TOPIC,
+                        version, buildTopicURL(Constants.TOPIC_POST_ONE_KITCHEN_RESTAURANT_TEMPLATE),
+                        buildTopicURL(Constants.TOPIC_POST_RESTAURANT_TEMPLATE)));
+            } else if (! version.equals(Constants.CONTROL_BLOCK_VERSION_300)) {
+                throw new MemberDataException(MessageFormat.format(UNSUPPORTED_CONTROL_BLOCK_VERSION,
+                        version, buildTopicURL(Constants.TOPIC_POST_ONE_KITCHEN_RESTAURANT_TEMPLATE),
+                        Constants.CONTROL_BLOCK_VERSION_300));
+            }
+            // Validate the contents
+            RestaurantTemplateParser.create(restaurantTemplate).restaurants();
+
+        } catch (MemberDataException ex) {
+            String reason = ex.getCause() != null ? ex.getCause().getMessage() : ex.getMessage();
+            request.postStatus(WorkRequestHandler.RequestStatus.Failed, reason);
+            return;
+        }
+
+        // Copy post to Restaurant Template Storage
+
+        Post post = new Post();
+        post.title = request.date;
+        post.topic_id = Constants.TOPIC_RESTAURANT_TEMPLATE_STORAGE.getId();
+        post.raw = request.raw;
+        post.createdAt = ZonedDateTime.now(ZoneId.systemDefault())
+                .format(DateTimeFormatter.ofPattern("uuuu.MM.dd.HH.mm.ss"));
+
+        HttpResponse<String> response = apiClient.post(post.toJson());
+
+        String statusMessage = "Archive of " + request.uploadFile.getOriginalFileName()
+                + " to topic " + Constants.TOPIC_RESTAURANT_TEMPLATE_STORAGE.getId() + " ";
         if (response.statusCode() != HTTP_OK) {
             statusMessage += "failed: ";
             statusMessage += response.body();
@@ -1515,10 +1608,9 @@ public class Main {
             } else if (topicId == Constants.TOPIC_REQUEST_ONE_KITCHEN_DRIVER_MESSAGES.getId()) {
                 doOneKitchenDriverMessages(apiClient, request, users);
             } else if (topicId == Constants.TOPIC_POST_ONE_KITCHEN_RESTAURANT_TEMPLATE.getId()) {
-                doRestaurantTemplate(apiClient, request,
-                        Constants.TOPIC_ONE_KITCHEN_RESTAURANT_TEMPLATE_STORAGE.getId());
+                doRestaurantTemplate(apiClient, request);
             } else if (topicId == Constants.TOPIC_POST_RESTAURANT_TEMPLATE.getId()) {
-                doRestaurantTemplate(apiClient, request, Constants.TOPIC_RESTAURANT_TEMPLATE_STORAGE.getId());
+                doOneKitchenRestaurantTemplate(apiClient, request);
             } else if (topicId == Constants.TOPIC_POST_COMPLETED_ONEKITCHEN_ORDERS.getId()) {
                 doCompletedOneKitchenOrders(apiClient, request, users);
             } else {

@@ -31,7 +31,9 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.time.LocalDate;
 import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 import static java.time.temporal.ChronoUnit.*;
@@ -459,6 +461,12 @@ public class TestBase {
 
     String shortBoolean(boolean value) {
         return value ? "Y" : "N";
+    }
+
+    String yesterday() {
+        LocalDate yesterday = LocalDate.now(Constants.TIMEZONE).minusDays(1);
+        DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy/MM/dd");
+        return yesterday.format(format);
     }
 
     public String createMessageBlock(String contents) {
