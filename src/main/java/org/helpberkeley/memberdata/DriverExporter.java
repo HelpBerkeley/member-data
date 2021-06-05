@@ -591,6 +591,11 @@ public class DriverExporter extends Exporter {
         }
 
         StringBuilder output = new StringBuilder();
+
+        String timeStamp = ZonedDateTime.now(ZoneId.systemDefault())
+                .format(DateTimeFormatter.ofPattern("uuuu/MM/dd HH:mm:ss"));
+        output.append("Updated: ").append(timeStamp).append("\n");
+
         output.append("|User Name|Name|Phone #|Event|Details|\n");
         output.append("|---|---|---|---|---|\n");
 
