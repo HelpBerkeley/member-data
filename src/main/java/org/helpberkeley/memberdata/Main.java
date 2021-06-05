@@ -1606,9 +1606,9 @@ public class Main {
             } else if (topicId == Constants.TOPIC_REQUEST_ONE_KITCHEN_DRIVER_MESSAGES.getId()) {
                 doOneKitchenDriverMessages(apiClient, request, users);
             } else if (topicId == Constants.TOPIC_POST_ONE_KITCHEN_RESTAURANT_TEMPLATE.getId()) {
-                doRestaurantTemplate(apiClient, request);
-            } else if (topicId == Constants.TOPIC_POST_RESTAURANT_TEMPLATE.getId()) {
                 doOneKitchenRestaurantTemplate(apiClient, request);
+            } else if (topicId == Constants.TOPIC_POST_RESTAURANT_TEMPLATE.getId()) {
+                doRestaurantTemplate(apiClient, request);
             } else if (topicId == Constants.TOPIC_POST_COMPLETED_ONEKITCHEN_ORDERS.getId()) {
                 doCompletedOneKitchenOrders(apiClient, request, users);
             } else {

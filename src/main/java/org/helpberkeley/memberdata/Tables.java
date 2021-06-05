@@ -261,9 +261,10 @@ public class Tables {
                 continue;
             }
 
-            if ((user.isDriver() && user.isTrainedDriver())
-                || (user.isEventDriver() && user.isTrainedEventDriver())) {
-                drivers.add(user);
+            if (user.isOut() &&
+                ((user.isDriver() && user.isTrainedDriver())
+                || (user.isEventDriver() && user.isTrainedEventDriver()))) {
+                    drivers.add(user);
             }
         }
 

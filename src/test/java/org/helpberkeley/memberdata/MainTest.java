@@ -168,6 +168,8 @@ public class MainTest extends TestBase {
         String usersFile = findFile(Constants.MEMBERDATA_RAW_FILE, "csv");
         String[] args = { Options.COMMAND_DRIVER_MESSAGES, usersFile };
         Main.main(args);
+        assertThat(WorkRequestHandler.getLastStatusPost()).isNotNull();
+        assertThat(WorkRequestHandler.getLastStatusPost().raw).contains("Status: Succeeded");
     }
 
     @Test
@@ -179,6 +181,7 @@ public class MainTest extends TestBase {
         String usersFile = findFile(Constants.MEMBERDATA_RAW_FILE, "csv");
         String[] args = { Options.COMMAND_DRIVER_MESSAGES, usersFile };
         Main.main(args);
+        assertThat(WorkRequestHandler.getLastStatusPost()).isNotNull();
         assertThat(WorkRequestHandler.getLastStatusPost().raw).contains("Status: Fail");
         assertThat(WorkRequestHandler.getLastStatusPost().raw).contains(MessageFormat.format(
                 Main.WRONG_REQUEST_TOPIC, Constants.CONTROL_BLOCK_VERSION_300,
@@ -196,6 +199,7 @@ public class MainTest extends TestBase {
         String usersFile = findFile(Constants.MEMBERDATA_RAW_FILE, "csv");
         String[] args = { Options.COMMAND_DRIVER_MESSAGES, usersFile };
         Main.main(args);
+        assertThat(WorkRequestHandler.getLastStatusPost()).isNotNull();
         assertThat(WorkRequestHandler.getLastStatusPost().raw).contains("Status: Fail");
         assertThat(WorkRequestHandler.getLastStatusPost().raw).contains(MessageFormat.format(
                 Main.UNSUPPORTED_CONTROL_BLOCK_VERSION, "0",
@@ -208,6 +212,8 @@ public class MainTest extends TestBase {
         String usersFile = findFile(Constants.MEMBERDATA_RAW_FILE, "csv");
         String[] args = { Options.COMMAND_ONE_KITCHEN_DRIVER_MESSAGES, usersFile };
         Main.main(args);
+        assertThat(WorkRequestHandler.getLastStatusPost()).isNotNull();
+        assertThat(WorkRequestHandler.getLastStatusPost().raw).contains("Status: Succeeded");
     }
 
     @Test
@@ -220,6 +226,7 @@ public class MainTest extends TestBase {
         String usersFile = findFile(Constants.MEMBERDATA_RAW_FILE, "csv");
         String[] args = { Options.COMMAND_ONE_KITCHEN_DRIVER_MESSAGES, usersFile };
         Main.main(args);
+        assertThat(WorkRequestHandler.getLastStatusPost()).isNotNull();
         assertThat(WorkRequestHandler.getLastStatusPost().raw).contains("Status: Fail");
         assertThat(WorkRequestHandler.getLastStatusPost().raw).contains(MessageFormat.format(
                 Main.WRONG_REQUEST_TOPIC, Constants.CONTROL_BLOCK_VERSION_200,
@@ -237,6 +244,7 @@ public class MainTest extends TestBase {
         String usersFile = findFile(Constants.MEMBERDATA_RAW_FILE, "csv");
         String[] args = { Options.COMMAND_ONE_KITCHEN_DRIVER_MESSAGES, usersFile };
         Main.main(args);
+        assertThat(WorkRequestHandler.getLastStatusPost()).isNotNull();
         assertThat(WorkRequestHandler.getLastStatusPost().raw).contains("Status: Fail");
         assertThat(WorkRequestHandler.getLastStatusPost().raw).contains(MessageFormat.format(
                 Main.UNSUPPORTED_CONTROL_BLOCK_VERSION, "0",
@@ -251,6 +259,8 @@ public class MainTest extends TestBase {
                 Constants.QUERY_GET_LAST_REQUEST_DRIVER_MESSAGES_REPLY, "last-routed-workflow-status.json");
         String[] args = { Options.COMMAND_DRIVER_MESSAGES, usersFile };
         Main.main(args);
+        assertThat(WorkRequestHandler.getLastStatusPost()).isNotNull();
+        assertThat(WorkRequestHandler.getLastStatusPost().raw).contains("Status: Succeeded");
     }
 
     @Test
@@ -260,6 +270,8 @@ public class MainTest extends TestBase {
                 Constants.QUERY_GET_LAST_REQUEST_DRIVER_MESSAGES_REPLY, "last-routed-workflow-bad-request.json");
         String[] args = { Options.COMMAND_DRIVER_MESSAGES, usersFile };
         Main.main(args);
+        assertThat(WorkRequestHandler.getLastStatusPost()).isNotNull();
+        assertThat(WorkRequestHandler.getLastStatusPost().raw).contains("Status: Failed");
     }
 
     @Test
@@ -452,12 +464,16 @@ public class MainTest extends TestBase {
     public void restaurantTemplateTest() throws IOException, CsvException {
         String[] args = { Options.COMMAND_RESTAURANT_TEMPLATE };
         Main.main(args);
+        assertThat(WorkRequestHandler.getLastStatusPost()).isNotNull();
+        assertThat(WorkRequestHandler.getLastStatusPost().raw).contains("Status: Succeeded");
     }
 
     @Test
     public void oneKitchenRestaurantTemplateTest() throws IOException, CsvException {
         String[] args = { Options.COMMAND_ONE_KITCHEN_RESTAURANT_TEMPLATE };
         Main.main(args);
+        assertThat(WorkRequestHandler.getLastStatusPost()).isNotNull();
+        assertThat(WorkRequestHandler.getLastStatusPost().raw).contains("Status: Succeeded");
     }
 
     @Test
@@ -497,6 +513,8 @@ public class MainTest extends TestBase {
         String usersFile = findFile(Constants.MEMBERDATA_RAW_FILE, "csv");
         String[] args = { Options.COMMAND_WORK_REQUESTS, usersFile };
         Main.main(args);
+        assertThat(WorkRequestHandler.getLastStatusPost()).isNotNull();
+        assertThat(WorkRequestHandler.getLastStatusPost().raw).contains("Status: Fail");
     }
 
     @Test
@@ -510,6 +528,7 @@ public class MainTest extends TestBase {
         String[] args = { Options.COMMAND_COMPLETED_ONEKITCHEN_ORDERS, usersFile };
         Main.main(args);
         System.out.println(WorkRequestHandler.getLastStatusPost().raw);
+        assertThat(WorkRequestHandler.getLastStatusPost()).isNotNull();
         assertThat(WorkRequestHandler.getLastStatusPost().raw).contains("Status: Fail");
         assertThat(WorkRequestHandler.getLastStatusPost().raw).contains(MessageFormat.format(
                 Main.WRONG_REQUEST_TOPIC, Constants.CONTROL_BLOCK_VERSION_200,
@@ -528,6 +547,7 @@ public class MainTest extends TestBase {
         String[] args = { Options.COMMAND_COMPLETED_DAILY_ORDERS, usersFile };
         Main.main(args);
         System.out.println(WorkRequestHandler.getLastStatusPost().raw);
+        assertThat(WorkRequestHandler.getLastStatusPost()).isNotNull();
         assertThat(WorkRequestHandler.getLastStatusPost().raw).contains("Status: Fail");
         assertThat(WorkRequestHandler.getLastStatusPost().raw).contains(MessageFormat.format(
                 Main.WRONG_REQUEST_TOPIC, Constants.CONTROL_BLOCK_VERSION_300,
@@ -545,6 +565,7 @@ public class MainTest extends TestBase {
         String[] args = { Options.COMMAND_ONE_KITCHEN_RESTAURANT_TEMPLATE };
         Main.main(args);
         System.out.println(WorkRequestHandler.getLastStatusPost().raw);
+        assertThat(WorkRequestHandler.getLastStatusPost()).isNotNull();
         assertThat(WorkRequestHandler.getLastStatusPost().raw).contains("Status: Fail");
         assertThat(WorkRequestHandler.getLastStatusPost().raw).contains(MessageFormat.format(
                 Main.WRONG_REQUEST_TOPIC, Constants.CONTROL_BLOCK_VERSION_200,
