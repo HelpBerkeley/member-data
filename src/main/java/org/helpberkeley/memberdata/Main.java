@@ -1500,7 +1500,7 @@ public class Main {
 
         Post post = new Post();
         post.title = request.date;
-        post.topic_id = Constants.TOPIC_RESTAURANT_TEMPLATE_STORAGE.getId();
+        post.topic_id = Constants.TOPIC_ONE_KITCHEN_RESTAURANT_TEMPLATE_STORAGE.getId();
         post.raw = request.raw;
         post.createdAt = ZonedDateTime.now(ZoneId.systemDefault())
                 .format(DateTimeFormatter.ofPattern("uuuu.MM.dd.HH.mm.ss"));
@@ -1508,7 +1508,7 @@ public class Main {
         HttpResponse<String> response = apiClient.post(post.toJson());
 
         String statusMessage = "Archive of " + request.uploadFile.getOriginalFileName()
-                + " to topic " + Constants.TOPIC_RESTAURANT_TEMPLATE_STORAGE.getId() + " ";
+                + " to topic " + Constants.TOPIC_ONE_KITCHEN_RESTAURANT_TEMPLATE_STORAGE.getId() + " ";
         if (response.statusCode() != HTTP_OK) {
             statusMessage += "failed: ";
             statusMessage += response.body();
