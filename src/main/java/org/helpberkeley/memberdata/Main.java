@@ -977,7 +977,6 @@ public class Main {
             return null;
         }
 
-        DriverPostFormatV200 driverPostFormatV200 = (DriverPostFormatV200) driverPostFormat;
         Post post = new Post();
         post.title = "Generated Backup Driver Post";
         post.topic_id = topic;

@@ -147,7 +147,6 @@ public class DriverPostTest extends org.helpberkeley.memberdata.DriverPostTest {
         String post = posts.get(0);
         System.out.println(post);
         assertThat(post).contains("take pics");
-        post = posts.get(1);
         post = driverPostFormat.generateSummary();
         assertThat(post).contains("No drivers going to Thai Delight");
         assertThat(post).contains("No drivers going to V&A Cafe");

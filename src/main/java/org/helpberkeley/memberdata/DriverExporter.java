@@ -599,11 +599,7 @@ public class DriverExporter extends Exporter {
         output.append("|User Name|Name|Phone #|Event|Details|\n");
         output.append("|---|---|---|---|---|\n");
 
-        ZonedDateTime now = ZonedDateTime.now();
-
         for (DetailedDriver detailedDriver : outDrivers) {
-
-            ZonedDateTime createTime = ZonedDateTime.parse(detailedDriver.getCreateTime());
 
             output.append('@');
             output.append(detailedDriver.getUserName());

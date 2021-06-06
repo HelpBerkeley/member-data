@@ -79,6 +79,10 @@ public class Constants {
     public static final int QUERY_GET_THURSDAY_ONE_KITCHEN_GROUP_POST_FORMAT_V300 = 61;
     public static final int QUERY_GET_THURSDAY_ONE_KITCHEN_ORDERS_TABLE_POST_FORMAT_V300 = 62;
     public static final int QUERY_GET_LAST_COMPLETED_ONEKITCHEN_ORDERS_REPLY = 63;
+    public static final int QUERY_GET_WEDNESDAY_ONE_KITCHEN_DRIVERS_TABLE_POST_FORMAT_V300 = 66;
+    public static final int QUERY_GET_WEDNESDAY_ONE_KITCHEN_ORDERS_TABLE_POST_FORMAT_V300 = 67;
+    public static final int QUERY_GET_WEDNESDAY_ONE_KITCHEN_DRIVERS_POST_FORMAT_V300 = 68;
+    public static final int QUERY_GET_WEDNESDAY_ONE_KITCHEN_GROUP_POST_FORMAT_V300 = 69;
 
     // Current spec version for these queries
     public static final int QUERY_GET_DRIVERS_POST_FORMAT = QUERY_GET_DRIVERS_POST_FORMAT_V23;

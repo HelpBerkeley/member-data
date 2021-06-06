@@ -29,7 +29,7 @@ public class MemberDataException extends RuntimeException {
     public MemberDataException(final String message) {
         super(message);
     }
-    MemberDataException(final String message, Exception ex) {
+    public MemberDataException(final String message, Exception ex) {
         super(message, ex);
     }
 }

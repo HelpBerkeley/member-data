@@ -61,13 +61,10 @@ public class RestaurantV300 extends Restaurant {
 
     @Override
     protected void setVersionSpecificFields(RestaurantBean restaurantBean) {
-        RestaurantBeanV300 bean = (RestaurantBeanV300) restaurantBean;
     }
 
     @Override
     protected String setVersionSpecificFields(WorkflowBean workflowBean) {
-        WorkflowBeanV300 bean = (WorkflowBeanV300) workflowBean;
-
         // FIX THIS, DS: implement
         return "";
     }
