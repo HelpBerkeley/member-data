@@ -38,7 +38,7 @@ public class ControlBlockTest extends ControlBlockTestBase {
 
     private final Map<String, Restaurant> allRestaurants;
 
-    private static final String EMPTY_ROW = ",,,,,,,,,,,,,,\n";
+    public static final String EMPTY_ROW = ",,,,,,,,,,,,,,\n";
 
     private static final String HEADER =
             "Consumer,Driver,Name,User Name,Phone #,Phone2 #,Neighborhood,City,"

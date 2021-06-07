@@ -61,10 +61,10 @@ public abstract class Restaurant {
     protected abstract void mergeInGlobalVersionSpecificFields(Restaurant globalRestaurant);
     public abstract String pickupRow();
 
-    void setStartTime(final String startTime) {
+    public void setStartTime(final String startTime) {
         this.startTime = startTime;
     }
-    void setClosingTime(final String closingTime) {
+    public void setClosingTime(final String closingTime) {
         this.closingTime = closingTime;
         this.closingTimeValue = convertTime(closingTime);
     }
@@ -77,7 +77,7 @@ public abstract class Restaurant {
     void setDetails(final String details) {
         this.details = (details == null) ? "" : details;
     }
-    void setRoute(final String route) {
+    public void setRoute(final String route) {
         this.route = route;
     }
     void setAddress(final String address) {
@@ -87,7 +87,7 @@ public abstract class Restaurant {
         assert ! drivers.containsKey(driver.getUserName()) : driver.getUserName();
         drivers.put(driver.getUserName(), driver);
     }
-    void setEmoji(String emoji) {
+    public void setEmoji(String emoji) {
         this.emoji = emoji;
     }
 

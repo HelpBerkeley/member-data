@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-2021. helpberkeley.org
+ * Copyright (c) 2021. helpberkeley.org
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -20,8 +20,9 @@
  * SOFTWARE.
  *
  */
-package org.helpberkeley.memberdata;
+package org.helpberkeley.memberdata.v200;
 
+import org.helpberkeley.memberdata.*;
 import org.junit.Test;
 
 import java.util.Map;
@@ -29,7 +30,7 @@ import java.util.Map;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
 
-public class RestaurantTemplateTest extends TestBase {
+public class RestaurantTemplateTest extends RestaurantTemplateTestBase {
 
     private static final String HEADER = "Consumer,Driver,Name,User Name,Phone #,Phone2 #,"
         + "Neighborhood,City,Address,Condo,Details,Restaurants,normal,veggie,#orders\n";
@@ -39,6 +40,16 @@ public class RestaurantTemplateTest extends TestBase {
 
     private static final String CONTROL_BLOCK =
             HEADER + CONTROL_BLOCK_BEGIN_ROW + CONTROL_BLOCK_VERSION_ROW + CONTROL_BLOCK_END_ROW;
+
+    @Override
+    public String getEmptyRow() {
+        return org.helpberkeley.memberdata.v200.ControlBlockTest.EMPTY_ROW;
+    }
+
+    @Override
+    public String getRestaurantTemplate() {
+        return readResourceFile("restaurant-template-v200.csv");
+    }
 
 //,,,,,,,,,,,,,,
 //        FALSE,TRUE,,,,,,,,,,,,,

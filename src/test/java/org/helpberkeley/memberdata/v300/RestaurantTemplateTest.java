@@ -23,10 +23,21 @@
 package org.helpberkeley.memberdata.v300;
 
 import org.helpberkeley.memberdata.RestaurantTemplateParser;
-import org.helpberkeley.memberdata.TestBase;
+import org.helpberkeley.memberdata.RestaurantTemplateTestBase;
 import org.junit.Test;
 
-public class RestaurantTemplateTest extends TestBase {
+public class RestaurantTemplateTest extends RestaurantTemplateTestBase {
+
+    @Override
+    public String getEmptyRow() {
+        return org.helpberkeley.memberdata.v300.ControlBlockTest.EMPTY_ROW;
+    }
+
+    @Override
+    public String getRestaurantTemplate() {
+        return readResourceFile("restaurant-template-v300.csv");
+    }
+
     @Test
     public void testTemplateValidation() {
         String template = readResourceFile("restaurant-template-v300.csv");

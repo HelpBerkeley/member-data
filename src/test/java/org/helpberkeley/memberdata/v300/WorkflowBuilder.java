@@ -35,6 +35,7 @@ public class WorkflowBuilder {
 
     private final List<DriverBlockBuilder> driverBlocks = new ArrayList<>();
     private ControlBlockBuilder controlBlockBuilder = new ControlBlockBuilder();
+    private String finalRow;
 
     @Override
     public String toString() {
@@ -46,6 +47,11 @@ public class WorkflowBuilder {
 
         workflow.append(controlBlockBuilder.build());
         driverBlocks.forEach(workflow::append);
+
+        if (finalRow != null) {
+            workflow.append(finalRow);
+        }
+
         return workflow.toString();
     }
 
@@ -56,6 +62,16 @@ public class WorkflowBuilder {
 
     public WorkflowBuilder withControlBlock(ControlBlockBuilder controlBlock) {
         controlBlockBuilder = controlBlock;
+        return this;
+    }
+
+    public WorkflowBuilder withTrailingEmptyRowNotEnoughColumns() {
+        finalRow = ControlBlockTest.EMPTY_ROW.substring(3);
+        return this;
+    }
+
+    public WorkflowBuilder withTrailingEmptyRowTooManyColumns() {
+        finalRow = ",,," + ControlBlockTest.EMPTY_ROW;
         return this;
     }
 }

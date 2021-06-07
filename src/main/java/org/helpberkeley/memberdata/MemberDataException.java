@@ -21,15 +21,35 @@
 //
 package org.helpberkeley.memberdata;
 
+import java.util.Objects;
+
 /**
  * Unchecked exception used throughout member-data
  */
 public class MemberDataException extends RuntimeException {
 
-    public MemberDataException(final String message) {
+    public MemberDataException(String message) {
         super(message);
     }
-    public MemberDataException(final String message, Exception ex) {
+    public MemberDataException(String message, Exception ex) {
         super(message, ex);
+    }
+    public MemberDataException(Exception ex) {
+        super(getMessages(ex), ex);
+    }
+
+    private static String getMessages(Exception throwable) {
+        StringBuilder messages = new StringBuilder();
+        Objects.requireNonNull(throwable);
+
+        messages.append(throwable.getMessage());
+
+        Throwable rootCause = throwable;
+        while (rootCause.getCause() != null && rootCause.getCause() != rootCause) {
+            rootCause = rootCause.getCause();
+            messages.append("\n");
+            messages.append(rootCause.getMessage());
+        }
+        return messages.toString();
     }
 }

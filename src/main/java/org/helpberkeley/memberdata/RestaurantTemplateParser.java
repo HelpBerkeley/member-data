@@ -128,7 +128,7 @@ public abstract class RestaurantTemplateParser {
         return restaurants;
     }
 
-    String getVersion() {
+    public String getVersion() {
         return version;
     }
 

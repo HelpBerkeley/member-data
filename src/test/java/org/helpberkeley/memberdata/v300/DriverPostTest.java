@@ -73,6 +73,11 @@ public class DriverPostTest extends org.helpberkeley.memberdata.DriverPostTest {
         assertThat(posts).containsExactly("Cust Name 5\n");
     }
 
+    @Override
+    public String getEmptyRow() {
+        return org.helpberkeley.memberdata.v300.ControlBlockTest.EMPTY_ROW;
+    }
+
     @Test
     public void v300SingleDriverDeliveriesTest() {
         String format = "LOOP &{Consumer} { "

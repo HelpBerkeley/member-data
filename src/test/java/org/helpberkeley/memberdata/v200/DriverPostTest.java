@@ -72,6 +72,11 @@ public class DriverPostTest extends org.helpberkeley.memberdata.DriverPostTest {
         assertThat(posts).containsExactly("", "Cust Name 5\n");
     }
 
+    @Override
+    public String getEmptyRow() {
+        return ControlBlockTest.EMPTY_ROW;
+    }
+
     @Test
     public void singleDriverMessageTest() {
         String routedDeliveries = readResourceFile("routed-deliveries-single.csv");

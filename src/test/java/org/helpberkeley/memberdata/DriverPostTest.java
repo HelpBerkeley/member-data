@@ -45,6 +45,7 @@ public abstract class DriverPostTest extends TestBase {
     public abstract String getRoutedDeliveriesFileName();
     public abstract void checkExpectedDeliveries(List<String> posts);
     public abstract void checkCondoConsumers(List<String> posts);
+    public abstract String getEmptyRow();
 
     @Test
     public void emptyTest() {
@@ -121,5 +122,41 @@ public abstract class DriverPostTest extends TestBase {
                 DriverPostFormat.create(createApiSimulator(), users, routedDeliveries);
         List<String> posts = driverPostFormat.generateDriverPosts();
         checkCondoConsumers(posts);
+    }
+
+    @Test
+    public void dataRowWithoutEnoughColumnsTest() {
+        String emptyRow = getEmptyRow().substring(3);
+        String routedDeliveries = readResourceFile(getRoutedDeliveriesFileName()) + emptyRow;
+        Throwable thrown = catchThrowable(() ->
+                DriverPostFormat.create(createApiSimulator(), users, routedDeliveries));
+
+        assertThat(thrown).isInstanceOf(MemberDataException.class);
+
+        String expectedMessage = "Error parsing CSV line: "
+                + routedDeliveries.split("\\n").length
+                + ". ["
+                + emptyRow.replace('\n', ']')
+                + "\nNumber of data fields does not match number of headers.";
+        assertThat(thrown).hasMessage(expectedMessage);
+    }
+
+    @Test
+    public void dataRowWithTooManyColumnsTest() {
+        String emptyRow = getEmptyRow();
+        String routedDeliveries = readResourceFile(getRoutedDeliveriesFileName())
+                + ",,," + emptyRow;
+        Throwable thrown = catchThrowable(() ->
+                DriverPostFormat.create(createApiSimulator(), users, routedDeliveries));
+        assertThat(thrown).isInstanceOf(MemberDataException.class);
+
+        String expectedMessage = "Error parsing CSV line: "
+                + routedDeliveries.split("\\n").length
+                + ". ["
+                + ",,,"
+                + emptyRow.replace('\n', ']')
+                + "\nNumber of data fields does not match number of headers.";
+
+        assertThat(thrown).hasMessage(expectedMessage);
     }
 }

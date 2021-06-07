@@ -74,8 +74,12 @@ public class WorkflowParserV300 extends WorkflowParser {
 
     @Override
     protected List<WorkflowBean> parse(String csvData) {
-        return new CsvToBeanBuilder<WorkflowBean>(
-                new StringReader(csvData)).withType(WorkflowBeanV300.class).build().parse();
+        try {
+            return new CsvToBeanBuilder<WorkflowBean>(
+                    new StringReader(csvData)).withType(WorkflowBeanV300.class).build().parse();
+        } catch (RuntimeException ex) {
+            throw new MemberDataException(ex);
+        }
     }
 
     /**

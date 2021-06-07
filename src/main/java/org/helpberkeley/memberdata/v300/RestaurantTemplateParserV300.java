@@ -23,10 +23,7 @@
 package org.helpberkeley.memberdata.v300;
 
 import com.opencsv.bean.CsvToBeanBuilder;
-import org.helpberkeley.memberdata.Constants;
-import org.helpberkeley.memberdata.ControlBlock;
-import org.helpberkeley.memberdata.RestaurantBean;
-import org.helpberkeley.memberdata.RestaurantTemplateParser;
+import org.helpberkeley.memberdata.*;
 
 import java.io.StringReader;
 import java.util.Arrays;
@@ -43,8 +40,12 @@ public class RestaurantTemplateParserV300 extends RestaurantTemplateParser {
     @Override
     protected List<RestaurantBean> parse(String csvData) {
 
-        return new CsvToBeanBuilder<RestaurantBean>(
-                new StringReader(csvData)).withType(RestaurantBeanV300.class).build().parse();
+        try {
+            return new CsvToBeanBuilder<RestaurantBean>(
+                    new StringReader(csvData)).withType(RestaurantBeanV300.class).build().parse();
+        } catch (RuntimeException ex) {
+            throw new MemberDataException(ex);
+        }
     }
 
     @Override
