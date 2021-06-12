@@ -111,7 +111,7 @@ class GMapApiImpl implements GMapApi {
         {
             properties.load(is);
         } catch (IOException e) {
-            throw new MemberDataException(e.getMessage());
+            throw new MemberDataException(e);
         } finally {}
 
         return properties;

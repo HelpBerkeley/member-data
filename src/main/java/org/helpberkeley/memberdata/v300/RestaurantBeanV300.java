@@ -208,7 +208,7 @@ public class RestaurantBeanV300 implements RestaurantBean {
                     RestaurantBeanV300.class.getDeclaredField(fieldName).getAnnotation(CsvBindByName.class);
             return bindByName.column();
         } catch (NoSuchFieldException e) {
-            throw new MemberDataException(e.getMessage());
+            throw new MemberDataException(e);
         }
     }
 

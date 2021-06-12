@@ -218,7 +218,7 @@ public class Main {
         {
             properties.load(is);
         } catch (IOException e) {
-            throw new MemberDataException(e.getMessage());
+            throw new MemberDataException(e);
         } finally {}
 
         return properties;
@@ -288,7 +288,7 @@ public class Main {
             postRaw.append('|');
             postRaw.append(user.getEmailVerified());
             postRaw.append('|');
-            postRaw.append((user.isMondayFrreg() || user.isThursdayFrreg()) ? ":fire:" : "");
+            postRaw.append(user.isFrreg() ? ":fire:" : "");
             postRaw.append('|');
             postRaw.append(user.getCity());
             postRaw.append('|');

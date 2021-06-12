@@ -78,6 +78,7 @@ public class GMapApiClient
 
             return new Location(address, result.geometry.location.lat, result.geometry.location.lng);
         } catch (ApiException | InterruptedException | IOException e) {
+            // FIX THIS, DS: add another signature for getting all cause messages?
             throw new MemberDataException(
                     "Google maps errors getting location for " + address + ": " + e.getMessage());
         }
@@ -102,6 +103,7 @@ public class GMapApiClient
 
             return legs[0].duration.inSeconds;
         } catch (ApiException | InterruptedException | IOException e) {
+            // FIX THIS, DS: add another signature for getting all cause messages?
             throw new MemberDataException("Google maps errors getting directions: " + e.getMessage());
         }
     }

@@ -188,6 +188,7 @@ public class Constants {
     public static final String GROUP_GONE = "gone";
     public static final String GROUP_OTHER_DRIVERS = "other_drivers";
     public static final String GROUP_MONDAY_FRREG = "MOfrreg";
+    public static final String GROUP_WEDNESDAY_FRREG = "WEfrreg";
     public static final String GROUP_THURSDAY_FRREG = "THfrreg";
     public static final String GROUP_FRVOICEONLY = "FRvoiceonly";
 

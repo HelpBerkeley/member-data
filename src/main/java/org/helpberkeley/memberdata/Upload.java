@@ -52,6 +52,7 @@ public class Upload {
         try {
             responseBody = client.upload(fileName);
         } catch (URISyntaxException ex) {
+            // FIX THIS, DS: add another signature for getting all cause messages?
             throw new MemberDataException("Failed uploading " + fileName + ": " + ex.getMessage());
         }
 

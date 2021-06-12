@@ -200,7 +200,7 @@ public class HBParser {
         assert ! lines.isEmpty();
         String[] headers = lines.get(0);
 
-        assert headers.length == 49 : headers.length;
+        assert headers.length == 50 : headers.length;
 
         int index = 0;
         assert headers[index].equals(User.ID_COLUMN) : headers[index];
@@ -251,6 +251,7 @@ public class HBParser {
         assert headers[++index].equals(User.ADMIN_COLUMN) : headers[index];
         assert headers[++index].equals(User.GROUPS_OWNED_COLUMN) : headers[index];
         assert headers[++index].equals(User.MONDAY_FRREG_COLUMN) : headers[index];
+        assert headers[++index].equals(User.WEDNESDAY_FRREG_COLUMN) : headers[index];
         assert headers[++index].equals(User.THURSDAY_FRREG_COLUMN) : headers[index];
 
         List<User> users = new ArrayList<>();
@@ -414,7 +415,10 @@ public class HBParser {
                 groups.add(Constants.GROUP_MONDAY_FRREG);
             }
 
-            //noinspection UnusedAssignment
+            if (Boolean.parseBoolean(columns[index++])) {
+                groups.add(Constants.GROUP_WEDNESDAY_FRREG);
+            }
+
             if (Boolean.parseBoolean(columns[index++])) {
                 groups.add(Constants.GROUP_THURSDAY_FRREG);
             }

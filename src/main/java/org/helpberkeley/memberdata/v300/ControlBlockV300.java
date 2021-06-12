@@ -36,7 +36,7 @@ import java.util.regex.Pattern;
 public class ControlBlockV300 extends ControlBlock {
 
     public static final String MORE_START_TIMES_THAN_DRIVERS =
-            "More start times defined in control block than they are drivers.\n";
+            "More start times defined in control block than there are drivers.\n";
     public static final String MORE_DRIVERS_THAN_START_TIMES =
             "There are more drivers ({0}) than start times ({1}) defined in the "
                     + Constants.CONTROL_BLOCK_START_TIMES + ".\n";

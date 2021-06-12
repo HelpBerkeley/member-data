@@ -79,6 +79,7 @@ public class User {
     static final String EMAIL_VERIFIED_COLUMN = "Verified";
     static final String GROUPS_OWNED_COLUMN = "groups-owned";
     static final String MONDAY_FRREG_COLUMN = "MOfrreg";
+    static final String WEDNESDAY_FRREG_COLUMN = "WEfrreg";
     static final String THURSDAY_FRREG_COLUMN = "THfrreg";
     static final String FRVOICEONLY_COLUMN = "FRVoiceOnly";
 
@@ -405,8 +406,16 @@ public class User {
         return groupMembership.contains(Constants.GROUP_MONDAY_FRREG);
     }
 
+    Boolean isWednesdayFrreg() {
+        return groupMembership.contains(Constants.GROUP_WEDNESDAY_FRREG);
+    }
+
     Boolean isThursdayFrreg() {
         return groupMembership.contains(Constants.GROUP_THURSDAY_FRREG);
+    }
+
+    Boolean isFrreg() {
+        return (isMondayFrreg() || isWednesdayFrreg() || isThursdayFrreg());
     }
 
     Boolean isTrainedEventDriver() {
@@ -1270,6 +1279,7 @@ public class User {
                 + ADMIN_COLUMN + Constants.CSV_SEPARATOR
                 + GROUPS_OWNED_COLUMN + Constants.CSV_SEPARATOR
                 + MONDAY_FRREG_COLUMN + Constants.CSV_SEPARATOR
+                + WEDNESDAY_FRREG_COLUMN + Constants.CSV_SEPARATOR
                 + THURSDAY_FRREG_COLUMN
                 + "\n";
     }
@@ -1324,6 +1334,7 @@ public class User {
                 isAdmin() + Constants.CSV_SEPARATOR +
                 groupsOwned() + Constants.CSV_SEPARATOR +
                 isMondayFrreg() + Constants.CSV_SEPARATOR +
+                isWednesdayFrreg() + Constants.CSV_SEPARATOR +
                 isThursdayFrreg() +
                 '\n';
     }

@@ -67,3 +67,15 @@ Standardize logging
 	- File push actions
 	- Message post actions
 	- Error messages
+
+Generalize Discourse retries?  Everything retries,
+and then some sort of out of band alert for after failure?
+Retry forever with occasional alert?
+
+Support multiple ops managers
+Do intrinsic round robin when assigned to driver messages
+
+Improve error message:
+https://go.helpberkeley.org/t/request-onekitchen-driver-messages/4878/367
+Can we figure out if it was the workflow sheet that was posted?
+

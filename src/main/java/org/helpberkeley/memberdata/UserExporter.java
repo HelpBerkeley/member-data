@@ -611,8 +611,7 @@ public class UserExporter extends Exporter {
         output.append("|---|---|---|---|\n");
 
         for (User user : tables.sortByUserName()) {
-
-            if (user.isMondayFrreg() || user.isThursdayFrreg()) {
+            if (user.isFrreg()) {
                 output.append(user.getUserName());
                 output.append('|');
                 output.append(user.getName());
