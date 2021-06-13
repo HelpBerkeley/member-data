@@ -37,6 +37,8 @@ public abstract class DriverPostFormat {
     }
 
     public static final String ERROR_CONTINUE_WITHOUT_LOOP = "CONTINUE without an enclosing loop";
+    public static final String ERROR_BACKUP_DRIVER_DUPLICATE =
+            "Backup driver {0} is also a driver.\n";
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DriverPostFormat.class);
     protected ApiClient apiClient;
@@ -105,7 +107,7 @@ public abstract class DriverPostFormat {
     protected abstract int driverTemplateQueryID();
     protected abstract int groupTemplateQueryID();
     public abstract List<Driver> getDrivers();
-    protected abstract String statusMessages();
+    public abstract String statusMessages();
     public abstract String generateSummary();
     protected abstract ProcessingReturnValue processStructRef(MessageBlockStructRef structRef, MessageBlockContext context);
     protected abstract boolean processBooleanSimpleRef(MessageBlockSimpleRef element, MessageBlockContext context);

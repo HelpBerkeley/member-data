@@ -79,3 +79,10 @@ Improve error message:
 https://go.helpberkeley.org/t/request-onekitchen-driver-messages/4878/367
 Can we figure out if it was the workflow sheet that was posted?
 
+Update all audit failures / warnings with fix directions
+
+Upgrade duplicate backup driver / driver warning to an error.
+Add support for explicitly supporting the dup via directive,
+or a control block varible. Add support for the directive
+changin the driver's post and the group post.
+Update error message to explain directions for usage.

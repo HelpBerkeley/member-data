@@ -22,30 +22,29 @@
  */
 package org.helpberkeley.memberdata.v300;
 
-import org.helpberkeley.memberdata.Constants;
+import com.opencsv.exceptions.CsvException;
+import org.helpberkeley.memberdata.DriverHistory;
+import org.helpberkeley.memberdata.TestBase;
+import org.junit.Test;
 
-public class DriverBuilder {
+import java.io.IOException;
 
-    private String userName = WorkflowBuilder.DEFAULT_DRIVER_USER_NAME;
-    private final String name = WorkflowBuilder.DEFAULT_DRIVER_NAME;
+import static org.assertj.core.api.Assertions.assertThat;
 
-    public DriverBuilder withUserName(String userName) {
-        this.userName = userName;
-        return this;
-    }
+public class DriverHistoryTest extends TestBase {
 
-    @Override
-    public String toString() {
-        return build();
-    }
+    @Test
+    public void oneKitchenDriverHistoryTest() throws IOException, CsvException {
 
-    public String build() {
-        return "FALSE,TRUE,"
-                + name
-                + Constants.CSV_SEPARATOR
-                + userName
-                + Constants.CSV_SEPARATOR
-                + "777-777-7777,none,Hills,Berkeley,77 77th Place,,,,,,,,,"
-                + "\n";
+        String history = DriverHistory.generateOneKitchenDriverHistory(createApiSimulator());
+        String[] lines = history.split("\n");
+        assertThat(lines).containsExactlyInAnyOrder(
+                "username,delivery_date",
+                "jbDriver,2020/12/30",
+                "MrBackup772,2020/12/30",
+                "jbDriver,2021/05/02",
+                "jsDriver,2021/05/02",
+                "JVol,2021/05/02",
+                "MrBackup772,2021/05/02");
     }
 }

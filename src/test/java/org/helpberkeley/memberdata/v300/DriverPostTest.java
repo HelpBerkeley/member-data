@@ -349,7 +349,7 @@ public class DriverPostTest extends org.helpberkeley.memberdata.DriverPostTest {
         DriverPostFormat driverPostFormat =
                 DriverPostFormat.create(createApiSimulator(), users, routedDeliveries);
         String post = driverPostFormat.generateGroupInstructionsPost();
-        assertThat(post).isEqualTo("jsDriver\n");
+        assertThat(post).isEqualTo("MrBackup772\n");
     }
 
     @Test
@@ -536,5 +536,24 @@ public class DriverPostTest extends org.helpberkeley.memberdata.DriverPostTest {
         assertThat(driversTablePost).isEqualTo(driversTablePost);
         String ordersTablePost = driverPostFormat.generateOrdersTablePost();
         assertThat(ordersTablePost).isEqualTo(ordersTable);
+    }
+
+    @Test
+    public void backupDriverIsADriverTest() {
+        DeliveryBuilder delivery = new DeliveryBuilder();
+        delivery.withStdMeals("1");
+        DriverBlockBuilder driverBlock = new DriverBlockBuilder();
+        driverBlock.withRestaurant(new RestaurantBuilder());
+        driverBlock.withDelivery(delivery);
+
+        WorkflowBuilder workflowBuilder = new WorkflowBuilder();
+        workflowBuilder.withDriverBlock(driverBlock);
+        workflowBuilder.withControlBlock(
+                new ControlBlockBuilder().withBackupDriver(WorkflowBuilder.DEFAULT_DRIVER_USER_NAME));
+
+        DriverPostFormat driverPostFormat =
+                DriverPostFormat.create(createApiSimulator(), users, workflowBuilder.build());
+        assertThat(driverPostFormat.statusMessages()).contains(MessageFormat.format(
+                DriverPostFormat.ERROR_BACKUP_DRIVER_DUPLICATE, WorkflowBuilder.DEFAULT_DRIVER_USER_NAME));
     }
 }

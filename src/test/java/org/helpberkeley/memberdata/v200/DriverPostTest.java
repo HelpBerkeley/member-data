@@ -25,6 +25,7 @@ package org.helpberkeley.memberdata.v200;
 import org.helpberkeley.memberdata.*;
 import org.junit.Test;
 
+import java.text.MessageFormat;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -333,5 +334,14 @@ public class DriverPostTest extends org.helpberkeley.memberdata.DriverPostTest {
                 + "Cust Name 6|(555) 555.6666|NoAltPhone|66 66th St|NoCondo|:open_umbrella:|\n"
                 + "Cust Name 7|(555) 555.7777|NoAltPhone|77 77th St|NoCondo|:open_umbrella:|\n"
         );
+    }
+
+    @Test
+    public void backupDriverIsADriverTest() {
+        String routedDeliveries = readResourceFile("routed-deliveries-backup-dup.csv");
+        DriverPostFormat driverPostFormat =
+                DriverPostFormat.create(createApiSimulator(), users, routedDeliveries);
+        assertThat(driverPostFormat.statusMessages()).contains(MessageFormat.format(
+                DriverPostFormat.ERROR_BACKUP_DRIVER_DUPLICATE, "jbDriver"));
     }
 }

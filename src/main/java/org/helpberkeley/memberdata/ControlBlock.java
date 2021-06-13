@@ -260,7 +260,7 @@ public abstract class ControlBlock {
         return splitRestaurant;
     }
 
-    List<String> getBackupDrivers() {
+    public List<String> getBackupDrivers() {
         return backupDrivers;
     }
 

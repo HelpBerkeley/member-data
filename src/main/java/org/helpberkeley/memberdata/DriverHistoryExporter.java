@@ -32,9 +32,9 @@ public class DriverHistoryExporter extends Exporter {
         this.driverHistory = driverHistory;
     }
 
-    String driverHistoryToFile() throws IOException {
+    String driverHistoryToFile(String prefix) throws IOException {
 
-        String outputFileName = generateFileName(Constants.DRIVER_HISTORY_FILE, "csv");
+        String outputFileName = generateFileName(prefix + Constants.DRIVER_HISTORY_FILE, "csv");
         writeFile(outputFileName, driverHistory);
         return outputFileName;
     }

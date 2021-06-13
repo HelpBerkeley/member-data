@@ -894,6 +894,15 @@ public class HBParser {
         return drivers;
     }
 
+    static Collection<String> parseOneKitchenBackupDrivers(
+            String fileName, String deliveryData) {
+
+        WorkflowParser parser = WorkflowParser.create(
+                WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, Collections.emptyMap(), deliveryData);
+        ControlBlock controlBlock = parser.controlBlock();
+        return new HashSet<>(controlBlock.getBackupDrivers());
+    }
+
     // Skip Discourse system users. Not fully formed.
     private static boolean skipUserId(long userId) {
         return (userId == -1) || (userId == -2) || (userId == 708) || (userId == 844);

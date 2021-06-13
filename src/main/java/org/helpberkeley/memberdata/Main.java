@@ -1331,8 +1331,8 @@ public class Main {
         // Generate the driver history table
         String driverHistoryTable = DriverHistory.generateDriverHistory(apiClient);
 
-        // Export updated order history
-        String fileName = new DriverHistoryExporter(driverHistoryTable).driverHistoryToFile();
+        // Export updated driver history
+        String fileName = new DriverHistoryExporter(driverHistoryTable).driverHistoryToFile("");
 
         // Upload new driver history
         Upload upload = new Upload(apiClient, fileName);
@@ -1348,7 +1348,7 @@ public class Main {
         String driverHistoryTable = DriverHistory.generateOneKitchenDriverHistory(apiClient);
 
         // Export updated order history
-        String fileName = new DriverHistoryExporter(driverHistoryTable).driverHistoryToFile();
+        String fileName = new DriverHistoryExporter(driverHistoryTable).driverHistoryToFile("onekitchen-");
 
         // Upload new driver history
         Upload upload = new Upload(apiClient, fileName);

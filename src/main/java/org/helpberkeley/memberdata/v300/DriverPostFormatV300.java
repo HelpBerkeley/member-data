@@ -26,7 +26,9 @@ import org.helpberkeley.memberdata.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 
@@ -152,7 +154,7 @@ public class DriverPostFormatV300 extends DriverPostFormat {
     }
 
     @Override
-    protected String statusMessages() {
+    public String statusMessages() {
         return statusMessages.toString();
     }
 
@@ -234,6 +236,15 @@ public class DriverPostFormatV300 extends DriverPostFormat {
 
         controlBlock.audit(users, getDrivers());
         statusMessages.append(controlBlock.getWarnings());
+
+        // Check for duplicates between backup drivers and drivers
+        HashSet<String> backupDrivers = new HashSet<>(controlBlock.getBackupDrivers());
+
+        for (Driver driver : drivers) {
+            if (backupDrivers.contains(driver.getUserName())) {
+                statusMessages.append(MessageFormat.format(ERROR_BACKUP_DRIVER_DUPLICATE, driver));
+            }
+        }
     }
 
     private void loadRoutedDeliveries(final String routedDeliveries) {

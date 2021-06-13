@@ -165,8 +165,13 @@ public class DriverHistory {
             } else {
                 LOGGER.debug("Processing drivers from " + orderHistoryData.getDate());
 
+                // Get drivers
                 Collection<String> drivers =
                         HBParser.parseOneKitchenDeliveryDrivers(uploadFile.getOriginalFileName(), deliveries);
+
+                // Add in backup drivers
+                drivers.addAll(HBParser.parseOneKitchenBackupDrivers(
+                        uploadFile.getOriginalFileName(), deliveries));
 
                 final String deliveryDate = orderHistoryData.getDate();
                 for (String driverName : drivers) {
