@@ -277,11 +277,6 @@ public class DriverExporterTest extends TestBase {
         tables = new Tables(List.of(u1));
         assertThat(tables.availableDrivers()).isEmpty();
 
-        u1 = createTestUser1WithGroups(Constants.GROUP_DRIVERS, Constants.GROUP_TRAINED_DRIVERS,
-                Constants.GROUP_EVENT_DRIVERS);
-        tables = new Tables(List.of(u1));
-        assertThat(tables.availableDrivers()).isEmpty();
-
         u1 = createTestUser1WithGroups(Constants.GROUP_DRIVERS, Constants.GROUP_TRAINED_DRIVERS, Constants.GROUP_GONE);
         tables = new Tables(List.of(u1));
         assertThat(tables.availableDrivers()).isEmpty();
@@ -352,5 +347,101 @@ public class DriverExporterTest extends TestBase {
         assertThat(detailedDrivers.get(2).getUserName()).isEqualTo(u1.getUserName());
         assertThat(detailedDrivers.get(2).getLatestDetailsPostNumber()).isEqualTo(1);
         assertThat(detailedDrivers.get(2).getDetails()).isEqualTo(u1Details);
+    }
+
+    @Test
+    public void availableEventDriversTest() throws UserException {
+        User u1 = createTestUser1WithGroups(Constants.GROUP_DRIVERS,
+                Constants.GROUP_EVENT_DRIVERS, Constants.GROUP_TRAINED_EVENT_DRIVERS);
+        User u2 = createTestUser2WithGroups(Constants.GROUP_DRIVERS,
+                Constants.GROUP_EVENT_DRIVERS, Constants.GROUP_TRAINED_EVENT_DRIVERS);
+        User u3 = createTestUser3WithGroups(Constants.GROUP_DRIVERS,
+                Constants.GROUP_EVENT_DRIVERS, Constants.GROUP_TRAINED_EVENT_DRIVERS);
+        List<User> drivers = List.of(u1, u2, u3);
+        DriverExporter driverExporter = new DriverExporter(drivers, Map.of(), Map.of());
+
+        List<DetailedDriver> detailedDrivers =
+                driverExporter.availableDetailedEventDriversByReverseCreationDate();
+        assertThat(detailedDrivers).hasSameSizeAs(drivers);
+        assertThat(detailedDrivers.get(0).getUserName()).isEqualTo(u2.getUserName());
+        assertThat(detailedDrivers.get(1).getUserName()).isEqualTo(u3.getUserName());
+        assertThat(detailedDrivers.get(2).getUserName()).isEqualTo(u1.getUserName());
+    }
+
+    @Test
+    public void availableEventDriversWithDetailsTest() throws UserException {
+        User u1 = createTestUser1WithGroups(Constants.GROUP_DRIVERS,
+                Constants.GROUP_EVENT_DRIVERS, Constants.GROUP_TRAINED_EVENT_DRIVERS);
+        User u2 = createTestUser2WithGroups(Constants.GROUP_DRIVERS,
+                Constants.GROUP_EVENT_DRIVERS, Constants.GROUP_TRAINED_EVENT_DRIVERS);
+        User u3 = createTestUser3WithGroups(Constants.GROUP_DRIVERS,
+                Constants.GROUP_EVENT_DRIVERS, Constants.GROUP_TRAINED_EVENT_DRIVERS);
+        List<User> drivers = List.of(u1, u2, u3);
+
+        Map<String, DetailsPost> details = new HashMap<>();
+        String u1Details = "twas brillig and the slithy toves";
+        String u2Details = "all mimsy were the borogroves";
+        DetailsPost detailsPost = new DetailsPost(u1.getUserName());
+        detailsPost.setDetails(1, u1Details);
+        details.put(u1.getUserName(), detailsPost);
+
+        detailsPost = new DetailsPost(u2.getUserName());
+        detailsPost.setDetails(3, u2Details);
+        details.put(u2.getUserName(), detailsPost);
+
+        DriverExporter driverExporter = new DriverExporter(drivers, Map.of(), details);
+
+        List<DetailedDriver> detailedDrivers =
+                driverExporter.availableEventDriversWithDetailsPosts();
+        assertThat(detailedDrivers).hasSize(2);
+        assertThat(detailedDrivers.get(0).getUserName()).isEqualTo(u2.getUserName());
+        assertThat(detailedDrivers.get(1).getUserName()).isEqualTo(u1.getUserName());
+    }
+
+    @Test
+    public void availableDriversAreAvailableEventDriversTest() throws UserException {
+        User u1 = createTestUser1WithGroups(Constants.GROUP_DRIVERS, Constants.GROUP_TRAINED_DRIVERS);
+        User u2 = createTestUser2WithGroups(Constants.GROUP_DRIVERS, Constants.GROUP_TRAINED_DRIVERS,
+                Constants.GROUP_EVENT_DRIVERS);
+        User u3 = createTestUser3WithGroups(Constants.GROUP_DRIVERS,
+                Constants.GROUP_EVENT_DRIVERS, Constants.GROUP_TRAINED_EVENT_DRIVERS);
+        List<User> drivers = List.of(u1, u2, u3);
+        DriverExporter driverExporter = new DriverExporter(drivers, Map.of(), Map.of());
+
+        List<DetailedDriver> detailedDrivers =
+                driverExporter.availableDetailedEventDriversByReverseCreationDate();
+        assertThat(detailedDrivers).hasSameSizeAs(drivers);
+        assertThat(detailedDrivers.get(0).getUserName()).isEqualTo(u2.getUserName());
+        assertThat(detailedDrivers.get(1).getUserName()).isEqualTo(u3.getUserName());
+        assertThat(detailedDrivers.get(2).getUserName()).isEqualTo(u1.getUserName());
+    }
+
+    @Test
+    public void availableDriversWithDetailsAreEventDriversTest() throws UserException {
+        User u1 = createTestUser1WithGroups(Constants.GROUP_DRIVERS, Constants.GROUP_TRAINED_DRIVERS);
+        User u2 = createTestUser2WithGroups(Constants.GROUP_DRIVERS, Constants.GROUP_TRAINED_DRIVERS,
+                Constants.GROUP_EVENT_DRIVERS, Constants.GROUP_TRAINED_EVENT_DRIVERS);
+        User u3 = createTestUser3WithGroups(Constants.GROUP_DRIVERS,
+                Constants.GROUP_EVENT_DRIVERS, Constants.GROUP_TRAINED_EVENT_DRIVERS);
+        List<User> drivers = List.of(u1, u2, u3);
+
+        Map<String, DetailsPost> details = new HashMap<>();
+        String u1Details = "twas brillig and the slithy toves";
+        String u2Details = "all mimsy were the borogroves";
+        DetailsPost detailsPost = new DetailsPost(u1.getUserName());
+        detailsPost.setDetails(1, u1Details);
+        details.put(u1.getUserName(), detailsPost);
+
+        detailsPost = new DetailsPost(u2.getUserName());
+        detailsPost.setDetails(3, u2Details);
+        details.put(u2.getUserName(), detailsPost);
+
+        DriverExporter driverExporter = new DriverExporter(drivers, Map.of(), details);
+
+        List<DetailedDriver> detailedDrivers =
+                driverExporter.availableEventDriversWithDetailsPosts();
+        assertThat(detailedDrivers).hasSize(2);
+        assertThat(detailedDrivers.get(0).getUserName()).isEqualTo(u2.getUserName());
+        assertThat(detailedDrivers.get(1).getUserName()).isEqualTo(u1.getUserName());
     }
 }

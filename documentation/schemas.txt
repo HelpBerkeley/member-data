@@ -347,7 +347,7 @@ Column Name,Type,Description,
 Created,String,YY/MM/DD   (no YYYY, and no HH/MM/SS)
 Name,String,Full name
 User Name,String,Discourse user name,
-In, Boolean, NOT(gone) AND NOT(out) AND NOT(other) AND NOT(event)
+In, Boolean, NOT(gone) AND NOT(out) AND NOT(other)
 Dtrain'd, Boolean, In trained_drivers,
 bike, Boolean, In bikers,
 limited, Boolean, In limited,

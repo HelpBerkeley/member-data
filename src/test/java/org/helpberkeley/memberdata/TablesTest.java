@@ -215,7 +215,7 @@ public class TablesTest extends TestBase {
                 List.of(Constants.GROUP_DRIVERS, Constants.GROUP_TRAINED_DRIVERS,
                         Constants.GROUP_TRAINED_EVENT_DRIVERS, Constants.GROUP_EVENT_DRIVERS),
                 List.of(Constants.GROUP_EVENT_DRIVERS));
-        assertThat(u1.isAvailableDriver()).isFalse();
+        assertThat(u1.isAvailableDriver()).isTrue();
         assertThat(u1.isEventDriver()).isTrue();
 
         Tables tables = new Tables(List.of(u1));

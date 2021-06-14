@@ -241,7 +241,8 @@ public class Tables {
         List<User> drivers = new ArrayList<>();
 
         for (User user : users) {
-            if (user.isAvailableEventDriver() && user.isTrainedEventDriver()) {
+            if ((user.isAvailableDriver() && user.isTrainedDriver())
+                    || (user.isAvailableEventDriver() && user.isTrainedEventDriver())) {
                 drivers.add(user);
             }
         }

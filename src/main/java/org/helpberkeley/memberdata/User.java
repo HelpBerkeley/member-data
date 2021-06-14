@@ -431,7 +431,7 @@ public class User {
     }
 
     Boolean isAvailableDriver() {
-        return isDriver() && ! (isGone() || isOut() || isOtherDrivers() || isEventDriver());
+        return isDriver() && ! (isGone() || isOut() || isOtherDrivers());
     }
 
     Boolean isAvailableEventDriver() {
