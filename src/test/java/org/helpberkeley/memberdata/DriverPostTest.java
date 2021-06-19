@@ -159,4 +159,56 @@ public abstract class DriverPostTest extends TestBase {
 
         assertThat(thrown).hasMessage(expectedMessage);
     }
+
+    @Test
+    public void unknownPickupsListRefVariableTest() {
+        String format = "LOOP &{ThisDriverRestaurant} { "
+                + " &{ThisDriverRestaurant.HasPurpleSnowCones}"
+                + " }";
+        HttpClientSimulator.setQueryResponseData(getDriverPostFormatQuery(), createMessageBlock(format));
+        String routedDeliveries = readResourceFile(getRoutedDeliveriesFileName());
+        DriverPostFormat driverPostFormat =
+                DriverPostFormat.create(createApiSimulator(), users, routedDeliveries);
+        Throwable thrown = catchThrowable(() -> driverPostFormat.generateDriverPosts());
+        assertThat(thrown).isInstanceOf(MemberDataException.class);
+        assertThat(thrown).hasMessage(
+                "Post: 1, block: Test: unknown list variable &{ThisDriverRestaurant.HasPurpleSnowCones}");
+    }
+
+    @Test
+    public void emptyLoopTest() {
+        String format = "LOOP &{BackupDriver} { }";
+        HttpClientSimulator.setQueryResponseData(getDriverPostFormatQuery(), createMessageBlock(format));
+        String routedDeliveries = readResourceFile(getRoutedDeliveriesFileName());
+        Throwable thrown = catchThrowable(() ->
+                DriverPostFormat.create(createApiSimulator(), users, routedDeliveries));
+        assertThat(thrown).isInstanceOf(MemberDataException.class);
+        assertThat(thrown).hasMessageContaining("mismatched input");
+        assertThat(thrown).hasMessageContaining(format);
+    }
+
+    @Test
+    public void emptyConditionalTest() {
+        String format = "IF &{ThisDriverHasCondo} { }";
+        HttpClientSimulator.setQueryResponseData(getDriverPostFormatQuery(), createMessageBlock(format));
+        String routedDeliveries = readResourceFile(getRoutedDeliveriesFileName());
+        Throwable thrown = catchThrowable(() ->
+                DriverPostFormat.create(createApiSimulator(), users, routedDeliveries));
+        assertThat(thrown).isInstanceOf(MemberDataException.class);
+        assertThat(thrown).hasMessageContaining("mismatched input");
+        assertThat(thrown).hasMessageContaining(format);
+    }
+
+    @Test
+    public void unknownStructVariableTest() {
+        String format = "LOOP &{BackupDriver} { ${BackupDriver.FavoriteColor} }";
+        HttpClientSimulator.setQueryResponseData(getGroupInstructionsFormatQuery(), createMessageBlock(format));
+        String routedDeliveries = readResourceFile(getRoutedDeliveriesFileName());
+        DriverPostFormat driverPostFormat =
+                DriverPostFormat.create(createApiSimulator(), users, routedDeliveries);
+        Throwable thrown = catchThrowable(() -> driverPostFormat.generateGroupInstructionsPost());
+        assertThat(thrown).isInstanceOf(MemberDataException.class);
+        assertThat(thrown).hasMessage(
+                "Post: 1, block: Test: unknown struct variable ${BackupDriver.FavoriteColor}");
+    }
 }
