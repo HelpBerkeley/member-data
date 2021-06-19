@@ -29,6 +29,7 @@ import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
+import static org.helpberkeley.memberdata.v200.ControlBlockTest.EMPTY_ROW;
 
 public class RestaurantTemplateTest extends RestaurantTemplateTestBase {
 
@@ -43,7 +44,7 @@ public class RestaurantTemplateTest extends RestaurantTemplateTestBase {
 
     @Override
     public String getEmptyRow() {
-        return org.helpberkeley.memberdata.v200.ControlBlockTest.EMPTY_ROW;
+        return EMPTY_ROW;
     }
 
     @Override
@@ -51,6 +52,15 @@ public class RestaurantTemplateTest extends RestaurantTemplateTestBase {
         return readResourceFile("restaurant-template-v200.csv");
     }
 
+    @Override
+    public String getControlBlockDirectiveRow(String directive) {
+        return EMPTY_ROW.replaceFirst(",,,", "FALSE,FALSE," + directive + ",");
+    }
+
+    @Override
+    public int controlBlockEndLineNumber() {
+        return 29;
+    }
 //,,,,,,,,,,,,,,
 //        FALSE,TRUE,,,,,,,,,,,,,
 //        FALSE,,,,,,,,"1158 Solano Ave, Albany",FALSE,,Cafe Raj,,,

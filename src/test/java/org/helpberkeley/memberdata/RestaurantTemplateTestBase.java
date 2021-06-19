@@ -24,6 +24,8 @@ package org.helpberkeley.memberdata;
 
 import org.junit.Test;
 
+import java.text.MessageFormat;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
 
@@ -31,7 +33,9 @@ public abstract class RestaurantTemplateTestBase extends TestBase {
 
 
     public abstract String getEmptyRow();
+    public abstract String getControlBlockDirectiveRow(String directive);
     public abstract String getRestaurantTemplate();
+    public abstract int controlBlockEndLineNumber();
 
     @Test
     public void dataRowWithoutEnoughColumnsTest() {
@@ -64,5 +68,26 @@ public abstract class RestaurantTemplateTestBase extends TestBase {
                 + "\nNumber of data fields does not match number of headers.";
 
         assertThat(thrown).hasMessage(expectedMessage);
+    }
+
+    @Test
+    public void unknownControlBlockDirectiveTest() {
+        String badDirective = "Commenrt";
+        String badDirectiveRow = getControlBlockDirectiveRow(badDirective);
+
+        // Insert bad directive row into the control block
+        StringBuilder restaurantTemplate = new StringBuilder();
+        for (String line : getRestaurantTemplate().split("\\n")) {
+            if (line.contains(Constants.CONTROL_BLOCK_END)) {
+                restaurantTemplate.append(badDirectiveRow);
+            }
+            restaurantTemplate.append(line).append("\n");
+        }
+        RestaurantTemplateParser parser = RestaurantTemplateParser.create(restaurantTemplate.toString());
+        Throwable thrown = catchThrowable(() -> parser.restaurants());
+        assertThat(thrown).isInstanceOf(MemberDataException.class);
+        String expectedError = RestaurantTemplateParser.TEMPLATE_ERROR + MessageFormat.format(
+                ControlBlock.ERROR_UNKNOWN_DIRECTIVE, badDirective, controlBlockEndLineNumber());
+        assertThat(thrown).hasMessage(expectedError);
     }
 }

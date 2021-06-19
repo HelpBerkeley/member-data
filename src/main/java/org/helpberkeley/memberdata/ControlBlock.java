@@ -41,6 +41,8 @@ public abstract class ControlBlock {
             "Control block Version key must appear once and only once";
     static final String ERROR_WRONG_NUMBER_OF_VERSION_VALUES =
             "Too many non-empty columns. Control block Version value must appear once and only once";
+    static final String ERROR_UNKNOWN_DIRECTIVE = "Unexpected control block directive \"{0}\" in "
+            + Constants.WORKFLOW_NAME_COLUMN + " column at line {1}.\n";
 
     static final String UNKNOWN_BACKUP_DRIVER =
             Constants.CONTROL_BLOCK_BACKUP_DRIVER + " {0} is not a member. Misspelling?\n";

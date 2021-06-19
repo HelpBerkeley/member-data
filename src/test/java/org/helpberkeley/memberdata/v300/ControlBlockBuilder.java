@@ -44,13 +44,14 @@ public class ControlBlockBuilder {
     private final List<String> DEFAULT_ALT_MEAL_OPTIONS_LIST = List.of(DEFAULT_ALT_MEAL_OPTIONS);
     private final List<String> DEFAULT_ALT_GROCERY_OPTIONS_LIST = List.of(DEFAULT_ALT_GROCERY_OPTIONS);
     private final List<String> DEFAULT_START_TIMES_LIST = List.of(DEFAULT_START_TIMES);
+    private final List<String> DEFAULT_MESSAGE_FORMAT_LIST = List.of(DEFAULT_MESSAGE_FORMAT);
 
     private List<String> startTimes = DEFAULT_START_TIMES_LIST;
     private String opsManager = DEFAULT_OPS_MANAGER;
     private String foodSources = DEFAULT_FOOD_SOURCES;
     private List<String> altMealOptions = DEFAULT_ALT_MEAL_OPTIONS_LIST;
     private List<String> altGroceryOptions = DEFAULT_ALT_GROCERY_OPTIONS_LIST;
-    private String messageFormat = DEFAULT_MESSAGE_FORMAT;
+    private List<String> messageFormat = DEFAULT_MESSAGE_FORMAT_LIST;
     private String backupDriver = null;
     private List<String> pickupManagers = DEFAULT_PICKUP_MANAGERS_LIST;
 
@@ -67,7 +68,8 @@ public class ControlBlockBuilder {
         controlBlock.append(ControlBlockTest.CONTROL_BLOCK_VERSION_ROW);
 
         if (messageFormat != null) {
-            controlBlock.append(getKeyValueRow(Constants.CONTROL_BLOCK_MESSAGE_FORMAT, messageFormat));
+            messageFormat.forEach((s) -> controlBlock.append(
+                    getKeyValueRow(Constants.CONTROL_BLOCK_MESSAGE_FORMAT, quote(s))));
         }
         if (startTimes != null) {
             startTimes.forEach((s) -> controlBlock.append(
@@ -181,7 +183,10 @@ public class ControlBlockBuilder {
     }
 
     public ControlBlockBuilder withMessageFormat(String format) {
-        this.messageFormat = format;
+        if (this.messageFormat == DEFAULT_MESSAGE_FORMAT_LIST) {
+            this.messageFormat = new ArrayList<>();
+        }
+        this.messageFormat.add(format);
         return this;
     }
 

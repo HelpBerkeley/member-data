@@ -433,4 +433,19 @@ public class ControlBlockTest extends ControlBlockTestBase {
         assertThat(thrown).isInstanceOf(MemberDataException.class);
         assertThat(thrown).hasMessage(MessageFormat.format(ControlBlockV300.INVALID_MESSAGE_FORMAT, badFormat));
     }
+
+    @Test
+    public void tooManyMessageFormatTest() {
+        String format1 = MessageSpecFormat.MONDAY.getFormat();
+        String format2 = MessageSpecFormat.MONDAY.getFormat();
+        String workFlowData = new ControlBlockBuilder()
+                .withMessageFormat(format1)
+                .withMessageFormat(format2)
+                .build();
+        WorkflowParser workflowParser = WorkflowParser.create(
+                WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, Map.of(), workFlowData);
+        Throwable thrown = catchThrowable(() ->  workflowParser.controlBlock());
+        assertThat(thrown).isInstanceOf(MemberDataException.class);
+        assertThat(thrown).hasMessage(ControlBlockV300.TOO_MANY_MESSAGE_FORMAT_VARIABLES);
+    }
 }

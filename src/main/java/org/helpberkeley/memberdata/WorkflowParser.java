@@ -27,6 +27,7 @@ import com.google.common.collect.PeekingIterator;
 import org.helpberkeley.memberdata.v200.WorkflowParserV200;
 import org.helpberkeley.memberdata.v300.WorkflowParserV300;
 
+import java.text.MessageFormat;
 import java.util.*;
 
 public abstract class WorkflowParser {
@@ -298,9 +299,7 @@ public abstract class WorkflowParser {
             case Constants.CONTROL_BLOCK_END:
                 break;
             default:
-                errors += "Unexpected control block directive \"" + directive
-                    + "\" in " + Constants.WORKFLOW_NAME_COLUMN + " column at line " + lineNumber
-                    + ".\n";
+                errors += MessageFormat.format(ControlBlock.ERROR_UNKNOWN_DIRECTIVE, directive, lineNumber);
         }
 
         if (! errors.isEmpty()) {

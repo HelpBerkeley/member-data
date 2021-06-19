@@ -26,6 +26,8 @@ import org.helpberkeley.memberdata.RestaurantTemplateParser;
 import org.helpberkeley.memberdata.RestaurantTemplateTestBase;
 import org.junit.Test;
 
+import static org.helpberkeley.memberdata.v300.ControlBlockTest.EMPTY_ROW;
+
 public class RestaurantTemplateTest extends RestaurantTemplateTestBase {
 
     @Override
@@ -36,6 +38,16 @@ public class RestaurantTemplateTest extends RestaurantTemplateTestBase {
     @Override
     public String getRestaurantTemplate() {
         return readResourceFile("restaurant-template-v300.csv");
+    }
+
+    @Override
+    public String getControlBlockDirectiveRow(String directive) {
+        return EMPTY_ROW.replaceFirst(",,,", "FALSE,FALSE," + directive + ",");
+    }
+
+    @Override
+    public int controlBlockEndLineNumber() {
+        return 58;
     }
 
     @Test

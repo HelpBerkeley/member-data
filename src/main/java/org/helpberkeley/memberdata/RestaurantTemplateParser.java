@@ -26,6 +26,7 @@ package org.helpberkeley.memberdata;
 import org.helpberkeley.memberdata.v200.RestaurantTemplateParserV200;
 import org.helpberkeley.memberdata.v300.RestaurantTemplateParserV300;
 
+import java.text.MessageFormat;
 import java.util.*;
 
 public abstract class RestaurantTemplateParser {
@@ -184,6 +185,8 @@ public abstract class RestaurantTemplateParser {
 
         while ((bean = nextRow()) != null) {
 
+            auditControlBlockRow(bean);
+
             if (isControlBlockEndRow(bean)) {
                 break;
             }
@@ -203,6 +206,34 @@ public abstract class RestaurantTemplateParser {
             default:
                 throw new MemberDataException(
                         TEMPLATE_ERROR + "\n" + ERROR_MISSING_OR_UNSUPPORTED_VERSION + "\n");
+        }
+    }
+
+    private void auditControlBlockRow(RestaurantBean bean) {
+        String errors = "";
+
+        if (! bean.getConsumer().equalsIgnoreCase("false")) {
+            errors += "Control block " + Constants.WORKFLOW_CONSUMER_COLUMN
+                    + " column does not contain FALSE, at line " + lineNumber + ".\n";
+        }
+        if (! bean.getDriver().equalsIgnoreCase("false")) {
+            errors += "Control block " + Constants.WORKFLOW_DRIVER_COLUMN
+                    + " column does not contain FALSE, at line " + lineNumber + ".\n";
+        }
+
+        String directive = bean.getControlBlockDirective();
+
+        switch (directive) {
+            case "":
+            case Constants.CONTROL_BLOCK_COMMENT:
+            case Constants.CONTROL_BLOCK_END:
+                break;
+            default:
+                errors += MessageFormat.format(ControlBlock.ERROR_UNKNOWN_DIRECTIVE, directive, lineNumber);
+        }
+
+        if (! errors.isEmpty()) {
+            throwTemplateError(errors);
         }
     }
 
