@@ -256,4 +256,48 @@ public class PickupManagerPostTest extends TestBase {
         String post = ((DriverPostFormatV300)driverPostFormat).generateDriversTablePost();
         assertThat(post).isEqualTo("ZZZ|ThirdPerson|\n");
     }
+
+    @Test
+    public void v300MealsOnlyTest() {
+
+        String format = "IF ${MealsOnlyRun} THEN { \"true\" } "
+                + "\"|\""
+                + "IF NOT ${MealsOnlyRun} THEN { \"true\" } "
+                + "\"|\""
+                + "IF ${GroceriesOnlyRun} THEN { \"true\" } "
+                + "\"|\""
+                + "IF NOT ${GroceriesOnlyRun} THEN { \"true\" } ";
+        HttpClientSimulator.setQueryResponseData(pickupManagerPostFormatQuery, createMessageBlock(format));
+
+        ControlBlockBuilder controlBlock = new ControlBlockBuilder();
+        controlBlock.withFoodSources("BFN|");
+        WorkflowBuilder workflow = new WorkflowBuilder()
+            .withControlBlock(controlBlock);
+        DriverPostFormat driverPostFormat =
+                DriverPostFormat.create(createApiSimulator(), users, workflow.build());
+        String post = ((DriverPostFormatV300)driverPostFormat).generateDriversTablePost();
+        assertThat(post).isEqualTo("true|||true");
+    }
+
+    @Test
+    public void v300GroceriesOnlyTest() {
+
+        String format = "IF ${MealsOnlyRun} THEN { \"true\" } "
+                + "\"|\""
+                + "IF NOT ${MealsOnlyRun} THEN { \"true\" } "
+                + "\"|\""
+                + "IF ${GroceriesOnlyRun} THEN { \"true\" } "
+                + "\"|\""
+                + "IF NOT ${GroceriesOnlyRun} THEN { \"true\" } ";
+        HttpClientSimulator.setQueryResponseData(pickupManagerPostFormatQuery, createMessageBlock(format));
+
+        ControlBlockBuilder controlBlock = new ControlBlockBuilder();
+        controlBlock.withFoodSources("|Safeway");
+        WorkflowBuilder workflow = new WorkflowBuilder()
+                .withControlBlock(controlBlock);
+        DriverPostFormat driverPostFormat =
+                DriverPostFormat.create(createApiSimulator(), users, workflow.build());
+        String post = ((DriverPostFormatV300)driverPostFormat).generateDriversTablePost();
+        assertThat(post).isEqualTo("|true|true|");
+    }
 }

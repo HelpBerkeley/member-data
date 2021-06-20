@@ -211,4 +211,16 @@ public abstract class DriverPostTest extends TestBase {
         assertThat(thrown).hasMessage(
                 "Post: 1, block: Test: unknown struct variable ${BackupDriver.FavoriteColor}");
     }
+
+    @Test
+    public void unknownListNameTest() {
+        String format = "LOOP &{TheLoop} { \"Hi\" }";
+        HttpClientSimulator.setQueryResponseData(getGroupInstructionsFormatQuery(), createMessageBlock(format));
+        String routedDeliveries = readResourceFile(getRoutedDeliveriesFileName());
+        DriverPostFormat driverPostFormat =
+                DriverPostFormat.create(createApiSimulator(), users, routedDeliveries);
+        Throwable thrown = catchThrowable(() -> driverPostFormat.generateGroupInstructionsPost());
+        assertThat(thrown).isInstanceOf(MemberDataException.class);
+        assertThat(thrown).hasMessage("Post: 1, block: Test: unknown list variable &{TheLoop}");
+    }
 }

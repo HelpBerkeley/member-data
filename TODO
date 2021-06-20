@@ -86,3 +86,8 @@ Add support for explicitly supporting the dup via directive,
 or a control block varible. Add support for the directive
 changin the driver's post and the group post.
 Update error message to explain directions for usage.
+
+Fix message spec errors to state the topic and post 
+
+Update completed order processing not to bother
+with message spec parsing.

@@ -290,6 +290,8 @@ public class DriverPostFormatV300 extends DriverPostFormat {
             case "TotalStandardMeal":
                 value = getStandardMealTotal();
                 break;
+//            case "MealsOnlyRun":
+
             default:
                 throw new MemberDataException(context.formatException("unknown variable ${" + varName + "}"));
         }
@@ -433,10 +435,19 @@ public class DriverPostFormatV300 extends DriverPostFormat {
         Driver driver = context.getDriver();
         boolean value;
 
-        if ("ThisDriverAnyCondo".equals(refName)) {
-            value = driver.hasCondo();
-        } else {
-            throw new MemberDataException(context.formatException("unknown boolean variable ${" + refName + "}"));
+        switch (refName) {
+            case "ThisDriverAnyCondo":
+                value = driver.hasCondo();
+                break;
+            case "MealsOnlyRun":
+                value = mealsOnlyRun();
+                break;
+            case "GroceriesOnlyRun":
+                value = groceriesOnlyRun();
+                break;
+            default:
+                throw new MemberDataException(
+                        context.formatException("unknown boolean variable ${" + refName + "}"));
         }
 
         LOGGER.trace("${{}} = \"{}\"", element, value);
@@ -1037,5 +1048,15 @@ public class DriverPostFormatV300 extends DriverPostFormat {
         }
 
         return String.valueOf(total);
+    }
+
+    private boolean mealsOnlyRun() {
+        ControlBlockV300 controlBlock = (ControlBlockV300)getControlBlock();
+        return controlBlock.getGrocerySource().isEmpty();
+    }
+
+    private boolean groceriesOnlyRun() {
+        ControlBlockV300 controlBlock = (ControlBlockV300)getControlBlock();
+        return controlBlock.getMealSource().isEmpty();
     }
 }

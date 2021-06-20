@@ -448,4 +448,36 @@ public class ControlBlockTest extends ControlBlockTestBase {
         assertThat(thrown).isInstanceOf(MemberDataException.class);
         assertThat(thrown).hasMessage(ControlBlockV300.TOO_MANY_MESSAGE_FORMAT_VARIABLES);
     }
+
+    @Test
+    public void mealsOnlyFoodSourceTest() {
+
+        String mealSource = "Chez McDo";
+        ControlBlockBuilder builder = new ControlBlockBuilder();
+        builder.withFoodSources(mealSource + "|");
+
+        WorkflowParser workflowParser = WorkflowParser.create(
+                WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, Map.of(), builder.build());
+
+        ControlBlockV300 controlBlock = (ControlBlockV300) workflowParser.controlBlock();
+        audit(controlBlock);
+        assertThat(controlBlock.getMealSource()).isEqualTo(mealSource);
+        assertThat(controlBlock.getGrocerySource()).isEmpty();
+    }
+
+    @Test
+    public void groceriesOnlyFoodSourceTest() {
+
+        String grocerySource = "Big Red Barn Productions";
+        ControlBlockBuilder builder = new ControlBlockBuilder();
+        builder.withFoodSources("|" + grocerySource);
+
+        WorkflowParser workflowParser = WorkflowParser.create(
+                WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, Map.of(), builder.build());
+
+        ControlBlockV300 controlBlock = (ControlBlockV300) workflowParser.controlBlock();
+        audit(controlBlock);
+        assertThat(controlBlock.getGrocerySource()).isEqualTo(grocerySource);
+        assertThat(controlBlock.getMealSource()).isEmpty();
+    }
 }
