@@ -30,7 +30,6 @@ public class DriverBlockBuilder {
     private final List<RestaurantBuilder> restaurants = new ArrayList<>();
     private final List<DeliveryBuilder> deliveries = new ArrayList<>();
     private DriverBuilder driver = new DriverBuilder();
-    private final String gmapURL = WorkflowBuilder.DEFAULT_GMAP_URL;
 
     @Override
     public String toString() {
@@ -45,7 +44,7 @@ public class DriverBlockBuilder {
         restaurants.forEach(driverBlock::append);
         deliveries.forEach(driverBlock::append);
         driverBlock.append(driver.build());
-        driverBlock.append(gmapURL);
+        driverBlock.append(WorkflowBuilder.DEFAULT_GMAP_URL);
         driverBlock.append(ControlBlockTest.EMPTY_ROW);
 
         return driverBlock.toString();

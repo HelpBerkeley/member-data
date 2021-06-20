@@ -478,8 +478,8 @@ public class TestBase {
         final Object[][] rows;
 
         MessageBlockJSON(String message) {
-            columns = new String[] { "post_number", "raw", "deleted_at" };
-            Object[] row = new Object[] { 1, "[Test]\n" + message, null };
+            columns = new String[] { "post_number", "topic_id", "raw", "deleted_at" };
+            Object[] row = new Object[] { 1, 200, "[Test]\n" + message, null };
             rows = new Object[][] { row };
         }
 

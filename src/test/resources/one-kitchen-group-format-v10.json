@@ -1,1 +1,52 @@
-{"success":true,"errors":[],"duration":0.7,"result_count":6,"params":{},"columns":["post_number","raw","deleted_at"],"default_limit":1000,"rows":[[1,"[comment]\n\nComment post: this is where we spec the format of the summary post for the drivers.\n\n**Sections**\n[header]\n[PleaseNote]\n[SplitRestaurants]\n[Instructions]\n\n**Variables**\n\n**Driver** ... list, workflow spreadsheet scope.\n**.UserName**   ... string, from workflow spreadsheet\n**.FirstRestaurantName**  ... string, from workflow spreadsheet\n**.FirstRestaurantStartTime**  ... string, from restaurant Template\n**.IsFirstRestaurantClosingBefore7PM** ... Boolean, calculated from restaurant template\n**.FirstRestaurantClosingTime** ... string, from restaurant template\n**.Orders**\n\n**SplitRestaurant**  ...  list, workflow spreadsheet scope\n**.Name** ... string, from restaurant template\n**.Emoji** ... string, from control block\n**.TotalOrders** ... integer, calculated from workflow spreadsheet\n**.Driver** ... list, from workflow spreadsheet\n\n**SplitRestaurant.Driver**  \n**.UserName** ... string, from workflow spreadsheet\n**.SplitRestaurantOrders** ... integer, from workflow spreadsheet\n**.CompactPhone**  ... string, workflow spreadsheet scope, calculated from workflow spreadsheet\n**.IsCleanup**  ...  boolean, from control block\n\n----\n**Suggested changes**\n\nRemove:\n**Driver** ... list, workflow spreadsheet scope.\n**.IsFirstRestaurantClosingBefore7PM** ... Boolean, calculated from restaurant template\n\nAdd:\n**Driver** ... list, workflow spreadsheet scope.\n**.IsFirstRestaurantClosingBefore545PM** ... Boolean, calculated from restaurant template",null],[2,"```\n[header]\n\nLOOP \u0026{Driver}\n{\n    \"@\" \u0026{Driver.UserName} \", your run starts at \"\n    \u0026{Driver.FirstRestaurantName}  \" at  \"\n    \u0026{Driver.FirstRestaurantStartTime}  \".\"\n    IF \u0026{Driver.IsFirstRestaurantClosingBefore545PM} THEN\n    {\n        \" This restaurant closes at \" \n        \u0026{Driver.FirstRestaurantClosingTime}  \".\"\n    }\n    \"\\n\"\n}\n```",null],[3,"[Comment]\n\n[PleaseNote]\n\nLeft blank on purpose",null],[4,"```\n[SplitRestaurants]\n\n\n```",null],[5,"[Instructions]\n\n\"\\n**Tips and reminders**\\n\\n\n\n* The Big Five: well-charged phone, gloves, clean food boxes, mask, social distancing\\n\n* Before setting off, use your phone to open the email message you received for your run (it will save a cached version if you lose cellular connectivity during your run.)\\n\n* Very important: **post right before starting on your run** so we know you left. Otherwise, we may have to send another driver out.\\n\n* Use [DiscourseHub app](https://go.helpberkeley.org/t/helpberkeley-org-on-your-hand-held-devices/774/1) to get run info and to upload pictures of order forms.\\n\n* When using GMap URL, you might need to press Continue to go to next waypoint.\\n\n* Be on time at restaurants.\\n\n* Go to all restaurants listed on your run, even those with zero orders.Take picture of next day order form at each restaurant, even when there are no next-day orders.\\n\n* At each restaurant, make sure order form is for the tomorrow's orders, then take two pictures in portrait mode (not landscape), being sure picture includes all the info we need, including restaurant name at the top. Upload pictures to the thread right away.\\n\n* At pick-up, compare bags at restaurant with orders on your list to make sure that number of bags and orders is correct for each client and that each is properly labeled. Correct any problems as needed with restaurant before leaving. If discrepancy, call the ops manager right away before leaving.\\n\n* Position bags carefully in your dirty boxes and drive cautiously to avoid spilling food.\\n\n* If a ration leaks or bag tears, wait for customer 15 feet away from door, apologize for the accident, explain how it occurred, and offer to have us reorder and bring out another order in one hour. If they agree, call ops manager to place order.\\n\n* After dropping off food, call customer from your car while parked on the street next to their house to notify them of delivery.\\n\n* Runs must be finished by 7:30. if it looks like your run will end later, call the ops manager so customer can be notified of late delivery.\\n\n* **Please post at the end of your run** to let us know you finished, report any problems, and give us feedback, particularly on finding addresses.\\n\n* Immediately after arriving home, discard gloves, sanitize boxes, and thoroughly wash hands.\\n\n* Please be available by phone/text in the evening in case we have urgent questions.\\n\\n\n\nThank you!\"",null],[6,"[comment]\n\nNote: the [Instructions] block works better without backticks.",null]]}
+{
+  "success": true,
+  "errors": [],
+  "duration": 0.7,
+  "result_count": 6,
+  "params": {},
+  "columns": [
+    "post_number",
+    "topic_id",
+    "raw",
+    "deleted_at"
+  ],
+  "default_limit": 1000,
+  "rows": [
+    [
+      1,
+      200,
+      "[comment]\n\nComment post: this is where we spec the format of the summary post for the drivers.\n\n**Sections**\n[header]\n[PleaseNote]\n[SplitRestaurants]\n[Instructions]\n\n**Variables**\n\n**Driver** ... list, workflow spreadsheet scope.\n**.UserName**   ... string, from workflow spreadsheet\n**.FirstRestaurantName**  ... string, from workflow spreadsheet\n**.FirstRestaurantStartTime**  ... string, from restaurant Template\n**.IsFirstRestaurantClosingBefore7PM** ... Boolean, calculated from restaurant template\n**.FirstRestaurantClosingTime** ... string, from restaurant template\n**.Orders**\n\n**SplitRestaurant**  ...  list, workflow spreadsheet scope\n**.Name** ... string, from restaurant template\n**.Emoji** ... string, from control block\n**.TotalOrders** ... integer, calculated from workflow spreadsheet\n**.Driver** ... list, from workflow spreadsheet\n\n**SplitRestaurant.Driver**  \n**.UserName** ... string, from workflow spreadsheet\n**.SplitRestaurantOrders** ... integer, from workflow spreadsheet\n**.CompactPhone**  ... string, workflow spreadsheet scope, calculated from workflow spreadsheet\n**.IsCleanup**  ...  boolean, from control block\n\n----\n**Suggested changes**\n\nRemove:\n**Driver** ... list, workflow spreadsheet scope.\n**.IsFirstRestaurantClosingBefore7PM** ... Boolean, calculated from restaurant template\n\nAdd:\n**Driver** ... list, workflow spreadsheet scope.\n**.IsFirstRestaurantClosingBefore545PM** ... Boolean, calculated from restaurant template",
+      null
+    ],
+    [
+      2,
+      200,
+      "```\n[header]\n\nLOOP &{Driver}\n{\n    \"@\" &{Driver.UserName} \", your run starts at \"\n    &{Driver.FirstRestaurantName}  \" at  \"\n    &{Driver.FirstRestaurantStartTime}  \".\"\n    IF &{Driver.IsFirstRestaurantClosingBefore545PM} THEN\n    {\n        \" This restaurant closes at \" \n        &{Driver.FirstRestaurantClosingTime}  \".\"\n    }\n    \"\\n\"\n}\n```",
+      null
+    ],
+    [
+      3,
+      200,
+      "[Comment]\n\n[PleaseNote]\n\nLeft blank on purpose",
+      null
+    ],
+    [
+      4,
+      200,
+      "```\n[SplitRestaurants]\n\n\n```",
+      null
+    ],
+    [
+      5,
+      200,
+      "[Instructions]\n\n\"\\n**Tips and reminders**\\n\\n\n\n* The Big Five: well-charged phone, gloves, clean food boxes, mask, social distancing\\n\n* Before setting off, use your phone to open the email message you received for your run (it will save a cached version if you lose cellular connectivity during your run.)\\n\n* Very important: **post right before starting on your run** so we know you left. Otherwise, we may have to send another driver out.\\n\n* Use [DiscourseHub app](https://go.helpberkeley.org/t/helpberkeley-org-on-your-hand-held-devices/774/1) to get run info and to upload pictures of order forms.\\n\n* When using GMap URL, you might need to press Continue to go to next waypoint.\\n\n* Be on time at restaurants.\\n\n* Go to all restaurants listed on your run, even those with zero orders.Take picture of next day order form at each restaurant, even when there are no next-day orders.\\n\n* At each restaurant, make sure order form is for the tomorrow's orders, then take two pictures in portrait mode (not landscape), being sure picture includes all the info we need, including restaurant name at the top. Upload pictures to the thread right away.\\n\n* At pick-up, compare bags at restaurant with orders on your list to make sure that number of bags and orders is correct for each client and that each is properly labeled. Correct any problems as needed with restaurant before leaving. If discrepancy, call the ops manager right away before leaving.\\n\n* Position bags carefully in your dirty boxes and drive cautiously to avoid spilling food.\\n\n* If a ration leaks or bag tears, wait for customer 15 feet away from door, apologize for the accident, explain how it occurred, and offer to have us reorder and bring out another order in one hour. If they agree, call ops manager to place order.\\n\n* After dropping off food, call customer from your car while parked on the street next to their house to notify them of delivery.\\n\n* Runs must be finished by 7:30. if it looks like your run will end later, call the ops manager so customer can be notified of late delivery.\\n\n* **Please post at the end of your run** to let us know you finished, report any problems, and give us feedback, particularly on finding addresses.\\n\n* Immediately after arriving home, discard gloves, sanitize boxes, and thoroughly wash hands.\\n\n* Please be available by phone/text in the evening in case we have urgent questions.\\n\\n\n\nThank you!\"",
+      null
+    ],
+    [
+      6,
+      200,
+      "[comment]\n\nNote: the [Instructions] block works better without backticks.",
+      null
+    ]
+  ]
+}

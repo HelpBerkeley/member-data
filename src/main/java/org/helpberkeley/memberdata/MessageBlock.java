@@ -37,6 +37,7 @@ public class MessageBlock implements MessageBlockScope {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MessageBlock.class);
 
+    final long topic;
     final long postNumber;
     final String raw;
     String name;
@@ -44,7 +45,8 @@ public class MessageBlock implements MessageBlockScope {
     private final Stack<MessageBlockScope> scopeStack = new Stack<>();
     private final List<MessageBlockElement> elements = new ArrayList<>();
 
-    public MessageBlock(long postNumber, final String raw) {
+    public MessageBlock(long topic, long postNumber, final String raw) {
+        this.topic = topic;
         this.postNumber = postNumber;
         // Normalize EOL
         this.raw = raw.replaceAll("\\r\\n?", "\n");
@@ -78,7 +80,7 @@ public class MessageBlock implements MessageBlockScope {
         parser.removeErrorListeners();
 
         // Create/add custom error listener
-        MessageBlockErrorListener errorListener = new MessageBlockErrorListener(name, postNumber);
+        MessageBlockErrorListener errorListener = new MessageBlockErrorListener(name, topic, postNumber);
         parser.addErrorListener(errorListener);
 
         // Begin parsing at the block rule
