@@ -50,10 +50,6 @@ public class ControlBlockTest extends ControlBlockTestBase {
     private final String CONTROL_BLOCK_VERSION_ROW =
             "FALSE,FALSE,,Version,,,,2-0-0,,,,,,,\n";
 
-    // FIX THIS, DS: re-organize to remove this
-//    public static final String MINIMUM_CONTROL_BLOCK =
-//            CONTROL_BLOCK_BEGIN_ROW;
-
     public ControlBlockTest() {
         RestaurantTemplateParser parser =
                 RestaurantTemplateParser.create(readResourceFile("restaurant-template-v200.csv"));

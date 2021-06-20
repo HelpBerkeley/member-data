@@ -32,9 +32,11 @@ public class MessageBlockErrorListener extends BaseErrorListener {
 
     private final String blockName;
     private final long postNumber;
+    private final long topicId;
 
-    MessageBlockErrorListener(String name, long postNumber) {
+    MessageBlockErrorListener(String name, long topicId, long postNumber) {
         this.blockName = (name == null) ? "unknown" : name;
+        this.topicId = topicId;
         this.postNumber = postNumber;
     }
 
@@ -66,7 +68,8 @@ public class MessageBlockErrorListener extends BaseErrorListener {
                 int line, int charPositionInLine, String msg, RecognitionException e) {
 
         errorMessages.append("section: ").append(blockName);
-        errorMessages.append(", post: ").append(postNumber);
+        errorMessages.append(", url: ").append("https://go.helpberkeley.org/t/").append(topicId);
+        errorMessages.append("/").append(postNumber);
         errorMessages.append(", line: ").append(charPositionInLine).append(", ").append(msg).append("\n");
         underlineError(recognizer, (Token) offendingSymbol, line, charPositionInLine);
     }

@@ -960,9 +960,10 @@ public class DriverPostFormatV300 extends DriverPostFormat {
 
         for (Object rowObj : apiQueryResult.rows) {
             Object[] columns = (Object[]) rowObj;
-            assert columns.length == 3 : columns.length;
+            assert columns.length == 4 : columns.length;
 
-            MessageBlock messageBlock = new MessageBlock((Long)columns[0], (String)columns[1]);
+            MessageBlock messageBlock = new MessageBlock(
+                    (Long)columns[1], (Long)columns[0], (String)columns[2]);
             // FIX THIS, DS: catch and update status here?
             messageBlock.parse();
             driversTableMessageBlocks.add(messageBlock);
@@ -976,9 +977,10 @@ public class DriverPostFormatV300 extends DriverPostFormat {
 
         for (Object rowObj : apiQueryResult.rows) {
             Object[] columns = (Object[]) rowObj;
-            assert columns.length == 3 : columns.length;
+            assert columns.length == 4 : columns.length;
 
-            MessageBlock messageBlock = new MessageBlock((Long)columns[0], (String)columns[1]);
+            MessageBlock messageBlock = new MessageBlock(
+                    (Long)columns[1], (Long)columns[0], (String)columns[2]);
 
             // FIX THIS, DS: catch and update status here?
             messageBlock.parse();

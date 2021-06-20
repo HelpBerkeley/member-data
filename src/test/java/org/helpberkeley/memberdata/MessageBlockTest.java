@@ -32,18 +32,19 @@ public class MessageBlockTest extends TestBase {
     @Test
     public void emptyBlockTest() {
 
-        MessageBlock messageBlock = new MessageBlock(0, "");
+        MessageBlock messageBlock = new MessageBlock(100, 0, "");
         Throwable thrown = catchThrowable(messageBlock::parse);
         assertThat(thrown).isInstanceOf(MemberDataException.class);
         assertThat(thrown).hasMessageContaining(
-                "section: unknown, post: 0, line: 0, mismatched input '<EOF>' expecting '['");
+                "section: unknown, url: https://go.helpberkeley.org/t/100/0, "
+                + "line: 0, mismatched input '<EOF>' expecting '['");
     }
 
     @Test
     public void labelOnlyTest() {
         String block = "[labelOnly]\n";
 
-        MessageBlock messageBlock = new MessageBlock(0, block);
+        MessageBlock messageBlock = new MessageBlock(100, 0, block);
         messageBlock.parse();
 
         assertThat(messageBlock.getName()).isEqualTo("labelOnly");
@@ -53,7 +54,7 @@ public class MessageBlockTest extends TestBase {
     public void labelWithSpacesTest() {
         String block = "[ spaceyLabel ]\n";
 
-        MessageBlock messageBlock = new MessageBlock(0, block);
+        MessageBlock messageBlock = new MessageBlock(100, 0, block);
         messageBlock.parse();
 
         assertThat(messageBlock.getName()).isEqualTo("spaceyLabel");
@@ -65,7 +66,7 @@ public class MessageBlockTest extends TestBase {
             "[simpleVar]\n" +
             "${simpleVar}\n";
 
-        MessageBlock messageBlock = new MessageBlock(0, block);
+        MessageBlock messageBlock = new MessageBlock(100, 0, block);
         messageBlock.parse();
 
         assertThat(messageBlock.getName()).isEqualTo("simpleVar");
@@ -80,7 +81,7 @@ public class MessageBlockTest extends TestBase {
             "[listVar]\n" +
             "&{listVar.v1}\n";
 
-        MessageBlock messageBlock = new MessageBlock(0, block);
+        MessageBlock messageBlock = new MessageBlock(100, 0, block);
         messageBlock.parse();
 
         assertThat(messageBlock.getName()).isEqualTo("listVar");
@@ -95,7 +96,7 @@ public class MessageBlockTest extends TestBase {
             "[structVar]\n" +
             "${structVar.v1}\n";
 
-        MessageBlock messageBlock = new MessageBlock(0, block);
+        MessageBlock messageBlock = new MessageBlock(100, 0, block);
         messageBlock.parse();
 
         assertThat(messageBlock.getName()).isEqualTo("structVar");
@@ -110,7 +111,7 @@ public class MessageBlockTest extends TestBase {
             "[quotedString]\n" +
             "\"quoted string\"";
 
-        MessageBlock messageBlock = new MessageBlock(0, block);
+        MessageBlock messageBlock = new MessageBlock(100, 0, block);
         messageBlock.parse();
 
         assertThat(messageBlock.getName()).isEqualTo("quotedString");
@@ -126,7 +127,7 @@ public class MessageBlockTest extends TestBase {
                 "[conditionalSimpleVar]\n" +
                 "IF ${var1} THEN { ${var2} }\n";
 
-        MessageBlock messageBlock = new MessageBlock(0, block);
+        MessageBlock messageBlock = new MessageBlock(100, 0, block);
         messageBlock.parse();
 
         assertThat(messageBlock.getName()).isEqualTo("conditionalSimpleVar");
@@ -149,7 +150,7 @@ public class MessageBlockTest extends TestBase {
                 "   \"this is str2\" \n" +
                 "}";
 
-        MessageBlock messageBlock = new MessageBlock(0, block);
+        MessageBlock messageBlock = new MessageBlock(100, 0, block);
         messageBlock.parse();
 
         assertThat(messageBlock.getName()).isEqualTo("conditionalMultiElement");
@@ -176,7 +177,7 @@ public class MessageBlockTest extends TestBase {
                 "}\n" +
                 "\"un ver vert va vers un verre vert\"";
 
-        MessageBlock messageBlock = new MessageBlock(0, block);
+        MessageBlock messageBlock = new MessageBlock(100, 0, block);
         messageBlock.parse();
 
         assertThat(messageBlock.getName()).isEqualTo("conditionalFollowedByQuotedString");
@@ -198,7 +199,7 @@ public class MessageBlockTest extends TestBase {
                 "[conditionalSimpleVar]\n" +
                         "IF NOT ${var1} THEN { ${var2} }\n";
 
-        MessageBlock messageBlock = new MessageBlock(0, block);
+        MessageBlock messageBlock = new MessageBlock(100, 0, block);
         messageBlock.parse();
 
         assertThat(messageBlock.getName()).isEqualTo("conditionalSimpleVar");
@@ -220,7 +221,7 @@ public class MessageBlockTest extends TestBase {
                 "   &{listVar.v2}\n" +
                 "}\n";
 
-        MessageBlock messageBlock = new MessageBlock(0, block);
+        MessageBlock messageBlock = new MessageBlock(100, 0, block);
         messageBlock.parse();
 
         assertThat(messageBlock.getName()).isEqualTo("loop");
@@ -242,7 +243,7 @@ public class MessageBlockTest extends TestBase {
             "LOOP &{loopVar1} { \"string1\n\" }\n" +
             "LOOP &{loopVar2} { \"string2\" }";
 
-        MessageBlock messageBlock = new MessageBlock(0, block);
+        MessageBlock messageBlock = new MessageBlock(100, 0, block);
         messageBlock.parse();
 
         assertThat(messageBlock.getName()).isEqualTo("multiLoopBlock");
@@ -269,7 +270,7 @@ public class MessageBlockTest extends TestBase {
                         "    &{LoopVar.v1}\n" +
                         "}\n";
 
-        MessageBlock messageBlock = new MessageBlock(0, block);
+        MessageBlock messageBlock = new MessageBlock(100, 0, block);
         messageBlock.parse();
 
         assertThat(messageBlock.getName()).isEqualTo("loopListElement");
@@ -291,7 +292,7 @@ public class MessageBlockTest extends TestBase {
                 "[comment]\n" + "hi mom\n"
                 + "[comment]\n" + "bye mom\n";
 
-        MessageBlock messageBlock = new MessageBlock(0, block);
+        MessageBlock messageBlock = new MessageBlock(100, 0, block);
         messageBlock.parse();
     }
 
@@ -301,7 +302,7 @@ public class MessageBlockTest extends TestBase {
                 "````\n" +
                 "[tooManyBackQuotes]\n" +
                 "```";
-        MessageBlock messageBlock = new MessageBlock(0, block);
+        MessageBlock messageBlock = new MessageBlock(100, 0, block);
         Throwable thrown = catchThrowable(messageBlock::parse);
         assertThat(thrown).isInstanceOf(MemberDataException.class);
         assertThat(thrown).hasMessageContaining(block);
@@ -318,7 +319,7 @@ public class MessageBlockTest extends TestBase {
                     "    &{LoopVar.v1}\n" +
                     "}\n";
 
-        MessageBlock messageBlock = new MessageBlock(0, block);
+        MessageBlock messageBlock = new MessageBlock(100, 0, block);
         messageBlock.parse();
 
         assertThat(messageBlock.getName()).isEqualTo("loopWithContinueElement");
@@ -345,7 +346,7 @@ public class MessageBlockTest extends TestBase {
                 "[lineCommentsOnlyTest]\n" +
                     "// This is a comment\n" +
                     "// as well as this.\n";
-        MessageBlock messageBlock = new MessageBlock(0, block);
+        MessageBlock messageBlock = new MessageBlock(100, 0, block);
         messageBlock.parse();
         assertThat(messageBlock.getElements()).hasSize(0);
     }
@@ -359,7 +360,7 @@ public class MessageBlockTest extends TestBase {
                     "// This is another comment\n" +
                     "&{someOtherVar.something}";
 
-        MessageBlock messageBlock = new MessageBlock(0, block);
+        MessageBlock messageBlock = new MessageBlock(100, 0, block);
         messageBlock.parse();
         assertThat(messageBlock.getElements()).hasSize(2);
         assertThat(messageBlock.getElements().get(0)).isInstanceOf(MessageBlockSimpleRef.class);
@@ -376,7 +377,7 @@ public class MessageBlockTest extends TestBase {
                     "\"";
 
 
-        MessageBlock messageBlock = new MessageBlock(0, block);
+        MessageBlock messageBlock = new MessageBlock(100, 0, block);
         messageBlock.parse();
         assertThat(messageBlock.getElements()).hasSize(1);
         assertThat(messageBlock.getElements().get(0)).isInstanceOf(MessageBlockQuotedString.class);
