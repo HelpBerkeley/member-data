@@ -67,11 +67,14 @@ public class MessageBlockErrorListener extends BaseErrorListener {
     public void syntaxError(Recognizer<?, ?> recognizer, Object offendingSymbol,
                 int line, int charPositionInLine, String msg, RecognitionException e) {
 
-        errorMessages.append("section: ").append(blockName);
-        errorMessages.append(", url: ").append("https://go.helpberkeley.org/t/").append(topicId);
-        errorMessages.append("/").append(postNumber);
-        errorMessages.append(", line: ").append(charPositionInLine).append(", ").append(msg).append("\n");
+        errorMessages.append("Block: ").append(blockName).append("\n");
+        errorMessages.append("Post: ").append("https://go.helpberkeley.org/t/").append(topicId);
+        errorMessages.append("/").append(postNumber).append("\n");
+        errorMessages.append("Line: ").append(line).append("\n");
+        errorMessages.append("Offset: ").append(charPositionInLine).append("\n");
+        errorMessages.append(msg).append("\n");
         underlineError(recognizer, (Token) offendingSymbol, line, charPositionInLine);
+        errorMessages.append("\n");
     }
 
     private void underlineError(Recognizer<?, ?> recognizer, Token offendingToken, int line, int charPositionInLine) {

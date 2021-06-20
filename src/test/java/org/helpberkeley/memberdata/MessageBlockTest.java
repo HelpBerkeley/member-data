@@ -31,13 +31,15 @@ public class MessageBlockTest extends TestBase {
 
     @Test
     public void emptyBlockTest() {
-
         MessageBlock messageBlock = new MessageBlock(100, 0, "");
         Throwable thrown = catchThrowable(messageBlock::parse);
         assertThat(thrown).isInstanceOf(MemberDataException.class);
         assertThat(thrown).hasMessageContaining(
-                "section: unknown, url: https://go.helpberkeley.org/t/100/0, "
-                + "line: 0, mismatched input '<EOF>' expecting '['");
+                "Block: unknown\n"
+                + "Post: https://go.helpberkeley.org/t/100/0\n"
+                + "Line: 1\n"
+                + "Offset: 0\n"
+                + "mismatched input '<EOF>' expecting '['");
     }
 
     @Test
@@ -383,5 +385,31 @@ public class MessageBlockTest extends TestBase {
         assertThat(messageBlock.getElements().get(0)).isInstanceOf(MessageBlockQuotedString.class);
         MessageBlockQuotedString qs = (MessageBlockQuotedString)messageBlock.getElements().get(0);
         assertThat(qs.getValue()).isEqualTo(quotedComment);
+    }
+
+    @Test
+    public void multipleErrorsTest() {
+        String format = "[multipleErrorsTest]\n"
+                + "IF &{Something} THEN\n"
+                + "{\n"
+                + "}";
+        MessageBlock messageBlock = new MessageBlock(100, 9, format);
+        Throwable thrown = catchThrowable(messageBlock::parse);
+        assertThat(thrown).isInstanceOf(MemberDataException.class);
+        assertThat(thrown).hasMessage("Block: multipleErrorsTest\n" +
+                    "Post: https://go.helpberkeley.org/t/100/9\n" +
+                    "Line: 2\n" +
+                    "Offset: 5\n" +
+                    "mismatched input 'Something' expecting COMPOSITE\n" +
+                    "IF &{Something} THEN\n" +
+                    "     ^^^^^^^^^\n" +
+                    "\n" +
+                    "Block: multipleErrorsTest\n" +
+                    "Post: https://go.helpberkeley.org/t/100/9\n" +
+                    "Line: 4\n" +
+                    "Offset: 0\n" +
+                    "mismatched input '}' expecting {'${', '&{', 'IF', 'LOOP', 'CONTINUE', QUOTED_STRING}\n" +
+                    "}\n" +
+                    "^\n\n");
     }
 }
