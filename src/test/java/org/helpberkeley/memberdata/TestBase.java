@@ -22,8 +22,6 @@
 package org.helpberkeley.memberdata;
 
 import com.cedarsoftware.util.io.JsonWriter;
-import org.helpberkeley.memberdata.route.GMapApiClient;
-import org.helpberkeley.memberdata.route.GmapApiSimulatorFactory;
 import org.junit.BeforeClass;
 
 import java.io.IOException;
@@ -124,7 +122,6 @@ public class TestBase {
 
     static final String[] COMMANDS_WITH_NO_PARAMETERS = {
             Options.COMMAND_FETCH,
-            Options.COMMAND_DRIVER_ROUTES,
             Options.COMMAND_DRIVER_HISTORY,
             Options.COMMAND_ONEKITCHEN_DRIVER_HISTORY,
             Options.COMMAND_RESTAURANT_TEMPLATE,
@@ -139,7 +136,6 @@ public class TestBase {
     @BeforeClass
     public static void installHttpClientSimulatorFactory() {
         ApiClient.httpClientFactory = new HttpClientSimulatorFactory();
-        GMapApiClient.apiFactory = new GmapApiSimulatorFactory();
     }
 
     protected ApiClient createApiSimulator() {

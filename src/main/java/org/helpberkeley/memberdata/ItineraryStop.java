@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020. helpberkeley.org
+ * Copyright (c) 2021. helpberkeley.org
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -20,11 +20,8 @@
  * SOFTWARE.
  *
  */
-package org.helpberkeley.memberdata.route;
 
-public class GmapApiSimulatorFactory implements GMapApiFactory {
-    @Override
-    public GMapApi createApi() {
-        return new GMapApiSimulator();
-    }
+package org.helpberkeley.memberdata;
+
+public interface ItineraryStop {
 }

@@ -118,8 +118,7 @@ public class ControlBlockTest extends ControlBlockTestBase {
                 + getKeyValueRow(key, value)
                 + CONTROL_BLOCK_END_ROW;
 
-        WorkflowParser workflowParser = WorkflowParser.create(
-                WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, Collections.EMPTY_MAP, workFlowData);
+        WorkflowParser workflowParser = WorkflowParser.create(Collections.EMPTY_MAP, workFlowData);
         ControlBlock controlBlock = workflowParser.controlBlock();
         assertThat(controlBlock.getWarnings()).contains(
                 MessageFormat.format(ControlBlock.UNSUPPORTED, key, 4, Constants.CONTROL_BLOCK_VERSION_200));
@@ -136,8 +135,7 @@ public class ControlBlockTest extends ControlBlockTestBase {
                 + getKeyValueRow(key, value)
                 + CONTROL_BLOCK_END_ROW;
 
-        WorkflowParser workflowParser = WorkflowParser.create(
-                WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, Collections.EMPTY_MAP, workFlowData);
+        WorkflowParser workflowParser = WorkflowParser.create(Collections.EMPTY_MAP, workFlowData);
         ControlBlock controlBlock = workflowParser.controlBlock();
         assertThat(controlBlock.getWarnings()).contains(
                 MessageFormat.format(ControlBlock.UNSUPPORTED, key, 4, Constants.CONTROL_BLOCK_VERSION_200));
@@ -154,8 +152,7 @@ public class ControlBlockTest extends ControlBlockTestBase {
                 + getKeyValueRow(key, value)
                 + CONTROL_BLOCK_END_ROW;
 
-        WorkflowParser workflowParser = WorkflowParser.create(
-                WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, Collections.EMPTY_MAP, workFlowData);
+        WorkflowParser workflowParser = WorkflowParser.create(Collections.EMPTY_MAP, workFlowData);
         ControlBlock controlBlock = workflowParser.controlBlock();
         assertThat(controlBlock.getWarnings()).contains(
                 MessageFormat.format(ControlBlock.UNSUPPORTED, key, 4, Constants.CONTROL_BLOCK_VERSION_200));
@@ -172,8 +169,7 @@ public class ControlBlockTest extends ControlBlockTestBase {
                 + getKeyValueRow(key, value)
                 + CONTROL_BLOCK_END_ROW;
 
-        WorkflowParser workflowParser = WorkflowParser.create(
-                WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, Collections.EMPTY_MAP, workFlowData);
+        WorkflowParser workflowParser = WorkflowParser.create(Collections.EMPTY_MAP, workFlowData);
         ControlBlock controlBlock = workflowParser.controlBlock();
         assertThat(controlBlock.getWarnings()).contains(
                 MessageFormat.format(ControlBlock.UNSUPPORTED, key, 4, Constants.CONTROL_BLOCK_VERSION_200));

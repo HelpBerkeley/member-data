@@ -25,42 +25,18 @@ package org.helpberkeley.memberdata.v300;
 import org.helpberkeley.memberdata.Delivery;
 import org.helpberkeley.memberdata.Driver;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 public class DriverV300 extends Driver {
 
-    private final List<DeliveryV300> deliveries = new ArrayList<>();
     private String startTime;
 
-    public DriverV300(List<Delivery> deliveries) {
-        for (Delivery delivery : deliveries) {
-            assert delivery instanceof DeliveryV300;
-            this.deliveries.add((DeliveryV300) delivery);
-        }
+    public DriverV300() {
+
     }
 
     @Override
-    public List<Delivery> getDeliveries() {
-        return Collections.unmodifiableList(deliveries);
-    }
-
-    public List<DeliveryV300> getDeliveriesV300() {
-        return Collections.unmodifiableList(deliveries);
-    }
-
-    @Override
-    protected void resetDeliveries(List<Delivery> deliveries) {
-        this.deliveries.clear();
-        for (Delivery delivery : deliveries) {
-            assert delivery instanceof DeliveryV300;
-            this.deliveries.add((DeliveryV300) delivery);
-        }
-    }
-
-    @Override
-    protected void initialize() {
+    public void initialize() {
 
     }
 
@@ -77,7 +53,7 @@ public class DriverV300 extends Driver {
     String getStandardMeals() {
 
         int standardMeals = 0;
-        for (DeliveryV300 delivery : deliveries) {
+            for (DeliveryV300 delivery : (List<DeliveryV300>)(List<? extends Delivery>)deliveries) {
             standardMeals += delivery.getStdMeals();
         }
 
@@ -87,7 +63,7 @@ public class DriverV300 extends Driver {
     String getStandardGroceries() {
 
         int standardGroceries = 0;
-        for (DeliveryV300 delivery : deliveries) {
+            for (DeliveryV300 delivery : (List<DeliveryV300>)(List<? extends Delivery>)deliveries) {
             standardGroceries += delivery.getStdGrocery();
         }
 
@@ -96,7 +72,7 @@ public class DriverV300 extends Driver {
 
     int getAltMeals(String mealType) {
         int altMeals = 0;
-        for (DeliveryV300 delivery : deliveries) {
+        for (DeliveryV300 delivery : (List<DeliveryV300>)(List<? extends Delivery>)deliveries) {
             int numAltMeals = delivery.getAltMeals();
 
             if ((numAltMeals > 0) && delivery.getTypeMeal().equals(mealType)) {
@@ -109,7 +85,7 @@ public class DriverV300 extends Driver {
 
     int getAltGroceries(String groceryType) {
         int altGroceries = 0;
-        for (DeliveryV300 delivery : deliveries) {
+        for (DeliveryV300 delivery : (List<DeliveryV300>)(List<? extends Delivery>)deliveries) {
             int numAltGroceries = delivery.getAltGrocery();
 
             if ((numAltGroceries > 0) && delivery.getTypeGrocery().equals(groceryType)) {

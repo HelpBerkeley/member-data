@@ -22,7 +22,6 @@
 package org.helpberkeley.memberdata;
 
 import com.opencsv.exceptions.CsvException;
-import org.helpberkeley.memberdata.route.Route;
 import org.helpberkeley.memberdata.v200.DriverPostFormatV200;
 import org.helpberkeley.memberdata.v300.DriverPostFormatV300;
 import org.slf4j.Logger;
@@ -33,7 +32,6 @@ import java.io.InputStream;
 import java.net.URL;
 import java.net.http.HttpResponse;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.MessageFormat;
 import java.time.LocalDate;
@@ -123,9 +121,6 @@ public class Main {
                 break;
             case Options.COMMAND_ONE_KITCHEN_DRIVER_MESSAGES:
                 oneKitchenDriverMessages(apiClient, options.getFileName());
-                break;
-            case Options.COMMAND_DRIVER_ROUTES:
-                driverRoutes(apiClient);
                 break;
             case Options.COMMAND_ORDER_HISTORY:
                 orderHistory(apiClient, options.getFileName());
@@ -557,95 +552,6 @@ public class Main {
                 ONE_KITCHEN_WORKFLOW_TITLE, ONE_KITCHEN_WORKFLOW_DATA_TOPIC);
     }
 
-    private static void driverRoutes(ApiClient apiClient) {
-        Query query = new Query(
-                Constants.QUERY_GET_LAST_ROUTE_REQUEST_REPLY, Constants.TOPIC_REQUEST_DRIVER_ROUTES);
-        WorkRequestHandler requestHandler = new WorkRequestHandler(apiClient, query);
-
-        WorkRequestHandler.Reply reply;
-
-        try {
-            reply = requestHandler.getLastReply();
-        } catch (MemberDataException ex) {
-            LOGGER.warn("getLastReply failed: " + ex + "\n" + ex.getMessage());
-            requestHandler.postStatus(WorkRequestHandler.RequestStatus.Failed, ex.getMessage());
-            return;
-        }
-
-        if (reply instanceof WorkRequestHandler.Status) {
-            return;
-        }
-
-        WorkRequestHandler.WorkRequest request = (WorkRequestHandler.WorkRequest) reply;
-        doDriverRoutes(apiClient, request);
-    }
-
-    private static void doDriverRoutes(ApiClient apiClient, WorkRequestHandler.WorkRequest request) {
-
-        // Download file
-        String unroutedDeliveries = apiClient.downloadFile(request.uploadFile.getFileName());
-        request.postStatus(WorkRequestHandler.RequestStatus.Processing, "");
-
-        Route route = new Route();
-
-        try {
-            WorkflowParser workflowParser = WorkflowParser.create(
-                    WorkflowParser.Mode.DRIVER_ROUTE_REQUEST, Collections.emptyMap(), unroutedDeliveries);
-            List<Driver> drivers = workflowParser.drivers();
-
-            for (Driver driver : drivers) {
-                route.route(driver);
-            }
-
-            StringBuilder statusMessage = new StringBuilder();
-            long locationCalls = route.getLocationCalls();
-            long directionsCalls = route.getDirectionsCalls();
-
-            statusMessage.append("|Maps API|Number of Calls|Cost|\n");
-            statusMessage.append("|---|---|---|\n");
-            statusMessage.append("|Location|")
-                    .append(locationCalls)
-                    .append('|')
-                    .append(String.format("$%.2g", locationCalls * .005))
-                    .append("|\n");
-            statusMessage.append("|Directions|")
-                    .append(directionsCalls)
-                    .append('|')
-                    .append(String.format("$%.2g", directionsCalls * .005))
-                    .append("|\n");
-            statusMessage.append("|Total||")
-                    .append(String.format("$%.2g", (locationCalls + directionsCalls) * .005))
-                    .append("|\n");
-
-            // Create new workflow file
-            //
-            StringBuilder routedWorkflow = new StringBuilder();
-
-            // Original control block
-            routedWorkflow.append(workflowParser.rawControlBlock());
-
-            // Add a separator row for ease of viewing in the Google sheets
-            routedWorkflow.append(workflowParser.emptyRow());
-
-            for (Driver driver : drivers) {
-                routedWorkflow.append(driver.driverBlock());
-                routedWorkflow.append(workflowParser.emptyRow());
-            }
-
-            Exporter exporter = new Exporter();
-            String fileName = "routed-" + request.uploadFile.getOriginalFileName();
-            exporter.writeFile(fileName, routedWorkflow.toString());
-            Upload upload = new Upload(apiClient, fileName);
-            postRequestDriverRoutesSucceeded(apiClient, fileName, upload.getShortURL(), statusMessage.toString());
-            Files.delete(Path.of(fileName));
-        } catch (MemberDataException | IOException ex) {
-            String reason = ex.getCause() != null ? ex.getCause().getMessage() : ex.getMessage();
-            request.postStatus(WorkRequestHandler.RequestStatus.Failed, reason);
-        } finally {
-            route.shutdown();
-        }
-    }
-
     /**
      * Check the Request Driver Messages topic for a request.
      * Generate driver messages if a request is present.
@@ -1002,32 +908,6 @@ public class Main {
         }
 
         return null;
-    }
-
-    // FIX THIS, DS: update WorkRequestHandler postStatus() to handle this.  Then we can do end to end tests
-    //               using WorkReqeustHandler.getLastStatusPost()
-    private static void postRequestDriverRoutesSucceeded(ApiClient apiClient, final String fileName,
-            final String shortURL, final String statusMessage) {
-
-        String timeStamp = ZonedDateTime.now(ZoneId.systemDefault())
-                .format(DateTimeFormatter.ofPattern("uuuu/MM/dd HH:mm:ss"));
-
-        String rawPost = timeStamp + "\n"
-                + "Status: " + WorkRequestHandler.RequestStatus.Succeeded + "\n"
-                + "File: " + "[" + fileName + "](" + shortURL + ")\n"
-                + "\n"
-                + statusMessage + "\n";
-
-        Post post = new Post();
-        post.title = "Request Driver Route status response";
-        post.topic_id = Constants.TOPIC_REQUEST_DRIVER_ROUTES.getId();
-        post.raw = rawPost;
-        post.createdAt = timeStamp;
-
-        HttpResponse<?> response = apiClient.post(post.toJson());
-
-        // FIX THIS, DS: what to do with this error?
-        assert response.statusCode() == HTTP_OK : "failed " + response.statusCode() + ": " + response.body();
     }
 
     // Process the last request in the Post completed daily orders topic
@@ -1612,7 +1492,8 @@ public class Main {
                 doCompletedOneKitchenOrders(apiClient, request, users);
             } else {
                 assert topicId == Constants.TOPIC_REQUEST_DRIVER_ROUTES.getId() : topicId;
-                doDriverRoutes(apiClient, request);
+                requestHandler.postStatus(WorkRequestHandler.RequestStatus.Failed,
+                        "Route requests not supported");
             }
         }
     }

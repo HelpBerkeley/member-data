@@ -897,8 +897,7 @@ public class HBParser {
     static Collection<String> parseOneKitchenBackupDrivers(
             String fileName, String deliveryData) {
 
-        WorkflowParser parser = WorkflowParser.create(
-                WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, Collections.emptyMap(), deliveryData);
+        WorkflowParser parser = WorkflowParser.create(Collections.emptyMap(), deliveryData);
         ControlBlock controlBlock = parser.controlBlock();
         return new HashSet<>(controlBlock.getBackupDrivers());
     }

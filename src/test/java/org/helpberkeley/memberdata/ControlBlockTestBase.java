@@ -61,8 +61,7 @@ public abstract class ControlBlockTestBase extends TestBase {
                 + getEmptyRow().replaceFirst(",,", "TRUE,FALSE,")
                 + getEndRow();
 
-        WorkflowParser workflowParser = WorkflowParser.create(
-                WorkflowParser.Mode.DRIVER_ROUTE_REQUEST, Map.of(), workFlowData);
+        WorkflowParser workflowParser = WorkflowParser.create(Map.of(), workFlowData);
 
         Throwable thrown = catchThrowable(workflowParser::drivers);
         assertThat(thrown).isInstanceOf(MemberDataException.class);
@@ -79,8 +78,7 @@ public abstract class ControlBlockTestBase extends TestBase {
                 + getEmptyRow().replaceFirst(",,", "FALSE,TRUE,")
                 + getEndRow();
 
-        WorkflowParser workflowParser = WorkflowParser.create(
-                WorkflowParser.Mode.DRIVER_ROUTE_REQUEST, Map.of(), workFlowData);
+        WorkflowParser workflowParser = WorkflowParser.create(Map.of(), workFlowData);
 
         Throwable thrown = catchThrowable(workflowParser::drivers);
         assertThat(thrown).isInstanceOf(MemberDataException.class);
@@ -99,8 +97,7 @@ public abstract class ControlBlockTestBase extends TestBase {
                 + getDirectiveRow(badDirective)
                 + getEndRow();
 
-        WorkflowParser workflowParser = WorkflowParser.create(
-                WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, Map.of(), workFlowData);
+        WorkflowParser workflowParser = WorkflowParser.create(Map.of(), workFlowData);
 
         Throwable thrown = catchThrowable(workflowParser::drivers);
         assertThat(thrown).isInstanceOf(MemberDataException.class);
@@ -119,8 +116,7 @@ public abstract class ControlBlockTestBase extends TestBase {
                 + getKeyValueRow(badVariableName, "")
                 + getEndRow();
 
-        WorkflowParser workflowParser = WorkflowParser.create(
-                WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, Map.of(), workFlowData);
+        WorkflowParser workflowParser = WorkflowParser.create(Map.of(), workFlowData);
         ControlBlock controlBlock = workflowParser.controlBlock();
         assertThat(controlBlock.getWarnings()).contains(
                 "Unknown key \"" + badVariableName + "\" in the User Name column at line 4.");
@@ -138,8 +134,7 @@ public abstract class ControlBlockTestBase extends TestBase {
                 + getKeyValueRow(key, value)
                 + getEndRow();
 
-        WorkflowParser workflowParser = WorkflowParser.create(
-                WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, Map.of(), workFlowData);
+        WorkflowParser workflowParser = WorkflowParser.create(Map.of(), workFlowData);
 
         Throwable thrown = catchThrowable(workflowParser::drivers);
         assertThat(thrown).isInstanceOf(MemberDataException.class);
@@ -158,8 +153,7 @@ public abstract class ControlBlockTestBase extends TestBase {
                 + getKeyValueRow(key, value)
                 + getEndRow();
 
-        WorkflowParser workflowParser = WorkflowParser.create(
-                WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, Map.of(), workFlowData);
+        WorkflowParser workflowParser = WorkflowParser.create(Map.of(), workFlowData);
 
         Throwable thrown = catchThrowable(workflowParser::drivers);
         assertThat(thrown).isInstanceOf(MemberDataException.class);
@@ -179,8 +173,7 @@ public abstract class ControlBlockTestBase extends TestBase {
                 + getKeyValueRow(key, value)
                 + getEndRow();
 
-        WorkflowParser workflowParser = WorkflowParser.create(
-                WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, Map.of(), workFlowData);
+        WorkflowParser workflowParser = WorkflowParser.create(Map.of(), workFlowData);
 
         Throwable thrown = catchThrowable(workflowParser::drivers);
         assertThat(thrown).isInstanceOf(MemberDataException.class);
@@ -199,8 +192,7 @@ public abstract class ControlBlockTestBase extends TestBase {
                 + getKeyValueRow(key, value)
                 + getEndRow();
 
-        WorkflowParser workflowParser = WorkflowParser.create(
-                WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, Map.of(), workFlowData);
+        WorkflowParser workflowParser = WorkflowParser.create(Map.of(), workFlowData);
 
         Throwable thrown = catchThrowable(workflowParser::drivers);
         assertThat(thrown).isInstanceOf(MemberDataException.class);
@@ -219,8 +211,7 @@ public abstract class ControlBlockTestBase extends TestBase {
                 + getKeyValueRow(key, value)
                 + getEndRow();
 
-        WorkflowParser workflowParser = WorkflowParser.create(
-                WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, Map.of(), workFlowData);
+        WorkflowParser workflowParser = WorkflowParser.create(Map.of(), workFlowData);
 
         Throwable thrown = catchThrowable(workflowParser::drivers);
         assertThat(thrown).isInstanceOf(MemberDataException.class);
@@ -242,8 +233,7 @@ public abstract class ControlBlockTestBase extends TestBase {
                 + addVersionSpecificRequiredVariables()
                 + getEndRow();
 
-        WorkflowParser workflowParser = WorkflowParser.create(
-                WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, Map.of(), workFlowData);
+        WorkflowParser workflowParser = WorkflowParser.create(Map.of(), workFlowData);
         ControlBlock controlBlock = workflowParser.controlBlock();
         Throwable thrown = catchThrowable(() -> audit(controlBlock));
         assertThat(thrown).isInstanceOf(MemberDataException.class);
@@ -263,8 +253,7 @@ public abstract class ControlBlockTestBase extends TestBase {
                 + getKeyValueRow(key, value)
                 + getEndRow();
 
-        WorkflowParser workflowParser = WorkflowParser.create(
-                WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, Map.of(), workFlowData);
+        WorkflowParser workflowParser = WorkflowParser.create(Map.of(), workFlowData);
 
         Throwable thrown = catchThrowable(workflowParser::drivers);
         assertThat(thrown).isInstanceOf(MemberDataException.class);
@@ -284,8 +273,7 @@ public abstract class ControlBlockTestBase extends TestBase {
                 + addVersionSpecificRequiredVariables()
                 + getEndRow();
 
-        WorkflowParser workflowParser = WorkflowParser.create(
-                WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, Map.of(), workFlowData);
+        WorkflowParser workflowParser = WorkflowParser.create(Map.of(), workFlowData);
         ControlBlock controlBlock = workflowParser.controlBlock();
         audit(controlBlock);
         assertThat(controlBlock.getWarnings()).contains(
@@ -304,8 +292,7 @@ public abstract class ControlBlockTestBase extends TestBase {
                 + getKeyValueRow(key, value)
                 + getEndRow();
 
-        WorkflowParser workflowParser = WorkflowParser.create(
-                WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, Map.of(), workFlowData);
+        WorkflowParser workflowParser = WorkflowParser.create(Map.of(), workFlowData);
 
         Throwable thrown = catchThrowable(workflowParser::drivers);
         assertThat(thrown).isInstanceOf(MemberDataException.class);
@@ -325,8 +312,7 @@ public abstract class ControlBlockTestBase extends TestBase {
                 + getKeyValueRow(key, value)
                 + getEndRow();
 
-        WorkflowParser workflowParser = WorkflowParser.create(
-                WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, Map.of(), workFlowData);
+        WorkflowParser workflowParser = WorkflowParser.create(Map.of(), workFlowData);
 
         Throwable thrown = catchThrowable(workflowParser::drivers);
         assertThat(thrown).isInstanceOf(MemberDataException.class);
@@ -346,8 +332,7 @@ public abstract class ControlBlockTestBase extends TestBase {
                 + getKeyValueRow(key, value)
                 + getEndRow();
 
-        WorkflowParser workflowParser = WorkflowParser.create(
-                WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, Map.of(), workFlowData);
+        WorkflowParser workflowParser = WorkflowParser.create(Map.of(), workFlowData);
 
         Throwable thrown = catchThrowable(workflowParser::drivers);
         assertThat(thrown).isInstanceOf(MemberDataException.class);
@@ -366,8 +351,7 @@ public abstract class ControlBlockTestBase extends TestBase {
                 + getKeyValueRow(key, value)
                 + getEndRow();
 
-        WorkflowParser workflowParser = WorkflowParser.create(
-                WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, Map.of(), workFlowData);
+        WorkflowParser workflowParser = WorkflowParser.create(Map.of(), workFlowData);
 
         Throwable thrown = catchThrowable(workflowParser::drivers);
         assertThat(thrown).isInstanceOf(MemberDataException.class);
@@ -387,8 +371,7 @@ public abstract class ControlBlockTestBase extends TestBase {
                 + getKeyValueRow(key, value)
                 + getEndRow();
 
-        WorkflowParser workflowParser = WorkflowParser.create(
-                WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, Map.of(), workFlowData);
+        WorkflowParser workflowParser = WorkflowParser.create(Map.of(), workFlowData);
 
         Throwable thrown = catchThrowable(workflowParser::drivers);
         assertThat(thrown).isInstanceOf(MemberDataException.class);
@@ -408,8 +391,7 @@ public abstract class ControlBlockTestBase extends TestBase {
                 + getKeyValueRow(key, value)
                 + getEndRow();
 
-        WorkflowParser workflowParser = WorkflowParser.create(
-                WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, Map.of(), workFlowData);
+        WorkflowParser workflowParser = WorkflowParser.create(Map.of(), workFlowData);
 
         Throwable thrown = catchThrowable(workflowParser::drivers);
         assertThat(thrown).isInstanceOf(MemberDataException.class);
@@ -428,8 +410,7 @@ public abstract class ControlBlockTestBase extends TestBase {
                 + getKeyValueRow(key, value)
                 + getEndRow();
 
-        WorkflowParser workflowParser = WorkflowParser.create(
-                WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, Map.of(), workFlowData);
+        WorkflowParser workflowParser = WorkflowParser.create(Map.of(), workFlowData);
 
         Throwable thrown = catchThrowable(workflowParser::drivers);
         assertThat(thrown).isInstanceOf(MemberDataException.class);
@@ -449,8 +430,7 @@ public abstract class ControlBlockTestBase extends TestBase {
                 + getKeyValueRow(key, value)
                 + getEndRow();
 
-        WorkflowParser workflowParser = WorkflowParser.create(
-                WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, Map.of(), workFlowData);
+        WorkflowParser workflowParser = WorkflowParser.create(Map.of(), workFlowData);
 
         Throwable thrown = catchThrowable(workflowParser::drivers);
         assertThat(thrown).isInstanceOf(MemberDataException.class);
@@ -469,8 +449,7 @@ public abstract class ControlBlockTestBase extends TestBase {
                 + getKeyValueRow(key, value)
                 + getEndRow();
 
-        WorkflowParser workflowParser = WorkflowParser.create(
-                WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, Map.of(), workFlowData);
+        WorkflowParser workflowParser = WorkflowParser.create(Map.of(), workFlowData);
 
         Throwable thrown = catchThrowable(workflowParser::drivers);
         assertThat(thrown).isInstanceOf(MemberDataException.class);
@@ -489,8 +468,7 @@ public abstract class ControlBlockTestBase extends TestBase {
                 + getKeyValueRow(key, value)
                 + getEndRow();
 
-        WorkflowParser workflowParser = WorkflowParser.create(
-                WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, Map.of(), workFlowData);
+        WorkflowParser workflowParser = WorkflowParser.create(Map.of(), workFlowData);
 
         Throwable thrown = catchThrowable(workflowParser::drivers);
         assertThat(thrown).isInstanceOf(MemberDataException.class);
@@ -507,8 +485,7 @@ public abstract class ControlBlockTestBase extends TestBase {
                 + addVersionSpecificRequiredVariables()
                 + getEndRow();
 
-        WorkflowParser workflowParser = WorkflowParser.create(
-                WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, Map.of(), workFlowData);
+        WorkflowParser workflowParser = WorkflowParser.create(Map.of(), workFlowData);
         Throwable thrown = catchThrowable(() -> audit(workflowParser.controlBlock()));
         assertThat(thrown).isInstanceOf(MemberDataException.class);
         assertThat(thrown).hasMessageContaining(ControlBlock.ERROR_MISSING_OPS_MANAGER);
@@ -527,8 +504,7 @@ public abstract class ControlBlockTestBase extends TestBase {
                 + getKeyValueRow(key, value)
                 + getEndRow();
 
-        WorkflowParser workflowParser = WorkflowParser.create(
-                WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, Map.of(), workFlowData);
+        WorkflowParser workflowParser = WorkflowParser.create(Map.of(), workFlowData);
 
         Throwable thrown = catchThrowable(() -> audit(workflowParser.controlBlock()));
         assertThat(thrown).isInstanceOf(MemberDataException.class);
@@ -548,8 +524,7 @@ public abstract class ControlBlockTestBase extends TestBase {
                 + getKeyValueRow(key, value)
                 + getEndRow();
 
-        WorkflowParser workflowParser = WorkflowParser.create(
-                WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, Map.of(), workFlowData);
+        WorkflowParser workflowParser = WorkflowParser.create(Map.of(), workFlowData);
 
         Throwable thrown = catchThrowable(() -> audit(workflowParser.controlBlock()));
         assertThat(thrown).isInstanceOf(MemberDataException.class);
@@ -571,8 +546,7 @@ public abstract class ControlBlockTestBase extends TestBase {
                 + getKeyValueRow(key, value2)
                 + getEndRow();
 
-        WorkflowParser workflowParser = WorkflowParser.create(
-                WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, Map.of(), workFlowData);
+        WorkflowParser workflowParser = WorkflowParser.create(Map.of(), workFlowData);
 
         Throwable thrown = catchThrowable(() -> audit(workflowParser.controlBlock()));
         assertThat(thrown).isInstanceOf(MemberDataException.class);
@@ -594,8 +568,7 @@ public abstract class ControlBlockTestBase extends TestBase {
                 + getKeyValueRow(splitKey, splitValue)
                 + getEndRow();
 
-        WorkflowParser workflowParser = WorkflowParser.create(
-                WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, Map.of(), workFlowData);
+        WorkflowParser workflowParser = WorkflowParser.create(Map.of(), workFlowData);
 
         Throwable thrown = catchThrowable(() -> audit(workflowParser.controlBlock()));
         assertThat(thrown).isInstanceOf(MemberDataException.class);
@@ -618,8 +591,7 @@ public abstract class ControlBlockTestBase extends TestBase {
                 + getKeyValueRow(splitKey, splitValue)
                 + getEndRow();
 
-        WorkflowParser workflowParser = WorkflowParser.create(
-                WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, Map.of(), workFlowData);
+        WorkflowParser workflowParser = WorkflowParser.create(Map.of(), workFlowData);
 
         Throwable thrown = catchThrowable(() -> audit(workflowParser.controlBlock()));
         assertThat(thrown).isInstanceOf(MemberDataException.class);
@@ -640,8 +612,7 @@ public abstract class ControlBlockTestBase extends TestBase {
                 + addVersionSpecificRequiredVariables()
                 + getEndRow();
 
-        WorkflowParser workflowParser = WorkflowParser.create(
-                WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, Map.of(), workFlowData);
+        WorkflowParser workflowParser = WorkflowParser.create(Map.of(), workFlowData);
         ControlBlock controlBlock = workflowParser.controlBlock();
         audit(controlBlock);
         assertThat(controlBlock.getWarnings()).contains("No BackupDriverUserName set in the control block.\n");
@@ -680,8 +651,7 @@ public abstract class ControlBlockTestBase extends TestBase {
                 + addVersionSpecificRequiredVariables()
                 + getEndRow();
 
-        WorkflowParser workflowParser = WorkflowParser.create(
-                WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, Map.of(), workFlowData);
+        WorkflowParser workflowParser = WorkflowParser.create(Map.of(), workFlowData);
         Throwable thrown = catchThrowable(() -> audit(workflowParser.controlBlock()));
         assertThat(thrown).isInstanceOf(MemberDataException.class);
         assertThat(thrown).hasMessageContaining(
@@ -705,8 +675,7 @@ public abstract class ControlBlockTestBase extends TestBase {
                 + addVersionSpecificRequiredVariables()
                 + getEndRow();
 
-        WorkflowParser workflowParser = WorkflowParser.create(
-                WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, Map.of(), workFlowData);
+        WorkflowParser workflowParser = WorkflowParser.create(Map.of(), workFlowData);
         ControlBlock controlBlock = workflowParser.controlBlock();
         audit(controlBlock);
         assertThat(controlBlock.getWarnings()).contains(
@@ -725,8 +694,7 @@ public abstract class ControlBlockTestBase extends TestBase {
                 + getKeyValueRow(key, value)
                 + getEndRow();
 
-        WorkflowParser workflowParser = WorkflowParser.create(
-                WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, Map.of(), workFlowData);
+        WorkflowParser workflowParser = WorkflowParser.create(Map.of(), workFlowData);
 
         Throwable thrown = catchThrowable(() -> audit(workflowParser.controlBlock()));
         assertThat(thrown).isInstanceOf(MemberDataException.class);
@@ -746,8 +714,7 @@ public abstract class ControlBlockTestBase extends TestBase {
                 + getKeyValueRow(key, value)
                 + getEndRow();
 
-        WorkflowParser workflowParser = WorkflowParser.create(
-                WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, getAllRestaurants(), workFlowData);
+        WorkflowParser workflowParser = WorkflowParser.create(getAllRestaurants(), workFlowData);
 
         Throwable thrown = catchThrowable(workflowParser::drivers);
 
@@ -768,8 +735,7 @@ public abstract class ControlBlockTestBase extends TestBase {
                 + getKeyValueRow(key, value)
                 + getEndRow();
 
-        WorkflowParser workflowParser = WorkflowParser.create(
-                WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, getAllRestaurants(), workFlowData);
+        WorkflowParser workflowParser = WorkflowParser.create(getAllRestaurants(), workFlowData);
 
         Throwable thrown = catchThrowable(workflowParser::drivers);
         assertThat(thrown).isInstanceOf(MemberDataException.class);
@@ -789,8 +755,7 @@ public abstract class ControlBlockTestBase extends TestBase {
                 + getKeyValueRow(key, value)
                 + getEndRow();
 
-        WorkflowParser workflowParser = WorkflowParser.create(
-                WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, getAllRestaurants(), workFlowData);
+        WorkflowParser workflowParser = WorkflowParser.create(getAllRestaurants(), workFlowData);
 
         assertThat(workflowParser.controlBlock().lateArrivalAuditDisabled()).isTrue();
         assertThat(workflowParser.controlBlock().splitRestaurantAuditsDisabled()).isFalse();
@@ -809,8 +774,7 @@ public abstract class ControlBlockTestBase extends TestBase {
                 + getKeyValueRow(key, value)
                 + getEndRow();
 
-        WorkflowParser workflowParser = WorkflowParser.create(
-                WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, getAllRestaurants(), workFlowData);
+        WorkflowParser workflowParser = WorkflowParser.create(getAllRestaurants(), workFlowData);
 
         assertThat(workflowParser.controlBlock().splitRestaurantAuditsDisabled()).isTrue();
         assertThat(workflowParser.controlBlock().lateArrivalAuditDisabled()).isFalse();
@@ -829,8 +793,7 @@ public abstract class ControlBlockTestBase extends TestBase {
                 + getKeyValueRow(key, value)
                 + getEndRow();
 
-        WorkflowParser workflowParser = WorkflowParser.create(
-                WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, getAllRestaurants(), workFlowData);
+        WorkflowParser workflowParser = WorkflowParser.create(getAllRestaurants(), workFlowData);
 
         assertThat(workflowParser.controlBlock().restaurantsAuditDisabled()).isTrue();
         assertThat(workflowParser.controlBlock().splitRestaurantAuditsDisabled()).isFalse();
@@ -845,8 +808,7 @@ public abstract class ControlBlockTestBase extends TestBase {
                 + getVersionRow()
                 + getEndRow();
 
-        WorkflowParser workflowParser = WorkflowParser.create(
-                WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, getAllRestaurants(), workFlowData);
+        WorkflowParser workflowParser = WorkflowParser.create(getAllRestaurants(), workFlowData);
 
         assertThat(workflowParser.controlBlock().lateArrivalAuditDisabled()).isFalse();
         assertThat(workflowParser.controlBlock().splitRestaurantAuditsDisabled()).isFalse();
@@ -871,8 +833,7 @@ public abstract class ControlBlockTestBase extends TestBase {
                 + getKeyValueRow(key3, value3)
                 + getEndRow();
 
-        WorkflowParser workflowParser = WorkflowParser.create(
-                WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, getAllRestaurants(), workFlowData);
+        WorkflowParser workflowParser = WorkflowParser.create(getAllRestaurants(), workFlowData);
 
         assertThat(workflowParser.controlBlock().lateArrivalAuditDisabled()).isFalse();
         assertThat(workflowParser.controlBlock().splitRestaurantAuditsDisabled()).isTrue();
@@ -897,8 +858,7 @@ public abstract class ControlBlockTestBase extends TestBase {
                 + getKeyValueRow(key3, value3)
                 + getEndRow();
 
-        WorkflowParser workflowParser = WorkflowParser.create(
-                WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, getAllRestaurants(), workFlowData);
+        WorkflowParser workflowParser = WorkflowParser.create(getAllRestaurants(), workFlowData);
 
         assertThat(workflowParser.controlBlock().splitRestaurantAuditsDisabled()).isFalse();
         assertThat(workflowParser.controlBlock().lateArrivalAuditDisabled()).isTrue();
@@ -923,8 +883,7 @@ public abstract class ControlBlockTestBase extends TestBase {
                 + getKeyValueRow(key3, value3)
                 + getEndRow();
 
-        WorkflowParser workflowParser = WorkflowParser.create(
-                WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, getAllRestaurants(), workFlowData);
+        WorkflowParser workflowParser = WorkflowParser.create(getAllRestaurants(), workFlowData);
 
         assertThat(workflowParser.controlBlock().restaurantsAuditDisabled()).isFalse();
         assertThat(workflowParser.controlBlock().splitRestaurantAuditsDisabled()).isTrue();

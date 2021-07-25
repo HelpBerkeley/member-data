@@ -89,8 +89,7 @@ public class WorkflowHBParserTest extends WorkflowHBParserBaseTest {
         WorkflowBuilder workflowBuilder = new WorkflowBuilder();
         workflowBuilder.withDriverBlock(driverBlock);
 
-        WorkflowParser parser = WorkflowParser.create(
-                WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, restaurants, workflowBuilder.build());
+        WorkflowParser parser = WorkflowParser.create(restaurants, workflowBuilder.build());
         auditControlBlock(parser.controlBlock());
         Throwable thrown = catchThrowable(parser::drivers);
         assertThat(thrown).isInstanceOf(MemberDataException.class);
@@ -110,8 +109,7 @@ public class WorkflowHBParserTest extends WorkflowHBParserBaseTest {
         WorkflowBuilder workflowBuilder = new WorkflowBuilder();
         workflowBuilder.withDriverBlock(driverBlock);
 
-        WorkflowParser parser = WorkflowParser.create(
-                WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, restaurants, workflowBuilder.build());
+        WorkflowParser parser = WorkflowParser.create(restaurants, workflowBuilder.build());
         auditControlBlock(parser.controlBlock());
 
         Throwable thrown = catchThrowable(parser::drivers);
@@ -130,8 +128,7 @@ public class WorkflowHBParserTest extends WorkflowHBParserBaseTest {
         WorkflowBuilder workflowBuilder = new WorkflowBuilder();
         workflowBuilder.withDriverBlock(driverBlock);
 
-        WorkflowParser parser = WorkflowParser.create(
-                WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, restaurants, workflowBuilder.build());
+        WorkflowParser parser = WorkflowParser.create(restaurants, workflowBuilder.build());
         auditControlBlock(parser.controlBlock());
         Throwable thrown = catchThrowable(parser::drivers);
         assertThat(thrown).isInstanceOf(MemberDataException.class);
@@ -150,8 +147,7 @@ public class WorkflowHBParserTest extends WorkflowHBParserBaseTest {
         WorkflowBuilder workflowBuilder = new WorkflowBuilder();
         workflowBuilder.withDriverBlock(driverBlock);
 
-        WorkflowParser parser = WorkflowParser.create(
-                WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, restaurants, workflowBuilder.build());
+        WorkflowParser parser = WorkflowParser.create(restaurants, workflowBuilder.build());
         auditControlBlock(parser.controlBlock());
 
         Throwable thrown = catchThrowable(parser::drivers);
@@ -172,8 +168,7 @@ public class WorkflowHBParserTest extends WorkflowHBParserBaseTest {
         workflowBuilder.withDriverBlock(driverBlock);
         workflowBuilder.withControlBlock(new ControlBlockBuilder().withAltMealOptions(""));
 
-        WorkflowParser parser = WorkflowParser.create(
-                WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, restaurants, workflowBuilder.build());
+        WorkflowParser parser = WorkflowParser.create(restaurants, workflowBuilder.build());
         auditControlBlock(parser.controlBlock());
 
         Throwable thrown = catchThrowable(parser::drivers);
@@ -193,8 +188,7 @@ public class WorkflowHBParserTest extends WorkflowHBParserBaseTest {
         workflowBuilder.withDriverBlock(driverBlock);
         workflowBuilder.withControlBlock(new ControlBlockBuilder().withAltGroceryOptions(""));
 
-        WorkflowParser parser = WorkflowParser.create(
-                WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, restaurants, workflowBuilder.build());
+        WorkflowParser parser = WorkflowParser.create(restaurants, workflowBuilder.build());
         auditControlBlock(parser.controlBlock());
 
         Throwable thrown = catchThrowable(parser::drivers);
@@ -216,8 +210,7 @@ public class WorkflowHBParserTest extends WorkflowHBParserBaseTest {
         WorkflowBuilder workflowBuilder = new WorkflowBuilder();
         workflowBuilder.withDriverBlock(driverBlock);
 
-        WorkflowParser parser = WorkflowParser.create(
-                WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, restaurants, workflowBuilder.build());
+        WorkflowParser parser = WorkflowParser.create(restaurants, workflowBuilder.build());
         auditControlBlock(parser.controlBlock());
         Throwable thrown = catchThrowable(parser::drivers);
         assertThat(thrown).isInstanceOf(MemberDataException.class);
@@ -237,8 +230,7 @@ public class WorkflowHBParserTest extends WorkflowHBParserBaseTest {
         WorkflowBuilder workflowBuilder = new WorkflowBuilder();
         workflowBuilder.withDriverBlock(driverBlock);
 
-        WorkflowParser parser = WorkflowParser.create(
-                WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, restaurants, workflowBuilder.build());
+        WorkflowParser parser = WorkflowParser.create(restaurants, workflowBuilder.build());
         auditControlBlock(parser.controlBlock());
         Throwable thrown = catchThrowable(parser::drivers);
         assertThat(thrown).isInstanceOf(MemberDataException.class);
@@ -257,8 +249,7 @@ public class WorkflowHBParserTest extends WorkflowHBParserBaseTest {
         WorkflowBuilder workflowBuilder = new WorkflowBuilder();
         workflowBuilder.withDriverBlock(driverBlock);
 
-        WorkflowParser parser = WorkflowParser.create(
-                WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, restaurants, workflowBuilder.build());
+        WorkflowParser parser = WorkflowParser.create(restaurants, workflowBuilder.build());
         auditControlBlock(parser.controlBlock());
 
         Throwable thrown = catchThrowable(parser::drivers);
@@ -278,8 +269,7 @@ public class WorkflowHBParserTest extends WorkflowHBParserBaseTest {
         WorkflowBuilder workflowBuilder = new WorkflowBuilder();
         workflowBuilder.withDriverBlock(driverBlock);
 
-        WorkflowParser parser = WorkflowParser.create(
-                WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, restaurants, workflowBuilder.build());
+        WorkflowParser parser = WorkflowParser.create(restaurants, workflowBuilder.build());
         auditControlBlock(parser.controlBlock());
 
         Throwable thrown = catchThrowable(parser::drivers);
@@ -296,8 +286,7 @@ public class WorkflowHBParserTest extends WorkflowHBParserBaseTest {
         WorkflowBuilder workflowBuilder = new WorkflowBuilder();
         workflowBuilder.withDriverBlock(driverBlock);
 
-        WorkflowParser parser = WorkflowParser.create(
-                WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, restaurants, workflowBuilder.build());
+        WorkflowParser parser = WorkflowParser.create(restaurants, workflowBuilder.build());
         auditControlBlock(parser.controlBlock());
 
         Throwable thrown = catchThrowable(parser::drivers);
@@ -313,8 +302,7 @@ public class WorkflowHBParserTest extends WorkflowHBParserBaseTest {
         WorkflowBuilder workflowBuilder = new WorkflowBuilder();
         workflowBuilder.withDriverBlock(driverBlock);
 
-        WorkflowParser parser = WorkflowParser.create(
-                WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, restaurants, workflowBuilder.build());
+        WorkflowParser parser = WorkflowParser.create(restaurants, workflowBuilder.build());
         auditControlBlock(parser.controlBlock());
 
         Throwable thrown = catchThrowable(parser::drivers);
@@ -331,8 +319,7 @@ public class WorkflowHBParserTest extends WorkflowHBParserBaseTest {
         WorkflowBuilder workflowBuilder = new WorkflowBuilder();
         workflowBuilder.withDriverBlock(driverBlock);
 
-        WorkflowParser parser = WorkflowParser.create(
-                WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, restaurants, workflowBuilder.build());
+        WorkflowParser parser = WorkflowParser.create(restaurants, workflowBuilder.build());
         auditControlBlock(parser.controlBlock());
 
         Throwable thrown = catchThrowable(parser::drivers);
@@ -349,8 +336,7 @@ public class WorkflowHBParserTest extends WorkflowHBParserBaseTest {
         WorkflowBuilder workflowBuilder = new WorkflowBuilder();
         workflowBuilder.withDriverBlock(driverBlock);
 
-        WorkflowParser parser = WorkflowParser.create(
-                WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, restaurants, workflowBuilder.build());
+        WorkflowParser parser = WorkflowParser.create(restaurants, workflowBuilder.build());
         auditControlBlock(parser.controlBlock());
 
         Throwable thrown = catchThrowable(parser::drivers);
@@ -367,8 +353,7 @@ public class WorkflowHBParserTest extends WorkflowHBParserBaseTest {
         WorkflowBuilder workflowBuilder = new WorkflowBuilder();
         workflowBuilder.withDriverBlock(driverBlock);
 
-        WorkflowParser parser = WorkflowParser.create(
-                WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, restaurants, workflowBuilder.build());
+        WorkflowParser parser = WorkflowParser.create(restaurants, workflowBuilder.build());
         auditControlBlock(parser.controlBlock());
 
         Throwable thrown = catchThrowable(parser::drivers);
@@ -386,8 +371,7 @@ public class WorkflowHBParserTest extends WorkflowHBParserBaseTest {
         workflowBuilder.withDriverBlock(driverBlock);
         workflowBuilder.withControlBlock(new ControlBlockBuilder().withFoodSources("RevFoodTruck|"));
 
-        WorkflowParser parser = WorkflowParser.create(
-                WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, restaurants, workflowBuilder.build());
+        WorkflowParser parser = WorkflowParser.create(restaurants, workflowBuilder.build());
         auditControlBlock(parser.controlBlock());
         assertThat(parser.controlBlock().getWarnings()).contains(ControlBlockV300.EMPTY_GROCERY_SOURCE);
     }
@@ -401,8 +385,7 @@ public class WorkflowHBParserTest extends WorkflowHBParserBaseTest {
         workflowBuilder.withDriverBlock(driverBlock);
         workflowBuilder.withControlBlock(new ControlBlockBuilder().withFoodSources("|BFN"));
 
-        WorkflowParser parser = WorkflowParser.create(
-                WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, restaurants, workflowBuilder.build());
+        WorkflowParser parser = WorkflowParser.create(restaurants, workflowBuilder.build());
         auditControlBlock(parser.controlBlock());
         assertThat(parser.controlBlock().getWarnings()).contains(ControlBlockV300.EMPTY_MEAL_SOURCE);
     }
@@ -417,8 +400,7 @@ public class WorkflowHBParserTest extends WorkflowHBParserBaseTest {
         workflowBuilder.withDriverBlock(driverBlock);
         workflowBuilder.withControlBlock(new ControlBlockBuilder().withPickupManager(notAMember));
 
-        WorkflowParser parser = WorkflowParser.create(
-                WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, restaurants, workflowBuilder.build());
+        WorkflowParser parser = WorkflowParser.create(restaurants, workflowBuilder.build());
         Throwable thrown = catchThrowable(() -> auditControlBlock(parser.controlBlock()));
         assertThat(thrown).isInstanceOf(MemberDataException.class);
         assertThat(thrown).hasMessage(MessageFormat.format(
@@ -434,8 +416,7 @@ public class WorkflowHBParserTest extends WorkflowHBParserBaseTest {
         WorkflowBuilder workflowBuilder = new WorkflowBuilder();
         workflowBuilder.withDriverBlock(driverBlock);
 
-        WorkflowParser parser = WorkflowParser.create(
-                WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, restaurants, workflowBuilder.build());
+        WorkflowParser parser = WorkflowParser.create(restaurants, workflowBuilder.build());
         auditControlBlock(parser.controlBlock());
         Throwable thrown = catchThrowable(parser::drivers);
         assertThat(thrown).isInstanceOf(MemberDataException.class);
@@ -451,8 +432,7 @@ public class WorkflowHBParserTest extends WorkflowHBParserBaseTest {
         WorkflowBuilder workflowBuilder = new WorkflowBuilder();
         workflowBuilder.withDriverBlock(driverBlock);
 
-        WorkflowParser parser = WorkflowParser.create(
-                WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, restaurants, workflowBuilder.build());
+        WorkflowParser parser = WorkflowParser.create(restaurants, workflowBuilder.build());
         auditControlBlock(parser.controlBlock());
         List<Driver> drivers = parser.drivers();
         assertThat(drivers).hasSize(1);

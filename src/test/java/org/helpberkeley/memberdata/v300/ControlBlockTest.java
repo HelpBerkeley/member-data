@@ -124,8 +124,7 @@ public class ControlBlockTest extends ControlBlockTestBase {
                 + getKeyValueRow(key, value)
                 + CONTROL_BLOCK_END_ROW;
 
-        WorkflowParser workflowParser = WorkflowParser.create(
-                WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, Map.of(), workFlowData);
+        WorkflowParser workflowParser = WorkflowParser.create(Map.of(), workFlowData);
         ControlBlockV300 controlBlock = (ControlBlockV300) workflowParser.controlBlock();
         assertThat(controlBlock.getAltMealOptions()).containsExactly("none", "veggie", "noRed", "noPork");
     }
@@ -137,8 +136,7 @@ public class ControlBlockTest extends ControlBlockTestBase {
         ControlBlockBuilder builder = new ControlBlockBuilder();
         builder.withAltMealOptions(none);
 
-        WorkflowParser workflowParser = WorkflowParser.create(
-                WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, Map.of(), builder.build());
+        WorkflowParser workflowParser = WorkflowParser.create(Map.of(), builder.build());
 
         ControlBlockV300 controlBlock = (ControlBlockV300) workflowParser.controlBlock();
         Throwable thrown = catchThrowable(() -> audit(controlBlock));
@@ -151,8 +149,7 @@ public class ControlBlockTest extends ControlBlockTestBase {
     public void altGroceryOptionsTest() {
         String value = "none, veg, custom pick";
         String workFlowData = new ControlBlockBuilder().withAltGroceryOptions(value).build();
-        WorkflowParser workflowParser = WorkflowParser.create(
-                WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, Map.of(), workFlowData);
+        WorkflowParser workflowParser = WorkflowParser.create(Map.of(), workFlowData);
         ControlBlockV300 controlBlock = (ControlBlockV300) workflowParser.controlBlock();
         audit(controlBlock);
         assertThat(controlBlock.getAltGroceryOptions()).containsExactly("none", "veg", "custom pick");
@@ -165,8 +162,7 @@ public class ControlBlockTest extends ControlBlockTestBase {
         ControlBlockBuilder builder = new ControlBlockBuilder();
         builder.withAltGroceryOptions(none);
 
-        WorkflowParser workflowParser = WorkflowParser.create(
-                WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, Map.of(), builder.build());
+        WorkflowParser workflowParser = WorkflowParser.create(Map.of(), builder.build());
 
         ControlBlockV300 controlBlock = (ControlBlockV300) workflowParser.controlBlock();
         Throwable thrown = catchThrowable(() -> audit(controlBlock));
@@ -181,8 +177,7 @@ public class ControlBlockTest extends ControlBlockTestBase {
         String grocerySource = "Groceryland";
         String value = mealSource + '|' + grocerySource;
         String workFlowData = new ControlBlockBuilder().withFoodSources(value).build();
-        WorkflowParser workflowParser = WorkflowParser.create(
-                WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, Map.of(), workFlowData);
+        WorkflowParser workflowParser = WorkflowParser.create(Map.of(), workFlowData);
         ControlBlockV300 controlBlock = (ControlBlockV300) workflowParser.controlBlock();
         audit(controlBlock);
         assertThat(controlBlock.getMealSource()).isEqualTo(mealSource);
@@ -195,8 +190,7 @@ public class ControlBlockTest extends ControlBlockTestBase {
         String grocerySource = "Groceryland";
         String value = mealSource + ':' + grocerySource;
         String workFlowData = new ControlBlockBuilder().withFoodSources(value).build();
-        WorkflowParser workflowParser = WorkflowParser.create(
-                WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, Map.of(), workFlowData);
+        WorkflowParser workflowParser = WorkflowParser.create(Map.of(), workFlowData);
         Throwable thrown = catchThrowable(workflowParser::controlBlock);
         assertThat(thrown).isInstanceOf(MemberDataException.class);
         assertThat(thrown).hasMessage(MessageFormat.format(ControlBlockV300.FOOD_SOURCES_BAD_VALUE, value, 8));
@@ -206,8 +200,7 @@ public class ControlBlockTest extends ControlBlockTestBase {
     public void startTimesTest() {
         String value = "3:00, 3:10, 3:15";
         String workFlowData = new ControlBlockBuilder().withStartTimes(value).build();
-        WorkflowParser workflowParser = WorkflowParser.create(
-                WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, Map.of(), workFlowData);
+        WorkflowParser workflowParser = WorkflowParser.create(Map.of(), workFlowData);
         ControlBlockV300 controlBlock = (ControlBlockV300) workflowParser.controlBlock();
         audit(controlBlock);
         assertThat(controlBlock.getStartTimes()).containsExactly("3:00", "3:10", "3:15");
@@ -223,8 +216,7 @@ public class ControlBlockTest extends ControlBlockTestBase {
                 .withPickupManager(value1)
                 .withPickupManager(value2)
                 .withPickupManager(value3).build();
-        WorkflowParser workflowParser = WorkflowParser.create(
-                WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, Map.of(), workFlowData);
+        WorkflowParser workflowParser = WorkflowParser.create(Map.of(), workFlowData);
         ControlBlockV300 controlBlock = (ControlBlockV300) workflowParser.controlBlock();
         audit(controlBlock);
         assertThat(controlBlock.getPickupManagers()).containsExactly("ZZZ", "ThirdPerson", "JVol");
@@ -234,8 +226,7 @@ public class ControlBlockTest extends ControlBlockTestBase {
     public void startTimesAuditWarningsTest() {
         String value = "3:00, 3:10, 3:15";
         String workFlowData = new ControlBlockBuilder().withStartTimes(value).build();
-        WorkflowParser workflowParser = WorkflowParser.create(
-                WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, Map.of(), workFlowData);
+        WorkflowParser workflowParser = WorkflowParser.create(Map.of(), workFlowData);
         ControlBlockV300 controlBlock = (ControlBlockV300) workflowParser.controlBlock();
         assertThat(controlBlock.getWarnings()).isEmpty();
         controlBlock.audit(users, List.of());
@@ -251,8 +242,7 @@ public class ControlBlockTest extends ControlBlockTestBase {
 
         for (String value : values) {
             String workFlowData = new ControlBlockBuilder().withStartTimes(value).build();
-            WorkflowParser workflowParser = WorkflowParser.create(
-                    WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, Map.of(), workFlowData);
+            WorkflowParser workflowParser = WorkflowParser.create(Map.of(), workFlowData);
             ControlBlockV300 controlBlock = (ControlBlockV300) workflowParser.controlBlock();
             Throwable thrown = catchThrowable(() -> controlBlock.audit(users, List.of()));
             assertThat(thrown).isInstanceOf(MemberDataException.class);
@@ -268,8 +258,7 @@ public class ControlBlockTest extends ControlBlockTestBase {
 
         for (String value : values) {
             String workFlowData = new ControlBlockBuilder().withStartTimes(value).build();
-            WorkflowParser workflowParser = WorkflowParser.create(
-                    WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, Map.of(), workFlowData);
+            WorkflowParser workflowParser = WorkflowParser.create(Map.of(), workFlowData);
             ControlBlockV300 controlBlock = (ControlBlockV300) workflowParser.controlBlock();
             assertThat(controlBlock.getStartTimes()).containsExactly(value);
             controlBlock.audit(users, List.of());
@@ -284,8 +273,7 @@ public class ControlBlockTest extends ControlBlockTestBase {
                 .withStartTimes(startTimes)
                 .withStartTimes(startTimes)
                 .build();
-        WorkflowParser workflowParser = WorkflowParser.create(
-                WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, Map.of(), workFlowData);
+        WorkflowParser workflowParser = WorkflowParser.create(Map.of(), workFlowData);
         Throwable thrown = catchThrowable(workflowParser::controlBlock);
         assertThat(thrown).isInstanceOf(MemberDataException.class);
         assertThat(thrown).hasMessage(ControlBlockV300.TOO_MANY_START_TIMES_VARIABLES);
@@ -296,8 +284,7 @@ public class ControlBlockTest extends ControlBlockTestBase {
 
         String workFlowData = new ControlBlockBuilder().withoutStartTimes().build();
 
-        WorkflowParser workflowParser = WorkflowParser.create(
-                WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, Map.of(), workFlowData);
+        WorkflowParser workflowParser = WorkflowParser.create(Map.of(), workFlowData);
         ControlBlock controlBlock = workflowParser.controlBlock();
         Throwable thrown = catchThrowable(() -> audit(controlBlock));
         assertThat(thrown).isInstanceOf(MemberDataException.class);
@@ -319,8 +306,7 @@ public class ControlBlockTest extends ControlBlockTestBase {
                 + getKeyValueRow(key, value)
                 + CONTROL_BLOCK_END_ROW;
 
-        WorkflowParser workflowParser = WorkflowParser.create(
-                WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, Map.of(), workFlowData);
+        WorkflowParser workflowParser = WorkflowParser.create(Map.of(), workFlowData);
         Throwable thrown = catchThrowable(workflowParser::controlBlock);
         assertThat(thrown).isInstanceOf(MemberDataException.class);
         assertThat(thrown).hasMessage(ControlBlockV300.TOO_MANY_FOOD_SOURCES_VARIABLES);
@@ -330,8 +316,7 @@ public class ControlBlockTest extends ControlBlockTestBase {
     public void missingFoodSourcesTest() {
 
         String workFlowData = new ControlBlockBuilder().withoutFoodSources().build();
-        WorkflowParser workflowParser = WorkflowParser.create(
-                WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, Map.of(), workFlowData);
+        WorkflowParser workflowParser = WorkflowParser.create(Map.of(), workFlowData);
         ControlBlock controlBlock = workflowParser.controlBlock();
         Throwable thrown = catchThrowable(() -> audit(controlBlock));
         assertThat(thrown).isInstanceOf(MemberDataException.class);
@@ -343,8 +328,7 @@ public class ControlBlockTest extends ControlBlockTestBase {
     public void missingAltMealOptionsTest() {
 
         String workFlowData = new ControlBlockBuilder().withoutAltMealOptions().build();
-        WorkflowParser workflowParser = WorkflowParser.create(
-                WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, Map.of(), workFlowData);
+        WorkflowParser workflowParser = WorkflowParser.create(Map.of(), workFlowData);
         ControlBlock controlBlock = workflowParser.controlBlock();
         Throwable thrown = catchThrowable(() -> audit(controlBlock));
         assertThat(thrown).isInstanceOf(MemberDataException.class);
@@ -361,8 +345,7 @@ public class ControlBlockTest extends ControlBlockTestBase {
                 .withAltMealOptions(altMealOptions)
                 .withAltMealOptions(altMealOptions)
                 .build();
-        WorkflowParser workflowParser = WorkflowParser.create(
-                WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, Map.of(), workFlowData);
+        WorkflowParser workflowParser = WorkflowParser.create(Map.of(), workFlowData);
         Throwable thrown = catchThrowable(workflowParser::controlBlock);
         assertThat(thrown).isInstanceOf(MemberDataException.class);
         assertThat(thrown).hasMessage(ControlBlockV300.TOO_MANY_ALT_MEAL_OPTIONS_VARIABLES);
@@ -372,8 +355,7 @@ public class ControlBlockTest extends ControlBlockTestBase {
     public void missingAltGroceryOptionsTest() {
 
         String workFlowData = new ControlBlockBuilder().withoutAltGroceryOptions().build();
-        WorkflowParser workflowParser = WorkflowParser.create(
-                WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, Map.of(), workFlowData);
+        WorkflowParser workflowParser = WorkflowParser.create(Map.of(), workFlowData);
         ControlBlock controlBlock = workflowParser.controlBlock();
         Throwable thrown = catchThrowable(() -> audit(controlBlock));
         assertThat(thrown).isInstanceOf(MemberDataException.class);
@@ -389,8 +371,7 @@ public class ControlBlockTest extends ControlBlockTestBase {
                 .withAltGroceryOptions(altGroceryOptions)
                 .withAltGroceryOptions(altGroceryOptions)
                 .build();
-        WorkflowParser workflowParser = WorkflowParser.create(
-                WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, Map.of(), workFlowData);
+        WorkflowParser workflowParser = WorkflowParser.create(Map.of(), workFlowData);
         Throwable thrown = catchThrowable(workflowParser::controlBlock);
         assertThat(thrown).isInstanceOf(MemberDataException.class);
         assertThat(thrown).hasMessage(ControlBlockV300.TOO_MANY_ALT_GROCERY_OPTIONS_VARIABLES);
@@ -400,8 +381,7 @@ public class ControlBlockTest extends ControlBlockTestBase {
     public void missingPickupManagersTest() {
 
         String workFlowData = new ControlBlockBuilder().withoutPickupManager().build();
-        WorkflowParser workflowParser = WorkflowParser.create(
-                WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, Map.of(), workFlowData);
+        WorkflowParser workflowParser = WorkflowParser.create(Map.of(), workFlowData);
         ControlBlock controlBlock = workflowParser.controlBlock();
         Throwable thrown = catchThrowable(() -> audit(controlBlock));
         assertThat(thrown).isInstanceOf(MemberDataException.class);
@@ -413,8 +393,7 @@ public class ControlBlockTest extends ControlBlockTestBase {
     public void missingMessageFormatTest() {
 
         String workFlowData = new ControlBlockBuilder().withoutMessageFormat().build();
-        WorkflowParser workflowParser = WorkflowParser.create(
-                WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, Map.of(), workFlowData);
+        WorkflowParser workflowParser = WorkflowParser.create(Map.of(), workFlowData);
         ControlBlock controlBlock = workflowParser.controlBlock();
         Throwable thrown = catchThrowable(() -> audit(controlBlock));
         assertThat(thrown).isInstanceOf(MemberDataException.class);
@@ -426,8 +405,7 @@ public class ControlBlockTest extends ControlBlockTestBase {
     public void invalidMessageFormatTest() {
         String badFormat = "TuesdayWeld";
         String workFlowData = new ControlBlockBuilder().withMessageFormat(badFormat).build();
-        WorkflowParser workflowParser = WorkflowParser.create(
-                WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, Map.of(), workFlowData);
+        WorkflowParser workflowParser = WorkflowParser.create(Map.of(), workFlowData);
         ControlBlock controlBlock = workflowParser.controlBlock();
         Throwable thrown = catchThrowable(() -> audit(controlBlock));
         assertThat(thrown).isInstanceOf(MemberDataException.class);
@@ -442,9 +420,8 @@ public class ControlBlockTest extends ControlBlockTestBase {
                 .withMessageFormat(format1)
                 .withMessageFormat(format2)
                 .build();
-        WorkflowParser workflowParser = WorkflowParser.create(
-                WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, Map.of(), workFlowData);
-        Throwable thrown = catchThrowable(() ->  workflowParser.controlBlock());
+        WorkflowParser workflowParser = WorkflowParser.create(Map.of(), workFlowData);
+        Throwable thrown = catchThrowable(workflowParser::controlBlock);
         assertThat(thrown).isInstanceOf(MemberDataException.class);
         assertThat(thrown).hasMessage(ControlBlockV300.TOO_MANY_MESSAGE_FORMAT_VARIABLES);
     }
@@ -456,8 +433,7 @@ public class ControlBlockTest extends ControlBlockTestBase {
         ControlBlockBuilder builder = new ControlBlockBuilder();
         builder.withFoodSources(mealSource + "|");
 
-        WorkflowParser workflowParser = WorkflowParser.create(
-                WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, Map.of(), builder.build());
+        WorkflowParser workflowParser = WorkflowParser.create(Map.of(), builder.build());
 
         ControlBlockV300 controlBlock = (ControlBlockV300) workflowParser.controlBlock();
         audit(controlBlock);
@@ -472,8 +448,7 @@ public class ControlBlockTest extends ControlBlockTestBase {
         ControlBlockBuilder builder = new ControlBlockBuilder();
         builder.withFoodSources("|" + grocerySource);
 
-        WorkflowParser workflowParser = WorkflowParser.create(
-                WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, Map.of(), builder.build());
+        WorkflowParser workflowParser = WorkflowParser.create(Map.of(), builder.build());
 
         ControlBlockV300 controlBlock = (ControlBlockV300) workflowParser.controlBlock();
         audit(controlBlock);

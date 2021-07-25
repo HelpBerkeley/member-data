@@ -76,8 +76,7 @@ public abstract class WorkflowHBParserBaseTest extends TestBase {
 
             final String expected = header.toString();
 
-            Throwable thrown = catchThrowable(() -> WorkflowParser.create(
-                            WorkflowParser.Mode.DRIVER_ROUTE_REQUEST, Collections.emptyMap(), expected));
+            Throwable thrown = catchThrowable(() -> WorkflowParser.create(Collections.emptyMap(), expected));
             assertThat(thrown).isInstanceOf(MemberDataException.class);
             assertThat(thrown).hasMessageContaining(columnNames.get(columnNum));
         }

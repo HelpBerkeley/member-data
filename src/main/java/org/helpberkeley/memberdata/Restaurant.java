@@ -29,7 +29,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-public abstract class Restaurant {
+public abstract class Restaurant implements ItineraryStop {
     protected final String name;
     protected String address = "";
     private String startTime = "";
@@ -59,7 +59,6 @@ public abstract class Restaurant {
     protected abstract void setVersionSpecificFields(RestaurantBean restaurantBean);
     protected abstract String setVersionSpecificFields(WorkflowBean workflowBean);
     protected abstract void mergeInGlobalVersionSpecificFields(Restaurant globalRestaurant);
-    public abstract String pickupRow();
 
     public void setStartTime(final String startTime) {
         this.startTime = startTime;

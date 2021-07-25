@@ -22,9 +22,7 @@
  */
 package org.helpberkeley.memberdata;
 
-import org.helpberkeley.memberdata.route.Location;
-
-public abstract class Delivery {
+public abstract class Delivery implements ItineraryStop {
 
     protected final String name;
     protected final long lineNumber;
@@ -36,7 +34,6 @@ public abstract class Delivery {
     protected String address;
     protected Boolean isCondo;
     protected String details;
-    protected Location location;
 
     public Delivery(String name, long lineNumber) {
         this.name = name;
@@ -75,10 +72,6 @@ public abstract class Delivery {
         this.details = details;
     }
 
-    public void setLocation(Location location) {
-        this.location = location;
-    }
-
     public String getName() {
         return name;
     }
@@ -114,15 +107,9 @@ public abstract class Delivery {
         return address + ", " + city + ", " + "CA";
     }
 
-    public Location getLocation() {
-        return location;
-    }
-
     public long getLineNumber() {
         return lineNumber;
     }
-
-    public abstract String deliveryRow();
 
     protected final String csvEscapeCommas(String value) {
         if (value.contains(",")) {

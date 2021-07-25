@@ -275,13 +275,6 @@ public class MainTest extends TestBase {
     }
 
     @Test
-    public void driverRoutesTest() throws IOException, CsvException {
-        String[] args = { Options.COMMAND_DRIVER_ROUTES};
-        WorkRequestHandler.clearLastStatusPost();
-        Main.main(args);
-    }
-
-    @Test
     public void completedOrdersTest() throws IOException, CsvException {
         LocalDate yesterday = LocalDate.now(Constants.TIMEZONE).minusDays(1);
         DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy/MM/dd");

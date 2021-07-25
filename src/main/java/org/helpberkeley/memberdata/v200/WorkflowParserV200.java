@@ -30,8 +30,8 @@ import java.util.*;
 
 public class WorkflowParserV200 extends WorkflowParser {
 
-    public WorkflowParserV200(Mode mode, final String csvData) {
-        super(mode, csvData);
+    public WorkflowParserV200(final String csvData) {
+        super(csvData);
     }
 
     @Override
@@ -89,77 +89,64 @@ public class WorkflowParserV200 extends WorkflowParser {
 
     }
 
-    @Override
-    protected List<Delivery> processDeliveries() {
-        List<Delivery> deliveries = new ArrayList<>();
-        WorkflowBean bean;
+    public Delivery processDelivery(WorkflowBean bean) {
 
-        while ((bean = peekNextRow()) != null) {
-            if (! bean.getConsumer().equalsIgnoreCase("TRUE")) {
-                break;
-            }
+        String errors = "";
 
-            bean = nextRow();
-            assert bean != null;
-            String errors = "";
+        String consumerName = bean.getName();
+        if (consumerName.isEmpty()) {
+            errors += "missing consumer name\n";
+        }
+        String userName = bean.getUserName();
+        if (userName.isEmpty()) {
+            errors += "missing user name\n";
+        }
+        String phone = bean.getPhone();
+        if (phone.isEmpty()) {
+            errors += "missing phone\n";
+        }
+        String altPhone = bean.getAltPhone();
+        String neighborhood = bean.getNeighborhood();
+        String city = bean.getCity();
+        if (city.isEmpty()) {
+            errors += "missing city\n";
+        }
+        String address = bean.getAddress();
+        if (address.isEmpty()) {
+            errors += "missing address\n";
+        }
+        boolean isCondo = Boolean.parseBoolean(bean.getCondo());
+        String details = bean.getDetails();
+        String restaurantName = bean.getRestaurant();
+        if (restaurantName.isEmpty()) {
+            errors += "missing restaurant name\n";
+        }
+        String normalRations = bean.getNormal();
+        String veggieRations = bean.getVeggie();
 
-            String consumerName = bean.getName();
-            if (consumerName.isEmpty()) {
-                errors += "missing consumer name\n";
-            }
-            String userName = bean.getUserName();
-            if (userName.isEmpty()) {
-                errors += "missing user name\n";
-            }
-            String phone = bean.getPhone();
-            if (phone.isEmpty()) {
-                errors += "missing phone\n";
-            }
-            String altPhone = bean.getAltPhone();
-            String neighborhood = bean.getNeighborhood();
-            String city = bean.getCity();
-            if (city.isEmpty()) {
-                errors += "missing city\n";
-            }
-            String address = bean.getAddress();
-            if (address.isEmpty()) {
-                errors += "missing address\n";
-            }
-            boolean isCondo = Boolean.parseBoolean(bean.getCondo());
-            String details = bean.getDetails();
-            String restaurantName = bean.getRestaurant();
-            if (restaurantName.isEmpty()) {
-                errors += "missing restaurant name\n";
-            }
-            String normalRations = bean.getNormal();
-            String veggieRations = bean.getVeggie();
-
-            if (normalRations.isEmpty() || veggieRations.isEmpty()) {
-                errors += "normal and/or veggie rations column is empty. "
-                        + "Please insert the the correct number(s) (e.g. 0). ";
-            }
-
-            if (! errors.isEmpty()) {
-                throw new MemberDataException("line " + lineNumber + " " + errors);
-            }
-
-            DeliveryV200 delivery = new DeliveryV200(consumerName, lineNumber);
-            delivery.setUserName(userName);
-            delivery.setPhone(phone);
-            delivery.setAltPhone(altPhone);
-            delivery.setNeighborhood(neighborhood);
-            delivery.setCity(city);
-            delivery.setAddress(address);
-            delivery.setIsCondo(isCondo);
-            delivery.setDetails(details);
-            delivery.setRestaurant(restaurantName);
-            delivery.setNormalRations(normalRations.isEmpty() ? "0" : normalRations);
-            delivery.setVeggieRations(veggieRations.isEmpty() ? "0" : veggieRations);
-
-            deliveries.add(delivery);
+        if (normalRations.isEmpty() || veggieRations.isEmpty()) {
+            errors += "normal and/or veggie rations column is empty. "
+                    + "Please insert the the correct number(s) (e.g. 0). ";
         }
 
-        return deliveries;
+        if (! errors.isEmpty()) {
+            throw new MemberDataException("line " + lineNumber + " " + errors);
+        }
+
+        DeliveryV200 delivery = new DeliveryV200(consumerName, lineNumber);
+        delivery.setUserName(userName);
+        delivery.setPhone(phone);
+        delivery.setAltPhone(altPhone);
+        delivery.setNeighborhood(neighborhood);
+        delivery.setCity(city);
+        delivery.setAddress(address);
+        delivery.setIsCondo(isCondo);
+        delivery.setDetails(details);
+        delivery.setRestaurant(restaurantName);
+        delivery.setNormalRations(normalRations.isEmpty() ? "0" : normalRations);
+        delivery.setVeggieRations(veggieRations.isEmpty() ? "0" : veggieRations);
+
+        return delivery;
     }
 
     @Override

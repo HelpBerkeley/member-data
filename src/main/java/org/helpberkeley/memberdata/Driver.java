@@ -22,7 +22,6 @@
  */
 package org.helpberkeley.memberdata;
 
-import org.helpberkeley.memberdata.route.Location;
 import org.helpberkeley.memberdata.v200.DriverV200;
 import org.helpberkeley.memberdata.v200.WorkflowBeanV200;
 import org.helpberkeley.memberdata.v300.DriverV300;
@@ -40,58 +39,97 @@ public abstract class Driver {
 
     private String gMapURL = null;
     private WorkflowBean bean;
-    protected List<Restaurant> pickups;
     private long routeSeconds = 0;
     protected final List<String> warningMessages = new ArrayList<>();
     protected boolean disableLateArrivalAudit = false;
+
+    protected final List<ItineraryStop> itinerary = new ArrayList<>();
+    protected final List<Restaurant> pickups = new ArrayList<>();
+    protected final List<Delivery> deliveries = new ArrayList<>();
 
     protected Driver() {
 
     }
 
-    public static Driver createDriver(WorkflowBean driverBean, List<Restaurant> pickups,
-                   List<Delivery> deliveries, String gmapURL, boolean disableLateArrivalAudit) {
-
+    public static Driver createDriver(WorkflowBean driverBean) {
         Driver driver;
 
         if (driverBean instanceof WorkflowBeanV200) {
-            driver = new DriverV200(deliveries);
+            driver = new DriverV200();
         } else if (driverBean instanceof WorkflowBeanV300) {
-            driver = new DriverV300(deliveries);
+            driver = new DriverV300();
         } else {
             throw new MemberDataException("Version not supported for " + driverBean);
         }
 
         driver.bean = driverBean;
-        driver.pickups = pickups;
-        driver.gMapURL = gmapURL;
-        driver.disableLateArrivalAudit = disableLateArrivalAudit;
-        driver.initialize();
-
         return driver;
     }
 
-    protected abstract void initialize();
-    public abstract List<Delivery> getDeliveries();
-    protected abstract void resetDeliveries(List<Delivery> deliveries);
+//    public static Driver createDriver(WorkflowBean driverBean, List<Restaurant> pickups,
+//                   List<Delivery> deliveries, String gmapURL, boolean disableLateArrivalAudit) {
+//
+//        Driver driver;
+//
+//        if (driverBean instanceof WorkflowBeanV200) {
+//            driver = new DriverV200(deliveries);
+//        } else if (driverBean instanceof WorkflowBeanV300) {
+//            driver = new DriverV300(deliveries);
+//        } else {
+//            throw new MemberDataException("Version not supported for " + driverBean);
+//        }
+//
+//        driver.bean = driverBean;
+//        driver.pickups = pickups;
+//        driver.gMapURL = gmapURL;
+//        driver.disableLateArrivalAudit = disableLateArrivalAudit;
+//        driver.initialize();
+//
+//        return driver;
+//    }
+//
+//    public abstract List<Delivery> getDeliveries();
+//    protected abstract void resetDeliveries(List<Delivery> deliveries);
+//
+//    public static Driver createDriver(WorkflowBean driverBean, List<Restaurant> pickups, List<Delivery> deliveries) {
+//
+//        Driver driver;
+//
+//        if (driverBean instanceof WorkflowBeanV200) {
+//            driver = new DriverV200(deliveries);
+//        } else if (driverBean instanceof WorkflowBeanV300) {
+//            driver = new DriverV300(deliveries);
+//        } else {
+//            throw new MemberDataException("Version not supported for " + driverBean);
+//        }
+//
+//        driver.bean = driverBean;
+//        driver.pickups = pickups;
+//
+//        return driver;
+//    }
+
+    public abstract void initialize();
     public abstract String getStartTime();
 
-    public static Driver createDriver(WorkflowBean driverBean, List<Restaurant> pickups, List<Delivery> deliveries) {
+    public void addRestaurant(Restaurant restaurant) {
+        pickups.add(restaurant);
+    }
 
-        Driver driver;
+    public void addDelivery(Delivery delivery) {
+        deliveries.add(delivery);
+    }
 
-        if (driverBean instanceof WorkflowBeanV200) {
-            driver = new DriverV200(deliveries);
-        } else if (driverBean instanceof WorkflowBeanV300) {
-            driver = new DriverV300(deliveries);
-        } else {
-            throw new MemberDataException("Version not supported for " + driverBean);
-        }
+    public void setGMapURL(String gMapURL) {
+        this.gMapURL = gMapURL;
+    }
 
-        driver.bean = driverBean;
-        driver.pickups = pickups;
+    public void setDisableLateArrivalAudit(boolean doAudit) {
+        disableLateArrivalAudit = doAudit;
+    }
 
-        return driver;
+    public List<Delivery> getDeliveries() {
+        return deliveries;
     }
 
     @Override
@@ -116,7 +154,7 @@ public abstract class Driver {
     }
 
     public boolean hasCondo() {
-        for (Delivery delivery : getDeliveries()) {
+        for (Delivery delivery : deliveries) {
             if (delivery.isCondo()) {
                 return true;
             }
@@ -128,18 +166,8 @@ public abstract class Driver {
         return bean.getAddress() + ", " + bean.getCity() + ", " + "CA";
     }
 
-    public long getRouteSeconds() {
-        return routeSeconds;
-    }
-
     public List<Restaurant> getPickups() {
         return Collections.unmodifiableList(pickups);
-    }
-
-    public void setDeliveries(List<Delivery> deliveries, long totalSeconds) {
-        resetDeliveries(deliveries);
-        generateURL();
-        this.routeSeconds = totalSeconds;
     }
 
     public String getFirstRestaurantName() {
@@ -154,147 +182,5 @@ public abstract class Driver {
 
     public final List<String> getWarningMessages() {
         return warningMessages;
-    }
-
-    private void generateURL() {
-        StringBuilder url = new StringBuilder();
-
-        url.append("https://www.google.com/maps/dir/");
-
-        // The driver's home address is the beginning of the route.
-        String address = getFullAddress()
-                .replaceAll("\\s+", " ")
-                .replaceAll(" ", "+")
-                .replaceAll("#", "%23");
-        url.append(address).append('/');
-
-        for (Restaurant pickup : pickups) {
-
-            address = pickup.getAddress().replaceAll(" ", "+").replaceAll("#", "%23");
-            url.append(address).append('/');
-        }
-
-        Location prevLocation = null;
-
-        for (Delivery delivery : getDeliveries()) {
-
-            Location location = delivery.getLocation();
-
-            if (location.equals(prevLocation)) {
-                LOGGER.info("Skipping adding duplicate location {} to route", delivery.getFullAddress());
-            } else {
-                address = delivery.getAddress()
-                        .replaceAll("\\s+", " ")
-                        .replaceAll(" ", "+")
-                        .replaceAll("#", "%23");
-                url.append(address).append('/');
-            }
-            prevLocation = location;
-        }
-
-        // The driver's home address is also the end of the route.
-        address = getFullAddress()
-                .replaceAll("\\s+", " ")
-                .replaceAll(" ", "+")
-                .replaceAll("#", "%23");
-        url.append(address).append('/');
-
-        // FIX THIS, DS: remove trailing '/' ?
-
-        gMapURL = url.toString();
-    }
-
-    public String driverBlock() {
-
-        StringBuilder block = new StringBuilder();
-
-        String driverRow = driverRow();
-
-        block.append(driverRow);
-
-        for (Restaurant pickup : pickups) {
-            block.append(pickup.pickupRow());
-        }
-
-        for (Delivery delivery : getDeliveries()) {
-            block.append(delivery.deliveryRow());
-        }
-
-        block.append(driverRow);
-        block.append('"').append(gMapURL).append('"').append('\n');
-
-        return block.toString();
-    }
-
-    // FIX THIS, DS: this is hardwired to column order/length
-    private String driverRow() {
-
-        StringBuilder row = new StringBuilder();
-        String value;
-
-        // Consumer
-        row.append("FALSE,");
-
-        // Driver
-        row.append("TRUE,");
-
-        // Name
-        value = bean.getName();
-        if (value.contains(",")) {
-            value = "\"" + value + "\"";
-        }
-        row.append(value).append(",");
-
-        // User Name
-        value = bean.getUserName();
-        assert ! value.contains((",")) : "bad user name: " + value;
-        row.append(value).append(",");
-
-        // Phone
-        value = bean.getPhone();
-        assert ! value.contains((",")) : "bad phone: " + value;
-        row.append(value).append(",");
-
-        // Alt Phone
-        value = bean.getAltPhone();
-        assert ! value.contains((",")) : "bad alt phone: " + value;
-        row.append(value).append(",");
-
-        // Neighborhood
-        value = bean.getNeighborhood();
-        if (value.contains(",")) {
-            value = "\"" + value + "\"";
-        }
-        row.append(value).append(",");
-
-        // City
-        value = bean.getCity();
-        if (value.contains(",")) {
-            value = "\"" + value + "\"";
-        }
-        row.append(value).append(",");
-
-        // Address
-        value = bean.getAddress();
-        if (value.contains(",")) {
-            value = "\"" + value + "\"";
-        }
-        row.append(value).append(",");
-
-        // Condo
-        value = bean.getCondo();
-        row.append(value).append(",");
-
-        // Details
-        value = bean.getDetails();
-        if (value.contains(",")) {
-            value = "\"" + value + "\"";
-        }
-        row.append(value).append(",");
-
-        // Empty columns for Restaurants,normal,veggie,#orders
-        row.append(",,,\n");
-
-        return row.toString();
     }
 }

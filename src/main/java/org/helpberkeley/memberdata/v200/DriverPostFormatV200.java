@@ -216,8 +216,7 @@ public class DriverPostFormatV200 extends DriverPostFormat {
     }
 
     private void loadRoutedDeliveries(final String routedDeliveries) {
-        WorkflowParser parser = WorkflowParser.create(
-                WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, restaurants, routedDeliveries);
+        WorkflowParser parser = WorkflowParser.create(restaurants, routedDeliveries);
         drivers = parser.drivers();
         ControlBlock cb = parser.getControlBlock();
         assert cb instanceof ControlBlockV200 : "Mismatched control block";

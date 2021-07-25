@@ -42,7 +42,6 @@ public class Options {
     static final String COMMAND_ONE_KITCHEN_WORKFLOW = "onekitchen-workflow";
     static final String COMMAND_DRIVER_MESSAGES = "driver-messages";
     static final String COMMAND_ONE_KITCHEN_DRIVER_MESSAGES = "one-kitchen-driver-messages";
-    static final String COMMAND_DRIVER_ROUTES = "driver-routes";
     static final String COMMAND_COMPLETED_DAILY_ORDERS = "completed-daily-orders";
     static final String COMMAND_COMPLETED_ONEKITCHEN_ORDERS = "completed-onekitchen-orders";
     static final String COMMAND_DRIVERS = "drivers";
@@ -71,7 +70,6 @@ public class Options {
                     + "    | " + COMMAND_COMPLETED_ONEKITCHEN_ORDERS + " all-members-file\n"
                     + "    | " + COMMAND_DRIVER_MESSAGES + " all-members-file\n"
                     + "    | " + COMMAND_ONE_KITCHEN_DRIVER_MESSAGES + " all-members-file\n"
-                    + "    | " + COMMAND_DRIVER_ROUTES + "\n"
                     + "    | " + COMMAND_ORDER_HISTORY + " all-members-file\n"
                     + "    | " + COMMAND_DRIVERS + " all-members-file\n"
                     + "    | " + COMMAND_DRIVER_HISTORY + "\n"
@@ -119,7 +117,6 @@ public class Options {
 
         switch (arg) {
             case COMMAND_FETCH:
-            case COMMAND_DRIVER_ROUTES:
             case COMMAND_DRIVER_HISTORY:
             case COMMAND_ONEKITCHEN_DRIVER_HISTORY:
             case COMMAND_RESTAURANT_TEMPLATE:

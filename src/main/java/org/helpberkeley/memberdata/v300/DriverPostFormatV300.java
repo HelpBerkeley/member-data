@@ -248,8 +248,7 @@ public class DriverPostFormatV300 extends DriverPostFormat {
     }
 
     private void loadRoutedDeliveries(final String routedDeliveries) {
-        WorkflowParser parser = WorkflowParser.create(
-                WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, restaurants, routedDeliveries);
+        WorkflowParser parser = WorkflowParser.create(restaurants, routedDeliveries);
         drivers = parser.drivers();
 
         ControlBlock cb = parser.getControlBlock();
@@ -905,7 +904,8 @@ public class DriverPostFormatV300 extends DriverPostFormat {
         }
 
         if (restaurantName.equals(controlBlock.getMealSource())) {
-            for (DeliveryV300 delivery : driver.getDeliveriesV300()) {
+            for (DeliveryV300 delivery
+                    : (List<DeliveryV300>)(List<? extends Delivery>)driver.getDeliveries()) {
                 if (mealType.equals(delivery.getTypeMeal())) {
                     total += delivery.getAltMeals();
                 }
@@ -931,7 +931,8 @@ public class DriverPostFormatV300 extends DriverPostFormat {
         }
 
         if (restaurantName.equals(controlBlock.getGrocerySource())) {
-            for (DeliveryV300 delivery : driver.getDeliveriesV300()) {
+            for (DeliveryV300 delivery
+                    : (List<DeliveryV300>)(List<? extends Delivery>)driver.getDeliveries()) {
                 if (groceryType.equals(delivery.getTypeGrocery())) {
                     total += delivery.getAltGrocery();
                 }

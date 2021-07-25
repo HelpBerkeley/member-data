@@ -645,8 +645,12 @@ public class DriverStartTimeTest extends TestBase {
         WorkflowBeanV200 driverBean = new WorkflowBeanV200();
         driverBean.setUserName("jb");
 
-        return (DriverV200) Driver.createDriver(
-                driverBean, pickupRestaurants, List.of(), "https://something", disableLateStartAudit);
+        DriverV200 driver = (DriverV200)Driver.createDriver(driverBean);
+        pickupRestaurants.forEach(driver::addRestaurant);
+        driver.setDisableLateArrivalAudit(disableLateStartAudit);
+        driver.initialize();
+
+        return driver;
     }
 
     static class TestData {

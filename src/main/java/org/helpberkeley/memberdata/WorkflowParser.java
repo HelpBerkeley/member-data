@@ -32,30 +32,20 @@ import java.util.*;
 
 public abstract class WorkflowParser {
 
-    public enum Mode {
-        /** The CSV data is for passing to the routing software */
-        DRIVER_ROUTE_REQUEST,
-        /** The CSV data is for driver message generation */
-        DRIVER_MESSAGE_REQUEST,
-    }
-
-    protected final Mode mode;
     protected final ControlBlock controlBlock;
     protected long lineNumber = 1;
     protected final PeekingIterator<WorkflowBean> iterator;
     protected Map<String, Restaurant> globalRestaurants;
     protected final String normalizedCSVData;
 
-    protected WorkflowParser(Mode mode, final String csvData) {
-        this.mode = mode;
+    protected WorkflowParser(final String csvData) {
         // Normalize EOL
         normalizedCSVData = csvData.replaceAll("\\r\\n?", "\n");
         controlBlock = ControlBlock.create(normalizedCSVData);
         iterator = initializeIterator(csvData);
     }
 
-    public static WorkflowParser create(
-            Mode mode, Map<String, Restaurant> globalRestaurants, String csvData) {
+    public static WorkflowParser create(Map<String, Restaurant> globalRestaurants, String csvData) {
 
         ControlBlock controlBlock = ControlBlock.create(csvData);
         WorkflowParser workflowParser;
@@ -64,10 +54,10 @@ public abstract class WorkflowParser {
             case Constants.CONTROL_BLOCK_VERSION_UNKNOWN:
                 throw new MemberDataException("Control block not found");
             case Constants.CONTROL_BLOCK_VERSION_200:
-                workflowParser = new WorkflowParserV200(mode, csvData);
+                workflowParser = new WorkflowParserV200(csvData);
                 break;
             case Constants.CONTROL_BLOCK_VERSION_300:
-                workflowParser = new WorkflowParserV300(mode, csvData);
+                workflowParser = new WorkflowParserV300(csvData);
                 break;
             case Constants.CONTROL_BLOCK_VERSION_1:
             default:
@@ -87,39 +77,9 @@ public abstract class WorkflowParser {
      */
     protected abstract void auditColumnNames(final String csvData);
 
-    protected abstract List<Delivery> processDeliveries();
+    protected abstract Delivery processDelivery(WorkflowBean bean);
     protected abstract void versionSpecificAudit(Driver driver);
-
     protected abstract void auditPickupDeliveryMismatch(Driver driver);
-
-    public String rawControlBlock() {
-
-        StringBuilder lines = new StringBuilder();
-
-        // Copy all lines up to the first driver block
-        for (String line : normalizedCSVData.split("\n")) {
-
-            if (line.startsWith("FALSE,TRUE,")) {
-                break;
-            }
-
-            lines.append(line).append('\n');
-        }
-
-        return lines.toString();
-    }
-
-    /**
-     * Based upon the header row, return an empty row.
-     * @return Empty row
-     */
-    public String emptyRow() {
-
-        int endOfFirstLine = normalizedCSVData.indexOf('\n');
-        String row = normalizedCSVData.substring(0, endOfFirstLine);
-
-        return row.replaceAll("[^,]", "") + "\n";
-    }
 
     private PeekingIterator<WorkflowBean> initializeIterator(final String csvData) {
         assert ! csvData.isEmpty() : "empty workflow";
@@ -272,10 +232,7 @@ public abstract class WorkflowParser {
                 continue;
             }
 
-            if (mode != Mode.DRIVER_ROUTE_REQUEST) {
-                assert mode == Mode.DRIVER_MESSAGE_REQUEST : mode;
-                controlBlock.processRow(bean, lineNumber);
-            }
+            controlBlock.processRow(bean, lineNumber);
         }
     }
 
@@ -346,11 +303,10 @@ public abstract class WorkflowParser {
             throw new MemberDataException("line " + lineNumber + " " + errors);
         }
 
-        // Read 1 or more restaurant rows. Example:
-        // FALSE,,,,,,,,"1561 Solano Ave, Berkeley",FALSE,,Talavera,,,0
-        //
-        List<Restaurant> restaurants = processRestaurants();
-        List<Delivery> deliveries = processDeliveries();
+        Driver driver = Driver.createDriver(driverBean);
+
+        processItinerary(driver);
+        driver.initialize();
 
         WorkflowBean bean = nextRow();
 
@@ -367,93 +323,82 @@ public abstract class WorkflowParser {
             throw new MemberDataException(driverUserName + ", line " + lineNumber + ", mismatch driver end name");
         }
 
-        Driver driver;
-
         bean = nextRow();
 
-        if (mode == Mode.DRIVER_MESSAGE_REQUEST) {
-            if (bean == null) {
-                throw new MemberDataException("Driver " + driverUserName
-                        + " missing gmap URL after line " + lineNumber);
-            }
-
-            String gmapURL = bean.getGMapURL();
-            if (gmapURL.isEmpty()) {
-                throw new MemberDataException("Line " + lineNumber + ", driver " + driverUserName + " empty gmap URL");
-            }
-            if (!gmapURL.contains("https://")) {
-                throw new MemberDataException("Driver " + driverUserName + " unrecognizable gmap URL");
-            }
-
-            driver = Driver.createDriver(
-                    driverBean, restaurants, deliveries, gmapURL, controlBlock.lateArrivalAuditDisabled());
-        } else {
-            assert mode == Mode.DRIVER_ROUTE_REQUEST;
-
-            // This can be either an empty row, marking boundary between this driver and the next,
-            // Or the end of file.
-
-            if ((bean != null) && (! emptyRow(bean))) {
-                throw new MemberDataException("Line " + lineNumber + " is not empty");
-            }
-
-            driver = Driver.createDriver(driverBean, restaurants, deliveries);
+        if (bean == null) {
+            throw new MemberDataException("Driver " + driverUserName
+                    + " missing gmap URL after line " + lineNumber);
         }
+
+        String gmapURL = bean.getGMapURL();
+        if (gmapURL.isEmpty()) {
+            throw new MemberDataException("Line " + lineNumber + ", driver " + driverUserName + " empty gmap URL");
+        }
+        if (!gmapURL.contains("https://")) {
+            throw new MemberDataException("Driver " + driverUserName + " unrecognizable gmap URL");
+        }
+
+        driver.setGMapURL(gmapURL);
+        driver.setDisableLateArrivalAudit(controlBlock.lateArrivalAuditDisabled());
 
         return driver;
     }
 
-    private List<Restaurant> processRestaurants() {
+    private void processItinerary(Driver driver) {
 
-        List<Restaurant> restaurants = new ArrayList<>();
         WorkflowBean bean;
-
         while ((bean = peekNextRow()) != null) {
 
-            if (! (bean.getConsumer().equalsIgnoreCase("FALSE") && bean.getDriver().isEmpty())) {
-                break;
+            if (isPickupRow(bean)) {
+                driver.addRestaurant(processRestaurant(nextRow()));
+            } else if (isDeliveryRow(bean)) {
+                driver.addDelivery(processDelivery(nextRow()));
+            } else {
+                // FIX THIS, DS: sufficient?  Check for end of driver block?
+                return;
             }
-
-            bean = nextRow();
-            String errors = "";
-
-            String restaurantName = Objects.requireNonNull(bean).getRestaurant();
-            if (restaurantName.isEmpty()) {
-                errors += "missing restaurant name\n";
-            }
-            String address = bean.getAddress();
-            if (address.isEmpty()) {
-                errors += "missing address\n";
-            }
-            String details = bean.getDetails();
-
-            Restaurant restaurant = Restaurant.createRestaurant(controlBlock, restaurantName);
-            errors += restaurant.setVersionSpecificFields(bean);
-
-            if (! errors.isEmpty()) {
-                throw new MemberDataException("line " + lineNumber + " " + errors);
-            }
-
-            restaurant.setAddress(address);
-            restaurant.setDetails(details);
-
-            // FIX THIS, DS: refactor to a single map of restaurants
-            if (mode == Mode.DRIVER_MESSAGE_REQUEST) {
-                Restaurant globalRestaurant = globalRestaurants.get(restaurantName);
-                if (globalRestaurant == null) {
-                    throw new MemberDataException("Restaurant " + restaurantName + ", line number " + lineNumber
-                        + ", not found in restaurant template");
-                }
-                restaurant.mergeGlobal(globalRestaurant);
-            }
-
-            restaurants.add(restaurant);
         }
-
-        return restaurants;
     }
 
-    private boolean emptyRow(WorkflowBean bean) {
-        return bean.isEmpty();
+    private boolean isDeliveryRow(WorkflowBean bean) {
+        return bean.getConsumer().equalsIgnoreCase("TRUE");
+    }
+
+    private boolean isPickupRow(WorkflowBean bean) {
+        return (bean.getConsumer().equalsIgnoreCase("FALSE") && bean.getDriver().isEmpty());
+    }
+
+    private Restaurant processRestaurant(WorkflowBean bean) {
+        String errors = "";
+
+        String restaurantName = Objects.requireNonNull(bean).getRestaurant();
+        if (restaurantName.isEmpty()) {
+            errors += "missing restaurant name\n";
+        }
+        String address = bean.getAddress();
+        if (address.isEmpty()) {
+            errors += "missing address\n";
+        }
+        String details = bean.getDetails();
+
+        Restaurant restaurant = Restaurant.createRestaurant(controlBlock, restaurantName);
+        errors += restaurant.setVersionSpecificFields(bean);
+
+        if (! errors.isEmpty()) {
+            throw new MemberDataException("line " + lineNumber + " " + errors);
+        }
+
+        restaurant.setAddress(address);
+        restaurant.setDetails(details);
+
+        // FIX THIS, DS: refactor to a single map of restaurants
+        Restaurant globalRestaurant = globalRestaurants.get(restaurantName);
+        if (globalRestaurant == null) {
+            throw new MemberDataException("Restaurant " + restaurantName + ", line number " + lineNumber
+                    + ", not found in restaurant template");
+        }
+        restaurant.mergeGlobal(globalRestaurant);
+
+        return restaurant;
     }
 }

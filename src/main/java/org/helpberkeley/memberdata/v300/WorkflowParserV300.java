@@ -68,8 +68,8 @@ public class WorkflowParserV300 extends WorkflowParser {
     public static final String DUPLICATE_PICKUP =
             "Restaurant {0} appears more than once for driver {1}.\n";
 
-    public WorkflowParserV300(Mode mode, final String csvData) {
-        super(mode, csvData);
+    public WorkflowParserV300(final String csvData) {
+        super(csvData);
     }
 
     @Override
@@ -130,80 +130,69 @@ public class WorkflowParserV300 extends WorkflowParser {
     }
 
     @Override
-    protected List<Delivery> processDeliveries() {
-        List<Delivery> deliveries = new ArrayList<>();
-        WorkflowBeanV300 bean;
+    protected Delivery processDelivery(WorkflowBean workflowBean) {
 
-        while ((bean = (WorkflowBeanV300)peekNextRow()) != null) {
-            if (!bean.getConsumer().equalsIgnoreCase("TRUE")) {
-                break;
-            }
+        StringBuilder errors = new StringBuilder();
+        WorkflowBeanV300 bean = (WorkflowBeanV300)workflowBean;
 
-            bean = (WorkflowBeanV300) nextRow();
-            assert bean != null;
-            StringBuilder errors = new StringBuilder();
+        String consumerName = bean.getName();
+        if (consumerName.isEmpty()) {
+            errors.append(MessageFormat.format(MISSING_CONSUMER_NAME, lineNumber));
+        }
+        String userName = bean.getUserName();
+        if (userName.isEmpty()) {
+            errors.append(MessageFormat.format(MISSING_CONSUMER_USER_NAME, lineNumber));
+        }
+        String phone = bean.getPhone();
+        if (phone.isEmpty()) {
+            errors.append(MessageFormat.format(MISSING_PHONE, lineNumber));
+        }
+        String altPhone = bean.getAltPhone();
+        String neighborhood = bean.getNeighborhood();
+        String city = bean.getCity();
+        if (city.isEmpty()) {
+            errors.append(MessageFormat.format(MISSING_CITY, lineNumber));
+        }
+        String address = bean.getAddress();
+        if (address.isEmpty()) {
+            errors.append(MessageFormat.format(MISSING_ADDRESS, lineNumber));
+        }
+        boolean isCondo = Boolean.parseBoolean(bean.getCondo());
+        String details = bean.getDetails();
 
-            String consumerName = bean.getName();
-            if (consumerName.isEmpty()) {
-                errors.append(MessageFormat.format(MISSING_CONSUMER_NAME, lineNumber));
-            }
-            String userName = bean.getUserName();
-            if (userName.isEmpty()) {
-                errors.append(MessageFormat.format(MISSING_CONSUMER_USER_NAME, lineNumber));
-            }
-            String phone = bean.getPhone();
-            if (phone.isEmpty()) {
-                errors.append(MessageFormat.format(MISSING_PHONE, lineNumber));
-            }
-            String altPhone = bean.getAltPhone();
-            String neighborhood = bean.getNeighborhood();
-            String city = bean.getCity();
-            if (city.isEmpty()) {
-                errors.append(MessageFormat.format(MISSING_CITY, lineNumber));
-            }
-            String address = bean.getAddress();
-            if (address.isEmpty()) {
-                errors.append(MessageFormat.format(MISSING_ADDRESS, lineNumber));
-            }
-            boolean isCondo = Boolean.parseBoolean(bean.getCondo());
-            String details = bean.getDetails();
+        String stdMeals = getIntegerValue(bean.getStdMeals());
+        String altMeals = getIntegerValue(bean.getAltMeals());
+        String typeMeal = bean.getTypeMeal().trim();
+        String stdGrocery = getIntegerValue(bean.getStdGrocery());
+        String altGrocery = getIntegerValue(bean.getAltGrocery());
+        String typeGrocery = bean.getTypeGrocery().trim();
 
-            String stdMeals = getIntegerValue(bean.getStdMeals());
-            String altMeals = getIntegerValue(bean.getAltMeals());
-            String typeMeal = bean.getTypeMeal().trim();
-            String stdGrocery = getIntegerValue(bean.getStdGrocery());
-            String altGrocery = getIntegerValue(bean.getAltGrocery());
-            String typeGrocery = bean.getTypeGrocery().trim();
+        validIntegerValue(stdMeals, Constants.WORKFLOW_STD_MEALS_COLUMN, errors);
+        parseAuditAltMeals(altMeals, typeMeal, errors);
+        validIntegerValue(stdGrocery, Constants.WORKFLOW_STD_GROCERY_COLUMN, errors);
+        parseAuditAltGrocery(altGrocery, typeGrocery, errors);
 
-            validIntegerValue(stdMeals, Constants.WORKFLOW_STD_MEALS_COLUMN, errors);
-            parseAuditAltMeals(altMeals, typeMeal, errors);
-            validIntegerValue(stdGrocery, Constants.WORKFLOW_STD_GROCERY_COLUMN, errors);
-            parseAuditAltGrocery(altGrocery, typeGrocery, errors);
-
-            if (! errors.toString().isEmpty()) {
-                throw new MemberDataException(errors.toString());
-            }
-
-            DeliveryV300 delivery = new DeliveryV300(consumerName, lineNumber);
-            delivery.setUserName(userName);
-            delivery.setPhone(phone);
-            delivery.setAltPhone(altPhone);
-            delivery.setNeighborhood(neighborhood);
-            delivery.setCity(city);
-            delivery.setAddress(address);
-            delivery.setIsCondo(isCondo);
-            delivery.setDetails(details);
-            delivery.setStdMeals(stdMeals);
-            delivery.setAltMeals(altMeals);
-            delivery.setTypeMeal(typeMeal.isEmpty() ? "" : typeMeal);
-            delivery.setStdGrocery(stdGrocery);
-            delivery.setAltGrocery(altGrocery);
-            delivery.setTypeGrocery(typeGrocery.isEmpty() ? "" : typeGrocery);
-
-            deliveries.add(delivery);
+        if (! errors.toString().isEmpty()) {
+            throw new MemberDataException(errors.toString());
         }
 
-        return deliveries;
+        DeliveryV300 delivery = new DeliveryV300(consumerName, lineNumber);
+        delivery.setUserName(userName);
+        delivery.setPhone(phone);
+        delivery.setAltPhone(altPhone);
+        delivery.setNeighborhood(neighborhood);
+        delivery.setCity(city);
+        delivery.setAddress(address);
+        delivery.setIsCondo(isCondo);
+        delivery.setDetails(details);
+        delivery.setStdMeals(stdMeals);
+        delivery.setAltMeals(altMeals);
+        delivery.setTypeMeal(typeMeal.isEmpty() ? "" : typeMeal);
+        delivery.setStdGrocery(stdGrocery);
+        delivery.setAltGrocery(altGrocery);
+        delivery.setTypeGrocery(typeGrocery.isEmpty() ? "" : typeGrocery);
+
+        return delivery;
     }
 
     @Override
@@ -273,7 +262,7 @@ public class WorkflowParserV300 extends WorkflowParser {
         List<String> altGroceryTypes = controlBlockV300.getAltGroceryOptions();
         StringBuilder errors = new StringBuilder();
 
-        for (DeliveryV300 delivery : ((DriverV300)driver).getDeliveriesV300()) {
+        for (DeliveryV300 delivery : (List<DeliveryV300>)(List<? extends Delivery>)driver.getDeliveries()) {
             if (delivery.getAltMeals() > 0) {
 
                 if (altMealTypes == null) {

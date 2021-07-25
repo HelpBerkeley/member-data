@@ -22,7 +22,6 @@
  */
 package org.helpberkeley.memberdata.v200;
 
-import org.helpberkeley.memberdata.Delivery;
 import org.helpberkeley.memberdata.Driver;
 import org.helpberkeley.memberdata.MemberDataException;
 import org.helpberkeley.memberdata.Restaurant;
@@ -30,9 +29,6 @@ import org.helpberkeley.memberdata.Restaurant;
 import java.text.MessageFormat;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 public class DriverV200 extends Driver {
 
@@ -45,27 +41,8 @@ public class DriverV200 extends Driver {
 
     private String originalStartTime;
     private String startTime;
-    private final List<DeliveryV200> deliveries = new ArrayList<>();
 
-    public DriverV200(List<Delivery> deliveries) {
-        for (Delivery delivery : deliveries) {
-            assert delivery instanceof DeliveryV200;
-            this.deliveries.add((DeliveryV200) delivery);
-        }
-    }
-
-    @Override
-    public List<Delivery> getDeliveries() {
-        return Collections.unmodifiableList(deliveries);
-    }
-
-    @Override
-    protected void resetDeliveries(List<Delivery> deliveries) {
-        this.deliveries.clear();
-        for (Delivery delivery : deliveries) {
-            assert delivery instanceof DeliveryV200;
-            this.deliveries.add((DeliveryV200) delivery);
-        }
+    public DriverV200() {
     }
 
     public long getOrders(String restaurantName) {
@@ -82,8 +59,7 @@ public class DriverV200 extends Driver {
     }
 
     @Override
-    protected void initialize() {
-
+    public void initialize() {
         setStartTime();
     }
 

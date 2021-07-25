@@ -39,41 +39,6 @@ public class RestaurantV200 extends Restaurant {
         return getName() + ", orders: " + orders + ", start:" + getStartTime() + ", drivers:" + getDrivers().keySet();
     }
 
-    // FIX THIS, DS: columns are hard wired
-    //
-    public String pickupRow() {
-        StringBuilder row = new StringBuilder();
-
-        // Consumer, Driver, Name, UserName, Phone, Alt Phone, Neighborhood, City
-        row.append("FALSE,,,,,,,,");
-
-        // Address
-        row.append('"').append(address).append('"').append(',');
-
-        // Condo
-        row.append("FALSE,");
-
-        // Details
-        if (! details.isEmpty()) {
-            row.append('"').append(details).append('"').append(',');
-        } else {
-            row.append(',');
-        }
-
-        // Restaurant
-        row.append('"').append(name).append('"').append(',');
-
-        // Empty columns for  normal and veggie
-        row.append(",,");
-
-        // Orders
-        row.append(orders);
-
-        row.append('\n');
-
-        return row.toString();
-    }
-
     @Override
     protected void setVersionSpecificFields(RestaurantBean restaurantBean) {
 

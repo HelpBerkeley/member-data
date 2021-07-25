@@ -54,11 +54,6 @@ public class RestaurantV300 extends Restaurant {
         return getName() + ", start:" + getStartTime() + ", drivers:" + getDrivers().keySet();
     }
 
-    public String pickupRow() {
-        throw new MemberDataException("Routing requests for version "
-                + Constants.CONTROL_BLOCK_VERSION_300 + " are not current supported");
-    }
-
     @Override
     protected void setVersionSpecificFields(RestaurantBean restaurantBean) {
     }

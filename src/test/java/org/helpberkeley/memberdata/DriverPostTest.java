@@ -169,7 +169,7 @@ public abstract class DriverPostTest extends TestBase {
         String routedDeliveries = readResourceFile(getRoutedDeliveriesFileName());
         DriverPostFormat driverPostFormat =
                 DriverPostFormat.create(createApiSimulator(), users, routedDeliveries);
-        Throwable thrown = catchThrowable(() -> driverPostFormat.generateDriverPosts());
+        Throwable thrown = catchThrowable(driverPostFormat::generateDriverPosts);
         assertThat(thrown).isInstanceOf(MemberDataException.class);
         assertThat(thrown).hasMessage(
                 "Post: 1, block: Test: unknown list variable &{ThisDriverRestaurant.HasPurpleSnowCones}");
@@ -206,7 +206,7 @@ public abstract class DriverPostTest extends TestBase {
         String routedDeliveries = readResourceFile(getRoutedDeliveriesFileName());
         DriverPostFormat driverPostFormat =
                 DriverPostFormat.create(createApiSimulator(), users, routedDeliveries);
-        Throwable thrown = catchThrowable(() -> driverPostFormat.generateGroupInstructionsPost());
+        Throwable thrown = catchThrowable(driverPostFormat::generateGroupInstructionsPost);
         assertThat(thrown).isInstanceOf(MemberDataException.class);
         assertThat(thrown).hasMessage(
                 "Post: 1, block: Test: unknown struct variable ${BackupDriver.FavoriteColor}");
@@ -219,7 +219,7 @@ public abstract class DriverPostTest extends TestBase {
         String routedDeliveries = readResourceFile(getRoutedDeliveriesFileName());
         DriverPostFormat driverPostFormat =
                 DriverPostFormat.create(createApiSimulator(), users, routedDeliveries);
-        Throwable thrown = catchThrowable(() -> driverPostFormat.generateGroupInstructionsPost());
+        Throwable thrown = catchThrowable(driverPostFormat::generateGroupInstructionsPost);
         assertThat(thrown).isInstanceOf(MemberDataException.class);
         assertThat(thrown).hasMessage("Post: 1, block: Test: unknown list variable &{TheLoop}");
     }
