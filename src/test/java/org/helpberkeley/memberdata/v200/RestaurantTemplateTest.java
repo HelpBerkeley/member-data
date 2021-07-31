@@ -29,7 +29,7 @@ import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
-import static org.helpberkeley.memberdata.v200.ControlBlockTest.EMPTY_ROW;
+import static org.helpberkeley.memberdata.v200.BuilderConstants.EMPTY_ROW;
 
 public class RestaurantTemplateTest extends RestaurantTemplateTestBase {
 

@@ -20,7 +20,7 @@
  * SOFTWARE.
  *
  */
-package org.helpberkeley.memberdata.v300;
+package org.helpberkeley.memberdata.v200;
 
 import org.helpberkeley.memberdata.Builder;
 
@@ -45,7 +45,7 @@ public class DriverBlockBuilder {
         itinerary.forEach(driverBlock::append);
         driverBlock.append(driver.build());
         driverBlock.append(WorkflowBuilder.DEFAULT_GMAP_URL);
-        driverBlock.append(ControlBlockTest.EMPTY_ROW);
+        driverBlock.append(BuilderConstants.EMPTY_ROW);
 
         return driverBlock.toString();
     }

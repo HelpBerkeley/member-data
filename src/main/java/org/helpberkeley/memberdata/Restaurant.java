@@ -31,6 +31,7 @@ import java.util.Map;
 
 public abstract class Restaurant implements ItineraryStop {
     protected final String name;
+    protected final int lineNumber;
     protected String address = "";
     private String startTime = "";
     private String closingTime = "";
@@ -40,16 +41,17 @@ public abstract class Restaurant implements ItineraryStop {
     private String route = "";
     private final Map<String, Driver> drivers = new HashMap<>();
 
-    protected Restaurant(String name) {
+    protected Restaurant(String name, int lineNumber) {
         this.name = name;
+        this.lineNumber = lineNumber;
     }
 
-    public static Restaurant createRestaurant(ControlBlock controlBlock, String name) {
+    public static Restaurant createRestaurant(ControlBlock controlBlock, String name, int lineNumber) {
         switch (controlBlock.getVersion()) {
             case Constants.CONTROL_BLOCK_VERSION_200:
-                return new RestaurantV200(controlBlock, name);
+                return new RestaurantV200(controlBlock, name, lineNumber);
             case Constants.CONTROL_BLOCK_VERSION_300:
-                return new RestaurantV300(controlBlock, name);
+                return new RestaurantV300(controlBlock, name, lineNumber);
             default:
                 throw new MemberDataException("Control block version " + controlBlock.getVersion()
                         + " is not supported for restaurant creation");
@@ -59,6 +61,16 @@ public abstract class Restaurant implements ItineraryStop {
     protected abstract void setVersionSpecificFields(RestaurantBean restaurantBean);
     protected abstract String setVersionSpecificFields(WorkflowBean workflowBean);
     protected abstract void mergeInGlobalVersionSpecificFields(Restaurant globalRestaurant);
+
+    @Override
+    public ItineraryStopType getType() {
+        return ItineraryStopType.PICKUP;
+    }
+
+    @Override
+    public int getLineNumber() {
+        return lineNumber;
+    }
 
     public void setStartTime(final String startTime) {
         this.startTime = startTime;

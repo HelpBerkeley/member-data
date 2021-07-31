@@ -634,7 +634,7 @@ public class DriverStartTimeTest extends TestBase {
         for (Pickup pickup : testData.pickups) {
 
             RestaurantV200 restaurant = (RestaurantV200)
-                    Restaurant.createRestaurant(controlBlock, pickup.restaurantName);
+                    Restaurant.createRestaurant(controlBlock, pickup.restaurantName, 1);
             restaurant.mergeGlobal(restaurants.get(restaurant.getName()));
             restaurant.addOrders(pickup.numOrders);
 

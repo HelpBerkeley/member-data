@@ -30,7 +30,7 @@ public class DeliveryV200 extends Delivery {
     private String veggieRations;
     private String restaurant;
 
-    public DeliveryV200(String name, long lineNumber) {
+    public DeliveryV200(String name, int lineNumber) {
         super(name, lineNumber);
     }
 
@@ -41,7 +41,6 @@ public class DeliveryV200 extends Delivery {
                 + ", restaurant: " + getRestaurant()
                 + ", rations: " + getNormalRations() + ":" + getVeggieRations();
     }
-
 
     public void setRestaurant(String restaurant) {
         this.restaurant = restaurant;

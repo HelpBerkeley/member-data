@@ -41,7 +41,7 @@ public class DeliveryV300 extends Delivery {
                 + ", grocery:" + getStdGrocery() + ':' + getAltGrocery();
     }
 
-    public DeliveryV300(String name, long lineNumber) {
+    public DeliveryV300(String name, int lineNumber) {
         super(name, lineNumber);
     }
 

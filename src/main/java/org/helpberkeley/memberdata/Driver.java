@@ -39,7 +39,6 @@ public abstract class Driver {
 
     private String gMapURL = null;
     private WorkflowBean bean;
-    private long routeSeconds = 0;
     protected final List<String> warningMessages = new ArrayList<>();
     protected boolean disableLateArrivalAudit = false;
 
@@ -66,58 +65,17 @@ public abstract class Driver {
         return driver;
     }
 
-//    public static Driver createDriver(WorkflowBean driverBean, List<Restaurant> pickups,
-//                   List<Delivery> deliveries, String gmapURL, boolean disableLateArrivalAudit) {
-//
-//        Driver driver;
-//
-//        if (driverBean instanceof WorkflowBeanV200) {
-//            driver = new DriverV200(deliveries);
-//        } else if (driverBean instanceof WorkflowBeanV300) {
-//            driver = new DriverV300(deliveries);
-//        } else {
-//            throw new MemberDataException("Version not supported for " + driverBean);
-//        }
-//
-//        driver.bean = driverBean;
-//        driver.pickups = pickups;
-//        driver.gMapURL = gmapURL;
-//        driver.disableLateArrivalAudit = disableLateArrivalAudit;
-//        driver.initialize();
-//
-//        return driver;
-//    }
-//
-//    public abstract List<Delivery> getDeliveries();
-//    protected abstract void resetDeliveries(List<Delivery> deliveries);
-//
-//    public static Driver createDriver(WorkflowBean driverBean, List<Restaurant> pickups, List<Delivery> deliveries) {
-//
-//        Driver driver;
-//
-//        if (driverBean instanceof WorkflowBeanV200) {
-//            driver = new DriverV200(deliveries);
-//        } else if (driverBean instanceof WorkflowBeanV300) {
-//            driver = new DriverV300(deliveries);
-//        } else {
-//            throw new MemberDataException("Version not supported for " + driverBean);
-//        }
-//
-//        driver.bean = driverBean;
-//        driver.pickups = pickups;
-//
-//        return driver;
-//    }
-
     public abstract void initialize();
     public abstract String getStartTime();
 
     public void addRestaurant(Restaurant restaurant) {
         pickups.add(restaurant);
+        itinerary.add(restaurant);
     }
 
     public void addDelivery(Delivery delivery) {
         deliveries.add(delivery);
+        itinerary.add(delivery);
     }
 
     public void setGMapURL(String gMapURL) {
@@ -130,6 +88,10 @@ public abstract class Driver {
 
     public List<Delivery> getDeliveries() {
         return deliveries;
+    }
+
+    public List<ItineraryStop> getItinerary() {
+        return itinerary;
     }
 
     @Override
@@ -162,12 +124,18 @@ public abstract class Driver {
         return false;
     }
 
-    public String getFullAddress() {
-        return bean.getAddress() + ", " + bean.getCity() + ", " + "CA";
-    }
-
     public List<Restaurant> getPickups() {
         return Collections.unmodifiableList(pickups);
+    }
+
+    public Restaurant getPickup(String restaurantName) {
+        for (Restaurant restaurant : pickups) {
+            if (restaurant.getName().equals(restaurantName)) {
+                return restaurant;
+            }
+        }
+
+        return null;
     }
 
     public String getFirstRestaurantName() {

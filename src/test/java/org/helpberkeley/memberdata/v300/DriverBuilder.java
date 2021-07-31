@@ -26,11 +26,16 @@ import org.helpberkeley.memberdata.Constants;
 
 public class DriverBuilder {
 
-    private String userName = WorkflowBuilder.DEFAULT_DRIVER_USER_NAME;
-    private final String name = WorkflowBuilder.DEFAULT_DRIVER_NAME;
+    private String userName = BuilderConstants.DEFAULT_DRIVER_USER_NAME;
+    private String name = BuilderConstants.DEFAULT_DRIVER_NAME;
 
     public DriverBuilder withUserName(String userName) {
         this.userName = userName;
+        return this;
+    }
+
+    public DriverBuilder withName(String name) {
+        this.name = name;
         return this;
     }
 

@@ -35,6 +35,12 @@ public class WorkflowParserV300 extends WorkflowParser {
     public static final String MISSING_MEAL_PICKUP = "Line {0}, driver {1}, meal delivery from {2} but no pickup.\n";
     public static final String MISSING_GROCERY_PICKUP =
             "Line {0}, driver {1}, grocery delivery from {2} but no pickup.\n";
+    public static final String MISSING_MEAL_SOURCE =
+            "Line {0}, driver {1}, meal delivery for {2}, "
+            + "but no meal source is defined in the control block.\n";
+    public static final String MISSING_GROCERY_SOURCE =
+            "Line {0}, driver {1}, grocery delivery for {2}, "
+            + "but no grocery source is defined in the control block.\n";
 
     public static final String INVALID_COUNT_VALUE =
             "Line {0}, \"{1}\" is not a valid value for the \"{2}\" column.\n";
@@ -233,7 +239,10 @@ public class WorkflowParserV300 extends WorkflowParser {
 
             // Check that if we have meals, that the meal source location is in the pickups
             if ((deliveryV300.getStdMeals() > 0) || (deliveryV300.getAltMeals() > 0)) {
-                if (! pickups.contains(controlBlockV300.getMealSource())) {
+                if (controlBlockV300.getMealSource().isEmpty()) {
+                    errors.append(MessageFormat.format(MISSING_MEAL_SOURCE, delivery.getLineNumber(),
+                        driver.getName(), delivery.getName()));
+                } else if (! pickups.contains(controlBlockV300.getMealSource())) {
                     errors.append(MessageFormat.format(MISSING_MEAL_PICKUP,
                             delivery.getLineNumber(), driver, controlBlockV300.getMealSource()));
                 }
@@ -241,7 +250,10 @@ public class WorkflowParserV300 extends WorkflowParser {
 
             // Check that if we have groceries, that the grocery source location is in the pickups
             if ((deliveryV300.getStdGrocery() > 0) || (deliveryV300.getAltGrocery() > 0)) {
-                if (!pickups.contains(controlBlockV300.getGrocerySource())) {
+                if (controlBlockV300.getGrocerySource().isEmpty()) {
+                    errors.append(MessageFormat.format(MISSING_GROCERY_SOURCE, delivery.getLineNumber(),
+                            driver.getName(), delivery.getName()));
+                } else if (!pickups.contains(controlBlockV300.getGrocerySource())) {
                     errors.append(MessageFormat.format(MISSING_GROCERY_PICKUP,
                             delivery.getLineNumber(), driver, controlBlockV300.getMealSource()));
                 }
@@ -293,6 +305,65 @@ public class WorkflowParserV300 extends WorkflowParser {
         if (errors.length() > 0) {
             throw new MemberDataException(errors.toString());
         }
+    }
+
+    @Override
+    protected void auditDeliveryBeforePickup(Driver driver) {
+        StringBuilder errors = new StringBuilder();
+
+        RestaurantV300 mealProvider = getMealProvider(driver);
+        RestaurantV300 groceryProvider = getGroceryProvider(driver);
+
+        for (DeliveryV300 delivery : (List<DeliveryV300>)(List<? extends Delivery>)driver.getDeliveries()) {
+
+            if ((delivery.getStdMeals() > 0) || (delivery.getAltMeals() > 0)) {
+                // FIX THIS, DS: have we already audited for missing meal provider?
+                if (delivery.getLineNumber() < mealProvider.getLineNumber()) {
+                    errors.append(MessageFormat.format(ERROR_DELIVERY_BEFORE_PICKUP, driver.getUserName(),
+                            delivery.getName(), delivery.getLineNumber(),
+                            mealProvider.getName(), mealProvider.getLineNumber()));
+                }
+            }
+
+            if ((delivery.getStdGrocery() > 0) || (delivery.getAltGrocery() > 0)) {
+                if (delivery.getLineNumber() < groceryProvider.getLineNumber()) {
+                    // FIX THIS, DS: have we already audited for missing grocery provider?
+                    errors.append(MessageFormat.format(ERROR_DELIVERY_BEFORE_PICKUP, driver.getUserName(),
+                            delivery.getName(), delivery.getLineNumber(),
+                            groceryProvider.getName(), groceryProvider.getLineNumber()));
+                }
+            }
+        }
+
+        if (errors.length() > 0) {
+            throw new MemberDataException(errors.toString());
+        }
+    }
+
+    private RestaurantV300 getMealProvider(Driver driver) {
+        String mealSource = ((ControlBlockV300)controlBlock).getMealSource();
+
+        for (ItineraryStop itineraryStop : driver.getItinerary()) {
+            if ((itineraryStop.getType() == ItineraryStopType.PICKUP)
+                && ((Restaurant)itineraryStop).getName().equals(mealSource)) {
+                return (RestaurantV300) itineraryStop;
+            }
+        }
+
+        return null;
+    }
+
+    private RestaurantV300 getGroceryProvider(Driver driver) {
+        String grocerySource = ((ControlBlockV300)controlBlock).getGrocerySource();
+
+        for (ItineraryStop itineraryStop : driver.getItinerary()) {
+            if ((itineraryStop.getType() == ItineraryStopType.PICKUP)
+                    && ((Restaurant)itineraryStop).getName().equals(grocerySource)) {
+                return (RestaurantV300) itineraryStop;
+            }
+        }
+
+        return null;
     }
 
     private boolean validIntegerValue(String value, String columnName, StringBuilder errors) {

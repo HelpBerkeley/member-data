@@ -20,12 +20,11 @@
  * SOFTWARE.
  *
  */
-package org.helpberkeley.memberdata.v300;
+package org.helpberkeley.memberdata.v200;
 
 import org.helpberkeley.memberdata.Builder;
 
-import static org.helpberkeley.memberdata.v300.BuilderConstants.DEFAULT_CONSUMER_NAME;
-import static org.helpberkeley.memberdata.v300.BuilderConstants.DEFAULT_CONSUMER_USER_NAME;
+import static org.helpberkeley.memberdata.v200.BuilderConstants.*;
 
 class DeliveryBuilder implements Builder {
 
@@ -34,40 +33,17 @@ class DeliveryBuilder implements Builder {
     private String city = "Berkeley";
     private String address = "123 456th St.";
     private String phone = "555-555-1112";
-    private String stdMeals = "";
-    private String altMeals = "";
-    private String typeMeal = "";
-    private String stdGrocery = "";
-    private String altGrocery = "";
-    private String typeGrocery = "";
+    private String restaurantName = DEFAULT_RESTAURANT_NAME;
+    private String normalMeals = "0";
+    private String veggieMeals = "0";
 
-    public DeliveryBuilder withStdMeals(String stdMeals) {
-        this.stdMeals = stdMeals;
+    public DeliveryBuilder withNormalMeals(String normalMeals) {
+        this.normalMeals = normalMeals;
         return this;
     }
 
-    public DeliveryBuilder withAltMeals(String altMeals) {
-        this.altMeals = altMeals;
-        return this;
-    }
-
-    public DeliveryBuilder withTypeMeal(String typeMeal) {
-        this.typeMeal = typeMeal;
-        return this;
-    }
-
-    public DeliveryBuilder withStdGrocery(String stdGrocery) {
-        this.stdGrocery = stdGrocery;
-        return this;
-    }
-
-    public DeliveryBuilder withAltGrocery(String altGrocery) {
-        this.altGrocery = altGrocery;
-        return this;
-    }
-
-    public DeliveryBuilder withTypeGrocery(String typeGrocery) {
-        this.typeGrocery = typeGrocery;
+    public DeliveryBuilder withVeggieMeals(String veggieMeals) {
+        this.veggieMeals = veggieMeals;
         return this;
     }
 
@@ -96,35 +72,31 @@ class DeliveryBuilder implements Builder {
         return this;
     }
 
+    public DeliveryBuilder withRestaurant(String restaurant) {
+        this.restaurantName = restaurant;
+        return this;
+    }
+
     @Override
     public String toString() {
         return build();
     }
 
     public String build() {
-        return "TRUE,FALSE,"
-                + consumerName
-                + ","
-                + consumerUserName
-                + ","
-                + phone
-                + ",111-222-3333,"
-                + "Hills,"
-                + city
-                + ","
-                + address
-                + ",FALSE,,,"
-                + stdMeals
-                + ","
-                + altMeals
-                + ","
-                + typeMeal
-                + ","
-                + stdGrocery
-                + ","
-                + altGrocery
-                + ","
-                + typeGrocery
+        return "TRUE" + ","
+                + "FALSE" + ","
+                + consumerName + ","
+                + consumerUserName + ","
+                + phone + ","
+                + "111-222-3333" + ","
+                + "Hills" + ","
+                + city + ","
+                + address + ","
+                + "FALSE" + ","
+                + "" + ","
+                + restaurantName + ","
+                + normalMeals + ","
+                + veggieMeals + ","
                 + "\n";
     }
 }

@@ -32,8 +32,8 @@ public class RestaurantV300 extends Restaurant {
     private final HashSet<String> alternateMealTypes = new LinkedHashSet<>();
     private final HashSet<String> alternateGroceryTypes = new LinkedHashSet<>();
 
-    public RestaurantV300(ControlBlock controlBlock, String name) {
-        super(name);
+    public RestaurantV300(ControlBlock controlBlock, String name, int lineNumber) {
+        super(name, lineNumber);
         ControlBlockV300 controlBlock1 = (ControlBlockV300) controlBlock;
 
         if (controlBlock1.getMealSource().equals(name)) {

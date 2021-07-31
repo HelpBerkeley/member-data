@@ -20,17 +20,21 @@
  * SOFTWARE.
  *
  */
-package org.helpberkeley.memberdata.v300;
-
-import org.helpberkeley.memberdata.Builder;
+package org.helpberkeley.memberdata.v200;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class DriverBlockBuilder {
+import static org.helpberkeley.memberdata.v200.BuilderConstants.*;
 
-    private final List<Builder> itinerary = new ArrayList<>();
-    private DriverBuilder driver = new DriverBuilder();
+public class WorkflowBuilder {
+
+    public static final String DEFAULT_GMAP_URL =
+            "\"https://www.google.com/maps/dir/something+something+else\",,,,,,,,,,,,,,\n";
+
+    private final List<DriverBlockBuilder> driverBlocks = new ArrayList<>();
+    private ControlBlockBuilder controlBlockBuilder = new ControlBlockBuilder();
+    private String finalRow;
 
     @Override
     public String toString() {
@@ -38,30 +42,35 @@ public class DriverBlockBuilder {
     }
 
     public String build() {
+        StringBuilder workflow = new StringBuilder();
 
-        StringBuilder driverBlock = new StringBuilder();
+        workflow.append(controlBlockBuilder.build());
+        driverBlocks.forEach(workflow::append);
 
-        driverBlock.append(driver.build());
-        itinerary.forEach(driverBlock::append);
-        driverBlock.append(driver.build());
-        driverBlock.append(WorkflowBuilder.DEFAULT_GMAP_URL);
-        driverBlock.append(ControlBlockTest.EMPTY_ROW);
+        if (finalRow != null) {
+            workflow.append(finalRow);
+        }
 
-        return driverBlock.toString();
+        return workflow.toString();
     }
 
-    public DriverBlockBuilder withDriver(DriverBuilder driver) {
-        this.driver = driver;
+    public WorkflowBuilder withDriverBlock(DriverBlockBuilder driverBlock) {
+        driverBlocks.add(driverBlock);
         return this;
     }
 
-    public DriverBlockBuilder withDelivery(DeliveryBuilder delivery) {
-        itinerary.add(delivery);
+    public WorkflowBuilder withControlBlock(ControlBlockBuilder controlBlock) {
+        controlBlockBuilder = controlBlock;
         return this;
     }
 
-    public DriverBlockBuilder withRestaurant(RestaurantBuilder restaurant) {
-        itinerary.add(restaurant);
+    public WorkflowBuilder withTrailingEmptyRowNotEnoughColumns() {
+        finalRow = EMPTY_ROW.substring(3);
+        return this;
+    }
+
+    public WorkflowBuilder withTrailingEmptyRowTooManyColumns() {
+        finalRow = ",,," + BuilderConstants.EMPTY_ROW;
         return this;
     }
 }

@@ -75,7 +75,7 @@ public class DriverPostTest extends org.helpberkeley.memberdata.DriverPostTest {
 
     @Override
     public String getEmptyRow() {
-        return ControlBlockTest.EMPTY_ROW;
+        return BuilderConstants.EMPTY_ROW;
     }
 
     @Test

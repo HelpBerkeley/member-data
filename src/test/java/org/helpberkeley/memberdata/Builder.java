@@ -23,7 +23,5 @@
 
 package org.helpberkeley.memberdata;
 
-public interface ItineraryStop {
-    ItineraryStopType getType();
-    int getLineNumber();
+public interface Builder {
 }

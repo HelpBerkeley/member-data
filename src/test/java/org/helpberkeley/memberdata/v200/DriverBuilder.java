@@ -20,17 +20,19 @@
  * SOFTWARE.
  *
  */
-package org.helpberkeley.memberdata.v300;
+package org.helpberkeley.memberdata.v200;
 
-import org.helpberkeley.memberdata.Builder;
+import org.helpberkeley.memberdata.Constants;
 
-import java.util.ArrayList;
-import java.util.List;
+public class DriverBuilder {
 
-public class DriverBlockBuilder {
+    private String userName = BuilderConstants.DEFAULT_DRIVER_USER_NAME;
+    private final String name = BuilderConstants.DEFAULT_DRIVER_NAME;
 
-    private final List<Builder> itinerary = new ArrayList<>();
-    private DriverBuilder driver = new DriverBuilder();
+    public DriverBuilder withUserName(String userName) {
+        this.userName = userName;
+        return this;
+    }
 
     @Override
     public String toString() {
@@ -38,30 +40,12 @@ public class DriverBlockBuilder {
     }
 
     public String build() {
-
-        StringBuilder driverBlock = new StringBuilder();
-
-        driverBlock.append(driver.build());
-        itinerary.forEach(driverBlock::append);
-        driverBlock.append(driver.build());
-        driverBlock.append(WorkflowBuilder.DEFAULT_GMAP_URL);
-        driverBlock.append(ControlBlockTest.EMPTY_ROW);
-
-        return driverBlock.toString();
-    }
-
-    public DriverBlockBuilder withDriver(DriverBuilder driver) {
-        this.driver = driver;
-        return this;
-    }
-
-    public DriverBlockBuilder withDelivery(DeliveryBuilder delivery) {
-        itinerary.add(delivery);
-        return this;
-    }
-
-    public DriverBlockBuilder withRestaurant(RestaurantBuilder restaurant) {
-        itinerary.add(restaurant);
-        return this;
+        return "FALSE,TRUE,"
+                + name
+                + Constants.CSV_SEPARATOR
+                + userName
+                + Constants.CSV_SEPARATOR
+                + "777-777-7777,none,Hills,Berkeley,77 77th Place,,,,,,"
+                + "\n";
     }
 }

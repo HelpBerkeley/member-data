@@ -32,8 +32,11 @@ import java.util.*;
 
 public abstract class WorkflowParser {
 
+    public static final String ERROR_DELIVERY_BEFORE_PICKUP =
+            "Driver {0}, delivery for {1} at line {2} occurs before pickup from {3} at line {4}.\n";
+
     protected final ControlBlock controlBlock;
-    protected long lineNumber = 1;
+    protected int lineNumber = 1;
     protected final PeekingIterator<WorkflowBean> iterator;
     protected Map<String, Restaurant> globalRestaurants;
     protected final String normalizedCSVData;
@@ -79,6 +82,7 @@ public abstract class WorkflowParser {
 
     protected abstract Delivery processDelivery(WorkflowBean bean);
     protected abstract void versionSpecificAudit(Driver driver);
+    protected abstract void auditDeliveryBeforePickup(Driver driver);
     protected abstract void auditPickupDeliveryMismatch(Driver driver);
 
     private PeekingIterator<WorkflowBean> initializeIterator(final String csvData) {
@@ -148,6 +152,7 @@ public abstract class WorkflowParser {
 
             Driver driver = processDriver(bean);
             auditPickupDeliveryMismatch(driver);
+            auditDeliveryBeforePickup(driver);
             versionSpecificAudit(driver);
             driverMap.put(driver.getUserName(), driver);
         }
@@ -381,7 +386,7 @@ public abstract class WorkflowParser {
         }
         String details = bean.getDetails();
 
-        Restaurant restaurant = Restaurant.createRestaurant(controlBlock, restaurantName);
+        Restaurant restaurant = Restaurant.createRestaurant(controlBlock, restaurantName, lineNumber);
         errors += restaurant.setVersionSpecificFields(bean);
 
         if (! errors.isEmpty()) {

@@ -22,9 +22,11 @@
  */
 package org.helpberkeley.memberdata.v300;
 
-public class RestaurantBuilder {
+import org.helpberkeley.memberdata.Builder;
 
-    private String name = WorkflowBuilder.DEFAULT_RESTAURANT_NAME;
+public class RestaurantBuilder implements Builder {
+
+    private String name = BuilderConstants.DEFAULT_RESTAURANT_NAME;
 
     @Override
     public String toString() {

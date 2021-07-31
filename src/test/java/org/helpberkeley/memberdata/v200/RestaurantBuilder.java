@@ -20,17 +20,14 @@
  * SOFTWARE.
  *
  */
-package org.helpberkeley.memberdata.v300;
+package org.helpberkeley.memberdata.v200;
 
 import org.helpberkeley.memberdata.Builder;
 
-import java.util.ArrayList;
-import java.util.List;
+public class RestaurantBuilder implements Builder {
 
-public class DriverBlockBuilder {
-
-    private final List<Builder> itinerary = new ArrayList<>();
-    private DriverBuilder driver = new DriverBuilder();
+    private String name = BuilderConstants.DEFAULT_RESTAURANT_NAME;
+    private String orders = "0";
 
     @Override
     public String toString() {
@@ -38,30 +35,20 @@ public class DriverBlockBuilder {
     }
 
     public String build() {
-
-        StringBuilder driverBlock = new StringBuilder();
-
-        driverBlock.append(driver.build());
-        itinerary.forEach(driverBlock::append);
-        driverBlock.append(driver.build());
-        driverBlock.append(WorkflowBuilder.DEFAULT_GMAP_URL);
-        driverBlock.append(ControlBlockTest.EMPTY_ROW);
-
-        return driverBlock.toString();
+        return "FALSE,,,,,,,,\"9999 999 St., Berkeley, CA\",FALSE,,"
+                + name
+                + ",,,"
+                + orders
+                + "\n";
     }
 
-    public DriverBlockBuilder withDriver(DriverBuilder driver) {
-        this.driver = driver;
+    public RestaurantBuilder withName(String name) {
+        this.name = name;
         return this;
     }
 
-    public DriverBlockBuilder withDelivery(DeliveryBuilder delivery) {
-        itinerary.add(delivery);
-        return this;
-    }
-
-    public DriverBlockBuilder withRestaurant(RestaurantBuilder restaurant) {
-        itinerary.add(restaurant);
+    public RestaurantBuilder withOrders(String orders) {
+        this.orders = orders;
         return this;
     }
 }

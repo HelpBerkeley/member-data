@@ -40,7 +40,7 @@ public abstract class RestaurantTemplateParser {
     static final String DUPLICATE_ROUTE_ERROR = " appears more than once in the route block";
     private static final String ROUTE_MARKER = " Route";
 
-    private long lineNumber = 0;
+    private int lineNumber = 0;
     private final Iterator<RestaurantBean> iterator;
     private String version = Constants.CONTROL_BLOCK_VERSION_UNKNOWN;
     private final ControlBlock controlBlock;
@@ -344,7 +344,7 @@ public abstract class RestaurantTemplateParser {
             if (restaurants.containsKey(restaurantName)) {
                 throwTemplateError(restaurantName + DUPLICATE_ROUTE_ERROR);
             }
-            Restaurant restaurant = Restaurant.createRestaurant(controlBlock, restaurantName);
+            Restaurant restaurant = Restaurant.createRestaurant(controlBlock, restaurantName, lineNumber);
             restaurants.put(restaurantName, restaurant);
             restaurant.setRoute(routeName);
             restaurant.setStartTime(startTime);

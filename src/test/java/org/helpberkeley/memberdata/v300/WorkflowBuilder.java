@@ -27,9 +27,6 @@ import java.util.List;
 
 public class WorkflowBuilder {
 
-    public static final String DEFAULT_DRIVER_USER_NAME = "jbDriver";
-    public static final String DEFAULT_DRIVER_NAME = "Joe B. Driver";
-    public static final String DEFAULT_RESTAURANT_NAME = "RevFoodTruck";
     public static final String DEFAULT_GMAP_URL =
             "\"https://www.google.com/maps/dir/something+something+else\",,,,,,,,,,,,,,,,,\n";
 

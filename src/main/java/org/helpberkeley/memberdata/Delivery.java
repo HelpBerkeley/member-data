@@ -25,7 +25,7 @@ package org.helpberkeley.memberdata;
 public abstract class Delivery implements ItineraryStop {
 
     protected final String name;
-    protected final long lineNumber;
+    protected final int lineNumber;
     protected String userName;
     protected String phone;
     protected String altPhone;
@@ -35,9 +35,19 @@ public abstract class Delivery implements ItineraryStop {
     protected Boolean isCondo;
     protected String details;
 
-    public Delivery(String name, long lineNumber) {
+    public Delivery(String name, int lineNumber) {
         this.name = name;
         this.lineNumber = lineNumber;
+    }
+
+    @Override
+    public ItineraryStopType getType() {
+        return ItineraryStopType.DELIVERY;
+    }
+
+    @Override
+    public int getLineNumber() {
+        return lineNumber;
     }
 
     public void setUserName(String userName) {
@@ -105,10 +115,6 @@ public abstract class Delivery implements ItineraryStop {
 
     public String getFullAddress() {
         return address + ", " + city + ", " + "CA";
-    }
-
-    public long getLineNumber() {
-        return lineNumber;
     }
 
     protected final String csvEscapeCommas(String value) {

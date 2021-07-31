@@ -29,8 +29,8 @@ public class RestaurantV200 extends Restaurant {
     private boolean noPics = false;
     private long orders = 0;
 
-    public RestaurantV200(ControlBlock controlBlock, String name) {
-        super(name);
+    public RestaurantV200(ControlBlock controlBlock, String name, int lineNumber) {
+        super(name, lineNumber);
         ControlBlockV200 controlBlock1 = (ControlBlockV200) controlBlock;
     }
 

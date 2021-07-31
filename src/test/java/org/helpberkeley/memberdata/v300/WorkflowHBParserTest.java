@@ -22,6 +22,7 @@
  */
 package org.helpberkeley.memberdata.v300;
 
+import org.assertj.core.api.Assertions;
 import org.helpberkeley.memberdata.*;
 import org.junit.Test;
 
@@ -31,6 +32,7 @@ import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.ThrowableAssert.catchThrowable;
+import static org.helpberkeley.memberdata.v300.BuilderConstants.*;
 
 public class WorkflowHBParserTest extends WorkflowHBParserBaseTest {
 
@@ -43,8 +45,8 @@ public class WorkflowHBParserTest extends WorkflowHBParserBaseTest {
     private final ControlBlock controlBlock = ControlBlock.create(controlBlockData);
 
     private final Map<String, Restaurant> restaurants =
-            Map.of("RevFoodTruck", Restaurant.createRestaurant(controlBlock, "RevFoodTruck"),
-                    "BFN", Restaurant.createRestaurant(controlBlock, "BFN"));
+            Map.of("RevFoodTruck", Restaurant.createRestaurant(controlBlock, "RevFoodTruck", 1),
+                    "BFN", Restaurant.createRestaurant(controlBlock, "BFN", 2));
 
     public WorkflowHBParserTest() {
         super();
@@ -421,7 +423,7 @@ public class WorkflowHBParserTest extends WorkflowHBParserBaseTest {
         Throwable thrown = catchThrowable(parser::drivers);
         assertThat(thrown).isInstanceOf(MemberDataException.class);
         assertThat(thrown).hasMessage(MessageFormat.format(WorkflowParserV300.DUPLICATE_PICKUP,
-                WorkflowBuilder.DEFAULT_RESTAURANT_NAME, WorkflowBuilder.DEFAULT_DRIVER_USER_NAME));
+                DEFAULT_RESTAURANT_NAME, DEFAULT_DRIVER_USER_NAME));
     }
 
     @Test
@@ -438,7 +440,129 @@ public class WorkflowHBParserTest extends WorkflowHBParserBaseTest {
         assertThat(drivers).hasSize(1);
         assertThat(drivers.get(0).getWarningMessages()).containsExactly(MessageFormat.format(
                 WorkflowParserV300.EMPTY_DELIVERY, 15,
-                WorkflowBuilder.DEFAULT_DRIVER_NAME, DeliveryBuilder.DEFAULT_CONSUMER_NAME));
+                DEFAULT_DRIVER_NAME, DEFAULT_CONSUMER_NAME));
+    }
+
+    @Test
+    public void mixedPickupsAndDeliveriesTest() {
+        DriverBlockBuilder driverBlock = new DriverBlockBuilder();
+        driverBlock.withRestaurant(new RestaurantBuilder());
+        driverBlock.withDelivery(new DeliveryBuilder().withStdMeals("1"));
+        driverBlock.withRestaurant(new RestaurantBuilder().withName("BFN"));
+        driverBlock.withDelivery(new DeliveryBuilder().withStdGrocery("1"));
+        WorkflowBuilder workflowBuilder = new WorkflowBuilder();
+        workflowBuilder.withDriverBlock(driverBlock);
+
+        WorkflowParser parser = WorkflowParser.create(restaurants, workflowBuilder.build());
+        auditControlBlock(parser.controlBlock());
+        List<Driver> drivers = parser.drivers();
+        assertThat(drivers.get(0).getWarningMessages()).isEmpty();
+        assertThat(drivers).hasSize(1);
+        Driver driver = drivers.get(0);
+
+        List<ItineraryStop> itinerary = driver.getItinerary();
+        assertThat(itinerary).hasSize(4);
+
+        assertThat(itinerary.get(0)).isInstanceOf(RestaurantV300.class);
+        RestaurantV300 restaurant = (RestaurantV300) itinerary.get(0);
+        assertThat(restaurant.getName()).isEqualTo(DEFAULT_RESTAURANT_NAME);
+
+        assertThat(itinerary.get(1)).isInstanceOf(DeliveryV300.class);
+        DeliveryV300 delivery = (DeliveryV300)itinerary.get(1);
+        assertThat(delivery.getName()).isEqualTo(DEFAULT_CONSUMER_NAME);
+        assertThat(delivery.getUserName()).isEqualTo(DEFAULT_CONSUMER_USER_NAME);
+
+        assertThat(itinerary.get(2)).isInstanceOf(RestaurantV300.class);
+        restaurant = (RestaurantV300) itinerary.get(2);
+        assertThat(restaurant.getName()).isEqualTo("BFN");
+
+        assertThat(itinerary.get(3)).isInstanceOf(DeliveryV300.class);
+        delivery = (DeliveryV300)itinerary.get(3);
+        assertThat(delivery.getName()).isEqualTo(DEFAULT_CONSUMER_NAME);
+        assertThat(delivery.getUserName()).isEqualTo(DEFAULT_CONSUMER_USER_NAME);
+    }
+
+    @Test
+    public void deliveryBeforePickupTest() {
+        DriverBlockBuilder driverBlock = new DriverBlockBuilder();
+        driverBlock.withDelivery(new DeliveryBuilder().withStdMeals("1"));
+        driverBlock.withRestaurant(new RestaurantBuilder());
+        WorkflowBuilder workflowBuilder = new WorkflowBuilder();
+        workflowBuilder.withDriverBlock(driverBlock);
+
+        WorkflowParser parser = WorkflowParser.create(restaurants, workflowBuilder.build());
+        auditControlBlock(parser.controlBlock());
+        Throwable thrown = Assertions.catchThrowable(parser::drivers);
+        assertThat(thrown).isInstanceOf(MemberDataException.class);
+        assertThat(thrown).hasMessage(MessageFormat.format(WorkflowParser.ERROR_DELIVERY_BEFORE_PICKUP,
+                DEFAULT_DRIVER_USER_NAME, DEFAULT_CONSUMER_NAME, 14, DEFAULT_RESTAURANT_NAME, 15));
+    }
+
+    @Test
+    public void emptyPickupsNoDeliveriesTest() {
+        DriverBlockBuilder driverBlock = new DriverBlockBuilder();
+        driverBlock.withRestaurant(new RestaurantBuilder());
+        driverBlock.withRestaurant(new RestaurantBuilder().withName("BFN"));
+        WorkflowBuilder workflowBuilder = new WorkflowBuilder();
+        workflowBuilder.withDriverBlock(driverBlock);
+
+        WorkflowParser parser = WorkflowParser.create(restaurants, workflowBuilder.build());
+        auditControlBlock(parser.controlBlock());
+        List<Driver> drivers = parser.drivers();
+        assertThat(drivers).hasSize(1);
+        Driver driver = drivers.get(0);
+        assertThat(driver.getWarningMessages()).isEmpty();
+
+        List<ItineraryStop> itinerary = driver.getItinerary();
+        assertThat(itinerary).hasSize(2);
+
+        assertThat(itinerary.get(0).getType()).isEqualTo(ItineraryStopType.PICKUP);
+        assertThat(itinerary.get(0)).isInstanceOf(RestaurantV300.class);
+        RestaurantV300 restaurant = (RestaurantV300)itinerary.get(0);
+        assertThat(restaurant.getName()).isEqualTo(DEFAULT_RESTAURANT_NAME);
+
+        assertThat(itinerary.get(1).getType()).isEqualTo(ItineraryStopType.PICKUP);
+        assertThat(itinerary.get(1)).isInstanceOf(RestaurantV300.class);
+        restaurant = (RestaurantV300)itinerary.get(1);
+        assertThat(restaurant.getName()).isEqualTo("BFN");
+    }
+
+    @Test
+    public void missingMealSourceTest() {
+        ControlBlockBuilder controlBlock = new ControlBlockBuilder()
+                .withFoodSources("|BFN");
+        DriverBlockBuilder driverBlock = new DriverBlockBuilder();
+        driverBlock.withDelivery(new DeliveryBuilder().withStdMeals("1"));
+        driverBlock.withRestaurant(new RestaurantBuilder());
+        WorkflowBuilder workflowBuilder = new WorkflowBuilder()
+                .withControlBlock(controlBlock)
+                .withDriverBlock(driverBlock);
+
+        WorkflowParser parser = WorkflowParser.create(restaurants, workflowBuilder.build());
+        auditControlBlock(parser.controlBlock());
+        Throwable thrown = Assertions.catchThrowable(parser::drivers);
+        assertThat(thrown).isInstanceOf(MemberDataException.class);
+        assertThat(thrown).hasMessage(MessageFormat.format(WorkflowParserV300.MISSING_MEAL_SOURCE,
+                14, DEFAULT_DRIVER_NAME, DEFAULT_CONSUMER_NAME));
+    }
+
+    @Test
+    public void missingGrocerySourceTest() {
+        ControlBlockBuilder controlBlock = new ControlBlockBuilder()
+                .withFoodSources("RevFoodTruck|");
+        DriverBlockBuilder driverBlock = new DriverBlockBuilder();
+        driverBlock.withDelivery(new DeliveryBuilder().withStdGrocery("1"));
+        driverBlock.withRestaurant(new RestaurantBuilder());
+        WorkflowBuilder workflowBuilder = new WorkflowBuilder()
+                .withControlBlock(controlBlock)
+                .withDriverBlock(driverBlock);
+
+        WorkflowParser parser = WorkflowParser.create(restaurants, workflowBuilder.build());
+        auditControlBlock(parser.controlBlock());
+        Throwable thrown = Assertions.catchThrowable(parser::drivers);
+        assertThat(thrown).isInstanceOf(MemberDataException.class);
+        assertThat(thrown).hasMessage(MessageFormat.format(WorkflowParserV300.MISSING_GROCERY_SOURCE,
+                14, DEFAULT_DRIVER_NAME, DEFAULT_CONSUMER_NAME));
     }
 
     private void auditControlBlock(ControlBlock controlBlock) {

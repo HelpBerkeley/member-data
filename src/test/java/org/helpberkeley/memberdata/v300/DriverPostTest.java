@@ -433,7 +433,7 @@ public class DriverPostTest extends org.helpberkeley.memberdata.DriverPostTest {
                 DriverPostFormat.create(createApiSimulator(), users, workflowBuilder.build());
         String post = driverPostFormat.generateSummary();
         assertThat(post).isEqualTo(MessageFormat.format(WorkflowParserV300.EMPTY_DELIVERY, 16,
-                WorkflowBuilder.DEFAULT_DRIVER_NAME, DeliveryBuilder.DEFAULT_CONSUMER_NAME));
+                BuilderConstants.DEFAULT_DRIVER_NAME, BuilderConstants.DEFAULT_CONSUMER_NAME));
     }
 
     @Test
@@ -549,11 +549,11 @@ public class DriverPostTest extends org.helpberkeley.memberdata.DriverPostTest {
         WorkflowBuilder workflowBuilder = new WorkflowBuilder();
         workflowBuilder.withDriverBlock(driverBlock);
         workflowBuilder.withControlBlock(
-                new ControlBlockBuilder().withBackupDriver(WorkflowBuilder.DEFAULT_DRIVER_USER_NAME));
+                new ControlBlockBuilder().withBackupDriver(BuilderConstants.DEFAULT_DRIVER_USER_NAME));
 
         DriverPostFormat driverPostFormat =
                 DriverPostFormat.create(createApiSimulator(), users, workflowBuilder.build());
         assertThat(driverPostFormat.statusMessages()).contains(MessageFormat.format(
-                DriverPostFormat.ERROR_BACKUP_DRIVER_DUPLICATE, WorkflowBuilder.DEFAULT_DRIVER_USER_NAME));
+                DriverPostFormat.ERROR_BACKUP_DRIVER_DUPLICATE, BuilderConstants.DEFAULT_DRIVER_USER_NAME));
     }
 }

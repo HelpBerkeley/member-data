@@ -26,6 +26,7 @@ import com.opencsv.bean.CsvToBeanBuilder;
 import org.helpberkeley.memberdata.*;
 
 import java.io.StringReader;
+import java.text.MessageFormat;
 import java.util.*;
 
 public class WorkflowParserV200 extends WorkflowParser {
@@ -89,6 +90,7 @@ public class WorkflowParserV200 extends WorkflowParser {
 
     }
 
+    @Override
     public Delivery processDelivery(WorkflowBean bean) {
 
         String errors = "";
@@ -208,6 +210,31 @@ public class WorkflowParserV200 extends WorkflowParser {
 
         if (errors.length() > 0) {
             throw new MemberDataException("Driver " + driver.getUserName() + ": " + errors);
+        }
+    }
+
+    @Override
+    protected void auditDeliveryBeforePickup(Driver driver) {
+        StringBuilder errors = new StringBuilder();
+
+        for (DeliveryV200 delivery : (List<DeliveryV200>)(List<? extends Delivery>)driver.getDeliveries()) {
+
+            if ((delivery.getNormalRations().isEmpty() || delivery.getNormalRations().equals("0"))
+                && (delivery.getVeggieRations().isEmpty() || delivery.getVeggieRations().equals("0"))) {
+                continue;
+            }
+
+            String restaurantName = delivery.getRestaurant();
+            Restaurant restaurant = driver.getPickup(restaurantName);
+            if (delivery.getLineNumber() < restaurant.getLineNumber()) {
+                errors.append(MessageFormat.format(ERROR_DELIVERY_BEFORE_PICKUP, driver.getUserName(),
+                        delivery.getName(), delivery.getLineNumber(),
+                        restaurantName, restaurant.getLineNumber()));
+            }
+        }
+
+        if (errors.length() > 0) {
+            throw new MemberDataException(errors.toString());
         }
     }
 

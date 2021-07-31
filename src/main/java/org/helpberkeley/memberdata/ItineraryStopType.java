@@ -20,10 +20,9 @@
  * SOFTWARE.
  *
  */
-
 package org.helpberkeley.memberdata;
 
-public interface ItineraryStop {
-    ItineraryStopType getType();
-    int getLineNumber();
+public enum ItineraryStopType {
+    PICKUP,
+    DELIVERY
 }

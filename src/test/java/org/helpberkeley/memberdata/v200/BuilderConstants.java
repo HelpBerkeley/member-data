@@ -20,10 +20,24 @@
  * SOFTWARE.
  *
  */
+package org.helpberkeley.memberdata.v200;
 
-package org.helpberkeley.memberdata;
+import org.helpberkeley.memberdata.Constants;
 
-public interface ItineraryStop {
-    ItineraryStopType getType();
-    int getLineNumber();
+public class BuilderConstants {
+    public static final String HEADER =
+            "Consumer,Driver,Name,User Name,Phone #,Phone2 #,Neighborhood,City,"
+                    + "Address,Condo,Details,Restaurants,normal,veggie,#orders\n";
+    public static final String EMPTY_ROW = ",,,,,,,,,,,,,,\n";
+    public static final String CONTROL_BLOCK_BEGIN_ROW =
+            "FALSE,FALSE," + Constants.CONTROL_BLOCK_BEGIN + ",,,,,,,,,,,,\n";
+    public static final String CONTROL_BLOCK_END_ROW =
+            "FALSE,FALSE," + Constants.CONTROL_BLOCK_END + ",,,,,,,,,,,,\n";
+    public static final String CONTROL_BLOCK_VERSION_ROW =
+            "FALSE,FALSE,,Version,,,,2-0-0,,,,,,,\n";
+    public static final String DEFAULT_CONSUMER_NAME = "Cust name 1";
+    public static final String DEFAULT_CONSUMER_USER_NAME = "cust1";
+    public static final String DEFAULT_RESTAURANT_NAME = "Cafe Raj";
+    public static final String DEFAULT_DRIVER_USER_NAME = "jbDriver";
+    public static final String DEFAULT_DRIVER_NAME = "Joe B. Driver";
 }

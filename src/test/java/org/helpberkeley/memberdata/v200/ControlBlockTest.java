@@ -32,23 +32,12 @@ import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.ThrowableAssert.catchThrowable;
+import static org.helpberkeley.memberdata.v200.BuilderConstants.*;
 
 @SuppressWarnings("unchecked")
 public class ControlBlockTest extends ControlBlockTestBase {
 
     private final Map<String, Restaurant> allRestaurants;
-
-    public static final String EMPTY_ROW = ",,,,,,,,,,,,,,\n";
-
-    private static final String HEADER =
-            "Consumer,Driver,Name,User Name,Phone #,Phone2 #,Neighborhood,City,"
-                    + "Address,Condo,Details,Restaurants,normal,veggie,#orders\n";
-    private final String CONTROL_BLOCK_BEGIN_ROW =
-            "FALSE,FALSE," + Constants.CONTROL_BLOCK_BEGIN + ",,,,,,,,,,,,\n";
-    private final String CONTROL_BLOCK_END_ROW =
-            "FALSE,FALSE," + Constants.CONTROL_BLOCK_END + ",,,,,,,,,,,,\n";
-    private final String CONTROL_BLOCK_VERSION_ROW =
-            "FALSE,FALSE,,Version,,,,2-0-0,,,,,,,\n";
 
     public ControlBlockTest() {
         RestaurantTemplateParser parser =
@@ -88,12 +77,12 @@ public class ControlBlockTest extends ControlBlockTestBase {
 
     @Override
     public String getDirectiveRow(String directive) {
-        return EMPTY_ROW.replaceFirst(",,,", "FALSE,FALSE," + directive + ",");
+        return BuilderConstants.EMPTY_ROW.replaceFirst(",,,", "FALSE,FALSE," + directive + ",");
     }
 
     @Override
     public String getKeyValueRow(String key, String value) {
-        return EMPTY_ROW.replaceFirst(",,,,,,,", "FALSE,FALSE,," + key + ",,,," + value);
+        return BuilderConstants.EMPTY_ROW.replaceFirst(",,,,,,,", "FALSE,FALSE,," + key + ",,,," + value);
     }
 
     @Override
