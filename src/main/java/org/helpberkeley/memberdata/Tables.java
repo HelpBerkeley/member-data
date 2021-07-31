@@ -159,6 +159,10 @@ public class Tables {
                 continue;
             }
 
+            if (user.isGone()) {
+                continue;
+            }
+
             if ((!user.isDriver()) && (!user.isDispatcher()) && (!user.isSpecialist()) && (!user.isPacker())) {
                 volunteerRequests.add(user);
             }

@@ -390,6 +390,15 @@ public class TestBase {
                 TEST_REFERRAL_1, TEST_VERIFIED_1);
     }
 
+    protected User createUserWithVolunteerRequestAndGroup(
+            String userName, String request, String group) throws UserException {
+
+        return User.createUser(TEST_NAME_1, userName, TEST_ID_1, TEST_ADDRESS_1,
+                TEST_CITY_1, TEST_PHONE_1, TEST_ALT_PHONE_1, TEST_NEIGHBORHOOD_1, TEST_CREATED_1,
+                TEST_CONDO_1, TEST_CONSUMER_REQUEST_1, request,
+                TEST_REFERRAL_1, TEST_VERIFIED_1, group);
+    }
+
     protected User createUserWithNoRequestsNoGroups(final String userName) throws UserException {
 
         return User.createUser(TEST_NAME_1, userName, TEST_ID_1, TEST_ADDRESS_1,

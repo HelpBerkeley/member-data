@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2020 helpberkeley.org
+// Copyright (c) 2020-2021 helpberkeley.org
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -91,6 +91,7 @@ public class UserExporterTest extends TestBase {
         User u2 = createUserWithVolunteerRequest(TEST_USER_NAME_2, "Drive");
         User u3 = createUserWithNoRequestsNoGroups(TEST_USER_NAME_3);
         User u4 = createUserWithVolunteerRequest("u4", "Dispatch");
+        User u5 = createUserWithVolunteerRequestAndGroup("u5", "Drive", "gone");
 
         UserExporter exporter = new UserExporter(List.of(u1, u2, u3, u4));
         String fileName = exporter.volunteerRequestsToFile("volunteerRequests.csv");
@@ -100,6 +101,7 @@ public class UserExporterTest extends TestBase {
         assertThat(fileData).contains(TEST_USER_NAME_2);
         assertThat(fileData).doesNotContain(TEST_USER_NAME_3);
         assertThat(fileData).contains("u4");
+        assertThat(fileData).doesNotContain("u5");
 
         Files.delete(Paths.get(fileName));
     }
