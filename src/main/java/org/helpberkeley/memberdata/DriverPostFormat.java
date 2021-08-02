@@ -129,7 +129,7 @@ public abstract class DriverPostFormat {
 
             for (MessageBlock messageBlock : driverPostMessageBlocks) {
 
-                context.setMessageBlockContext(messageBlock.getPostNumber(), messageBlock.getName());
+                context.setMessageBlock(messageBlock);
 
                 if (messageBlock.getName().equalsIgnoreCase("comment")) {
                     continue;
@@ -152,7 +152,7 @@ public abstract class DriverPostFormat {
 
         for (MessageBlock messageBlock : groupInstructionMessageBlocks) {
 
-            context.setMessageBlockContext(messageBlock.getPostNumber(), messageBlock.getName());
+            context.setMessageBlock(messageBlock);
 
             if (messageBlock.name.equalsIgnoreCase("comment")) {
                 continue;
@@ -172,7 +172,7 @@ public abstract class DriverPostFormat {
 
         for (MessageBlock messageBlock : backupDriverMessageBlocks) {
 
-            context.setMessageBlockContext(messageBlock.getPostNumber(), messageBlock.getName());
+            context.setMessageBlock(messageBlock);
 
             if (messageBlock.name.equalsIgnoreCase("comment")) {
                 continue;
@@ -455,6 +455,9 @@ public abstract class DriverPostFormat {
             case "BackupDriver":
                 returnValue = processBackupDrivers(loop, context);
                 break;
+            case "Itinerary":
+                returnValue = processItinerary(loop, context);
+                break;
             default:
                 returnValue = processVersionSpecificLoopListNameRef(listName, loop, context);
         }
@@ -511,6 +514,32 @@ public abstract class DriverPostFormat {
 
             for (MessageBlockElement loopElement : loop.getElements()) {
                 ProcessingReturnValue returnValue = processElement(loopElement, deliveryContext);
+                output.append(returnValue.output);
+
+                if (returnValue.status == ProcessingStatus.CONTINUE) {
+                    break;
+                }
+            }
+        }
+
+        LOGGER.trace("${{}} = \"{}\"", loop, output);
+        return new ProcessingReturnValue(ProcessingStatus.COMPLETE, output.toString());
+    }
+
+    private ProcessingReturnValue processItinerary(MessageBlockLoop loop, MessageBlockContext context) {
+
+        StringBuilder output = new StringBuilder();
+        Driver driver = context.getDriver();
+        MessageBlockContext itineraryContext = new MessageBlockContext("Itinerary", context);
+
+        LOGGER.trace("processItinerary: {}", itineraryContext);
+
+        for (ItineraryStop itineraryStop : driver.getItinerary()) {
+
+            itineraryContext.setItineraryStop(itineraryStop);
+
+            for (MessageBlockElement loopElement : loop.getElements()) {
+                ProcessingReturnValue returnValue = processElement(loopElement, itineraryContext);
                 output.append(returnValue.output);
 
                 if (returnValue.status == ProcessingStatus.CONTINUE) {

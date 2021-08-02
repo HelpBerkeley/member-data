@@ -24,6 +24,7 @@ package org.helpberkeley.memberdata;
 
 import org.junit.Test;
 
+import java.text.MessageFormat;
 import java.util.List;
 import java.util.Map;
 
@@ -171,8 +172,10 @@ public abstract class DriverPostTest extends TestBase {
                 DriverPostFormat.create(createApiSimulator(), users, routedDeliveries);
         Throwable thrown = catchThrowable(driverPostFormat::generateDriverPosts);
         assertThat(thrown).isInstanceOf(MemberDataException.class);
-        assertThat(thrown).hasMessage(
-                "Post: 1, block: Test: unknown list variable &{ThisDriverRestaurant.HasPurpleSnowCones}");
+        assertThat(thrown).hasMessage(MessageFormat.format(MessageBlockContext.MESSAGE_ERROR,
+                "Test",
+                "unknown list variable &{ThisDriverRestaurant.HasPurpleSnowCones}",
+                200, 1));
     }
 
     @Test
@@ -208,8 +211,11 @@ public abstract class DriverPostTest extends TestBase {
                 DriverPostFormat.create(createApiSimulator(), users, routedDeliveries);
         Throwable thrown = catchThrowable(driverPostFormat::generateGroupInstructionsPost);
         assertThat(thrown).isInstanceOf(MemberDataException.class);
-        assertThat(thrown).hasMessage(
-                "Post: 1, block: Test: unknown struct variable ${BackupDriver.FavoriteColor}");
+        assertThat(thrown).hasMessage(MessageFormat.format(MessageBlockContext.MESSAGE_ERROR,
+            "Test",
+            "unknown struct variable ${BackupDriver.FavoriteColor}",
+            200, 1));
+
     }
 
     @Test
@@ -221,6 +227,9 @@ public abstract class DriverPostTest extends TestBase {
                 DriverPostFormat.create(createApiSimulator(), users, routedDeliveries);
         Throwable thrown = catchThrowable(driverPostFormat::generateGroupInstructionsPost);
         assertThat(thrown).isInstanceOf(MemberDataException.class);
-        assertThat(thrown).hasMessage("Post: 1, block: Test: unknown list variable &{TheLoop}");
+        assertThat(thrown).hasMessage(MessageFormat.format(MessageBlockContext.MESSAGE_ERROR,
+            "Test",
+            "unknown list variable &{TheLoop}",
+            200, 1));
     }
 }

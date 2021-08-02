@@ -33,6 +33,8 @@ class DeliveryBuilder implements Builder {
     private String city = "Berkeley";
     private String address = "123 456th St.";
     private String phone = "555-555-1112";
+    private String altPhone = "";
+    private boolean condo = false;
     private String restaurantName = DEFAULT_RESTAURANT_NAME;
     private String normalMeals = "0";
     private String veggieMeals = "0";
@@ -62,6 +64,11 @@ class DeliveryBuilder implements Builder {
         return this;
     }
 
+    public DeliveryBuilder withCondo(boolean condo) {
+        this.condo = condo;
+        return this;
+    }
+
     public DeliveryBuilder withAddress(String address) {
         this.address = address;
         return this;
@@ -69,6 +76,11 @@ class DeliveryBuilder implements Builder {
 
     public DeliveryBuilder withPhone(String phone) {
         this.phone = phone;
+        return this;
+    }
+
+    public DeliveryBuilder withAltPhone(String altPhone) {
+        this.altPhone = altPhone;
         return this;
     }
 
@@ -88,11 +100,11 @@ class DeliveryBuilder implements Builder {
                 + consumerName + ","
                 + consumerUserName + ","
                 + phone + ","
-                + "111-222-3333" + ","
-                + "Hills" + ","
+                + altPhone + ","
+                + "Hills,"
                 + city + ","
                 + address + ","
-                + "FALSE" + ","
+                + String.valueOf(condo).toUpperCase() + ","
                 + "" + ","
                 + restaurantName + ","
                 + normalMeals + ","

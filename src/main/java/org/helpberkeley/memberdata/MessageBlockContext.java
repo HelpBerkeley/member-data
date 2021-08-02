@@ -22,12 +22,18 @@
  */
 package org.helpberkeley.memberdata;
 
+import java.text.MessageFormat;
+
 public class MessageBlockContext {
+
+    public static final String ERROR_WRONG_ITINERARY_STOP_TYPE =
+            "itinerary stop from worksheet line {1} is not a {2}.";
+    public static final String MESSAGE_ERROR = "Block {0}: {1}.\n"
+            + "https://go.helpberkeley.org/t/{2}/{3}\n";
     private final String name;
     private final MessageBlockContext parent;
 
-    private String messageBlockName;
-    private long messageBlockPost;
+    private MessageBlock messageBlock;
     private Driver driver;
     private Delivery delivery;
     private Restaurant splitRestaurant;
@@ -35,6 +41,7 @@ public class MessageBlockContext {
     private String backupDriver;
     private String alternateType;
     private String pickupManager;
+    private ItineraryStop itineraryStop;
 
     public MessageBlockContext(String name, MessageBlockContext parent) {
         this.name = name;
@@ -68,13 +75,15 @@ public class MessageBlockContext {
         if (getBackupDriver() != null) {
             string.append(" backupDriver: ").append(getBackupDriver()).append(", ");
         }
+        if (getItineraryStop() != null) {
+            string.append(" itineraryStop: ").append(getItineraryStop()).append(", ");
+        }
 
         return string.toString();
     }
 
-    public void setMessageBlockContext(long postNumber, String name) {
-        messageBlockName = name;
-        messageBlockPost = postNumber;
+    public void setMessageBlock(MessageBlock messageBlock) {
+        this.messageBlock = messageBlock;
     }
 
     public void setDriver(Driver driver) {
@@ -105,6 +114,10 @@ public class MessageBlockContext {
         this.pickupManager = pickupManager;
     }
 
+    public void setItineraryStop(ItineraryStop itineraryStop) {
+        this.itineraryStop = itineraryStop;
+    }
+
     String getBlockName() {
 
         MessageBlockContext baseContext = this;
@@ -113,8 +126,9 @@ public class MessageBlockContext {
             baseContext = baseContext.parent;
         }
 
-        assert baseContext.messageBlockName != null : baseContext;
-        return baseContext.messageBlockName;
+        assert baseContext.messageBlock != null : baseContext;
+        assert baseContext.messageBlock.getName() != null : baseContext.messageBlock;
+        return baseContext.messageBlock.getName();
     }
 
     long getPostNumber() {
@@ -125,8 +139,20 @@ public class MessageBlockContext {
             baseContext = baseContext.parent;
         }
 
-        assert baseContext.messageBlockName != null : baseContext;
-        return baseContext.messageBlockPost;
+        assert baseContext.messageBlock != null : baseContext;
+        return baseContext.messageBlock.getPostNumber();
+    }
+
+    long getTopic() {
+
+        MessageBlockContext baseContext = this;
+
+        while (baseContext.parent != null) {
+            baseContext = baseContext.parent;
+        }
+
+        assert baseContext.messageBlock != null : baseContext;
+        return baseContext.messageBlock.getTopic();
     }
 
     public Driver getDriver() {
@@ -177,6 +203,36 @@ public class MessageBlockContext {
         return null;
     }
 
+    public Restaurant getItineraryRestaurant() {
+
+        if (itineraryStop == null) {
+            throw new MemberDataException(
+                    formatException("Not looping over Itinerary. IRestaurant not available"));
+        }
+
+        if (itineraryStop.getType() != ItineraryStopType.PICKUP) {
+            throw new MemberDataException(formatException(MessageFormat.format(
+                    ERROR_WRONG_ITINERARY_STOP_TYPE, itineraryStop.getLineNumber(), "restaurant")));
+        }
+
+        return (Restaurant)itineraryStop;
+    }
+
+    public Delivery getItineraryDelivery() {
+
+        if (itineraryStop == null) {
+            throw new MemberDataException(
+                    formatException("Not looping over Itinerary. IConsumer not available"));
+        }
+
+        if (itineraryStop.getType() != ItineraryStopType.DELIVERY) {
+            throw new MemberDataException(formatException(MessageFormat.format(
+                    ERROR_WRONG_ITINERARY_STOP_TYPE, itineraryStop.getLineNumber(), "delivery")));
+        }
+
+        return (Delivery)itineraryStop;
+    }
+
     public String getBackupDriver() {
         if (backupDriver != null) {
             return backupDriver;
@@ -205,11 +261,12 @@ public class MessageBlockContext {
         return alternateType;
     }
 
-    // FIX THIS, DS: pass in an element and get the line number from it.
-    public String formatException(String message) {
-        String blockName = getBlockName();
-        long postNumber = getPostNumber();
+    public ItineraryStop getItineraryStop() {
+        return itineraryStop;
+    }
 
-        return "Post: " + postNumber + ", block: " + blockName + ": " + message;
+    public String formatException(String message) {
+        return MessageFormat.format(
+                MESSAGE_ERROR, getBlockName(), message, getTopic(), getPostNumber());
     }
 }

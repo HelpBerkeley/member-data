@@ -200,7 +200,7 @@ public class DriverPostFormatV300 extends DriverPostFormat {
 
         for (MessageBlock messageBlock : driversTableMessageBlocks) {
 
-            context.setMessageBlockContext(messageBlock.getPostNumber(), messageBlock.getName());
+            context.setMessageBlock(messageBlock);
 
             if (messageBlock.getName().equalsIgnoreCase("comment")) {
                 continue;
@@ -220,7 +220,7 @@ public class DriverPostFormatV300 extends DriverPostFormat {
 
         for (MessageBlock messageBlock : ordersTableMessageBlocks) {
 
-            context.setMessageBlockContext(messageBlock.getPostNumber(), messageBlock.getName());
+            context.setMessageBlock(messageBlock);
 
             if (messageBlock.getName().equalsIgnoreCase("comment")) {
                 continue;

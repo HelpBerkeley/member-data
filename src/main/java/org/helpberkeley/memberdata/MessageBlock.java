@@ -108,6 +108,10 @@ public class MessageBlock implements MessageBlockScope {
         return postNumber;
     }
 
+    public long getTopic() {
+        return topic;
+    }
+
     @Override
     public void addElement(MessageBlockElement element) {
         elements.add(element);

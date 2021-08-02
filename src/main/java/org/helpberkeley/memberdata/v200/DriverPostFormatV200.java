@@ -276,7 +276,7 @@ public class DriverPostFormatV200 extends DriverPostFormat {
                 returnValue = processPickupsListRef(listRef, context);
                 break;
             case "Consumer":
-                returnValue = processDeliveriesListRef(listRef, context);
+                returnValue = processDeliveriesListRef(listRef.getName(), context);
                 break;
             case "Driver":
                 returnValue = processDriverListRef(listRef, context);
@@ -285,7 +285,13 @@ public class DriverPostFormatV200 extends DriverPostFormat {
                 returnValue = processSplitRestaurantListRef(listRef, context);
                 break;
             case "Pickup":
-                returnValue = processThisRestaurantPickupListRef(listRef, context);
+                returnValue = processThisRestaurantPickupListRef(refName, context);
+                break;
+            case "IRestaurant":
+                returnValue = processItineraryRestaurantListRef(refName, context);
+                break;
+            case "IConsumer":
+                returnValue = processItineraryDeliveryListRef(listRef.getName(), context);
                 break;
             default:
                 throw new MemberDataException(context.formatException(
@@ -393,11 +399,9 @@ public class DriverPostFormatV200 extends DriverPostFormat {
         return new ProcessingReturnValue(ProcessingStatus.COMPLETE, value);
     }
 
-    private ProcessingReturnValue processDeliveriesListRef(MessageBlockListRef listRef, MessageBlockContext context) {
-        String refName = listRef.getName();
+    private ProcessingReturnValue processDeliveriesListRef(String refName, MessageBlockContext context) {
         String value;
-
-        DeliveryV200 delivery = (DeliveryV200)context.getDelivery();
+        DeliveryV200 delivery = (DeliveryV200) context.getDelivery();
 
         switch (refName) {
             case "Consumer.Name":
@@ -441,10 +445,55 @@ public class DriverPostFormatV200 extends DriverPostFormat {
         return new ProcessingReturnValue(ProcessingStatus.COMPLETE, value);
     }
 
-    private ProcessingReturnValue processThisRestaurantPickupListRef(
-            MessageBlockListRef listRef, MessageBlockContext context) {
+    private ProcessingReturnValue processItineraryDeliveryListRef(String refName, MessageBlockContext context) {
+        String value;
+        DeliveryV200 delivery = (DeliveryV200) context.getItineraryDelivery();
 
-        String refName = listRef.getName();
+        switch (refName) {
+            case "IConsumer.Name":
+                value = delivery.getName();
+                break;
+            case "IConsumer.UserName":
+                value = delivery.getUserName();
+                break;
+            case "IConsumer.CompactPhone":
+                value = compactPhone(delivery.getPhone());
+                break;
+            case "IConsumer.CompactAltPhone":
+                value = compactPhone(delivery.getAltPhone());
+                break;
+            case "IConsumer.City":
+                value = delivery.getCity();
+                break;
+            case "IConsumer.Address":
+                value = delivery.getAddress();
+                break;
+            case "IConsumer.Details":
+                value = delivery.getDetails();
+                break;
+            case "IConsumer.Restaurant":
+                value = delivery.getRestaurant();
+                break;
+            case "IConsumer.RestaurantEmoji":
+                value = restaurants.get(delivery.getRestaurant()).getEmoji();
+                break;
+            case "IConsumer.Normal":
+                value = delivery.getNormalRations();
+                break;
+            case "IConsumer.Veggie":
+                value = delivery.getVeggieRations();
+                break;
+            default:
+                throw new MemberDataException(context.formatException("unknown list variable &{" + refName + "}"));
+        }
+
+        LOGGER.trace("${{}} = \"{}\"", refName, value);
+        return new ProcessingReturnValue(ProcessingStatus.COMPLETE, value);
+    }
+
+    private ProcessingReturnValue processThisRestaurantPickupListRef(
+            String refName, MessageBlockContext context) {
+
         String value;
 
         Restaurant pickupRestaurant = context.getPickupRestaurant();
@@ -467,6 +516,43 @@ public class DriverPostFormatV200 extends DriverPostFormat {
                 break;
             default:
                 throw new MemberDataException(context.formatException("unknown list variable &{" + refName + "}"));
+        }
+
+        LOGGER.trace("${{}} = \"{}\"", refName, value);
+        return new ProcessingReturnValue(ProcessingStatus.COMPLETE, value);
+    }
+
+    private ProcessingReturnValue processItineraryRestaurantListRef(
+            String refName, MessageBlockContext context) {
+
+        String value;
+        RestaurantV200 restaurant = (RestaurantV200)context.getItineraryRestaurant();
+
+        switch (refName) {
+            case "IRestaurant.Name":
+                value = restaurant.getName();
+                break;
+            case "IRestaurant.Emoji":
+                value = restaurant.getEmoji();
+                break;
+            case "IRestaurant.Address":
+                value = restaurant.getAddress();
+                break;
+            case "IRestaurant.Details":
+                value = restaurant.getDetails();
+                break;
+            case "IRestaurant.ThisDriverRestaurantNoPics":
+                // FIX THIS, DS: can we find this in the drivers version of this restaurant?
+                RestaurantV200 globalRestaurant = (RestaurantV200) restaurants.get(restaurant.getName());
+                value = Boolean.toString(globalRestaurant.getNoPics());
+                break;
+            case "IRestaurant.ThisDriverOrders":
+                // FIX THIS, DS: is this correct?
+                value = Long.toString(restaurant.getOrders());
+                break;
+            default:
+                throw new MemberDataException(
+                        context.formatException("unknown list variable &{" + refName + "}"));
         }
 
         LOGGER.trace("${{}} = \"{}\"", refName, value);
@@ -611,11 +697,40 @@ public class DriverPostFormatV200 extends DriverPostFormat {
 
             if (refName.equals("Consumer.IsAltPhone")) {
                 String altPhone = delivery.getAltPhone();
-                value = ((! altPhone.isEmpty()) && (! altPhone.equalsIgnoreCase("none")));
-            } else if (refName.equals("Consumer.IsCondo")) {
+                value = ((!altPhone.isEmpty()) && (!altPhone.equalsIgnoreCase("none")));
+            }
+            else if (refName.equals("Consumer.IsCondo")) {
                 value = delivery.isCondo();
-            } else {
-                throw new MemberDataException(context.formatException("Unknown boolean variable &{" + refName + "}"));
+            }
+            else {
+                throw new MemberDataException(
+                        context.formatException("Unknown boolean variable &{" + refName + "}"));
+            }
+        } else if (listName.equals("IConsumer")) {
+            Delivery delivery = context.getItineraryDelivery();
+
+            if (refName.equals("IConsumer.IsAltPhone")) {
+                String altPhone = delivery.getAltPhone();
+                value = ((!altPhone.isEmpty()) && (!altPhone.equalsIgnoreCase("none")));
+            }
+            else if (refName.equals("IConsumer.IsCondo")) {
+                value = delivery.isCondo();
+            }
+            else {
+                throw new MemberDataException(
+                        context.formatException("Unknown boolean variable &{" + refName + "}"));
+            }
+        } else if (listName.equals("Itinerary")) {
+            ItineraryStop itineraryStop = context.getItineraryStop();
+
+            if (refName.equals("Itinerary.IsRestaurant")) {
+                value = (itineraryStop.getType() == ItineraryStopType.PICKUP);
+            } else if (refName.equals("Itinerary.IsDelivery")) {
+                value = (itineraryStop.getType() == ItineraryStopType.DELIVERY);
+            }
+            else {
+                    throw new MemberDataException(
+                            context.formatException("Unknown boolean variable &{" + refName + "}"));
             }
         } else if (refName.equals("Driver.IsFirstRestaurantClosingBefore7PM")) {
             Driver driver = context.getDriver();

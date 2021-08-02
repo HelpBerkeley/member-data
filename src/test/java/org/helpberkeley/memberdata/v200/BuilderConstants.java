@@ -38,6 +38,7 @@ public class BuilderConstants {
     public static final String DEFAULT_CONSUMER_NAME = "Cust name 1";
     public static final String DEFAULT_CONSUMER_USER_NAME = "cust1";
     public static final String DEFAULT_RESTAURANT_NAME = "Cafe Raj";
+    public static final String DEFAULT_RESTAURANT_ADDRESS = "1234 1234th Ave";
     public static final String DEFAULT_DRIVER_USER_NAME = "jbDriver";
     public static final String DEFAULT_DRIVER_NAME = "Joe B. Driver";
 }

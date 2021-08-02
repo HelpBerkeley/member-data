@@ -27,6 +27,7 @@ import org.helpberkeley.memberdata.Builder;
 public class RestaurantBuilder implements Builder {
 
     private String name = BuilderConstants.DEFAULT_RESTAURANT_NAME;
+    private String address = BuilderConstants.DEFAULT_RESTAURANT_ADDRESS;
     private String orders = "0";
 
     @Override
@@ -35,7 +36,9 @@ public class RestaurantBuilder implements Builder {
     }
 
     public String build() {
-        return "FALSE,,,,,,,,\"9999 999 St., Berkeley, CA\",FALSE,,"
+        return "FALSE,,,,,,,,"
+                + "\"" + address + "\","
+                + "FALSE,,"
                 + name
                 + ",,,"
                 + orders
@@ -44,6 +47,11 @@ public class RestaurantBuilder implements Builder {
 
     public RestaurantBuilder withName(String name) {
         this.name = name;
+        return this;
+    }
+
+    public RestaurantBuilder withAddress(String address) {
+        this.address = address;
         return this;
     }
 
