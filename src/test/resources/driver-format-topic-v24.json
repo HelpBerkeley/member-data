@@ -1,0 +1,112 @@
+{
+  "success": true,
+  "errors": [],
+  "duration": 0.8,
+  "result_count": 17,
+  "params": {},
+  "columns": [
+    "post_number",
+    "topic_id",
+    "raw",
+    "deleted_at"
+  ],
+  "default_limit": 1000,
+  "rows": [
+    [
+      2,
+      7287,
+      "[comment]",
+      null
+    ],
+    [
+      3,
+      7287,
+      "```\n[Header]\n\n\"Driver's run @\"    ${ThisDriverUserName}\n\": start at **\"  ${ThisDriverFirstRestaurant} \" \" ${FirstRestaurantEmoji}\n\" \"  ${ThisDriverFirstRestaurantStartTime}  \".** \"\n\nIF ${IsFirstRestaurantClosingBefore545PM} THEN\n{\n  \"This restaurant closes at \" \n  ${ThisDriverFirstRestaurantClosingTime}  \".\"\n}\n\n\"\\n\" \"**Please reply to this thread when you begin your run!**\\n\\n\n\nAny issue: call today's on-call ops manager,\"\n\" @\"${OnCallOpsManager.UserName}\", at \"${OnCallOpsManager.CompactPhone}\".\\n\\n\"\n\n\n```",
+      null
+    ],
+    [
+      4,
+      7287,
+      "[comment]",
+      null
+    ],
+    [
+      5,
+      7287,
+      "```\n[SplitRestaurant]\n\nIF ${ThisDriverSplitsAnyRestaurant} THEN\n{\n  \"You are sharing at least one restaurant \"\n  \"with other drivers:\\n\"\n\n  LOOP &{ThisDriverRestaurant}\n  {\n    IF &{ThisDriverRestaurant.IsSplit} THEN \n    {\n      \"**&ast;** you are picking up **\"  \n      &{ThisDriverRestaurant.ThisDriverOrders}  \n      \"** of \"  &{ThisDriverRestaurant.TotalOrders}  \n      \" orders at **\"  \n      &{ThisDriverRestaurant.Name} \"** \" \n      &{ThisDriverRestaurant.Emoji}  \n      \" (\" &{ThisDriverRestaurant.TotalDrivers}  \" drivers).\"\n\n\n```\n```\n      IF &{ThisDriverRestaurant.IsCleanup} THEN\n      {\n        \" **You are cleanup driver:** \"\n\n        IF &{ThisDriverRestaurant.NoPics} THEN\n          {  \"you **do not need to take pics** (uploaded directly); \"  }\n\n        IF NOT &{ThisDriverRestaurant.NoPics} THEN\n          {  \"**take pics** of the order form; \"  }\n\n        \"**remain on location** until all orders are picked up. \"\n        \"If problem, call the ops manager.\\n\"\n      }\n\n```\n```\n      IF NOT &{ThisDriverRestaurant.IsCleanup} THEN\n        {  \" You **do not need to take pics.**\\n\"  }\n    \n    }\n  }\n\n  \"**&ast;** be careful to take the right orders; \"\n  \"always explain that other drivers are coming.\\n\\n\"\n\n}\n```",
+      null
+    ],
+    [
+      6,
+      7287,
+      "[comment]",
+      null
+    ],
+    [
+      7,
+      7287,
+      "```\n[Condo]\n\nIF ${ThisDriverAnyCondo} THEN\n{\n    \":warning:You have a condo on your run: **from the previous delivery \"\n    \"location, call condo consumer** and ask to meet downstairs. \"\n    \"Always leave a message, & **post** if delivery fails \"\n     \"(full instructions at the end).\\n\\n\"\n}\n```",
+      null
+    ],
+    [
+      8,
+      7287,
+      "[comment]",
+      null
+    ],
+    [
+      9,
+      7287,
+      "[PickupHeader]\n\"Please go to each restaurant and customer in the order listed in the itinerary table. Some restaurants may have no orders to pick up but you still need to stop there to take pics of tomorrow’s order form, and ask about possible orders for today (just in case).\\n\"",
+      null
+    ],
+    [
+      10,
+      7287,
+      "[comment]",
+      null
+    ],
+    [
+      11,
+      7287,
+      "```\n[Pickup]\n\n\"\\n\\n\"\n\"**Pickups** \"\n\"(by restaurant, with # & type of rations, 1 order per line):\\n\n\n|Restaurant|Name|UserName|Reg|Veg|\\n\n|---|---|---|---|---|\\n\n\"\n```\n```\nLOOP &{ThisDriverRestaurant}\n{\n\n  IF &{ThisDriverRestaurant.AnyOrder} THEN \n  {\n\n    LOOP &{ThisDriverRestaurant.Pickup}\n    {\n       \"|\" &{ThisDriverRestaurant.Name} \" \" &{ThisDriverRestaurant.Emoji}\n       \"|\" &{Pickup.MemberName}\n       \"|\" &{Pickup.UserName}\n       \"|\" &{Pickup.Normal}\n       \"|\" &{Pickup.Veggie}\n       \"|\\n\"\n    }\n  }\n}\n```",
+      null
+    ],
+    [
+      12,
+      7287,
+      "[comment]",
+      null
+    ],
+    [
+      13,
+      7287,
+      "[Itinerary]\n```\n\"**Itinerary**  (:point_right: shows primary phone):\\n\"\n\n\"|Name|Phone|Address|Details|\\n\"\n\"| --- | --- | --- | --- |\\n\"\nLOOP &{Itinerary}\n{\n    IF &{Itinerary.IsRestaurant} THEN  {\n        \"|**Restaurant** \" &{IRestaurant.Name} \" \" &{IRestaurant.Emoji}\n        \"||\"  &{IRestaurant.Address} \"|\"  &{IRestaurant.ThisDriverOrders} \" orders //\"\n\n        IF &{IRestaurant.IsCleanup} THEN  {\n                IF &{IRestaurant.NoPics} THEN\n                {  \":no_mobile_phones:**No pics**\" }\n\n               IF NOT &{IRestaurant.NoPics} THEN\n               {  \"camera:**Take pics**\"  }\n        }\n        IF NOT &{IRestaurant.IsCleanup} THEN\n        {  \":no_mobile_phones:**No pics**\" }\n\n        \" \" &{IRestaurant.Details}\n       \"|\\n\"\n    }\n\n    IF &{Itinerary.IsDelivery} THEN {\n        \"|\" &{IConsumer.Name}\n        \"|\" \" :point_right:\" &{IConsumer.CompactPhone}\n         IF &{IConsumer.IsAltPhone} THEN { \", \" &{IConsumer.CompactAltPhone}  }\n        \"|\" &{IConsumer.Address} \", \" &{IConsumer.City}  \n        \"|\" IF &{IConsumer.IsCondo} THEN { \":warning:**Condo**\" }\n        \" \" &{IConsumer.RestaurantEmoji} \" \" &{IConsumer.Details}\n        \"|\\n\"\n    }\n}\n```",
+      null
+    ],
+    [
+      14,
+      7287,
+      "[comment]",
+      null
+    ],
+    [
+      15,
+      7287,
+      "```\n[GMapURL]\n\n\"**GMap static URL:** \"\n\"[\"   ${ThisDriverUserName} \"'s itinerary](\" ${ThisDriverGMapURL} \")\\n\\n\"\n```",
+      null
+    ],
+    [
+      16,
+      7287,
+      "[comment]",
+      null
+    ],
+    [
+      17,
+      7287,
+      "```\n[CompleteCondo]\n\nIF ${ThisDriverAnyCondo} THEN\n{\n    \":warning: **Complete condo instructions** \"\n    \"(read carefully by clicking the down arrow):\\n\\n\"\n\n    \"https://go.helpberkeley.org/t/condo-instructions/3109 \\n\\n\"\n}\n\n\"Thanks so much for taking the run, and good luck!\"\n```",
+      null
+    ]
+  ]
+}

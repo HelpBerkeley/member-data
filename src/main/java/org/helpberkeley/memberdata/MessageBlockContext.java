@@ -27,7 +27,7 @@ import java.text.MessageFormat;
 public class MessageBlockContext {
 
     public static final String ERROR_WRONG_ITINERARY_STOP_TYPE =
-            "itinerary stop from worksheet line {1} is not a {2}.";
+            "itinerary stop from worksheet line {0} is not a {1}";
     public static final String MESSAGE_ERROR = "Block {0}: {1}.\n"
             + "https://go.helpberkeley.org/t/{2}/{3}\n";
     private final String name;
@@ -263,6 +263,10 @@ public class MessageBlockContext {
 
     public ItineraryStop getItineraryStop() {
         return itineraryStop;
+    }
+
+    public boolean isItinerary() {
+        return itineraryStop != null;
     }
 
     public String formatException(String message) {

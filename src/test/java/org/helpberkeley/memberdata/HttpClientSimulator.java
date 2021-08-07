@@ -178,6 +178,9 @@ public class HttpClientSimulator extends HttpClient {
             case Constants.QUERY_GET_DRIVERS_POST_FORMAT_V23:
                 dataFile = "driver-format-topic-v23.json";
                 break;
+            case Constants.QUERY_GET_DRIVERS_POST_FORMAT_V24:
+                dataFile = "driver-format-topic-v24.json";
+                break;
             case Constants.QUERY_GET_GROUP_INSTRUCTIONS_FORMAT_V22:
                 dataFile = "group-instructions-post-v22.json";
                 break;

@@ -23,6 +23,7 @@
 package org.helpberkeley.memberdata.v200;
 
 import org.helpberkeley.memberdata.*;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.text.MessageFormat;
@@ -39,8 +40,15 @@ public class DriverPostTest extends org.helpberkeley.memberdata.DriverPostTest {
             + " &{IRestaurant.Emoji} \"|\""
             + " &{IRestaurant.Address} \"|\""
             + " &{IRestaurant.Details} \"|\""
-            + " &{IRestaurant.ThisDriverRestaurantNoPics} \"|\""
-            + " &{IRestaurant.ThisDriverOrders}"
+            + " &{IRestaurant.ThisDriverOrders} \"|\""
+            + " IF &{IRestaurant.IsSplit} THEN { \"split|\" } "
+            + " IF NOT &{IRestaurant.IsSplit} THEN { \"not split|\" } "
+            + " IF &{IRestaurant.NoPics} THEN { \"NoPics|\" } "
+            + " IF NOT &{IRestaurant.NoPics} THEN { \"take pics|\" } "
+            + " IF &{IRestaurant.IsCleanup} THEN { \"cleanup|\" } "
+            + " IF NOT &{IRestaurant.IsCleanup} THEN { \"not cleanup|\" } "
+            + " &{IRestaurant.TotalDrivers} \"|\""
+            + " &{IRestaurant.TotalOrders} \"|\""
             + "\"\\n\""
             + " }\n"
             + " IF &{Itinerary.IsDelivery} THEN {\n"
@@ -69,7 +77,7 @@ public class DriverPostTest extends org.helpberkeley.memberdata.DriverPostTest {
 
     @Override
     public int getDriverPostFormatQuery() {
-        return Constants.QUERY_GET_DRIVERS_POST_FORMAT_V23;
+        return Constants.QUERY_GET_DRIVERS_POST_FORMAT_V24;
     }
 
     @Override
@@ -422,13 +430,14 @@ public class DriverPostTest extends org.helpberkeley.memberdata.DriverPostTest {
                 DriverPostFormat.create(createApiSimulator(), users, routedDeliveries);
         List<String> posts = driverPostFormat.generateDriverPosts();
         assertThat(posts).hasSize(2);
-        assertThat(posts.get(0)).isEqualTo("Talavera|:gloves:|1561 Solano Ave, Berkeley||false|0\n" +
-                "Sweet Basil|:lemon:|1736 Solano Ave, Berkeley||false|1\n" +
-                "Bopshop|:motor_scooter:|1823 Solano Ave, Berkeley||false|2\n" +
+        assertThat(posts.get(0)).isEqualTo(
+                "Talavera|:gloves:|1561 Solano Ave, Berkeley||0|not split|take pics|not cleanup|1|0|\n" +
+                "Sweet Basil|:lemon:|1736 Solano Ave, Berkeley||1|not split|take pics|not cleanup|1|1|\n" +
+                "Bopshop|:motor_scooter:|1823 Solano Ave, Berkeley||2|not split|take pics|not cleanup|1|2|\n" +
                 "Cust Name 1|Cust1|(555) 555.1112|(111) 222.3333|has alt phone||123 456th Ave|Berkeley||is not condo|:motor_scooter:||1|0|\n" +
                 "Cust Name 2|Cust2|(555) 555.2222|none||no alt phone|77 77th St|Berkeley||is not condo|:lemon:||1|1|\n" +
                 "Cust Name 3|Cust3|(555) 555.3333|none||no alt phone|11 11th St|Berkeley||is not condo|:motor_scooter:||1|0|\n");
-        assertThat(posts.get(1)).isEqualTo("Cafe Raj|:open_umbrella:|1158 Solano Ave, Albany|One,Two,Three details|false|4\n" +
+        assertThat(posts.get(1)).isEqualTo("Cafe Raj|:open_umbrella:|1158 Solano Ave, Albany|One,Two,Three details|4|not split|take pics|not cleanup|1|4|\n" +
                 "Cust Name 4|Cust4|(555) 555.4444|none||no alt phone|44 44th St|Berkeley||is not condo|:open_umbrella:||0|1|\n" +
                 "Cust Name 5|Cust5|(555) 555.5555|none||no alt phone|55 55th St|Berkeley|is condo||:open_umbrella:|listed as a condo but|1|0|\n" +
                 "Cust Name 6|Cust6|(555) 555.6666|none||no alt phone|66 66th St|Berkeley||is not condo|:open_umbrella:||1|0|\n" +
@@ -472,15 +481,17 @@ public class DriverPostTest extends org.helpberkeley.memberdata.DriverPostTest {
                 DriverPostFormat.create(createApiSimulator(), users, workflowBuilder.build());
         List<String> posts = driverPostFormat.generateDriverPosts();
         assertThat(posts).hasSize(1);
-        assertThat(posts.get(0)).isEqualTo("Cafe Raj|:open_umbrella:|1234 1234th Ave||false|1\n" +
+        assertThat(posts.get(0)).isEqualTo(
+                "Cafe Raj|:open_umbrella:|1234 1234th Ave||1|not split|take pics|not cleanup|1|1|\n" +
                 "Cust name 1|cust1|(555) 555.1112|||no alt phone|123 456th St.|Berkeley|is condo||:open_umbrella:||1|3|\n" +
-                "Bopshop|:motor_scooter:|1 square plaza||false|2\n" +
+                "Bopshop|:motor_scooter:|1 square plaza||2|not split|take pics|not cleanup|1|2|\n" +
                 "fred|fredM|(333) 444.1212|(277) 555.1999|has alt phone||11 99th St.|Berkeley||is not condo|:motor_scooter:||0|1|\n" +
                 "ricky|rickyR|(555) 555.1112|||no alt phone|12 99th St.|Berkeley||is not condo|:motor_scooter:||1|0|\n");
     }
 
+    /** Test audit against using IConsumer for an Itinerary.IsPickup itinerary stop. */
     @Test
-    public void itineraryNotPickupTest() {
+    public void itineraryNotDeliveryTest() {
         String itineraryFormat = "LOOP &{Itinerary} {\n"
                 + "&{IConsumer.Name}"
                 + " }\n"
@@ -491,35 +502,69 @@ public class DriverPostTest extends org.helpberkeley.memberdata.DriverPostTest {
                 DriverPostFormat.create(createApiSimulator(), users, routedDeliveries);
         Throwable thrown = catchThrowable(() -> driverPostFormat.generateDriverPosts());
         assertThat(thrown).isInstanceOf(MemberDataException.class);
-        System.out.println(thrown);
         assertThat(thrown).hasMessageContaining(MessageFormat.format(MessageBlockContext.MESSAGE_ERROR,
                 "Test",
                 MessageFormat.format(MessageBlockContext.ERROR_WRONG_ITINERARY_STOP_TYPE,12, "delivery"),
                 200, 1));
     }
 
+    /** Test audit against using IRestaurant for an Itinerary.IsDelivery itinerary stop. */
     @Test
-    public void itineraryNotDeliveryTest() {
+    public void itineraryNotPickupTest() {
         String itineraryFormat = "LOOP &{Itinerary} {\n"
-                + "&{IDelivery.Name}"
+                + "IF &{Itinerary.IsDelivery} THEN {"
+                + "&{IRestaurant.Name}"
                 + " }\n"
                 + "}";
-
-        DriverBlockBuilder driverBlock = new DriverBlockBuilder();
-        driverBlock.withRestaurant(new RestaurantBuilder().withOrders("0"));
-        driverBlock.withRestaurant(new RestaurantBuilder()
-                .withName("Bopshop")
-                .withAddress("221 Baker St.")
-                .withOrders("0"));
-        WorkflowBuilder workflowBuilder = new WorkflowBuilder();
-        workflowBuilder.withDriverBlock(driverBlock);
-
         HttpClientSimulator.setQueryResponseData(getDriverPostFormatQuery(), createMessageBlock(itineraryFormat));
+        String routedDeliveries = readResourceFile(getRoutedDeliveriesFileName());
         DriverPostFormat driverPostFormat =
-                DriverPostFormat.create(createApiSimulator(), users, workflowBuilder.build());
-        HttpClientSimulator.setQueryResponseData(getDriverPostFormatQuery(), createMessageBlock(itineraryFormat));
+                DriverPostFormat.create(createApiSimulator(), users, routedDeliveries);
         Throwable thrown = catchThrowable(() -> driverPostFormat.generateDriverPosts());
         assertThat(thrown).isInstanceOf(MemberDataException.class);
-        System.out.println(thrown);
+        assertThat(thrown).hasMessageContaining(MessageFormat.format(MessageBlockContext.MESSAGE_ERROR,
+                "Test",
+                MessageFormat.format(MessageBlockContext.ERROR_WRONG_ITINERARY_STOP_TYPE,15, "restaurant"),
+                200, 1));
+    }
+
+    @Test
+    public void itineraryWrongVarRestaurantTest() {
+        String format = "LOOP &{Itinerary} {\n"
+                + "IF &{Itinerary.IsDelivery} THEN {"
+                + "&{ThisDriverRestaurant.Name}"
+                + " }\n"
+                + "}";
+        HttpClientSimulator.setQueryResponseData(getDriverPostFormatQuery(), createMessageBlock(format));
+        String routedDeliveries = readResourceFile(getRoutedDeliveriesFileName());
+        DriverPostFormat driverPostFormat =
+                DriverPostFormat.create(createApiSimulator(), users, routedDeliveries);
+        Throwable thrown = catchThrowable(() -> driverPostFormat.generateDriverPosts());
+        assertThat(thrown).isInstanceOf(MemberDataException.class);
+        assertThat(thrown).hasMessageContaining(MessageFormat.format(MessageBlockContext.MESSAGE_ERROR,
+                "Test",
+                MessageFormat.format(DriverPostFormatV200.ERROR_UNSUPPORTED_ITINERARY_VARIABLE,
+                        "ThisDriverRestaurant", "IRestaurant"),
+                200, 1));
+    }
+
+    @Test
+    public void itineraryWrongVarConsumerTest() {
+        String format = "LOOP &{Itinerary} {\n"
+                + "IF &{Itinerary.IsDelivery} THEN {"
+                + "&{Consumer.Name}"
+                + " }\n"
+                + "}";
+        HttpClientSimulator.setQueryResponseData(getDriverPostFormatQuery(), createMessageBlock(format));
+        String routedDeliveries = readResourceFile(getRoutedDeliveriesFileName());
+        DriverPostFormat driverPostFormat =
+                DriverPostFormat.create(createApiSimulator(), users, routedDeliveries);
+        Throwable thrown = catchThrowable(() -> driverPostFormat.generateDriverPosts());
+        assertThat(thrown).isInstanceOf(MemberDataException.class);
+        assertThat(thrown).hasMessageContaining(MessageFormat.format(MessageBlockContext.MESSAGE_ERROR,
+                "Test",
+                MessageFormat.format(DriverPostFormatV200.ERROR_UNSUPPORTED_ITINERARY_VARIABLE,
+                        "Consumer", "IConsumer"),
+                200, 1));
     }
 }

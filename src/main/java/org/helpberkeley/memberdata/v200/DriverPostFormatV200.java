@@ -33,6 +33,9 @@ import java.util.List;
 
 public class DriverPostFormatV200 extends DriverPostFormat {
 
+    public static final String ERROR_UNSUPPORTED_ITINERARY_VARIABLE =
+            "cannot use {0} struct in an Itinerary LOOP. Use {1} instead";
+
     private static final Logger LOGGER = LoggerFactory.getLogger(DriverPostFormatV200.class);
 
     private final StringBuilder statusMessages = new StringBuilder();
@@ -273,9 +276,17 @@ public class DriverPostFormatV200 extends DriverPostFormat {
 
         switch (listName) {
             case "ThisDriverRestaurant":
+                if (context.isItinerary()) {
+                    throw new MemberDataException(context.formatException(MessageFormat.format(
+                            ERROR_UNSUPPORTED_ITINERARY_VARIABLE, listName, "IRestaurant")));
+                }
                 returnValue = processPickupsListRef(listRef, context);
                 break;
             case "Consumer":
+                if (context.isItinerary()) {
+                    throw new MemberDataException(context.formatException(MessageFormat.format(
+                            ERROR_UNSUPPORTED_ITINERARY_VARIABLE, listName, "IConsumer")));
+                }
                 returnValue = processDeliveriesListRef(listRef.getName(), context);
                 break;
             case "Driver":
@@ -527,6 +538,7 @@ public class DriverPostFormatV200 extends DriverPostFormat {
 
         String value;
         RestaurantV200 restaurant = (RestaurantV200)context.getItineraryRestaurant();
+        RestaurantV200 globalRestaurant = (RestaurantV200) restaurants.get(restaurant.getName());
 
         switch (refName) {
             case "IRestaurant.Name":
@@ -543,12 +555,17 @@ public class DriverPostFormatV200 extends DriverPostFormat {
                 break;
             case "IRestaurant.ThisDriverRestaurantNoPics":
                 // FIX THIS, DS: can we find this in the drivers version of this restaurant?
-                RestaurantV200 globalRestaurant = (RestaurantV200) restaurants.get(restaurant.getName());
                 value = Boolean.toString(globalRestaurant.getNoPics());
                 break;
             case "IRestaurant.ThisDriverOrders":
                 // FIX THIS, DS: is this correct?
                 value = Long.toString(restaurant.getOrders());
+                break;
+            case "IRestaurant.TotalDrivers":
+                value = String.valueOf(globalRestaurant.getDrivers().size());
+                break;
+            case "IRestaurant.TotalOrders":
+                value = String.valueOf(globalRestaurant.getOrders());
                 break;
             default:
                 throw new MemberDataException(
@@ -692,6 +709,30 @@ public class DriverPostFormatV200 extends DriverPostFormat {
                             context.formatException("Unknown boolean variable &{" + refName + "}"));
             }
 
+        } else if (listName.equals("IRestaurant")) {
+            RestaurantV200 restaurant = (RestaurantV200) context.getItineraryRestaurant();
+            String restaurantName = restaurant.getName();
+            RestaurantV200 globalRestaurant = (RestaurantV200) restaurants.get(restaurantName);
+
+            switch (refName) {
+                case "IRestaurant.IsSplit":
+                    return globalRestaurant.getDrivers().size() > 1;
+                case "IRestaurant.NoPics":
+                    return globalRestaurant.getNoPics();
+                case "IRestaurant.IsCleanup":
+                    if (globalRestaurant.getDrivers().size() == 1) {
+                        return false;
+                    }
+
+                    String driverUserName = context.getDriver().getUserName();
+                    // FIX THIS, DS: what if we aren't in a split restaurant context?  Audit
+                    ControlBlock.SplitRestaurant splitRestaurant = controlBlock.getSplitRestaurant(restaurantName);
+                    // FIX THIS, DS: what if the control block is missing this split restaurant? Audit
+                    return splitRestaurant.getCleanupDriverUserName().equals(driverUserName);
+                default:
+                    throw new MemberDataException(
+                            context.formatException("Unknown boolean variable &{" + refName + "}"));
+            }
         } else if (listName.equals("Consumer")) {
             Delivery delivery = context.getDelivery();
 
