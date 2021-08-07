@@ -28,6 +28,9 @@ public class MessageBlockContext {
 
     public static final String ERROR_WRONG_ITINERARY_STOP_TYPE =
             "itinerary stop from worksheet line {0} is not a {1}";
+    public static final String ERROR_ITINERARY_VARIABLE_NOT_AVAILABLE =
+            "not looping over an Itinerary. {0} struct not available";
+
     public static final String MESSAGE_ERROR = "Block {0}: {1}.\n"
             + "https://go.helpberkeley.org/t/{2}/{3}\n";
     private final String name;
@@ -207,7 +210,7 @@ public class MessageBlockContext {
 
         if (itineraryStop == null) {
             throw new MemberDataException(
-                    formatException("Not looping over Itinerary. IRestaurant not available"));
+                    formatException(MessageFormat.format(ERROR_ITINERARY_VARIABLE_NOT_AVAILABLE, "IRestaurant")));
         }
 
         if (itineraryStop.getType() != ItineraryStopType.PICKUP) {
@@ -222,7 +225,7 @@ public class MessageBlockContext {
 
         if (itineraryStop == null) {
             throw new MemberDataException(
-                    formatException("Not looping over Itinerary. IConsumer not available"));
+                    formatException(MessageFormat.format(ERROR_ITINERARY_VARIABLE_NOT_AVAILABLE, "IConsumer")));
         }
 
         if (itineraryStop.getType() != ItineraryStopType.DELIVERY) {

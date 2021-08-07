@@ -567,4 +567,34 @@ public class DriverPostTest extends org.helpberkeley.memberdata.DriverPostTest {
                         "Consumer", "IConsumer"),
                 200, 1));
     }
+
+    @Test
+    public void iConsumerWithoutItineraryTest() {
+        String format = "&{IConsumer.Name}\n";
+        HttpClientSimulator.setQueryResponseData(getDriverPostFormatQuery(), createMessageBlock(format));
+        String routedDeliveries = readResourceFile(getRoutedDeliveriesFileName());
+        DriverPostFormat driverPostFormat =
+                DriverPostFormat.create(createApiSimulator(), users, routedDeliveries);
+        Throwable thrown = catchThrowable(() -> driverPostFormat.generateDriverPosts());
+        assertThat(thrown).isInstanceOf(MemberDataException.class);
+        assertThat(thrown).hasMessageContaining(MessageFormat.format(MessageBlockContext.MESSAGE_ERROR,
+                "Test",
+                MessageFormat.format(MessageBlockContext.ERROR_ITINERARY_VARIABLE_NOT_AVAILABLE, "IConsumer"),
+                200, 1));
+    }
+
+    @Test
+    public void iRestaurantWithoutItineraryTest() {
+        String format = "&{IRestaurant.Name}\n";
+        HttpClientSimulator.setQueryResponseData(getDriverPostFormatQuery(), createMessageBlock(format));
+        String routedDeliveries = readResourceFile(getRoutedDeliveriesFileName());
+        DriverPostFormat driverPostFormat =
+                DriverPostFormat.create(createApiSimulator(), users, routedDeliveries);
+        Throwable thrown = catchThrowable(() -> driverPostFormat.generateDriverPosts());
+        assertThat(thrown).isInstanceOf(MemberDataException.class);
+        assertThat(thrown).hasMessageContaining(MessageFormat.format(MessageBlockContext.MESSAGE_ERROR,
+                "Test",
+                MessageFormat.format(MessageBlockContext.ERROR_ITINERARY_VARIABLE_NOT_AVAILABLE, "IRestaurant"),
+                200, 1));
+    }
 }
