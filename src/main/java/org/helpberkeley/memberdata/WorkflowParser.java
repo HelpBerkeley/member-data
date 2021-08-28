@@ -390,7 +390,7 @@ public abstract class WorkflowParser {
         errors += restaurant.setVersionSpecificFields(bean);
 
         if (! errors.isEmpty()) {
-            throw new MemberDataException("line " + lineNumber + " " + errors);
+            throw new MemberDataException("line " + lineNumber + ", " + errors);
         }
 
         restaurant.setAddress(address);

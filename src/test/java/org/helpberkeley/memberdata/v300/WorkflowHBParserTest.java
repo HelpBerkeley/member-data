@@ -492,7 +492,7 @@ public class WorkflowHBParserTest extends WorkflowHBParserBaseTest {
 
         WorkflowParser parser = WorkflowParser.create(restaurants, workflowBuilder.build());
         auditControlBlock(parser.controlBlock());
-        Throwable thrown = Assertions.catchThrowable(parser::drivers);
+        Throwable thrown = catchThrowable(parser::drivers);
         assertThat(thrown).isInstanceOf(MemberDataException.class);
         assertThat(thrown).hasMessage(MessageFormat.format(WorkflowParser.ERROR_DELIVERY_BEFORE_PICKUP,
                 DEFAULT_DRIVER_USER_NAME, DEFAULT_CONSUMER_NAME, 14, DEFAULT_RESTAURANT_NAME, 15));
@@ -540,7 +540,7 @@ public class WorkflowHBParserTest extends WorkflowHBParserBaseTest {
 
         WorkflowParser parser = WorkflowParser.create(restaurants, workflowBuilder.build());
         auditControlBlock(parser.controlBlock());
-        Throwable thrown = Assertions.catchThrowable(parser::drivers);
+        Throwable thrown = catchThrowable(parser::drivers);
         assertThat(thrown).isInstanceOf(MemberDataException.class);
         assertThat(thrown).hasMessage(MessageFormat.format(WorkflowParserV300.MISSING_MEAL_SOURCE,
                 14, DEFAULT_DRIVER_NAME, DEFAULT_CONSUMER_NAME));
@@ -559,10 +559,159 @@ public class WorkflowHBParserTest extends WorkflowHBParserBaseTest {
 
         WorkflowParser parser = WorkflowParser.create(restaurants, workflowBuilder.build());
         auditControlBlock(parser.controlBlock());
-        Throwable thrown = Assertions.catchThrowable(parser::drivers);
+        Throwable thrown = catchThrowable(parser::drivers);
         assertThat(thrown).isInstanceOf(MemberDataException.class);
         assertThat(thrown).hasMessage(MessageFormat.format(WorkflowParserV300.MISSING_GROCERY_SOURCE,
                 14, DEFAULT_DRIVER_NAME, DEFAULT_CONSUMER_NAME));
+    }
+
+    @Test
+    public void stdMealCountOnPickupRowTest() {
+        ControlBlockBuilder controlBlock = new ControlBlockBuilder();
+        RestaurantBuilder restaurantBuilder = new RestaurantBuilder()
+                .withStdMealCount("1");
+        DriverBlockBuilder driverBlock = new DriverBlockBuilder()
+                .withRestaurant(restaurantBuilder)
+                .withDelivery(new DeliveryBuilder());
+        WorkflowBuilder workflowBuilder = new WorkflowBuilder()
+                .withControlBlock(controlBlock)
+                .withDriverBlock(driverBlock);
+        WorkflowParser parser = WorkflowParser.create(restaurants, workflowBuilder.build());
+        auditControlBlock(parser.controlBlock());
+        Throwable thrown = catchThrowable(parser::drivers);
+        assertThat(thrown).isInstanceOf(MemberDataException.class);
+        assertThat(thrown).hasMessageContaining(MessageFormat.format(
+                RestaurantV300.ERROR_NON_EMPTY_COLUMN, Constants.WORKFLOW_STD_MEALS_COLUMN));
+    }
+
+    @Test
+    public void altMealCountOnPickupRowTest() {
+        ControlBlockBuilder controlBlock = new ControlBlockBuilder();
+        RestaurantBuilder restaurantBuilder = new RestaurantBuilder()
+                .withAltMealCount("1");
+        DriverBlockBuilder driverBlock = new DriverBlockBuilder()
+                .withRestaurant(restaurantBuilder)
+                .withDelivery(new DeliveryBuilder());
+        WorkflowBuilder workflowBuilder = new WorkflowBuilder()
+                .withControlBlock(controlBlock)
+                .withDriverBlock(driverBlock);
+        WorkflowParser parser = WorkflowParser.create(restaurants, workflowBuilder.build());
+        auditControlBlock(parser.controlBlock());
+        Throwable thrown = catchThrowable(parser::drivers);
+        assertThat(thrown).isInstanceOf(MemberDataException.class);
+        assertThat(thrown).hasMessageContaining(MessageFormat.format(
+                RestaurantV300.ERROR_NON_EMPTY_COLUMN, Constants.WORKFLOW_ALT_MEALS_COLUMN));
+    }
+
+    @Test
+    public void altMealTypeOnPickupRowTest() {
+        ControlBlockBuilder controlBlock = new ControlBlockBuilder();
+        RestaurantBuilder restaurantBuilder = new RestaurantBuilder()
+                .withAltMealType("a ginger sling with a pineapple heart");
+        DriverBlockBuilder driverBlock = new DriverBlockBuilder()
+                .withRestaurant(restaurantBuilder)
+                .withDelivery(new DeliveryBuilder());
+        WorkflowBuilder workflowBuilder = new WorkflowBuilder()
+                .withControlBlock(controlBlock)
+                .withDriverBlock(driverBlock);
+        WorkflowParser parser = WorkflowParser.create(restaurants, workflowBuilder.build());
+        auditControlBlock(parser.controlBlock());
+        Throwable thrown = catchThrowable(parser::drivers);
+        assertThat(thrown).isInstanceOf(MemberDataException.class);
+        assertThat(thrown).hasMessageContaining(MessageFormat.format(
+                RestaurantV300.ERROR_NON_EMPTY_COLUMN, Constants.WORKFLOW_TYPE_MEAL_COLUMN));
+    }
+
+    @Test
+    public void stdGroceryCountOnPickupRowTest() {
+        ControlBlockBuilder controlBlock = new ControlBlockBuilder();
+        RestaurantBuilder restaurantBuilder = new RestaurantBuilder()
+                .withStdGroceryCount("1");
+        DriverBlockBuilder driverBlock = new DriverBlockBuilder()
+                .withRestaurant(restaurantBuilder)
+                .withDelivery(new DeliveryBuilder());
+        WorkflowBuilder workflowBuilder = new WorkflowBuilder()
+                .withControlBlock(controlBlock)
+                .withDriverBlock(driverBlock);
+        WorkflowParser parser = WorkflowParser.create(restaurants, workflowBuilder.build());
+        auditControlBlock(parser.controlBlock());
+        Throwable thrown = catchThrowable(parser::drivers);
+        assertThat(thrown).isInstanceOf(MemberDataException.class);
+        assertThat(thrown).hasMessageContaining(MessageFormat.format(
+                RestaurantV300.ERROR_NON_EMPTY_COLUMN, Constants.WORKFLOW_STD_GROCERY_COLUMN));
+    }
+
+    @Test
+    public void altGroceryCountOnPickupRowTest() {
+        ControlBlockBuilder controlBlock = new ControlBlockBuilder();
+        RestaurantBuilder restaurantBuilder = new RestaurantBuilder()
+                .withAltGroceryCount("1");
+        DriverBlockBuilder driverBlock = new DriverBlockBuilder()
+                .withRestaurant(restaurantBuilder)
+                .withDelivery(new DeliveryBuilder());
+        WorkflowBuilder workflowBuilder = new WorkflowBuilder()
+                .withControlBlock(controlBlock)
+                .withDriverBlock(driverBlock);
+        WorkflowParser parser = WorkflowParser.create(restaurants, workflowBuilder.build());
+        auditControlBlock(parser.controlBlock());
+        Throwable thrown = catchThrowable(parser::drivers);
+        assertThat(thrown).isInstanceOf(MemberDataException.class);
+        assertThat(thrown).hasMessageContaining(MessageFormat.format(
+                RestaurantV300.ERROR_NON_EMPTY_COLUMN, Constants.WORKFLOW_ALT_GROCERY_COLUMN));
+    }
+
+    @Test
+    public void altGroceryTypeOnPickupRowTest() {
+        ControlBlockBuilder controlBlock = new ControlBlockBuilder();
+        RestaurantBuilder restaurantBuilder = new RestaurantBuilder()
+                .withAltGroceryType("inorganic");
+        DriverBlockBuilder driverBlock = new DriverBlockBuilder()
+                .withRestaurant(restaurantBuilder)
+                .withDelivery(new DeliveryBuilder());
+        WorkflowBuilder workflowBuilder = new WorkflowBuilder()
+                .withControlBlock(controlBlock)
+                .withDriverBlock(driverBlock);
+        WorkflowParser parser = WorkflowParser.create(restaurants, workflowBuilder.build());
+        auditControlBlock(parser.controlBlock());
+        Throwable thrown = catchThrowable(parser::drivers);
+        assertThat(thrown).isInstanceOf(MemberDataException.class);
+        assertThat(thrown).hasMessageContaining(MessageFormat.format(
+                RestaurantV300.ERROR_NON_EMPTY_COLUMN, Constants.WORKFLOW_TYPE_GROCERY_COLUMN));
+    }
+
+    @Test
+    public void allTypeAndCountErrorsOnPickupRowTest() {
+        ControlBlockBuilder controlBlock = new ControlBlockBuilder();
+        RestaurantBuilder restaurantBuilder = new RestaurantBuilder()
+                .withStdMealCount("1")
+                .withAltMealCount("1")
+                .withAltMealType("invisi-food")
+                .withStdGroceryCount("1")
+                .withAltGroceryCount("1")
+                .withAltGroceryType("blue foods only");
+        DriverBlockBuilder driverBlock = new DriverBlockBuilder()
+                .withRestaurant(restaurantBuilder)
+                .withDelivery(new DeliveryBuilder());
+        WorkflowBuilder workflowBuilder = new WorkflowBuilder()
+                .withControlBlock(controlBlock)
+                .withDriverBlock(driverBlock);
+        WorkflowParser parser = WorkflowParser.create(restaurants, workflowBuilder.build());
+        auditControlBlock(parser.controlBlock());
+        Throwable thrown = catchThrowable(parser::drivers);
+        assertThat(thrown).isInstanceOf(MemberDataException.class);
+        assertThat(thrown).hasMessageContaining(MessageFormat.format(
+                RestaurantV300.ERROR_NON_EMPTY_COLUMN, Constants.WORKFLOW_STD_MEALS_COLUMN));
+        assertThat(thrown).hasMessageContaining(MessageFormat.format(
+                RestaurantV300.ERROR_NON_EMPTY_COLUMN, Constants.WORKFLOW_ALT_MEALS_COLUMN));
+        assertThat(thrown).hasMessageContaining(MessageFormat.format(
+                RestaurantV300.ERROR_NON_EMPTY_COLUMN, Constants.WORKFLOW_TYPE_MEAL_COLUMN));
+        assertThat(thrown).hasMessageContaining(MessageFormat.format(
+                RestaurantV300.ERROR_NON_EMPTY_COLUMN, Constants.WORKFLOW_STD_GROCERY_COLUMN));
+        assertThat(thrown).hasMessageContaining(MessageFormat.format(
+                RestaurantV300.ERROR_NON_EMPTY_COLUMN, Constants.WORKFLOW_ALT_GROCERY_COLUMN));
+        assertThat(thrown).hasMessageContaining(MessageFormat.format(
+                RestaurantV300.ERROR_NON_EMPTY_COLUMN, Constants.WORKFLOW_TYPE_GROCERY_COLUMN));
+
     }
 
     private void auditControlBlock(ControlBlock controlBlock) {

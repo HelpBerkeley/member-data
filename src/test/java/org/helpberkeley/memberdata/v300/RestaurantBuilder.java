@@ -28,6 +28,15 @@ public class RestaurantBuilder implements Builder {
 
     private String name = BuilderConstants.DEFAULT_RESTAURANT_NAME;
 
+    // These are invalid fields for a restaurant (pickup), but are
+    // included here for audit testing.
+    private String stdMealCount = "";
+    private String altMealCount = "";
+    private String altMealType = "";
+    private String stdGroceryCount = "";
+    private String altGroceryCount = "";
+    private String altGroceryType = "";
+
     @Override
     public String toString() {
         return build();
@@ -35,12 +44,48 @@ public class RestaurantBuilder implements Builder {
 
     public String build() {
         return "FALSE,,,,,,,,\"9999 999 St., Berkeley, CA\",FALSE,,"
-                + name
-                + ",,,,,,\n";
+                + name + ","
+                + stdMealCount + ","
+                + altMealCount + ","
+                + altMealType + ","
+                + stdGroceryCount + ","
+                + altGroceryCount + ","
+                + altGroceryType
+                + "\n";
     }
 
     public RestaurantBuilder withName(String name) {
         this.name = name;
+        return this;
+    }
+
+    public RestaurantBuilder withStdMealCount(String count) {
+        this.stdMealCount = count;
+        return this;
+    }
+
+    public RestaurantBuilder withAltMealCount(String count) {
+        this.altMealCount = count;
+        return this;
+    }
+
+    public RestaurantBuilder withAltMealType(String type) {
+        this.altMealType = type;
+        return this;
+    }
+
+    public RestaurantBuilder withStdGroceryCount(String count) {
+        this.stdGroceryCount = count;
+        return this;
+    }
+
+    public RestaurantBuilder withAltGroceryCount(String count) {
+        this.altGroceryCount = count;
+        return this;
+    }
+
+    public RestaurantBuilder withAltGroceryType(String type) {
+        this.altGroceryType = type;
         return this;
     }
 }
