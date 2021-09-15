@@ -65,12 +65,12 @@ public class DriverV200 extends Driver {
 
     private void setStartTime() {
 
-        RestaurantV200 restaurant = (RestaurantV200) pickups.get(0);
-
-        // FIX THIS, DS: verify that upstream auditing can make this an assertion
-        if (restaurant == null) {
+        if (pickups.size() == 0) {
             throw new MemberDataException("Driver " + getUserName() + " has no pickups");
         }
+
+        // FIX THIS, DS: add test case
+        RestaurantV200 restaurant = (RestaurantV200) pickups.get(0);
 
         originalStartTime = restaurant.getStartTime();
         startTime = originalStartTime;

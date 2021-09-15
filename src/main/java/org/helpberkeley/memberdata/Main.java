@@ -1534,8 +1534,8 @@ public class Main {
 
             WorkRequestHandler.WorkRequest request = (WorkRequestHandler.WorkRequest) reply;
             request.setTestTopic();
-             doOneKitchenDriverMessages(apiClient, request, users);
-//            doDriverMessages(apiClient, request, users);
+//             doOneKitchenDriverMessages(apiClient, request, users);
+            doDriverMessages(apiClient, request, users);
         } catch (MemberDataException | IOException | CsvException ex) {
             LOGGER.warn("getLastReply failed: " + ex + "\n" + ex.getMessage());
             requestHandler.postStatus(WorkRequestHandler.RequestStatus.Failed, ex.getMessage());
