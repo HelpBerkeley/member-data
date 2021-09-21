@@ -1305,7 +1305,7 @@ public class User {
                 escapeCommas(getReferral()) + Constants.CSV_SEPARATOR +
                 getEmailVerified() + Constants.CSV_SEPARATOR +
                 hasConsumerRequest() + Constants.CSV_SEPARATOR +
-                getVolunteerRequest() + Constants.CSV_SEPARATOR +
+                escapeCommas(getVolunteerRequest()) + Constants.CSV_SEPARATOR +
                 isSpecialist() + Constants.CSV_SEPARATOR +
                 isPacker() + Constants.CSV_SEPARATOR +
                 isBHS() + Constants.CSV_SEPARATOR +
