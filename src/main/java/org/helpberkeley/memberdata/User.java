@@ -44,7 +44,7 @@ public class User {
     static final String DRIVER_COLUMN = "Driver";
     static final String SPECIALIST_COLUMN = "Specialist";
     static final String DISPATCHER_COLUMN = "Dispatcher";
-    static final String PACKER_COLUMN = "Packer";
+    static final String LOGISTICS_COLUMN = "Logistics";
     static final String CREATED_AT_COLUMN = "Created";
     static final String CONDO_COLUMN = "Condo";
     static final String CONSUMER_REQUEST_COLUMN = "Consumer Request";
@@ -111,7 +111,7 @@ public class User {
     static final String SHORT_MODERATORS_COLUMN = "Mods";
     static final String SHORT_TRUST_LEVEL_4_COLUMN = "Trust4";
     static final String SHORT_SPECIALIST_COLUMN = "Specs";
-    static final String SHORT_PACKER_COLUMN = "Packer";
+    static final String SHORT_LOGISTICS_COLUMN = "Logistics";
     static final String SHORT_BHS_COLUMN = "BHS";
     static final String SHORT_CUSTOMER_INFO_COLUMN = "CustInf";
     static final String SHORT_ADVISOR_COLUMN = "Advsr";
@@ -302,8 +302,8 @@ public class User {
         return groupMembership.contains(Constants.GROUP_SPECIALISTS);
     }
 
-    Boolean isPacker() {
-        return groupMembership.contains(Constants.GROUP_PACKERS);
+    Boolean isLogistics() {
+        return groupMembership.contains(Constants.GROUP_LOGISTICS);
     }
 
     Boolean isBHS() {
@@ -533,9 +533,9 @@ public class User {
                 "=" +
                 isSpecialist() +
                 ':' +
-                Constants.GROUP_PACKERS +
+                Constants.GROUP_LOGISTICS +
                 "=" +
-                isPacker() +
+                isLogistics() +
                 ':' +
                 Constants.GROUP_BHS +
                 "=" +
@@ -1209,7 +1209,7 @@ public class User {
                 + SHORT_MODERATORS_COLUMN + Constants.CSV_SEPARATOR
                 + SHORT_TRUST_LEVEL_4_COLUMN + Constants.CSV_SEPARATOR
                 + SHORT_SPECIALIST_COLUMN + Constants.CSV_SEPARATOR
-                + SHORT_PACKER_COLUMN + Constants.CSV_SEPARATOR
+                + SHORT_LOGISTICS_COLUMN + Constants.CSV_SEPARATOR
                 + SHORT_BHS_COLUMN + Constants.CSV_SEPARATOR
                 + SHORT_CUSTOMER_INFO_COLUMN + Constants.CSV_SEPARATOR
                 + SHORT_ADVISOR_COLUMN + Constants.CSV_SEPARATOR
@@ -1252,7 +1252,7 @@ public class User {
                 + CONSUMER_REQUEST_COLUMN + Constants.CSV_SEPARATOR
                 + VOLUNTEER_REQUEST_COLUMN + Constants.CSV_SEPARATOR
                 + SPECIALIST_COLUMN + Constants.CSV_SEPARATOR
-                + PACKER_COLUMN + Constants.CSV_SEPARATOR
+                + LOGISTICS_COLUMN + Constants.CSV_SEPARATOR
                 + BHS_COLUMN + Constants.CSV_SEPARATOR
                 + HELPLINE_COLUMN + Constants.CSV_SEPARATOR
                 + SITELINE_COLUMN + Constants.CSV_SEPARATOR
@@ -1307,7 +1307,7 @@ public class User {
                 hasConsumerRequest() + Constants.CSV_SEPARATOR +
                 escapeCommas(getVolunteerRequest()) + Constants.CSV_SEPARATOR +
                 isSpecialist() + Constants.CSV_SEPARATOR +
-                isPacker() + Constants.CSV_SEPARATOR +
+                isLogistics() + Constants.CSV_SEPARATOR +
                 isBHS() + Constants.CSV_SEPARATOR +
                 isHelpLine() + Constants.CSV_SEPARATOR +
                 isSiteLine() + Constants.CSV_SEPARATOR +
@@ -1377,7 +1377,7 @@ public class User {
                 isModerator() + Constants.CSV_SEPARATOR +
                 isTrustLevel4() + Constants.CSV_SEPARATOR +
                 isSpecialist() + Constants.CSV_SEPARATOR +
-                isPacker() + Constants.CSV_SEPARATOR +
+                isLogistics() + Constants.CSV_SEPARATOR +
                 isBHS() + Constants.CSV_SEPARATOR +
                 isCustomerInfo() + Constants.CSV_SEPARATOR +
                 isAdvisor() + Constants.CSV_SEPARATOR +

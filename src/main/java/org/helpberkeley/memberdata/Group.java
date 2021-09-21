@@ -119,7 +119,7 @@ public class Group {
             case Constants.GROUP_ADVISOR:
             case Constants.GROUP_COORDINATORS:
             case Constants.GROUP_ADMIN:
-            case Constants.GROUP_PACKERS:
+            case Constants.GROUP_LOGISTICS:
             case Constants.GROUP_BOARDMEMBERS:
             case Constants.GROUP_LIMITED:
             case Constants.GROUP_AT_RISK:

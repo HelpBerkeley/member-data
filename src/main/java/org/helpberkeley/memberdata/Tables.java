@@ -84,7 +84,7 @@ public class Tables {
 
         for (User user : sortByUserName()) {
             if (user.isConsumer() || user.isDispatcher()
-                    || user.isDriver() || user.isSpecialist() || user.isPacker()) {
+                    || user.isDriver() || user.isSpecialist() || user.isLogistics()) {
                 continue;
             }
 
@@ -163,7 +163,7 @@ public class Tables {
                 continue;
             }
 
-            if ((!user.isDriver()) && (!user.isDispatcher()) && (!user.isSpecialist()) && (!user.isPacker())) {
+            if ((!user.isDriver()) && (!user.isDispatcher()) && (!user.isSpecialist()) && (!user.isLogistics())) {
                 volunteerRequests.add(user);
             }
         }
@@ -307,7 +307,7 @@ public class Tables {
         for (User user : users) {
             if (user.isConsumer()) {
                 inreach.add(user);
-            } else if (! (user.isDriver() || user.isDispatcher() || user.isPacker())) {
+            } else if (! (user.isDriver() || user.isDispatcher() || user.isLogistics())) {
                 inreach.add(user);
             }
         }

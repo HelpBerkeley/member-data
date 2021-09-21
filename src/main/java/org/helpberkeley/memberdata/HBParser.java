@@ -224,7 +224,7 @@ public class HBParser {
         assert headers[++index].equals(User.CONSUMER_REQUEST_COLUMN) : headers[index];
         assert headers[++index].equals(User.VOLUNTEER_REQUEST_COLUMN) : headers[index];
         assert headers[++index].equals(User.SPECIALIST_COLUMN) : headers[index];
-        assert headers[++index].equals(User.PACKER_COLUMN) : headers[index];
+        assert headers[++index].equals(User.LOGISTICS_COLUMN) : headers[index];
         assert headers[++index].equals(User.BHS_COLUMN) : headers[index];
         assert headers[++index].equals(User.HELPLINE_COLUMN) : headers[index];
         assert headers[++index].equals(User.SITELINE_COLUMN) : headers[index];
@@ -309,7 +309,7 @@ public class HBParser {
             }
 
             if (Boolean.parseBoolean(columns[index++])) {
-                groups.add(Constants.GROUP_PACKERS);
+                groups.add(Constants.GROUP_LOGISTICS);
             }
 
             if (Boolean.parseBoolean(columns[index++])) {

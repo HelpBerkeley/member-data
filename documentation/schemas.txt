@@ -1,7 +1,7 @@
 Help Berkeley Schemas
 =====================
 
-Version: 3.0.0
+Version: 3.0.1
 
 Full Member Record
 ------------------
@@ -40,7 +40,7 @@ Marktg,Boolean,In Marketing group,
 Mods,Boolean,In mod group,
 Trust4,Boolean,In trust_level_4 group,
 Specs,Boolean,In specialist group,
-Packer,Boolean,In HB_Packers group,
+Logistics,Boolean,In Logistics group,
 BHS,Boolean,In Berkeley High School Students group,
 CustInf,Boolean,In customerinfo group,
 Advsr,Boolean,In advisors group,
@@ -95,7 +95,7 @@ Marktg,Boolean,In Marketing group,
 Mods,Boolean,In mod group,
 Trust4,Boolean,In trust_level_4 group,
 Specs,Boolean,In specialist group,
-Packer,Boolean,In HB_Packers group,
+Logistics,Boolean,In Logistics group,
 BHS,Boolean,In Berkeley High School Students group,
 CustInf,Boolean,In customerinfo group,
 Advsr,Boolean,In advisors group,
@@ -465,7 +465,7 @@ Email Verified,Boolean,,
 Name,String,Full name
 Phone #,String,,
 City,String,,
-Volunteer Request,String,Volunteer request type and not yet in a drivers, dispatchers, HB_packers, or specialists group,
+Volunteer Request,String,Volunteer request type and not yet in a drivers, dispatchers, Logistics, or specialists group,
 
 Member data requiring attention
 -------------------------------

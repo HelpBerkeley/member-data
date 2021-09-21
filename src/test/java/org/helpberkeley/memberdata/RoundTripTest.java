@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2020 helpberkeley.org
+// Copyright (c) 2020-2021 helpberkeley.org
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -40,7 +40,7 @@ public class RoundTripTest extends TestBase {
                 Constants.GROUP_TRAINED_DRIVERS,
                 Constants.GROUP_DISPATCHERS,
                 Constants.GROUP_SPECIALISTS,
-                Constants.GROUP_PACKERS,
+                Constants.GROUP_LOGISTICS,
                 Constants.GROUP_BHS,
                 Constants.GROUP_HELPLINE,
                 Constants.GROUP_SITELINE,

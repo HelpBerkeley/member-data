@@ -739,15 +739,15 @@ public class UserTest extends TestBase {
     }
 
     @Test
-    public void groupPackers() throws UserException {
-        User u1 = createUserWithGroup("u1", Constants.GROUP_PACKERS);
-        User u2 = createUserWithGroup("u1", Constants.GROUP_PACKERS);
+    public void groupLogistics() throws UserException {
+        User u1 = createUserWithGroup("u1", Constants.GROUP_LOGISTICS);
+        User u2 = createUserWithGroup("u1", Constants.GROUP_LOGISTICS);
         User u3 = createUser();
 
-        assertThat(u1.isPacker()).isTrue();
+        assertThat(u1.isLogistics()).isTrue();
         assertThat(u1).isEqualTo(u2);
         assertThat(u1).isNotEqualTo(u3);
-        assertThat(u3.isPacker()).isFalse();
+        assertThat(u3.isLogistics()).isFalse();
     }
 
     @Test

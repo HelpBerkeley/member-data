@@ -144,7 +144,7 @@ public class UserExporterTest extends TestBase {
         assertThat(headerColumns[index++]).isEqualTo(User.CONSUMER_REQUEST_COLUMN);
         assertThat(headerColumns[index++]).isEqualTo(User.VOLUNTEER_REQUEST_COLUMN);
         assertThat(headerColumns[index++]).isEqualTo(User.SPECIALIST_COLUMN);
-        assertThat(headerColumns[index++]).isEqualTo(User.PACKER_COLUMN);
+        assertThat(headerColumns[index++]).isEqualTo(User.LOGISTICS_COLUMN);
         assertThat(headerColumns[index++]).isEqualTo(User.BHS_COLUMN);
         assertThat(headerColumns[index++]).isEqualTo(User.HELPLINE_COLUMN);
         assertThat(headerColumns[index++]).isEqualTo(User.SITELINE_COLUMN);
@@ -183,7 +183,7 @@ public class UserExporterTest extends TestBase {
         assertThat(columns[index++]).isEqualTo(String.valueOf(u1.getEmailVerified()));
         assertThat(columns[index++]).isEqualTo(String.valueOf(u1.hasConsumerRequest()));
         assertThat(columns[index++]).isEqualTo(u1.getVolunteerRequest());
-        assertThat(columns[index++]).isEqualTo(String.valueOf(u1.isPacker()));
+        assertThat(columns[index++]).isEqualTo(String.valueOf(u1.isLogistics()));
         assertThat(columns[index++]).isEqualTo(String.valueOf(u1.isSpecialist()));
         assertThat(columns[index++]).isEqualTo(String.valueOf(u1.isBHS()));
         assertThat(columns[index++]).isEqualTo(String.valueOf(u1.isHelpLine()));
@@ -263,7 +263,7 @@ public class UserExporterTest extends TestBase {
         assertThat(headerColumns[index++]).isEqualTo(User.SHORT_MODERATORS_COLUMN);
         assertThat(headerColumns[index++]).isEqualTo(User.SHORT_TRUST_LEVEL_4_COLUMN);
         assertThat(headerColumns[index++]).isEqualTo(User.SHORT_SPECIALIST_COLUMN);
-        assertThat(headerColumns[index++]).isEqualTo(User.SHORT_PACKER_COLUMN);
+        assertThat(headerColumns[index++]).isEqualTo(User.SHORT_LOGISTICS_COLUMN);
         assertThat(headerColumns[index++]).isEqualTo(User.SHORT_BHS_COLUMN);
         assertThat(headerColumns[index++]).isEqualTo(User.SHORT_CUSTOMER_INFO_COLUMN);
         assertThat(headerColumns[index++]).isEqualTo(User.SHORT_ADVISOR_COLUMN);
@@ -315,7 +315,7 @@ public class UserExporterTest extends TestBase {
         assertThat(columns[index++]).isEqualTo(String.valueOf(u1.isModerator()));
         assertThat(columns[index++]).isEqualTo(String.valueOf(u1.isTrustLevel4()));
         assertThat(columns[index++]).isEqualTo(String.valueOf(u1.isSpecialist()));
-        assertThat(columns[index++]).isEqualTo(String.valueOf(u1.isPacker()));
+        assertThat(columns[index++]).isEqualTo(String.valueOf(u1.isLogistics()));
         assertThat(columns[index++]).isEqualTo(String.valueOf(u1.isBHS()));
         assertThat(columns[index++]).isEqualTo(String.valueOf(u1.isCustomerInfo()));
         assertThat(columns[index++]).isEqualTo(String.valueOf(u1.isAdvisor()));
