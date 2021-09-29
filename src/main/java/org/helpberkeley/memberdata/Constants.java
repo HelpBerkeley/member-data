@@ -177,7 +177,7 @@ public class Constants {
     public static final String GROUP_ADVISOR = "advisors";
     public static final String GROUP_COORDINATORS = "coordinators";
     public static final String GROUP_ADMIN = "admin";
-    public static final String GROUP_LOGISTICS = "Logistics";
+    public static final String GROUP_LOGISTICS = "logistics";
     public static final String GROUP_BOARDMEMBERS = "boardmembers";
     public static final String GROUP_LIMITED = "limited";
     public static final String GROUP_AT_RISK = "at-risk";
