@@ -485,15 +485,16 @@ public class HBParser {
     }
 
     static Map<String, DetailsPost> deliveryDetails(ApiQueryResult apiQueryResult) {
-        assert apiQueryResult.headers.length == 2 : apiQueryResult.headers.length;
+        assert apiQueryResult.headers.length == 3 : apiQueryResult.headers.length;
         assert apiQueryResult.headers[0].equals(Constants.DISCOURSE_COLUMN_POST_NUMBER);
         assert apiQueryResult.headers[1].equals(Constants.DISCOURSE_COLUMN_RAW);
+        assert apiQueryResult.headers[2].equals(Constants.DISCOURSE_COLUMN_DELETED_AT);
 
         Map<String, DetailsPost> deliveryDetails = new HashMap<>();
 
         for (Object rowObj : apiQueryResult.rows) {
             Object[] columns = (Object[]) rowObj;
-            assert columns.length == 2 : columns.length;
+            assert columns.length == 3 : columns.length;
 
             //
             Long id = ((Long)columns[0]);

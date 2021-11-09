@@ -48,7 +48,7 @@ public class Constants {
 
     public static final int QUERY_EMAIL_CONFIRMATIONS_V1 = 15;
     public static final int QUERY_GET_EMAILS = 11;
-    public static final int QUERY_GET_DELIVERY_DETAILS = 17;
+    public static final int QUERY_GET_DELIVERY_DETAILS = 72;
     public static final int QUERY_GET_LAST_REQUEST_DRIVER_MESSAGES_REPLY = 22;
     public static final int QUERY_GET_LAST_ROUTE_REQUEST_REPLY = 25;
     public static final int QUERY_GET_BACKUP_DRIVER_FORMAT_V12 = 28;
@@ -246,4 +246,5 @@ public class Constants {
     public static final String DISCOURSE_COLUMN_POST_NUMBER = "post_number";
     public static final String DISCOURSE_COLUMN_RAW = "raw";
     public static final String DISCOURSE_COLUMN_TOPIC_ID = "topic_id";
+    public static final String DISCOURSE_COLUMN_DELETED_AT = "deleted_at";
 }
