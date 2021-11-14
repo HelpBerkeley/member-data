@@ -134,6 +134,7 @@ public class Group {
             case Constants.GROUP_WEDNESDAY_FRREG:
             case Constants.GROUP_THURSDAY_FRREG:
             case Constants.GROUP_FRVOICEONLY:
+            case Constants.GROUP_EVOLUNTEERS:
                 return true;
             default:
                 return false;

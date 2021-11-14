@@ -829,6 +829,18 @@ public class UserTest extends TestBase {
     }
 
     @Test
+    public void groupEVolunteers() throws UserException {
+        User u1 = createUserWithGroup("u1", Constants.GROUP_EVOLUNTEERS);
+        User u2 = createUserWithGroup("u1", Constants.GROUP_EVOLUNTEERS);
+        User u3 = createUser();
+
+        assertThat(u1.isEVolunteers()).isTrue();
+        assertThat(u1).isEqualTo(u2);
+        assertThat(u1).isNotEqualTo(u3);
+        assertThat(u3.isEVolunteers()).isFalse();
+    }
+
+    @Test
     public void nameWithCommaTest() throws UserException {
         String name = "J, Alfred, Prufrock";
         User u1 = createUserWithName(name);

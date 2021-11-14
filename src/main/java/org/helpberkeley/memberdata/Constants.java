@@ -192,6 +192,7 @@ public class Constants {
     public static final String GROUP_WEDNESDAY_FRREG = "WEfrreg";
     public static final String GROUP_THURSDAY_FRREG = "THfrreg";
     public static final String GROUP_FRVOICEONLY = "FRvoiceonly";
+    public static final String GROUP_EVOLUNTEERS = "evolunteers";
 
     public static final String ALT_TYPE_NONE = "none";
 

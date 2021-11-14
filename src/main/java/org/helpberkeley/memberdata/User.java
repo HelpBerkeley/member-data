@@ -82,6 +82,7 @@ public class User {
     static final String WEDNESDAY_FRREG_COLUMN = "WEfrreg";
     static final String THURSDAY_FRREG_COLUMN = "THfrreg";
     static final String FRVOICEONLY_COLUMN = "FRVoiceOnly";
+    static final String EVOLUNTEERS_COLUMN = "evolunteers";
 
     static final String SHORT_ID_COLUMN = "ID";
     static final String SHORT_CREATED_AT_COLUMN = "Created";
@@ -352,6 +353,10 @@ public class User {
 
     Boolean isFRVoiceOnly() {
         return groupMembership.contains(Constants.GROUP_FRVOICEONLY);
+    }
+
+    Boolean isEVolunteers() {
+        return groupMembership.contains(Constants.GROUP_EVOLUNTEERS);
     }
 
     Boolean isTrustLevel4() {
@@ -1280,7 +1285,8 @@ public class User {
                 + GROUPS_OWNED_COLUMN + Constants.CSV_SEPARATOR
                 + MONDAY_FRREG_COLUMN + Constants.CSV_SEPARATOR
                 + WEDNESDAY_FRREG_COLUMN + Constants.CSV_SEPARATOR
-                + THURSDAY_FRREG_COLUMN
+                + THURSDAY_FRREG_COLUMN + Constants.CSV_SEPARATOR
+                + EVOLUNTEERS_COLUMN
                 + "\n";
     }
 
@@ -1335,7 +1341,8 @@ public class User {
                 groupsOwned() + Constants.CSV_SEPARATOR +
                 isMondayFrreg() + Constants.CSV_SEPARATOR +
                 isWednesdayFrreg() + Constants.CSV_SEPARATOR +
-                isThursdayFrreg() +
+                isThursdayFrreg() + Constants.CSV_SEPARATOR +
+                isEVolunteers() +
                 '\n';
     }
 

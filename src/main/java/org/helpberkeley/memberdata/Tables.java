@@ -163,7 +163,11 @@ public class Tables {
                 continue;
             }
 
-            if ((!user.isDriver()) && (!user.isDispatcher()) && (!user.isSpecialist()) && (!user.isLogistics())) {
+            if ((!user.isDriver())
+                    && (!user.isDispatcher())
+                    && (!user.isSpecialist())
+                    && (!user.isLogistics())
+                    && (!user.isEVolunteers())) {
                 volunteerRequests.add(user);
             }
         }
