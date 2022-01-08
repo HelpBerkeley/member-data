@@ -91,6 +91,9 @@ public class DriverPostFormatV300 extends DriverPostFormat {
         if (controlBlock.getMessageFormat().equalsIgnoreCase(MessageSpecFormat.MONDAY.getFormat())) {
             return Constants.QUERY_GET_ONE_KITCHEN_DRIVERS_POST_FORMAT_V300;
         } else if (controlBlock.getMessageFormat().equalsIgnoreCase(
+                MessageSpecFormat.SPECIAL.getFormat())) {
+            return Constants.QUERY_GET_SPECIAL_ONE_KITCHEN_DRIVERS_POST_FORMAT_V300;
+        } else if (controlBlock.getMessageFormat().equalsIgnoreCase(
                 MessageSpecFormat.WEDNESDAY.getFormat())) {
             return Constants.QUERY_GET_WEDNESDAY_ONE_KITCHEN_DRIVERS_POST_FORMAT_V300;
         } else if (controlBlock.getMessageFormat().equalsIgnoreCase(
@@ -107,6 +110,9 @@ public class DriverPostFormatV300 extends DriverPostFormat {
         if (controlBlock.getMessageFormat().equalsIgnoreCase(MessageSpecFormat.MONDAY.getFormat())) {
             return Constants.QUERY_GET_ONE_KITCHEN_GROUP_POST_FORMAT_V300;
         } else if (controlBlock.getMessageFormat().equalsIgnoreCase(
+                MessageSpecFormat.SPECIAL.getFormat())) {
+            return Constants.QUERY_GET_SPECIAL_ONE_KITCHEN_GROUP_POST_FORMAT_V300;
+        } else if (controlBlock.getMessageFormat().equalsIgnoreCase(
                 MessageSpecFormat.WEDNESDAY.getFormat())) {
             return Constants.QUERY_GET_WEDNESDAY_ONE_KITCHEN_GROUP_POST_FORMAT_V300;
         } else if (controlBlock.getMessageFormat().equalsIgnoreCase(
@@ -122,6 +128,9 @@ public class DriverPostFormatV300 extends DriverPostFormat {
         if (controlBlock.getMessageFormat().equalsIgnoreCase(MessageSpecFormat.MONDAY.getFormat())) {
             return Constants.QUERY_GET_ONE_KITCHEN_DRIVERS_TABLE_POST_FORMAT_V300;
         } else if (controlBlock.getMessageFormat().equalsIgnoreCase(
+                MessageSpecFormat.SPECIAL.getFormat())) {
+            return Constants.QUERY_GET_SPECIAL_ONE_KITCHEN_DRIVERS_TABLE_POST_FORMAT_V300;
+        } else if (controlBlock.getMessageFormat().equalsIgnoreCase(
                 MessageSpecFormat.WEDNESDAY.getFormat())) {
             return Constants.QUERY_GET_WEDNESDAY_ONE_KITCHEN_DRIVERS_TABLE_POST_FORMAT_V300;
         } else if (controlBlock.getMessageFormat().equalsIgnoreCase(
@@ -136,6 +145,9 @@ public class DriverPostFormatV300 extends DriverPostFormat {
     private int ordersTableTemplateQueryID() {
         if (controlBlock.getMessageFormat().equalsIgnoreCase(MessageSpecFormat.MONDAY.getFormat())) {
             return Constants.QUERY_GET_ONE_KITCHEN_ORDERS_TABLE_POST_FORMAT_V300;
+        } else if (controlBlock.getMessageFormat().equalsIgnoreCase(
+                MessageSpecFormat.SPECIAL.getFormat())) {
+            return Constants.QUERY_GET_SPECIAL_ONE_KITCHEN_ORDERS_TABLE_POST_FORMAT_V300;
         } else if (controlBlock.getMessageFormat().equalsIgnoreCase(
                 MessageSpecFormat.WEDNESDAY.getFormat())) {
             return Constants.QUERY_GET_WEDNESDAY_ONE_KITCHEN_ORDERS_TABLE_POST_FORMAT_V300;

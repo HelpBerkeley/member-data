@@ -1,8 +1,8 @@
 {
   "success": true,
   "errors": [],
-  "duration": 0.9,
-  "result_count": 53,
+  "duration": 0.3,
+  "result_count": 57,
   "params": {},
   "columns": [
     "id",
@@ -21,25 +21,25 @@
       "WITH pairs AS (\n    SELECT p.user_id liked, pa.user_id liker\n    FROM post_actions pa\n    LEFT JOIN posts p ON p.id = pa.post_id\n    WHERE post_action_type_id = 2\n)\nSELECT liker liker_user_id, liked liked_user_id, count(*)\nFROM pairs\nGROUP BY liked, liker\nORDER BY count DESC\n"
     ],
     [
-      11,
-      "User Email",
-      "Used by the remote member data fetcher. Do not modify or remove.",
+      75,
+      "Get SpecialFreeRun Group Post Format V3.0.0",
+      "Fetch the latest V3.0.0 SpecialFreeRun orders table format. The original topic id number is 8201. Modify this in the query below to point to any other OneKitchen group post format topic.",
       false,
-      "SELECT\n  u.id AS user_id,\n  u.userName,\n  use.email\nFROM user_emails AS use\nRIGHT JOIN users AS u on use.user_id = u.id"
+      "SELECT \n  p.post_number,\n  p.topic_id,\n  p.raw,\n  p.deleted_at\nFROM posts AS p\nWHERE (p.topic_id = 8201 AND p.deleted_at IS NULL)\nORDER BY (p.post_number)"
     ],
     [
-      51,
-      "Get last OneKitchen restaurant template",
-      "Used by the back-end to fetch the last validated OneKitchen restaurant template.\nDo not modify or remove.",
+      74,
+      "Get SpecialFreeRun Orders Table Format V3.0.0",
+      "Fetch the latest V3.0.0 SpecialFreeRun orders table format. The original topic id number is 8199. Modify this in the query below to point to any other OneKitchen orders table format topic.",
       false,
-      "SELECT \n  p.post_number,\n  p.deleted_at,\n  p.raw\nFROM posts AS p\nWHERE (p.topic_id = 6547 AND p.deleted_at IS NULL)\nORDER BY (p.post_number) DESC\nLIMIT 1"
+      "SELECT \n  p.post_number,\n  p.topic_id,\n  p.raw,\n  p.deleted_at\nFROM posts AS p\nWHERE (p.topic_id = 8199 AND p.deleted_at IS NULL)\nORDER BY (p.post_number)"
     ],
     [
-      53,
-      "Get Monday One Kitchen Driver Post Format V3.0.0",
-      "Fetch the latest V3.0.0 one kitchen driver post.  Do not modify or remove.",
+      65,
+      "Get OneKitchen Order History Data",
+      "Get all of the validated/archived OneKitchen workflow sheets. Used by the back-end software. Do not modify or remove.",
       false,
-      "SELECT \n  p.post_number,\n  p.topic_id,\n  p.raw,\n  p.deleted_at\nFROM posts AS p\nWHERE (p.topic_id = 6599 AND p.deleted_at IS NULL)\nORDER BY (p.post_number)"
+      "SELECT\n  p.post_number,\n  p.deleted_at,\n  p.raw\nFROM posts p\nWHERE (p.topic_id = 6923\n  AND p.deleted_at IS NULL)"
     ],
     [
       -16,
@@ -63,11 +63,11 @@
       "SELECT \n  p.post_number,\n  p.deleted_at,\n  p.raw\nFROM posts AS p\nWHERE (p.topic_id = 6548 AND p.deleted_at IS NULL)\nORDER BY (p.post_number) DESC\nLIMIT 1"
     ],
     [
-      54,
-      "Get Monday One Kitchen Group Post Format V3.0.0",
-      "",
+      11,
+      "User Email",
+      "Used by the remote member data fetcher. Do not modify or remove.",
       false,
-      "SELECT \n  p.post_number,\n  p.topic_id,\n  p.raw,\n  p.deleted_at\nFROM posts AS p\nWHERE (p.topic_id = 6612 AND p.deleted_at IS NULL)\nORDER BY (p.post_number)"
+      "SELECT\n  u.id AS user_id,\n  u.userName,\n  use.email\nFROM user_emails AS use\nRIGHT JOIN users AS u on use.user_id = u.id"
     ],
     [
       52,
@@ -77,18 +77,11 @@
       "SELECT \n  p.topic_id,\n  p.post_number,\n  p.deleted_at,\n  p.raw\nFROM posts AS p\nWHERE (p.topic_id = 6604 AND p.deleted_at IS NULL)\nORDER BY (p.post_number) DESC\nLIMIT 1"
     ],
     [
-      65,
-      "Get OneKitchen Order History Data",
-      "Get all of the validated/archived OneKitchen workflow sheets. Used by the back-end software. Do not modify or remove.",
+      76,
+      "Get SpecialFreeRun Driver Post Format V3.0.0",
+      "Fetch the latest V3.0.0 special free run driver post.\nThe original topic id number is 8202. Modify this in the query to point to any other OneKitchen driver post format topic.",
       false,
-      "SELECT\n  p.post_number,\n  p.deleted_at,\n  p.raw\nFROM posts p\nWHERE (p.topic_id = 6923\n  AND p.deleted_at IS NULL)"
-    ],
-    [
-      72,
-      "Get Delivery Details V1.1",
-      " Fetch the delivery details posts. Do not modify or remove. Used by the back-end processing. ",
-      false,
-      "SELECT \n  p.post_number,\n  p.raw,\n  p.deleted_at\nFROM posts AS p\nWHERE (p.topic_id = 1818) AND (p.deleted_at is NULL)\nORDER BY (p.post_number)"
+      "SELECT \n  p.post_number,\n  p.topic_id,\n  p.raw,\n  p.deleted_at\nFROM posts AS p\nWHERE (p.topic_id = 8202 AND p.deleted_at IS NULL)\nORDER BY (p.post_number)"
     ],
     [
       17,
@@ -96,6 +89,20 @@
       "Fetch the delivery details posts. Do not modify or remove. Used by the back-end processing.",
       false,
       "SELECT \n  p.post_number,\n  p.raw\nFROM posts AS p\nWHERE (p.topic_id = 1818)\nORDER BY (p.post_number)"
+    ],
+    [
+      51,
+      "Get last OneKitchen restaurant template",
+      "Used by the back-end to fetch the last validated OneKitchen restaurant template.\nDo not modify or remove.",
+      false,
+      "SELECT \n  p.post_number,\n  p.deleted_at,\n  p.raw\nFROM posts AS p\nWHERE (p.topic_id = 6547 AND p.deleted_at IS NULL)\nORDER BY (p.post_number) DESC\nLIMIT 1"
+    ],
+    [
+      72,
+      "Get Delivery Details V1.1",
+      " Fetch the delivery details posts. Do not modify or remove. Used by the back-end processing. ",
+      false,
+      "SELECT \n  p.post_number,\n  p.raw,\n  p.deleted_at\nFROM posts AS p\nWHERE (p.topic_id = 1818) AND (p.deleted_at is NULL)\nORDER BY (p.post_number)"
     ],
     [
       69,
@@ -119,6 +126,20 @@
       "SELECT user_id, count(*) AS message_count\nFROM topics\nWHERE archetype = 'private_message' AND subtype = 'user_to_user'\nAND age(created_at) < interval '7 days'\nGROUP BY user_id\nORDER BY message_count DESC\n"
     ],
     [
+      53,
+      "Get Monday One Kitchen Driver Post Format V3.0.0",
+      "Fetch the latest V3.0.0 one kitchen driver post.  Do not modify or remove.",
+      false,
+      "SELECT \n  p.post_number,\n  p.topic_id,\n  p.raw,\n  p.deleted_at\nFROM posts AS p\nWHERE (p.topic_id = 6599 AND p.deleted_at IS NULL)\nORDER BY (p.post_number)"
+    ],
+    [
+      54,
+      "Get Monday One Kitchen Group Post Format V3.0.0",
+      "",
+      false,
+      "SELECT \n  p.post_number,\n  p.topic_id,\n  p.raw,\n  p.deleted_at\nFROM posts AS p\nWHERE (p.topic_id = 6612 AND p.deleted_at IS NULL)\nORDER BY (p.post_number)"
+    ],
+    [
       58,
       "Get last reply from request topics 2.0",
       "",
@@ -140,11 +161,11 @@
       "-- [params]\n-- int :request_driver_routes = 2844\n-- int :request_driver_messages = 2504\n-- int :request_one_kitchen_driver_messages = 4878\n-- int :post_restaurant_template = 1860\n-- int :post_completed_daily_orders = 859\n\nselect * from (\n        select\n         distinct on (p.topic_id)\n          p.topic_id,\n          p.post_number,\n          p.deleted_at,\n          p.raw\n        FROM posts AS p\n        WHERE p.deleted_at IS null and p.topic_id in (\n          :request_driver_routes,\n          :request_driver_messages,\n          :request_one_kitchen_driver_messages,\n          :post_restaurant_template,\n          :post_completed_daily_orders)\n        ORDER BY p.topic_id DESC, p.post_number DESC\n) p \nORDER BY p.post_number desc"
     ],
     [
-      23,
-      "User Query V1.7",
-      "Used by the remote data fetcher. Do not modify or remove.",
+      73,
+      "Get SpecialFreeRun Drivers Table Format V3.0.0",
+      "Fetch the latest V3.0.0 special free pickup managers drivers table format. The original topic id number is 8200. Modify this in the query to point to any other OneKitchen pickup manager drivers table format topic.",
       false,
-      "SELECT\n  u.id AS user_id,\n  u.userName,\n  u.name,\n  u.staged,\n  MAX(CASE ucf.name WHEN 'user_field_1' THEN value END) AS address,\n  MAX(CASE ucf.name WHEN 'user_field_2' THEN value END) AS phone,\n  MAX(CASE ucf.name WHEN 'user_field_3' THEN value END) AS neighborhood,\n  MAX(CASE ucf.name WHEN 'user_field_6' THEN value END) AS city,\n  MAX(CASE ucf.name WHEN 'user_field_7' THEN value END) AS condo,\n  MAX(CASE ucf.name WHEN 'user_field_9' THEN value END) AS consumer_request,\n  MAX(CASE ucf.name WHEN 'user_field_11' THEN value END) as volunteer_request,\n  MAX(CASE ucf.name WHEN 'user_field_12' THEN value END) as alt_phone,\n  MAX(CASE ucf.name WHEN 'user_field_13' THEN value END) as referral,\n  u.created_at\nFROM user_custom_fields AS ucf\nRIGHT JOIN users AS u on ucf.user_id = u.id\nGROUP BY u.id"
+      "SELECT \n  p.post_number,\n  p.topic_id,\n  p.raw,\n  p.deleted_at\nFROM posts AS p\nWHERE (p.topic_id = 8200 AND p.deleted_at IS NULL)\nORDER BY (p.post_number)"
     ],
     [
       67,
@@ -159,6 +180,13 @@
       "based on the number of replies, it accepts a ‘months_ago’ parameter, defaults to 1 to give results for the last calendar month.",
       false,
       "-- [params]\n-- int :months_ago = 1\n\nWITH query_period AS\n(SELECT date_trunc('month', CURRENT_DATE) - INTERVAL ':months_ago months' AS period_start,\n                                                    date_trunc('month', CURRENT_DATE) - INTERVAL ':months_ago months' + INTERVAL '1 month' - INTERVAL '1 second' AS period_end)\nSELECT t.id AS topic_id,\n    t.category_id,\n    COUNT(p.id) AS reply_count\nFROM topics t\nJOIN posts p ON t.id = p.topic_id\nJOIN query_period qp ON p.created_at >= qp.period_start\nAND p.created_at <= qp.period_end\nWHERE t.archetype = 'regular'\nAND t.user_id > 0\nGROUP BY t.id\nORDER BY COUNT(p.id) DESC, t.score DESC\nLIMIT 100\n"
+    ],
+    [
+      23,
+      "User Query V1.7",
+      "Used by the remote data fetcher. Do not modify or remove.",
+      false,
+      "SELECT\n  u.id AS user_id,\n  u.userName,\n  u.name,\n  u.staged,\n  MAX(CASE ucf.name WHEN 'user_field_1' THEN value END) AS address,\n  MAX(CASE ucf.name WHEN 'user_field_2' THEN value END) AS phone,\n  MAX(CASE ucf.name WHEN 'user_field_3' THEN value END) AS neighborhood,\n  MAX(CASE ucf.name WHEN 'user_field_6' THEN value END) AS city,\n  MAX(CASE ucf.name WHEN 'user_field_7' THEN value END) AS condo,\n  MAX(CASE ucf.name WHEN 'user_field_9' THEN value END) AS consumer_request,\n  MAX(CASE ucf.name WHEN 'user_field_11' THEN value END) as volunteer_request,\n  MAX(CASE ucf.name WHEN 'user_field_12' THEN value END) as alt_phone,\n  MAX(CASE ucf.name WHEN 'user_field_13' THEN value END) as referral,\n  u.created_at\nFROM user_custom_fields AS ucf\nRIGHT JOIN users AS u on ucf.user_id = u.id\nGROUP BY u.id"
     ],
     [
       -7,
@@ -182,11 +210,11 @@
       "SELECT\n    gu.group_id,\n    gu.user_id\nFROM group_users gu\nRIGHT JOIN users u On u.id = gu.user_id\nORDER BY gu.group_id"
     ],
     [
-      15,
-      "Email confirmed",
-      "Used by the remote member data fetcher. Do not modify or remove.",
+      45,
+      "Get Order History Data",
+      "Get all of the non-deleted Order History Data posts",
       false,
-      "SELECT\n  e.user_id,\n  e.confirmed\nFROM email_tokens as e"
+      "SELECT\n  p.post_number,\n  p.deleted_at,\n  p.raw\nFROM posts p\nWHERE (p.topic_id = 5234\n  AND p.deleted_at IS NULL)"
     ],
     [
       -9,
@@ -196,32 +224,25 @@
       "SELECT posts.id AS post_id,\n    uploads.original_filename,\n    ROUND(uploads.filesize / 1000000.0, 2) AS size_in_mb,\n    uploads.extension,\n    uploads.created_at,\n    uploads.url\nFROM post_uploads\nJOIN uploads ON uploads.id = post_uploads.upload_id\nJOIN posts ON posts.id = post_uploads.post_id\nORDER BY uploads.filesize DESC\nLIMIT 50\n"
     ],
     [
-      60,
-      "Get Thursday OneKitchen Drivers Post Format V3.0.0",
-      " Fetch the latest V3.0.0 Thursday OneKitchen driver post. Do not modify or remove. ",
+      47,
+      "Get Group Users V2",
+      "Get group members and owners.  Used by back-end. Do not modify or remove.",
       false,
-      "SELECT \n  p.post_number,\n  p.topic_id,\n  p.raw,\n  p.deleted_at\nFROM posts AS p\nWHERE (p.topic_id = 6895 AND p.deleted_at IS NULL)\nORDER BY (p.post_number)"
-    ],
-    [
-      61,
-      "Get Thursday OneKitchen Group Post Format V3.0.0",
-      "Get the Thursday V3.0.0 OneKitchen Group Message Format.  Do not modify or remove.",
-      false,
-      "SELECT \n  p.post_number,\n  p.topic_id,\n  p.raw,\n  p.deleted_at\nFROM posts AS p\nWHERE (p.topic_id = 6897 AND p.deleted_at IS NULL)\nORDER BY (p.post_number)"
+      "SELECT\n    gu.group_id,\n    gu.user_id,\n    gu.owner\nFROM group_users gu\nRIGHT JOIN users u On u.id = gu.user_id\nORDER BY gu.group_id"
     ],
     [
       62,
       "Get Thursday OneKitchen Orders Table Format V3.0.0",
-      "Get the V3.0.0 Thursday OneKitchen Orders Table format post. Do not modify or remove.",
+      "Get the V3.0.0 Thursday OneKitchen Orders Table format post. Do not modify or remove.\n\nTemporarily move from Thursday 6899 for Thanksgiving.",
       false,
-      "SELECT \n  p.post_number,\n  p.topic_id,\n  p.raw,\n  p.deleted_at\nFROM posts AS p\nWHERE (p.topic_id = 6899 AND p.deleted_at IS NULL)\nORDER BY (p.post_number)"
+      "SELECT \n  p.post_number,\n  p.topic_id,\n  p.raw,\n  p.deleted_at\nFROM posts AS p\nWHERE (p.topic_id = 8075 AND p.deleted_at IS NULL)\nORDER BY (p.post_number)"
     ],
     [
-      59,
-      "Get Thursday OneKitchen Drivers Table Format V3.0.0",
-      "Fetch the V3.0.0 Thursday OneKitchen pickup managers drivers table format. Do not modify or remove.",
+      15,
+      "Email confirmed",
+      "Used by the remote member data fetcher. Do not modify or remove.",
       false,
-      "SELECT \n  p.post_number,\n  p.topic_id,\n  p.raw,\n  p.deleted_at\nFROM posts AS p\nWHERE (p.topic_id = 6898 AND p.deleted_at IS NULL)\nORDER BY (p.post_number)"
+      "SELECT\n  e.user_id,\n  e.confirmed\nFROM email_tokens as e"
     ],
     [
       42,
@@ -238,25 +259,11 @@
       "SELECT \n  p.post_number,\n  p.raw,\n  p.deleted_at\nFROM posts AS p\nWHERE (p.topic_id = 4880 AND p.deleted_at IS NULL)\nORDER BY (p.post_number)"
     ],
     [
-      45,
-      "Get Order History Data",
-      "Get all of the non-deleted Order History Data posts",
+      59,
+      "Get Thursday OneKitchen Drivers Table Format V3.0.0",
+      "Fetch the V3.0.0 Thursday OneKitchen pickup managers drivers table format. Do not modify or remove.\n\nTemporarily moved from Thurday topic 6898",
       false,
-      "SELECT\n  p.post_number,\n  p.deleted_at,\n  p.raw\nFROM posts p\nWHERE (p.topic_id = 5234\n  AND p.deleted_at IS NULL)"
-    ],
-    [
-      49,
-      "Get current validated restaurant template",
-      "Used by the back-end to fetch the current restaurant template.  Do not modify or remove.",
-      false,
-      "SELECT \n  p.post_number,\n  p.deleted_at,\n  p.raw\nFROM posts AS p\nWHERE (p.topic_id = 6055 AND p.deleted_at IS NULL)\nORDER BY (p.post_number) DESC\nLIMIT 1"
-    ],
-    [
-      35,
-      "Get restaurant templates",
-      "Used by the remote data fetcher. Do not modify or remove.",
-      false,
-      "SELECT \n  p.post_number,\n  p.deleted_at,\n  p.raw\nFROM posts AS p\nWHERE (p.topic_id = 1860 AND p.deleted_at IS NULL)\nORDER BY (p.post_number)\n"
+      "SELECT \n  p.post_number,\n  p.topic_id,\n  p.raw,\n  p.deleted_at\nFROM posts AS p\nWHERE (p.topic_id = 8074 AND p.deleted_at IS NULL)\nORDER BY (p.post_number)"
     ],
     [
       56,
@@ -266,11 +273,11 @@
       "SELECT \n  p.post_number,\n  p.topic_id,\n  p.raw,\n  p.deleted_at\nFROM posts AS p\nWHERE (p.topic_id = 6637 AND p.deleted_at IS NULL)\nORDER BY (p.post_number)"
     ],
     [
-      34,
-      "Get queries",
-      "Get all the defined data explorer plugin queries.",
+      35,
+      "Get restaurant templates",
+      "Used by the remote data fetcher. Do not modify or remove.",
       false,
-      "SELECT\n    q.id,\n    q.name,\n    q.description,\n    q.hidden,\n    q.sql\nFROM data_explorer_queries as q\nWHERE (q.hidden = FALSE)"
+      "SELECT \n  p.post_number,\n  p.deleted_at,\n  p.raw\nFROM posts AS p\nWHERE (p.topic_id = 1860 AND p.deleted_at IS NULL)\nORDER BY (p.post_number)\n"
     ],
     [
       55,
@@ -278,6 +285,34 @@
       "Fetch the latest V3.0.0 one kitchen pickup managers drivers table format. Do not modify or remove.",
       false,
       "SELECT \n  p.post_number,\n  p.topic_id,\n  p.raw,\n  p.deleted_at\nFROM posts AS p\nWHERE (p.topic_id = 6707 AND p.deleted_at IS NULL)\nORDER BY (p.post_number)"
+    ],
+    [
+      49,
+      "Get current validated restaurant template",
+      "Used by the back-end to fetch the current restaurant template.  Do not modify or remove.",
+      false,
+      "SELECT \n  p.post_number,\n  p.deleted_at,\n  p.raw\nFROM posts AS p\nWHERE (p.topic_id = 6055 AND p.deleted_at IS NULL)\nORDER BY (p.post_number) DESC\nLIMIT 1"
+    ],
+    [
+      34,
+      "Get queries",
+      "Get all the defined data explorer plugin queries.",
+      false,
+      "SELECT\n    q.id,\n    q.name,\n    q.description,\n    q.hidden,\n    q.sql\nFROM data_explorer_queries as q\nWHERE (q.hidden = FALSE)"
+    ],
+    [
+      60,
+      "Get Thursday OneKitchen Drivers Post Format V3.0.0",
+      " Fetch the latest V3.0.0 Thursday OneKitchen driver post. Do not modify or remove. \n\nTemporarily changed form 6895 to Thanksgiving.",
+      false,
+      "SELECT \n  p.post_number,\n  p.topic_id,\n  p.raw,\n  p.deleted_at\nFROM posts AS p\nWHERE (p.topic_id = 8077 AND p.deleted_at IS NULL)\nORDER BY (p.post_number)"
+    ],
+    [
+      61,
+      "Get Thursday OneKitchen Group Post Format V3.0.0",
+      "Get the Thursday V3.0.0 OneKitchen Group Message Format.  Do not modify or remove.\n\nTemporarily changed from 6897 to Thanksgiving.",
+      false,
+      "SELECT \n  p.post_number,\n  p.topic_id,\n  p.raw,\n  p.deleted_at\nFROM posts AS p\nWHERE (p.topic_id = 8076 AND p.deleted_at IS NULL)\nORDER BY (p.post_number)"
     ],
     [
       41,
@@ -294,11 +329,11 @@
       "SELECT\n    g.id,\n    g.name\nFROM groups g"
     ],
     [
-      47,
-      "Get Group Users V2",
-      "Get group members and owners.  Used by back-end. Do not modify or remove.",
+      46,
+      "Get Driver Details",
+      "Fetch all of the driver details posts.  Used by the back-end software.  Do not modify or remove.",
       false,
-      "SELECT\n    gu.group_id,\n    gu.user_id,\n    gu.owner\nFROM group_users gu\nRIGHT JOIN users u On u.id = gu.user_id\nORDER BY gu.group_id"
+      "SELECT \n  p.post_number,\n  p.deleted_at,\n  p.raw\nFROM posts AS p\nWHERE (p.topic_id = 4524)\n    AND (p.post_number > 1)\n    AND (p.deleted_at is NULL)\nORDER BY (p.post_number)"
     ],
     [
       32,
@@ -313,13 +348,6 @@
       "Get all of the posts in the Backup Driver Message V1.2 topic.\n Do not modify or remove.",
       false,
       "SELECT \n  p.post_number,\n  p.topic_id,\n  p.raw,\n  p.deleted_at\nFROM posts AS p\nWHERE (p.topic_id = 3202 AND p.deleted_at IS NULL)\nORDER BY (p.post_number)"
-    ],
-    [
-      46,
-      "Get Driver Details",
-      "Fetch all of the driver details posts.  Used by the back-end software.  Do not modify or remove.",
-      false,
-      "SELECT \n  p.post_number,\n  p.deleted_at,\n  p.raw\nFROM posts AS p\nWHERE (p.topic_id = 4524)\n    AND (p.post_number > 1)\n    AND (p.deleted_at is NULL)\nORDER BY (p.post_number)"
     ],
     [
       22,
@@ -357,18 +385,18 @@
       "SELECT \n  p.post_number,\n  p.topic_id,\n  p.raw,\n  p.deleted_at\nFROM posts AS p\nWHERE (p.topic_id = 6599 AND p.deleted_at IS NULL)\nORDER BY (p.post_number)\n\n\n\n"
     ],
     [
-      63,
-      "Get last OneKitchen completed orders reply",
-      "Fetch the last reply in then OneKitchen completed orders topic. Used by the back-end software.  Do not modify or remove.",
-      false,
-      "SELECT \n  p.post_number,\n  p.deleted_at,\n  p.raw\nFROM posts AS p\nWHERE (p.topic_id = 6889 AND p.deleted_at IS NULL)\nORDER BY (p.post_number) DESC\nLIMIT 1"
-    ],
-    [
       70,
       "Get Driver Post Format V2.4",
       "Get all of the posts in the Driver Post Format V2.4 topic. Do not modify or remove.",
       false,
       "SELECT \n  p.post_number,\n  p.topic_id,\n  p.raw,\n  p.deleted_at\nFROM posts AS p\nWHERE (p.topic_id = 7287 AND p.deleted_at IS NULL)\nORDER BY (p.post_number)"
+    ],
+    [
+      63,
+      "Get last OneKitchen completed orders reply",
+      "Fetch the last reply in then OneKitchen completed orders topic. Used by the back-end software.  Do not modify or remove.",
+      false,
+      "SELECT \n  p.post_number,\n  p.deleted_at,\n  p.raw\nFROM posts AS p\nWHERE (p.topic_id = 6889 AND p.deleted_at IS NULL)\nORDER BY (p.post_number) DESC\nLIMIT 1"
     ],
     [
       64,

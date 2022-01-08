@@ -505,6 +505,40 @@ public class DriverPostTest extends org.helpberkeley.memberdata.DriverPostTest {
     }
 
     @Test
+    public void specialMessageFormatTest() {
+        String routedDeliveries = readResourceFile("routed-deliveries-special-v300.csv");
+
+        String driverFormat = "Thursday driver message";
+        String groupFormat = "Thursday group message";
+        String driversTable = "Thursday drivers table message";
+        String ordersTable = "Thursday orders table message";
+        HttpClientSimulator.setQueryResponseData(
+                Constants.QUERY_GET_SPECIAL_ONE_KITCHEN_DRIVERS_POST_FORMAT_V300,
+                createMessageBlock(quote(driverFormat)));
+        HttpClientSimulator.setQueryResponseData(
+                Constants.QUERY_GET_SPECIAL_ONE_KITCHEN_GROUP_POST_FORMAT_V300,
+                createMessageBlock(quote(groupFormat)));
+        HttpClientSimulator.setQueryResponseData(
+                Constants.QUERY_GET_SPECIAL_ONE_KITCHEN_DRIVERS_TABLE_POST_FORMAT_V300,
+                createMessageBlock(quote(driversTable)));
+        HttpClientSimulator.setQueryResponseData(
+                Constants.QUERY_GET_SPECIAL_ONE_KITCHEN_ORDERS_TABLE_POST_FORMAT_V300,
+                createMessageBlock(quote(ordersTable)));
+
+        DriverPostFormatV300 driverPostFormat = (DriverPostFormatV300)
+                DriverPostFormat.create(createApiSimulator(), users, routedDeliveries);
+        List<String> posts = driverPostFormat.generateDriverPosts();
+        assertThat(posts).hasSize(1);
+        assertThat(posts).containsExactly(driverFormat);
+        String groupPost = driverPostFormat.generateGroupInstructionsPost();
+        assertThat(groupPost).isEqualTo(groupPost);
+        String driversTablePost = driverPostFormat.generateDriversTablePost();
+        assertThat(driversTablePost).isEqualTo(driversTablePost);
+        String ordersTablePost = driverPostFormat.generateOrdersTablePost();
+        assertThat(ordersTablePost).isEqualTo(ordersTable);
+    }
+
+    @Test
     public void thursdayMessageFormatTest() {
         String routedDeliveries = readResourceFile("routed-deliveries-thursday-v300.csv");
 

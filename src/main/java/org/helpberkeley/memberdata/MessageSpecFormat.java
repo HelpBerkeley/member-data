@@ -26,6 +26,7 @@ package org.helpberkeley.memberdata;
 public enum MessageSpecFormat {
 
     MONDAY("MondayFreeRun"),
+    SPECIAL("SpecialFreeRun"),
     WEDNESDAY("WednesdayFreeRun"),
     THURSDAY("ThursdayFreeRun");
 
@@ -42,6 +43,7 @@ public enum MessageSpecFormat {
     public static boolean validFormat(String value) {
 
         return MONDAY.format.equalsIgnoreCase(value)
+                || SPECIAL.format.equalsIgnoreCase(value)
                 || WEDNESDAY.format.equalsIgnoreCase(value)
                 || THURSDAY.format.equalsIgnoreCase(value);
     }
