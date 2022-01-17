@@ -493,16 +493,27 @@ public class MainTest extends TestBase {
     @Test
     public void workRequestsAllRequestsTest() throws IOException, CsvException {
         HttpClientSimulator.setQueryResponseFile(
-                Constants.QUERY_GET_LAST_REPLY_FROM_REQUEST_TOPICS_V21, "last-replies-all-requests.json");
+                Constants.QUERY_GET_REQUESTS_LAST_REPLIES, "last-replies-all-requests.json");
         String usersFile = findFile(Constants.MEMBERDATA_RAW_FILE, "csv");
         String[] args = { Options.COMMAND_WORK_REQUESTS, usersFile };
         Main.main(args);
+        assertThat(Files.deleteIfExists(Paths.get(Constants.ONE_KITCHEN_WORKFLOW_REQUEST_FILE))).isTrue();
+    }
+
+    @Test
+    public void workRequestsDailyWorkflowTest() throws IOException, CsvException {
+        HttpClientSimulator.setQueryResponseFile(
+                Constants.QUERY_GET_REQUESTS_LAST_REPLIES, "last-replies-daily-workflow-request.json");
+        String usersFile = findFile(Constants.MEMBERDATA_RAW_FILE, "csv");
+        String[] args = { Options.COMMAND_WORK_REQUESTS, usersFile };
+        Main.main(args);
+        assertThat(Files.deleteIfExists(Paths.get(Constants.DAILY_WORKFLOW_REQUEST_FILE))).isTrue();
     }
 
     @Test
     public void workRequestsBadRequestTest() throws IOException, CsvException {
         HttpClientSimulator.setQueryResponseFile(
-                Constants.QUERY_GET_LAST_REPLY_FROM_REQUEST_TOPICS_V21, "last-replies-bad-request.json");
+                Constants.QUERY_GET_REQUESTS_LAST_REPLIES, "last-replies-bad-request.json");
         String usersFile = findFile(Constants.MEMBERDATA_RAW_FILE, "csv");
         String[] args = { Options.COMMAND_WORK_REQUESTS, usersFile };
         Main.main(args);

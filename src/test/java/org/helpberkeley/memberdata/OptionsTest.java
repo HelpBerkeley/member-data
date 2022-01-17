@@ -179,4 +179,37 @@ public class OptionsTest extends TestBase {
             assertThat(options.getCommand()).isEqualTo(command);
         }
     }
+
+    @Test
+    public void workflowStatusTest() {
+        Options options = new Options(new String[] { Options.COMMAND_WORKFLOW, TEST_FILE_NAME, "true" });
+        options.parse();
+        assertThat(options.getCommand()).isEqualTo(Options.COMMAND_WORKFLOW);
+        assertThat(options.postStatus()).isTrue();
+    }
+
+    @Test
+    public void workflowNoStatusTest() {
+        Options options = new Options(new String[] { Options.COMMAND_WORKFLOW, TEST_FILE_NAME });
+        options.parse();
+        assertThat(options.getCommand()).isEqualTo(Options.COMMAND_WORKFLOW);
+        assertThat(options.postStatus()).isFalse();
+    }
+
+    @Test
+    public void oneKitchenWorkflowStatusTest() {
+        Options options = new Options(new String[] {
+                Options.COMMAND_ONE_KITCHEN_WORKFLOW, TEST_FILE_NAME, "true" });
+        options.parse();
+        assertThat(options.getCommand()).isEqualTo(Options.COMMAND_ONE_KITCHEN_WORKFLOW);
+        assertThat(options.postStatus()).isTrue();
+    }
+
+    @Test
+    public void oneKitchenWorkflowNoStatusTest() {
+        Options options = new Options(new String[] { Options.COMMAND_ONE_KITCHEN_WORKFLOW, TEST_FILE_NAME });
+        options.parse();
+        assertThat(options.getCommand()).isEqualTo(Options.COMMAND_ONE_KITCHEN_WORKFLOW);
+        assertThat(options.postStatus()).isFalse();
+    }
 }

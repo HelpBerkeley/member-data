@@ -36,6 +36,28 @@ import static java.net.HttpURLConnection.HTTP_OK;
 
 public class WorkRequestHandler {
 
+    public enum RequestType {
+        UPLOAD("upload"),
+        ONE_KITCHEN("OneKitchen"),
+        DAILY("Daily");
+
+        RequestType(String type) {
+            this.type = type;
+        }
+
+        public static RequestType fromString(String name) {
+            for (RequestType requestType : RequestType.values()) {
+                if (requestType.type.equalsIgnoreCase(name)) {
+                    return requestType;
+                }
+            }
+
+            throw new MemberDataException(name + " is not a known RequestType");
+        }
+
+        private final String type;
+    }
+
     public static final String ERROR_INVALID_DATE =
             "Invalid date in post. The first line must contain only the date, formatted as: **YYYY/MM/DD**";
     public static final String TOPIC_DIRECTIVE_NOT_SUPPORTED =
@@ -202,6 +224,8 @@ public class WorkRequestHandler {
         Long topic;
         final String version;
         final boolean disableDateAudit;
+        final RequestType requestType;
+        final List<String> otherLines = new ArrayList<>();
 
         WorkRequest(Reply reply, String date, UploadFile uploadFile,
                     Long topic, String version, boolean disableDateAudit) {
@@ -211,10 +235,25 @@ public class WorkRequestHandler {
             this.topic = topic;
             this.version = version;
             this.disableDateAudit = disableDateAudit;
+            this.requestType = RequestType.UPLOAD;
+        }
+
+        WorkRequest(Reply reply, String date, RequestType requestType) {
+            super(reply);
+            this.date = date;
+            this.requestType = requestType;
+            this.uploadFile = null;
+            this.topic = topic;
+            this.disableDateAudit = false;
+            this.version = null;
         }
 
         void setTestTopic() {
             this.topic = Main.STONE_TEST_TOPIC;
+        }
+
+        RequestType getRequestType() {
+            return requestType;
         }
 
         // Generate a reply to the topic id
@@ -225,10 +264,14 @@ public class WorkRequestHandler {
 
             String rawPost = timeStamp + "\n"
                     + "\n"
-                    + "Status: " + status + "\n"
-                    + "File: " + uploadFile.getOriginalFileName() + "\n"
-                    + "\n"
-                    + statusMessage + "\n";
+                    + "Status: " + status + "\n";
+
+            if (uploadFile != null) {
+                rawPost += "File: " + uploadFile.getOriginalFileName() + "\n";
+            }
+
+            rawPost += "\n";
+            rawPost += statusMessage + "\n";
 
             Post post = new Post();
             post.title = "Status response to post " + postNumber;
@@ -265,7 +308,7 @@ public class WorkRequestHandler {
             boolean disableDateAudit = false;
 
             while (iterator.hasNext()) {
-                String line = iterator.next();
+                String line = iterator.next().trim();
 
                 if (line.startsWith("Status:")) {
                     return null;
@@ -275,8 +318,7 @@ public class WorkRequestHandler {
                     throw new MemberDataException(
                             "Post #" + lastReply.postNumber + " is not a valid request\n"
                                     + TOPIC_DIRECTIVE_NOT_SUPPORTED);
-                }
-                else if (line.equalsIgnoreCase("test topic")) {
+                } else if (line.equalsIgnoreCase("test topic")) {
                     topic = Main.STONE_TEST_TOPIC;
                 } else if (line.startsWith("Version:")) {
                     version = line.replaceAll("Version:", "").trim();
@@ -289,7 +331,11 @@ public class WorkRequestHandler {
                     UploadFile uploadFile = new UploadFile(fileName, shortURL);
 
                     return new WorkRequest(lastReply, dateLine, uploadFile, topic, version, disableDateAudit);
+                } else if (line.equalsIgnoreCase(Constants.ONE_KITCHEN_WORKFLOW)
+                    || line.equalsIgnoreCase(Constants.DAILY_WORKFLOW)) {
+                    return new WorkRequest(lastReply, dateLine, RequestType.fromString(line));
                 }
+
             }
 
             throw new MemberDataException("Post #" + lastReply.postNumber + " is not a valid request");

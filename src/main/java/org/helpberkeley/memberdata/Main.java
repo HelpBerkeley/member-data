@@ -175,10 +175,10 @@ public class Main {
                 generateEmail(apiClient, options.getFileName());
                 break;
             case Options.COMMAND_WORKFLOW:
-                generateWorkflow(apiClient, options.getFileName());
+                generateWorkflow(apiClient, options.getFileName(), options.postStatus());
                 break;
             case Options.COMMAND_ONE_KITCHEN_WORKFLOW:
-                generateOneKitchenWorkflow(apiClient, options.getFileName());
+                generateOneKitchenWorkflow(apiClient, options.getFileName(), options.postStatus());
                 break;
             case Options.COMMAND_COMPLETED_DAILY_ORDERS:
                 completedDailyOrders(apiClient, options.getFileName());
@@ -477,7 +477,7 @@ public class Main {
         new UserExporter(users).allMembersWithEmailReportToFile(emails);
     }
 
-    private static void generateWorkflow(ApiClient apiClient, final String usersFile)
+    private static void generateWorkflow(ApiClient apiClient, final String usersFile, boolean postStatus)
             throws IOException, CsvException {
 
         // Read/parse the members data
@@ -512,9 +512,29 @@ public class Main {
 
         // Create a post in with a link to the uploaded file.
         postFile(apiClient, workflowFileName, upload.getShortURL(), WORKFLOW_TITLE, WORKFLOW_DATA_TOPIC);
+
+        if (postStatus) {
+            String timeStamp = ZonedDateTime.now(ZoneId.systemDefault())
+                    .format(DateTimeFormatter.ofPattern("uuuu/MM/dd HH:mm:ss"));
+
+            rawPost = timeStamp + "\n"
+                    + "\n"
+                    + "Status: " + WorkRequestHandler.RequestStatus.Succeeded + "\n"
+                    + "Daily workflow uploaded: [" + workflowFileName + "|attachment](" + upload.getShortURL() + ")\n";
+
+            Post post = new Post();
+            post.title = "Workflow generation status message";
+            post.topic_id = Constants.TOPIC_REQUEST_WORKFLOW.getId();
+            post.raw = rawPost;
+            post.createdAt = timeStamp;
+
+            HttpResponse<?> response = apiClient.post(post.toJson());
+            // FIX THIS, DS: what to do with this error?
+            assert response.statusCode() == HTTP_OK : "failed " + response.statusCode() + ": " + response.body();
+        }
     }
 
-    private static void generateOneKitchenWorkflow(ApiClient apiClient, final String usersFile)
+    private static void generateOneKitchenWorkflow(ApiClient apiClient, final String usersFile, boolean postStatus)
             throws IOException, CsvException {
 
         // Read/parse the members data
@@ -550,6 +570,27 @@ public class Main {
         // Create a post in with a link to the uploaded file.
         postFile(apiClient, workflowFileName, upload.getShortURL(),
                 ONE_KITCHEN_WORKFLOW_TITLE, ONE_KITCHEN_WORKFLOW_DATA_TOPIC);
+
+        if (postStatus) {
+            String timeStamp = ZonedDateTime.now(ZoneId.systemDefault())
+                    .format(DateTimeFormatter.ofPattern("uuuu/MM/dd HH:mm:ss"));
+
+            rawPost = timeStamp + "\n"
+                    + "\n"
+                    + "Status: " + WorkRequestHandler.RequestStatus.Succeeded + "\n"
+                    + "OneKitchen workflow uploaded: ["
+                    + workflowFileName + "|attachment](" + upload.getShortURL() + ")\n";
+
+            Post post = new Post();
+            post.title = "Workflow generation status message";
+            post.topic_id = Constants.TOPIC_REQUEST_WORKFLOW.getId();
+            post.raw = rawPost;
+            post.createdAt = timeStamp;
+
+            HttpResponse<?> response = apiClient.post(post.toJson());
+            // FIX THIS, DS: what to do with this error?
+            assert response.statusCode() == HTTP_OK : "failed " + response.statusCode() + ": " + response.body();
+        }
     }
 
     /**
@@ -1404,6 +1445,38 @@ public class Main {
         LOGGER.info(statusMessage);
     }
 
+    private static void createWorkflowRequest(WorkRequestHandler.WorkRequest request) {
+
+        WorkRequestHandler.RequestStatus requestStatus = WorkRequestHandler.RequestStatus.Processing;
+        String statusMessage = "Workflow request posted. The backend software should see and process"
+                + " it within the next few minutes";
+
+        String workflowRequestFileName;
+
+        switch (request.getRequestType()) {
+            case DAILY:
+                workflowRequestFileName = Constants.DAILY_WORKFLOW_REQUEST_FILE;
+                break;
+            case ONE_KITCHEN:
+                workflowRequestFileName = Constants.ONE_KITCHEN_WORKFLOW_REQUEST_FILE;
+                break;
+            default:
+                request.postStatus(WorkRequestHandler.RequestStatus.Failed, request.getRequestType()
+                        + " is an unsupported workflow request type");
+                return;
+        }
+
+        try {
+            Files.createFile(Paths.get(workflowRequestFileName));
+        } catch (IOException ex) {
+            requestStatus = WorkRequestHandler.RequestStatus.Failed;
+            statusMessage = "Failure processing workflow request: " + ex.getMessage();
+        }
+
+        // Send status message
+        request.postStatus(requestStatus, statusMessage);
+    }
+
     private static void customerCarePost(
             ApiClient apiClient, String usersFile) throws IOException, CsvException {
         // Load users
@@ -1437,10 +1510,10 @@ public class Main {
     }
 
     private static void workRequests(ApiClient apiClient, String usersFile) throws IOException, CsvException {
-        String json = apiClient.runQuery(Constants.QUERY_GET_LAST_REPLY_FROM_REQUEST_TOPICS_V21);
+        String json = apiClient.runQuery(Constants.QUERY_GET_REQUESTS_LAST_REPLIES);
         ApiQueryResult apiQueryResult = HBParser.parseQueryResult(json);
 
-        assert apiQueryResult.rows.length == 7 : apiQueryResult.rows.length;
+        assert apiQueryResult.rows.length == 8 : apiQueryResult.rows.length;
         Integer postNumberIndex = apiQueryResult.getColumnIndex(Constants.DISCOURSE_COLUMN_POST_NUMBER);
         assert postNumberIndex != null;
         Integer rawIndex = apiQueryResult.getColumnIndex(Constants.DISCOURSE_COLUMN_RAW);
@@ -1484,6 +1557,8 @@ public class Main {
                 doCompletedDailyOrders(apiClient, request, users);
             } else if (topicId == Constants.TOPIC_REQUEST_ONE_KITCHEN_DRIVER_MESSAGES.getId()) {
                 doOneKitchenDriverMessages(apiClient, request, users);
+            } else if (topicId == Constants.TOPIC_REQUEST_WORKFLOW.getId()) {
+                createWorkflowRequest(request);
             } else if (topicId == Constants.TOPIC_POST_ONE_KITCHEN_RESTAURANT_TEMPLATE.getId()) {
                 doOneKitchenRestaurantTemplate(apiClient, request);
             } else if (topicId == Constants.TOPIC_POST_RESTAURANT_TEMPLATE.getId()) {

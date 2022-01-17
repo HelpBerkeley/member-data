@@ -76,8 +76,8 @@ public class Options {
                     + "    | " + COMMAND_ONEKITCHEN_DRIVER_HISTORY + "\n"
                     + "    | " + COMMAND_INREACH + " all-members-file\n"
                     + "    | " + COMMAND_EMAIL + " all-members-file\n"
-                    + "    | " + COMMAND_WORKFLOW + " all-members-file\n"
-                    + "    | " + COMMAND_ONE_KITCHEN_WORKFLOW + " all-members-file\n"
+                    + "    | " + COMMAND_WORKFLOW + " all-members-file [true|false] (post status)\n"
+                    + "    | " + COMMAND_ONE_KITCHEN_WORKFLOW + " all-members-file [true|false] [true|false] (post status)\n"
                     + "    | " + COMMAND_POST_ERRORS + " errors-file-name\n"
                     + "    | " + COMMAND_POST_CONSUMER_REQUESTS + " consumer-requests-file-name\n"
                     + "    | " + COMMAND_POST_VOLUNTEER_REQUESTS + " volunteer-requests-file-name\n"
@@ -96,6 +96,7 @@ public class Options {
     private String command;
     private String fileName;
     private String shortURL;
+    private boolean postStatus = false;
 
 
     Options(final String[] args) {
@@ -131,8 +132,6 @@ public class Options {
             case COMMAND_EMAIL:
             case COMMAND_DRIVER_MESSAGES:
             case COMMAND_ONE_KITCHEN_DRIVER_MESSAGES:
-            case COMMAND_WORKFLOW:
-            case COMMAND_ONE_KITCHEN_WORKFLOW:
             case COMMAND_POST_ALL_MEMBERS:
             case COMMAND_POST_DRIVERS:
             case COMMAND_UPDATE_DISPATCHERS:
@@ -149,6 +148,19 @@ public class Options {
                     dieMessage(USAGE_ERROR + arg + COMMAND_REQUIRES_FILE_NAME);
                 }
                 fileName = args[index++];
+                break;
+            case COMMAND_WORKFLOW:
+            case COMMAND_ONE_KITCHEN_WORKFLOW:
+                setCommand(arg);
+                if (index == args.length) {
+                    dieMessage(USAGE_ERROR + arg + COMMAND_REQUIRES_FILE_NAME);
+                }
+                fileName = args[index++];
+
+                if (index < args.length) {
+                    postStatus = Boolean.parseBoolean(args[index++]);
+                }
+
                 break;
             case COMMAND_POST_DISPATCHERS:
                 setCommand(arg);
@@ -191,6 +203,10 @@ public class Options {
 
     String getShortURL() {
         return shortURL;
+    }
+
+    boolean postStatus() {
+        return postStatus;
     }
 
     private void setCommand(final String command) {

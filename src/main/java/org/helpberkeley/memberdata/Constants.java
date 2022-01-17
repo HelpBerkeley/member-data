@@ -67,6 +67,7 @@ public class Constants {
     public static final int QUERY_GET_LAST_REPLY_FROM_REQUEST_TOPICS_V10 = 50;
     public static final int QUERY_GET_LAST_REPLY_FROM_REQUEST_TOPICS_V20 = 58;
     public static final int QUERY_GET_LAST_REPLY_FROM_REQUEST_TOPICS_V21 = 64;
+    public static final int QUERY_GET_LAST_REPLY_FROM_REQUEST_TOPICS_V22 = 77;
     public static final int QUERY_GET_CURRENT_VALIDATED_ONE_KITCHEN_RESTAURANT_TEMPLATE = 51;
     public static final int QUERY_GET_LAST_TEST_REQUEST = 52;
     public static final int QUERY_GET_ONE_KITCHEN_DRIVERS_POST_FORMAT_V300 = 53;
@@ -94,12 +95,14 @@ public class Constants {
     public static final int QUERY_GET_GROUP_INSTRUCTIONS_FORMAT = QUERY_GET_GROUP_INSTRUCTIONS_FORMAT_V22;
     public static final int QUERY_GET_BACKUP_DRIVER_FORMAT = QUERY_GET_BACKUP_DRIVER_FORMAT_V12;
     public static final int QUERY_EMAIL_CONFIRMATIONS = QUERY_EMAIL_CONFIRMATIONS_V1;
+    public static final int QUERY_GET_REQUESTS_LAST_REPLIES = QUERY_GET_LAST_REPLY_FROM_REQUEST_TOPICS_V22;
 
     public static final Topic TOPIC_REQUEST_DRIVER_MESSAGES = new Topic("Request Driver Messages", 2504);
     public static final Topic TOPIC_REQUEST_DRIVER_ROUTES = new Topic("Request Driver Routes", 2844);
     public static final Topic TOPIC_POST_RESTAURANT_TEMPLATE = new Topic("Post restaurant template", 1860);
     public static final Topic TOPIC_REQUEST_ONE_KITCHEN_DRIVER_MESSAGES =
             new Topic("Request OneKitchen Driver Messages", 4878);
+    public static final Topic TOPIC_REQUEST_WORKFLOW = new Topic("Request Workflow", 8506);
     public static final Topic TOPIC_ORDER_HISTORY_DATA = new Topic("Order History Data", 5234);
     public static final Topic TOPIC_ONEKITCHEN_ORDER_HISTORY_DATA = new Topic("OneKitchen Order History Data", 6923);
     public static final Topic TOPIC_POST_COMPLETED_DAILY_ORDERS = new Topic("Post completed daily orders", 859);
@@ -252,4 +255,9 @@ public class Constants {
     public static final String DISCOURSE_COLUMN_RAW = "raw";
     public static final String DISCOURSE_COLUMN_TOPIC_ID = "topic_id";
     public static final String DISCOURSE_COLUMN_DELETED_AT = "deleted_at";
+
+    public static final String ONE_KITCHEN_WORKFLOW_REQUEST_FILE = "onekitchen-workflow.request";
+    public static final String DAILY_WORKFLOW_REQUEST_FILE = "daily-workflow.request";
+    public static final String ONE_KITCHEN_WORKFLOW = "OneKitchen";
+    public static final String DAILY_WORKFLOW = "Daily";
 }
