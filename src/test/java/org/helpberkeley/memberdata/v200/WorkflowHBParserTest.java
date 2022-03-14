@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021. helpberkeley.org
+ * Copyright (c) 2021-2022. helpberkeley.org
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -297,6 +297,39 @@ public class WorkflowHBParserTest extends WorkflowHBParserBaseTest {
         restaurant = (RestaurantV200)itinerary.get(2);
         assertThat(restaurant.getName()).isEqualTo("Kim's Cafe");
         assertThat(restaurant.getOrders()).isEqualTo(0);
+    }
+
+    @Test
+    public void consumerBooleanWhitespaceTest() {
+        DriverBlockBuilder driverBlock = new DriverBlockBuilder();
+        driverBlock.withRestaurant(new RestaurantBuilder().withOrders("1"));
+        driverBlock.withDelivery(new DeliveryBuilder().withIsConsumer("TRUE ").withNormalMeals("1"));
+        WorkflowBuilder workflowBuilder = new WorkflowBuilder();
+        workflowBuilder.withDriverBlock(driverBlock);
+
+        WorkflowParser parser = WorkflowParser.create(restaurants, workflowBuilder.build());
+        auditControlBlock(parser.controlBlock());
+        List<Driver> drivers = parser.drivers();
+        assertThat(drivers).hasSize(1);
+        Driver driver = drivers.get(0);
+        assertThat(driver.getWarningMessages()).isEmpty();
+
+        List<ItineraryStop> itinerary = driver.getItinerary();
+        assertThat(itinerary).hasSize(2);
+
+        assertThat(itinerary.get(0).getType()).isEqualTo(ItineraryStopType.PICKUP);
+        assertThat(itinerary.get(0)).isInstanceOf(RestaurantV200.class);
+        RestaurantV200 restaurant = (RestaurantV200)itinerary.get(0);
+        assertThat(restaurant.getName()).isEqualTo(DEFAULT_RESTAURANT_NAME);
+        assertThat(restaurant.getOrders()).isEqualTo(1);
+
+        assertThat(itinerary.get(1).getType()).isEqualTo(ItineraryStopType.DELIVERY);
+        assertThat(itinerary.get(1)).isInstanceOf(DeliveryV200.class);
+        DeliveryV200 delivery = (DeliveryV200) itinerary.get(1);
+        assertThat(delivery.getName()).isEqualTo(DEFAULT_CONSUMER_NAME);
+        assertThat(delivery.getUserName()).isEqualTo(DEFAULT_CONSUMER_USER_NAME);
+        assertThat(delivery.getNormalRations()).isEqualTo("1");
+        assertThat(delivery.getVeggieRations()).isEqualTo("0");
     }
 
     private void auditControlBlock(ControlBlock controlBlock) {

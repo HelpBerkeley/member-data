@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021. helpberkeley.org
+ * Copyright (c) 2021-2022. helpberkeley.org
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,11 +23,14 @@
 package org.helpberkeley.memberdata.v200;
 
 import org.helpberkeley.memberdata.Builder;
+import org.helpberkeley.memberdata.Constants;
 
 import static org.helpberkeley.memberdata.v200.BuilderConstants.*;
 
 class DeliveryBuilder implements Builder {
 
+    private String isConsumer = Constants.TRUE;
+    private String isDriver = Constants.FALSE;
     private String consumerName = DEFAULT_CONSUMER_NAME;
     private String consumerUserName = DEFAULT_CONSUMER_USER_NAME;
     private String city = "Berkeley";
@@ -38,6 +41,16 @@ class DeliveryBuilder implements Builder {
     private String restaurantName = DEFAULT_RESTAURANT_NAME;
     private String normalMeals = "0";
     private String veggieMeals = "0";
+
+    public DeliveryBuilder withIsConsumer(String isConsumer) {
+        this.isConsumer = isConsumer;
+        return this;
+    }
+
+    public DeliveryBuilder withIsDriver(String isDriver) {
+        this.isDriver = isDriver;
+        return this;
+    }
 
     public DeliveryBuilder withNormalMeals(String normalMeals) {
         this.normalMeals = normalMeals;
@@ -95,8 +108,10 @@ class DeliveryBuilder implements Builder {
     }
 
     public String build() {
-        return "TRUE" + ","
-                + "FALSE" + ","
+        return isConsumer
+                + Constants.CSV_SEPARATOR
+                + isDriver
+                + Constants.CSV_SEPARATOR
                 + consumerName + ","
                 + consumerUserName + ","
                 + phone + ","

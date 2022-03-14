@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021. helpberkeley.org
+ * Copyright (c) 2021-2022. helpberkeley.org
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -28,6 +28,8 @@ public class DriverBuilder {
 
     private String userName = BuilderConstants.DEFAULT_DRIVER_USER_NAME;
     private String name = BuilderConstants.DEFAULT_DRIVER_NAME;
+    private String isConsumer = Constants.FALSE;
+    private String isDriver = Constants.TRUE;
 
     public DriverBuilder withUserName(String userName) {
         this.userName = userName;
@@ -39,13 +41,26 @@ public class DriverBuilder {
         return this;
     }
 
+    public DriverBuilder withIsConsumer(String isConsumer) {
+        this.isConsumer = isConsumer;
+        return this;
+    }
+
+    public DriverBuilder withIsDriver(String isDriver) {
+        this.isDriver = isDriver;
+        return this;
+    }
+
     @Override
     public String toString() {
         return build();
     }
 
     public String build() {
-        return "FALSE,TRUE,"
+        return isConsumer
+                + Constants.CSV_SEPARATOR
+                + isDriver
+                + Constants.CSV_SEPARATOR
                 + name
                 + Constants.CSV_SEPARATOR
                 + userName

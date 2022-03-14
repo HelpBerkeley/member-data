@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2020-2021 helpberkeley.org
+// Copyright (c) 2020-2022 helpberkeley.org
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -260,4 +260,7 @@ public class Constants {
     public static final String DAILY_WORKFLOW_REQUEST_FILE = "daily-workflow.request";
     public static final String ONE_KITCHEN_WORKFLOW = "OneKitchen";
     public static final String DAILY_WORKFLOW = "Daily";
+
+    public static final String TRUE = "TRUE";
+    public static final String FALSE = "FALSE";
 }

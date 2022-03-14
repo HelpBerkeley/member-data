@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021. helpberkeley.org
+ * Copyright (c) 2021-2022. helpberkeley.org
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -712,6 +712,82 @@ public class WorkflowHBParserTest extends WorkflowHBParserBaseTest {
         assertThat(thrown).hasMessageContaining(MessageFormat.format(
                 RestaurantV300.ERROR_NON_EMPTY_COLUMN, Constants.WORKFLOW_TYPE_GROCERY_COLUMN));
 
+    }
+
+    @Test
+    public void driverBooleanWhitespaceTest() {
+        DriverBlockBuilder driverBlock = new DriverBlockBuilder();
+        driverBlock.withRestaurant(new RestaurantBuilder());
+        driverBlock.withDelivery(new DeliveryBuilder().withStdMeals("1"));
+        driverBlock.withRestaurant(new RestaurantBuilder().withName("BFN"));
+        driverBlock.withDelivery(new DeliveryBuilder().withStdGrocery("1"));
+        WorkflowBuilder workflowBuilder = new WorkflowBuilder();
+        workflowBuilder.withDriverBlock(driverBlock);
+        WorkflowParser parser = WorkflowParser.create(restaurants, workflowBuilder.build());
+        auditControlBlock(parser.controlBlock());
+        List<Driver> drivers = parser.drivers();
+        assertThat(drivers.get(0).getWarningMessages()).isEmpty();
+        assertThat(drivers).hasSize(1);
+        Driver driver = drivers.get(0);
+
+        List<ItineraryStop> itinerary = driver.getItinerary();
+        assertThat(itinerary).hasSize(4);
+
+        assertThat(itinerary.get(0)).isInstanceOf(RestaurantV300.class);
+        RestaurantV300 restaurant = (RestaurantV300) itinerary.get(0);
+        assertThat(restaurant.getName()).isEqualTo(DEFAULT_RESTAURANT_NAME);
+
+        assertThat(itinerary.get(1)).isInstanceOf(DeliveryV300.class);
+        DeliveryV300 delivery = (DeliveryV300)itinerary.get(1);
+        assertThat(delivery.getName()).isEqualTo(DEFAULT_CONSUMER_NAME);
+        assertThat(delivery.getUserName()).isEqualTo(DEFAULT_CONSUMER_USER_NAME);
+
+        assertThat(itinerary.get(2)).isInstanceOf(RestaurantV300.class);
+        restaurant = (RestaurantV300) itinerary.get(2);
+        assertThat(restaurant.getName()).isEqualTo("BFN");
+
+        assertThat(itinerary.get(3)).isInstanceOf(DeliveryV300.class);
+        delivery = (DeliveryV300)itinerary.get(3);
+        assertThat(delivery.getName()).isEqualTo(DEFAULT_CONSUMER_NAME);
+        assertThat(delivery.getUserName()).isEqualTo(DEFAULT_CONSUMER_USER_NAME);
+    }
+
+    @Test
+    public void consumerBooleanWhitespaceTest() {
+        DriverBlockBuilder driverBlock = new DriverBlockBuilder();
+        driverBlock.withRestaurant(new RestaurantBuilder());
+        driverBlock.withDelivery(new DeliveryBuilder().withStdMeals("1"));
+        driverBlock.withRestaurant(new RestaurantBuilder().withName("BFN"));
+        driverBlock.withDelivery(new DeliveryBuilder().withIsConsumer("TRUE ").withStdGrocery("1"));
+        WorkflowBuilder workflowBuilder = new WorkflowBuilder();
+        workflowBuilder.withDriverBlock(driverBlock);
+        WorkflowParser parser = WorkflowParser.create(restaurants, workflowBuilder.build());
+        auditControlBlock(parser.controlBlock());
+        List<Driver> drivers = parser.drivers();
+        assertThat(drivers.get(0).getWarningMessages()).isEmpty();
+        assertThat(drivers).hasSize(1);
+        Driver driver = drivers.get(0);
+
+        List<ItineraryStop> itinerary = driver.getItinerary();
+        assertThat(itinerary).hasSize(4);
+
+        assertThat(itinerary.get(0)).isInstanceOf(RestaurantV300.class);
+        RestaurantV300 restaurant = (RestaurantV300) itinerary.get(0);
+        assertThat(restaurant.getName()).isEqualTo(DEFAULT_RESTAURANT_NAME);
+
+        assertThat(itinerary.get(1)).isInstanceOf(DeliveryV300.class);
+        DeliveryV300 delivery = (DeliveryV300)itinerary.get(1);
+        assertThat(delivery.getName()).isEqualTo(DEFAULT_CONSUMER_NAME);
+        assertThat(delivery.getUserName()).isEqualTo(DEFAULT_CONSUMER_USER_NAME);
+
+        assertThat(itinerary.get(2)).isInstanceOf(RestaurantV300.class);
+        restaurant = (RestaurantV300) itinerary.get(2);
+        assertThat(restaurant.getName()).isEqualTo("BFN");
+
+        assertThat(itinerary.get(3)).isInstanceOf(DeliveryV300.class);
+        delivery = (DeliveryV300)itinerary.get(3);
+        assertThat(delivery.getName()).isEqualTo(DEFAULT_CONSUMER_NAME);
+        assertThat(delivery.getUserName()).isEqualTo(DEFAULT_CONSUMER_USER_NAME);
     }
 
     private void auditControlBlock(ControlBlock controlBlock) {
