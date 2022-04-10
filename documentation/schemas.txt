@@ -584,6 +584,7 @@ When:          Whenever any change to any data in the full user record
 Who:           Driver is listed if:
                  (drivers == TRUE) AND (trained_drivers == TRUE) 
                  AND (event_drivers == FALSE) AND (GONE == FALSE) AND (OUT == FALSE) AND (OTHER ==FALSE)
+		 AND (has driven in the last 4 weeks)
 
 Note: this driver table will be difficult to keep very compact but needs
 to display many columns, and be readable at a glance.  To this purpose

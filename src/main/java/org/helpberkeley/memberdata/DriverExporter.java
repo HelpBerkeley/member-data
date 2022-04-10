@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021. helpberkeley.org
+ * Copyright (c) 2021-2022. helpberkeley.org
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -303,6 +303,11 @@ public class DriverExporter extends Exporter {
                 recentRuns = ":red_circle::red_circle::red_circle::red_circle:";
             }
 
+            // Skip drivers inactive in the past 4 weeks
+            if (recentRuns.equals(":red_circle::red_circle::red_circle::red_circle:")) {
+                continue;
+            }
+
             String name = detailedDriver.getName();
             if (name.length() > 19) {
                 name = name.substring(0, 18);
@@ -420,6 +425,11 @@ public class DriverExporter extends Exporter {
                 totalRuns = Long.toString(history.totalRuns());
             } else {
                 recentRuns = ":red_circle::red_circle::red_circle::red_circle:";
+            }
+
+            // Skip drivers inactive in the past 4 weeks
+            if (recentRuns.equals(":red_circle::red_circle::red_circle::red_circle:")) {
+                continue;
             }
 
             String name = detailedDriver.getName();
