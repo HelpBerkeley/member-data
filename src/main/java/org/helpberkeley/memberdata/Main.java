@@ -84,6 +84,7 @@ public class Main {
     static final long CUSTOMER_CARE_MEMBER_DATA_POST_ID = 52234;
     static final long FRREG_POST_ID = 52427;
     static final long OUT_DRIVERS_POST_ID =  64492;
+    static final long COPY_EVENT_DRIVERS_TABLE_SHORT_POST_ID = 94664;
 
     static final String WRONG_REQUEST_TOPIC =
             "Control block version {0} is not supported in {1}. Did you mean to send this to {2} ?\n";
@@ -1217,6 +1218,9 @@ public class Main {
         post = driverExporter.eventDriversShortPost();
         // update the posting
         response = apiClient.updatePost(EVENT_DRIVERS_TABLE_SHORT_POST_ID, post);
+        // FIX THIS, DS: what to do with this error?
+        assert response.statusCode() == HTTP_OK : "failed " + response.statusCode() + ": " + response.body();
+        response = apiClient.updatePost(COPY_EVENT_DRIVERS_TABLE_SHORT_POST_ID, post);
         // FIX THIS, DS: what to do with this error?
         assert response.statusCode() == HTTP_OK : "failed " + response.statusCode() + ": " + response.body();
 
