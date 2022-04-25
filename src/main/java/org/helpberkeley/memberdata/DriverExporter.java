@@ -49,6 +49,7 @@ public class DriverExporter extends Exporter {
             DriverHistory> driverHistory, Map<String, DetailsPost> driverDetails) {
         this.tables = new Tables(users);
         this.driverDetails = driverDetails;
+        // Driver user name key is lower case in this map. See DriverHistory.doGetDriverHistory()
         this.driverHistory = driverHistory;
     }
 
@@ -60,7 +61,7 @@ public class DriverExporter extends Exporter {
 
             DetailsPost detailsPost = driverDetails.get(user.getUserName());
             String details = (detailsPost == null) ? "" : detailsPost.getDetails();
-            DriverHistory history = driverHistory.get(user.getUserName());
+            DriverHistory history = driverHistory.get(user.getUserName().toLowerCase());
             List<Integer> weeklyHistory =
                     (history != null) ? history.getWeeklyRunTotals() : List.of(0, 0, 0, 0, 0, 0, 0);
 
@@ -286,7 +287,7 @@ public class DriverExporter extends Exporter {
 
         for (DetailedDriver detailedDriver : detailedDrivers) {
 
-            DriverHistory history = driverHistory.get(detailedDriver.getUserName());
+            DriverHistory history = driverHistory.get(detailedDriver.getUserName().toLowerCase());
 
             String recentRuns;
             String totalRuns = "0";
@@ -351,7 +352,7 @@ public class DriverExporter extends Exporter {
 
         for (DetailedDriver detailedDriver : detailedDrivers) {
 
-            DriverHistory history = driverHistory.get(detailedDriver.getUserName());
+            DriverHistory history = driverHistory.get(detailedDriver.getUserName().toLowerCase());
 
             String recentRuns32;
             String recentRuns10;
@@ -410,7 +411,7 @@ public class DriverExporter extends Exporter {
 
         for (DetailedDriver detailedDriver : detailedDrivers) {
 
-            DriverHistory history = driverHistory.get(detailedDriver.getUserName());
+            DriverHistory history = driverHistory.get(detailedDriver.getUserName().toLowerCase());
 
             String recentRuns;
             String totalRuns = "0";
@@ -475,7 +476,7 @@ public class DriverExporter extends Exporter {
 
         for (DetailedDriver detailedDriver : detailedDrivers) {
 
-            DriverHistory history = driverHistory.get(detailedDriver.getUserName());
+            DriverHistory history = driverHistory.get(detailedDriver.getUserName().toLowerCase());
 
             String recentRuns32;
             String recentRuns10;

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-2021 helpberkeley.org
+ * Copyright (c) 2020-2022 helpberkeley.org
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -436,9 +436,9 @@ public class MainTest extends TestBase {
         Main.main(args);
 
         String driversFile = readFile(findFile(Constants.DRIVERS_FILE, "csv"));
-        assertThat(driversFile).contains("jbDriver");
-        assertThat(driversFile).contains("jsDriver");
-        assertThat(driversFile).contains("Xyzzy");
+        assertThat(driversFile).contains("jbDriver,Y,Y,N,N,3,");
+        assertThat(driversFile).contains("jsDriver,Y,Y,N,N,4,");
+        assertThat(driversFile).contains("Xyzzy,Y,N,N,N,0,");
     }
 
     @Test

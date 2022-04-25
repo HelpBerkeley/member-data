@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021. helpberkeley.org
+ * Copyright (c) 2021-2022. helpberkeley.org
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -235,7 +235,10 @@ public class DriverHistory {
         for (String[] columns : lines) {
             assert columns.length == 2 : columns.length;
 
-            DriverHistory driver = driverHistory.computeIfAbsent(columns[0], DriverHistory::new);
+            // Use lower case version of driver user name to make the history insensitive to
+            // the case in the workflow spreadsheet.  Map back to actual case in DriverExporter usage
+            // of history.
+            DriverHistory driver = driverHistory.computeIfAbsent(columns[0].toLowerCase(), DriverHistory::new);
             driver.addRun(columns[1]);
         }
     }
