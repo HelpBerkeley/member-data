@@ -407,7 +407,7 @@ public class DriverExporter extends Exporter {
         output.append("Updated: ").append(timeStamp).append("\n");
 
         output.append("|UserName|Full Name|phn .#|lt|ar|bk|rn|3. 2. 1. 0|\n");
-        output.append("|---|---|---|---|---|---|---|---|---|---|---|---|---|\n");
+        output.append("|---|---|---|---|---|---|---|---|\n");
 
         for (DetailedDriver detailedDriver : detailedDrivers) {
 
