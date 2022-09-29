@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021. helpberkeley.org
+ * Copyright (c) 2021-2022. helpberkeley.org
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -52,7 +52,7 @@ public class ControlBlockBuilder {
     private List<String> altMealOptions = DEFAULT_ALT_MEAL_OPTIONS_LIST;
     private List<String> altGroceryOptions = DEFAULT_ALT_GROCERY_OPTIONS_LIST;
     private List<String> messageFormat = DEFAULT_MESSAGE_FORMAT_LIST;
-    private String backupDriver = null;
+    private List<String> backupDrivers = new ArrayList<>();
     private List<String> pickupManagers = DEFAULT_PICKUP_MANAGERS_LIST;
 
     @Override
@@ -101,9 +101,8 @@ public class ControlBlockBuilder {
                         getKeyValueRow(Constants.CONTROL_BLOCK_ALT_GROCERY_OPTIONS, quote(o))));
             }
         }
-        if (backupDriver != null) {
-            controlBlock.append(getKeyValueRow(Constants.CONTROL_BLOCK_BACKUP_DRIVER, backupDriver));
-        }
+
+        backupDrivers.forEach(b -> controlBlock.append(getKeyValueRow(Constants.CONTROL_BLOCK_BACKUP_DRIVER, b)));
         controlBlock.append(ControlBlockTest.CONTROL_BLOCK_END_ROW);
         controlBlock.append(EMPTY_ROW);
 
@@ -196,7 +195,7 @@ public class ControlBlockBuilder {
     }
 
     public ControlBlockBuilder withBackupDriver(String backupDriver) {
-        this.backupDriver = backupDriver;
+        backupDrivers.add(backupDriver);
         return this;
     }
 

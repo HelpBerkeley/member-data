@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021. helpberkeley.org
+ * Copyright (c) 2021-2022. helpberkeley.org
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -34,10 +34,6 @@ public class PickupManagerPostTest extends TestBase {
     private final String oneDriverOneSource;
     private final String multiDriverOneSource;
     private final Map<String, User> users;
-
-    private final int restaurantTemplateQuery = Constants.QUERY_GET_CURRENT_VALIDATED_ONE_KITCHEN_RESTAURANT_TEMPLATE;
-    private final int driverPostFormatQuery = Constants.QUERY_GET_ONE_KITCHEN_DRIVERS_POST_FORMAT_V300;
-    private final int groupPostFormatQuery = Constants.QUERY_GET_ONE_KITCHEN_GROUP_POST_FORMAT_V300;
     private final int pickupManagerPostFormatQuery = Constants.QUERY_GET_ONE_KITCHEN_DRIVERS_TABLE_POST_FORMAT_V300;
 
     public PickupManagerPostTest() {
@@ -46,7 +42,6 @@ public class PickupManagerPostTest extends TestBase {
 
         Loader loader = new Loader(createApiSimulator());
         users = new Tables(loader.load()).mapByUserName();
-
     }
 
     @Test
@@ -299,5 +294,42 @@ public class PickupManagerPostTest extends TestBase {
                 DriverPostFormat.create(createApiSimulator(), users, workflow.build());
         String post = ((DriverPostFormatV300)driverPostFormat).generateDriversTablePost();
         assertThat(post).isEqualTo("|true|true|");
+    }
+
+    @Test
+    public void v300SingleBackupDriverTest() {
+        String format = "LOOP &{BackupDriver} {"
+                + " ${BackupDriver.UserName}\",\" ${BackupDriver.CompactPhone}\"\\n\""
+                + "}";
+        HttpClientSimulator.setQueryResponseData(pickupManagerPostFormatQuery, createMessageBlock(format));
+        ControlBlockBuilder controlBlock = new ControlBlockBuilder();
+        controlBlock.withFoodSources("|Safeway");
+        controlBlock .withBackupDriver("MrBackup772");
+        WorkflowBuilder workflow = new WorkflowBuilder()
+                .withControlBlock(controlBlock);
+        DriverPostFormat driverPostFormat =
+                DriverPostFormat.create(createApiSimulator(), users, workflow.build());
+        String post = ((DriverPostFormatV300)driverPostFormat).generateDriversTablePost();
+        System.out.println(post);
+        assertThat(post).isEqualTo("MrBackup772,(123) 456.7890\n");
+    }
+
+    @Test
+    public void v300MultiBackupDriverTest() {
+        String format = "LOOP &{BackupDriver} {"
+                + " ${BackupDriver.UserName}\",\" ${BackupDriver.CompactPhone}\"\\n\""
+                + "}";
+        HttpClientSimulator.setQueryResponseData(pickupManagerPostFormatQuery, createMessageBlock(format));
+        ControlBlockBuilder controlBlock = new ControlBlockBuilder();
+        controlBlock.withFoodSources("|Safeway");
+        controlBlock .withBackupDriver("MrBackup772");
+        controlBlock .withBackupDriver("jsDriver");
+        WorkflowBuilder workflow = new WorkflowBuilder()
+                .withControlBlock(controlBlock);
+        DriverPostFormat driverPostFormat =
+                DriverPostFormat.create(createApiSimulator(), users, workflow.build());
+        String post = ((DriverPostFormatV300)driverPostFormat).generateDriversTablePost();
+        System.out.println(post);
+        assertThat(post).isEqualTo("MrBackup772,(123) 456.7890\njsDriver,(888) 888.8888\n");
     }
 }

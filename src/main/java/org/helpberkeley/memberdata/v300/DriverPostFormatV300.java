@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-2021. helpberkeley.org
+ * Copyright (c) 2020-2022. helpberkeley.org
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -325,7 +325,10 @@ public class DriverPostFormatV300 extends DriverPostFormat {
                 value = compactPhone(controlBlock.getFirstOpsManager().getPhone());
                 break;
             case "BackupDriver.UserName":
-                value = compactPhone(context.getBackupDriver());
+                value = context.getBackupDriver();
+                break;
+            case "BackupDriver.CompactPhone":
+                value = getCompactPhone(context.getBackupDriver());
                 break;
             default:
                 throw new MemberDataException(context.formatException("unknown struct variable ${" + refName + "}"));
@@ -1073,5 +1076,10 @@ public class DriverPostFormatV300 extends DriverPostFormat {
     private boolean groceriesOnlyRun() {
         ControlBlockV300 controlBlock = (ControlBlockV300)getControlBlock();
         return controlBlock.getMealSource().isEmpty();
+    }
+
+    private String getCompactPhone(String userName) {
+        User user = users.get(userName);
+        return compactPhone(user.getPhoneNumber());
     }
 }
