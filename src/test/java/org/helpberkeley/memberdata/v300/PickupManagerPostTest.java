@@ -299,7 +299,9 @@ public class PickupManagerPostTest extends TestBase {
     @Test
     public void v300SingleBackupDriverTest() {
         String format = "LOOP &{BackupDriver} {"
-                + " ${BackupDriver.UserName}\",\" ${BackupDriver.CompactPhone}\"\\n\""
+                + "${BackupDriver.Name}\",\""
+                + "${BackupDriver.UserName}\",\""
+                + "${BackupDriver.CompactPhone}\"\\n\""
                 + "}";
         HttpClientSimulator.setQueryResponseData(pickupManagerPostFormatQuery, createMessageBlock(format));
         ControlBlockBuilder controlBlock = new ControlBlockBuilder();
@@ -311,13 +313,15 @@ public class PickupManagerPostTest extends TestBase {
                 DriverPostFormat.create(createApiSimulator(), users, workflow.build());
         String post = ((DriverPostFormatV300)driverPostFormat).generateDriversTablePost();
         System.out.println(post);
-        assertThat(post).isEqualTo("MrBackup772,(123) 456.7890\n");
+        assertThat(post).isEqualTo("Scotty J Backup 772th,MrBackup772,(123) 456.7890\n");
     }
 
     @Test
     public void v300MultiBackupDriverTest() {
         String format = "LOOP &{BackupDriver} {"
-                + " ${BackupDriver.UserName}\",\" ${BackupDriver.CompactPhone}\"\\n\""
+                + "${BackupDriver.Name}\",\""
+                + "${BackupDriver.UserName}\",\""
+                + "${BackupDriver.CompactPhone}\"\\n\""
                 + "}";
         HttpClientSimulator.setQueryResponseData(pickupManagerPostFormatQuery, createMessageBlock(format));
         ControlBlockBuilder controlBlock = new ControlBlockBuilder();
@@ -330,6 +334,7 @@ public class PickupManagerPostTest extends TestBase {
                 DriverPostFormat.create(createApiSimulator(), users, workflow.build());
         String post = ((DriverPostFormatV300)driverPostFormat).generateDriversTablePost();
         System.out.println(post);
-        assertThat(post).isEqualTo("MrBackup772,(123) 456.7890\njsDriver,(888) 888.8888\n");
+        assertThat(post).isEqualTo("Scotty J Backup 772th,MrBackup772,(123) 456.7890\n"
+                + "Josephine B Driver,jsDriver,(888) 888.8888\n");
     }
 }

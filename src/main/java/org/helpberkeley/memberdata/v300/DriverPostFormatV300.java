@@ -324,6 +324,9 @@ public class DriverPostFormatV300 extends DriverPostFormat {
                 // FIX THIS, DS: how are we handling multiple ops managers?
                 value = compactPhone(controlBlock.getFirstOpsManager().getPhone());
                 break;
+            case "BackupDriver.Name":
+                value = getName(context.getBackupDriver());
+                break;
             case "BackupDriver.UserName":
                 value = context.getBackupDriver();
                 break;
@@ -1081,5 +1084,10 @@ public class DriverPostFormatV300 extends DriverPostFormat {
     private String getCompactPhone(String userName) {
         User user = users.get(userName);
         return compactPhone(user.getPhoneNumber());
+    }
+
+    private String getName(String userName) {
+        User user = users.get(userName);
+        return user.getName();
     }
 }
