@@ -551,6 +551,9 @@ public class DriverPostFormatV300 extends DriverPostFormat {
             case "Driver":
                 returnValue = processDriverListRef(listRef, context);
                 break;
+            case "BackupDriver":
+                returnValue = processBackupDriverListRef(listRef, context);
+                break;
             case "AlternateMeals":
                 returnValue = processAlternateMealsListRef(listRef, context);
                 break;

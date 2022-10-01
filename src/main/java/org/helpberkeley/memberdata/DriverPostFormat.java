@@ -433,6 +433,34 @@ public abstract class DriverPostFormat {
         return new ProcessingReturnValue(ProcessingStatus.COMPLETE, value);
     }
 
+    protected final ProcessingReturnValue processBackupDriverListRef(
+            MessageBlockListRef listRef, MessageBlockContext context) {
+
+        String refName = listRef.getName();
+        String value;
+
+        String backupDriverUserName = context.getBackupDriver();
+        User user = users.get(backupDriverUserName);
+
+        switch (refName) {
+            case "BackupDriver.Name":
+                value = user.getName();
+                break;
+            case "BackupDriver.UserName":
+                value = backupDriverUserName;
+                break;
+            case "BackupDriver.CompactPhone":
+                value = compactPhone(user.getPhoneNumber());
+                break;
+            default:
+                value = versionSpecificDriverListRef(context, refName);
+                break;
+        }
+
+        LOGGER.trace("${{}} = \"{}\"", refName, value);
+        return new ProcessingReturnValue(ProcessingStatus.COMPLETE, value);
+    }
+
     private ProcessingReturnValue processLoopListNameRef(
             MessageBlockLoop loop, MessageBlockListNameRef listNameRef, MessageBlockContext context) {
 

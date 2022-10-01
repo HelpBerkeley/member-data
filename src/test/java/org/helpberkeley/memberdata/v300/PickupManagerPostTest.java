@@ -299,9 +299,9 @@ public class PickupManagerPostTest extends TestBase {
     @Test
     public void v300SingleBackupDriverTest() {
         String format = "LOOP &{BackupDriver} {"
-                + "${BackupDriver.Name}\",\""
-                + "${BackupDriver.UserName}\",\""
-                + "${BackupDriver.CompactPhone}\"\\n\""
+                + "&{BackupDriver.Name}\",\""
+                + "&{BackupDriver.UserName}\",\""
+                + "&{BackupDriver.CompactPhone}\"\\n\""
                 + "}";
         HttpClientSimulator.setQueryResponseData(pickupManagerPostFormatQuery, createMessageBlock(format));
         ControlBlockBuilder controlBlock = new ControlBlockBuilder();
@@ -319,9 +319,9 @@ public class PickupManagerPostTest extends TestBase {
     @Test
     public void v300MultiBackupDriverTest() {
         String format = "LOOP &{BackupDriver} {"
-                + "${BackupDriver.Name}\",\""
-                + "${BackupDriver.UserName}\",\""
-                + "${BackupDriver.CompactPhone}\"\\n\""
+                + "&{BackupDriver.Name}\",\""
+                + "&{BackupDriver.UserName}\",\""
+                + "&{BackupDriver.CompactPhone}\"\\n\""
                 + "}";
         HttpClientSimulator.setQueryResponseData(pickupManagerPostFormatQuery, createMessageBlock(format));
         ControlBlockBuilder controlBlock = new ControlBlockBuilder();
