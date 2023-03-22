@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2020-2021 helpberkeley.org
+// Copyright (c) 2020-2023 helpberkeley.org
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -91,6 +91,7 @@ public class Main {
     static final String UNSUPPORTED_CONTROL_BLOCK_VERSION =
             "Control block version {0} is not supported. {1} requires control block version {2}\n";
 
+    static final String DATE_IS_IN_THE_FUTURE = "Invalid date, {0} is in the future.";
 
     public static void main(String[] args) throws IOException, CsvException {
 
@@ -1048,7 +1049,7 @@ public class Main {
         String error = "";
 
         if (daysBetween < 0) {
-            error = "Invalid date, " +  date + " is in the future.";
+            error = MessageFormat.format(DATE_IS_IN_THE_FUTURE, date);
         } else if (daysBetween > 7) {
             error = "Invalid date, " +  date + " is more than one week ago.";
         }

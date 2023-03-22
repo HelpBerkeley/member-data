@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-2022 helpberkeley.org
+ * Copyright (c) 2020-2023 helpberkeley.org
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -34,6 +34,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.catchThrowable;
 
 /**
  * Execute the individual commands, end-to-end.
@@ -382,7 +383,9 @@ public class MainTest extends TestBase {
                         + "\"rows\": [ "
                         + "[ 1, null, \""
                         + lastYearStr
-                        + "\nDisable date audit\n[xyzzy.csv|attachment](upload://routed-deliveries-v200.csv) (5.8 KB)\" ] "
+                        + "\n"
+                        + WorkRequestHandler.DISABLE_DATE_AUDIT
+                        + "\n[xyzzy.csv|attachment](upload://routed-deliveries-v200.csv) (5.8 KB)\" ] "
                         + "] }";
         HttpClientSimulator.setQueryResponseData(
                 Constants.QUERY_GET_LAST_COMPLETED_DAILY_ORDERS_REPLY, completedOrdersRequest);
@@ -420,6 +423,57 @@ public class MainTest extends TestBase {
         Post statusPost = WorkRequestHandler.getLastStatusPost();
         assertThat(statusPost).isNotNull();
         assertThat(statusPost.raw).contains("Status: Succeeded");
+    }
+
+    @Test
+    public void completedOneKitchenOrdersInTheFutureNegativeTest() throws IOException, CsvException {
+        LocalDate tomorrow = LocalDate.now(Constants.TIMEZONE).plusDays(1);
+        DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy/MM/dd");
+        String tomorrowStr = tomorrow.format(format);
+
+        String completedOneKitchenOrdersRequest =
+                "{ \"success\": true, \"columns\": [ \"post_number\", \"deleted_at\", \"raw\" ], "
+                        + "\"rows\": [ "
+                        + "[ 42, null, \""
+                        + tomorrowStr
+                        + "\n[xyzzy.csv|attachment](upload://routed-deliveries-v300.csv) (5.8 KB)\" ] "
+                        + "] }";
+        HttpClientSimulator.setQueryResponseData(
+                Constants.QUERY_GET_LAST_COMPLETED_ONEKITCHEN_ORDERS_REPLY, completedOneKitchenOrdersRequest);
+        String usersFile = findFile(Constants.MEMBERDATA_RAW_FILE, "csv");
+        String[] args = { Options.COMMAND_COMPLETED_ONEKITCHEN_ORDERS, usersFile };
+        WorkRequestHandler.clearLastStatusPost();
+        Main.main(args);
+        assertThat(WorkRequestHandler.getLastStatusPost()).isNotNull();
+        String statusMessage = WorkRequestHandler.getLastStatusPost().raw;
+        assertThat(statusMessage).contains("Status: Failed");
+        assertThat(statusMessage).contains(MessageFormat.format(Main.DATE_IS_IN_THE_FUTURE, tomorrowStr));
+    }
+
+    @Test
+    public void completedOneKitchenOrdersInTheFutureDisableDateAuditTest() throws IOException, CsvException {
+        LocalDate tomorrow = LocalDate.now(Constants.TIMEZONE).plusDays(1);
+        DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy/MM/dd");
+        String tomorrowStr = tomorrow.format(format);
+
+        String completedOneKitchenOrdersRequest =
+                "{ \"success\": true, \"columns\": [ \"post_number\", \"deleted_at\", \"raw\" ], "
+                        + "\"rows\": [ "
+                        + "[ 42, null, \""
+                        + tomorrowStr
+                        + "\n"
+                        + WorkRequestHandler.DISABLE_DATE_AUDIT
+                        + "\n[xyzzy.csv|attachment](upload://routed-deliveries-v300.csv) (5.8 KB)\" ] "
+                        + "] }";
+        HttpClientSimulator.setQueryResponseData(
+                Constants.QUERY_GET_LAST_COMPLETED_ONEKITCHEN_ORDERS_REPLY, completedOneKitchenOrdersRequest);
+        String usersFile = findFile(Constants.MEMBERDATA_RAW_FILE, "csv");
+        String[] args = { Options.COMMAND_COMPLETED_ONEKITCHEN_ORDERS, usersFile };
+        WorkRequestHandler.clearLastStatusPost();
+        Main.main(args);
+        assertThat(WorkRequestHandler.getLastStatusPost()).isNotNull();
+        String statusMessage = WorkRequestHandler.getLastStatusPost().raw;
+        assertThat(statusMessage).contains("Status: Succeeded");
     }
 
     @Test

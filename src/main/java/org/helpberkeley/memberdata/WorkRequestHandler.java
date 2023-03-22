@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-2021. helpberkeley.org
+ * Copyright (c) 2020-2023. helpberkeley.org
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -62,6 +62,8 @@ public class WorkRequestHandler {
             "Invalid date in post. The first line must contain only the date, formatted as: **YYYY/MM/DD**";
     public static final String TOPIC_DIRECTIVE_NOT_SUPPORTED =
             "Topic: no longer supported as directive. Use \"Test topic\" instead.";
+
+    public static final String DISABLE_DATE_AUDIT = "disable date audit";
 
     private final ApiClient apiClient;
     private final Query query;
@@ -322,7 +324,7 @@ public class WorkRequestHandler {
                     topic = Main.STONE_TEST_TOPIC;
                 } else if (line.startsWith("Version:")) {
                     version = line.replaceAll("Version:", "").trim();
-                } else if (line.startsWith("Disable date audit")) {
+                } else if (line.toLowerCase().startsWith(DISABLE_DATE_AUDIT)) {
                     disableDateAudit = true;
                 } else if (line.contains(Constants.UPLOAD_URI_PREFIX)) {
                     String shortURL =  HBParser.shortURLDiscoursePost(line);
