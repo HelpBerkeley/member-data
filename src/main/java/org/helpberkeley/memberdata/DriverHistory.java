@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2022. helpberkeley.org
+ * Copyright (c) 2021-2023. helpberkeley.org
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -47,6 +47,8 @@ public class DriverHistory {
     private static final long DAYS_IN_A_WEEK = DayOfWeek.values().length;
     private static final String DRIVER_HISTORY_HEADER =
         Constants.COLUMN_USERNAME + Constants.CSV_SEPARATOR + Constants.COLUMN_DELIVERY_DATE + '\n';
+
+    private static final long MILLISECONDS_BETWEEN_REQUESTS = 1200;
 
     private final LocalDate today;
     private final Week[] weeks = new Week[WEEKS_OF_HISTORY];
@@ -105,7 +107,7 @@ public class DriverHistory {
         // If a reset of the order history has been done, we are going to download
         // all of the delivery files.  Avoid getting rate limited by Discourse, which
         // occurs when there are more than 60 requests per minute on a connection.
-        long napTime = (postsToProcess.size() > 10) ? TimeUnit.SECONDS.toMillis(1) : 0;
+        long napTime = (postsToProcess.size() > 10) ? MILLISECONDS_BETWEEN_REQUESTS : 0;
 
         StringBuilder output = new StringBuilder();
         output.append(DRIVER_HISTORY_HEADER);
