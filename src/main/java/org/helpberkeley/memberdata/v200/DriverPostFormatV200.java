@@ -52,6 +52,7 @@ public class DriverPostFormatV200 extends DriverPostFormat {
         loadGroupPostFormat();
         loadBackupDriverPostFormat();
         loadRoutedDeliveries(routedDeliveries);
+        generateOpsManagerPhone();
         auditControlBlock();
     }
 

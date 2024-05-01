@@ -27,6 +27,7 @@ import org.helpberkeley.memberdata.v300.DriverPostFormatV300;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.text.MessageFormat;
 import java.util.*;
 
 public abstract class DriverPostFormat {
@@ -117,6 +118,17 @@ public abstract class DriverPostFormat {
             MessageBlockLoop loop, MessageBlockListRef listRef, MessageBlockContext context);
     protected abstract String versionSpecificSimpleRef(MessageBlockContext context, String varName);
     protected abstract String versionSpecificDriverListRef(MessageBlockContext context, String varName);
+
+    public final void generateOpsManagerPhone() {
+        ControlBlock controlBlock = getControlBlock();
+        ControlBlock.OpsManager opsManager = controlBlock.getFirstOpsManager();
+        if (opsManager.getPhone().isEmpty()) {
+            User user = users.get(opsManager.getUserName());
+            if (user != null) {
+                opsManager.setPhone(user.getPhoneNumber());
+            }
+        }
+    }
 
     public final List<String> generateDriverPosts() {
 

@@ -22,10 +22,12 @@
  */
 package org.helpberkeley.memberdata.v300;
 
+import org.assertj.core.api.ThrowableAssert;
 import org.helpberkeley.memberdata.*;
 import org.junit.Test;
 
 import java.text.MessageFormat;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -455,4 +457,61 @@ public class ControlBlockTest extends ControlBlockTestBase {
         assertThat(controlBlock.getGrocerySource()).isEqualTo(grocerySource);
         assertThat(controlBlock.getMealSource()).isEmpty();
     }
+
+    @Test
+    public void missingOpsManagerPhoneTest() {
+        ControlBlockBuilder builder = new ControlBlockBuilder();
+        String value = "JVol|";
+        builder.withOpsManager(value);
+
+        WorkflowParser workflowParser = WorkflowParser.create(Map.of(), builder.build());
+        Throwable thrown = catchThrowable(workflowParser::controlBlock);
+
+
+        assertThat(thrown).isInstanceOf(MemberDataException.class);
+        assertThat(thrown).hasMessageContaining("OpsManager value \"" + value + "\" at line 6 does not match \"username\" or \"username | phone\"");
+    }
+
+    @Test
+    public void retrieveOpsManagerPhoneTest() {
+        // JVol | 123-456-7890
+        ControlBlockBuilder builder = new ControlBlockBuilder();
+        String value = "JVol";
+        builder.withOpsManager(value);
+
+        String csvData = builder.build();
+
+//        WorkflowParser workflowParser = WorkflowParser.create(Map.of(), csvData);
+
+        DriverPostFormat driverPostFormat = DriverPostFormat.create(createApiSimulator(), users, csvData);
+        driverPostFormat.generateOpsManagerPhone();
+
+        assertThat(driverPostFormat.getControlBlock().getFirstOpsManager().getPhone()).isEqualTo("123-456-7890");
+
+    }
+
+//    @Test
+//    public void testTest() {
+////        String value = "JVol | 222-222-2222";
+////        String[] fields = value.split("\\" + "|", -42);
+////        System.out.println(Arrays.toString(fields));
+////        String userName = fields[0].trim();
+////        String phone = "";
+////        if (fields.length > 1) {
+////            phone = fields[1].trim();
+////        }
+////        String phoneNew = phone.replaceAll("\\D", "");
+////        System.out.println(userName);
+////        System.out.println(phone);
+////        System.out.println(phoneNew);
+//
+//        String phone = "";
+//        if (phone.isEmpty()){
+//            System.out.println("empty");
+//        } else {
+//            System.out.println("not empty");
+//        }
+//
+//
+//    }
 }

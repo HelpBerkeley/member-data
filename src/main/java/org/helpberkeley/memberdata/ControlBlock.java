@@ -382,21 +382,31 @@ public abstract class ControlBlock {
     }
 
     //
-    // An OpManager data field should look like "userName | phone number"
+    // An OpManager data field should look like "username" or "userName | phone number"
     //
     private void processOpsManager(final String value, long lineNumber) {
 
         String[] fields = value.split("\\" + INTRA_FIELD_SEPARATOR, -42);
 
-        if (fields.length != 2) {
-            throw new MemberDataException("OpsManager value \"" + value
-                    + "\" at line " + lineNumber + " does not match \"username | phone\".\n");
-        }
+//        if (fields.length != 2) {
+//            throw new MemberDataException("OpsManager value \"" + value
+//                    + "\" at line " + lineNumber + " does not match \"username | phone\".\n");
+//        }
 
         String userName = fields[0].trim();
-        String phone = fields[1].trim();
+        String phone = "";
 
         StringBuilder errors = new StringBuilder();
+
+        if (fields.length == 2) {
+            phone = fields[1].trim();
+            if (phone.isEmpty()) {
+                errors.append("OpsManager value \"" + value + "\" at line ").append(lineNumber).append(" does not match \"username\" or \"username | phone\"").append(".\n");
+            }
+        } else if (fields.length > 2) {
+            errors.append("OpsManager value \"" + value
+                    + "\" at line " + lineNumber + " does not match \"username\" or \"username | phone\".\n");
+        }
 
         if (! opsManagers.isEmpty()) {
             errors.append("Line ").append(lineNumber).append(", multiple OpsManager entries not yet supported.\n");
@@ -422,9 +432,9 @@ public abstract class ControlBlock {
                     .append(" to a valid OpsManager user name.\n");
         }
 
-        if (phone.isEmpty()) {
-            errors.append("Empty OpsManager phone number at line ").append(lineNumber).append(".\n");
-        }
+//        if (phone.isEmpty()) {
+//            errors.append("Empty OpsManager phone number at line ").append(lineNumber).append(".\n");
+//        }
 
         if (phone.contains(Constants.CONTROL_BLOCK_VALUE_DEFAULT_PREFIX)) {
             errors.append("Set OpsManager phone \"")
@@ -596,12 +606,20 @@ public abstract class ControlBlock {
     }
 
     public static class OpsManager {
-        private final String userName;
-        private final String phone;
+        private String userName;
+        private String phone;
 
         OpsManager(String userName, String phone) {
             this.userName = userName;
             this.phone = phone;
+        }
+
+        public void setUserName(String newUserName) {
+            this.userName = newUserName;
+        }
+
+        public void setPhone(String newPhone) {
+            this.phone = newPhone;
         }
 
         public String getUserName() {

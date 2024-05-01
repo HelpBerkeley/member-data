@@ -138,7 +138,7 @@ public abstract class ControlBlockTestBase extends TestBase {
 
         Throwable thrown = catchThrowable(workflowParser::drivers);
         assertThat(thrown).isInstanceOf(MemberDataException.class);
-        assertThat(thrown).hasMessageContaining("OpsManager value \"" + value + "\" at line 4 does not match");
+        assertThat(thrown).hasMessageContaining("OpsManager user name \"fred 123-456-7890\" at line 4 cannot contain spaces.");
     }
 
     @Test
@@ -157,7 +157,7 @@ public abstract class ControlBlockTestBase extends TestBase {
 
         Throwable thrown = catchThrowable(workflowParser::drivers);
         assertThat(thrown).isInstanceOf(MemberDataException.class);
-        assertThat(thrown).hasMessageContaining("does not match \"username | phone\"");
+        assertThat(thrown).hasMessageContaining("does not match \"username\" or \"username | phone\"");
         assertThat(thrown).hasMessageContaining("|fred|123-456-7890|");
     }
 
@@ -241,24 +241,24 @@ public abstract class ControlBlockTestBase extends TestBase {
                 MessageFormat.format(ControlBlock.UNKNOWN_OPS_MANAGER, "UnknownDudette"));
     }
 
-    @Test
-    public void opsManagerEmptyPhoneTest() {
-
-        String key = "OpsManager (UserName|Phone)";
-        String value = "biff|";
-
-        String workFlowData = getHeader()
-                + getBeginRow()
-                + getVersionRow()
-                + getKeyValueRow(key, value)
-                + getEndRow();
-
-        WorkflowParser workflowParser = WorkflowParser.create(Map.of(), workFlowData);
-
-        Throwable thrown = catchThrowable(workflowParser::drivers);
-        assertThat(thrown).isInstanceOf(MemberDataException.class);
-        assertThat(thrown).hasMessageContaining("Empty OpsManager phone number at line 4.");
-    }
+//    @Test
+//    public void opsManagerEmptyPhoneTest() {
+//
+//        String key = "OpsManager (UserName|Phone)";
+//        String value = "biff|";
+//
+//        String workFlowData = getHeader()
+//                + getBeginRow()
+//                + getVersionRow()
+//                + getKeyValueRow(key, value)
+//                + getEndRow();
+//
+//        WorkflowParser workflowParser = WorkflowParser.create(Map.of(), workFlowData);
+//
+//        Throwable thrown = catchThrowable(workflowParser::drivers);
+//        assertThat(thrown).isInstanceOf(MemberDataException.class);
+//        assertThat(thrown).hasMessageContaining("Empty OpsManager phone number at line 4. Does not match \"username\" or \"username | phone\"");
+//    }
 
     @Test
     public void opsManagerMismatchedPhoneTest() {
@@ -278,6 +278,15 @@ public abstract class ControlBlockTestBase extends TestBase {
         audit(controlBlock);
         assertThat(controlBlock.getWarnings()).contains(
                 MessageFormat.format(ControlBlock.OPS_MANAGER_PHONE_MISMATCH, "JVol", "222-222-2222"));
+    }
+
+    @Test
+    public void opsManagerGeneratePhoneTest() {
+        String csvData = readResourceFile("routed-deliveries-v300.csv");
+        DriverPostFormat driverPostFormat = DriverPostFormat.create(createApiSimulator(), users, csvData);
+
+        // JVol | 123-456-7890
+
     }
 
     @Test

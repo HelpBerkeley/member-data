@@ -45,7 +45,7 @@ public abstract class WorkflowParser {
         // Normalize EOL
         normalizedCSVData = csvData.replaceAll("\\r\\n?", "\n");
         controlBlock = ControlBlock.create(normalizedCSVData);
-        iterator = initializeIterator(csvData);
+        iterator = initializeIterator(normalizedCSVData);
     }
 
     public static WorkflowParser create(Map<String, Restaurant> globalRestaurants, String csvData) {
