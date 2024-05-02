@@ -47,7 +47,7 @@ version of the control block).
 Support version 2-0-0 keys are:
 
     Version
-    OpsManager (UserName | Phone)
+    OpsManager (UserName)
     SplitRestaurant (Name | CleanupDriverUserName)
     BackupDriverUserName
 
@@ -96,7 +96,7 @@ ControlBegin
 ControlEnd
 Comment
 Version
-OpsManager (UserName | Phone)
+OpsManager (UserName)
 SplitRestaurant (Name | CleanupDriverUserName)
 BackupDriverUserName
 

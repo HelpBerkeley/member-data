@@ -72,7 +72,6 @@ public class DriverPostFormatV300 extends DriverPostFormat {
     protected void initialize(String routedDeliveries, RequestType requestType) {
         loadLastRestaurantTemplate();
         loadRoutedDeliveries(routedDeliveries);
-        generateOpsManagerPhone();
         auditControlBlock();
         setDriverStartTimes();
         loadDriverPostFormat();

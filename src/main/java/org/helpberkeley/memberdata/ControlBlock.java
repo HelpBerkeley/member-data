@@ -52,6 +52,9 @@ public abstract class ControlBlock {
             Constants.CONTROL_BLOCK_OPS_MANAGER + " {0} is not a member. Misspelling?\n";
     static final String OPS_MANAGER_PHONE_MISMATCH =
             Constants.CONTROL_BLOCK_OPS_MANAGER + " {0} phone {1} does not match the member data\n";
+    static final String OPS_MANAGER_WRONG_FORMAT =
+            " OpsManager value {0} at line {1} does not match OpsManager(UserName) or "
+            + Constants.CONTROL_BLOCK_OPS_MANAGER + ".\n";
     static final String UNKNOWN_SPLIT_RESTAURANT =
             Constants.CONTROL_BLOCK_SPLIT_RESTAURANT + " contains unknown restaurant {0}. Misspelling?\n";
     public static final String UNKNOWN_CLEANUP_DRIVER =
@@ -155,6 +158,8 @@ public abstract class ControlBlock {
 
             if (user == null) {
                 errors.append(MessageFormat.format(UNKNOWN_OPS_MANAGER, opsManager.userName));
+            } else if (opsManager.phone.isEmpty()) {
+                opsManager.phone = user.getPhoneNumber();
             } else {
                 String phone = opsManager.phone.replaceAll("\\D", "");
 
@@ -388,11 +393,6 @@ public abstract class ControlBlock {
 
         String[] fields = value.split("\\" + INTRA_FIELD_SEPARATOR, -42);
 
-//        if (fields.length != 2) {
-//            throw new MemberDataException("OpsManager value \"" + value
-//                    + "\" at line " + lineNumber + " does not match \"username | phone\".\n");
-//        }
-
         String userName = fields[0].trim();
         String phone = "";
 
@@ -401,11 +401,10 @@ public abstract class ControlBlock {
         if (fields.length == 2) {
             phone = fields[1].trim();
             if (phone.isEmpty()) {
-                errors.append("OpsManager value \"" + value + "\" at line ").append(lineNumber).append(" does not match \"username\" or \"username | phone\"").append(".\n");
+                errors.append(MessageFormat.format(OPS_MANAGER_WRONG_FORMAT, value, lineNumber));
             }
         } else if (fields.length > 2) {
-            errors.append("OpsManager value \"" + value
-                    + "\" at line " + lineNumber + " does not match \"username\" or \"username | phone\".\n");
+            errors.append(MessageFormat.format(OPS_MANAGER_WRONG_FORMAT, value, lineNumber));
         }
 
         if (! opsManagers.isEmpty()) {
@@ -431,10 +430,6 @@ public abstract class ControlBlock {
                     .append(userName).append("\" at line ").append(lineNumber)
                     .append(" to a valid OpsManager user name.\n");
         }
-
-//        if (phone.isEmpty()) {
-//            errors.append("Empty OpsManager phone number at line ").append(lineNumber).append(".\n");
-//        }
 
         if (phone.contains(Constants.CONTROL_BLOCK_VALUE_DEFAULT_PREFIX)) {
             errors.append("Set OpsManager phone \"")
@@ -606,16 +601,12 @@ public abstract class ControlBlock {
     }
 
     public static class OpsManager {
-        private String userName;
+        private final String userName;
         private String phone;
 
         OpsManager(String userName, String phone) {
             this.userName = userName;
             this.phone = phone;
-        }
-
-        public void setUserName(String newUserName) {
-            this.userName = newUserName;
         }
 
         public void setPhone(String newPhone) {
