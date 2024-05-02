@@ -48,6 +48,7 @@ public class ControlBlockBuilder {
 
     private List<String> startTimes = DEFAULT_START_TIMES_LIST;
     private String opsManager = DEFAULT_OPS_MANAGER;
+    private String builderOpsManagerMacro = Constants.CONTROL_BLOCK_OPS_MANAGER_USERNAME_AND_PHONE;
     private String foodSources = DEFAULT_FOOD_SOURCES;
     private List<String> altMealOptions = DEFAULT_ALT_MEAL_OPTIONS_LIST;
     private List<String> altGroceryOptions = DEFAULT_ALT_GROCERY_OPTIONS_LIST;
@@ -76,7 +77,7 @@ public class ControlBlockBuilder {
                     getKeyValueRow(Constants.CONTROL_BLOCK_START_TIMES, quote(s))));
         }
         if (opsManager != null) {
-            controlBlock.append(getKeyValueRow(Constants.CONTROL_BLOCK_OPS_MANAGER, opsManager));
+            controlBlock.append(getKeyValueRow(builderOpsManagerMacro, opsManager));
         }
         if (pickupManagers != null) {
             pickupManagers.forEach((p) -> controlBlock.append(
@@ -173,6 +174,12 @@ public class ControlBlockBuilder {
 
     public ControlBlockBuilder withOpsManager(String opsManager) {
         this.opsManager = opsManager;
+        return this;
+    }
+
+    public ControlBlockBuilder withOpsManager(String opsManager, String macro) {
+        this.opsManager = opsManager;
+        this.builderOpsManagerMacro = macro;
         return this;
     }
 

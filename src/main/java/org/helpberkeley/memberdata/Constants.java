@@ -215,7 +215,8 @@ public class Constants {
     public static final String CONTROL_BLOCK_BEGIN = "ControlBegin";
     public static final String CONTROL_BLOCK_END = "ControlEnd";
     public static final String CONTROL_BLOCK_COMMENT = "Comment";
-    public static final String CONTROL_BLOCK_OPS_MANAGER = "OpsManager(UserName|Phone)";
+    public static final String CONTROL_BLOCK_OPS_MANAGER_USERNAME_ONLY = "OpsManager(UserName)";
+    public static final String CONTROL_BLOCK_OPS_MANAGER_USERNAME_AND_PHONE = "OpsManager(UserName|Phone)";
     public static final String CONTROL_BLOCK_SPLIT_RESTAURANT = "SplitRestaurant(Name|CleanupDriverUserName)";
     public static final String CONTROL_BLOCK_BACKUP_DRIVER = "BackupDriverUserName";
     public static final String CONTROL_BLOCK_VERSION = "Version";

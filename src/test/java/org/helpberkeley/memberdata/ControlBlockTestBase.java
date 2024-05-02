@@ -256,7 +256,7 @@ public abstract class ControlBlockTestBase extends TestBase {
 
         Throwable thrown = catchThrowable(workflowParser::drivers);
         assertThat(thrown).isInstanceOf(MemberDataException.class);
-        assertThat(thrown).hasMessageContaining(MessageFormat.format(ControlBlock.OPS_MANAGER_WRONG_FORMAT, value, "4"));
+        assertThat(thrown).hasMessageContaining(MessageFormat.format(ControlBlock.OPS_MANAGER_WRONG_FORMAT, value, 4));
     }
 
     @Test
