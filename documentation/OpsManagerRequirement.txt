@@ -1,0 +1,36 @@
+﻿DocVersion: V1.1
+Last Updated: 5/1/2024
+1.  Control Block
+
+
+The control block is a section at the beginning of a workflow table that
+is used to version the schema of the workflow data and provide macro support
+for driver message generation.
+
+
+
+
+1.1 Supported Macros
+
+
+Operations Manager – username and phone.
+
+
+
+
+REQ-CB-001-1 Operations Manager Macro
+
+
+Support specification of the Operations Manager user name and phone number.
+
+
+REQ-CB-001-2 Operations Manager Macro Optional Phone number.
+
+
+Support optional specification of Operations Manager phone number.
+
+
+REQ-CB-001-2 Operations Manager Macro Backwards Compatibility
+
+
+Support Operations Manager specification with or without included phone number to maintain backwards compatibility.
