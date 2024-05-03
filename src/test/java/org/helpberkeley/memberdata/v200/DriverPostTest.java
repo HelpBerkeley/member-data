@@ -23,7 +23,6 @@
 package org.helpberkeley.memberdata.v200;
 
 import org.helpberkeley.memberdata.*;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.text.MessageFormat;

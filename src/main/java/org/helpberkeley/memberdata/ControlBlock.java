@@ -611,10 +611,6 @@ public abstract class ControlBlock {
             this.phone = phone;
         }
 
-        public void setPhone(String newPhone) {
-            this.phone = newPhone;
-        }
-
         public String getUserName() {
             return userName;
         }

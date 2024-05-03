@@ -22,12 +22,10 @@
  */
 package org.helpberkeley.memberdata.v300;
 
-import org.assertj.core.api.ThrowableAssert;
 import org.helpberkeley.memberdata.*;
 import org.junit.Test;
 
 import java.text.MessageFormat;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
