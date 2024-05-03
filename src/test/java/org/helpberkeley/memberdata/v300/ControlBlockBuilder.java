@@ -177,7 +177,7 @@ public class ControlBlockBuilder {
         return this;
     }
 
-    public ControlBlockBuilder withOpsManager(String opsManager, String macro) {
+    public ControlBlockBuilder withOpsManagerMacro(String opsManager, String macro) {
         this.opsManager = opsManager;
         this.builderOpsManagerMacro = macro;
         return this;

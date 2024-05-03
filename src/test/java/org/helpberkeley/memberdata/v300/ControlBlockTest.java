@@ -468,6 +468,7 @@ public class ControlBlockTest extends ControlBlockTestBase {
         String csvData = builder.build();
 
         DriverPostFormat driverPostFormat = DriverPostFormat.create(createApiSimulator(), users, csvData);
+        assertThat(driverPostFormat.getControlBlock().getFirstOpsManager().getUserName()).isEqualTo("JVol");
         assertThat(driverPostFormat.getControlBlock().getFirstOpsManager().getPhone()).isEqualTo("123-456-7890");
     }
 
@@ -480,6 +481,7 @@ public class ControlBlockTest extends ControlBlockTestBase {
         String csvData = builder.build();
 
         DriverPostFormat driverPostFormat = DriverPostFormat.create(createApiSimulator(), users, csvData);
+        assertThat(driverPostFormat.getControlBlock().getFirstOpsManager().getUserName()).isEqualTo("JVol");
         assertThat(driverPostFormat.getControlBlock().getFirstOpsManager().getPhone()).isEqualTo("123-456-7890");
     }
 
@@ -487,11 +489,12 @@ public class ControlBlockTest extends ControlBlockTestBase {
     public void opsManagerShortMacroNoPhone() {
         ControlBlockBuilder builder = new ControlBlockBuilder();
         String value = "JVol";
-        builder.withOpsManager(value, Constants.CONTROL_BLOCK_OPS_MANAGER_USERNAME_ONLY);
+        builder.withOpsManagerMacro(value, Constants.CONTROL_BLOCK_OPS_MANAGER_USERNAME_ONLY);
 
         String csvData = builder.build();
 
         DriverPostFormat driverPostFormat = DriverPostFormat.create(createApiSimulator(), users, csvData);
+        assertThat(driverPostFormat.getControlBlock().getFirstOpsManager().getUserName()).isEqualTo("JVol");
         assertThat(driverPostFormat.getControlBlock().getFirstOpsManager().getPhone()).isEqualTo("123-456-7890");
     }
 
@@ -499,11 +502,12 @@ public class ControlBlockTest extends ControlBlockTestBase {
     public void opsManagerShortMacroWithPhone() {
         ControlBlockBuilder builder = new ControlBlockBuilder();
         String value = "JVol|123-456-7890";
-        builder.withOpsManager(value, Constants.CONTROL_BLOCK_OPS_MANAGER_USERNAME_ONLY);
+        builder.withOpsManagerMacro(value, Constants.CONTROL_BLOCK_OPS_MANAGER_USERNAME_ONLY);
 
         String csvData = builder.build();
 
         DriverPostFormat driverPostFormat = DriverPostFormat.create(createApiSimulator(), users, csvData);
+        assertThat(driverPostFormat.getControlBlock().getFirstOpsManager().getUserName()).isEqualTo("JVol");
         assertThat(driverPostFormat.getControlBlock().getFirstOpsManager().getPhone()).isEqualTo("123-456-7890");
     }
 }
