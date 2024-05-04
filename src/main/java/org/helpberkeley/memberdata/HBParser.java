@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2020-2021 helpberkeley.org
+// Copyright (c) 2020-2023 helpberkeley.org
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -21,7 +21,8 @@
 //
 package org.helpberkeley.memberdata;
 
-import com.cedarsoftware.util.io.JsonReader;
+import com.cedarsoftware.io.JsonIo;
+import com.cedarsoftware.io.ReadOptionsBuilder;
 import com.opencsv.CSVReader;
 import com.opencsv.exceptions.CsvException;
 import org.slf4j.Logger;
@@ -43,12 +44,10 @@ public class HBParser {
     private static final Logger LOGGER = LoggerFactory.getLogger(HBParser.class);
 
     public static ApiQueryResult parseQueryResult(final String queryResultJson) {
-        Map<String, Object> options = new HashMap<>();
-        options.put(JsonReader.USE_MAPS, Boolean.TRUE);
 
-        @SuppressWarnings("unchecked")
-        Map<String, Object> map =
-                (Map<String, Object>)JsonReader.jsonToJava(queryResultJson, options);
+        Map<String, Object> map = JsonIo.toObjects(queryResultJson,
+                new ReadOptionsBuilder().returnAsNativeJsonObjects().build(), null);
+
         Object[] columns = (Object[])map.get("columns");
         Object[] rows = (Object[])map.get("rows");
 
@@ -627,24 +626,20 @@ public class HBParser {
     }
 
     static String postBody(final String json) {
-        Map<String, Object> options = new HashMap<>();
-        options.put(JsonReader.USE_MAPS, Boolean.TRUE);
 
         @SuppressWarnings("unchecked")
-        Map<String, Object> map = (Map<String, Object>)
-                JsonReader.jsonToJava(json, options);
+        Map<String, Object> map = (Map<String, Object>)JsonIo.toObjects(json,
+                new ReadOptionsBuilder().returnAsNativeJsonObjects().build(), null);
 
         assert map.containsKey(Constants.DISCOURSE_COLUMN_RAW) : json;
         return (String)map.get(Constants.DISCOURSE_COLUMN_RAW);
     }
 
     static PostResponse postResponse(final String json) {
-        Map<String, Object> options = new HashMap<>();
-        options.put(JsonReader.USE_MAPS, Boolean.TRUE);
 
         @SuppressWarnings("unchecked")
-        Map<String, Object> map = (Map<String, Object>)
-                JsonReader.jsonToJava(json, options);
+        Map<String, Object> map = (Map<String, Object>)JsonIo.toObjects(json,
+                new ReadOptionsBuilder().returnAsNativeJsonObjects().build(), null);
 
         assert map.containsKey("topic_id") : json;
         long topic_id = (long)map.get("topic_id");
