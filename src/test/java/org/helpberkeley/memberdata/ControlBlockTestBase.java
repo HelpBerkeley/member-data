@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021. helpberkeley.org
+ * Copyright (c) 2021-2024. helpberkeley.org
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -138,7 +138,7 @@ public abstract class ControlBlockTestBase extends TestBase {
 
         Throwable thrown = catchThrowable(workflowParser::drivers);
         assertThat(thrown).isInstanceOf(MemberDataException.class);
-        assertThat(thrown).hasMessageContaining("OpsManager value \"" + value + "\" at line 4 does not match");
+        assertThat(thrown).hasMessageContaining("OpsManager user name \"fred 123-456-7890\" at line 4 cannot contain spaces.");
     }
 
     @Test
@@ -157,8 +157,7 @@ public abstract class ControlBlockTestBase extends TestBase {
 
         Throwable thrown = catchThrowable(workflowParser::drivers);
         assertThat(thrown).isInstanceOf(MemberDataException.class);
-        assertThat(thrown).hasMessageContaining("does not match \"username | phone\"");
-        assertThat(thrown).hasMessageContaining("|fred|123-456-7890|");
+        assertThat(thrown).hasMessageContaining(MessageFormat.format(ControlBlock.OPS_MANAGER_WRONG_FORMAT, value, "4"));
     }
 
     @Test
@@ -257,7 +256,7 @@ public abstract class ControlBlockTestBase extends TestBase {
 
         Throwable thrown = catchThrowable(workflowParser::drivers);
         assertThat(thrown).isInstanceOf(MemberDataException.class);
-        assertThat(thrown).hasMessageContaining("Empty OpsManager phone number at line 4.");
+        assertThat(thrown).hasMessageContaining(MessageFormat.format(ControlBlock.OPS_MANAGER_WRONG_FORMAT, value, 4));
     }
 
     @Test

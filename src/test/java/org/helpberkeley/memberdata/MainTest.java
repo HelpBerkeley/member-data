@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-2023 helpberkeley.org
+ * Copyright (c) 2020-2024 helpberkeley.org
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -34,7 +34,6 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.catchThrowable;
 
 /**
  * Execute the individual commands, end-to-end.

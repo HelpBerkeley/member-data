@@ -22,7 +22,6 @@
  */
 package org.helpberkeley.memberdata.v300;
 
-import org.assertj.core.api.Assertions;
 import org.helpberkeley.memberdata.*;
 import org.junit.Test;
 

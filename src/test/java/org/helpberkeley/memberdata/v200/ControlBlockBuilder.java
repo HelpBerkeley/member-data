@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021. helpberkeley.org
+ * Copyright (c) 2021-2024. helpberkeley.org
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -47,7 +47,7 @@ public class ControlBlockBuilder {
         controlBlock.append(CONTROL_BLOCK_VERSION_ROW);
 
         if (opsManager != null) {
-            controlBlock.append(getKeyValueRow(Constants.CONTROL_BLOCK_OPS_MANAGER, opsManager));
+            controlBlock.append(getKeyValueRow(Constants.CONTROL_BLOCK_OPS_MANAGER_USERNAME_AND_PHONE, opsManager));
         }
         if (backupDriver != null) {
             controlBlock.append(getKeyValueRow(Constants.CONTROL_BLOCK_BACKUP_DRIVER, backupDriver));
