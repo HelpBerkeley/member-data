@@ -46,7 +46,7 @@ public class HBParser {
     public static ApiQueryResult parseQueryResult(final String queryResultJson) {
 
         Map<String, Object> map = JsonIo.toObjects(queryResultJson,
-                new ReadOptionsBuilder().returnAsNativeJsonObjects().build(), null);
+                new ReadOptionsBuilder().returnAsNativeJsonObjects().build(), Map.class);
 
         Object[] columns = (Object[])map.get("columns");
         Object[] rows = (Object[])map.get("rows");
@@ -629,7 +629,7 @@ public class HBParser {
 
         @SuppressWarnings("unchecked")
         Map<String, Object> map = (Map<String, Object>)JsonIo.toObjects(json,
-                new ReadOptionsBuilder().returnAsNativeJsonObjects().build(), null);
+                new ReadOptionsBuilder().returnAsNativeJsonObjects().build(), Map.class);
 
         assert map.containsKey(Constants.DISCOURSE_COLUMN_RAW) : json;
         return (String)map.get(Constants.DISCOURSE_COLUMN_RAW);
@@ -639,7 +639,7 @@ public class HBParser {
 
         @SuppressWarnings("unchecked")
         Map<String, Object> map = (Map<String, Object>)JsonIo.toObjects(json,
-                new ReadOptionsBuilder().returnAsNativeJsonObjects().build(), null);
+                new ReadOptionsBuilder().returnAsNativeJsonObjects().build(), Map.class);
 
         assert map.containsKey("topic_id") : json;
         long topic_id = (long)map.get("topic_id");
