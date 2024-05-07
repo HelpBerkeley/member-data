@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2020 helpberkeley.org
+// Copyright (c) 2020-2024 helpberkeley.org
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -21,10 +21,8 @@
 //
 package org.helpberkeley.memberdata;
 
-import com.cedarsoftware.util.io.JsonWriter;
-
-import java.util.HashMap;
-import java.util.Map;
+import com.cedarsoftware.io.JsonIo;
+import com.cedarsoftware.io.WriteOptionsBuilder;
 
 public class Post {
 
@@ -35,8 +33,7 @@ public class Post {
 
     String toJson() {
 
-        Map<String, Object> options = new HashMap<>();
-        options.put(JsonWriter.TYPE, Boolean.FALSE);
-        return JsonWriter.objectToJson(this, options);
+        return JsonIo.toJson(this,
+                new WriteOptionsBuilder().showTypeInfoNever().build());
     }
 }
