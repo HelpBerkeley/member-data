@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2020-2023 helpberkeley.org
+// Copyright (c) 2020-2024 helpberkeley.org
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -44,6 +44,12 @@ import java.util.*;
 import static java.net.HttpURLConnection.HTTP_OK;
 
 public class Main {
+
+    static {
+        // Disable SLF4J start of day info message
+        System.setProperty("slf4j.internal.verbosity", "WARN");
+    }
+
     private static final Logger LOGGER = LoggerFactory.getLogger(ApiClient.class);
 
     static final String MEMBERDATA_ERRORS_FILE = "memberdata-errors";
