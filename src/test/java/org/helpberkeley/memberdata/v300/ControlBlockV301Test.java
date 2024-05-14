@@ -21,21 +21,17 @@
  *
  */
 
-package org.helpberkeley.memberdata;
+package org.helpberkeley.memberdata.v300;
 
-class ControlBlockV0 extends ControlBlock {
+public class ControlBlockV301Test extends ControlBlockTest {
 
-     ControlBlockV0(String header) {
-         super(header);
+    public static final String CONTROL_BLOCK_VERSION_ROW = "FALSE,FALSE,,Version ,,,,3-0-1,,,,,,,,,,\n";
+
+    public ControlBlockV301Test() {
     }
 
     @Override
-    public String getVersion() {
-        return Constants.CONTROL_BLOCK_VERSION_UNKNOWN;
-    }
-
-    @Override
-    public boolean versionIsCompatible(String version) {
-        return getVersion().equals(version);
+    public String getVersionRow() {
+        return CONTROL_BLOCK_VERSION_ROW;
     }
 }
