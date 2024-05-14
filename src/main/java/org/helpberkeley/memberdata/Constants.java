@@ -235,6 +235,7 @@ public class Constants {
     public static final String CONTROL_BLOCK_VERSION_1 = "1";
     public static final String CONTROL_BLOCK_VERSION_200 = "2-0-0";
     public static final String CONTROL_BLOCK_VERSION_300 = "3-0-0";
+    public static final String CONTROL_BLOCK_VERSION_301 = "3-0-1";
     public static final String CONTROL_BLOCK_VERSION_302 = "3-0-2";
 
     public static final long UNKNOWN_USER_ID = 852;

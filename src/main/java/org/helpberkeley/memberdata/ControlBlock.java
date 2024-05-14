@@ -129,6 +129,7 @@ public abstract class ControlBlock {
             case Constants.CONTROL_BLOCK_VERSION_200:
                 return new ControlBlockV200(header);
             case Constants.CONTROL_BLOCK_VERSION_300:
+            case Constants.CONTROL_BLOCK_VERSION_301:
             case Constants.CONTROL_BLOCK_VERSION_302:
                 return new ControlBlockV300(header);
             default:
