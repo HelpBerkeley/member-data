@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021. helpberkeley.org
+ * Copyright (c) 2021-2024. helpberkeley.org
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -99,6 +99,11 @@ public class ControlBlockV300 extends ControlBlock {
     @Override
     public String getVersion() {
         return Constants.CONTROL_BLOCK_VERSION_300;
+    }
+    @Override
+    public boolean versionIsCompatible(String version) {
+        return (version.equals(Constants.CONTROL_BLOCK_VERSION_300)
+                || version.equals(Constants.CONTROL_BLOCK_VERSION_302));
     }
 
     @Override

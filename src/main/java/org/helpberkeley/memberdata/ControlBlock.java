@@ -129,6 +129,7 @@ public abstract class ControlBlock {
             case Constants.CONTROL_BLOCK_VERSION_200:
                 return new ControlBlockV200(header);
             case Constants.CONTROL_BLOCK_VERSION_300:
+            case Constants.CONTROL_BLOCK_VERSION_302:
                 return new ControlBlockV300(header);
             default:
                 throw new MemberDataException(
@@ -238,6 +239,8 @@ public abstract class ControlBlock {
     }
 
     public abstract String getVersion();
+
+    public abstract boolean versionIsCompatible(String version);
 
     List<OpsManager> getOpsManagers() {
         return opsManagers;
@@ -356,7 +359,7 @@ public abstract class ControlBlock {
     }
 
     private void processVersion(String value) {
-        if (! value.equals(getVersion())) {
+        if (! versionIsCompatible(value)) {
             throw new MemberDataException("Control block version mismatch: " + value + " and " + getVersion());
         }
     }

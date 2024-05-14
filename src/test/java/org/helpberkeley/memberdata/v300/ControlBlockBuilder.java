@@ -46,6 +46,7 @@ public class ControlBlockBuilder {
     private final List<String> DEFAULT_START_TIMES_LIST = List.of(DEFAULT_START_TIMES);
     private final List<String> DEFAULT_MESSAGE_FORMAT_LIST = List.of(DEFAULT_MESSAGE_FORMAT);
 
+    private String versionRow = ControlBlockTest.CONTROL_BLOCK_VERSION_ROW;
     private List<String> startTimes = DEFAULT_START_TIMES_LIST;
     private String opsManager = DEFAULT_OPS_MANAGER;
     private String builderOpsManagerMacro = Constants.CONTROL_BLOCK_OPS_MANAGER_USERNAME_AND_PHONE;
@@ -66,7 +67,7 @@ public class ControlBlockBuilder {
 
         controlBlock.append(ControlBlockTest.HEADER);
         controlBlock.append(ControlBlockTest.CONTROL_BLOCK_BEGIN_ROW);
-        controlBlock.append(ControlBlockTest.CONTROL_BLOCK_VERSION_ROW);
+        controlBlock.append(versionRow);
 
         if (messageFormat != null) {
             messageFormat.forEach((s) -> controlBlock.append(
@@ -108,6 +109,11 @@ public class ControlBlockBuilder {
         controlBlock.append(EMPTY_ROW);
 
         return controlBlock.toString();
+    }
+
+    public ControlBlockBuilder withVersionRow(String versionRow) {
+        this.versionRow = versionRow;
+        return this;
     }
 
     public ControlBlockBuilder withStartTimes(String startTimes) {

@@ -23,6 +23,7 @@
 package org.helpberkeley.memberdata.v300;
 
 import org.helpberkeley.memberdata.*;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.text.MessageFormat;
@@ -36,6 +37,7 @@ public class ControlBlockTest extends ControlBlockTestBase {
 
     private final Map<String, User> users;
     private final Map<String, Restaurant> allRestaurants;
+    private ControlBlockBuilder controlBlockBuilder;
 
     public static final String EMPTY_ROW = ",,,,,,,,,,,,,,,,,\n";
 
@@ -52,6 +54,12 @@ public class ControlBlockTest extends ControlBlockTestBase {
         RestaurantTemplateParser parser =
                 RestaurantTemplateParser.create(readResourceFile("restaurant-template-v300.csv"));
         allRestaurants = parser.restaurants();
+    }
+
+    @Before
+    public void createControlBlockBuilder() {
+        controlBlockBuilder = new ControlBlockBuilder();
+        controlBlockBuilder.withVersionRow(getVersionRow());
     }
 
     @Override
@@ -133,10 +141,9 @@ public class ControlBlockTest extends ControlBlockTestBase {
     public void altMealOptionsNoneTest() {
 
         String none = "none";
-        ControlBlockBuilder builder = new ControlBlockBuilder();
-        builder.withAltMealOptions(none);
+        controlBlockBuilder.withAltMealOptions(none);
 
-        WorkflowParser workflowParser = WorkflowParser.create(Map.of(), builder.build());
+        WorkflowParser workflowParser = WorkflowParser.create(Map.of(), controlBlockBuilder.build());
 
         ControlBlockV300 controlBlock = (ControlBlockV300) workflowParser.controlBlock();
         Throwable thrown = catchThrowable(() -> audit(controlBlock));
@@ -148,7 +155,7 @@ public class ControlBlockTest extends ControlBlockTestBase {
     @Test
     public void altGroceryOptionsTest() {
         String value = "none, veg, custom pick";
-        String workFlowData = new ControlBlockBuilder().withAltGroceryOptions(value).build();
+        String workFlowData = controlBlockBuilder.withAltGroceryOptions(value).build();
         WorkflowParser workflowParser = WorkflowParser.create(Map.of(), workFlowData);
         ControlBlockV300 controlBlock = (ControlBlockV300) workflowParser.controlBlock();
         audit(controlBlock);
@@ -159,10 +166,9 @@ public class ControlBlockTest extends ControlBlockTestBase {
     public void altGroceryOptionsNoneTest() {
 
         String none = "none";
-        ControlBlockBuilder builder = new ControlBlockBuilder();
-        builder.withAltGroceryOptions(none);
+        controlBlockBuilder.withAltGroceryOptions(none);
 
-        WorkflowParser workflowParser = WorkflowParser.create(Map.of(), builder.build());
+        WorkflowParser workflowParser = WorkflowParser.create(Map.of(), controlBlockBuilder.build());
 
         ControlBlockV300 controlBlock = (ControlBlockV300) workflowParser.controlBlock();
         Throwable thrown = catchThrowable(() -> audit(controlBlock));
@@ -176,7 +182,7 @@ public class ControlBlockTest extends ControlBlockTestBase {
         String mealSource = "Meals'R'Us";
         String grocerySource = "Groceryland";
         String value = mealSource + '|' + grocerySource;
-        String workFlowData = new ControlBlockBuilder().withFoodSources(value).build();
+        String workFlowData = controlBlockBuilder.withFoodSources(value).build();
         WorkflowParser workflowParser = WorkflowParser.create(Map.of(), workFlowData);
         ControlBlockV300 controlBlock = (ControlBlockV300) workflowParser.controlBlock();
         audit(controlBlock);
@@ -189,7 +195,7 @@ public class ControlBlockTest extends ControlBlockTestBase {
         String mealSource = "Meals'R'Us";
         String grocerySource = "Groceryland";
         String value = mealSource + ':' + grocerySource;
-        String workFlowData = new ControlBlockBuilder().withFoodSources(value).build();
+        String workFlowData = controlBlockBuilder.withFoodSources(value).build();
         WorkflowParser workflowParser = WorkflowParser.create(Map.of(), workFlowData);
         Throwable thrown = catchThrowable(workflowParser::controlBlock);
         assertThat(thrown).isInstanceOf(MemberDataException.class);
@@ -199,7 +205,7 @@ public class ControlBlockTest extends ControlBlockTestBase {
     @Test
     public void startTimesTest() {
         String value = "3:00, 3:10, 3:15";
-        String workFlowData = new ControlBlockBuilder().withStartTimes(value).build();
+        String workFlowData = controlBlockBuilder.withStartTimes(value).build();
         WorkflowParser workflowParser = WorkflowParser.create(Map.of(), workFlowData);
         ControlBlockV300 controlBlock = (ControlBlockV300) workflowParser.controlBlock();
         audit(controlBlock);
@@ -212,7 +218,7 @@ public class ControlBlockTest extends ControlBlockTestBase {
         String value2 = "ThirdPerson";
         String value3 = "JVol";
 
-        String workFlowData = new ControlBlockBuilder()
+        String workFlowData = controlBlockBuilder
                 .withPickupManager(value1)
                 .withPickupManager(value2)
                 .withPickupManager(value3).build();
@@ -225,7 +231,7 @@ public class ControlBlockTest extends ControlBlockTestBase {
     @Test
     public void startTimesAuditWarningsTest() {
         String value = "3:00, 3:10, 3:15";
-        String workFlowData = new ControlBlockBuilder().withStartTimes(value).build();
+        String workFlowData = controlBlockBuilder.withStartTimes(value).build();
         WorkflowParser workflowParser = WorkflowParser.create(Map.of(), workFlowData);
         ControlBlockV300 controlBlock = (ControlBlockV300) workflowParser.controlBlock();
         assertThat(controlBlock.getWarnings()).isEmpty();
@@ -241,7 +247,8 @@ public class ControlBlockTest extends ControlBlockTestBase {
         };
 
         for (String value : values) {
-            String workFlowData = new ControlBlockBuilder().withStartTimes(value).build();
+            createControlBlockBuilder();
+            String workFlowData = controlBlockBuilder.withStartTimes(value).build();
             WorkflowParser workflowParser = WorkflowParser.create(Map.of(), workFlowData);
             ControlBlockV300 controlBlock = (ControlBlockV300) workflowParser.controlBlock();
             Throwable thrown = catchThrowable(() -> controlBlock.audit(users, List.of()));
@@ -257,7 +264,8 @@ public class ControlBlockTest extends ControlBlockTestBase {
         };
 
         for (String value : values) {
-            String workFlowData = new ControlBlockBuilder().withStartTimes(value).build();
+            createControlBlockBuilder();
+            String workFlowData = controlBlockBuilder.withStartTimes(value).build();
             WorkflowParser workflowParser = WorkflowParser.create(Map.of(), workFlowData);
             ControlBlockV300 controlBlock = (ControlBlockV300) workflowParser.controlBlock();
             assertThat(controlBlock.getStartTimes()).containsExactly(value);
@@ -269,7 +277,7 @@ public class ControlBlockTest extends ControlBlockTestBase {
     public void tooManyStartTimesTest() {
         String startTimes = "3:59";
 
-        String workFlowData = new ControlBlockBuilder()
+        String workFlowData = controlBlockBuilder
                 .withStartTimes(startTimes)
                 .withStartTimes(startTimes)
                 .build();
@@ -282,7 +290,7 @@ public class ControlBlockTest extends ControlBlockTestBase {
     @Test
     public void missingStartTimesTest() {
 
-        String workFlowData = new ControlBlockBuilder().withoutStartTimes().build();
+        String workFlowData = controlBlockBuilder.withoutStartTimes().build();
 
         WorkflowParser workflowParser = WorkflowParser.create(Map.of(), workFlowData);
         ControlBlock controlBlock = workflowParser.controlBlock();
@@ -315,7 +323,7 @@ public class ControlBlockTest extends ControlBlockTestBase {
     @Test
     public void missingFoodSourcesTest() {
 
-        String workFlowData = new ControlBlockBuilder().withoutFoodSources().build();
+        String workFlowData = controlBlockBuilder.withoutFoodSources().build();
         WorkflowParser workflowParser = WorkflowParser.create(Map.of(), workFlowData);
         ControlBlock controlBlock = workflowParser.controlBlock();
         Throwable thrown = catchThrowable(() -> audit(controlBlock));
@@ -327,7 +335,7 @@ public class ControlBlockTest extends ControlBlockTestBase {
     @Test
     public void missingAltMealOptionsTest() {
 
-        String workFlowData = new ControlBlockBuilder().withoutAltMealOptions().build();
+        String workFlowData = controlBlockBuilder.withoutAltMealOptions().build();
         WorkflowParser workflowParser = WorkflowParser.create(Map.of(), workFlowData);
         ControlBlock controlBlock = workflowParser.controlBlock();
         Throwable thrown = catchThrowable(() -> audit(controlBlock));
@@ -341,7 +349,7 @@ public class ControlBlockTest extends ControlBlockTestBase {
 
         String altMealOptions = ControlBlockBuilder.DEFAULT_ALT_MEAL_OPTIONS;
 
-        String workFlowData = new ControlBlockBuilder()
+        String workFlowData = controlBlockBuilder
                 .withAltMealOptions(altMealOptions)
                 .withAltMealOptions(altMealOptions)
                 .build();
@@ -354,7 +362,7 @@ public class ControlBlockTest extends ControlBlockTestBase {
     @Test
     public void missingAltGroceryOptionsTest() {
 
-        String workFlowData = new ControlBlockBuilder().withoutAltGroceryOptions().build();
+        String workFlowData = controlBlockBuilder.withoutAltGroceryOptions().build();
         WorkflowParser workflowParser = WorkflowParser.create(Map.of(), workFlowData);
         ControlBlock controlBlock = workflowParser.controlBlock();
         Throwable thrown = catchThrowable(() -> audit(controlBlock));
@@ -367,7 +375,7 @@ public class ControlBlockTest extends ControlBlockTestBase {
     public void tooManyAltGroceryOptionsTest() {
 
         String altGroceryOptions = "x, y, z";
-        String workFlowData = new ControlBlockBuilder()
+        String workFlowData = controlBlockBuilder
                 .withAltGroceryOptions(altGroceryOptions)
                 .withAltGroceryOptions(altGroceryOptions)
                 .build();
@@ -380,7 +388,7 @@ public class ControlBlockTest extends ControlBlockTestBase {
     @Test
     public void missingPickupManagersTest() {
 
-        String workFlowData = new ControlBlockBuilder().withoutPickupManager().build();
+        String workFlowData = controlBlockBuilder.withoutPickupManager().build();
         WorkflowParser workflowParser = WorkflowParser.create(Map.of(), workFlowData);
         ControlBlock controlBlock = workflowParser.controlBlock();
         Throwable thrown = catchThrowable(() -> audit(controlBlock));
@@ -392,7 +400,7 @@ public class ControlBlockTest extends ControlBlockTestBase {
     @Test
     public void missingMessageFormatTest() {
 
-        String workFlowData = new ControlBlockBuilder().withoutMessageFormat().build();
+        String workFlowData = controlBlockBuilder.withoutMessageFormat().build();
         WorkflowParser workflowParser = WorkflowParser.create(Map.of(), workFlowData);
         ControlBlock controlBlock = workflowParser.controlBlock();
         Throwable thrown = catchThrowable(() -> audit(controlBlock));
@@ -404,7 +412,7 @@ public class ControlBlockTest extends ControlBlockTestBase {
     @Test
     public void invalidMessageFormatTest() {
         String badFormat = "TuesdayWeld";
-        String workFlowData = new ControlBlockBuilder().withMessageFormat(badFormat).build();
+        String workFlowData = controlBlockBuilder.withMessageFormat(badFormat).build();
         WorkflowParser workflowParser = WorkflowParser.create(Map.of(), workFlowData);
         ControlBlock controlBlock = workflowParser.controlBlock();
         Throwable thrown = catchThrowable(() -> audit(controlBlock));
@@ -416,7 +424,7 @@ public class ControlBlockTest extends ControlBlockTestBase {
     public void tooManyMessageFormatTest() {
         String format1 = MessageSpecFormat.MONDAY.getFormat();
         String format2 = MessageSpecFormat.MONDAY.getFormat();
-        String workFlowData = new ControlBlockBuilder()
+        String workFlowData = controlBlockBuilder
                 .withMessageFormat(format1)
                 .withMessageFormat(format2)
                 .build();
@@ -430,10 +438,9 @@ public class ControlBlockTest extends ControlBlockTestBase {
     public void mealsOnlyFoodSourceTest() {
 
         String mealSource = "Chez McDo";
-        ControlBlockBuilder builder = new ControlBlockBuilder();
-        builder.withFoodSources(mealSource + "|");
+        controlBlockBuilder.withFoodSources(mealSource + "|");
 
-        WorkflowParser workflowParser = WorkflowParser.create(Map.of(), builder.build());
+        WorkflowParser workflowParser = WorkflowParser.create(Map.of(), controlBlockBuilder.build());
 
         ControlBlockV300 controlBlock = (ControlBlockV300) workflowParser.controlBlock();
         audit(controlBlock);
@@ -445,10 +452,9 @@ public class ControlBlockTest extends ControlBlockTestBase {
     public void groceriesOnlyFoodSourceTest() {
 
         String grocerySource = "Big Red Barn Productions";
-        ControlBlockBuilder builder = new ControlBlockBuilder();
-        builder.withFoodSources("|" + grocerySource);
+        controlBlockBuilder.withFoodSources("|" + grocerySource);
 
-        WorkflowParser workflowParser = WorkflowParser.create(Map.of(), builder.build());
+        WorkflowParser workflowParser = WorkflowParser.create(Map.of(), controlBlockBuilder.build());
 
         ControlBlockV300 controlBlock = (ControlBlockV300) workflowParser.controlBlock();
         audit(controlBlock);
@@ -459,11 +465,9 @@ public class ControlBlockTest extends ControlBlockTestBase {
     @Test
     public void opsManagerFullMacroNoPhone() {
         // JVol | 123-456-7890
-        ControlBlockBuilder builder = new ControlBlockBuilder();
         String value = "JVol";
-        builder.withOpsManager(value);
 
-        String csvData = builder.build();
+        String csvData = controlBlockBuilder.withOpsManager(value).build();
 
         DriverPostFormat driverPostFormat = DriverPostFormat.create(createApiSimulator(), users, csvData);
         assertThat(driverPostFormat.getControlBlock().getFirstOpsManager().getUserName()).isEqualTo("JVol");
@@ -472,11 +476,8 @@ public class ControlBlockTest extends ControlBlockTestBase {
 
     @Test
     public void opsManagerFullMacroWithPhone() {
-        ControlBlockBuilder builder = new ControlBlockBuilder();
         String value = "JVol|123-456-7890";
-        builder.withOpsManager(value);
-
-        String csvData = builder.build();
+        String csvData = controlBlockBuilder.withOpsManager(value).build();
 
         DriverPostFormat driverPostFormat = DriverPostFormat.create(createApiSimulator(), users, csvData);
         assertThat(driverPostFormat.getControlBlock().getFirstOpsManager().getUserName()).isEqualTo("JVol");
@@ -485,11 +486,11 @@ public class ControlBlockTest extends ControlBlockTestBase {
 
     @Test
     public void opsManagerShortMacroNoPhone() {
-        ControlBlockBuilder builder = new ControlBlockBuilder();
         String value = "JVol";
-        builder.withOpsManagerMacro(value, Constants.CONTROL_BLOCK_OPS_MANAGER_USERNAME_ONLY);
 
-        String csvData = builder.build();
+        String csvData = controlBlockBuilder
+                .withOpsManagerMacro(value, Constants.CONTROL_BLOCK_OPS_MANAGER_USERNAME_ONLY)
+                .build();
 
         DriverPostFormat driverPostFormat = DriverPostFormat.create(createApiSimulator(), users, csvData);
         assertThat(driverPostFormat.getControlBlock().getFirstOpsManager().getUserName()).isEqualTo("JVol");
@@ -498,11 +499,10 @@ public class ControlBlockTest extends ControlBlockTestBase {
 
     @Test
     public void opsManagerShortMacroWithPhone() {
-        ControlBlockBuilder builder = new ControlBlockBuilder();
         String value = "JVol|123-456-7890";
-        builder.withOpsManagerMacro(value, Constants.CONTROL_BLOCK_OPS_MANAGER_USERNAME_ONLY);
-
-        String csvData = builder.build();
+        String csvData = controlBlockBuilder
+                .withOpsManagerMacro(value, Constants.CONTROL_BLOCK_OPS_MANAGER_USERNAME_ONLY)
+                .build();
 
         DriverPostFormat driverPostFormat = DriverPostFormat.create(createApiSimulator(), users, csvData);
         assertThat(driverPostFormat.getControlBlock().getFirstOpsManager().getUserName()).isEqualTo("JVol");

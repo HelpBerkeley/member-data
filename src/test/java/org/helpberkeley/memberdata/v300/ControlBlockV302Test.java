@@ -20,22 +20,17 @@
  * SOFTWARE.
  *
  */
+package org.helpberkeley.memberdata.v300;
 
-package org.helpberkeley.memberdata;
+public class ControlBlockV302Test extends ControlBlockTest {
 
-class ControlBlockV0 extends ControlBlock {
+    public static final String CONTROL_BLOCK_VERSION_ROW = "FALSE,FALSE,,Version ,,,,3-0-2,,,,,,,,,,\n";
 
-     ControlBlockV0(String header) {
-         super(header);
+    public ControlBlockV302Test() {
     }
 
     @Override
-    public String getVersion() {
-        return Constants.CONTROL_BLOCK_VERSION_UNKNOWN;
-    }
-
-    @Override
-    public boolean versionIsCompatible(String version) {
-        return getVersion().equals(version);
+    public String getVersionRow() {
+        return CONTROL_BLOCK_VERSION_ROW;
     }
 }

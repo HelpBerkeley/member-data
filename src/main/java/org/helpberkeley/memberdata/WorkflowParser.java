@@ -60,6 +60,7 @@ public abstract class WorkflowParser {
                 workflowParser = new WorkflowParserV200(csvData);
                 break;
             case Constants.CONTROL_BLOCK_VERSION_300:
+            case Constants.CONTROL_BLOCK_VERSION_302:
                 workflowParser = new WorkflowParserV300(csvData);
                 break;
             case Constants.CONTROL_BLOCK_VERSION_1:
