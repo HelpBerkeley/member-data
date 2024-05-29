@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-2021. helpberkeley.org
+ * Copyright (c) 2020-2024. helpberkeley.org
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -44,6 +44,7 @@ public abstract class RestaurantTemplateParser {
     private final Iterator<RestaurantBean> iterator;
     private String version = Constants.CONTROL_BLOCK_VERSION_UNKNOWN;
     private final ControlBlock controlBlock;
+    private boolean hasFormulaDirective = false;
 
     protected RestaurantTemplateParser(ControlBlock controlBlock, String csvData) {
 
@@ -70,16 +71,16 @@ public abstract class RestaurantTemplateParser {
             throw new MemberDataException(TEMPLATE_ERROR + "\n" + ex.getMessage());
         }
 
-        switch (controlBlock.getVersion()) {
-            case Constants.CONTROL_BLOCK_VERSION_UNKNOWN:
-                throw new MemberDataException("Restaurant template is missing the control block");
-            case Constants.CONTROL_BLOCK_VERSION_200:
-                return new RestaurantTemplateParserV200(controlBlock, normalizedCSV);
-            case Constants.CONTROL_BLOCK_VERSION_300:
-                return new RestaurantTemplateParserV300(controlBlock, normalizedCSV);
-            default:
-                throw new MemberDataException("Control block version " + controlBlock.getVersion()
-                        + " is not supported for restaurant templates");
+        String version = controlBlock.getVersion();
+        if (version.equals(Constants.CONTROL_BLOCK_VERSION_UNKNOWN)) {
+            throw new MemberDataException("Restaurant template is missing the control block");
+        } else if (controlBlock.versionIsCompatible(Constants.CONTROL_BLOCK_VERSION_200)) {
+            return new RestaurantTemplateParserV200(controlBlock, normalizedCSV);
+        } else if (controlBlock.versionIsCompatible(Constants.CONTROL_BLOCK_VERSION_300)) {
+            return new RestaurantTemplateParserV300(controlBlock, normalizedCSV);
+        } else {
+            throw new MemberDataException("Control block version " + version
+                    + " is not supported for restaurant templates");
         }
     }
 
@@ -196,16 +197,19 @@ public abstract class RestaurantTemplateParser {
             }
         }
 
+        if (! hasFormulaDirective) {
+            throw new MemberDataException(
+                    TEMPLATE_ERROR + "\n" +
+                    "No Formula rows found within the Control Block. At least one valid Formula row is required.");
+        }
+
         version = controlBlock.getVersion();
 
-        switch (version) {
-            case Constants.CONTROL_BLOCK_VERSION_1:
-            case Constants.CONTROL_BLOCK_VERSION_200:
-            case Constants.CONTROL_BLOCK_VERSION_300:
-                break;
-            default:
-                throw new MemberDataException(
-                        TEMPLATE_ERROR + "\n" + ERROR_MISSING_OR_UNSUPPORTED_VERSION + "\n");
+        if ((!controlBlock.versionIsCompatible(Constants.CONTROL_BLOCK_VERSION_200))
+                && (!controlBlock.versionIsCompatible(Constants.CONTROL_BLOCK_VERSION_300))
+                && (!version.equals(Constants.CONTROL_BLOCK_VERSION_1))) {
+            throw new MemberDataException(
+                    TEMPLATE_ERROR + "\n" + ERROR_MISSING_OR_UNSUPPORTED_VERSION + "\n");
         }
     }
 
@@ -224,6 +228,10 @@ public abstract class RestaurantTemplateParser {
         String directive = bean.getControlBlockDirective();
 
         switch (directive) {
+            case Constants.CONTROL_BLOCK_FORMULA:
+                hasFormulaDirective = true;
+                auditControlBlockFormula(bean);
+                break;
             case "":
             case Constants.CONTROL_BLOCK_COMMENT:
             case Constants.CONTROL_BLOCK_END:
@@ -234,6 +242,22 @@ public abstract class RestaurantTemplateParser {
 
         if (! errors.isEmpty()) {
             throwTemplateError(errors);
+        }
+    }
+
+    private void auditControlBlockFormula(RestaurantBean bean) {
+        boolean containsFormulas = false;
+        String[] formulas = bean.getFormulas();
+
+        for (String s: formulas) {
+            if (s.startsWith("=")) {
+                containsFormulas = true;
+            }
+        }
+
+        if (!containsFormulas) {
+            throw new MemberDataException("Invalid or missing Formula value found at line " + lineNumber
+                    + ". Formula values must begin with \"= or they will not import/export correctly.\n");
         }
     }
 

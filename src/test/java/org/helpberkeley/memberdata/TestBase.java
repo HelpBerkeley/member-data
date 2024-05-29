@@ -29,6 +29,7 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.ZonedDateTime;
@@ -133,6 +134,25 @@ public class TestBase {
     static final String TEST_SHORT_URL = Constants.UPLOAD_URI_PREFIX + "ab34dezzAndSomethingY.csv";
 
     static final String REQUEST_TEMPLATE = "request-template.json";
+
+    protected String changeResourceCBVersion(String filepath, String newVersion) throws IOException {
+        String updatedTemplate = readResourceFile(filepath).replaceAll("Version,,,,\\d-\\d-\\d", "Version,,,,"
+            + newVersion);
+
+        String outputFileName = filepath.replaceAll("-v\\d\\d\\d", "-v"
+                + newVersion.replaceAll("\\D", ""));
+
+        if (outputFileName.matches(filepath)) {
+            outputFileName = filepath.replace(".", "-v" + newVersion.replaceAll("\\D", "") + ".");
+        }
+
+        Path fp = Paths.get(outputFileName);
+        Files.deleteIfExists(fp);
+        Files.createFile(Paths.get(outputFileName));
+        Files.writeString(fp, updatedTemplate);
+
+        return outputFileName;
+    }
 
     @BeforeClass
     public static void installHttpClientSimulatorFactory() {

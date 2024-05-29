@@ -23,7 +23,10 @@
 package org.helpberkeley.memberdata;
 
 import org.helpberkeley.memberdata.v200.ControlBlockV200;
+import org.helpberkeley.memberdata.v200.ControlBlockV202;
 import org.helpberkeley.memberdata.v300.ControlBlockV300;
+import org.helpberkeley.memberdata.v300.ControlBlockV301;
+import org.helpberkeley.memberdata.v300.ControlBlockV302;
 
 import java.text.MessageFormat;
 import java.util.*;
@@ -128,10 +131,14 @@ public abstract class ControlBlock {
                 return new ControlBlockV1(header);
             case Constants.CONTROL_BLOCK_VERSION_200:
                 return new ControlBlockV200(header);
+            case Constants.CONTROL_BLOCK_VERSION_202:
+                return new ControlBlockV202(header);
             case Constants.CONTROL_BLOCK_VERSION_300:
-            case Constants.CONTROL_BLOCK_VERSION_301:
-            case Constants.CONTROL_BLOCK_VERSION_302:
                 return new ControlBlockV300(header);
+            case Constants.CONTROL_BLOCK_VERSION_301:
+                return new ControlBlockV301(header);
+            case Constants.CONTROL_BLOCK_VERSION_302:
+                return new ControlBlockV302(header);
             default:
                 throw new MemberDataException(
                         "Control block version " + version + " is not supported.\n");
@@ -669,7 +676,7 @@ public abstract class ControlBlock {
                     continue;
                 }
 
-                if (line.contains(Constants.CONTROL_BLOCK_COMMENT)) {
+                if (line.contains(Constants.CONTROL_BLOCK_COMMENT) || line.contains(Constants.CONTROL_BLOCK_FORMULA)) {
                     continue;
                 }
 

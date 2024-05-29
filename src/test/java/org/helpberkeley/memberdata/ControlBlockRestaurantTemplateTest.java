@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-2021 helpberkeley.org
+ * Copyright (c) 2020-2024 helpberkeley.org
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -231,5 +231,26 @@ public class ControlBlockRestaurantTemplateTest extends TestBase {
                         extracting(RestaurantV200::getNoPics).isEqualTo(false);
             }
         }
+    }
+
+    @Test
+    public void missingFormulaRestaurantTest() {
+        String csvData = readResourceFile("restaurant-template-v302-missing-formula.csv");
+
+        Throwable thrown = catchThrowable(() ->
+                RestaurantTemplateParser.create(csvData).restaurants());
+        assertThat(thrown).isInstanceOf(MemberDataException.class);
+        assertThat(thrown).hasMessageContaining("Invalid or missing Formula value found at line");
+    }
+
+    @Test
+    public void missingFormulaDirectiveRestaurantTest() {
+        String csvData = readResourceFile("restaurant-template-v302-missing-formula-directive.csv");
+
+        Throwable thrown = catchThrowable(() ->
+                RestaurantTemplateParser.create(csvData).restaurants());
+        assertThat(thrown).isInstanceOf(MemberDataException.class);
+        assertThat(thrown).hasMessageContaining("No Formula rows found within the Control Block. " +
+                "At least one valid Formula row is required.");
     }
 }

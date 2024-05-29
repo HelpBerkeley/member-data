@@ -20,45 +20,22 @@
  * SOFTWARE.
  *
  */
-package org.helpberkeley.memberdata;
+package org.helpberkeley.memberdata.v300;
 
-public interface RestaurantBean {
-    String getVersion();
+import org.helpberkeley.memberdata.RestaurantTemplateParser;
+import org.junit.Test;
 
-    String getAddress();
-    String getNeighborhood();
-    String getAltPhone();
-    String getPhone();
-    String getConsumer();
-    String getDriver();
-    String getName();
-    String getUserName();
-    String getCity();
-    String getRestaurant();
-    String getCondo();
-    String getNormal();
-    String getVeggie();
-    String getDetails();
+public class RestaurantTemplateTestV301 extends RestaurantTemplateTest {
 
-    String getControlBlockDirective();
-    String getControlBlockKey();
-    String getControlBlockValue();
-    String getRoute();
-    String[] getFormulas();
-    boolean isEmpty();
-    String routeColumn();
-    String getActive();
-    String getStartTime();
-    String getClosingTime();
-    String getEmoji();
+    @Override
+    public String getRestaurantTemplate() {
+        return readResourceFile("restaurant-template-v301.csv");
+    }
 
-    String restaurantColumn();
-    String startTimeColumn();
-    String closingTimeColumn();
-    String emojiColumn();
-
-    default String unsupported(String columnName) {
-        throw new MemberDataException("Column heading \""
-                + columnName + "\" is not supported in control block version " + getVersion());
+    @Test
+    public void testTemplateValidation() {
+        String template = readResourceFile("restaurant-template-v301.csv");
+        RestaurantTemplateParser parser = RestaurantTemplateParser.create(template);
+        parser.restaurants();
     }
 }

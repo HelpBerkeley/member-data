@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-2021. helpberkeley.org
+ * Copyright (c) 2020-2024. helpberkeley.org
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -76,20 +76,16 @@ public abstract class DriverPostFormat {
         // FIX THIS, DS: check warnings here?
 
         DriverPostFormat driverPostFormat;
-
-        switch (controlBlock.getVersion()) {
-            case Constants.CONTROL_BLOCK_VERSION_UNKNOWN:
-                throw new MemberDataException("Control block not found");
-            case Constants.CONTROL_BLOCK_VERSION_200:
-                driverPostFormat = new DriverPostFormatV200();
-                break;
-            case Constants.CONTROL_BLOCK_VERSION_300:
-                driverPostFormat = new DriverPostFormatV300();
-                break;
-            case Constants.CONTROL_BLOCK_VERSION_1:
-            default:
-                throw new MemberDataException(
-                        "Control block version " + controlBlock.getVersion() + " is not supported.\n");
+        String version = controlBlock.getVersion();
+        if (version.equals(Constants.CONTROL_BLOCK_VERSION_UNKNOWN)) {
+            throw new MemberDataException("Control block not found");
+        } else if (controlBlock.versionIsCompatible(Constants.CONTROL_BLOCK_VERSION_200)) {
+            driverPostFormat = new DriverPostFormatV200();
+        } else if (controlBlock.versionIsCompatible(Constants.CONTROL_BLOCK_VERSION_300)) {
+            driverPostFormat = new DriverPostFormatV300();
+        } else {
+            throw new MemberDataException(
+                    "Control block version " + controlBlock.getVersion() + " is not supported.\n");
         }
 
         driverPostFormat.apiClient = apiClient;

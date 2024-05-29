@@ -38,9 +38,11 @@ public class RestaurantTemplateTest extends RestaurantTemplateTestBase {
     private static final String CONTROL_BLOCK_BEGIN_ROW = "FALSE,FALSE,ControlBegin,,,,,,,,,,,,\n";
     private static final String CONTROL_BLOCK_VERSION_ROW = "FALSE,FALSE,,Version,,,,2-0-0,,,,,,,\n";
     private static final String CONTROL_BLOCK_END_ROW = "FALSE,FALSE,ControlEnd,,,,,,,,,,,,\n";
+    private static final String CONTROL_BLOCK_FORMULA_ROW = "FALSE,FALSE,Formula,,,,=testFormula,,,,,,,,\n";
 
     private static final String CONTROL_BLOCK =
-            HEADER + CONTROL_BLOCK_BEGIN_ROW + CONTROL_BLOCK_VERSION_ROW + CONTROL_BLOCK_END_ROW;
+            HEADER + CONTROL_BLOCK_BEGIN_ROW + CONTROL_BLOCK_VERSION_ROW
+                    + CONTROL_BLOCK_FORMULA_ROW + CONTROL_BLOCK_END_ROW;
 
     @Override
     public String getEmptyRow() {
@@ -84,7 +86,7 @@ public class RestaurantTemplateTest extends RestaurantTemplateTestBase {
         Throwable thrown = catchThrowable(parser::restaurants);
         assertThat(thrown).isInstanceOf(MemberDataException.class);
         assertThat(thrown).hasMessage(
-                "Restaurant Template Error: missing emoji value from column normal, line number 5");
+                "Restaurant Template Error: missing emoji value from column normal, line number 6");
     }
 
     @Test

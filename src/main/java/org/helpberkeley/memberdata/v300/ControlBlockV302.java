@@ -20,45 +20,19 @@
  * SOFTWARE.
  *
  */
-package org.helpberkeley.memberdata;
 
-public interface RestaurantBean {
-    String getVersion();
+package org.helpberkeley.memberdata.v300;
 
-    String getAddress();
-    String getNeighborhood();
-    String getAltPhone();
-    String getPhone();
-    String getConsumer();
-    String getDriver();
-    String getName();
-    String getUserName();
-    String getCity();
-    String getRestaurant();
-    String getCondo();
-    String getNormal();
-    String getVeggie();
-    String getDetails();
+import org.helpberkeley.memberdata.Constants;
 
-    String getControlBlockDirective();
-    String getControlBlockKey();
-    String getControlBlockValue();
-    String getRoute();
-    String[] getFormulas();
-    boolean isEmpty();
-    String routeColumn();
-    String getActive();
-    String getStartTime();
-    String getClosingTime();
-    String getEmoji();
+public class ControlBlockV302 extends ControlBlockV300 {
 
-    String restaurantColumn();
-    String startTimeColumn();
-    String closingTimeColumn();
-    String emojiColumn();
+    public ControlBlockV302(String header) {
+        super(header);
+    }
 
-    default String unsupported(String columnName) {
-        throw new MemberDataException("Column heading \""
-                + columnName + "\" is not supported in control block version " + getVersion());
+    @Override
+    public String getVersion() {
+        return Constants.CONTROL_BLOCK_VERSION_302;
     }
 }

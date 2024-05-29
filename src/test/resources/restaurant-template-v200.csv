@@ -25,7 +25,7 @@ FALSE,FALSE,,OpsManager (UserName | Phone),,,,ReplaceThisByUserName | ReplaceThi
 FALSE,FALSE,,SplitRestaurant (Name | CleanupDriverUserName),,,,ReplaceThisBySplitRestaurantName | ReplaceThisByCleanupDriverUserName,,,,,,,
 FALSE,FALSE,,BackupDriverUserName,,,,ReplaceThisByTheBackUpDriverUserName,,,,,,,
 FALSE,FALSE,,,,,,,,,,,,,
-FALSE,FALSE,Comment,vlookup formula (take off leading '),,,"=VLOOKUP(D28, vlookup!$D$2:$K$900, 4, false)",,,,,,,,
+FALSE,FALSE,Formula,vlookup formula (take off leading '),,,"=VLOOKUP(D28, vlookup!$D$2:$K$900, 4, false)",,,,,,,,
 FALSE,FALSE,,,,,,,,,,,,,
 FALSE,FALSE,ControlEnd,,,,,,,,,,,,
 ,,,,,,,,,,,,,,

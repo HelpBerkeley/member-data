@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-2021 helpberkeley.org
+ * Copyright (c) 2020-2024 helpberkeley.org
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -26,6 +26,9 @@ import org.helpberkeley.memberdata.v200.DeliveryV200;
 import org.helpberkeley.memberdata.v200.RestaurantV200;
 import org.junit.Test;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Map;
 
@@ -41,9 +44,19 @@ public class RoutedDeliveriesTest extends TestBase {
     }
 
     @Test
-    public void parseRoutedTest() {
+    public void parseRoutedTestV200() {
         String csvData = readResourceFile("routed-deliveries-v200.csv");
+        parseRoutedTest(csvData);
+    }
 
+    @Test
+    public void parseRoutedTestV202() throws IOException {
+        String changedFilename = changeResourceCBVersion("routed-deliveries-v200.csv", "2-0-2");
+        String csvData = Files.readString(Paths.get(changedFilename));
+        parseRoutedTest(csvData);
+    }
+
+    private void parseRoutedTest(String csvData) {
         DriverPostFormat driverPostFormat = DriverPostFormat.create(createApiSimulator(), users, csvData);
         List<Driver> drivers = driverPostFormat.getDrivers();
 
@@ -187,8 +200,19 @@ public class RoutedDeliveriesTest extends TestBase {
     }
 
     @Test
-    public void parseRoutedWithSplitRestaurantTest() {
+    public void parseRoutedWithSplitRestaurantTestV200() {
         String csvData = readResourceFile("routed-deliveries-with-split-restaurant.csv");
+        parseRoutedWithSplitRestaurantTest(csvData);
+    }
+
+    @Test
+    public void parseRoutedWithSplitRestaurantTestV202() throws IOException {
+        String changedFilename = changeResourceCBVersion("routed-deliveries-with-split-restaurant.csv", "2-0-2");
+        String csvData = Files.readString(Paths.get(changedFilename));
+        parseRoutedWithSplitRestaurantTest(csvData);
+    }
+
+    private void parseRoutedWithSplitRestaurantTest(String csvData) {
         DriverPostFormat driverPostFormat = DriverPostFormat.create(createApiSimulator(), users, csvData);
         List<Driver> drivers = driverPostFormat.getDrivers();
 
@@ -412,8 +436,19 @@ public class RoutedDeliveriesTest extends TestBase {
     }
 
     @Test
-    public void parseRoutedWithSplitTurkeyTest() {
+    public void parseRoutedWithSplitTurkeyTestV200() {
         String csvData = readResourceFile("routed-deliveries-turkey.csv");
+        parseRoutedWithSplitTurkeyTest(csvData);
+    }
+
+    @Test
+    public void parseRoutedWithSplitTurkeyTestV202() throws IOException {
+        String changedFilename = changeResourceCBVersion("routed-deliveries-turkey.csv", "2-0-2");
+        String csvData = Files.readString(Paths.get(changedFilename));
+        parseRoutedWithSplitTurkeyTest(csvData);
+    }
+
+    private void parseRoutedWithSplitTurkeyTest(String csvData) {
         HttpClientSimulator.setQueryResponseFile(
                 Constants.QUERY_GET_CURRENT_VALIDATED_DRIVER_MESSAGE_RESTAURANT_TEMPLATE, "restaurant-template-turkey.json");
         DriverPostFormat driverPostFormat = DriverPostFormat.create(createApiSimulator(), users, csvData);
@@ -564,9 +599,19 @@ public class RoutedDeliveriesTest extends TestBase {
     }
 
     @Test
-    public void parseRoutedEmptyDeliveryTest() {
+    public void parseRoutedEmptyDeliveryTestV200() {
         String csvData = readResourceFile("routed-deliveries-empty-delivery.csv");
+        parseRoutedEmptyDeliveryTest(csvData);
+    }
 
+    @Test
+    public void parseRoutedEmptyDeliveryTestV202() throws IOException {
+        String changedFilename = changeResourceCBVersion("routed-deliveries-empty-delivery.csv", "2-0-2");
+        String csvData = Files.readString(Paths.get(changedFilename));
+        parseRoutedEmptyDeliveryTest(csvData);
+    }
+
+    private void parseRoutedEmptyDeliveryTest(String csvData) {
         DriverPostFormat driverPostFormat = DriverPostFormat.create(createApiSimulator(), users, csvData);
         List<Driver> drivers = driverPostFormat.getDrivers();
 

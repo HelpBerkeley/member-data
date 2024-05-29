@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-2022. helpberkeley.org
+ * Copyright (c) 2020-2024. helpberkeley.org
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -69,7 +69,7 @@ public class WorkflowBeanV300 implements WorkflowBean {
     public WorkflowBeanV300() {
 
     }
-
+    // TODO make version accurate - will return 3-0-0 even if version is 301/302
     public String getVersion() {
         return Constants.CONTROL_BLOCK_VERSION_300;
     }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-2021. helpberkeley.org
+ * Copyright (c) 2020-2024. helpberkeley.org
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -28,6 +28,18 @@ import org.helpberkeley.memberdata.MemberDataException;
 import org.helpberkeley.memberdata.RestaurantBean;
 
 public class RestaurantBeanV200 implements RestaurantBean {
+
+    @CsvBindByName(column = Constants.WORKFLOW_ADDRESS_COLUMN)
+    private String address;
+
+    @CsvBindByName(column = Constants.WORKFLOW_NEIGHBORHOOD_COLUMN)
+    private String neighborhood;
+
+    @CsvBindByName(column = Constants.WORKFLOW_ALT_PHONE_COLUMN)
+    private String altPhone;
+
+    @CsvBindByName(column = Constants.WORKFLOW_PHONE_COLUMN)
+    private String phone;;
 
     @CsvBindByName(column = Constants.WORKFLOW_CONSUMER_COLUMN)
     private String consumer;
@@ -209,6 +221,11 @@ public class RestaurantBeanV200 implements RestaurantBean {
 
     // Utility accessors
 
+    public String[] getFormulas() {
+        return new String[]{getPhone(), getAltPhone(), getNeighborhood(), getCity(), getAddress(),
+                getCondo(), getDetails()};
+    }
+
     public boolean isEmpty() {
 
         return consumer.isEmpty()
@@ -221,6 +238,14 @@ public class RestaurantBeanV200 implements RestaurantBean {
     }
 
     // Annotated accessors for CSV parser
+
+    public String getAddress() { return address.trim(); }
+
+    public String getNeighborhood() { return neighborhood.trim(); }
+
+    public String getAltPhone() { return altPhone.trim(); }
+
+    public String getPhone() { return phone.trim(); }
 
     public String getConsumer() {
         return consumer.trim();

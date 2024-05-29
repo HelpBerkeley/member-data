@@ -1,0 +1,27 @@
+Consumer,Driver,Name,User Name,Phone #,Phone2 #,Neighborhood,City,Address,Condo,Details,Restaurants,std meals,alt meals,type meal,std grocery,alt grocery,type grocery
+FALSE,FALSE,ControlBegin,,,,,,,,,,,,,,,
+FALSE,FALSE,,Version,,,,3-0-1,,,,,,,,,,
+FALSE,FALSE,,,,,,,,,,,,,,,,
+FALSE,FALSE,,TypeOfRun ,,,,MondayFreeRun,,,,,,,,,,
+FALSE,FALSE,,FoodSources (Meal|Grocery),,,,"Bauman Meals/Groceries|Bauman Meals/Groceries",,,,,,,,,,
+FALSE,FALSE,,AltMealOptions (),,,,"veggie, noRed, noPork",,,,,,,,,,
+FALSE,FALSE,,AltGroceryOptions (),,,,"veg, custom pick",,,,,,,,,,
+FALSE,FALSE,,StartTimes (),,,,"3:00, 3:00, 3:10, 3:10, 3:20, 3:20, 3:25, 3:25",,,,,,,,,,
+FALSE,FALSE,,PickupManagerUserName,,,,ZZZ,,,,,,,,,,
+FALSE,FALSE,,PickupManagerUserName,,,,ThirdPerson,,,,,,,,,,
+FALSE,FALSE,,OpsManager (UserName | Phone),,,,JVol | 123-456-7890,,,,,,,,,,
+FALSE,FALSE,,BackupDriverUserName,,,,MrBackup772,,,,,,,,,,
+FALSE,FALSE,,,,,,,,,,,,,,,,
+FALSE,FALSE,ControlEnd,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,
+FALSE,TRUE,Joe B. Driver,jbDriver,777-777-7777,none,Hills,Berkeley,77 77th Place,,,,,,,,,
+FALSE,,,,,,,,"1955 Ninth St., Berkeley, CA",FALSE,"Come from Hearst, park alongside E side of street past loading dock",Bauman Meals/Groceries,,,,,,
+TRUE,FALSE,Cust Name 1,Cust1,555-555-1112,111-222-3333,Hills,Berkeley,123 456th Ave,FALSE,,Bauman Meals/Groceries,0,1,noRed,0,0,
+TRUE,FALSE,Cust Name 2,Cust2,555-555-2222,none,Hills,Berkeley,77 77th St,FALSE,,Bauman Meals/Groceries,2,0,,2,0,
+TRUE,FALSE,Cust Name 3,Cust3,555-555-3333,none,Hills,Berkeley,11 11th St,FALSE,,Bauman Meals/Groceries,0,0,,2,0,
+TRUE,FALSE,Cust Name 4,Cust4,555-555-4444,none,Hills,Berkeley,44 44th St,FALSE,,Bauman Meals/Groceries,0,1,veggie,0,1,veg 
+TRUE,FALSE,Cust Name 5,Cust5,555-555-5555,none,Hills,Berkeley,55 55th St,TRUE,listed as a condo but,Bauman Meals/Groceries,0,1,noPork,0,0,
+TRUE,FALSE,Cust Name 6,Cust6,555-555-6666,none,Hills,Berkeley,66 66th St,FALSE,,Bauman Meals/Groceries,0,0,,0,1,custom pick
+TRUE,FALSE,Cust Name 7,Cust7,555-555-7777,none,Hills,Berkeley,77 77th St,FALSE,,Bauman Meals/Groceries,0,1,veggie,0,1,custom pick
+FALSE,TRUE,Joe B. Driver,jbDriver,777-777-7777,none,Hills,Berkeley,77 77th Place,,,,,,,,,
+"https://www.google.com/maps/dir/something+something+else",,,,,,,,,,,,,,,,,
