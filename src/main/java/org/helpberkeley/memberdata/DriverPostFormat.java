@@ -27,6 +27,7 @@ import org.helpberkeley.memberdata.v300.DriverPostFormatV300;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.text.MessageFormat;
 import java.util.*;
 
 public abstract class DriverPostFormat {
@@ -85,7 +86,7 @@ public abstract class DriverPostFormat {
             driverPostFormat = new DriverPostFormatV300();
         } else {
             throw new MemberDataException(
-                    "Control block version " + controlBlock.getVersion() + " is not supported.\n");
+                    MessageFormat.format(ControlBlock.UNSUPPORTED_VERSION_GENERIC, controlBlock.getVersion()));
         }
 
         driverPostFormat.apiClient = apiClient;

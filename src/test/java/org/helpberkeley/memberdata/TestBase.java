@@ -135,6 +135,23 @@ public class TestBase {
 
     static final String REQUEST_TEMPLATE = "request-template.json";
 
+    protected static void cleanupGeneratedFiles() throws IOException {
+        Files.list(Paths.get("."))
+                .filter(Files::isRegularFile)
+                .forEach(p -> {
+                    String fileName = p.getFileName().toString();
+                    if ((fileName.endsWith(".csv") ||
+                            (fileName.endsWith(".txt")) && (fileName.startsWith(Main.MEMBERDATA_ERRORS_FILE) ||
+                                    fileName.startsWith("temp")))) {
+                        try {
+                            Files.delete(p);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                });
+    }
+
     protected String changeResourceCBVersion(String filepath, String newVersion) throws IOException {
         String updatedTemplate = readResourceFile(filepath).replaceAll("Version,,,,\\d-\\d-\\d", "Version,,,,"
             + newVersion);
@@ -145,6 +162,8 @@ public class TestBase {
         if (outputFileName.matches(filepath)) {
             outputFileName = filepath.replace(".", "-v" + newVersion.replaceAll("\\D", "") + ".");
         }
+
+        outputFileName = "temp-" + outputFileName;
 
         Path fp = Paths.get(outputFileName);
         Files.deleteIfExists(fp);

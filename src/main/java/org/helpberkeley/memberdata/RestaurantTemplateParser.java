@@ -32,6 +32,10 @@ import java.util.*;
 public abstract class RestaurantTemplateParser {
 
     static final String TEMPLATE_ERROR = "Restaurant Template Error: ";
+    public static final String NO_FORMULA_ROWS_FOUND = TEMPLATE_ERROR + "\n" +
+            "No Formula rows found within the Control Block. At least one valid Formula row is required.";
+    public static final String MISSING_FORMULA_VALUE = "Invalid or missing Formula value found at line {0}." +
+            " Formula values must begin with \"= or they will not import/export correctly.\n";
     static final String ERROR_NO_DATA = "empty file";
     static final String ERROR_MISSING_OR_UNSUPPORTED_VERSION = "Missing or unsupported version: ";
     public static final String MISSING_COLUMN_ERROR = "missing column: ";
@@ -79,8 +83,8 @@ public abstract class RestaurantTemplateParser {
         } else if (controlBlock.versionIsCompatible(Constants.CONTROL_BLOCK_VERSION_300)) {
             return new RestaurantTemplateParserV300(controlBlock, normalizedCSV);
         } else {
-            throw new MemberDataException("Control block version " + version
-                    + " is not supported for restaurant templates");
+            throw new MemberDataException(MessageFormat.format(
+                    ControlBlock.UNSUPPORTED_VERSION_FOR, version, "restaurant templates."));
         }
     }
 
@@ -198,9 +202,7 @@ public abstract class RestaurantTemplateParser {
         }
 
         if (! hasFormulaDirective) {
-            throw new MemberDataException(
-                    TEMPLATE_ERROR + "\n" +
-                    "No Formula rows found within the Control Block. At least one valid Formula row is required.");
+            throw new MemberDataException(NO_FORMULA_ROWS_FOUND);
         }
 
         version = controlBlock.getVersion();
@@ -230,7 +232,7 @@ public abstract class RestaurantTemplateParser {
         switch (directive) {
             case Constants.CONTROL_BLOCK_FORMULA:
                 hasFormulaDirective = true;
-                auditControlBlockFormula(bean);
+                errors += auditControlBlockFormula(bean);
                 break;
             case "":
             case Constants.CONTROL_BLOCK_COMMENT:
@@ -245,9 +247,10 @@ public abstract class RestaurantTemplateParser {
         }
     }
 
-    private void auditControlBlockFormula(RestaurantBean bean) {
+    private String auditControlBlockFormula(RestaurantBean bean) {
+        String errors = "";
         boolean containsFormulas = false;
-        String[] formulas = bean.getFormulas();
+        List<String> formulas = bean.getFormulas();
 
         for (String s: formulas) {
             if (s.startsWith("=")) {
@@ -256,9 +259,9 @@ public abstract class RestaurantTemplateParser {
         }
 
         if (!containsFormulas) {
-            throw new MemberDataException("Invalid or missing Formula value found at line " + lineNumber
-                    + ". Formula values must begin with \"= or they will not import/export correctly.\n");
+            errors += MessageFormat.format(MISSING_FORMULA_VALUE, lineNumber);
         }
+        return errors;
     }
 
     // FIX THIS, DS: move to ControlBlock.  Call by processRow

@@ -22,6 +22,8 @@
  */
 package org.helpberkeley.memberdata;
 
+import java.util.List;
+
 public interface RestaurantBean {
     String getVersion();
 
@@ -44,7 +46,7 @@ public interface RestaurantBean {
     String getControlBlockKey();
     String getControlBlockValue();
     String getRoute();
-    String[] getFormulas();
+    List<String> getFormulas();
     boolean isEmpty();
     String routeColumn();
     String getActive();

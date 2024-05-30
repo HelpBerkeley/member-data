@@ -37,6 +37,8 @@ public abstract class ControlBlock {
     static final String ERROR_MISSING_OPS_MANAGER =
             "Control block missing a " + Constants.CONTROL_BLOCK_OPS_MANAGER_USERNAME_ONLY + " entry.\n";
 
+    static final String UNSUPPORTED_VERSION_GENERIC = "Control block version {0} is not supported.\n";
+    static final String UNSUPPORTED_VERSION_FOR = "Control block version {0} is not supported for {1}.\n";
     static final String BAD_HEADER_ROW = "Line 1, column names missing.\n";
     static final String MISSING_OR_INVALID_HEADER_ROW
             = "Line 1, header row missing or has a duplicate column name ({0})\n";

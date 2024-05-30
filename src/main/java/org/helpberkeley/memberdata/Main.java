@@ -650,14 +650,13 @@ public class Main {
 
         try {
             ControlBlock cb = ControlBlock.create(routedDeliveries);
-            String version = cb.getVersion();
             if (cb.versionIsCompatible(Constants.CONTROL_BLOCK_VERSION_300)) {
                 throw new MemberDataException(MessageFormat.format(WRONG_REQUEST_TOPIC,
-                        version, buildTopicURL(Constants.TOPIC_REQUEST_DRIVER_MESSAGES),
+                        cb.getVersion(), buildTopicURL(Constants.TOPIC_REQUEST_DRIVER_MESSAGES),
                         buildTopicURL(Constants.TOPIC_REQUEST_ONE_KITCHEN_DRIVER_MESSAGES)));
             } else if (! cb.versionIsCompatible(Constants.CONTROL_BLOCK_VERSION_200)) {
                 throw new MemberDataException(MessageFormat.format(UNSUPPORTED_CONTROL_BLOCK_VERSION,
-                        version, buildTopicURL(Constants.TOPIC_REQUEST_DRIVER_MESSAGES),
+                        cb.getVersion(), buildTopicURL(Constants.TOPIC_REQUEST_DRIVER_MESSAGES),
                         Constants.CONTROL_BLOCK_VERSION_200));
             }
             DriverPostFormat driverPostFormat = DriverPostFormat.create(apiClient, users, routedDeliveries);
@@ -718,14 +717,13 @@ public class Main {
 
         try {
             ControlBlock cb = ControlBlock.create(routedDeliveries);
-            String version = cb.getVersion();
             if (cb.versionIsCompatible(Constants.CONTROL_BLOCK_VERSION_200)) {
                 throw new MemberDataException(MessageFormat.format(WRONG_REQUEST_TOPIC,
-                        version, buildTopicURL(Constants.TOPIC_REQUEST_ONE_KITCHEN_DRIVER_MESSAGES),
+                        cb.getVersion(), buildTopicURL(Constants.TOPIC_REQUEST_ONE_KITCHEN_DRIVER_MESSAGES),
                         buildTopicURL(Constants.TOPIC_REQUEST_DRIVER_MESSAGES)));
             } else if (! cb.versionIsCompatible(Constants.CONTROL_BLOCK_VERSION_300)) {
                 throw new MemberDataException(MessageFormat.format(UNSUPPORTED_CONTROL_BLOCK_VERSION,
-                        version, buildTopicURL(Constants.TOPIC_REQUEST_ONE_KITCHEN_DRIVER_MESSAGES),
+                        cb.getVersion(), buildTopicURL(Constants.TOPIC_REQUEST_ONE_KITCHEN_DRIVER_MESSAGES),
                         Constants.CONTROL_BLOCK_VERSION_300));
             }
             DriverPostFormat driverPostFormat = DriverPostFormat.create(apiClient, users, routedDeliveries);
@@ -1007,14 +1005,13 @@ public class Main {
             String completedDeliveries = apiClient.downloadFile(request.uploadFile.getFileName());
 
             ControlBlock cb = ControlBlock.create(completedDeliveries);
-            String version = cb.getVersion();
             if (cb.versionIsCompatible(Constants.CONTROL_BLOCK_VERSION_300)) {
                 throw new MemberDataException(MessageFormat.format(WRONG_REQUEST_TOPIC,
-                        version, buildTopicURL(Constants.TOPIC_POST_COMPLETED_DAILY_ORDERS),
+                        cb.getVersion(), buildTopicURL(Constants.TOPIC_POST_COMPLETED_DAILY_ORDERS),
                         buildTopicURL(Constants.TOPIC_POST_COMPLETED_ONEKITCHEN_ORDERS)));
             } else if (! cb.versionIsCompatible(Constants.CONTROL_BLOCK_VERSION_200)) {
                 throw new MemberDataException(MessageFormat.format(UNSUPPORTED_CONTROL_BLOCK_VERSION,
-                        version, buildTopicURL(Constants.TOPIC_POST_COMPLETED_DAILY_ORDERS),
+                        cb.getVersion(), buildTopicURL(Constants.TOPIC_POST_COMPLETED_DAILY_ORDERS),
                         Constants.CONTROL_BLOCK_VERSION_200));
             }
 
@@ -1114,14 +1111,13 @@ public class Main {
             String completedDeliveries = apiClient.downloadFile(request.uploadFile.getFileName());
 
             ControlBlock cb = ControlBlock.create(completedDeliveries);
-            String version = cb.getVersion();
             if (cb.versionIsCompatible(Constants.CONTROL_BLOCK_VERSION_200)) {
                 throw new MemberDataException(MessageFormat.format(WRONG_REQUEST_TOPIC,
-                        version, buildTopicURL(Constants.TOPIC_POST_COMPLETED_ONEKITCHEN_ORDERS),
+                        cb.getVersion(), buildTopicURL(Constants.TOPIC_POST_COMPLETED_ONEKITCHEN_ORDERS),
                         buildTopicURL(Constants.TOPIC_POST_COMPLETED_DAILY_ORDERS)));
             } else if (! cb.versionIsCompatible(Constants.CONTROL_BLOCK_VERSION_300)) {
                 throw new MemberDataException(MessageFormat.format(UNSUPPORTED_CONTROL_BLOCK_VERSION,
-                        version, buildTopicURL(Constants.TOPIC_POST_COMPLETED_ONEKITCHEN_ORDERS),
+                        cb.getVersion(), buildTopicURL(Constants.TOPIC_POST_COMPLETED_ONEKITCHEN_ORDERS),
                         Constants.CONTROL_BLOCK_VERSION_300));
             }
 
@@ -1355,14 +1351,13 @@ public class Main {
 
             // Check that it is the expected V200 version
             ControlBlock cb = ControlBlock.create(restaurantTemplate);
-            String version = cb.getVersion();
             if (cb.versionIsCompatible(Constants.CONTROL_BLOCK_VERSION_300)) {
                 throw new MemberDataException(MessageFormat.format(WRONG_REQUEST_TOPIC,
-                        version, buildTopicURL(Constants.TOPIC_POST_RESTAURANT_TEMPLATE),
+                        cb.getVersion(), buildTopicURL(Constants.TOPIC_POST_RESTAURANT_TEMPLATE),
                         buildTopicURL(Constants.TOPIC_POST_ONE_KITCHEN_RESTAURANT_TEMPLATE)));
             } else if (! cb.versionIsCompatible(Constants.CONTROL_BLOCK_VERSION_200)) {
                 throw new MemberDataException(MessageFormat.format(UNSUPPORTED_CONTROL_BLOCK_VERSION,
-                        version, buildTopicURL(Constants.TOPIC_POST_RESTAURANT_TEMPLATE),
+                        cb.getVersion(), buildTopicURL(Constants.TOPIC_POST_RESTAURANT_TEMPLATE),
                         Constants.CONTROL_BLOCK_VERSION_200));
             }
             // Validate the contents
@@ -1414,14 +1409,13 @@ public class Main {
 
             // Check that it is the expected V300 version
             ControlBlock cb = ControlBlock.create(restaurantTemplate);
-            String version = cb.getVersion();
             if (cb.versionIsCompatible(Constants.CONTROL_BLOCK_VERSION_200)) {
                 throw new MemberDataException(MessageFormat.format(WRONG_REQUEST_TOPIC,
-                        version, buildTopicURL(Constants.TOPIC_POST_ONE_KITCHEN_RESTAURANT_TEMPLATE),
+                        cb.getVersion(), buildTopicURL(Constants.TOPIC_POST_ONE_KITCHEN_RESTAURANT_TEMPLATE),
                         buildTopicURL(Constants.TOPIC_POST_RESTAURANT_TEMPLATE)));
             } else if (! cb.versionIsCompatible(Constants.CONTROL_BLOCK_VERSION_300)) {
                 throw new MemberDataException(MessageFormat.format(UNSUPPORTED_CONTROL_BLOCK_VERSION,
-                        version, buildTopicURL(Constants.TOPIC_POST_ONE_KITCHEN_RESTAURANT_TEMPLATE),
+                        cb.getVersion(), buildTopicURL(Constants.TOPIC_POST_ONE_KITCHEN_RESTAURANT_TEMPLATE),
                         Constants.CONTROL_BLOCK_VERSION_300));
             }
             // Validate the contents

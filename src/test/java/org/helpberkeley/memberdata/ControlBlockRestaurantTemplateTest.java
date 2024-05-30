@@ -25,6 +25,7 @@ package org.helpberkeley.memberdata;
 import org.helpberkeley.memberdata.v200.RestaurantV200;
 import org.junit.Test;
 
+import java.text.MessageFormat;
 import java.util.List;
 import java.util.Map;
 
@@ -240,7 +241,8 @@ public class ControlBlockRestaurantTemplateTest extends TestBase {
         Throwable thrown = catchThrowable(() ->
                 RestaurantTemplateParser.create(csvData).restaurants());
         assertThat(thrown).isInstanceOf(MemberDataException.class);
-        assertThat(thrown).hasMessageContaining("Invalid or missing Formula value found at line");
+        assertThat(thrown).hasMessageContaining(MessageFormat.format(
+                RestaurantTemplateParser.MISSING_FORMULA_VALUE, "51"));
     }
 
     @Test
@@ -250,7 +252,6 @@ public class ControlBlockRestaurantTemplateTest extends TestBase {
         Throwable thrown = catchThrowable(() ->
                 RestaurantTemplateParser.create(csvData).restaurants());
         assertThat(thrown).isInstanceOf(MemberDataException.class);
-        assertThat(thrown).hasMessageContaining("No Formula rows found within the Control Block. " +
-                "At least one valid Formula row is required.");
+        assertThat(thrown).hasMessageContaining(RestaurantTemplateParser.NO_FORMULA_ROWS_FOUND);
     }
 }

@@ -55,22 +55,6 @@ public class MainTest extends TestBase {
         cleanupGeneratedFiles();
     }
 
-    private  static void cleanupGeneratedFiles() throws IOException {
-        Files.list(Paths.get("."))
-                .filter(Files::isRegularFile)
-                .forEach(p -> {
-                    String fileName = p.getFileName().toString();
-                    if (fileName.endsWith(".csv") ||
-                            (fileName.endsWith(".txt") && fileName.startsWith(Main.MEMBERDATA_ERRORS_FILE))) {
-                        try {
-                            Files.delete(p);
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                });
-    }
-
     @Test
     public void postUserErrorsTest() throws IOException, CsvException {
         String[] args = { Options.COMMAND_POST_ERRORS, TEST_FILE_NAME };
@@ -792,7 +776,8 @@ public class MainTest extends TestBase {
         System.out.println(WorkRequestHandler.getLastStatusPost().raw);
         assertThat(WorkRequestHandler.getLastStatusPost()).isNotNull();
         assertThat(WorkRequestHandler.getLastStatusPost().raw).contains("Status: Fail");
-        assertThat(WorkRequestHandler.getLastStatusPost().raw).contains("Invalid or missing Formula value found");
+        assertThat(WorkRequestHandler.getLastStatusPost().raw).contains(
+                MessageFormat.format(RestaurantTemplateParser.MISSING_FORMULA_VALUE, "51"));
     }
 
     @Test

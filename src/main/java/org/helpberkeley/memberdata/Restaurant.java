@@ -25,6 +25,7 @@ package org.helpberkeley.memberdata;
 import org.helpberkeley.memberdata.v200.RestaurantV200;
 import org.helpberkeley.memberdata.v300.RestaurantV300;
 
+import java.text.MessageFormat;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -52,8 +53,8 @@ public abstract class Restaurant implements ItineraryStop {
         } else if (controlBlock.versionIsCompatible(Constants.CONTROL_BLOCK_VERSION_300)) {
             return new RestaurantV300(controlBlock, name, lineNumber);
         } else {
-            throw new MemberDataException("Control block version " + controlBlock.getVersion()
-                    + " is not supported for restaurant creation");
+            throw new MemberDataException(MessageFormat.format(ControlBlock.UNSUPPORTED_VERSION_FOR,
+                    controlBlock.getVersion(), "restaurant creation."));
         }
     }
 

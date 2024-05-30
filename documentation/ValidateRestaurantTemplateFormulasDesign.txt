@@ -1,0 +1,74 @@
+﻿DocVersion: V1.4
+Last Updated: 5/30/2024
+        Validate Restaurant Template Formulas Design
+Version number: 1.4
+Author: David Stone, Cameron Thouati
+
+
+Requirements addressed from Validate Restaurant Template Formulas Requirements:
+* REQ-VRT-001-1 Validate formulas in OneKitchen Restaurant Template
+* REQ-VRT-001-2 Validate formulas in regular Restaurant Template
+* REQ-VRT-001-3 Error reporting
+
+
+Background:
+
+
+        The software checks regularly (currently every 80 seconds)
+        for restaurant template updates posted to these topics on go.helpberkeley.org:
+* Post Restaurant Template for Driver Messages
+   * https://go.helpberkeley.org/t/post-restaurant-template-for-driver-messages/1860/
+* Post Restaurant Template for OneKitchen Driver Messages
+   * https://go.helpberkeley.org/t/post-restaurant-template-for-onekitchen-driver-messages/6548/
+
+
+
+
+        The first line of a post must have only the date for the completed
+        daily orders in the form YYYY/MM/DD
+
+
+        Followed on another line by the uploaded spreadsheet. The software
+        validates the date and the restaurant template data and responds
+        either with a status message indicating success or the reason
+        for failure.
+
+
+        Lines other than the date and upload link are ignored, and may
+        be added for documentation purposes
+
+
+        When a new template is seen, the software checks that it
+        is well formed and parses correctly, and if so, stores it
+        in a SoftwareStore topic for use in workflow request processing.
+        A success message is posted as a reply on the request thread.
+        Note that the SoftwareStore category is meant to be private to
+        the software.
+
+
+        If the template has problems, it is rejected and the errors are
+        reported as a reply in the request thread.
+
+
+Formula validations:
+
+
+Control block lines that are to be ignored contain “Comment” (case-insensitive) in the Name column. A new indicator - “Formula” (case-insensitive) - will be used in the Name column for all rows that contain a formula. 
+
+
+The presence of "Formula" indicators is generally optional, but is required for templates posted to the following threads:
+* https://go.helpberkeley.org/t/post-restaurant-template-for-driver-messages/1860/
+* https://go.helpberkeley.org/t/post-restaurant-template-for-onekitchen-driver-messages/6548/
+If the "Formula" indicator is missing from templates posted to the above threads, an error will be reported as a reply to the thread with the text “No Formula rows found within the Control Block.  At least one valid Formula row is required.”
+
+
+Rows marked by the "Formula" indicator must contain at least one value beginning with ‘= or an error will be reported as a reply to the post thread: "Invalid or missing Formula value found at line N. Formula values must begin with '= or they will not import/export correctly."
+
+
+Template version number:
+
+
+The new OneKitchen Restaurant templates will have version number 3-0-2, and the formula validation feature will be backwards compatible with template versions 3-0-0 and above.
+
+
+The new regular Restaurant templates will have version number 2-0-2, and the formula validation feature will be backwards compatible with template versions 2-0-0 and above.

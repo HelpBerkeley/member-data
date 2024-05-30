@@ -69,7 +69,6 @@ public class WorkflowBeanV300 implements WorkflowBean {
     public WorkflowBeanV300() {
 
     }
-    // TODO make version accurate - will return 3-0-0 even if version is 301/302
     public String getVersion() {
         return Constants.CONTROL_BLOCK_VERSION_300;
     }

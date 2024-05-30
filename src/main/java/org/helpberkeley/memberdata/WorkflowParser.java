@@ -61,8 +61,8 @@ public abstract class WorkflowParser {
         } else if (controlBlock.versionIsCompatible(Constants.CONTROL_BLOCK_VERSION_300)) {
             workflowParser = new WorkflowParserV300(csvData);
         } else {
-            throw new MemberDataException(
-                    "Control block version " + controlBlock.getVersion() + " is not supported.\n");
+            throw new MemberDataException(MessageFormat.format(
+                    ControlBlock.UNSUPPORTED_VERSION_GENERIC, controlBlock.getVersion()));
         }
 
         workflowParser.globalRestaurants = globalRestaurants;

@@ -114,6 +114,6 @@ public class RestaurantTemplateTest extends RestaurantTemplateTestBase {
         String templateData = readResourceFile("restaurant-template-v1.csv");
         Throwable thrown = catchThrowable(() -> RestaurantTemplateParser.create(templateData));
         assertThat(thrown).isInstanceOf(MemberDataException.class);
-        assertThat(thrown).hasMessage("Control block version 1 is not supported for restaurant templates");
+        assertThat(thrown).hasMessageContaining("Control block version 1 is not supported for restaurant templates");
     }
 }

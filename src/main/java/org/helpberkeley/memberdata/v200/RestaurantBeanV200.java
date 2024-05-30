@@ -27,6 +27,8 @@ import org.helpberkeley.memberdata.Constants;
 import org.helpberkeley.memberdata.MemberDataException;
 import org.helpberkeley.memberdata.RestaurantBean;
 
+import java.util.List;
+
 public class RestaurantBeanV200 implements RestaurantBean {
 
     @CsvBindByName(column = Constants.WORKFLOW_ADDRESS_COLUMN)
@@ -221,9 +223,9 @@ public class RestaurantBeanV200 implements RestaurantBean {
 
     // Utility accessors
 
-    public String[] getFormulas() {
-        return new String[]{getPhone(), getAltPhone(), getNeighborhood(), getCity(), getAddress(),
-                getCondo(), getDetails()};
+    public List<String> getFormulas() {
+        return List.of(getPhone(), getAltPhone(), getNeighborhood(), getCity(), getAddress(),
+                getCondo(), getDetails());
     }
 
     public boolean isEmpty() {
