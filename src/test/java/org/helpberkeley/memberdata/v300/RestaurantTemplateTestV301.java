@@ -22,15 +22,20 @@
  */
 package org.helpberkeley.memberdata.v300;
 
-public class ControlBlockV302Test extends ControlBlockTest {
+import org.helpberkeley.memberdata.RestaurantTemplateParser;
+import org.junit.Test;
 
-    public static final String CONTROL_BLOCK_VERSION_ROW = "FALSE,FALSE,,Version ,,,,3-0-2,,,,,,,,,,\n";
-
-    public ControlBlockV302Test() {
-    }
+public class RestaurantTemplateTestV301 extends RestaurantTemplateTest {
 
     @Override
-    public String getVersionRow() {
-        return CONTROL_BLOCK_VERSION_ROW;
+    public String getRestaurantTemplate() {
+        return readResourceFile("restaurant-template-v301.csv");
+    }
+
+    @Test
+    public void testTemplateValidation() {
+        String template = readResourceFile("restaurant-template-v301.csv");
+        RestaurantTemplateParser parser = RestaurantTemplateParser.create(template);
+        parser.restaurants();
     }
 }

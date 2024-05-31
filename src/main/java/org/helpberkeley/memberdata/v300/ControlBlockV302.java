@@ -20,17 +20,19 @@
  * SOFTWARE.
  *
  */
+
 package org.helpberkeley.memberdata.v300;
 
-public class ControlBlockV302Test extends ControlBlockTest {
+import org.helpberkeley.memberdata.Constants;
 
-    public static final String CONTROL_BLOCK_VERSION_ROW = "FALSE,FALSE,,Version ,,,,3-0-2,,,,,,,,,,\n";
+public class ControlBlockV302 extends ControlBlockV300 {
 
-    public ControlBlockV302Test() {
+    public ControlBlockV302(String header) {
+        super(header);
     }
 
     @Override
-    public String getVersionRow() {
-        return CONTROL_BLOCK_VERSION_ROW;
+    public String getVersion() {
+        return Constants.CONTROL_BLOCK_VERSION_302;
     }
 }

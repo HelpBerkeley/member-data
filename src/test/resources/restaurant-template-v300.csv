@@ -43,7 +43,7 @@ FALSE,FALSE,Comment,"Below are helpful formulas that you may need to complete th
 FALSE,FALSE,Comment,,,,,,,,,,,,,,,
 FALSE,FALSE,Comment,(A) link to our Routing Neighborhoods,,,https://www.google.com/maps/d/u/0/edit?hl=en&mid=1gBuUZo9paTY3p_O6BzgKVUgmsCyfOaKb,,,,,,,,,,,
 FALSE,FALSE,Comment,,,,,,,,,,,,,,,
-FALSE,FALSE,Comment,(B) regular vlookup formula (take off leading '),,,"=VLOOKUP(D36, vlookup!$D$2:$K$1800, 4, false)",,,,,,,,,,,
+FALSE,FALSE,Formula,(B) regular vlookup formula (take off leading '),,,"=VLOOKUP(D36, vlookup!$D$2:$K$1800, 4, false)",,,,,,,,,,,
 FALSE,FALSE,Comment,The following few lines focus on Free run: the next line has the vlookup formulas to extract values between E-F and H-J columns,,,,,,,,,,,,,,
 FALSE,FALSE,Comment,"you need to (a) move the User Name column D to the left by one, (b) apply the vlookup for E-F and H-J, adjusting the line of reference and the lookup range,",,,,,,,,,,,,,,
 FALSE,FALSE,Comment,"(c), apply the vlookup for the Name column and adjust it, then (e) paste all lines by value to remove the conditional generation, then (f) move the User Name column back.",,,,,,,,,,,,,,

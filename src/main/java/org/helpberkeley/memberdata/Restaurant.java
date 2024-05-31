@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-2021. helpberkeley.org
+ * Copyright (c) 2020-2024. helpberkeley.org
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,6 +25,7 @@ package org.helpberkeley.memberdata;
 import org.helpberkeley.memberdata.v200.RestaurantV200;
 import org.helpberkeley.memberdata.v300.RestaurantV300;
 
+import java.text.MessageFormat;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -47,14 +48,13 @@ public abstract class Restaurant implements ItineraryStop {
     }
 
     public static Restaurant createRestaurant(ControlBlock controlBlock, String name, int lineNumber) {
-        switch (controlBlock.getVersion()) {
-            case Constants.CONTROL_BLOCK_VERSION_200:
-                return new RestaurantV200(controlBlock, name, lineNumber);
-            case Constants.CONTROL_BLOCK_VERSION_300:
-                return new RestaurantV300(controlBlock, name, lineNumber);
-            default:
-                throw new MemberDataException("Control block version " + controlBlock.getVersion()
-                        + " is not supported for restaurant creation");
+        if (controlBlock.versionIsCompatible(Constants.CONTROL_BLOCK_VERSION_200)) {
+            return new RestaurantV200(controlBlock, name, lineNumber);
+        } else if (controlBlock.versionIsCompatible(Constants.CONTROL_BLOCK_VERSION_300)) {
+            return new RestaurantV300(controlBlock, name, lineNumber);
+        } else {
+            throw new MemberDataException(MessageFormat.format(ControlBlock.UNSUPPORTED_VERSION_FOR,
+                    controlBlock.getVersion(), "restaurant creation."));
         }
     }
 

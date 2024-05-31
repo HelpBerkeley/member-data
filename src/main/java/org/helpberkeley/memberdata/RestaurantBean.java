@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021. helpberkeley.org
+ * Copyright (c) 2021-2024. helpberkeley.org
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,9 +22,15 @@
  */
 package org.helpberkeley.memberdata;
 
+import java.util.List;
+
 public interface RestaurantBean {
     String getVersion();
 
+    String getAddress();
+    String getNeighborhood();
+    String getAltPhone();
+    String getPhone();
     String getConsumer();
     String getDriver();
     String getName();
@@ -40,6 +46,7 @@ public interface RestaurantBean {
     String getControlBlockKey();
     String getControlBlockValue();
     String getRoute();
+    List<String> getFormulas();
     boolean isEmpty();
     String routeColumn();
     String getActive();

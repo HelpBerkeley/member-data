@@ -134,7 +134,7 @@ public class DriverPostTest extends org.helpberkeley.memberdata.DriverPostTest {
 
     @Test
     public void multiDriverMessageTest() {
-        String routedDeliveries = readResourceFile("routed-deliveries-v200.csv");
+        String routedDeliveries = readResourceFile(getRoutedDeliveriesFileName());
         DriverPostFormat driverPostFormat =
                 DriverPostFormat.create(createApiSimulator(), users, routedDeliveries);
 
@@ -215,7 +215,7 @@ public class DriverPostTest extends org.helpberkeley.memberdata.DriverPostTest {
 
     @Test
     public void generateGroupInstructionsNoSplitsPostTest() {
-        String routedDeliveries = readResourceFile("routed-deliveries-v200.csv");
+        String routedDeliveries = readResourceFile(getRoutedDeliveriesFileName());
         DriverPostFormat driverPostFormat =
                 DriverPostFormat.create(createApiSimulator(), users, routedDeliveries);
 
@@ -241,7 +241,7 @@ public class DriverPostTest extends org.helpberkeley.memberdata.DriverPostTest {
 
     @Test
     public void generateBackupDriverPostTest() {
-        String routedDeliveries = readResourceFile("routed-deliveries-v200.csv");
+        String routedDeliveries = readResourceFile(getRoutedDeliveriesFileName());
         DriverPostFormat driverPostFormat =
                 DriverPostFormat.create(createApiSimulator(), users, routedDeliveries);
 

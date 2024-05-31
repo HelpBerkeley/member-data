@@ -50,7 +50,7 @@ public interface WorkflowBean {
 
     default String unsupported(String columnName) {
         throw new MemberDataException("Column heading \""
-                + columnName + "\" is not supported in control block version " + getVersion());
+                + columnName + "\" is not supported in control block version " + getVersion() + " series.");
     }
 
 }

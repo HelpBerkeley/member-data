@@ -51,23 +51,18 @@ public abstract class WorkflowParser {
     public static WorkflowParser create(Map<String, Restaurant> globalRestaurants, String csvData) {
 
         ControlBlock controlBlock = ControlBlock.create(csvData);
+        String version = controlBlock.getVersion();
         WorkflowParser workflowParser;
 
-        switch (controlBlock.getVersion()) {
-            case Constants.CONTROL_BLOCK_VERSION_UNKNOWN:
-                throw new MemberDataException("Control block not found");
-            case Constants.CONTROL_BLOCK_VERSION_200:
-                workflowParser = new WorkflowParserV200(csvData);
-                break;
-            case Constants.CONTROL_BLOCK_VERSION_300:
-            case Constants.CONTROL_BLOCK_VERSION_301:
-            case Constants.CONTROL_BLOCK_VERSION_302:
-                workflowParser = new WorkflowParserV300(csvData);
-                break;
-            case Constants.CONTROL_BLOCK_VERSION_1:
-            default:
-                throw new MemberDataException(
-                        "Control block version " + controlBlock.getVersion() + " is not supported.\n");
+        if (version.equals(Constants.CONTROL_BLOCK_VERSION_UNKNOWN)) {
+            throw new MemberDataException("Control block not found");
+        } else if (controlBlock.versionIsCompatible(Constants.CONTROL_BLOCK_VERSION_200)) {
+            workflowParser = new WorkflowParserV200(csvData);
+        } else if (controlBlock.versionIsCompatible(Constants.CONTROL_BLOCK_VERSION_300)) {
+            workflowParser = new WorkflowParserV300(csvData);
+        } else {
+            throw new MemberDataException(MessageFormat.format(
+                    ControlBlock.UNSUPPORTED_VERSION_GENERIC, version));
         }
 
         workflowParser.globalRestaurants = globalRestaurants;
@@ -258,6 +253,7 @@ public abstract class WorkflowParser {
         String directive = bean.getControlBlockDirective();
 
         switch (directive) {
+            case Constants.CONTROL_BLOCK_FORMULA:
             case "":
             case Constants.CONTROL_BLOCK_COMMENT:
             case Constants.CONTROL_BLOCK_END:
@@ -276,7 +272,7 @@ public abstract class WorkflowParser {
 
         String directive = bean.getControlBlockDirective();
 
-        if (directive.equals(Constants.CONTROL_BLOCK_COMMENT)) {
+        if (directive.equals(Constants.CONTROL_BLOCK_COMMENT) || directive.equals(Constants.CONTROL_BLOCK_FORMULA)) {
             return true;
         }
 

@@ -23,7 +23,10 @@
 package org.helpberkeley.memberdata;
 
 import org.helpberkeley.memberdata.v200.ControlBlockV200;
+import org.helpberkeley.memberdata.v200.ControlBlockV202;
 import org.helpberkeley.memberdata.v300.ControlBlockV300;
+import org.helpberkeley.memberdata.v300.ControlBlockV301;
+import org.helpberkeley.memberdata.v300.ControlBlockV302;
 
 import java.text.MessageFormat;
 import java.util.*;
@@ -34,6 +37,8 @@ public abstract class ControlBlock {
     static final String ERROR_MISSING_OPS_MANAGER =
             "Control block missing a " + Constants.CONTROL_BLOCK_OPS_MANAGER_USERNAME_ONLY + " entry.\n";
 
+    public static final String UNSUPPORTED_VERSION_GENERIC = "Control block version {0} is not supported.\n";
+    public static final String UNSUPPORTED_VERSION_FOR = "Control block version {0} is not supported for {1}.\n";
     static final String BAD_HEADER_ROW = "Line 1, column names missing.\n";
     static final String MISSING_OR_INVALID_HEADER_ROW
             = "Line 1, header row missing or has a duplicate column name ({0})\n";
@@ -128,13 +133,16 @@ public abstract class ControlBlock {
                 return new ControlBlockV1(header);
             case Constants.CONTROL_BLOCK_VERSION_200:
                 return new ControlBlockV200(header);
+            case Constants.CONTROL_BLOCK_VERSION_202:
+                return new ControlBlockV202(header);
             case Constants.CONTROL_BLOCK_VERSION_300:
-            case Constants.CONTROL_BLOCK_VERSION_301:
-            case Constants.CONTROL_BLOCK_VERSION_302:
                 return new ControlBlockV300(header);
+            case Constants.CONTROL_BLOCK_VERSION_301:
+                return new ControlBlockV301(header);
+            case Constants.CONTROL_BLOCK_VERSION_302:
+                return new ControlBlockV302(header);
             default:
-                throw new MemberDataException(
-                        "Control block version " + version + " is not supported.\n");
+                throw new MemberDataException(MessageFormat.format(UNSUPPORTED_VERSION_GENERIC, version));
         }
     }
 
@@ -669,7 +677,7 @@ public abstract class ControlBlock {
                     continue;
                 }
 
-                if (line.contains(Constants.CONTROL_BLOCK_COMMENT)) {
+                if (line.contains(Constants.CONTROL_BLOCK_COMMENT) || line.contains(Constants.CONTROL_BLOCK_FORMULA)) {
                     continue;
                 }
 

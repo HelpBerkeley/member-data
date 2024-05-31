@@ -52,6 +52,7 @@ public class ControlBlockV200 extends ControlBlock {
     }
     @Override
     public boolean versionIsCompatible(String version) {
-        return getVersion().equals(version);
+        return (version.equals(Constants.CONTROL_BLOCK_VERSION_200)
+                || version.equals(Constants.CONTROL_BLOCK_VERSION_202));
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-2021 helpberkeley.org
+ * Copyright (c) 2020-2024 helpberkeley.org
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,6 +25,7 @@ package org.helpberkeley.memberdata;
 import org.helpberkeley.memberdata.v200.RestaurantV200;
 import org.junit.Test;
 
+import java.text.MessageFormat;
 import java.util.List;
 import java.util.Map;
 
@@ -231,5 +232,26 @@ public class ControlBlockRestaurantTemplateTest extends TestBase {
                         extracting(RestaurantV200::getNoPics).isEqualTo(false);
             }
         }
+    }
+
+    @Test
+    public void missingFormulaRestaurantTest() {
+        String csvData = readResourceFile("restaurant-template-v302-missing-formula.csv");
+
+        Throwable thrown = catchThrowable(() ->
+                RestaurantTemplateParser.create(csvData).restaurants());
+        assertThat(thrown).isInstanceOf(MemberDataException.class);
+        assertThat(thrown).hasMessageContaining(MessageFormat.format(
+                RestaurantTemplateParser.MISSING_FORMULA_VALUE, "51"));
+    }
+
+    @Test
+    public void missingFormulaDirectiveRestaurantTest() {
+        String csvData = readResourceFile("restaurant-template-v302-missing-formula-directive.csv");
+
+        Throwable thrown = catchThrowable(() ->
+                RestaurantTemplateParser.create(csvData).restaurants());
+        assertThat(thrown).isInstanceOf(MemberDataException.class);
+        assertThat(thrown).hasMessageContaining(RestaurantTemplateParser.NO_FORMULA_ROWS_FOUND);
     }
 }
