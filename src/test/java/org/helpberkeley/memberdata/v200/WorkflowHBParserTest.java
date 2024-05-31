@@ -335,14 +335,6 @@ public class WorkflowHBParserTest extends WorkflowHBParserBaseTest {
         assertThat(delivery.getVeggieRations()).isEqualTo("0");
     }
 
-    @Test
-    public void unsupportedV1Test() throws IOException {
-        String filename = changeResourceCBVersion("routed-deliveries-with-control-block.csv", "1");
-        String csvData = Files.readString(Paths.get(filename));
-        Throwable thrown = catchThrowable(() ->
-                DriverPostFormat.create(createApiSimulator(), users, csvData));
-    }
-
     private void auditControlBlock(ControlBlock controlBlock) {
         ((ControlBlockV200) controlBlock).audit(users, restaurants, List.of());
     }
