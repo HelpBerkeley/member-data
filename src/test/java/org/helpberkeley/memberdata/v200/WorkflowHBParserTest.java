@@ -25,6 +25,9 @@ package org.helpberkeley.memberdata.v200;
 import org.helpberkeley.memberdata.*;
 import org.junit.Test;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.text.MessageFormat;
 import java.util.List;
 import java.util.Map;
@@ -330,6 +333,14 @@ public class WorkflowHBParserTest extends WorkflowHBParserBaseTest {
         assertThat(delivery.getUserName()).isEqualTo(DEFAULT_CONSUMER_USER_NAME);
         assertThat(delivery.getNormalRations()).isEqualTo("1");
         assertThat(delivery.getVeggieRations()).isEqualTo("0");
+    }
+
+    @Test
+    public void unsupportedV1Test() throws IOException {
+        String filename = changeResourceCBVersion("routed-deliveries-with-control-block.csv", "1");
+        String csvData = Files.readString(Paths.get(filename));
+        Throwable thrown = catchThrowable(() ->
+                DriverPostFormat.create(createApiSimulator(), users, csvData));
     }
 
     private void auditControlBlock(ControlBlock controlBlock) {

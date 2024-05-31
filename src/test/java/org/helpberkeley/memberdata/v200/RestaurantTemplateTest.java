@@ -25,6 +25,7 @@ package org.helpberkeley.memberdata.v200;
 import org.helpberkeley.memberdata.*;
 import org.junit.Test;
 
+import java.text.MessageFormat;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -114,6 +115,7 @@ public class RestaurantTemplateTest extends RestaurantTemplateTestBase {
         String templateData = readResourceFile("restaurant-template-v1.csv");
         Throwable thrown = catchThrowable(() -> RestaurantTemplateParser.create(templateData));
         assertThat(thrown).isInstanceOf(MemberDataException.class);
-        assertThat(thrown).hasMessageContaining("Control block version 1 is not supported for restaurant templates");
+        assertThat(thrown).hasMessage(MessageFormat.format(
+                ControlBlock.UNSUPPORTED_VERSION_FOR, "1", "restaurant templates."));
     }
 }

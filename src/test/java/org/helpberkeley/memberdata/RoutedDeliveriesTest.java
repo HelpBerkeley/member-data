@@ -25,6 +25,7 @@ package org.helpberkeley.memberdata;
 import org.helpberkeley.memberdata.v200.DeliveryV200;
 import org.helpberkeley.memberdata.v200.RestaurantV200;
 import org.junit.AfterClass;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -42,6 +43,11 @@ public class RoutedDeliveriesTest extends TestBase {
     public RoutedDeliveriesTest() {
         Loader loader = new Loader(createApiSimulator());
         users = new Tables(loader.load()).mapByUserName();
+    }
+
+    @Before
+    public void initialize() throws IOException {
+        cleanupGeneratedFiles();
     }
 
     @AfterClass

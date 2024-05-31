@@ -62,7 +62,7 @@ public abstract class WorkflowParser {
             workflowParser = new WorkflowParserV300(csvData);
         } else {
             throw new MemberDataException(MessageFormat.format(
-                    ControlBlock.UNSUPPORTED_VERSION_GENERIC, controlBlock.getVersion()));
+                    ControlBlock.UNSUPPORTED_VERSION_GENERIC, version));
         }
 
         workflowParser.globalRestaurants = globalRestaurants;
