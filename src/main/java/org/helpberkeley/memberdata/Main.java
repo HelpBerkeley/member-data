@@ -1361,7 +1361,7 @@ public class Main {
                         Constants.CONTROL_BLOCK_VERSION_200));
             }
             // Validate the contents
-            RestaurantTemplateParser.create(restaurantTemplate).restaurants();
+            RestaurantTemplateParser.create(restaurantTemplate).restaurants(true);
 
         } catch (MemberDataException ex) {
             String reason = ex.getCause() != null ? ex.getCause().getMessage() : ex.getMessage();
@@ -1419,7 +1419,7 @@ public class Main {
                         Constants.CONTROL_BLOCK_VERSION_300));
             }
             // Validate the contents
-            RestaurantTemplateParser.create(restaurantTemplate).restaurants();
+            RestaurantTemplateParser.create(restaurantTemplate).restaurants(true);
 
         } catch (MemberDataException ex) {
             String reason = ex.getCause() != null ? ex.getCause().getMessage() : ex.getMessage();

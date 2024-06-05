@@ -51,7 +51,7 @@ public class ControlBlockRestaurantTemplateTest extends TestBase {
     @Test
     public void csvParseErrorTest() {
         final String badCSV = "This is neither poetry nor CSV data.\n1,2,3,4\n";
-        Throwable thrown = catchThrowable(() -> RestaurantTemplateParser.create(badCSV).restaurants());
+        Throwable thrown = catchThrowable(() -> RestaurantTemplateParser.create(badCSV).restaurants(false));
         assertThat(thrown).isInstanceOf(MemberDataException.class);
         assertThat(thrown).hasMessageContaining(RestaurantTemplateParser.TEMPLATE_ERROR);
         assertThat(thrown).hasMessageContaining(ControlBlock.BAD_HEADER_ROW);
@@ -165,7 +165,7 @@ public class ControlBlockRestaurantTemplateTest extends TestBase {
         final String badTemplate = readResourceFile("restaurant-template-missing-name.csv");
 
         Throwable thrown = catchThrowable(()
-                -> RestaurantTemplateParser.create(badTemplate).restaurants());
+                -> RestaurantTemplateParser.create(badTemplate).restaurants(false));
         assertThat(thrown).isInstanceOf(MemberDataException.class);
 
         assertThat(thrown).isInstanceOf(MemberDataException.class);
@@ -180,7 +180,7 @@ public class ControlBlockRestaurantTemplateTest extends TestBase {
         final String badTemplate = readResourceFile("restaurant-template-name-repeated.csv");
 
         Throwable thrown = catchThrowable(()
-                -> RestaurantTemplateParser.create(badTemplate).restaurants());
+                -> RestaurantTemplateParser.create(badTemplate).restaurants(false));
         assertThat(thrown).isInstanceOf(MemberDataException.class);
         assertThat(thrown).hasMessageContaining(RestaurantTemplateParser.TEMPLATE_ERROR);
 
@@ -195,7 +195,7 @@ public class ControlBlockRestaurantTemplateTest extends TestBase {
 
         final String csvData = readResourceFile("restaurant-template-empty-route-row.csv");
 
-        Map<String, Restaurant> restaurants = RestaurantTemplateParser.create(csvData).restaurants();
+        Map<String, Restaurant> restaurants = RestaurantTemplateParser.create(csvData).restaurants(false);
         assertThat(restaurants).hasSize(2);
         assertThat(restaurants).containsKeys("Cafe Raj", "Kim's Cafe");
     }
@@ -206,7 +206,7 @@ public class ControlBlockRestaurantTemplateTest extends TestBase {
         final String csvData = readResourceFile("restaurant-template-missing-route.csv");
 
         Throwable thrown = catchThrowable(() ->
-            RestaurantTemplateParser.create(csvData).restaurants());
+            RestaurantTemplateParser.create(csvData).restaurants(false));
         assertThat(thrown).isInstanceOf(MemberDataException.class);
         assertThat(thrown).hasMessageContaining(RestaurantTemplateParser.TEMPLATE_ERROR);
         assertThat(thrown).hasMessageContaining("missing route name value from column Consumer");
@@ -217,7 +217,7 @@ public class ControlBlockRestaurantTemplateTest extends TestBase {
         final String csvData = readResourceFile("restaurant-template-v200.csv");
         RestaurantTemplateParser parser = RestaurantTemplateParser.create(csvData);
 
-        for (Restaurant restaurant : parser.restaurants().values()) {
+        for (Restaurant restaurant : parser.restaurants(false).values()) {
 
             RestaurantV200 restaurantV200 = (RestaurantV200) restaurant;
 
@@ -239,7 +239,7 @@ public class ControlBlockRestaurantTemplateTest extends TestBase {
         String csvData = readResourceFile("restaurant-template-v302-missing-formula.csv");
 
         Throwable thrown = catchThrowable(() ->
-                RestaurantTemplateParser.create(csvData).restaurants());
+                RestaurantTemplateParser.create(csvData).restaurants(true));
         assertThat(thrown).isInstanceOf(MemberDataException.class);
         assertThat(thrown).hasMessageContaining(MessageFormat.format(
                 RestaurantTemplateParser.MISSING_FORMULA_VALUE, "51"));
@@ -250,7 +250,7 @@ public class ControlBlockRestaurantTemplateTest extends TestBase {
         String csvData = readResourceFile("restaurant-template-v302-missing-formula-directive.csv");
 
         Throwable thrown = catchThrowable(() ->
-                RestaurantTemplateParser.create(csvData).restaurants());
+                RestaurantTemplateParser.create(csvData).restaurants(true));
         assertThat(thrown).isInstanceOf(MemberDataException.class);
         assertThat(thrown).hasMessageContaining(RestaurantTemplateParser.NO_FORMULA_ROWS_FOUND);
     }

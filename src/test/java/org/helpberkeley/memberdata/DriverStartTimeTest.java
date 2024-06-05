@@ -62,7 +62,7 @@ public class DriverStartTimeTest extends TestBase {
     public DriverStartTimeTest() {
         String csvData = readResourceFile("restaurant-template-route-test.csv");
         controlBlock = ControlBlock.create(csvData);
-        restaurants = RestaurantTemplateParser.create(csvData).restaurants();
+        restaurants = RestaurantTemplateParser.create(csvData).restaurants(false);
     }
 
     /**

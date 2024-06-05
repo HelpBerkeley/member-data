@@ -42,7 +42,7 @@ public class ControlBlockTest extends ControlBlockTestBase {
     public ControlBlockTest() {
         RestaurantTemplateParser parser =
                 RestaurantTemplateParser.create(readResourceFile("restaurant-template-v200.csv"));
-        allRestaurants = parser.restaurants();
+        allRestaurants = parser.restaurants(false);
     }
 
     @Override
