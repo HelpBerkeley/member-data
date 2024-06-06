@@ -193,11 +193,12 @@ public abstract class RestaurantTemplateParser {
     }
 
     private void processControlBlock() {
+        String errors = "";
         RestaurantBean bean;
 
         while ((bean = nextRow()) != null) {
 
-            auditControlBlockRow(bean);
+            errors += auditControlBlockRow(bean);
 
             if (isControlBlockEndRow(bean)) {
                 break;
@@ -220,9 +221,13 @@ public abstract class RestaurantTemplateParser {
             throw new MemberDataException(
                     TEMPLATE_ERROR + "\n" + ERROR_MISSING_OR_UNSUPPORTED_VERSION + "\n");
         }
+
+        if (! errors.isEmpty()) {
+            throwTemplateError(errors);
+        }
     }
 
-    private void auditControlBlockRow(RestaurantBean bean) {
+    private String auditControlBlockRow(RestaurantBean bean) {
         String errors = "";
 
         if (! bean.getConsumer().equalsIgnoreCase("false")) {
@@ -251,9 +256,7 @@ public abstract class RestaurantTemplateParser {
                 errors += MessageFormat.format(ControlBlock.ERROR_UNKNOWN_DIRECTIVE, directive, lineNumber);
         }
 
-        if (! errors.isEmpty()) {
-            throwTemplateError(errors);
-        }
+        return errors;
     }
 
     private String auditControlBlockFormula(RestaurantBean bean) {
