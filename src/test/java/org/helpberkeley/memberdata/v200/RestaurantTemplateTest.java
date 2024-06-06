@@ -84,7 +84,8 @@ public class RestaurantTemplateTest extends RestaurantTemplateTestBase {
 
         RestaurantTemplateParser parser = RestaurantTemplateParser.create(csvData);
 
-        Throwable thrown = catchThrowable(parser::restaurants);
+//        Throwable thrown = catchThrowable(parser::restaurants);
+        Throwable thrown = catchThrowable(() -> parser.restaurants());
         assertThat(thrown).isInstanceOf(MemberDataException.class);
         assertThat(thrown).hasMessage(
                 "Restaurant Template Error: missing emoji value from column normal, line number 6");

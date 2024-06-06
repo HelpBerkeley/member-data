@@ -215,10 +215,60 @@ public class MainTest extends TestBase {
     }
 
     @Test
-    public void oneKitchenDriverMessagesV200SheetTest() throws IOException, CsvException {
+    public void oneKitchenDriverMessagesMissingFormulaTest() throws IOException, CsvException {
         String request = readResourceFile(REQUEST_TEMPLATE)
                 .replace("REPLACE_DATE", yesterday())
-                .replaceAll("REPLACE_FILENAME", "routed-deliveries-v200.csv");
+                .replaceAll("REPLACE_FILENAME", "restaurant-template-v302-missing-formula.csv");
+        HttpClientSimulator.setQueryResponseData(
+                Constants.QUERY_GET_CURRENT_VALIDATED_ONE_KITCHEN_RESTAURANT_TEMPLATE, request);
+        String usersFile = findFile(Constants.MEMBERDATA_RAW_FILE, "csv");
+        String[] args = { Options.COMMAND_ONE_KITCHEN_DRIVER_MESSAGES, usersFile };
+        Main.main(args);
+        assertThat(WorkRequestHandler.getLastStatusPost()).isNotNull();
+        assertThat(WorkRequestHandler.getLastStatusPost().raw).contains("Status: Succeeded");
+    }
+
+    @Test
+    public void oneKitchenDriverMessagesMissingFormulaDirectiveTest() throws IOException, CsvException {
+        String request = readResourceFile(REQUEST_TEMPLATE)
+                .replace("REPLACE_DATE", yesterday())
+                .replaceAll("REPLACE_FILENAME", "restaurant-template-v302-missing-formula-directive.csv");
+        HttpClientSimulator.setQueryResponseData(
+                Constants.QUERY_GET_CURRENT_VALIDATED_ONE_KITCHEN_RESTAURANT_TEMPLATE, request);
+        String usersFile = findFile(Constants.MEMBERDATA_RAW_FILE, "csv");
+        String[] args = { Options.COMMAND_ONE_KITCHEN_DRIVER_MESSAGES, usersFile };
+        Main.main(args);
+        assertThat(WorkRequestHandler.getLastStatusPost()).isNotNull();
+        assertThat(WorkRequestHandler.getLastStatusPost().raw).contains("Status: Succeeded");
+    }
+
+    @Test
+    public void oneKitchenDriverMessagesV200SheetTest() throws IOException, CsvException {
+        oneKitchenDriverMessagesWrongSheetTest("routed-deliveries-v200.csv", "2-0-0");
+    }
+
+    @Test
+    public void oneKitchenDriverMessagesV300SheetTest() throws IOException, CsvException {
+        oneKitchenDriverMessagesRightSheetTest("routed-deliveries-v300.csv");
+    }
+
+    private void oneKitchenDriverMessagesRightSheetTest(String filename) throws IOException, CsvException {
+        String request = readResourceFile(REQUEST_TEMPLATE)
+                .replace("REPLACE_DATE", yesterday())
+                .replaceAll("REPLACE_FILENAME", filename);
+        HttpClientSimulator.setQueryResponseData(
+                Constants.QUERY_GET_LAST_REQUEST_ONE_KITCHEN_DRIVER_MESSAGES_REPLY, request);
+        String usersFile = findFile(Constants.MEMBERDATA_RAW_FILE, "csv");
+        String[] args = { Options.COMMAND_ONE_KITCHEN_DRIVER_MESSAGES, usersFile };
+        Main.main(args);
+        assertThat(WorkRequestHandler.getLastStatusPost()).isNotNull();
+        assertThat(WorkRequestHandler.getLastStatusPost().raw).contains("Status: Succeeded");
+    }
+
+    private void oneKitchenDriverMessagesWrongSheetTest(String filename, String version) throws IOException, CsvException {
+        String request = readResourceFile(REQUEST_TEMPLATE)
+                .replace("REPLACE_DATE", yesterday())
+                .replaceAll("REPLACE_FILENAME", filename);
         HttpClientSimulator.setQueryResponseData(
                 Constants.QUERY_GET_LAST_REQUEST_ONE_KITCHEN_DRIVER_MESSAGES_REPLY, request);
         String usersFile = findFile(Constants.MEMBERDATA_RAW_FILE, "csv");
@@ -227,7 +277,7 @@ public class MainTest extends TestBase {
         assertThat(WorkRequestHandler.getLastStatusPost()).isNotNull();
         assertThat(WorkRequestHandler.getLastStatusPost().raw).contains("Status: Fail");
         assertThat(WorkRequestHandler.getLastStatusPost().raw).contains(MessageFormat.format(
-                Main.WRONG_REQUEST_TOPIC, Constants.CONTROL_BLOCK_VERSION_200,
+                Main.WRONG_REQUEST_TOPIC, version,
                 Main.buildTopicURL(Constants.TOPIC_REQUEST_ONE_KITCHEN_DRIVER_MESSAGES),
             Main.buildTopicURL(Constants.TOPIC_REQUEST_DRIVER_MESSAGES)));
     }

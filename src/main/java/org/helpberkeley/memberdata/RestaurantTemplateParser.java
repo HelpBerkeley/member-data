@@ -49,6 +49,8 @@ public abstract class RestaurantTemplateParser {
     private String version = Constants.CONTROL_BLOCK_VERSION_UNKNOWN;
     private final ControlBlock controlBlock;
     private boolean hasFormulaDirective = false;
+    private boolean validateFormulas = false;
+
 
     protected RestaurantTemplateParser(ControlBlock controlBlock, String csvData) {
 
@@ -105,6 +107,11 @@ public abstract class RestaurantTemplateParser {
     protected abstract void auditColumns(String csvData);
     protected abstract List<RestaurantBean> parse(String csvData);
     protected abstract boolean isAddressBlockMarker(RestaurantBean bean);
+
+    public Map<String, Restaurant> restaurantsWithFormulaAudit() {
+        this.validateFormulas = true;
+        return restaurants();
+    }
 
     public Map<String, Restaurant> restaurants() {
         Map<String, Restaurant> restaurants = new HashMap<>();
@@ -201,7 +208,7 @@ public abstract class RestaurantTemplateParser {
             }
         }
 
-        if (! hasFormulaDirective) {
+        if (validateFormulas && (! hasFormulaDirective)) {
             throw new MemberDataException(NO_FORMULA_ROWS_FOUND);
         }
 
@@ -232,7 +239,9 @@ public abstract class RestaurantTemplateParser {
         switch (directive) {
             case Constants.CONTROL_BLOCK_FORMULA:
                 hasFormulaDirective = true;
-                errors += auditControlBlockFormula(bean);
+                if (validateFormulas) {
+                    errors += auditControlBlockFormula(bean);
+                }
                 break;
             case "":
             case Constants.CONTROL_BLOCK_COMMENT:
