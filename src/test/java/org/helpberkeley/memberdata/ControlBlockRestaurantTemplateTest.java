@@ -246,6 +246,27 @@ public class ControlBlockRestaurantTemplateTest extends TestBase {
     }
 
     @Test
+    public void missingAllFormulasRestaurantTest() {
+        String csvData = readResourceFile("restaurant-template-v302-missing-all-formulas.csv");
+
+        Throwable thrown = catchThrowable(() ->
+                RestaurantTemplateParser.create(csvData).restaurantsWithFormulaAudit());
+        assertThat(thrown).isInstanceOf(MemberDataException.class);
+        assertThat(thrown).hasMessageContaining(MessageFormat.format(
+                RestaurantTemplateParser.MISSING_FORMULA_VALUE, "51"));
+        assertThat(thrown).hasMessageContaining(MessageFormat.format(
+                RestaurantTemplateParser.MISSING_FORMULA_VALUE, "45"));
+        assertThat(thrown).hasMessageContaining(MessageFormat.format(
+                RestaurantTemplateParser.MISSING_FORMULA_VALUE, "50"));
+        assertThat(thrown).hasMessageContaining(MessageFormat.format(
+                RestaurantTemplateParser.MISSING_FORMULA_VALUE, "54"));
+        assertThat(thrown).hasMessageContaining(MessageFormat.format(
+                RestaurantTemplateParser.MISSING_FORMULA_VALUE, "55"));
+        assertThat(thrown).hasMessageContaining(MessageFormat.format(
+                RestaurantTemplateParser.MISSING_FORMULA_VALUE, "56"));
+    }
+
+    @Test
     public void missingFormulaDirectiveRestaurantTest() {
         String csvData = readResourceFile("restaurant-template-v302-missing-formula-directive.csv");
 
