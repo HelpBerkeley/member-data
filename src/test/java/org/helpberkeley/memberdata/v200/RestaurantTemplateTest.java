@@ -85,7 +85,7 @@ public class RestaurantTemplateTest extends RestaurantTemplateTestBase {
         RestaurantTemplateParser parser = RestaurantTemplateParser.create(csvData);
 
 //        Throwable thrown = catchThrowable(parser::restaurants);
-        Throwable thrown = catchThrowable(() -> parser.restaurants(false));
+        Throwable thrown = catchThrowable(() -> parser.restaurants());
         assertThat(thrown).isInstanceOf(MemberDataException.class);
         assertThat(thrown).hasMessage(
                 "Restaurant Template Error: missing emoji value from column normal, line number 6");
@@ -96,7 +96,7 @@ public class RestaurantTemplateTest extends RestaurantTemplateTestBase {
         String templateData = readResourceFile("restaurant-template-v200.csv");
         RestaurantTemplateParser parser = RestaurantTemplateParser.create(templateData);
 
-        Map<String, Restaurant> restaurants = parser.restaurants(false);
+        Map<String, Restaurant> restaurants = parser.restaurants();
         assertThat(parser.getVersion()).isEqualTo(Constants.CONTROL_BLOCK_VERSION_200);
         assertThat(restaurants).doesNotContainKey("Kaze Ramen");
     }
@@ -106,7 +106,7 @@ public class RestaurantTemplateTest extends RestaurantTemplateTestBase {
         String templateData = readResourceFile("restaurant-template-turkey.csv");
         RestaurantTemplateParser parser = RestaurantTemplateParser.create(templateData);
 
-        Map<String, Restaurant> restaurants = parser.restaurants(false);
+        Map<String, Restaurant> restaurants = parser.restaurants();
         assertThat(parser.getVersion()).isEqualTo(Constants.CONTROL_BLOCK_VERSION_200);
         assertThat(restaurants).containsKey("Nourish You!");
     }

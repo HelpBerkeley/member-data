@@ -200,7 +200,7 @@ public abstract class DriverPostFormat {
         RestaurantTemplatePost restaurantTemplatePost = HBParser.restaurantTemplatePost(rawPost);
         String restaurantTemplate = apiClient.downloadFile(restaurantTemplatePost.uploadFile.getFileName());
         RestaurantTemplateParser parser = RestaurantTemplateParser.create(restaurantTemplate);
-        restaurants = parser.restaurants(false);
+        restaurants = parser.restaurants();
     }
 
     protected final void loadDriverPostFormat() {

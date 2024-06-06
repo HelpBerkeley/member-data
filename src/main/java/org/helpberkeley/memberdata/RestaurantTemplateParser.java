@@ -107,8 +107,12 @@ public abstract class RestaurantTemplateParser {
     protected abstract List<RestaurantBean> parse(String csvData);
     protected abstract boolean isAddressBlockMarker(RestaurantBean bean);
 
-    public Map<String, Restaurant> restaurants(boolean validateFormulas) {
-        this.validateFormulas = validateFormulas;
+    public Map<String, Restaurant> restaurantsWithFormulaAudit() {
+        this.validateFormulas = true;
+        return restaurants();
+    }
+
+    public Map<String, Restaurant> restaurants() {
         Map<String, Restaurant> restaurants = new HashMap<>();
 
         RestaurantBean bean;

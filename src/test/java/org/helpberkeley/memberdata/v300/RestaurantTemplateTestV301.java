@@ -36,6 +36,6 @@ public class RestaurantTemplateTestV301 extends RestaurantTemplateTest {
     public void testTemplateValidation() {
         String template = readResourceFile("restaurant-template-v301.csv");
         RestaurantTemplateParser parser = RestaurantTemplateParser.create(template);
-        parser.restaurants(false);
+        parser.restaurants();
     }
 }
