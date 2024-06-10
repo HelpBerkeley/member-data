@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2020-2021 helpberkeley.org
+// Copyright (c) 2020-2024 helpberkeley.org
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -238,6 +238,7 @@ public class HttpClientSimulator extends HttpClient {
             case Constants.QUERY_GET_LAST_REPLY_FROM_REQUEST_TOPICS_V20:
             case Constants.QUERY_GET_LAST_REPLY_FROM_REQUEST_TOPICS_V21:
             case Constants.QUERY_GET_LAST_REPLY_FROM_REQUEST_TOPICS_V22:
+            case Constants.QUERY_GET_LAST_REPLY_FROM_REQUEST_TOPICS_V23:
                 dataFile = "last-replies-no-requests.json";
                 break;
             case Constants.QUERY_GET_LAST_ONE_KITCHEN_RESTAURANT_TEMPLATE_REPLY:

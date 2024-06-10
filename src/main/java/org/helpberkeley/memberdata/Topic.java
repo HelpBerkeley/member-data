@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020. helpberkeley.org
+ * Copyright (c) 2020-2024. helpberkeley.org
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,9 +24,9 @@ package org.helpberkeley.memberdata;
 
 public class Topic {
     private final String name;
-    private final int id;
+    private final long id;
 
-    public Topic(final String name, final int id) {
+    public Topic(final String name, final long id) {
         this.name = name;
         this.id = id;
     }
@@ -35,7 +35,12 @@ public class Topic {
         return name;
     }
 
-    public int getId() {
+    public long getId() {
         return id;
+    }
+
+    @Override
+    public String toString() {
+        return id + ": " + name;
     }
 }

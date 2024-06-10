@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-2023. helpberkeley.org
+ * Copyright (c) 2020-2024. helpberkeley.org
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -77,12 +77,12 @@ public class WorkRequestHandler {
         this.query = query;
     }
 
-    WorkRequestHandler(ApiClient apiClient, long topicId, long postNumber, String raw) {
+    WorkRequestHandler(ApiClient apiClient, Topic topic, long postNumber, String raw) {
         this.apiClient = apiClient;
         this.query = null;
 
         // Normalize EOL
-        this.lastReply = new Reply(apiClient, topicId, postNumber, raw.replaceAll("\\r\\n?", "\n"));
+        this.lastReply = new Reply(apiClient, topic, postNumber, raw.replaceAll("\\r\\n?", "\n"));
     }
 
     // Support for end-to-end testing through main()
@@ -119,12 +119,15 @@ public class WorkRequestHandler {
                     "Last post (#" + lastReply.postNumber + ") in " + query.getTopic() + " is empty");
         }
 
+        // Check for for a status reply
         Reply reply = Status.parse(lastReply, lines);
 
+        // If it is not a status reply, parse it as a WorkRequest
         if (reply == null) {
             reply = WorkRequest.parse(lastReply, lines);
         }
 
+        // Fail it is neither.
         if (reply == null) {
            throw new MemberDataException(
                     "Post #" + lastReply.postNumber + " in " + query.getTopic()
@@ -182,39 +185,39 @@ public class WorkRequestHandler {
         // Normalize EOL
         lastReplyRaw = lastReplyRaw.replaceAll("\\r\\n?", "\n");
 
-        return new Reply(apiClient, query.getTopic().getId(), postNumber, lastReplyRaw);
+        return new Reply(apiClient, query.getTopic(), postNumber, lastReplyRaw);
     }
 
     long getTopicId() {
-        long topicId;
+        Topic topic;
 
         if (lastReply != null) {
-            topicId = lastReply.topicId;
+            topic = lastReply.requestTopic;
         } else {
             assert query != null;
             assert query.getTopic() != null;
-            topicId = query.getTopic().getId();
+            topic = query.getTopic();
         }
 
-        return topicId;
+        return topic.getId();
     }
 
     static class Reply {
         final ApiClient apiClient;
-        final long topicId;
+        final Topic requestTopic;
         final long postNumber;
         final String raw;
 
-        Reply(final ApiClient apiClient, long topicId, long postNumber, final String raw) {
+        Reply(final ApiClient apiClient, Topic requestTopic, long postNumber, final String raw) {
             this.apiClient = apiClient;
-            this.topicId = topicId;
+            this.requestTopic = requestTopic;
             this.postNumber = postNumber;
             this.raw = raw;
         }
 
         Reply(Reply reply) {
             this.apiClient = reply.apiClient;
-            this.topicId = reply.topicId;
+            this.requestTopic = reply.requestTopic;
             this.postNumber = reply.postNumber;
             this.raw = reply.raw;
         }
@@ -223,18 +226,17 @@ public class WorkRequestHandler {
     static class WorkRequest extends Reply {
         final String date;
         final UploadFile uploadFile;
-        Long topic;
+        final Topic destinationTopic;
         final String version;
         final boolean disableDateAudit;
         final RequestType requestType;
-        final List<String> otherLines = new ArrayList<>();
 
         WorkRequest(Reply reply, String date, UploadFile uploadFile,
-                    Long topic, String version, boolean disableDateAudit) {
+                    Topic destinationTopic, String version, boolean disableDateAudit) {
             super(reply);
             this.date = date;
             this.uploadFile = uploadFile;
-            this.topic = topic;
+            this.destinationTopic = destinationTopic;
             this.version = version;
             this.disableDateAudit = disableDateAudit;
             this.requestType = RequestType.UPLOAD;
@@ -245,20 +247,16 @@ public class WorkRequestHandler {
             this.date = date;
             this.requestType = requestType;
             this.uploadFile = null;
-            this.topic = topic;
+            this.destinationTopic = reply.requestTopic;
             this.disableDateAudit = false;
             this.version = null;
-        }
-
-        void setTestTopic() {
-            this.topic = Main.STONE_TEST_TOPIC;
         }
 
         RequestType getRequestType() {
             return requestType;
         }
 
-        // Generate a reply to the topic id
+        // Generate a reply to the request topic id
         void postStatus(RequestStatus status, final String statusMessage) {
 
             String timeStamp = ZonedDateTime.now(ZoneId.systemDefault())
@@ -277,8 +275,7 @@ public class WorkRequestHandler {
 
             Post post = new Post();
             post.title = "Status response to post " + postNumber;
-            assert topicId != 0;
-            post.topic_id = topicId;
+            post.topic_id = requestTopic.getId();
             post.raw = rawPost;
             post.createdAt = timeStamp;
 
@@ -294,7 +291,7 @@ public class WorkRequestHandler {
             assert ! lines.isEmpty();
             String dateLine = lines.get(0);
 
-            // Validate date
+            // Work requests begin with a timestamp line of the form: "YYYY/MM/DD"
             String regex = "^202[0-9]/[01][0-9]/[0-3][0-9]$";
 
             Pattern pattern = Pattern.compile(regex);
@@ -305,9 +302,9 @@ public class WorkRequestHandler {
             }
 
             ListIterator<String> iterator = lines.listIterator(1);
-            Long topic = null;
             String version = null;
             boolean disableDateAudit = false;
+            Topic destinationTopic = null;
 
             while (iterator.hasNext()) {
                 String line = iterator.next().trim();
@@ -321,7 +318,7 @@ public class WorkRequestHandler {
                             "Post #" + lastReply.postNumber + " is not a valid request\n"
                                     + TOPIC_DIRECTIVE_NOT_SUPPORTED);
                 } else if (line.equalsIgnoreCase("test topic")) {
-                    topic = Main.STONE_TEST_TOPIC;
+                    destinationTopic = Constants.TOPIC_STONE_TEST_TOPIC;
                 } else if (line.startsWith("Version:")) {
                     version = line.replaceAll("Version:", "").trim();
                 } else if (line.toLowerCase().startsWith(DISABLE_DATE_AUDIT)) {
@@ -332,7 +329,8 @@ public class WorkRequestHandler {
 
                     UploadFile uploadFile = new UploadFile(fileName, shortURL);
 
-                    return new WorkRequest(lastReply, dateLine, uploadFile, topic, version, disableDateAudit);
+                    return new WorkRequest(lastReply, dateLine,
+                            uploadFile, destinationTopic, version, disableDateAudit);
                 } else if (line.equalsIgnoreCase(Constants.ONE_KITCHEN_WORKFLOW)
                     || line.equalsIgnoreCase(Constants.DAILY_WORKFLOW)) {
                     return new WorkRequest(lastReply, dateLine, RequestType.fromString(line));
@@ -348,7 +346,7 @@ public class WorkRequestHandler {
             return "Post: " + postNumber + '\n'
                     + "WorkRequest\n"
                     + "Date: " + date + '\n'
-                    + "Topic: " + topic + '\n'
+                    + "DestinationTopic: " + destinationTopic + '\n'
                     + "Version: " + version + '\n'
                     + "FileName: " + uploadFile.getFileName() + '\n';
         }
@@ -392,23 +390,27 @@ public class WorkRequestHandler {
             assert ! lines.isEmpty();
             String dateLine = lines.get(0);
 
-            // Validate date
+            // Status replies are generated in postStatus() and have
+            // an initial timestamp line of the form: "YYYY/MM/DD HH:mm:SS"
             String regex = "^202[0-9]/[01][0-9]/[0-3][0-9] [012][0-9]:[0-5][0-9]:[0-5][0-9]$";
 
             Pattern pattern = Pattern.compile(regex);
             Matcher matcher = pattern.matcher(dateLine);
 
+            // Skip if it doesn't look like a status reply
             if (! matcher.find()) {
                 return null;
             }
 
-            assert lines.size() > 0;
+            assert !lines.isEmpty();
             String status = lines.get(1);
 
+            // Status replies have a "Status: message" line
             regex = "^Status: ([A-Z][a-z]+)$";
             pattern = Pattern.compile(regex);
             matcher = pattern.matcher(status);
 
+            // Skip if it doesn't look like a status reply
             if (! matcher.find()) {
                 return null;
             }
