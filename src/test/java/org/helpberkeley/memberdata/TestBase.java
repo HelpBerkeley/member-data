@@ -118,7 +118,6 @@ public class TestBase {
             Options.COMMAND_CUSTOMER_CARE_POST,
             Options.COMMAND_FRREG,
             Options.COMMAND_WORK_REQUESTS,
-            Options.COMMAND_TEST_REQUEST,
             Options.COMMAND_ONE_KITCHEN_WORKFLOW,
     };
 
@@ -134,6 +133,7 @@ public class TestBase {
     static final String TEST_SHORT_URL = Constants.UPLOAD_URI_PREFIX + "ab34dezzAndSomethingY.csv";
 
     static final String REQUEST_TEMPLATE = "request-template.json";
+    static final String REQUEST_TEMPLATE_EXTRA = "request-template-extra.json";
 
     protected static void cleanupGeneratedFiles() throws IOException {
         Files.list(Paths.get("."))

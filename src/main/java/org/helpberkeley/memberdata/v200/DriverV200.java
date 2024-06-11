@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021. helpberkeley.org
+ * Copyright (c) 2021-2024. helpberkeley.org
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -65,7 +65,7 @@ public class DriverV200 extends Driver {
 
     private void setStartTime() {
 
-        if (pickups.size() == 0) {
+        if (pickups.isEmpty()) {
             throw new MemberDataException("Driver " + getUserName() + " has no pickups");
         }
 

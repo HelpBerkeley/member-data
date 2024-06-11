@@ -48,11 +48,14 @@ public class MainTest extends TestBase {
         // Fetches files that will be used by the tests.
         String[] args = { Options.COMMAND_FETCH };
         Main.main(args);
+
+        WorkRequestHandler.clearLastStatusPost();
     }
 
     @AfterClass
     public static void cleanup() throws IOException {
         cleanupGeneratedFiles();
+        WorkRequestHandler.clearLastStatusPost();
     }
 
     @Test
@@ -152,8 +155,31 @@ public class MainTest extends TestBase {
         String usersFile = findFile(Constants.MEMBERDATA_RAW_FILE, "csv");
         String[] args = { Options.COMMAND_DRIVER_MESSAGES, usersFile };
         Main.main(args);
-        assertThat(WorkRequestHandler.getLastStatusPost()).isNotNull();
-        assertThat(WorkRequestHandler.getLastStatusPost().raw).contains("Status: Succeeded");
+        Post statusPost = WorkRequestHandler.getLastStatusPost();
+        assertThat(statusPost).isNotNull();
+        assertThat(statusPost.raw).contains("Status: Succeeded");
+        assertThat(statusPost.raw).contains(MessageFormat.format(Main.MESSAGES_POST_TO,
+                Constants.TOPIC_DRIVERS_POST_STAGING.getName(),
+                String.valueOf(Constants.TOPIC_DRIVERS_POST_STAGING.getId())));
+    }
+    @Test
+    public void driverMessagesTestTopicTest() throws IOException, CsvException {
+        String request = readResourceFile(REQUEST_TEMPLATE_EXTRA)
+                .replace("REPLACE_DATE", yesterday())
+                .replace("REPLACE_EXTRA", "Test topic")
+                .replaceAll("REPLACE_FILENAME", "routed-deliveries-v200.csv");
+        HttpClientSimulator.setQueryResponseData(
+                Constants.QUERY_GET_LAST_REQUEST_DRIVER_MESSAGES_REPLY, request);
+        String usersFile = findFile(Constants.MEMBERDATA_RAW_FILE, "csv");
+        String[] args = { Options.COMMAND_DRIVER_MESSAGES, usersFile };
+        Main.main(args);
+        Post statusPost = WorkRequestHandler.getLastStatusPost();
+        assertThat(statusPost).isNotNull();
+        assertThat(statusPost.raw).contains("Status: Succeeded");
+        assertThat(statusPost.raw).contains(MessageFormat.format(Main.MESSAGES_POST_TO,
+                Constants.TOPIC_STONE_TEST_TOPIC.getName(),
+                String.valueOf(Constants.TOPIC_STONE_TEST_TOPIC.getId())));
+        assertThat(statusPost.topic_id).isEqualTo(Constants.TOPIC_REQUEST_DRIVER_MESSAGES.getId());
     }
 
     @Test
@@ -179,12 +205,14 @@ public class MainTest extends TestBase {
         String usersFile = findFile(Constants.MEMBERDATA_RAW_FILE, "csv");
         String[] args = { Options.COMMAND_DRIVER_MESSAGES, usersFile };
         Main.main(args);
-        assertThat(WorkRequestHandler.getLastStatusPost()).isNotNull();
-        assertThat(WorkRequestHandler.getLastStatusPost().raw).contains("Status: Fail");
-        assertThat(WorkRequestHandler.getLastStatusPost().raw).contains(MessageFormat.format(
+        Post statusPost = WorkRequestHandler.getLastStatusPost();
+        assertThat(statusPost).isNotNull();
+        assertThat(statusPost.raw).contains("Status: Fail");
+        assertThat(statusPost.raw).contains(MessageFormat.format(
                 Main.WRONG_REQUEST_TOPIC, version,
                 Main.buildTopicURL(Constants.TOPIC_REQUEST_DRIVER_MESSAGES),
                 Main.buildTopicURL(Constants.TOPIC_REQUEST_ONE_KITCHEN_DRIVER_MESSAGES)));
+        assertThat(statusPost.topic_id).isEqualTo(Constants.TOPIC_REQUEST_DRIVER_MESSAGES.getId());
     }
 
     @Test
@@ -197,12 +225,14 @@ public class MainTest extends TestBase {
         String usersFile = findFile(Constants.MEMBERDATA_RAW_FILE, "csv");
         String[] args = { Options.COMMAND_DRIVER_MESSAGES, usersFile };
         Main.main(args);
-        assertThat(WorkRequestHandler.getLastStatusPost()).isNotNull();
-        assertThat(WorkRequestHandler.getLastStatusPost().raw).contains("Status: Fail");
-        assertThat(WorkRequestHandler.getLastStatusPost().raw).contains(MessageFormat.format(
+        Post statusPost = WorkRequestHandler.getLastStatusPost();
+        assertThat(statusPost).isNotNull();
+        assertThat(statusPost.raw).contains("Status: Fail");
+        assertThat(statusPost.raw).contains(MessageFormat.format(
                 Main.UNSUPPORTED_CONTROL_BLOCK_VERSION, "0",
                 Main.buildTopicURL(Constants.TOPIC_REQUEST_DRIVER_MESSAGES),
                 Constants.CONTROL_BLOCK_VERSION_200));
+        assertThat(statusPost.topic_id).isEqualTo(Constants.TOPIC_REQUEST_DRIVER_MESSAGES.getId());
     }
 
     @Test
@@ -210,12 +240,38 @@ public class MainTest extends TestBase {
         String usersFile = findFile(Constants.MEMBERDATA_RAW_FILE, "csv");
         String[] args = { Options.COMMAND_ONE_KITCHEN_DRIVER_MESSAGES, usersFile };
         Main.main(args);
-        assertThat(WorkRequestHandler.getLastStatusPost()).isNotNull();
-        assertThat(WorkRequestHandler.getLastStatusPost().raw).contains("Status: Succeeded");
+        Post statusPost = WorkRequestHandler.getLastStatusPost();
+        assertThat(statusPost).isNotNull();
+        assertThat(statusPost.raw).contains("Status: Succeeded");
+        assertThat(statusPost.raw).contains(MessageFormat.format(Main.MESSAGES_POST_TO,
+                Constants.TOPIC_DRIVERS_POST_STAGING.getName(),
+                String.valueOf(Constants.TOPIC_DRIVERS_POST_STAGING.getId())));
+    }
+
+    @Test
+    public void oneKitchenDriverMessagesTestTopicTest() throws IOException, CsvException {
+        String request = readResourceFile(REQUEST_TEMPLATE_EXTRA)
+                .replace("REPLACE_DATE", yesterday())
+                .replace("REPLACE_EXTRA", "Test topic")
+                .replaceAll("REPLACE_FILENAME", "routed-deliveries-v300.csv");
+        HttpClientSimulator.setQueryResponseData(
+                Constants.QUERY_GET_LAST_REQUEST_ONE_KITCHEN_DRIVER_MESSAGES_REPLY, request);
+        String usersFile = findFile(Constants.MEMBERDATA_RAW_FILE, "csv");
+        String[] args = { Options.COMMAND_ONE_KITCHEN_DRIVER_MESSAGES, usersFile };
+        Main.main(args);
+        Post statusPost = WorkRequestHandler.getLastStatusPost();
+        assertThat(statusPost).isNotNull();
+        assertThat(statusPost.raw).contains("Status: Succeeded");
+        assertThat(statusPost.raw).contains(MessageFormat.format(Main.MESSAGES_POST_TO,
+                Constants.TOPIC_STONE_TEST_TOPIC.getName(),
+                String.valueOf(Constants.TOPIC_STONE_TEST_TOPIC.getId())));
+        assertThat(statusPost.topic_id).isEqualTo(Constants.TOPIC_REQUEST_ONE_KITCHEN_DRIVER_MESSAGES.getId());
     }
 
     @Test
     public void oneKitchenDriverMessagesMissingFormulaTest() throws IOException, CsvException {
+        // FIX THIS, DS: update this test to send errors in the user request upload file
+        //               see issue: Invalid formula not being detected #14
         String request = readResourceFile(REQUEST_TEMPLATE)
                 .replace("REPLACE_DATE", yesterday())
                 .replaceAll("REPLACE_FILENAME", "restaurant-template-v302-missing-formula.csv");
@@ -224,12 +280,16 @@ public class MainTest extends TestBase {
         String usersFile = findFile(Constants.MEMBERDATA_RAW_FILE, "csv");
         String[] args = { Options.COMMAND_ONE_KITCHEN_DRIVER_MESSAGES, usersFile };
         Main.main(args);
-        assertThat(WorkRequestHandler.getLastStatusPost()).isNotNull();
-        assertThat(WorkRequestHandler.getLastStatusPost().raw).contains("Status: Succeeded");
+        Post statusPost = WorkRequestHandler.getLastStatusPost();
+        assertThat(statusPost).isNotNull();
+        assertThat(statusPost.raw).contains("Status: Succeeded");
+        assertThat(statusPost.topic_id).isEqualTo(Constants.TOPIC_REQUEST_ONE_KITCHEN_DRIVER_MESSAGES.getId());
     }
 
     @Test
     public void oneKitchenDriverMessagesMissingFormulaDirectiveTest() throws IOException, CsvException {
+        // FIX THIS, DS: update this test to send errors in the user request upload file
+        //               see issue: Invalid formula not being detected #14
         String request = readResourceFile(REQUEST_TEMPLATE)
                 .replace("REPLACE_DATE", yesterday())
                 .replaceAll("REPLACE_FILENAME", "restaurant-template-v302-missing-formula-directive.csv");
@@ -238,8 +298,10 @@ public class MainTest extends TestBase {
         String usersFile = findFile(Constants.MEMBERDATA_RAW_FILE, "csv");
         String[] args = { Options.COMMAND_ONE_KITCHEN_DRIVER_MESSAGES, usersFile };
         Main.main(args);
-        assertThat(WorkRequestHandler.getLastStatusPost()).isNotNull();
+        Post statusPost = WorkRequestHandler.getLastStatusPost();
+        assertThat(statusPost).isNotNull();
         assertThat(WorkRequestHandler.getLastStatusPost().raw).contains("Status: Succeeded");
+        assertThat(statusPost.topic_id).isEqualTo(Constants.TOPIC_REQUEST_ONE_KITCHEN_DRIVER_MESSAGES.getId());
     }
 
     @Test
@@ -261,8 +323,14 @@ public class MainTest extends TestBase {
         String usersFile = findFile(Constants.MEMBERDATA_RAW_FILE, "csv");
         String[] args = { Options.COMMAND_ONE_KITCHEN_DRIVER_MESSAGES, usersFile };
         Main.main(args);
-        assertThat(WorkRequestHandler.getLastStatusPost()).isNotNull();
-        assertThat(WorkRequestHandler.getLastStatusPost().raw).contains("Status: Succeeded");
+        Post statusPost = WorkRequestHandler.getLastStatusPost();
+        assertThat(statusPost).isNotNull();
+        assertThat(statusPost.raw).contains("Status: Succeeded");
+        assertThat(statusPost.topic_id).isEqualTo(Constants.TOPIC_REQUEST_ONE_KITCHEN_DRIVER_MESSAGES.getId());
+        assertThat(statusPost.raw).contains(MessageFormat.format(Main.MESSAGES_POST_TO,
+                Constants.TOPIC_DRIVERS_POST_STAGING.getName(),
+                String.valueOf(Constants.TOPIC_DRIVERS_POST_STAGING.getId())));
+        assertThat(statusPost.topic_id).isEqualTo(Constants.TOPIC_REQUEST_ONE_KITCHEN_DRIVER_MESSAGES.getId());
     }
 
     private void oneKitchenDriverMessagesWrongSheetTest(String filename, String version) throws IOException, CsvException {
@@ -274,12 +342,14 @@ public class MainTest extends TestBase {
         String usersFile = findFile(Constants.MEMBERDATA_RAW_FILE, "csv");
         String[] args = { Options.COMMAND_ONE_KITCHEN_DRIVER_MESSAGES, usersFile };
         Main.main(args);
-        assertThat(WorkRequestHandler.getLastStatusPost()).isNotNull();
-        assertThat(WorkRequestHandler.getLastStatusPost().raw).contains("Status: Fail");
-        assertThat(WorkRequestHandler.getLastStatusPost().raw).contains(MessageFormat.format(
+        Post statusPost = WorkRequestHandler.getLastStatusPost();
+        assertThat(statusPost).isNotNull();
+        assertThat(statusPost.raw).contains("Status: Fail");
+        assertThat(statusPost.raw).contains(MessageFormat.format(
                 Main.WRONG_REQUEST_TOPIC, version,
                 Main.buildTopicURL(Constants.TOPIC_REQUEST_ONE_KITCHEN_DRIVER_MESSAGES),
-            Main.buildTopicURL(Constants.TOPIC_REQUEST_DRIVER_MESSAGES)));
+                Main.buildTopicURL(Constants.TOPIC_REQUEST_DRIVER_MESSAGES)));
+        assertThat(statusPost.topic_id).isEqualTo(Constants.TOPIC_REQUEST_ONE_KITCHEN_DRIVER_MESSAGES.getId());
     }
 
     @Test
@@ -292,12 +362,14 @@ public class MainTest extends TestBase {
         String usersFile = findFile(Constants.MEMBERDATA_RAW_FILE, "csv");
         String[] args = { Options.COMMAND_ONE_KITCHEN_DRIVER_MESSAGES, usersFile };
         Main.main(args);
-        assertThat(WorkRequestHandler.getLastStatusPost()).isNotNull();
-        assertThat(WorkRequestHandler.getLastStatusPost().raw).contains("Status: Fail");
-        assertThat(WorkRequestHandler.getLastStatusPost().raw).contains(MessageFormat.format(
+        Post statusPost = WorkRequestHandler.getLastStatusPost();
+        assertThat(statusPost).isNotNull();
+        assertThat(statusPost.raw).contains("Status: Failed");
+        assertThat(statusPost.raw).contains(MessageFormat.format(
                 Main.UNSUPPORTED_CONTROL_BLOCK_VERSION, "0",
                 Main.buildTopicURL(Constants.TOPIC_REQUEST_ONE_KITCHEN_DRIVER_MESSAGES),
                 Constants.CONTROL_BLOCK_VERSION_300));
+        assertThat(statusPost.topic_id).isEqualTo(Constants.TOPIC_REQUEST_ONE_KITCHEN_DRIVER_MESSAGES.getId());
     }
 
     @Test
@@ -307,8 +379,9 @@ public class MainTest extends TestBase {
                 Constants.QUERY_GET_LAST_REQUEST_DRIVER_MESSAGES_REPLY, "last-routed-workflow-status.json");
         String[] args = { Options.COMMAND_DRIVER_MESSAGES, usersFile };
         Main.main(args);
-        assertThat(WorkRequestHandler.getLastStatusPost()).isNotNull();
-        assertThat(WorkRequestHandler.getLastStatusPost().raw).contains("Status: Succeeded");
+        // There should be nothing to do. All topics have
+        // status messages as their last reply.
+        assertThat(WorkRequestHandler.getLastStatusPost()).isNull();
     }
 
     @Test
@@ -345,6 +418,7 @@ public class MainTest extends TestBase {
         Post statusPost = WorkRequestHandler.getLastStatusPost();
         assertThat(statusPost).isNotNull();
         assertThat(statusPost.raw).contains("Status: Succeeded");
+        assertThat(statusPost.topic_id).isEqualTo(Constants.TOPIC_POST_COMPLETED_DAILY_ORDERS.getId());
     }
 
     @Test
@@ -489,10 +563,10 @@ public class MainTest extends TestBase {
         String[] args = { Options.COMMAND_COMPLETED_ONEKITCHEN_ORDERS, usersFile };
         WorkRequestHandler.clearLastStatusPost();
         Main.main(args);
-
         Post statusPost = WorkRequestHandler.getLastStatusPost();
         assertThat(statusPost).isNotNull();
         assertThat(statusPost.raw).contains("Status: Succeeded");
+        assertThat(statusPost.topic_id).isEqualTo(Constants.TOPIC_POST_COMPLETED_ONEKITCHEN_ORDERS.getId());
     }
 
     @Test
@@ -528,10 +602,11 @@ public class MainTest extends TestBase {
         String[] args = { Options.COMMAND_COMPLETED_ONEKITCHEN_ORDERS, usersFile };
         WorkRequestHandler.clearLastStatusPost();
         Main.main(args);
-        assertThat(WorkRequestHandler.getLastStatusPost()).isNotNull();
-        String statusMessage = WorkRequestHandler.getLastStatusPost().raw;
-        assertThat(statusMessage).contains("Status: Failed");
-        assertThat(statusMessage).contains(MessageFormat.format(Main.DATE_IS_IN_THE_FUTURE, tomorrowStr));
+        Post statusPost = WorkRequestHandler.getLastStatusPost();
+        assertThat(statusPost).isNotNull();
+        assertThat(statusPost.raw).contains("Status: Failed");
+        assertThat(statusPost.raw).contains(MessageFormat.format(Main.DATE_IS_IN_THE_FUTURE, tomorrowStr));
+        assertThat(statusPost.topic_id).isEqualTo(Constants.TOPIC_POST_COMPLETED_ONEKITCHEN_ORDERS.getId());
     }
 
     @Test
@@ -569,9 +644,10 @@ public class MainTest extends TestBase {
         String[] args = { Options.COMMAND_COMPLETED_ONEKITCHEN_ORDERS, usersFile };
         WorkRequestHandler.clearLastStatusPost();
         Main.main(args);
-        assertThat(WorkRequestHandler.getLastStatusPost()).isNotNull();
-        String statusMessage = WorkRequestHandler.getLastStatusPost().raw;
-        assertThat(statusMessage).contains("Status: Succeeded");
+        Post statusPost = WorkRequestHandler.getLastStatusPost();
+        assertThat(statusPost).isNotNull();
+        assertThat(statusPost.raw).contains("Status: Succeeded");
+        assertThat(statusPost.topic_id).isEqualTo(Constants.TOPIC_POST_COMPLETED_ONEKITCHEN_ORDERS.getId());
     }
 
     @Test
@@ -603,22 +679,6 @@ public class MainTest extends TestBase {
     public void oneKitchenDriverHistoryTest() throws IOException, CsvException {
         String[] args = { Options.COMMAND_ONEKITCHEN_DRIVER_HISTORY };
         Main.main(args);
-    }
-
-    @Test
-    public void restaurantTemplateTest() throws IOException, CsvException {
-        String[] args = { Options.COMMAND_RESTAURANT_TEMPLATE };
-        Main.main(args);
-        assertThat(WorkRequestHandler.getLastStatusPost()).isNotNull();
-        assertThat(WorkRequestHandler.getLastStatusPost().raw).contains("Status: Succeeded");
-    }
-
-    @Test
-    public void oneKitchenRestaurantTemplateTest() throws IOException, CsvException {
-        String[] args = { Options.COMMAND_ONE_KITCHEN_RESTAURANT_TEMPLATE };
-        Main.main(args);
-        assertThat(WorkRequestHandler.getLastStatusPost()).isNotNull();
-        assertThat(WorkRequestHandler.getLastStatusPost().raw).contains("Status: Succeeded");
     }
 
     @Test
@@ -663,14 +723,15 @@ public class MainTest extends TestBase {
     }
 
     @Test
-    public void workRequestsBadRequestTest() throws IOException, CsvException {
+    public void workRequestsBadPreviousRequestTest() throws IOException, CsvException {
         HttpClientSimulator.setQueryResponseFile(
                 Constants.QUERY_GET_REQUESTS_LAST_REPLIES, "last-replies-bad-request.json");
         String usersFile = findFile(Constants.MEMBERDATA_RAW_FILE, "csv");
         String[] args = { Options.COMMAND_WORK_REQUESTS, usersFile };
         Main.main(args);
-        assertThat(WorkRequestHandler.getLastStatusPost()).isNotNull();
-        assertThat(WorkRequestHandler.getLastStatusPost().raw).contains("Status: Fail");
+        // There should be nothing to do. All topics have
+        // status messages as their last reply.
+        assertThat(WorkRequestHandler.getLastStatusPost()).isNull();
     }
 
     @Test
@@ -692,13 +753,14 @@ public class MainTest extends TestBase {
         String usersFile = findFile(Constants.MEMBERDATA_RAW_FILE, "csv");
         String[] args = { Options.COMMAND_COMPLETED_ONEKITCHEN_ORDERS, usersFile };
         Main.main(args);
-        System.out.println(WorkRequestHandler.getLastStatusPost().raw);
-        assertThat(WorkRequestHandler.getLastStatusPost()).isNotNull();
-        assertThat(WorkRequestHandler.getLastStatusPost().raw).contains("Status: Fail");
-        assertThat(WorkRequestHandler.getLastStatusPost().raw).contains(MessageFormat.format(
+        Post statusPost = WorkRequestHandler.getLastStatusPost();
+        assertThat(statusPost).isNotNull();
+        assertThat(statusPost.raw).contains("Status: Fail");
+        assertThat(statusPost.raw).contains(MessageFormat.format(
                 Main.WRONG_REQUEST_TOPIC, version,
                 Main.buildTopicURL(Constants.TOPIC_POST_COMPLETED_ONEKITCHEN_ORDERS),
                 Main.buildTopicURL(Constants.TOPIC_POST_COMPLETED_DAILY_ORDERS)));
+        assertThat(statusPost.topic_id).isEqualTo(Constants.TOPIC_POST_COMPLETED_ONEKITCHEN_ORDERS.getId());
     }
 
     @Test
@@ -725,9 +787,10 @@ public class MainTest extends TestBase {
         String usersFile = findFile(Constants.MEMBERDATA_RAW_FILE, "csv");
         String[] args = { Options.COMMAND_COMPLETED_ONEKITCHEN_ORDERS, usersFile };
         Main.main(args);
-        System.out.println(WorkRequestHandler.getLastStatusPost().raw);
-        assertThat(WorkRequestHandler.getLastStatusPost()).isNotNull();
-        assertThat(WorkRequestHandler.getLastStatusPost().raw).contains("Status: Succeeded");
+        Post statusPost = WorkRequestHandler.getLastStatusPost();
+        assertThat(statusPost).isNotNull();
+        assertThat(statusPost.raw).contains("Status: Succeeded");
+        assertThat(statusPost.topic_id).isEqualTo(Constants.TOPIC_POST_COMPLETED_ONEKITCHEN_ORDERS.getId());
     }
 
     @Test
@@ -754,13 +817,14 @@ public class MainTest extends TestBase {
         String usersFile = findFile(Constants.MEMBERDATA_RAW_FILE, "csv");
         String[] args = { Options.COMMAND_COMPLETED_DAILY_ORDERS, usersFile };
         Main.main(args);
-        System.out.println(WorkRequestHandler.getLastStatusPost().raw);
-        assertThat(WorkRequestHandler.getLastStatusPost()).isNotNull();
-        assertThat(WorkRequestHandler.getLastStatusPost().raw).contains("Status: Fail");
-        assertThat(WorkRequestHandler.getLastStatusPost().raw).contains(MessageFormat.format(
+        Post statusPost = WorkRequestHandler.getLastStatusPost();
+        assertThat(statusPost).isNotNull();
+        assertThat(statusPost.raw).contains("Status: Fail");
+        assertThat(statusPost.raw).contains(MessageFormat.format(
                 Main.WRONG_REQUEST_TOPIC, version,
                 Main.buildTopicURL(Constants.TOPIC_POST_COMPLETED_DAILY_ORDERS),
                 Main.buildTopicURL(Constants.TOPIC_POST_COMPLETED_ONEKITCHEN_ORDERS)));
+        assertThat(statusPost.topic_id).isEqualTo(Constants.TOPIC_POST_COMPLETED_DAILY_ORDERS.getId());
     }
 
     @Test
@@ -782,9 +846,10 @@ public class MainTest extends TestBase {
         String usersFile = findFile(Constants.MEMBERDATA_RAW_FILE, "csv");
         String[] args = { Options.COMMAND_COMPLETED_DAILY_ORDERS, usersFile };
         Main.main(args);
-        System.out.println(WorkRequestHandler.getLastStatusPost().raw);
-        assertThat(WorkRequestHandler.getLastStatusPost()).isNotNull();
-        assertThat(WorkRequestHandler.getLastStatusPost().raw).contains("Status: Succeeded");
+        Post statusPost = WorkRequestHandler.getLastStatusPost();
+        assertThat(statusPost).isNotNull();
+        assertThat(statusPost.raw).contains("Status: Succeeded");
+        assertThat(statusPost.topic_id).isEqualTo(Constants.TOPIC_POST_COMPLETED_DAILY_ORDERS.getId());
     }
 
     @Test
@@ -805,13 +870,14 @@ public class MainTest extends TestBase {
                 Constants.QUERY_GET_LAST_ONE_KITCHEN_RESTAURANT_TEMPLATE_REPLY, request);
         String[] args = { Options.COMMAND_ONE_KITCHEN_RESTAURANT_TEMPLATE };
         Main.main(args);
-        System.out.println(WorkRequestHandler.getLastStatusPost().raw);
-        assertThat(WorkRequestHandler.getLastStatusPost()).isNotNull();
-        assertThat(WorkRequestHandler.getLastStatusPost().raw).contains("Status: Fail");
-        assertThat(WorkRequestHandler.getLastStatusPost().raw).contains(MessageFormat.format(
+        Post statusPost = WorkRequestHandler.getLastStatusPost();
+        assertThat(statusPost).isNotNull();
+        assertThat(statusPost.raw).contains("Status: Fail");
+        assertThat(statusPost.raw).contains(MessageFormat.format(
                 Main.WRONG_REQUEST_TOPIC, version,
                 Main.buildTopicURL(Constants.TOPIC_POST_ONE_KITCHEN_RESTAURANT_TEMPLATE),
                 Main.buildTopicURL(Constants.TOPIC_POST_RESTAURANT_TEMPLATE)));
+        assertThat(statusPost.topic_id).isEqualTo(Constants.TOPIC_POST_ONE_KITCHEN_RESTAURANT_TEMPLATE.getId());
     }
 
     @Test
@@ -823,11 +889,12 @@ public class MainTest extends TestBase {
                 Constants.QUERY_GET_LAST_ONE_KITCHEN_RESTAURANT_TEMPLATE_REPLY, request);
         String[] args = { Options.COMMAND_ONE_KITCHEN_RESTAURANT_TEMPLATE };
         Main.main(args);
-        System.out.println(WorkRequestHandler.getLastStatusPost().raw);
-        assertThat(WorkRequestHandler.getLastStatusPost()).isNotNull();
-        assertThat(WorkRequestHandler.getLastStatusPost().raw).contains("Status: Fail");
-        assertThat(WorkRequestHandler.getLastStatusPost().raw).contains(
+        Post statusPost = WorkRequestHandler.getLastStatusPost();
+        assertThat(statusPost).isNotNull();
+        assertThat(statusPost.raw).contains("Status: Fail");
+        assertThat(statusPost.raw).contains(
                 MessageFormat.format(RestaurantTemplateParser.MISSING_FORMULA_VALUE, "51"));
+        assertThat(statusPost.topic_id).isEqualTo(Constants.TOPIC_POST_ONE_KITCHEN_RESTAURANT_TEMPLATE.getId());
     }
 
     @Test
@@ -858,9 +925,10 @@ public class MainTest extends TestBase {
                 Constants.QUERY_GET_LAST_ONE_KITCHEN_RESTAURANT_TEMPLATE_REPLY, request);
         String[] args = { Options.COMMAND_ONE_KITCHEN_RESTAURANT_TEMPLATE };
         Main.main(args);
-        System.out.println(WorkRequestHandler.getLastStatusPost().raw);
-        assertThat(WorkRequestHandler.getLastStatusPost()).isNotNull();
-        assertThat(WorkRequestHandler.getLastStatusPost().raw).contains("Status: Succeeded");
+        Post statusPost = WorkRequestHandler.getLastStatusPost();
+        assertThat(statusPost).isNotNull();
+        assertThat(statusPost.raw).contains("Status: Succeeded");
+        assertThat(statusPost.topic_id).isEqualTo(Constants.TOPIC_POST_ONE_KITCHEN_RESTAURANT_TEMPLATE.getId());
     }
 
     @Test
@@ -886,12 +954,14 @@ public class MainTest extends TestBase {
                 Constants.QUERY_GET_LAST_RESTAURANT_TEMPLATE_REPLY, request);
         String[] args = { Options.COMMAND_RESTAURANT_TEMPLATE };
         Main.main(args);
-        System.out.println(WorkRequestHandler.getLastStatusPost().raw);
-        assertThat(WorkRequestHandler.getLastStatusPost().raw).contains("Status: Fail");
-        assertThat(WorkRequestHandler.getLastStatusPost().raw).contains(MessageFormat.format(
+        Post statusPost = WorkRequestHandler.getLastStatusPost();
+        assertThat(statusPost).isNotNull();
+        assertThat(statusPost.raw).contains("Status: Fail");
+        assertThat(statusPost.raw).contains(MessageFormat.format(
                 Main.WRONG_REQUEST_TOPIC, version,
                 Main.buildTopicURL(Constants.TOPIC_POST_RESTAURANT_TEMPLATE),
                 Main.buildTopicURL(Constants.TOPIC_POST_ONE_KITCHEN_RESTAURANT_TEMPLATE)));
+        assertThat(statusPost.topic_id).isEqualTo(Constants.TOPIC_POST_RESTAURANT_TEMPLATE.getId());
     }
 
     @Test
@@ -912,8 +982,10 @@ public class MainTest extends TestBase {
                 Constants.QUERY_GET_LAST_RESTAURANT_TEMPLATE_REPLY, request);
         String[] args = { Options.COMMAND_RESTAURANT_TEMPLATE };
         Main.main(args);
-        System.out.println(WorkRequestHandler.getLastStatusPost().raw);
-        assertThat(WorkRequestHandler.getLastStatusPost().raw).contains("Status: Succeeded");
+        Post statusPost = WorkRequestHandler.getLastStatusPost();
+        assertThat(statusPost).isNotNull();
+        assertThat(statusPost.raw).contains("Status: Succeeded");
+        assertThat(statusPost.topic_id).isEqualTo(Constants.TOPIC_POST_RESTAURANT_TEMPLATE.getId());
     }
 
     private String findFile(final String prefix, final String suffix) {

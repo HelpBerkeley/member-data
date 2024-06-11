@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-2021. helpberkeley.org
+ * Copyright (c) 2020-2024. helpberkeley.org
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -92,7 +92,7 @@ public class DriverPostFormatV200 extends DriverPostFormat {
         if (! controlBlock.restaurantsAuditDisabled()) {
             // Restaurants with no drivers
             for (Restaurant restaurant : restaurants.values()) {
-                if (restaurant.getDrivers().size() == 0) {
+                if (restaurant.getDrivers().isEmpty()) {
                     summary.append("No drivers going to ").append(restaurant.getName()).append("\n");
                 }
             }

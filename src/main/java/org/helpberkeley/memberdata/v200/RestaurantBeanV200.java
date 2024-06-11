@@ -41,7 +41,7 @@ public class RestaurantBeanV200 implements RestaurantBean {
     private String altPhone;
 
     @CsvBindByName(column = Constants.WORKFLOW_PHONE_COLUMN)
-    private String phone;;
+    private String phone;
 
     @CsvBindByName(column = Constants.WORKFLOW_CONSUMER_COLUMN)
     private String consumer;

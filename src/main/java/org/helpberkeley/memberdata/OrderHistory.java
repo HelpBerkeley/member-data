@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020. helpberkeley.org
+ * Copyright (c) 2020-2024. helpberkeley.org
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -89,7 +89,7 @@ public class OrderHistory {
         SortedMap<String, OrderHistoryData> newPosts = dataPosts.getNewPosts();
 
         // Nothing to merge
-        if (newPosts.size() == 0) {
+        if (newPosts.isEmpty()) {
             return;
         }
 
