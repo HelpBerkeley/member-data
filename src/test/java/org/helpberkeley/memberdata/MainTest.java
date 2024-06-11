@@ -158,9 +158,9 @@ public class MainTest extends TestBase {
         Post statusPost = WorkRequestHandler.getLastStatusPost();
         assertThat(statusPost).isNotNull();
         assertThat(statusPost.raw).contains("Status: Succeeded");
-        assertThat(statusPost.raw).contains(
-                "Messages Posted to [" + Constants.TOPIC_DRIVERS_POST_STAGING.getName() + "]");
-        assertThat(statusPost.topic_id).isEqualTo(Constants.TOPIC_REQUEST_DRIVER_MESSAGES.getId());
+        assertThat(statusPost.raw).contains(MessageFormat.format(Main.MESSAGES_POST_TO,
+                Constants.TOPIC_DRIVERS_POST_STAGING.getName(),
+                String.valueOf(Constants.TOPIC_DRIVERS_POST_STAGING.getId())));
     }
     @Test
     public void driverMessagesTestTopicTest() throws IOException, CsvException {
@@ -176,8 +176,9 @@ public class MainTest extends TestBase {
         Post statusPost = WorkRequestHandler.getLastStatusPost();
         assertThat(statusPost).isNotNull();
         assertThat(statusPost.raw).contains("Status: Succeeded");
-        assertThat(statusPost.raw).contains(
-                "Messages Posted to [" + Constants.TOPIC_STONE_TEST_TOPIC.getName() + "]");
+        assertThat(statusPost.raw).contains(MessageFormat.format(Main.MESSAGES_POST_TO,
+                Constants.TOPIC_STONE_TEST_TOPIC.getName(),
+                String.valueOf(Constants.TOPIC_STONE_TEST_TOPIC.getId())));
         assertThat(statusPost.topic_id).isEqualTo(Constants.TOPIC_REQUEST_DRIVER_MESSAGES.getId());
     }
 
@@ -242,10 +243,9 @@ public class MainTest extends TestBase {
         Post statusPost = WorkRequestHandler.getLastStatusPost();
         assertThat(statusPost).isNotNull();
         assertThat(statusPost.raw).contains("Status: Succeeded");
-        assertThat(statusPost.raw).contains(
-                "Messages Posted to [" + Constants.TOPIC_DRIVERS_POST_STAGING.getName() + "]");
-        assertThat(statusPost.raw).contains(
-                "/" + Constants.TOPIC_DRIVERS_POST_STAGING.getId());
+        assertThat(statusPost.raw).contains(MessageFormat.format(Main.MESSAGES_POST_TO,
+                Constants.TOPIC_DRIVERS_POST_STAGING.getName(),
+                String.valueOf(Constants.TOPIC_DRIVERS_POST_STAGING.getId())));
     }
 
     @Test
@@ -262,10 +262,10 @@ public class MainTest extends TestBase {
         Post statusPost = WorkRequestHandler.getLastStatusPost();
         assertThat(statusPost).isNotNull();
         assertThat(statusPost.raw).contains("Status: Succeeded");
-        assertThat(statusPost.raw).contains(
-                "Messages Posted to [" + Constants.TOPIC_STONE_TEST_TOPIC.getName() + "]");
-        assertThat(statusPost.raw).contains(
-                "/" + Constants.TOPIC_STONE_TEST_TOPIC.getId());
+        assertThat(statusPost.raw).contains(MessageFormat.format(Main.MESSAGES_POST_TO,
+                Constants.TOPIC_STONE_TEST_TOPIC.getName(),
+                String.valueOf(Constants.TOPIC_STONE_TEST_TOPIC.getId())));
+        assertThat(statusPost.topic_id).isEqualTo(Constants.TOPIC_REQUEST_ONE_KITCHEN_DRIVER_MESSAGES.getId());
     }
 
     @Test
@@ -327,10 +327,10 @@ public class MainTest extends TestBase {
         assertThat(statusPost).isNotNull();
         assertThat(statusPost.raw).contains("Status: Succeeded");
         assertThat(statusPost.topic_id).isEqualTo(Constants.TOPIC_REQUEST_ONE_KITCHEN_DRIVER_MESSAGES.getId());
-        assertThat(statusPost.raw).contains(
-                "Messages Posted to [" + Constants.TOPIC_DRIVERS_POST_STAGING.getName() + "]");
-        assertThat(statusPost.raw).contains(
-                "/" + Constants.TOPIC_DRIVERS_POST_STAGING.getId());
+        assertThat(statusPost.raw).contains(MessageFormat.format(Main.MESSAGES_POST_TO,
+                Constants.TOPIC_DRIVERS_POST_STAGING.getName(),
+                String.valueOf(Constants.TOPIC_DRIVERS_POST_STAGING.getId())));
+        assertThat(statusPost.topic_id).isEqualTo(Constants.TOPIC_REQUEST_ONE_KITCHEN_DRIVER_MESSAGES.getId());
     }
 
     private void oneKitchenDriverMessagesWrongSheetTest(String filename, String version) throws IOException, CsvException {
