@@ -893,7 +893,7 @@ public class MainTest extends TestBase {
         assertThat(statusPost).isNotNull();
         assertThat(statusPost.raw).contains("Status: Fail");
         assertThat(statusPost.raw).contains(
-                MessageFormat.format(RestaurantTemplateParser.MISSING_FORMULA_VALUE, "51"));
+                MessageFormat.format(RestaurantTemplateParser.MISSING_FORMULA_VALUE, "52"));
         assertThat(statusPost.topic_id).isEqualTo(Constants.TOPIC_POST_ONE_KITCHEN_RESTAURANT_TEMPLATE.getId());
     }
 

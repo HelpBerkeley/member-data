@@ -242,7 +242,7 @@ public class ControlBlockRestaurantTemplateTest extends TestBase {
                 RestaurantTemplateParser.create(csvData).restaurantsWithFormulaAudit());
         assertThat(thrown).isInstanceOf(MemberDataException.class);
         assertThat(thrown).hasMessageContaining(MessageFormat.format(
-                RestaurantTemplateParser.MISSING_FORMULA_VALUE, "51"));
+                RestaurantTemplateParser.MISSING_FORMULA_VALUE, "52"));
     }
 
     @Test
@@ -253,17 +253,17 @@ public class ControlBlockRestaurantTemplateTest extends TestBase {
                 RestaurantTemplateParser.create(csvData).restaurantsWithFormulaAudit());
         assertThat(thrown).isInstanceOf(MemberDataException.class);
         assertThat(thrown).hasMessageContaining(MessageFormat.format(
+                RestaurantTemplateParser.MISSING_FORMULA_VALUE, "52"));
+        assertThat(thrown).hasMessageContaining(MessageFormat.format(
+                RestaurantTemplateParser.MISSING_FORMULA_VALUE, "46"));
+        assertThat(thrown).hasMessageContaining(MessageFormat.format(
                 RestaurantTemplateParser.MISSING_FORMULA_VALUE, "51"));
-        assertThat(thrown).hasMessageContaining(MessageFormat.format(
-                RestaurantTemplateParser.MISSING_FORMULA_VALUE, "45"));
-        assertThat(thrown).hasMessageContaining(MessageFormat.format(
-                RestaurantTemplateParser.MISSING_FORMULA_VALUE, "50"));
-        assertThat(thrown).hasMessageContaining(MessageFormat.format(
-                RestaurantTemplateParser.MISSING_FORMULA_VALUE, "54"));
         assertThat(thrown).hasMessageContaining(MessageFormat.format(
                 RestaurantTemplateParser.MISSING_FORMULA_VALUE, "55"));
         assertThat(thrown).hasMessageContaining(MessageFormat.format(
                 RestaurantTemplateParser.MISSING_FORMULA_VALUE, "56"));
+        assertThat(thrown).hasMessageContaining(MessageFormat.format(
+                RestaurantTemplateParser.MISSING_FORMULA_VALUE, "57"));
     }
 
     @Test

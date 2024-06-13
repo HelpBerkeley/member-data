@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021. helpberkeley.org
+ * Copyright (c) 2021-2024. helpberkeley.org
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -61,20 +61,9 @@ public class RestaurantTemplateTest extends RestaurantTemplateTestBase {
     }
 
     @Override
-    public int controlBlockEndLineNumber() {
-        return 29;
+    public int zeroOriginControlBlockEndLineNumber() {
+        return 30;
     }
-//,,,,,,,,,,,,,,
-//        FALSE,TRUE,,,,,,,,,,,,,
-//        FALSE,,,,,,,,"1158 Solano Ave, Albany",FALSE,,Cafe Raj,,,
-//,,,,,,,,,,,,,,
-//        FALSE,TRUE,,,,,,,,,,,,,
-//        FALSE,,,,,,,,"1543 Shattuck Ave, Berkeley",FALSE,,Jot Mahal,,,
-//,,,,,,,,,,,,,,
-//,,,,,,,,,,,,,,
-//,,,,,,,,,Pics,,,Emojis,Starting,Closing
-//        Solano Route,,,,,,,,,,,Cafe Raj,:open_umbrella:,5:10 PM,10:00 PM
-//        Shattuck Route,,,,,,,,,,,Jot Mahal,:tractor:,5:10 PM,9:00 PM
 
     @Test
     public void missingEmojiTest() {
@@ -84,11 +73,10 @@ public class RestaurantTemplateTest extends RestaurantTemplateTestBase {
 
         RestaurantTemplateParser parser = RestaurantTemplateParser.create(csvData);
 
-//        Throwable thrown = catchThrowable(parser::restaurants);
-        Throwable thrown = catchThrowable(() -> parser.restaurants());
+        Throwable thrown = catchThrowable(parser::restaurants);
         assertThat(thrown).isInstanceOf(MemberDataException.class);
         assertThat(thrown).hasMessage(
-                "Restaurant Template Error: missing emoji value from column normal, line number 6");
+                "Restaurant Template Error: missing emoji value from column normal, line number 7");
     }
 
     @Test
