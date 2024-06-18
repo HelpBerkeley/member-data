@@ -209,7 +209,7 @@ public class WorkflowHBParserTest extends WorkflowHBParserBaseTest {
         Throwable thrown = catchThrowable(() ->
                 DriverPostFormat.create(createApiSimulator(), users, routedDeliveries));
         assertThat(thrown).isInstanceOf(MemberDataException.class);
-        assertThat(thrown).hasMessageContaining("Duplicate driver \"jbDriver\" at line 34");
+        assertThat(thrown).hasMessageContaining("Duplicate driver \"jbDriver\" at line 22");
     }
 
     @Test

@@ -44,7 +44,9 @@ public abstract class RestaurantTemplateParser {
     static final String DUPLICATE_ROUTE_ERROR = " appears more than once in the route block";
     private static final String ROUTE_MARKER = " Route";
 
-    private int lineNumber = 0;
+    // Keep the line numbers in sync with the restaurant template.
+    // CsvToBeanBuilder swallows the header row and nextRow() pre-increments line number
+    private int lineNumber = 1;
     private final Iterator<RestaurantBean> iterator;
     private String version = Constants.CONTROL_BLOCK_VERSION_UNKNOWN;
     private final ControlBlock controlBlock;

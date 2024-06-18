@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021. helpberkeley.org
+ * Copyright (c) 2021-2024. helpberkeley.org
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -46,8 +46,8 @@ public class RestaurantTemplateTest extends RestaurantTemplateTestBase {
     }
 
     @Override
-    public int controlBlockEndLineNumber() {
-        return 58;
+    public int zeroOriginControlBlockEndLineNumber() {
+        return 59;
     }
 
     @Test
