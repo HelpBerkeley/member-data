@@ -615,7 +615,7 @@ public class Main {
         try {
             reply = requestHandler.getLastReply();
         } catch (MemberDataException ex) {
-            LOGGER.warn("getLastReply failed: " + ex + "\n" + ex.getMessage());
+            LOGGER.warn("getLastReply failed: {}\n{}", ex, ex.getMessage());
             requestHandler.postStatus(WorkRequestHandler.RequestStatus.Failed, ex.getMessage());
             return;
         }
@@ -636,7 +636,7 @@ public class Main {
     private static void doDriverMessages(
             ApiClient apiClient, WorkRequestHandler.WorkRequest request, Map<String, User> users) {
 
-        LOGGER.info("Driver message request found:\n" + request);
+        LOGGER.info("Driver message request found:\n{}", request);
 
         Topic topic = (request.destinationTopic != null) ? request.destinationTopic : Constants.TOPIC_DRIVERS_POST_STAGING;
 
@@ -683,7 +683,7 @@ public class Main {
         try {
             reply = requestHandler.getLastReply();
         } catch (MemberDataException ex) {
-            LOGGER.warn("getLastReply failed: " + ex + "\n" + ex.getMessage());
+            LOGGER.warn("getLastReply failed: {}\n{}", ex, ex.getMessage());
             requestHandler.postStatus(WorkRequestHandler.RequestStatus.Failed, ex.getMessage());
             return;
         }
@@ -965,7 +965,7 @@ public class Main {
         try {
             reply = requestHandler.getLastReply();
         } catch (MemberDataException ex) {
-            LOGGER.warn("getLastReply failed: " + ex + "\n" + ex.getMessage());
+            LOGGER.warn("getLastReply failed: {}\n{}", ex, ex.getMessage());
             requestHandler.postStatus(WorkRequestHandler.RequestStatus.Failed, ex.getMessage());
             return;
         }
@@ -1071,7 +1071,7 @@ public class Main {
         try {
             reply = requestHandler.getLastReply();
         } catch (MemberDataException ex) {
-            LOGGER.warn("getLastReply failed: " + ex + "\n" + ex.getMessage());
+            LOGGER.warn("getLastReply failed: {}\n{}", ex, ex.getMessage());
             requestHandler.postStatus(WorkRequestHandler.RequestStatus.Failed, ex.getMessage());
             return;
         }
@@ -1296,7 +1296,7 @@ public class Main {
         try {
             reply = requestHandler.getLastReply();
         } catch (MemberDataException ex) {
-            LOGGER.warn("getLastReply failed: " + ex + "\n" + ex.getMessage());
+            LOGGER.warn("getLastReply failed: {}\n{}", ex, ex.getMessage());
             requestHandler.postStatus(WorkRequestHandler.RequestStatus.Failed, ex.getMessage());
             return;
         }
@@ -1321,7 +1321,7 @@ public class Main {
         try {
             reply = requestHandler.getLastReply();
         } catch (MemberDataException ex) {
-            LOGGER.warn("getLastReply failed: " + ex + "\n" + ex.getMessage());
+            LOGGER.warn("getLastReply failed: {}\n{}", ex, ex.getMessage());
             requestHandler.postStatus(WorkRequestHandler.RequestStatus.Failed, ex.getMessage());
             return;
         }
@@ -1542,7 +1542,7 @@ public class Main {
             try {
                 reply = requestHandler.getLastReply();
             } catch (MemberDataException ex) {
-                LOGGER.warn("getLastReply failed: " + ex + "\n" + ex.getMessage());
+                LOGGER.warn("getLastReply failed: {}\n{}", ex, ex.getMessage());
                 requestHandler.postStatus(WorkRequestHandler.RequestStatus.Failed, ex.getMessage());
                 continue;
             }

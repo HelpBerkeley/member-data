@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-2021. helpberkeley.org
+ * Copyright (c) 2020-2024. helpberkeley.org
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -149,7 +149,7 @@ public class MessageBlock implements MessageBlockScope {
     void addContinue() {
         // FIX THIS, DS: audit here that there is an enclosing loop?
         //               or do we have to wait until parse is complete?
-        //               we could stil be in the middle of a conditional.
+        //               we could still be in the middle of a conditional.
         getScope().addElement(new MessageBlockContinue());
     }
 

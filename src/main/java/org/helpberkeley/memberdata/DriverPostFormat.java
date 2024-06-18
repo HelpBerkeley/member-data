@@ -663,7 +663,7 @@ public abstract class DriverPostFormat {
     // Convert to (NNN) NNN.NNNN
     protected final String compactPhone(String phone) {
 
-        String compactPhone = phone.replaceAll("[^\\d]", "");
+        String compactPhone = phone.replaceAll("\\D", "");
 
         if ((compactPhone.length() == 11)  && compactPhone.startsWith("1")) {
             compactPhone = compactPhone.substring(1);

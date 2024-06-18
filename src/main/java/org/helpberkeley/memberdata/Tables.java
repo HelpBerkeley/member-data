@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2020-2021 helpberkeley.org
+// Copyright (c) 2020-2024 helpberkeley.org
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -24,7 +24,6 @@ package org.helpberkeley.memberdata;
 import java.time.ZonedDateTime;
 import java.util.*;
 
-import static java.time.temporal.ChronoUnit.DAYS;
 import static java.util.Comparator.reverseOrder;
 
 public class Tables {
@@ -101,7 +100,7 @@ public class Tables {
     List<User> recentlyCreated(int days) {
         List<User> recentMembers = new ArrayList<>();
 
-        ZonedDateTime threeDaysAgo = ZonedDateTime.now().minus(days, DAYS);
+        ZonedDateTime threeDaysAgo = ZonedDateTime.now().minusDays(days);
 
         for (User user : sortByUserName()) {
 

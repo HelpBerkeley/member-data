@@ -85,7 +85,7 @@ public abstract class RestaurantTemplateTestBase extends TestBase {
         }
 
         RestaurantTemplateParser parser = RestaurantTemplateParser.create(restaurantTemplate.toString());
-        Throwable thrown = catchThrowable(() -> parser.restaurants());
+        Throwable thrown = catchThrowable(parser::restaurants);
         assertThat(thrown).isInstanceOf(MemberDataException.class);
         String expectedError = RestaurantTemplateParser.TEMPLATE_ERROR + MessageFormat.format(
                 ControlBlock.ERROR_UNKNOWN_DIRECTIVE, badDirective, zeroOriginControlBlockEndLineNumber());

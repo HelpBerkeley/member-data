@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2020-2021 helpberkeley.org
+// Copyright (c) 2020-2024 helpberkeley.org
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -103,6 +103,7 @@ public class ApiClient {
     private HttpResponse<String> send(HttpRequest request) {
 
         for (int retry = 0; retry < 10; retry++ ) {
+            //noinspection LoggingSimilarMessage
             try {
                 HttpResponse <String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
                 switch (response.statusCode()) {
@@ -298,8 +299,7 @@ public class ApiClient {
                     try {
                         return new FileInputStream(Path.of(fileName).toFile());
                     } catch (FileNotFoundException e) {
-                        e.printStackTrace();
-                        throw new RuntimeException(e);
+                        throw new MemberDataException("upload failed", e);
                     }
                 }, fileName, "text/plain");
 

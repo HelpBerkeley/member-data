@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021. helpberkeley.org
+ * Copyright (c) 2021-2024. helpberkeley.org
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -89,11 +89,11 @@ public class DriverExporterTest extends TestBase {
         String u2Details = "all mimsy were the borogroves";
         String u3Details = "";
 
-        DetailsPost detailsPost = new DetailsPost(u1.getUserName());
+        DetailsPost detailsPost = new DetailsPost();
         detailsPost.setDetails(1, u1Details);
         details.put(u1.getUserName(), detailsPost);
 
-        detailsPost = new DetailsPost(u2.getUserName());
+        detailsPost = new DetailsPost();
         detailsPost.setDetails(2, u2Details);
         details.put(u2.getUserName(), detailsPost);
 
@@ -321,15 +321,15 @@ public class DriverExporterTest extends TestBase {
         String u2Details = "all mimsy were the borogroves";
         String u3Details = "did gyre and gimble in the wabe";
 
-        DetailsPost detailsPost = new DetailsPost(u1.getUserName());
+        DetailsPost detailsPost = new DetailsPost();
         detailsPost.setDetails(1, u1Details);
         details.put(u1.getUserName(), detailsPost);
 
-        detailsPost = new DetailsPost(u2.getUserName());
+        detailsPost = new DetailsPost();
         detailsPost.setDetails(3, u2Details);
         details.put(u2.getUserName(), detailsPost);
 
-        detailsPost = new DetailsPost(u3.getUserName());
+        detailsPost = new DetailsPost();
         detailsPost.setDetails(2, u3Details);
         details.put(u3.getUserName(), detailsPost);
 
@@ -381,11 +381,11 @@ public class DriverExporterTest extends TestBase {
         Map<String, DetailsPost> details = new HashMap<>();
         String u1Details = "twas brillig and the slithy toves";
         String u2Details = "all mimsy were the borogroves";
-        DetailsPost detailsPost = new DetailsPost(u1.getUserName());
+        DetailsPost detailsPost = new DetailsPost();
         detailsPost.setDetails(1, u1Details);
         details.put(u1.getUserName(), detailsPost);
 
-        detailsPost = new DetailsPost(u2.getUserName());
+        detailsPost = new DetailsPost();
         detailsPost.setDetails(3, u2Details);
         details.put(u2.getUserName(), detailsPost);
 
@@ -428,11 +428,11 @@ public class DriverExporterTest extends TestBase {
         Map<String, DetailsPost> details = new HashMap<>();
         String u1Details = "twas brillig and the slithy toves";
         String u2Details = "all mimsy were the borogroves";
-        DetailsPost detailsPost = new DetailsPost(u1.getUserName());
+        DetailsPost detailsPost = new DetailsPost();
         detailsPost.setDetails(1, u1Details);
         details.put(u1.getUserName(), detailsPost);
 
-        detailsPost = new DetailsPost(u2.getUserName());
+        detailsPost = new DetailsPost();
         detailsPost.setDetails(3, u2Details);
         details.put(u2.getUserName(), detailsPost);
 

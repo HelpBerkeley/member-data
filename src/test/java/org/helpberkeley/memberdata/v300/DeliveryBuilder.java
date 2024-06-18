@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2022. helpberkeley.org
+ * Copyright (c) 2021-2024. helpberkeley.org
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -28,7 +28,7 @@ import org.helpberkeley.memberdata.Constants;
 import static org.helpberkeley.memberdata.v300.BuilderConstants.DEFAULT_CONSUMER_NAME;
 import static org.helpberkeley.memberdata.v300.BuilderConstants.DEFAULT_CONSUMER_USER_NAME;
 
-class DeliveryBuilder implements Builder {
+public class DeliveryBuilder implements Builder {
 
     private String isConsumer = Constants.TRUE;
     private String isDriver = Constants.FALSE;
