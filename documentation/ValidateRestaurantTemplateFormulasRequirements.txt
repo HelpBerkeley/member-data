@@ -5,32 +5,34 @@ Last Updated: 5/13/2024
 1. Validate Restaurant Template Formulas [a]
 
 
- Support the ability to validate formulas in regular Restaurant Template and OneKitchen Restaurant Template spreadsheets.
+    Support the ability to validate formulas in regular Restaurant Template and OneKitchen Restaurant Template spreadsheets.
 
 
-        REQ-VRT-001-1 Validate formulas in OneKitchen Restaurant Template
+    REQ-VRT-001-1 Validate formulas in OneKitchen Restaurant Template
 
 
-Provide support for checking and validating the presence of formulas in OneKitchen Restaurant Template spreadsheets posted to Discourse.
+        Provide support for checking and validating the presence of formulas in OneKitchen Restaurant Template spreadsheets posted to Discourse.
 
 
-REQ-VRT-001-2 Validate formulas in regular Restaurant Template
+    REQ-VRT-001-2 Validate formulas in regular Restaurant Template
 
 
-Provide support for checking and validating the presence of formulas in regular Restaurant Template spreadsheets posted to Discourse.
+        Provide support for checking and validating the presence of formulas in regular Restaurant Template spreadsheets posted to Discourse.
 
 
-                REQ-VRT-001-3 Error reporting
+    REQ-VRT-001-3 Error reporting
 
 
-Missing or improperly formatted formulas should report an error with a descriptive message and line number.
+        Missing or improperly formatted formulas should report an error with a descriptive message and line number.
 
 
-[a]Note that we have two types of restaurant templates. The one currently in use is referred to as the restaurant template for one kitchen driver messages.  The older one, but still present and being handled by the backend is called "restaurant template for driver messages"
+    [a] Note that we have two types of restaurant templates. The one currently in use is referred to as the restaurant template
+    for one kitchen driver messages.  The older one, but still present and being handled by the backend is called
+    "restaurant template for driver messages"
 
 
-See:
-https://go.helpberkeley.org/t/post-restaurant-template-for-onekitchen-driver-messages/6548
+    See:
+    https://go.helpberkeley.org/t/post-restaurant-template-for-onekitchen-driver-messages/6548
 
 
-https://go.helpberkeley.org/t/post-restaurant-template-for-driver-messages/1860
+    https://go.helpberkeley.org/t/post-restaurant-template-for-driver-messages/1860

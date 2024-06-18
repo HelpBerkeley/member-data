@@ -3,31 +3,37 @@ Last Updated: 5/1/2024
 1.  Control Block
 
 
-Design details: https://github.com/HelpBerkeley/member-data/blob/master/documentation/ControlBlock
+    Design details: https://github.com/HelpBerkeley/member-data/blob/master/documentation/ControlBlock
 
 
 
 
-1.1 Supported Uses
+    1.1 Supported Uses
 
 
-Post workflow table with control block to one of Request Driver Messages threads on helpberkeley.org -> receive driver messages output on Get Driver Messages thread.
+        Post workflow table with control block to one of Request Driver Messages threads on helpberkeley.org -> receive
+        driver messages output on Get Driver Messages thread.
 
 
 
 
-DES-CB-001-1 HBFreeDeliveries Template - Operations Manager
+        DES-CB-001-1 HBFreeDeliveries Template - Operations Manager
 
 
-Workflow table template should specify: “There are two possible syntaxes---one without a phone number, and one with a phone number (the separator between the name and the number is a specific separator: | ). Examples of each are: 
-OpsManager (UserName) – example
-OpsManager (UserName | Phone) – example” 
+            Workflow table template should specify: “There are two possible syntaxes---one without a phone number,
+            and one with a phone number (the separator between the name and the number is a specific separator: | ).
+            Examples of each are:
+            OpsManager (UserName) – example
+            OpsManager (UserName | Phone) – example”
 
 
-Template default value should read “OpsManager (UserName)” instead of “OpsManager (UserName | Phone)” - to be replaced by user.
+            Template default value should read:
+             “OpsManager (UserName)” instead of “OpsManager (UserName | Phone)” - to be replaced by user.
 
 
-DES-CB-001-2 Operations Manager Macro
+        DES-CB-001-2 Operations Manager Macro
 
 
-“OpsManager (UserName)” macro is used in the Control Block to specify the identity of OpsManager, and their phone number, in the generated driver messages. “OpsManager (UserName | Phone)” and “OpsManager (UserName)” should both work with the same functionality.
+            “OpsManager (UserName)” macro is used in the Control Block to specify the identity of OpsManager, and their
+            phone number, in the generated driver messages. “OpsManager (UserName | Phone)” and “OpsManager (UserName)”
+            should both work with the same functionality.

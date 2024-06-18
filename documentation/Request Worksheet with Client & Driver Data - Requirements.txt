@@ -1,0 +1,41 @@
+﻿DocVersion: V1.3
+Last Updated: 5/10/2024
+Request Worksheet with Client & Driver Data
+
+
+Support the ability to receive and process manual workflow spreadsheet requests from volunteers. 
+
+
+
+
+1. Update Workflow Spreadsheet Requests - Support the ability for a HelpBerkeley volunteer to request updated client/driver data. 
+
+
+        REQ-WFR-001-1 Update Workflow Spreadsheet
+
+
+            Provide support for updating a workflow spreadsheet, updating any driver and client data that is newer on the website.
+
+
+        REQ-WFR-001-2 Descriptive messages for Update Workflow Spreadsheet Requests
+
+
+            Support the use of informative messages to indicate when any data has changed after being updated by the software for a Data Request.
+
+
+        REQ-WFR-001-3 Status reporting
+
+
+            Send status message indicating success or failure.
+
+
+        REQ-WFR-001-4  Error reporting
+
+
+            Upon failure, errors detected should report a descriptive message and line number.
+
+
+        REQ-WFR-001-5 Report updates to spreadsheet
+
+
+            Upon success, the status message will show a list of all updates that were made along with their line numbers..
