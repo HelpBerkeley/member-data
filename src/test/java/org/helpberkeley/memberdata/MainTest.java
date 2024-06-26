@@ -674,6 +674,54 @@ public class MainTest extends TestBase {
     }
 
     @Test
+    public void updatedMemberDataRequestMultipleUpdatesTest() throws IOException, CsvException {
+        String request = readResourceFile(DATA_REQUEST_TEMPLATE)
+                .replace("REPLACE_DATE", yesterday())
+                .replaceAll("REPLACE_FILENAME", "update-member-data-multiple-updates.csv");
+        HttpClientSimulator.setQueryResponseData(
+                Constants.QUERY_GET_REQUESTS_LAST_REPLIES, request);
+        String usersFile = findFile(Constants.MEMBERDATA_RAW_FILE, "csv");
+        String[] args = {Options.COMMAND_WORK_REQUESTS, usersFile};
+        Main.main(args);
+        assertThat(WorkRequestHandler.getLastStatusPost()).isNotNull();
+        System.out.println(WorkRequestHandler.getLastStatusPost().raw);
+        assertThat(WorkRequestHandler.getLastStatusPost().raw).contains("Status: Succeeded");
+        assertThat(WorkRequestHandler.getLastStatusPost().raw).contains(
+                "For user jbDriver, at linenumber 17, the values of the following columns have been updated: [Neighborhood, Condo].");
+        assertThat(WorkRequestHandler.getLastStatusPost().raw).contains(
+                "For user Somebody, at linenumber 19, the values of the following columns have been updated: [Phone #, Phone2 #, Neighborhood, Address, Details].");
+//        assertThat(WorkRequestHandler.getLastStatusPost().raw).contains("Status: Succeeded");
+    }
+
+    @Test
+    public void updatedMemberDataRequestMissingUsersTest() throws IOException, CsvException {
+        String request = readResourceFile(DATA_REQUEST_TEMPLATE)
+                .replace("REPLACE_DATE", yesterday())
+                .replaceAll("REPLACE_FILENAME", "update-member-data-no-matching-users.csv");
+        HttpClientSimulator.setQueryResponseData(
+                Constants.QUERY_GET_REQUESTS_LAST_REPLIES, request);
+        String usersFile = findFile(Constants.MEMBERDATA_RAW_FILE, "csv");
+        String[] args = { Options.COMMAND_WORK_REQUESTS, usersFile };
+        Main.main(args);
+        assertThat(WorkRequestHandler.getLastStatusPost()).isNotNull();
+        assertThat(WorkRequestHandler.getLastStatusPost().raw).contains("Status: Fail");
+        assertThat(WorkRequestHandler.getLastStatusPost().raw).contains(
+                "UserName Cust1 at line 19 does not match any current members, please update to a current member.");
+        assertThat(WorkRequestHandler.getLastStatusPost().raw).contains(
+                "UserName Cust2 at line 20 does not match any current members, please update to a current member.");
+        assertThat(WorkRequestHandler.getLastStatusPost().raw).contains(
+                "UserName Cust3 at line 21 does not match any current members, please update to a current member.");
+        assertThat(WorkRequestHandler.getLastStatusPost().raw).contains(
+                "UserName Cust4 at line 22 does not match any current members, please update to a current member.");
+        assertThat(WorkRequestHandler.getLastStatusPost().raw).contains(
+                "UserName Cust5 at line 23 does not match any current members, please update to a current member.");
+        assertThat(WorkRequestHandler.getLastStatusPost().raw).contains(
+                "UserName Cust6 at line 24 does not match any current members, please update to a current member.");
+        assertThat(WorkRequestHandler.getLastStatusPost().raw).contains(
+                "UserName Cust7 at line 25 does not match any current members, please update to a current member.");
+    }
+
+    @Test
     public void completedOneKitchenV200Test() throws IOException, CsvException {
         completedOneKitchenWrongTopic("routed-deliveries-v200.csv", "2-0-0");
     }

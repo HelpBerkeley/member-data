@@ -134,6 +134,7 @@ public class TestBase {
     static final String TEST_SHORT_URL = Constants.UPLOAD_URI_PREFIX + "ab34dezzAndSomethingY.csv";
 
     static final String REQUEST_TEMPLATE = "request-template.json";
+    static final String DATA_REQUEST_TEMPLATE = "last-replies-data-request-template.json";
 
     protected static void cleanupGeneratedFiles() throws IOException {
         Files.list(Paths.get("."))

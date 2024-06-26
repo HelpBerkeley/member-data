@@ -249,4 +249,10 @@ public class WorkflowBeanV200 implements WorkflowBean {
     public void setOrders(String orders) {
         this.orders = orders;
     }
+
+    public String[] getMemberData() {
+        String[] memberData = {getName(), getUserName(), getPhone(), getAltPhone(), getNeighborhood(), getCity(),
+                getAddress(), getCondo(), getDetails()};
+        return memberData;
+    }
 }

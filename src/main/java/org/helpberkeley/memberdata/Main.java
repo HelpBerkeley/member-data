@@ -706,6 +706,39 @@ public class Main {
         doOneKitchenDriverMessages(apiClient, request, users);
     }
 
+    private static void     doUpdatedMemberData(
+            ApiClient apiClient, WorkRequestHandler.WorkRequest request, Map<String, User> users) throws IOException {
+
+        String json = apiClient.runQuery(Constants.QUERY_GET_DELIVERY_DETAILS);
+        ApiQueryResult apiQueryResult = HBParser.parseQueryResult(json);
+        Map<String, DetailsPost> deliveryDetails = HBParser.deliveryDetails(apiQueryResult);
+
+        String workflowFileName = request.uploadFile.getFileName();
+        String deliveries = apiClient.downloadFile(workflowFileName);
+        request.postStatus(WorkRequestHandler.RequestStatus.Processing, "");
+
+        WorkflowParser parser = WorkflowParser.create(Collections.emptyMap(), deliveries);
+        String[] updatedDataResult = {};
+        try {
+            updatedDataResult = parser.updatedMemberData(users, deliveryDetails);
+        } catch (MemberDataException ex) {
+            LOGGER.warn("updatedMemberData failed: " + ex + "\n" + ex.getMessage());
+            request.postStatus(WorkRequestHandler.RequestStatus.Failed, ex.getMessage());
+            return;
+        }
+        String updatedCSVData = updatedDataResult[0];
+        String warnings = updatedDataResult[1];
+
+        UserExporter exporter = new UserExporter(new ArrayList<>(users.values()));
+        exporter.writeFile(workflowFileName, updatedCSVData);
+        Upload upload = new Upload(apiClient, workflowFileName);
+        String statusMessage = "Spreadsheet with updated member data uploaded: ["
+                + workflowFileName + "|attachment](" + upload.getShortURL() + ")\n"
+                + "\n" + warnings;
+
+        request.postStatus(WorkRequestHandler.RequestStatus.Succeeded, statusMessage);
+    }
+
     private static void doOneKitchenDriverMessages(
             ApiClient apiClient, WorkRequestHandler.WorkRequest request, Map<String, User> users) {
 
@@ -1524,7 +1557,7 @@ public class Main {
         String json = apiClient.runQuery(Constants.QUERY_GET_REQUESTS_LAST_REPLIES);
         ApiQueryResult apiQueryResult = HBParser.parseQueryResult(json);
 
-        assert apiQueryResult.rows.length == 8 : apiQueryResult.rows.length;
+        assert apiQueryResult.rows.length == 9 : apiQueryResult.rows.length;
         Integer postNumberIndex = apiQueryResult.getColumnIndex(Constants.DISCOURSE_COLUMN_POST_NUMBER);
         assert postNumberIndex != null;
         Integer rawIndex = apiQueryResult.getColumnIndex(Constants.DISCOURSE_COLUMN_RAW);
@@ -1576,6 +1609,8 @@ public class Main {
                 doRestaurantTemplate(apiClient, request);
             } else if (topicId == Constants.TOPIC_POST_COMPLETED_ONEKITCHEN_ORDERS.getId()) {
                 doCompletedOneKitchenOrders(apiClient, request, users);
+            } else if (topicId == Constants.TOPIC_REQUEST_DATA.getId()) {
+                doUpdatedMemberData(apiClient, request, users);
             } else {
                 assert topicId == Constants.TOPIC_REQUEST_DRIVER_ROUTES.getId() : topicId;
                 requestHandler.postStatus(WorkRequestHandler.RequestStatus.Failed,

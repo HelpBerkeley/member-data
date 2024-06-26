@@ -289,6 +289,12 @@ public class WorkflowBeanV300 implements WorkflowBean {
         this.typeGrocery = typeGrocery;
     }
 
+    public String[] getMemberData() {
+        String[] memberData = {getName(), getUserName(), getPhone(), getAltPhone(), getNeighborhood(), getCity(),
+                getAddress(), getCondo(), getDetails()};
+        return memberData;
+    }
+
     @Override
     public String getOrders() {
         throw new MemberDataException(
