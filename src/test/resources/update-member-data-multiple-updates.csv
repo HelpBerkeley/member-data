@@ -19,8 +19,8 @@ FALSE,,,,,,,,"1955 Ninth St., Berkeley, CA",FALSE,"Come from Hearst, park alongs
 TRUE,FALSE,Ms. Somebody,Somebody,555-555-1112,111-222-3333,Hills,Berkeley,123 456th Ave,FALSE,,Bauman Meals/Groceries,0,1,noRed,0,0,
 TRUE,FALSE,Cust Name 2,SomebodyElse,555-555-2222,none,Hills,Berkeley,77 77th St,FALSE,,Bauman Meals/Groceries,2,0,,2,0,
 TRUE,FALSE,Cust Name 3,ThirdPerson,555-555-3333,none,Hills,Berkeley,11 11th St,FALSE,,Bauman Meals/Groceries,0,0,,2,0,
-TRUE,FALSE,Cust Name 4,Xyzzy,555-555-4444,none,Hills,Berkeley,44 44th St,FALSE,,Bauman Meals/Groceries,0,1,veggie,0,1,veg
-TRUE,FALSE,Cust Name 5,ZZZ,555-555-5555,none,Hills,Berkeley,55 55th St,TRUE,listed as a condo but,Bauman Meals/Groceries,0,1,noPork,0,0,
+TRUE,FALSE,Cust Name 4,Xyzzy,555-555-4444,none,Hills,Berkeley,1223 Main St.,FALSE,,Bauman Meals/Groceries,0,1,veggie,0,1,veg
+TRUE,FALSE,Cust Name 5,ZZZ,123-456-7890,none,Hills,Berkeley,55 55th St,TRUE,listed as a condo but,Bauman Meals/Groceries,0,1,noPork,0,0,
 TRUE,FALSE,Cust Name 6,JVol,555-555-6666,none,Hills,Berkeley,66 66th St,FALSE,,Bauman Meals/Groceries,0,0,,0,1,custom pick
 TRUE,FALSE,Cust Name 7,MrBackup772,555-555-7777,none,Hills,Berkeley,77 77th St,FALSE,,Bauman Meals/Groceries,0,1,veggie,0,1,custom pick
 FALSE,TRUE,Joe B. Driver,jbDriver,777-777-7777,none,Hills,Berkeley,77 77th Place,,,,,,,,,

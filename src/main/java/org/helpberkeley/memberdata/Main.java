@@ -706,7 +706,7 @@ public class Main {
         doOneKitchenDriverMessages(apiClient, request, users);
     }
 
-    private static void     doUpdatedMemberData(
+    private static void doUpdatedMemberData(
             ApiClient apiClient, WorkRequestHandler.WorkRequest request, Map<String, User> users) throws IOException {
 
         String json = apiClient.runQuery(Constants.QUERY_GET_DELIVERY_DETAILS);

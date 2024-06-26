@@ -128,7 +128,7 @@ public abstract class WorkflowParser {
         String errors = "";
         String warnings = "";
         String[] cols = {"Name", "UserName", "Phone #", "Phone2 #", "Neighborhood", "City", "Address", "Condo", "Details"};
-        UserExporter exporter = new UserExporter(new ArrayList<>(users.values()));
+        UserExporter ex = new UserExporter(new ArrayList<>(users.values()));
 
         while ((bean = nextRow()) != null) {
             if (isMemberRow(bean)) {
@@ -140,15 +140,16 @@ public abstract class WorkflowParser {
                 } else {
                     DetailsPost details = deliveryDetails.get(matchingUser.getUserName());
 
-                    String[] currentMemberData = {matchingUser.getName(), matchingUser.getUserName(), matchingUser.getPhoneNumber(),
-                            matchingUser.getAltPhoneNumber(), matchingUser.getNeighborhood(), matchingUser.getCity(),
-                            matchingUser.getAddress(), matchingUser.isCondo() ? "TRUE" : "FALSE",
-                            details == null ? "" : exporter.escapeCommas(details.getDetails())};
+                    String[] currentMemberData = {ex.escapeCommas(matchingUser.getName()), matchingUser.getUserName(),
+                            matchingUser.getPhoneNumber(), matchingUser.getAltPhoneNumber(),
+                            ex.escapeCommas(matchingUser.getNeighborhood()), ex.escapeCommas(matchingUser.getCity()),
+                            ex.escapeCommas(matchingUser.getAddress()), matchingUser.isCondo() ? "TRUE" : "FALSE",
+                            details == null ? "" : ex.escapeCommas(details.getDetails())};
 
                     //track which columns are updated
                     List<String> updatedCols = new ArrayList<>();
                     for (int i = 0; i < origMemberData.length; i++) {
-                        if (! origMemberData[i].equals(currentMemberData[i])) {
+                        if (! ex.escapeCommas(origMemberData[i]).equals(currentMemberData[i])) {
                             updatedCols.add(cols[i]);
                         }
                     }
@@ -162,8 +163,7 @@ public abstract class WorkflowParser {
             throw new MemberDataException(errors);
         }
 
-        String[] result = {updatedCSVData, warnings};
-        return result;
+        return new String[]{updatedCSVData, warnings};
     }
 
     public List<Driver> drivers() {

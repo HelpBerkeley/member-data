@@ -290,9 +290,8 @@ public class WorkflowBeanV300 implements WorkflowBean {
     }
 
     public String[] getMemberData() {
-        String[] memberData = {getName(), getUserName(), getPhone(), getAltPhone(), getNeighborhood(), getCity(),
+        return new String[]{getName(), getUserName(), getPhone(), getAltPhone(), getNeighborhood(), getCity(),
                 getAddress(), getCondo(), getDetails()};
-        return memberData;
     }
 
     @Override

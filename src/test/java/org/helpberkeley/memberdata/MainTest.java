@@ -32,6 +32,9 @@ import java.nio.file.Paths;
 import java.text.MessageFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -674,6 +677,35 @@ public class MainTest extends TestBase {
     }
 
     @Test
+    public void workflowParserUpdateMemberDataTest() {
+        String deliveries = readResourceFile("update-member-data-multiple-updates.csv");
+        WorkflowParser parser = WorkflowParser.create(Collections.emptyMap(), deliveries);
+        ApiClient apiSim = createApiSimulator();
+        List<User> userList = new Loader(apiSim).load();
+        Map<String, User> users = new Tables(userList).mapByUserName();
+        String json = apiSim.runQuery(Constants.QUERY_GET_DELIVERY_DETAILS);
+        ApiQueryResult apiQueryResult = HBParser.parseQueryResult(json);
+        Map<String, DetailsPost> deliveryDetails = HBParser.deliveryDetails(apiQueryResult);
+        String[] results = parser.updatedMemberData(users,deliveryDetails);
+        String updatedCSVData = results[0];
+        assertThat(updatedCSVData).doesNotContain("Cust Name");
+        assertThat(updatedCSVData).contains(
+                "Ms. Somebody,Somebody,123-456-7890,510-015-5151,Unknown,Berkeley,542 11dy 7th Street,FALSE");
+        assertThat(updatedCSVData).contains(
+                "\"Mr. Somebody, Esq.\",SomebodyElse,123-456-7890,510-015-5151,Unknown,Berkeley,\"542 11dy 7th Street, Apt 3g\",FALSE");
+        assertThat(updatedCSVData).contains(
+                "THE THIRD PERSON,ThirdPerson,123-456-7890,510-222-7777,Unknown,Berkeley,4 Fortieth Blvd,FALSE,\"something, with, a, lot, of commas.\"");
+        assertThat(updatedCSVData).contains(
+                "X Y ZZY,Xyzzy,555-555-5555,123-456-0000,N.BerkHills/Tilden,Berkeley,1223 Main St.,FALSE");
+        assertThat(updatedCSVData).contains(
+                "Zees McZeesy,ZZZ,123-456-7890,none,unknown,Berkeley,3 Place Place Square,TRUE");
+        assertThat(updatedCSVData).contains(
+                "Joseph R. Volunteer,JVol,123-456-7890,none,unknown,Berkeley,47 74th Ave,TRUE");
+        assertThat(updatedCSVData).contains(
+                "Scotty J Backup 772th,MrBackup772,123-456-7890,none,unknown,Berkeley,38 38th Ave,TRUE");
+    }
+
+    @Test
     public void updatedMemberDataRequestMultipleUpdatesTest() throws IOException, CsvException {
         String request = readResourceFile(DATA_REQUEST_TEMPLATE)
                 .replace("REPLACE_DATE", yesterday())
@@ -684,13 +716,27 @@ public class MainTest extends TestBase {
         String[] args = {Options.COMMAND_WORK_REQUESTS, usersFile};
         Main.main(args);
         assertThat(WorkRequestHandler.getLastStatusPost()).isNotNull();
-        System.out.println(WorkRequestHandler.getLastStatusPost().raw);
         assertThat(WorkRequestHandler.getLastStatusPost().raw).contains("Status: Succeeded");
         assertThat(WorkRequestHandler.getLastStatusPost().raw).contains(
                 "For user jbDriver, at linenumber 17, the values of the following columns have been updated: [Neighborhood, Condo].");
         assertThat(WorkRequestHandler.getLastStatusPost().raw).contains(
                 "For user Somebody, at linenumber 19, the values of the following columns have been updated: [Phone #, Phone2 #, Neighborhood, Address, Details].");
-//        assertThat(WorkRequestHandler.getLastStatusPost().raw).contains("Status: Succeeded");
+        assertThat(WorkRequestHandler.getLastStatusPost().raw).contains(
+                "For user SomebodyElse, at linenumber 20, the values of the following columns have been updated: [Name, Phone #, Phone2 #, Neighborhood, Address, Details].");
+        assertThat(WorkRequestHandler.getLastStatusPost().raw).contains(
+                "For user ThirdPerson, at linenumber 21, the values of the following columns have been updated: [Name, Phone #, Phone2 #, Neighborhood, Address, Details].");
+        assertThat(WorkRequestHandler.getLastStatusPost().raw).contains(
+                "For user Xyzzy, at linenumber 22, the values of the following columns have been updated: [Name, Phone #, Phone2 #, Neighborhood].");
+        assertThat(WorkRequestHandler.getLastStatusPost().raw).contains(
+                "For user ZZZ, at linenumber 23, the values of the following columns have been updated: [Name, Neighborhood, Address, Details].");
+        assertThat(WorkRequestHandler.getLastStatusPost().raw).contains(
+                "For user JVol, at linenumber 24, the values of the following columns have been updated: [Name, Phone #, Neighborhood, Address, Condo].");
+        assertThat(WorkRequestHandler.getLastStatusPost().raw).contains(
+                "For user MrBackup772, at linenumber 25, the values of the following columns have been updated: [Name, Phone #, Neighborhood, Address, Condo].");
+        assertThat(WorkRequestHandler.getLastStatusPost().raw).contains(
+                "For user MrBackup772, at linenumber 25, the values of the following columns have been updated: [Name, Phone #, Neighborhood, Address, Condo].");
+        assertThat(WorkRequestHandler.getLastStatusPost().raw).contains(
+                "For user jbDriver, at linenumber 26, the values of the following columns have been updated: [Neighborhood, Condo].");
     }
 
     @Test
