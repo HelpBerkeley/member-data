@@ -706,7 +706,7 @@ public class MainTest extends TestBase {
     }
 
     @Test
-    public void updatedMemberDataRequestMultipleUpdatesTest() throws IOException, CsvException {
+    public void updateMemberDataRequestMultipleUpdatesTest() throws IOException, CsvException {
         String request = readResourceFile(DATA_REQUEST_TEMPLATE)
                 .replace("REPLACE_DATE", yesterday())
                 .replaceAll("REPLACE_FILENAME", "update-member-data-multiple-updates.csv");
@@ -729,7 +729,7 @@ public class MainTest extends TestBase {
     }
 
     @Test
-    public void updatedMemberDataRequestMissingUsersTest() throws IOException, CsvException {
+    public void updateMemberDataRequestMissingUsersTest() throws IOException, CsvException {
         String request = readResourceFile(DATA_REQUEST_TEMPLATE)
                 .replace("REPLACE_DATE", yesterday())
                 .replaceAll("REPLACE_FILENAME", "update-member-data-no-matching-users.csv");
@@ -754,6 +754,22 @@ public class MainTest extends TestBase {
                 "UserName Cust6 at line 24 does not match any current members, please update to a current member.");
         assertThat(WorkRequestHandler.getLastStatusPost().raw).contains(
                 "UserName Cust7 at line 25 does not match any current members, please update to a current member.");
+    }
+
+    @Test
+    public void updateMemberDataDriverIsConsumer() throws IOException, CsvException {
+        String request = readResourceFile(DATA_REQUEST_TEMPLATE)
+                .replace("REPLACE_DATE", yesterday())
+                .replaceAll("REPLACE_FILENAME", "update-member-data-driver-is-consumer.csv");
+        HttpClientSimulator.setQueryResponseData(
+                Constants.QUERY_GET_REQUESTS_LAST_REPLIES, request);
+        String usersFile = findFile(Constants.MEMBERDATA_RAW_FILE, "csv");
+        String[] args = { Options.COMMAND_WORK_REQUESTS, usersFile };
+        Main.main(args);
+        assertThat(WorkRequestHandler.getLastStatusPost()).isNotNull();
+        assertThat(WorkRequestHandler.getLastStatusPost().raw).contains("Status: Fail");
+        assertThat(WorkRequestHandler.getLastStatusPost().raw).contains("Linenumber 17 begins with TRUE TRUE. " +
+                "Is this a driver who is also a consumer? If so, the consumer column must be set to false.");
     }
 
     @Test
