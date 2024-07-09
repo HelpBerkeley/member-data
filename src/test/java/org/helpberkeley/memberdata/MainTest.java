@@ -686,8 +686,8 @@ public class MainTest extends TestBase {
         String json = apiSim.runQuery(Constants.QUERY_GET_DELIVERY_DETAILS);
         ApiQueryResult apiQueryResult = HBParser.parseQueryResult(json);
         Map<String, DetailsPost> deliveryDetails = HBParser.deliveryDetails(apiQueryResult);
-        String[] results = parser.updatedMemberData(users,deliveryDetails);
-        String updatedCSVData = results[0];
+        WorkflowExporter exporter = new WorkflowExporter(parser);
+        String updatedCSVData = exporter.updateMemberData(users, deliveryDetails);
         assertThat(updatedCSVData).doesNotContain("Cust Name");
         assertThat(updatedCSVData).contains(
                 "Ms. Somebody,Somebody,123-456-7890,510-015-5151,Unknown,Berkeley,542 11dy 7th Street,FALSE");
@@ -717,26 +717,15 @@ public class MainTest extends TestBase {
         Main.main(args);
         assertThat(WorkRequestHandler.getLastStatusPost()).isNotNull();
         assertThat(WorkRequestHandler.getLastStatusPost().raw).contains("Status: Succeeded");
-        assertThat(WorkRequestHandler.getLastStatusPost().raw).contains(
-                "For user jbDriver, at linenumber 17, the values of the following columns have been updated: [Neighborhood, Condo].");
-        assertThat(WorkRequestHandler.getLastStatusPost().raw).contains(
-                "For user Somebody, at linenumber 19, the values of the following columns have been updated: [Phone #, Phone2 #, Neighborhood, Address, Details].");
-        assertThat(WorkRequestHandler.getLastStatusPost().raw).contains(
-                "For user SomebodyElse, at linenumber 20, the values of the following columns have been updated: [Name, Phone #, Phone2 #, Neighborhood, Address, Details].");
-        assertThat(WorkRequestHandler.getLastStatusPost().raw).contains(
-                "For user ThirdPerson, at linenumber 21, the values of the following columns have been updated: [Name, Phone #, Phone2 #, Neighborhood, Address, Details].");
-        assertThat(WorkRequestHandler.getLastStatusPost().raw).contains(
-                "For user Xyzzy, at linenumber 22, the values of the following columns have been updated: [Name, Phone #, Phone2 #, Neighborhood].");
-        assertThat(WorkRequestHandler.getLastStatusPost().raw).contains(
-                "For user ZZZ, at linenumber 23, the values of the following columns have been updated: [Name, Neighborhood, Address, Details].");
-        assertThat(WorkRequestHandler.getLastStatusPost().raw).contains(
-                "For user JVol, at linenumber 24, the values of the following columns have been updated: [Name, Phone #, Neighborhood, Address, Condo].");
-        assertThat(WorkRequestHandler.getLastStatusPost().raw).contains(
-                "For user MrBackup772, at linenumber 25, the values of the following columns have been updated: [Name, Phone #, Neighborhood, Address, Condo].");
-        assertThat(WorkRequestHandler.getLastStatusPost().raw).contains(
-                "For user MrBackup772, at linenumber 25, the values of the following columns have been updated: [Name, Phone #, Neighborhood, Address, Condo].");
-        assertThat(WorkRequestHandler.getLastStatusPost().raw).contains(
-                "For user jbDriver, at linenumber 26, the values of the following columns have been updated: [Neighborhood, Condo].");
+        assertThat(WorkRequestHandler.getLastStatusPost().raw).contains("| jbDriver | | | | Updated | | | Updated | |");
+        assertThat(WorkRequestHandler.getLastStatusPost().raw).contains("| Somebody | | Updated | Updated | Updated | | Updated | | Updated |");
+        assertThat(WorkRequestHandler.getLastStatusPost().raw).contains("| SomebodyElse | Updated | Updated | Updated | Updated | | Updated | | Updated |");
+        assertThat(WorkRequestHandler.getLastStatusPost().raw).contains("| ThirdPerson | Updated | Updated | Updated | Updated | | Updated | | Updated |");
+        assertThat(WorkRequestHandler.getLastStatusPost().raw).contains("| Xyzzy | Updated | Updated | Updated | Updated | | | | |");
+        assertThat(WorkRequestHandler.getLastStatusPost().raw).contains("| ZZZ | Updated | | | Updated | | Updated | | Updated |");
+        assertThat(WorkRequestHandler.getLastStatusPost().raw).contains("| JVol | Updated | Updated | | Updated | | Updated | Updated | |");
+        assertThat(WorkRequestHandler.getLastStatusPost().raw).contains("| MrBackup772 | Updated | Updated | | Updated | | Updated | Updated | |");
+        assertThat(WorkRequestHandler.getLastStatusPost().raw).contains("| jbDriver | | | | Updated | | | Updated | |");
     }
 
     @Test

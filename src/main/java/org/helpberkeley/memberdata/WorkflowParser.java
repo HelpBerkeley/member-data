@@ -122,50 +122,6 @@ public abstract class WorkflowParser {
         return newValue.isEmpty() ? "0" : newValue;
     }
 
-    public String[] updatedMemberData(Map<String, User> users, Map<String, DetailsPost> deliveryDetails) {
-        WorkflowBean bean;
-        String updatedCSVData = normalizedCSVData;
-        String errors = "";
-        String warnings = "";
-        String[] cols = {"Name", "UserName", "Phone #", "Phone2 #", "Neighborhood", "City", "Address", "Condo", "Details"};
-        UserExporter ex = new UserExporter(new ArrayList<>(users.values()));
-
-        while ((bean = nextRow()) != null) {
-            if (isMemberRow(bean)) {
-                String[] origMemberData = bean.getMemberData();
-                User matchingUser = users.get(bean.getUserName());
-                if (matchingUser == null) {
-                    errors += "UserName " + bean.getUserName() + " at line " + lineNumber +
-                            " does not match any current members, please update to a current member.\n";
-                } else {
-                    DetailsPost details = deliveryDetails.get(matchingUser.getUserName());
-
-                    String[] currentMemberData = {ex.escapeCommas(matchingUser.getName()), matchingUser.getUserName(),
-                            matchingUser.getPhoneNumber(), matchingUser.getAltPhoneNumber(),
-                            ex.escapeCommas(matchingUser.getNeighborhood()), ex.escapeCommas(matchingUser.getCity()),
-                            ex.escapeCommas(matchingUser.getAddress()), matchingUser.isCondo() ? "TRUE" : "FALSE",
-                            details == null ? "" : ex.escapeCommas(details.getDetails())};
-
-                    //track which columns are updated
-                    List<String> updatedCols = new ArrayList<>();
-                    for (int i = 0; i < origMemberData.length; i++) {
-                        if (! ex.escapeCommas(origMemberData[i]).equals(currentMemberData[i])) {
-                            updatedCols.add(cols[i]);
-                        }
-                    }
-
-                    updatedCSVData = updatedCSVData.replace(String.join(",", origMemberData), String.join(",", currentMemberData));
-                    warnings += "For user " + bean.getUserName() + ", at linenumber " + lineNumber + ", the values of the following columns have been updated: " + updatedCols + ".\n";
-                }
-            }
-        }
-        if (! errors.isEmpty()) {
-            throw new MemberDataException(errors);
-        }
-
-        return new String[]{updatedCSVData, warnings};
-    }
-
     public List<Driver> drivers() {
 
         LinkedHashMap<String, Driver> driverMap = new LinkedHashMap<>();
@@ -265,7 +221,7 @@ public abstract class WorkflowParser {
         return Boolean.parseBoolean(driverValue) && (! Boolean.parseBoolean(consumerValue));
     }
 
-    private boolean isMemberRow(WorkflowBean bean) {
+    public boolean isMemberRow(WorkflowBean bean) {
         String consumerValue = bean.getConsumer();
         String driverValue = bean.getDriver();
 

@@ -289,9 +289,25 @@ public class WorkflowBeanV300 implements WorkflowBean {
         this.typeGrocery = typeGrocery;
     }
 
-    public String[] getMemberData() {
-        return new String[]{getName(), getUserName(), getPhone(), getAltPhone(), getNeighborhood(), getCity(),
-                getAddress(), getCondo(), getDetails()};
+    public String toCSVString() {
+        return consumer + Constants.CSV_SEPARATOR +
+                driver + Constants.CSV_SEPARATOR +
+                name + Constants.CSV_SEPARATOR +
+                userName + Constants.CSV_SEPARATOR +
+                phone + Constants.CSV_SEPARATOR +
+                altPhone + Constants.CSV_SEPARATOR +
+                neighborhood + Constants.CSV_SEPARATOR +
+                city + Constants.CSV_SEPARATOR +
+                address + Constants.CSV_SEPARATOR +
+                condo + Constants.CSV_SEPARATOR +
+                details + Constants.CSV_SEPARATOR +
+                restaurant + Constants.CSV_SEPARATOR +
+                stdMeals + Constants.CSV_SEPARATOR +
+                altMeals + Constants.CSV_SEPARATOR +
+                typeMeal + Constants.CSV_SEPARATOR +
+                stdGrocery + Constants.CSV_SEPARATOR +
+                altGrocery + Constants.CSV_SEPARATOR +
+                typeGrocery;
     }
 
     @Override

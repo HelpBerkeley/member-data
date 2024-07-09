@@ -97,7 +97,9 @@ public class Constants {
     public static final int QUERY_EMAIL_CONFIRMATIONS = QUERY_EMAIL_CONFIRMATIONS_V1;
     public static final int QUERY_GET_REQUESTS_LAST_REPLIES = QUERY_GET_LAST_REPLY_FROM_REQUEST_TOPICS_V22;
 
-    public static final Topic TOPIC_REQUEST_DATA = new Topic("Request Data", 1234);
+    public static final int AVG_RUN_SIZE = 30;
+
+    public static final Topic TOPIC_REQUEST_DATA = new Topic("Request Workflow User Updates", 1234);
     public static final Topic TOPIC_REQUEST_DRIVER_MESSAGES = new Topic("Request Driver Messages", 2504);
     public static final Topic TOPIC_REQUEST_DRIVER_ROUTES = new Topic("Request Driver Routes", 2844);
     public static final Topic TOPIC_POST_RESTAURANT_TEMPLATE = new Topic("Post restaurant template", 1860);

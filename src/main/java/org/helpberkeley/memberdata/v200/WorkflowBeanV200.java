@@ -250,8 +250,21 @@ public class WorkflowBeanV200 implements WorkflowBean {
         this.orders = orders;
     }
 
-    public String[] getMemberData() {
-        return new String[]{getName(), getUserName(), getPhone(), getAltPhone(), getNeighborhood(), getCity(),
-                getAddress(), getCondo(), getDetails()};
+    public String toCSVString() {
+        return consumer + Constants.CSV_SEPARATOR +
+                driver + Constants.CSV_SEPARATOR +
+                name + Constants.CSV_SEPARATOR +
+                userName + Constants.CSV_SEPARATOR +
+                phone + Constants.CSV_SEPARATOR +
+                altPhone + Constants.CSV_SEPARATOR +
+                neighborhood + Constants.CSV_SEPARATOR +
+                city + Constants.CSV_SEPARATOR +
+                address + Constants.CSV_SEPARATOR +
+                condo + Constants.CSV_SEPARATOR +
+                details + Constants.CSV_SEPARATOR +
+                restaurant + Constants.CSV_SEPARATOR +
+                normal + Constants.CSV_SEPARATOR +
+                veggie + Constants.CSV_SEPARATOR +
+                orders;
     }
 }

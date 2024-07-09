@@ -706,7 +706,7 @@ public class Main {
         doOneKitchenDriverMessages(apiClient, request, users);
     }
 
-    private static void doUpdatedMemberData(
+    private static void doUpdateMemberData(
             ApiClient apiClient, WorkRequestHandler.WorkRequest request, Map<String, User> users) throws IOException {
 
         String json = apiClient.runQuery(Constants.QUERY_GET_DELIVERY_DETAILS);
@@ -718,23 +718,21 @@ public class Main {
         request.postStatus(WorkRequestHandler.RequestStatus.Processing, "");
 
         WorkflowParser parser = WorkflowParser.create(Collections.emptyMap(), deliveries);
-        String[] updatedDataResult = {};
+        WorkflowExporter exporter = new WorkflowExporter(parser);
+        String updatedCSVData;
         try {
-            updatedDataResult = parser.updatedMemberData(users, deliveryDetails);
+            updatedCSVData = exporter.updateMemberData(users, deliveryDetails);
         } catch (MemberDataException ex) {
             LOGGER.warn("updatedMemberData failed: " + ex + "\n" + ex.getMessage());
             request.postStatus(WorkRequestHandler.RequestStatus.Failed, ex.getMessage());
             return;
         }
-        String updatedCSVData = updatedDataResult[0];
-        String warnings = updatedDataResult[1];
 
-        UserExporter exporter = new UserExporter(new ArrayList<>(users.values()));
         exporter.writeFile(workflowFileName, updatedCSVData);
         Upload upload = new Upload(apiClient, workflowFileName);
         String statusMessage = "Spreadsheet with updated member data uploaded: ["
                 + workflowFileName + "|attachment](" + upload.getShortURL() + ")\n"
-                + "\n" + warnings;
+                + "\n" + "The table below shows which data was updated: \n" + exporter.getWarnings();
 
         request.postStatus(WorkRequestHandler.RequestStatus.Succeeded, statusMessage);
     }
@@ -1610,7 +1608,7 @@ public class Main {
             } else if (topicId == Constants.TOPIC_POST_COMPLETED_ONEKITCHEN_ORDERS.getId()) {
                 doCompletedOneKitchenOrders(apiClient, request, users);
             } else if (topicId == Constants.TOPIC_REQUEST_DATA.getId()) {
-                doUpdatedMemberData(apiClient, request, users);
+                doUpdateMemberData(apiClient, request, users);
             } else {
                 assert topicId == Constants.TOPIC_REQUEST_DRIVER_ROUTES.getId() : topicId;
                 requestHandler.postStatus(WorkRequestHandler.RequestStatus.Failed,
