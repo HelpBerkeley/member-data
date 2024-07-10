@@ -37,6 +37,7 @@ import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.catchThrowable;
 
 /**
  * Execute the individual commands, end-to-end.
@@ -741,19 +742,19 @@ public class MainTest extends TestBase {
         assertThat(WorkRequestHandler.getLastStatusPost()).isNotNull();
         assertThat(WorkRequestHandler.getLastStatusPost().raw).contains("Status: Fail");
         assertThat(WorkRequestHandler.getLastStatusPost().raw).contains(
-                "UserName Cust1 at line 19 does not match any current members, please update to a current member.");
+                MessageFormat.format(WorkflowExporter.NO_MATCHING_MEMBER_ERROR, "Cust1", "19"));
         assertThat(WorkRequestHandler.getLastStatusPost().raw).contains(
-                "UserName Cust2 at line 20 does not match any current members, please update to a current member.");
+                MessageFormat.format(WorkflowExporter.NO_MATCHING_MEMBER_ERROR, "Cust2", "20"));
         assertThat(WorkRequestHandler.getLastStatusPost().raw).contains(
-                "UserName Cust3 at line 21 does not match any current members, please update to a current member.");
+                MessageFormat.format(WorkflowExporter.NO_MATCHING_MEMBER_ERROR, "Cust3", "21"));
         assertThat(WorkRequestHandler.getLastStatusPost().raw).contains(
-                "UserName Cust4 at line 22 does not match any current members, please update to a current member.");
+                MessageFormat.format(WorkflowExporter.NO_MATCHING_MEMBER_ERROR, "Cust4", "22"));
         assertThat(WorkRequestHandler.getLastStatusPost().raw).contains(
-                "UserName Cust5 at line 23 does not match any current members, please update to a current member.");
+                MessageFormat.format(WorkflowExporter.NO_MATCHING_MEMBER_ERROR, "Cust5", "23"));
         assertThat(WorkRequestHandler.getLastStatusPost().raw).contains(
-                "UserName Cust6 at line 24 does not match any current members, please update to a current member.");
+                MessageFormat.format(WorkflowExporter.NO_MATCHING_MEMBER_ERROR, "Cust6", "24"));
         assertThat(WorkRequestHandler.getLastStatusPost().raw).contains(
-                "UserName Cust7 at line 25 does not match any current members, please update to a current member.");
+                MessageFormat.format(WorkflowExporter.NO_MATCHING_MEMBER_ERROR, "Cust7", "25"));
     }
 
     @Test
@@ -768,8 +769,25 @@ public class MainTest extends TestBase {
         Main.main(args);
         assertThat(WorkRequestHandler.getLastStatusPost()).isNotNull();
         assertThat(WorkRequestHandler.getLastStatusPost().raw).contains("Status: Fail");
-        assertThat(WorkRequestHandler.getLastStatusPost().raw).contains("Linenumber 17 begins with TRUE TRUE. " +
-                "Is this a driver who is also a consumer? If so, the consumer column must be set to false.");
+        assertThat(WorkRequestHandler.getLastStatusPost().raw).contains(
+                MessageFormat.format(WorkflowExporter.DRIVER_IS_CONSUMER_ERROR, "17"));
+    }
+
+    @Test
+    public void updateMemberDataTooManyMembers() {
+        String deliveries = readResourceFile("update-member-data-multiple-updates.csv");
+        WorkflowParser parser = WorkflowParser.create(Collections.emptyMap(), deliveries);
+        ApiClient apiSim = createApiSimulator();
+        List<User> userList = new Loader(apiSim).load();
+        Map<String, User> users = new Tables(userList).mapByUserName();
+        String json = apiSim.runQuery(Constants.QUERY_GET_DELIVERY_DETAILS);
+        ApiQueryResult apiQueryResult = HBParser.parseQueryResult(json);
+        Map<String, DetailsPost> deliveryDetails = HBParser.deliveryDetails(apiQueryResult);
+        WorkflowExporter exporter = new WorkflowExporter(parser);
+        exporter.changeMemberLimit(2);
+        Throwable thrown = catchThrowable(() -> exporter.updateMemberData(users, deliveryDetails));
+        assertThat(thrown).isInstanceOf(MemberDataException.class);
+        assertThat(thrown).hasMessageContaining(MessageFormat.format(WorkflowExporter.TOO_MANY_MEMBERS_ERROR, 3));
     }
 
     @Test

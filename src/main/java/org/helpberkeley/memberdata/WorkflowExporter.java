@@ -22,20 +22,27 @@
  */
 package org.helpberkeley.memberdata;
 
+import java.text.MessageFormat;
 import java.util.*;
 
 public class WorkflowExporter extends Exporter {
 
-    WorkflowBean bean;
-    private StringBuilder updateWarnings;
-    private WorkflowParser parser;
-    private List<WorkflowBean> updatedBeans;
+    public static final String TOO_MANY_MEMBERS_ERROR = "This is many more members (at least {0}) than the typical run, " +
+            "does this sheet contain more members than just the drivers and consumers for this run?\n";
+    public static final String NO_MATCHING_MEMBER_ERROR = "UserName {0} at line {1}" +
+            " does not match any current members, please update to a current member.\n";
+    public static final String DRIVER_IS_CONSUMER_ERROR = "Line number {0} begins with TRUE TRUE. " +
+            "Is this a driver who is also a consumer? If so, the consumer column must be set to false.\n";
+
+    private final StringBuilder updateWarnings = new StringBuilder();
+    private final WorkflowParser parser;
+    private final List<WorkflowBean> updatedBeans = new ArrayList<>();
     private int numMembers;
+    private int member_limit = Constants.AVG_RUN_SIZE*10;
 
     public WorkflowExporter(WorkflowParser parser) {
         this.parser = parser;
-        updatedBeans = new ArrayList<WorkflowBean>();
-        updateWarnings = new StringBuilder("| UserName | Name | Phone | Phone 2 | Neighborhood | City | Address | Condo | Details |\n");
+        updateWarnings.append("| UserName | Name | Phone | Phone 2 | Neighborhood | City | Address | Condo | Details |\n");
         updateWarnings.append("|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|\n");
         numMembers = 0;
     }
@@ -43,37 +50,35 @@ public class WorkflowExporter extends Exporter {
     public String getWarnings() { return updateWarnings.toString(); }
 
     public String updateMemberData(Map<String, User> users, Map<String, DetailsPost> deliveryDetails) {
-        String errors = "";
+        StringBuilder errors = new StringBuilder();
+        WorkflowBean bean;
 
         while ((bean = parser.nextRow()) != null) {
             if (parser.isMemberRow(bean)) {
                 numMembers++;
-                if (numMembers > (Constants.AVG_RUN_SIZE*10)) {
-                    throw new MemberDataException("This is many more members [" + numMembers +
-                            "] than the typical run, did you accidentally upload a sheet with all current members?");
+                if (numMembers > member_limit) {
+                    throw new MemberDataException(MessageFormat.format(TOO_MANY_MEMBERS_ERROR, numMembers));
                 }
 
                 User matchingUser = users.get(bean.getUserName());
                 if (matchingUser == null) {
-                    errors += "UserName " + bean.getUserName() + " at line " + parser.lineNumber +
-                            " does not match any current members, please update to a current member.\n";
+                    errors.append(MessageFormat.format(NO_MATCHING_MEMBER_ERROR, bean.getUserName(), parser.lineNumber));
                 } else {
                     updateUser(matchingUser, bean, deliveryDetails);
                 }
             } else if (Boolean.parseBoolean(bean.getConsumer())) {
-                throw new MemberDataException("Linenumber " + parser.lineNumber + " begins with TRUE TRUE. " +
-                        "Is this a driver who is also a consumer? If so, the consumer column must be set to false.");
+                throw new MemberDataException(MessageFormat.format(DRIVER_IS_CONSUMER_ERROR, parser.lineNumber));
             }
             addBean(bean);
         }
-        if (! errors.isEmpty()) {
-            throw new MemberDataException(errors);
+        if (errors.length() != 0) {
+            throw new MemberDataException(errors.toString());
         }
         return updatedWorkflowToString();
     }
 
     private void updateUser(User user, WorkflowBean bean, Map<String, DetailsPost> deliveryDetails) {
-        String warningString = "| " + user.getUserName() + " |";
+        StringBuilder warningString = new StringBuilder("| " + user.getUserName() + " |");
 
         assert user.getUserName().equals(bean.getUserName()) : user.getUserName() + " != " + bean.getUserName();
 
@@ -82,61 +87,61 @@ public class WorkflowExporter extends Exporter {
         String value = escapeCommas(user.getName());
         if (! value.equals(escapeCommas(bean.getName()))) {
             bean.setName(value);
-            warningString += " Updated |";
+            warningString.append(" Updated |");
         } else {
-            warningString += " |";
+            warningString.append(" |");
         }
         value = user.getPhoneNumber();
         if (! value.equals(bean.getPhone())) {
             bean.setPhone(value);
-            warningString += " Updated |";
+            warningString.append(" Updated |");
         } else {
-            warningString += " |";
+            warningString.append(" |");
         }
         value = user.getAltPhoneNumber();
         if (! value.equals(bean.getAltPhone())) {
             bean.setAltPhone(value);
-            warningString += " Updated |";
+            warningString.append(" Updated |");
         } else {
-            warningString += " |";
+            warningString.append(" |");
         }
         value = escapeCommas(user.getNeighborhood());
         if (! value.equals(escapeCommas(bean.getNeighborhood()))) {
             bean.setNeighborhood(value);
-            warningString += " Updated |";
+            warningString.append(" Updated |");
         } else {
-            warningString += " |";
+            warningString.append(" |");
         }
         value = escapeCommas(user.getCity());
         if (! value.equals(escapeCommas(bean.getCity()))) {
             bean.setCity(value);
-            warningString += " Updated |";
+            warningString.append(" Updated |");
         } else {
-            warningString += " |";
+            warningString.append(" |");
         }
         value = escapeCommas(user.getAddress());
         if (! value.equals(escapeCommas(bean.getAddress()))) {
             bean.setAddress(value);
-            warningString += " Updated |";
+            warningString.append(" Updated |");
         } else {
-            warningString += " |";
+            warningString.append(" |");
         }
         value = user.isCondo() ? "TRUE" : "FALSE";
         if (! value.equals(bean.getCondo())) {
             bean.setCondo(value);
-            warningString += " Updated |";
+            warningString.append(" Updated |");
         } else {
-            warningString += " |";
+            warningString.append(" |");
         }
         value = details == null ? "" : escapeCommas(details.getDetails());
         if (! value.equals(escapeCommas(bean.getDetails()))) {
             bean.setDetails(value);
-            warningString += " Updated |";
+            warningString.append(" Updated |");
         } else {
-            warningString += " |";
+            warningString.append(" |");
         }
 
-        updateWarnings.append(warningString + "\n");
+        updateWarnings.append(warningString).append("\n");
     }
 
     private void addBean(WorkflowBean bean) {
@@ -146,9 +151,13 @@ public class WorkflowExporter extends Exporter {
     private String updatedWorkflowToString() {
         StringBuilder updatedData = new StringBuilder();
         for (WorkflowBean bean : updatedBeans) {
-            updatedData.append(bean.toCSVString() + "\n");
+            updatedData.append(bean.toCSVString()).append("\n");
         }
 
         return updatedData.toString();
+    }
+
+    public void changeMemberLimit(int limit) {
+        member_limit = limit;
     }
 }
