@@ -37,14 +37,12 @@ public class WorkflowExporter extends Exporter {
     private final StringBuilder updateWarnings = new StringBuilder();
     private final WorkflowParser parser;
     private final List<WorkflowBean> updatedBeans = new ArrayList<>();
-    private int numMembers;
     private int member_limit = Constants.AVG_RUN_SIZE*10;
 
     public WorkflowExporter(WorkflowParser parser) {
         this.parser = parser;
         updateWarnings.append("| UserName | Name | Phone | Phone 2 | Neighborhood | City | Address | Condo | Details |\n");
         updateWarnings.append("|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|\n");
-        numMembers = 0;
     }
 
     public String getWarnings() { return updateWarnings.toString(); }
@@ -52,6 +50,7 @@ public class WorkflowExporter extends Exporter {
     public String updateMemberData(Map<String, User> users, Map<String, DetailsPost> deliveryDetails) {
         StringBuilder errors = new StringBuilder();
         WorkflowBean bean;
+        int numMembers = 0;
 
         while ((bean = parser.nextRow()) != null) {
             if (parser.isMemberRow(bean)) {
@@ -84,8 +83,8 @@ public class WorkflowExporter extends Exporter {
 
         DetailsPost details = deliveryDetails.get(user.getUserName());
 
-        String value = escapeCommas(user.getName());
-        if (! value.equals(escapeCommas(bean.getName()))) {
+        String value = user.getName();
+        if (! escapeCommas(value).equals(escapeCommas(bean.getName()))) {
             bean.setName(value);
             warningString.append(" Updated |");
         } else {
@@ -105,22 +104,22 @@ public class WorkflowExporter extends Exporter {
         } else {
             warningString.append(" |");
         }
-        value = escapeCommas(user.getNeighborhood());
-        if (! value.equals(escapeCommas(bean.getNeighborhood()))) {
+        value = user.getNeighborhood();
+        if (! escapeCommas(value).equals(escapeCommas(bean.getNeighborhood()))) {
             bean.setNeighborhood(value);
             warningString.append(" Updated |");
         } else {
             warningString.append(" |");
         }
-        value = escapeCommas(user.getCity());
-        if (! value.equals(escapeCommas(bean.getCity()))) {
+        value = user.getCity();
+        if (! escapeCommas(value).equals(escapeCommas(bean.getCity()))) {
             bean.setCity(value);
             warningString.append(" Updated |");
         } else {
             warningString.append(" |");
         }
-        value = escapeCommas(user.getAddress());
-        if (! value.equals(escapeCommas(bean.getAddress()))) {
+        value = user.getAddress();
+        if (! escapeCommas(value).equals(escapeCommas(bean.getAddress()))) {
             bean.setAddress(value);
             warningString.append(" Updated |");
         } else {
@@ -133,8 +132,8 @@ public class WorkflowExporter extends Exporter {
         } else {
             warningString.append(" |");
         }
-        value = details == null ? "" : escapeCommas(details.getDetails());
-        if (! value.equals(escapeCommas(bean.getDetails()))) {
+        value = details == null ? "" : details.getDetails();
+        if (! escapeCommas(value).equals(escapeCommas(bean.getDetails()))) {
             bean.setDetails(value);
             warningString.append(" Updated |");
         } else {
@@ -150,6 +149,7 @@ public class WorkflowExporter extends Exporter {
 
     private String updatedWorkflowToString() {
         StringBuilder updatedData = new StringBuilder();
+        updatedData.append(updatedBeans.get(0).getCSVHeader()).append("\n");
         for (WorkflowBean bean : updatedBeans) {
             updatedData.append(bean.toCSVString()).append("\n");
         }

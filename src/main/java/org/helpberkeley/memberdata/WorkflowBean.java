@@ -57,6 +57,7 @@ public interface WorkflowBean {
     String getControlBlockValue();
     String getGMapURL();
     String toCSVString();
+    String getCSVHeader();
 
     default String unsupported(String columnName) {
         throw new MemberDataException("Column heading \""
