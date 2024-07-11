@@ -99,7 +99,7 @@ public class Constants {
 
     public static final int AVG_RUN_SIZE = 30;
 
-    public static final Topic TOPIC_REQUEST_DATA = new Topic("Request Workflow User Updates", 1234);
+    public static final Topic TOPIC_REQUEST_DATA = new Topic("Request Workflow User Updates", 10341);
     public static final Topic TOPIC_REQUEST_DRIVER_MESSAGES = new Topic("Request Driver Messages", 2504);
     public static final Topic TOPIC_REQUEST_DRIVER_ROUTES = new Topic("Request Driver Routes", 2844);
     public static final Topic TOPIC_POST_RESTAURANT_TEMPLATE = new Topic("Post restaurant template", 1860);

@@ -73,7 +73,11 @@ public class WorkflowExporter extends Exporter {
         if (errors.length() != 0) {
             throw new MemberDataException(errors.toString());
         }
-        return updatedWorkflowToString();
+        String incomingHeader = parser.normalizedCSVData.substring(0, parser.normalizedCSVData.indexOf('\n'));
+        String updatedCSVData = updatedWorkflowToString();
+        String outgoingHeader = updatedCSVData.substring(0, updatedCSVData.indexOf('\n'));
+        assert incomingHeader.equals(outgoingHeader) : "header mismatch:\n" + incomingHeader + "\n" + outgoingHeader;
+        return updatedCSVData;
     }
 
     private void updateUser(User user, WorkflowBean bean, Map<String, DetailsPost> deliveryDetails) {
@@ -149,6 +153,8 @@ public class WorkflowExporter extends Exporter {
 
     private String updatedWorkflowToString() {
         StringBuilder updatedData = new StringBuilder();
+
+        // append header, since bean initializes to row 2
         updatedData.append(updatedBeans.get(0).getCSVHeader()).append("\n");
         for (WorkflowBean bean : updatedBeans) {
             updatedData.append(bean.toCSVString()).append("\n");
