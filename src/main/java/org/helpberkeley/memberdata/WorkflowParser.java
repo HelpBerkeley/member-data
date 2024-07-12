@@ -223,6 +223,13 @@ public abstract class WorkflowParser {
         return Boolean.parseBoolean(driverValue) && (! Boolean.parseBoolean(consumerValue));
     }
 
+    public boolean isMemberRow(WorkflowBean bean) {
+        String consumerValue = bean.getConsumer();
+        String driverValue = bean.getDriver();
+
+        return Boolean.parseBoolean(driverValue) != Boolean.parseBoolean(consumerValue);
+    }
+
     private void processControlBlock() {
         WorkflowBean bean;
 

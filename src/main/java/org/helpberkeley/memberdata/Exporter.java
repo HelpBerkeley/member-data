@@ -54,7 +54,7 @@ public class Exporter {
         LOGGER.trace("Wrote: {}", fileName);
     }
 
-    public String escapeCommas(final String value) {
+    public static String escapeCommas(final String value) {
         if (value.indexOf(',') == -1) {
             return value;
         }

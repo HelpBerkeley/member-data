@@ -32,8 +32,12 @@ import java.nio.file.Paths;
 import java.text.MessageFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.catchThrowable;
 
 /**
  * Execute the individual commands, end-to-end.
@@ -732,6 +736,119 @@ public class MainTest extends TestBase {
         // There should be nothing to do. All topics have
         // status messages as their last reply.
         assertThat(WorkRequestHandler.getLastStatusPost()).isNull();
+    }
+
+    @Test
+    public void workflowParserUpdateMemberDataTest() {
+        String deliveries = readResourceFile("update-member-data-multiple-updates.csv");
+        WorkflowParser parser = WorkflowParser.create(Collections.emptyMap(), deliveries);
+        ApiClient apiSim = createApiSimulator();
+        List<User> userList = new Loader(apiSim).load();
+        Map<String, User> users = new Tables(userList).mapByUserName();
+        String json = apiSim.runQuery(Constants.QUERY_GET_DELIVERY_DETAILS);
+        ApiQueryResult apiQueryResult = HBParser.parseQueryResult(json);
+        Map<String, DetailsPost> deliveryDetails = HBParser.deliveryDetails(apiQueryResult);
+        WorkflowExporter exporter = new WorkflowExporter(parser);
+        String updatedCSVData = exporter.updateMemberData(users, deliveryDetails);
+        assertThat(updatedCSVData).doesNotContain("Cust Name");
+        assertThat(updatedCSVData).contains(
+                "Ms. Somebody,Somebody,123-456-7890,510-015-5151,Unknown,Berkeley,542 11dy 7th Street,FALSE");
+        assertThat(updatedCSVData).contains(
+                "\"Mr. Somebody, Esq.\",SomebodyElse,123-456-7890,510-015-5151,Unknown,Berkeley,\"542 11dy 7th Street, Apt 3g\",FALSE");
+        assertThat(updatedCSVData).contains(
+                "THE THIRD PERSON,ThirdPerson,123-456-7890,510-222-7777,Unknown,Berkeley,4 Fortieth Blvd,FALSE,\"something, with, a, lot, of commas.\"");
+        assertThat(updatedCSVData).contains(
+                "X Y ZZY,Xyzzy,555-555-5555,123-456-0000,N.BerkHills/Tilden,Berkeley,1223 Main St.,FALSE");
+        assertThat(updatedCSVData).contains(
+                "Zees McZeesy,ZZZ,123-456-7890,none,unknown,Berkeley,3 Place Place Square,TRUE");
+        assertThat(updatedCSVData).contains(
+                "Joseph R. Volunteer,JVol,123-456-7890,none,unknown,Berkeley,47 74th Ave,TRUE");
+        assertThat(updatedCSVData).contains(
+                "Scotty J Backup 772th,MrBackup772,123-456-7890,none,unknown,Berkeley,38 38th Ave,TRUE");
+    }
+
+    @Test
+    public void updateMemberDataRequestMultipleUpdatesTest() throws IOException, CsvException {
+        String request = readResourceFile(DATA_REQUEST_TEMPLATE)
+                .replace("REPLACE_DATE", yesterday())
+                .replaceAll("REPLACE_FILENAME", "update-member-data-multiple-updates.csv");
+        HttpClientSimulator.setQueryResponseData(
+                Constants.QUERY_GET_REQUESTS_LAST_REPLIES, request);
+        String usersFile = findFile(Constants.MEMBERDATA_RAW_FILE, "csv");
+        String[] args = {Options.COMMAND_WORK_REQUESTS, usersFile};
+        Main.main(args);
+        assertThat(WorkRequestHandler.getLastStatusPost()).isNotNull();
+        assertThat(WorkRequestHandler.getLastStatusPost().raw).contains("Status: Succeeded");
+        assertThat(WorkRequestHandler.getLastStatusPost().raw).contains("| jbDriver | | | | Updated | | | Updated | |");
+        assertThat(WorkRequestHandler.getLastStatusPost().raw).contains("| Somebody | | Updated | Updated | Updated | | Updated | | Updated |");
+        assertThat(WorkRequestHandler.getLastStatusPost().raw).contains("| SomebodyElse | Updated | Updated | Updated | Updated | | Updated | | Updated |");
+        assertThat(WorkRequestHandler.getLastStatusPost().raw).contains("| ThirdPerson | Updated | Updated | Updated | Updated | | Updated | | Updated |");
+        assertThat(WorkRequestHandler.getLastStatusPost().raw).contains("| Xyzzy | Updated | Updated | Updated | Updated | | | | |");
+        assertThat(WorkRequestHandler.getLastStatusPost().raw).contains("| ZZZ | Updated | | | Updated | | Updated | | Updated |");
+        assertThat(WorkRequestHandler.getLastStatusPost().raw).contains("| JVol | Updated | Updated | | Updated | | Updated | Updated | |");
+        assertThat(WorkRequestHandler.getLastStatusPost().raw).contains("| MrBackup772 | Updated | Updated | | Updated | | Updated | Updated | |");
+        assertThat(WorkRequestHandler.getLastStatusPost().raw).contains("| jbDriver | | | | Updated | | | Updated | |");
+    }
+
+    @Test
+    public void updateMemberDataRequestMissingUsersTest() throws IOException, CsvException {
+        String request = readResourceFile(DATA_REQUEST_TEMPLATE)
+                .replace("REPLACE_DATE", yesterday())
+                .replaceAll("REPLACE_FILENAME", "update-member-data-no-matching-users.csv");
+        HttpClientSimulator.setQueryResponseData(
+                Constants.QUERY_GET_REQUESTS_LAST_REPLIES, request);
+        String usersFile = findFile(Constants.MEMBERDATA_RAW_FILE, "csv");
+        String[] args = { Options.COMMAND_WORK_REQUESTS, usersFile };
+        Main.main(args);
+        assertThat(WorkRequestHandler.getLastStatusPost()).isNotNull();
+        assertThat(WorkRequestHandler.getLastStatusPost().raw).contains("Status: Fail");
+        assertThat(WorkRequestHandler.getLastStatusPost().raw).contains(
+                MessageFormat.format(WorkflowExporter.NO_MATCHING_MEMBER_ERROR, "Cust1", "19"));
+        assertThat(WorkRequestHandler.getLastStatusPost().raw).contains(
+                MessageFormat.format(WorkflowExporter.NO_MATCHING_MEMBER_ERROR, "Cust2", "20"));
+        assertThat(WorkRequestHandler.getLastStatusPost().raw).contains(
+                MessageFormat.format(WorkflowExporter.NO_MATCHING_MEMBER_ERROR, "Cust3", "21"));
+        assertThat(WorkRequestHandler.getLastStatusPost().raw).contains(
+                MessageFormat.format(WorkflowExporter.NO_MATCHING_MEMBER_ERROR, "Cust4", "22"));
+        assertThat(WorkRequestHandler.getLastStatusPost().raw).contains(
+                MessageFormat.format(WorkflowExporter.NO_MATCHING_MEMBER_ERROR, "Cust5", "23"));
+        assertThat(WorkRequestHandler.getLastStatusPost().raw).contains(
+                MessageFormat.format(WorkflowExporter.NO_MATCHING_MEMBER_ERROR, "Cust6", "24"));
+        assertThat(WorkRequestHandler.getLastStatusPost().raw).contains(
+                MessageFormat.format(WorkflowExporter.NO_MATCHING_MEMBER_ERROR, "Cust7", "25"));
+    }
+
+    @Test
+    public void updateMemberDataDriverIsConsumer() throws IOException, CsvException {
+        String request = readResourceFile(DATA_REQUEST_TEMPLATE)
+                .replace("REPLACE_DATE", yesterday())
+                .replaceAll("REPLACE_FILENAME", "update-member-data-driver-is-consumer.csv");
+        HttpClientSimulator.setQueryResponseData(
+                Constants.QUERY_GET_REQUESTS_LAST_REPLIES, request);
+        String usersFile = findFile(Constants.MEMBERDATA_RAW_FILE, "csv");
+        String[] args = { Options.COMMAND_WORK_REQUESTS, usersFile };
+        Main.main(args);
+        assertThat(WorkRequestHandler.getLastStatusPost()).isNotNull();
+        assertThat(WorkRequestHandler.getLastStatusPost().raw).contains("Status: Fail");
+        assertThat(WorkRequestHandler.getLastStatusPost().raw).contains(
+                MessageFormat.format(WorkflowExporter.DRIVER_IS_CONSUMER_ERROR, "17"));
+    }
+
+    @Test
+    public void updateMemberDataTooManyMembers() {
+        String deliveries = readResourceFile("update-member-data-multiple-updates.csv");
+        WorkflowParser parser = WorkflowParser.create(Collections.emptyMap(), deliveries);
+        ApiClient apiSim = createApiSimulator();
+        List<User> userList = new Loader(apiSim).load();
+        Map<String, User> users = new Tables(userList).mapByUserName();
+        String json = apiSim.runQuery(Constants.QUERY_GET_DELIVERY_DETAILS);
+        ApiQueryResult apiQueryResult = HBParser.parseQueryResult(json);
+        Map<String, DetailsPost> deliveryDetails = HBParser.deliveryDetails(apiQueryResult);
+        WorkflowExporter exporter = new WorkflowExporter(parser);
+        exporter.changeMemberLimit(2);
+        Throwable thrown = catchThrowable(() -> exporter.updateMemberData(users, deliveryDetails));
+        assertThat(thrown).isInstanceOf(MemberDataException.class);
+        assertThat(thrown).hasMessageContaining(MessageFormat.format(WorkflowExporter.TOO_MANY_MEMBERS_ERROR, 3));
     }
 
     @Test

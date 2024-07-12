@@ -41,12 +41,23 @@ public interface WorkflowBean {
     String getVeggie();
     String getOrders();
 
+    void setName(String name);
+    void setPhone(String phone);
+    void setAltPhone(String altPhone);
+    void setNeighborhood(String neighborhood);
+    void setCity(String city);
+    void setAddress(String address);
+    void setCondo(String condo);
+    void setDetails(String details);
+
     boolean isEmpty();
 
     String getControlBlockDirective();
     String getControlBlockKey();
     String getControlBlockValue();
     String getGMapURL();
+    String toCSVString();
+    String getCSVHeader();
 
     default String unsupported(String columnName) {
         throw new MemberDataException("Column heading \""

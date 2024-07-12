@@ -69,6 +69,7 @@ public class Constants {
     public static final int QUERY_GET_LAST_REPLY_FROM_REQUEST_TOPICS_V21 = 64;
     public static final int QUERY_GET_LAST_REPLY_FROM_REQUEST_TOPICS_V22 = 77;
     public static final int QUERY_GET_LAST_REPLY_FROM_REQUEST_TOPICS_V23 = 81;
+    public static final int QUERY_GET_LAST_REPLY_FROM_REQUEST_TOPICS_V24 = 82;
     public static final int QUERY_GET_CURRENT_VALIDATED_ONE_KITCHEN_RESTAURANT_TEMPLATE = 51;
     public static final int QUERY_GET_LAST_TEST_REQUEST = 52;
     public static final int QUERY_GET_ONE_KITCHEN_DRIVERS_POST_FORMAT_V300 = 53;
@@ -96,10 +97,14 @@ public class Constants {
     public static final int QUERY_GET_GROUP_INSTRUCTIONS_FORMAT = QUERY_GET_GROUP_INSTRUCTIONS_FORMAT_V22;
     public static final int QUERY_GET_BACKUP_DRIVER_FORMAT = QUERY_GET_BACKUP_DRIVER_FORMAT_V12;
     public static final int QUERY_EMAIL_CONFIRMATIONS = QUERY_EMAIL_CONFIRMATIONS_V1;
-    public static final int QUERY_GET_REQUESTS_LAST_REPLIES = QUERY_GET_LAST_REPLY_FROM_REQUEST_TOPICS_V23;
+    public static final int QUERY_GET_REQUESTS_LAST_REPLIES = QUERY_GET_LAST_REPLY_FROM_REQUEST_TOPICS_V24;
 
+    public static final int AVG_RUN_SIZE = 30;
+
+    public static final Topic TOPIC_REQUEST_DATA = new Topic("Request Workflow User Updates", 10341);
     public static final Topic TOPIC_STONE_TEST_TOPIC = new Topic("Stone test topic", 422);
     static final Topic TOPIC_DRIVERS_POST_STAGING = new Topic("Get Driver Messages", 2123);
+
     public static final Topic TOPIC_REQUEST_DRIVER_MESSAGES = new Topic("Request Driver Messages", 2504);
     public static final Topic TOPIC_REQUEST_DRIVER_ROUTES = new Topic("Request Driver Routes", 2844);
     public static final Topic TOPIC_POST_RESTAURANT_TEMPLATE = new Topic("Post restaurant template", 1860);
