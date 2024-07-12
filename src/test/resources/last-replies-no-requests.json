@@ -23,7 +23,6 @@
   ],
   "default_limit": 1000,
   "rows": [
- 
     [ 2844, 1810, null, "2021/03/04 21:09:17\n\nStatus: Succeeded\nSome something from 2844\n", "Request driver routes" ],
     [ 2504, 1810, null, "2021/03/04 21:09:17\n\nStatus: Succeeded\nSome something from 2504\n", "Request driver messages" ],
     [ 4878, 151, null,"2021/02/28 16:42:27\n\nStatus: Succeeded\nFile: something\n", "Request OneKitchen driver messages" ],
@@ -33,7 +32,6 @@
     [ 6548, 30, null, "2021/02/28 16:42:27\n\nStatus: Succeeded\nFile: something from 6548\n", "Post restaurant template for OneKitchen driver messages" ],
     [ 6889, 460, null, "2021/02/28 16:42:27\n\nStatus: Succeeded\nFile: something from 6889\n", "Post completed OneKitchen orders" ],
     [ 10341, 460, null, "2021/02/28 16:42:27\n\nStatus: Succeeded\nFile: something from 10341\n", "Request Workflow User Updates" ]
-
   ]
 }
 

@@ -239,6 +239,7 @@ public class HttpClientSimulator extends HttpClient {
             case Constants.QUERY_GET_LAST_REPLY_FROM_REQUEST_TOPICS_V21:
             case Constants.QUERY_GET_LAST_REPLY_FROM_REQUEST_TOPICS_V22:
             case Constants.QUERY_GET_LAST_REPLY_FROM_REQUEST_TOPICS_V23:
+            case Constants.QUERY_GET_LAST_REPLY_FROM_REQUEST_TOPICS_V24:
                 dataFile = "last-replies-no-requests.json";
                 break;
             case Constants.QUERY_GET_LAST_ONE_KITCHEN_RESTAURANT_TEMPLATE_REPLY:
