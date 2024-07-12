@@ -499,7 +499,7 @@ public class DriverPostTest extends org.helpberkeley.memberdata.DriverPostTest {
         String routedDeliveries = readResourceFile(getRoutedDeliveriesFileName());
         DriverPostFormat driverPostFormat =
                 DriverPostFormat.create(createApiSimulator(), users, routedDeliveries);
-        Throwable thrown = catchThrowable(() -> driverPostFormat.generateDriverPosts());
+        Throwable thrown = catchThrowable(driverPostFormat::generateDriverPosts);
         assertThat(thrown).isInstanceOf(MemberDataException.class);
         assertThat(thrown).hasMessageContaining(MessageFormat.format(MessageBlockContext.MESSAGE_ERROR,
                 "Test",
@@ -519,7 +519,7 @@ public class DriverPostTest extends org.helpberkeley.memberdata.DriverPostTest {
         String routedDeliveries = readResourceFile(getRoutedDeliveriesFileName());
         DriverPostFormat driverPostFormat =
                 DriverPostFormat.create(createApiSimulator(), users, routedDeliveries);
-        Throwable thrown = catchThrowable(() -> driverPostFormat.generateDriverPosts());
+        Throwable thrown = catchThrowable(driverPostFormat::generateDriverPosts);
         assertThat(thrown).isInstanceOf(MemberDataException.class);
         assertThat(thrown).hasMessageContaining(MessageFormat.format(MessageBlockContext.MESSAGE_ERROR,
                 "Test",
@@ -538,7 +538,7 @@ public class DriverPostTest extends org.helpberkeley.memberdata.DriverPostTest {
         String routedDeliveries = readResourceFile(getRoutedDeliveriesFileName());
         DriverPostFormat driverPostFormat =
                 DriverPostFormat.create(createApiSimulator(), users, routedDeliveries);
-        Throwable thrown = catchThrowable(() -> driverPostFormat.generateDriverPosts());
+        Throwable thrown = catchThrowable(driverPostFormat::generateDriverPosts);
         assertThat(thrown).isInstanceOf(MemberDataException.class);
         assertThat(thrown).hasMessageContaining(MessageFormat.format(MessageBlockContext.MESSAGE_ERROR,
                 "Test",
@@ -558,7 +558,7 @@ public class DriverPostTest extends org.helpberkeley.memberdata.DriverPostTest {
         String routedDeliveries = readResourceFile(getRoutedDeliveriesFileName());
         DriverPostFormat driverPostFormat =
                 DriverPostFormat.create(createApiSimulator(), users, routedDeliveries);
-        Throwable thrown = catchThrowable(() -> driverPostFormat.generateDriverPosts());
+        Throwable thrown = catchThrowable(driverPostFormat::generateDriverPosts);
         assertThat(thrown).isInstanceOf(MemberDataException.class);
         assertThat(thrown).hasMessageContaining(MessageFormat.format(MessageBlockContext.MESSAGE_ERROR,
                 "Test",
@@ -574,7 +574,7 @@ public class DriverPostTest extends org.helpberkeley.memberdata.DriverPostTest {
         String routedDeliveries = readResourceFile(getRoutedDeliveriesFileName());
         DriverPostFormat driverPostFormat =
                 DriverPostFormat.create(createApiSimulator(), users, routedDeliveries);
-        Throwable thrown = catchThrowable(() -> driverPostFormat.generateDriverPosts());
+        Throwable thrown = catchThrowable(driverPostFormat::generateDriverPosts);
         assertThat(thrown).isInstanceOf(MemberDataException.class);
         assertThat(thrown).hasMessageContaining(MessageFormat.format(MessageBlockContext.MESSAGE_ERROR,
                 "Test",
@@ -589,7 +589,7 @@ public class DriverPostTest extends org.helpberkeley.memberdata.DriverPostTest {
         String routedDeliveries = readResourceFile(getRoutedDeliveriesFileName());
         DriverPostFormat driverPostFormat =
                 DriverPostFormat.create(createApiSimulator(), users, routedDeliveries);
-        Throwable thrown = catchThrowable(() -> driverPostFormat.generateDriverPosts());
+        Throwable thrown = catchThrowable(driverPostFormat::generateDriverPosts);
         assertThat(thrown).isInstanceOf(MemberDataException.class);
         assertThat(thrown).hasMessageContaining(MessageFormat.format(MessageBlockContext.MESSAGE_ERROR,
                 "Test",

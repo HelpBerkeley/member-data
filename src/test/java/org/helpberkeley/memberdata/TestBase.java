@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2020-2024 helpberkeley.org
+// Copyright (c) 2020-2024. helpberkeley.org
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -24,6 +24,8 @@ package org.helpberkeley.memberdata;
 import com.cedarsoftware.io.JsonIo;
 import com.cedarsoftware.io.WriteOptionsBuilder;
 import org.junit.BeforeClass;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -36,8 +38,6 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
-import static java.time.temporal.ChronoUnit.*;
-
 public class TestBase {
 
     static final String TEST_NAME_1 = "name 1";
@@ -49,7 +49,7 @@ public class TestBase {
     static final String TEST_ALT_PHONE_1 = "1-777-888-9999";
     static final String TEST_NEIGHBORHOOD_1 = "neighborhood 1";
     static final Boolean TEST_CONDO_1 = Boolean.FALSE;
-    static final String TEST_CREATED_1 = ZonedDateTime.now().minus(6, WEEKS).toString();
+    static final String TEST_CREATED_1 = ZonedDateTime.now().minusWeeks(6).toString();
     static final Boolean TEST_CONSUMER_REQUEST_1 = false;
     static final String TEST_VOLUNTEER_REQUEST_1 = "Driver";
     static final String TEST_REFERRAL_1 = "Bobby over that old same place";
@@ -64,7 +64,7 @@ public class TestBase {
     static final String TEST_ALT_PHONE_2 = "1-222-333-4444";
     static final String TEST_NEIGHBORHOOD_2 = "neighborhood 2";
     static final Boolean TEST_CONDO_2 = Boolean.TRUE;
-    static final String TEST_CREATED_2 = ZonedDateTime.now().minus(8, MINUTES).toString();
+    static final String TEST_CREATED_2 = ZonedDateTime.now().minusMinutes(8).toString();
     static final Boolean TEST_CONSUMER_REQUEST_2 = true;
     static final String TEST_VOLUNTEER_REQUEST_2 = "Dispatcher";
     static final String TEST_REFERRAL_2 = "none";
@@ -79,7 +79,7 @@ public class TestBase {
     static final String TEST_ALT_PHONE_3 = "1-333-444-5555";
     static final String TEST_NEIGHBORHOOD_3 = "neighborhood 3";
     static final Boolean TEST_CONDO_3 = Boolean.FALSE;
-    static final String TEST_CREATED_3 = ZonedDateTime.now().minus(1, DAYS).toString();
+    static final String TEST_CREATED_3 = ZonedDateTime.now().minusDays(1).toString();
     static final Boolean TEST_CONSUMER_REQUEST_3 = true;
     static final String TEST_VOLUNTEER_REQUEST_3 = "none";
     static final String TEST_REFERRAL_3 = "none";
@@ -118,7 +118,6 @@ public class TestBase {
             Options.COMMAND_CUSTOMER_CARE_POST,
             Options.COMMAND_FRREG,
             Options.COMMAND_WORK_REQUESTS,
-            Options.COMMAND_TEST_REQUEST,
             Options.COMMAND_ONE_KITCHEN_WORKFLOW,
     };
 
@@ -132,10 +131,12 @@ public class TestBase {
 
     static final String TEST_FILE_NAME = "pom.xml";
     static final String TEST_SHORT_URL = Constants.UPLOAD_URI_PREFIX + "ab34dezzAndSomethingY.csv";
-
-    static final String REQUEST_TEMPLATE = "request-template.json";
+  
     static final String DATA_REQUEST_TEMPLATE = "last-replies-data-request-template.json";
+    static final String REQUEST_TEMPLATE = "request-template.json";
+    static final String REQUEST_TEMPLATE_EXTRA = "request-template-extra.json";
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(TestBase.class);
     protected static void cleanupGeneratedFiles() throws IOException {
         Files.list(Paths.get("."))
                 .filter(Files::isRegularFile)
@@ -146,8 +147,8 @@ public class TestBase {
                                     fileName.startsWith("temp")))) {
                         try {
                             Files.delete(p);
-                        } catch (IOException e) {
-                            e.printStackTrace();
+                        } catch (IOException ex) {
+                            LOGGER.warn("delete {} failed: {}", p, ex.getMessage());
                         }
                     }
                 });
@@ -168,7 +169,7 @@ public class TestBase {
 
         Path fp = Paths.get(outputFileName);
         Files.deleteIfExists(fp);
-        Files.createFile(Paths.get(outputFileName));
+        Files.createFile(fp);
         Files.writeString(fp, updatedTemplate);
 
         return outputFileName;

@@ -1,0 +1,46 @@
+﻿DocVersion: V1.1
+Last Updated: 5/10/2024
+
+
+Request Worksheet with Client & Driver Data
+
+
+1. Work Requests:
+
+
+Design details: https://github.com/HelpBerkeley/member-data/blob/master/documentation/automated-request-handling.txt
+
+
+        1.1 Supported Requests:
+        
+            Workflow Request - user posts date and workflow request-type (“Daily” or “OneKitchen”) to “Request Workflow” Discourse thread and receives an updated workflow spreadsheet template from the software.
+
+
+            Driver Messages Request - user posts date and completed workflow spreadsheet to “Request Driver Messages” Discourse thread and receives response at “Get Driver Messages” Discourse thread.
+
+
+            Data Request - user posts date and partially complete workflow spreadsheet to “Request User Data” Discourse thread and receives an identically formatted workflow spreadsheet with all client and driver data filled in/updated.
+
+
+        DES-WR-001-1 Data Request Discourse Topic
+
+
+            Support the use of the Data request-type with a designated “Request User Data” Discourse thread.
+
+
+        DES-WR-001-2 Data Request Arguments
+
+
+            Support Data Request with 2 required arguments - Date and workflow spreadsheet csv file.
+
+
+        DES-WR-001-3 Data Request updated data
+
+
+            Support Data Request by filling in/updating data for all rows in a submitted workflow spreadsheet beginning with “FALSE TRUE” or “TRUE FALSE”
+
+
+        DES-WR-001-4 Data Request warnings
+
+
+            Support descriptive warnings for Data Requests notifying the user exactly what lines and columns have been updated by the software.

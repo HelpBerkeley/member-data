@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020. helpberkeley.org
+ * Copyright (c) 2020-2024. helpberkeley.org
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -89,7 +89,7 @@ public class OrderHistory {
         SortedMap<String, OrderHistoryData> newPosts = dataPosts.getNewPosts();
 
         // Nothing to merge
-        if (newPosts.size() == 0) {
+        if (newPosts.isEmpty()) {
             return;
         }
 
@@ -113,7 +113,7 @@ public class OrderHistory {
         long napTime = (postsToProcess.size() > 10) ? TimeUnit.SECONDS.toMillis(1) : 0;
 
         for (OrderHistoryData orderHistoryData : postsToProcess.values()) {
-            LOGGER.debug("processing " + orderHistoryData);
+            LOGGER.debug("processing {}", orderHistoryData);
             // Download the delivery file
             UploadFile uploadFile = orderHistoryData.getUploadFile();
             String deliveries = apiClient.downloadFile(uploadFile.getFileName());
@@ -140,7 +140,7 @@ public class OrderHistory {
             }
 
             if (user == null) {
-                LOGGER.warn("Unknown user " + userOrder.userName + ": unknown user");
+                LOGGER.warn("Unknown user {}: unknown user", userOrder.userName);
                 user = usersByUserName.get(Constants.UNKNOWN_USER);
                 assert user != null : "Could not find " + Constants.UNKNOWN_USER;
             }

@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2020-2021 helpberkeley.org
+// Copyright (c) 2020-2024. helpberkeley.org
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -26,7 +26,6 @@ import org.junit.Test;
 import java.time.ZonedDateTime;
 import java.util.List;
 
-import static java.time.temporal.ChronoUnit.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class TablesTest extends TestBase {
@@ -69,11 +68,11 @@ public class TablesTest extends TestBase {
         ZonedDateTime now = ZonedDateTime.now();
 
         User userNow = createUserWithCreateTime("now", now.toString());
-        User userFourDaysAgo = createUserWithCreateTime("4DaysAgo", now.minus(4, DAYS).toString());
-        User userFourHoursAgo = createUserWithCreateTime("4HoursAgo", now.minus(4, HOURS).toString());
+        User userFourDaysAgo = createUserWithCreateTime("4DaysAgo", now.minusDays(4).toString());
+        User userFourHoursAgo = createUserWithCreateTime("4HoursAgo", now.minusHours(4).toString());
         // Add a minute of slop because the table is going to recalculate "now"
         User userThreeDaysAgo = createUserWithCreateTime("3DaysAgo",
-                now.minus(3, DAYS).plus(1, MINUTES).toString());
+                now.minusDays(3).plusMinutes(1).toString());
 
         List<User> users = List.of(userNow, userFourDaysAgo, userFourHoursAgo, userThreeDaysAgo);
         Tables tables = new Tables(users);
@@ -88,9 +87,9 @@ public class TablesTest extends TestBase {
         ZonedDateTime now = ZonedDateTime.now();
 
         User userNow = createUserWithCreateTime("now", now.toString());
-        User userEightSecondsAgo = createUserWithCreateTime("8secsAgo", now.minus(8, SECONDS).toString());
-        User userNineSecondsAgo = createUserWithCreateTime("9secsAgo", now.minus(9, SECONDS).toString());
-        User userTomorrow = createUserWithCreateTime("tomorrow", now.plus(1, DAYS).toString());
+        User userEightSecondsAgo = createUserWithCreateTime("8secsAgo", now.minusSeconds(8).toString());
+        User userNineSecondsAgo = createUserWithCreateTime("9secsAgo", now.minusSeconds(9).toString());
+        User userTomorrow = createUserWithCreateTime("tomorrow", now.plusDays(1).toString());
 
         List<User> users = List.of(userNow, userNineSecondsAgo, userTomorrow, userEightSecondsAgo);
         Tables tables = new Tables(users);
@@ -312,15 +311,15 @@ public class TablesTest extends TestBase {
     public void increachTest() throws UserException {
         ZonedDateTime now = ZonedDateTime.now();
         User u1 = createUserWithCreateTime("u1", now.toString());
-        User u2 = createUserWithCreateTime("u2", now.minus(1, DAYS).toString());
-        User u3 = createUserWithCreateTime("u3", now.plus(1, DAYS).toString());
+        User u2 = createUserWithCreateTime("u2", now.minusDays(1).toString());
+        User u3 = createUserWithCreateTime("u3", now.plusDays(1).toString());
         User u4 = createUserWithGroup("u4", Constants.GROUP_DRIVERS);
         User u5 = createUserWithGroup("u5", Constants.GROUP_DISPATCHERS);
         User u6 = createUserWithCreateTimeAndGroup("u6", now.toString(), Constants.GROUP_CONSUMERS);
         User u7 = createUserWithCreateTimeAndGroup(
-                "u7", now.minus(10, SECONDS).toString(), Constants.GROUP_CONSUMERS);
+                "u7", now.minusSeconds(10).toString(), Constants.GROUP_CONSUMERS);
         User u8 = createUserWithCreateTimeAndGroup(
-                "u8", now.plus(10, SECONDS).toString(), Constants.GROUP_CONSUMERS);
+                "u8", now.plusSeconds(10).toString(), Constants.GROUP_CONSUMERS);
 
         Tables tables = new Tables(List.of(u1, u2, u3, u4, u5, u6, u7, u8));
         List<User> inreach = tables.inreach();
@@ -333,13 +332,10 @@ public class TablesTest extends TestBase {
 
         User u1 = createUserWithCreateTimeAndGroup("u1", now.toString(), Constants.GROUP_DISPATCHERS);
         User u2 = createUserWithGroup("u2", Constants.GROUP_DRIVERS);
-        User u3 = createUserWithCreateTimeAndGroup("u3", now.minus(
-                1, DAYS).toString(), Constants.GROUP_DISPATCHERS);
-        User u4 = createUserWithCreateTimeAndGroup("u4", now.minus(
-                1, MINUTES).toString(), Constants.GROUP_DISPATCHERS);
+        User u3 = createUserWithCreateTimeAndGroup("u3", now.minusDays(1).toString(), Constants.GROUP_DISPATCHERS);
+        User u4 = createUserWithCreateTimeAndGroup("u4", now.minusMinutes(1).toString(), Constants.GROUP_DISPATCHERS);
         User u5 = createUserWithGroup("u5", Constants.GROUP_CONSUMERS);
-        User u6 = createUserWithCreateTimeAndGroup("u6", now.plus(
-                1, MINUTES).toString(), Constants.GROUP_DISPATCHERS);
+        User u6 = createUserWithCreateTimeAndGroup("u6", now.plusMinutes(1).toString(), Constants.GROUP_DISPATCHERS);
 
         Tables tables = new Tables(List.of(u1, u2, u3, u4, u5, u6));
         List<User> dispatchers = tables.dispatchers();

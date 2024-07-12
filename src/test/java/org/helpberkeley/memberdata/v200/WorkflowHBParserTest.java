@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2022. helpberkeley.org
+ * Copyright (c) 2021-2024. helpberkeley.org
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -209,7 +209,7 @@ public class WorkflowHBParserTest extends WorkflowHBParserBaseTest {
         Throwable thrown = catchThrowable(() ->
                 DriverPostFormat.create(createApiSimulator(), users, routedDeliveries));
         assertThat(thrown).isInstanceOf(MemberDataException.class);
-        assertThat(thrown).hasMessageContaining("Duplicate driver \"jbDriver\" at line 34");
+        assertThat(thrown).hasMessageContaining("Duplicate driver \"jbDriver\" at line 22");
     }
 
     @Test

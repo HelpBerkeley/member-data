@@ -236,8 +236,7 @@ public class ControlBlockV300 extends ControlBlock {
 
         // Warning if there are more start times than drivers
         if (startTimes.size() > drivers.size()) {
-            warnings.append(MessageFormat.format(MORE_START_TIMES_THAN_DRIVERS,
-                    startTimes.size(), drivers.size()));
+            warnings.append(MORE_START_TIMES_THAN_DRIVERS);
         }
 
         // Error if start times are malformed

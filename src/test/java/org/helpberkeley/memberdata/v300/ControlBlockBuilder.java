@@ -54,7 +54,7 @@ public class ControlBlockBuilder {
     private List<String> altMealOptions = DEFAULT_ALT_MEAL_OPTIONS_LIST;
     private List<String> altGroceryOptions = DEFAULT_ALT_GROCERY_OPTIONS_LIST;
     private List<String> messageFormat = DEFAULT_MESSAGE_FORMAT_LIST;
-    private List<String> backupDrivers = new ArrayList<>();
+    private final List<String> backupDrivers = new ArrayList<>();
     private List<String> pickupManagers = DEFAULT_PICKUP_MANAGERS_LIST;
 
     @Override

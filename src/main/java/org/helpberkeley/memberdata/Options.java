@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2020-2021 helpberkeley.org
+// Copyright (c) 2020-2024 helpberkeley.org
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -52,7 +52,6 @@ public class Options {
     static final String COMMAND_CUSTOMER_CARE_POST = "customer-care";
     static final String COMMAND_FRREG = "frreg";
     static final String COMMAND_WORK_REQUESTS = "work-requests";
-    static final String COMMAND_TEST_REQUEST = "test-request";
 
     static final String USAGE_ERROR = "Usage error for command ";
     static final String UNKNOWN_COMMAND = USAGE_ERROR + ": unknown command: ";
@@ -89,8 +88,7 @@ public class Options {
                     + "    | " + COMMAND_CUSTOMER_CARE_POST + " all-members-file\n"
                     + "    | " + COMMAND_FRREG + " all-members-file\n"
                     + "    | " + COMMAND_RESTAURANT_TEMPLATE + "\n"
-                    + "    | " + COMMAND_ONE_KITCHEN_RESTAURANT_TEMPLATE + "\n"
-                    + "    | " + COMMAND_TEST_REQUEST + " all-members-file\n";
+                    + "    | " + COMMAND_ONE_KITCHEN_RESTAURANT_TEMPLATE + "\n";
 
     private final String[] args;
     private String command;
@@ -142,7 +140,6 @@ public class Options {
             case COMMAND_CUSTOMER_CARE_POST:
             case COMMAND_FRREG:
             case COMMAND_DRIVERS:
-            case COMMAND_TEST_REQUEST:
                 setCommand(arg);
                 if (index == args.length) {
                     dieMessage(USAGE_ERROR + arg + COMMAND_REQUIRES_FILE_NAME);

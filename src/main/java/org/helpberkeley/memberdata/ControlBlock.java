@@ -256,7 +256,7 @@ public abstract class ControlBlock {
     }
 
     public OpsManager getFirstOpsManager() {
-        if (opsManagers.size() == 0) {
+        if (opsManagers.isEmpty()) {
             throw new MemberDataException("No OpsManager found");
         }
 

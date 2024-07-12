@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2020-2021 helpberkeley.org
+// Copyright (c) 2020-2024 helpberkeley.org
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -771,7 +771,7 @@ public class User {
             return;
         }
 
-        String digits = phoneNumber.replaceAll("[^\\d]", "");
+        String digits = phoneNumber.replaceAll("\\D", "");
 
         switch (digits.length()) {
             case 7:
@@ -823,7 +823,7 @@ public class User {
                 return;
         }
 
-        String digits = altPhoneNumber.replaceAll("[^\\d]", "");
+        String digits = altPhoneNumber.replaceAll("\\D", "");
 
         switch (digits.length()) {
             case 7:

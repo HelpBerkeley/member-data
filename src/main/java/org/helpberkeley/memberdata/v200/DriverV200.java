@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021. helpberkeley.org
+ * Copyright (c) 2021-2024. helpberkeley.org
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -65,7 +65,7 @@ public class DriverV200 extends Driver {
 
     private void setStartTime() {
 
-        if (pickups.size() == 0) {
+        if (pickups.isEmpty()) {
             throw new MemberDataException("Driver " + getUserName() + " has no pickups");
         }
 
@@ -117,13 +117,13 @@ public class DriverV200 extends Driver {
 
             LocalTime closingTime = convertTime(pickup.getClosingTime());
 
-            if (startTime.compareTo(closingTime.minusMinutes(10)) > 0) {
+            if (startTime.isAfter(closingTime.minusMinutes(10))) {
                 warningMessages.add(MessageFormat.format(WARNING_MAY_BE_REACHED_AFTER_CLOSING, pickup.getName()));
             }
 
             if (((RestaurantV200)pickup).getOrders() > 0) {
 
-                if (startTime.compareTo(convertTime(pickup.getStartTime())) > 0) {
+                if (startTime.isAfter(convertTime(pickup.getStartTime()))) {
                     warningMessages.add(MessageFormat.format(WARNING_MAY_BE_REACHED_AFTER_EXPECTED, pickup.getName()));
                 }
 
@@ -150,7 +150,7 @@ public class DriverV200 extends Driver {
         // If the starting zero order restaurant RS has a closing time where ClosingTimeS - 10 mins < 5:00pm,
         // then CalculatedStartTimeS = ClosingTimeS - 10 mins
 
-        if ( firstCloseTime.minusMinutes(10).compareTo(FIVE_PM) < 0) {
+        if (firstCloseTime.minusMinutes(10).isBefore(FIVE_PM)) {
             return formatTime(firstCloseTime.minusMinutes(10));
         }
 
@@ -166,7 +166,7 @@ public class DriverV200 extends Driver {
 
         LocalTime firstOrderRestaurantStartTime = convertTime(firstOrderRestaurant.getStartTime());
 
-        if ( firstOrderRestaurantStartTime.compareTo(FIVE_PM) <= 0) {
+        if (!firstOrderRestaurantStartTime.isAfter(FIVE_PM)) {
             return formatTime(firstOrderRestaurantStartTime);
         }
 
@@ -195,7 +195,7 @@ public class DriverV200 extends Driver {
             prev = restaurant;
         }
 
-        if (firstOrderRestaurantStartTime.compareTo(FIVE_PM) < 0) {
+        if (firstOrderRestaurantStartTime.isBefore(FIVE_PM)) {
             firstOrderRestaurantStartTime = FIVE_PM;
         }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021. helpberkeley.org
+ * Copyright (c) 2021-2024. helpberkeley.org
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -35,7 +35,7 @@ public abstract class RestaurantTemplateTestBase extends TestBase {
     public abstract String getEmptyRow();
     public abstract String getControlBlockDirectiveRow(String directive);
     public abstract String getRestaurantTemplate();
-    public abstract int controlBlockEndLineNumber();
+    public abstract int zeroOriginControlBlockEndLineNumber();
 
     @Test
     public void dataRowWithoutEnoughColumnsTest() {
@@ -83,11 +83,12 @@ public abstract class RestaurantTemplateTestBase extends TestBase {
             }
             restaurantTemplate.append(line).append("\n");
         }
+
         RestaurantTemplateParser parser = RestaurantTemplateParser.create(restaurantTemplate.toString());
-        Throwable thrown = catchThrowable(() -> parser.restaurants());
+        Throwable thrown = catchThrowable(parser::restaurants);
         assertThat(thrown).isInstanceOf(MemberDataException.class);
         String expectedError = RestaurantTemplateParser.TEMPLATE_ERROR + MessageFormat.format(
-                ControlBlock.ERROR_UNKNOWN_DIRECTIVE, badDirective, controlBlockEndLineNumber());
+                ControlBlock.ERROR_UNKNOWN_DIRECTIVE, badDirective, zeroOriginControlBlockEndLineNumber());
         assertThat(thrown).hasMessage(expectedError);
     }
 }

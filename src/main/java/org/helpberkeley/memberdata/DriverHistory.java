@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2023. helpberkeley.org
+ * Copyright (c) 2021-2024. helpberkeley.org
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -120,7 +120,7 @@ public class DriverHistory {
             if (isBlacklisted(uploadFile.getOriginalFileName())) {
                 LOGGER.info("Skipping blacklisted {}", uploadFile.getOriginalFileName());
             } else {
-                LOGGER.debug("Processing drivers from " + orderHistoryData.getDate());
+                LOGGER.debug("Processing drivers from {}", orderHistoryData.getDate());
 
                 Collection<String> drivers =
                         HBParser.parseDeliveryDrivers(uploadFile.getOriginalFileName(), deliveries);
@@ -165,7 +165,7 @@ public class DriverHistory {
             if (isBlacklisted(uploadFile.getOriginalFileName())) {
                 LOGGER.info("Skipping blacklisted {}", uploadFile.getOriginalFileName());
             } else {
-                LOGGER.debug("Processing drivers from " + orderHistoryData.getDate());
+                LOGGER.debug("Processing drivers from {}", orderHistoryData.getDate());
 
                 // Get drivers
                 Collection<String> drivers =
@@ -279,8 +279,8 @@ public class DriverHistory {
         }
 
         boolean incrementIfMatch(LocalDate runDate) {
-            if ((runDate.compareTo(monday) >= 0) &&
-                    runDate.compareTo(sunday) <= 0) {
+            if ((!runDate.isBefore(monday)) &&
+                    !runDate.isAfter(sunday)) {
                 numberOfRuns++;
                 return true;
             }

@@ -702,7 +702,7 @@ public abstract class ControlBlockTestBase extends TestBase {
     }
 
     @Test
-    public void unvisitedResutaurantsAuditBadValueTest() {
+    public void unvisitedRestaurantsAuditBadValueTest() {
 
         String key = Constants.CONTROL_BLOCK_UNVISITED_RESTAURANTS_AUDIT;
         String value = "TRUE";

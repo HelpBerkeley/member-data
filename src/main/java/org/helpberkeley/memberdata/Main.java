@@ -76,11 +76,9 @@ public class Main {
     static final long INREACH_POST_TOPIC = 820;
     static final long COMPLETED_DAILY_DELIVERIES_TOPIC = 859;
     static final long DISPATCHERS_POST_TOPIC = 938;
-    static final long STONE_TEST_TOPIC = 422;
     static final long DISPATCHERS_POST_ID = 5324;
     static final long ORDER_HISTORY_POST_ID = 6433;
     static final long RESTAURANT_TEMPLATE_POST_ID = 8664;
-    static final long DRIVERS_POST_STAGING_TOPIC_ID = 2123;
     static final long DRIVERS_TABLE_SHORT_POST_ID = 44847;
     static final long DRIVERS_TABLE_LONG_POST_ID = 44959;
     static final long EVENT_DRIVERS_TABLE_SHORT_POST_ID = 64471;
@@ -98,6 +96,8 @@ public class Main {
             "Control block version {0} is not supported. {1} requires control block version {2}\n";
 
     static final String DATE_IS_IN_THE_FUTURE = "Invalid date, {0} is in the future.";
+    static final String MESSAGES_POST_TO =
+            "**Messages Posted to [{0}](https://go.helpberkeley.org/t/{1})**\n\n";
 
     public static void main(String[] args) throws IOException, CsvException {
 
@@ -193,9 +193,6 @@ public class Main {
                 break;
             case Options.COMMAND_COMPLETED_ONEKITCHEN_ORDERS:
                 completedOneKitchenOrders(apiClient, options.getFileName());
-                break;
-            case Options.COMMAND_TEST_REQUEST:
-                testRequest(apiClient, options.getFileName());
                 break;
             default:
                 assert options.getCommand().equals(Options.COMMAND_POST_DRIVERS) : options.getCommand();
@@ -613,13 +610,12 @@ public class Main {
         Query query = new Query(
                 Constants.QUERY_GET_LAST_REQUEST_DRIVER_MESSAGES_REPLY, Constants.TOPIC_REQUEST_DRIVER_MESSAGES);
         WorkRequestHandler requestHandler = new WorkRequestHandler(apiClient, query);
-
         WorkRequestHandler.Reply reply;
 
         try {
             reply = requestHandler.getLastReply();
         } catch (MemberDataException ex) {
-            LOGGER.warn("getLastReply failed: " + ex + "\n" + ex.getMessage());
+            LOGGER.warn("getLastReply failed: {}\n{}", ex, ex.getMessage());
             requestHandler.postStatus(WorkRequestHandler.RequestStatus.Failed, ex.getMessage());
             return;
         }
@@ -640,9 +636,9 @@ public class Main {
     private static void doDriverMessages(
             ApiClient apiClient, WorkRequestHandler.WorkRequest request, Map<String, User> users) {
 
-        LOGGER.info("Driver message request found:\n" + request);
+        LOGGER.info("Driver message request found:\n{}", request);
 
-        long topic = (request.topic != null) ? request.topic : DRIVERS_POST_STAGING_TOPIC_ID;
+        Topic topic = (request.destinationTopic != null) ? request.destinationTopic : Constants.TOPIC_DRIVERS_POST_STAGING;
 
         // Download file
         String routedDeliveries = apiClient.downloadFile(request.uploadFile.getFileName());
@@ -687,7 +683,7 @@ public class Main {
         try {
             reply = requestHandler.getLastReply();
         } catch (MemberDataException ex) {
-            LOGGER.warn("getLastReply failed: " + ex + "\n" + ex.getMessage());
+            LOGGER.warn("getLastReply failed: {}\n{}", ex, ex.getMessage());
             requestHandler.postStatus(WorkRequestHandler.RequestStatus.Failed, ex.getMessage());
             return;
         }
@@ -740,7 +736,7 @@ public class Main {
     private static void doOneKitchenDriverMessages(
             ApiClient apiClient, WorkRequestHandler.WorkRequest request, Map<String, User> users) {
 
-        long topic = (request.topic != null) ? request.topic : DRIVERS_POST_STAGING_TOPIC_ID;
+        Topic topic = (request.destinationTopic != null) ? request.destinationTopic : Constants.TOPIC_DRIVERS_POST_STAGING;
 
         // Download file
         String routedDeliveries = apiClient.downloadFile(request.uploadFile.getFileName());
@@ -776,7 +772,7 @@ public class Main {
     }
 
     private static String generateDriverPosts(
-            ApiClient apiClient, DriverPostFormat driverPostFormat, long topic) {
+            ApiClient apiClient, DriverPostFormat driverPostFormat, Topic topic) {
 
         StringBuilder statusMessages = new StringBuilder();
         List<String> postURLs = new ArrayList<>();
@@ -789,7 +785,7 @@ public class Main {
 
         Post post = new Post();
         post.title = "Generated Group Instructions Post";
-        post.topic_id = topic;
+        post.topic_id = topic.getId();
         post.raw = driverPostFormat.generateGroupInstructionsPost();
         post.createdAt = ZonedDateTime.now(ZoneId.systemDefault())
                 .format(DateTimeFormatter.ofPattern("uuuu.MM.dd.HH.mm.ss"));
@@ -816,7 +812,7 @@ public class Main {
         for (String rawPost : posts) {
             post = new Post();
             post.title = "Generated Driver Post";
-            post.topic_id = topic;
+            post.topic_id = topic.getId();
             post.raw = rawPost;
             post.createdAt = ZonedDateTime.now(ZoneId.systemDefault())
                     .format(DateTimeFormatter.ofPattern("uuuu.MM.dd.HH.mm.ss"));
@@ -854,10 +850,8 @@ public class Main {
 
         statusMessages.append(driverPostFormat.generateSummary());
 
-        statusMessages.append("**Messages Posted to [Get driver messages]")
-                .append("(https://go.helpberkeley.org/t/")
-                .append(topic)
-                .append(")**\n\n");
+        statusMessages.append(
+                MessageFormat.format(MESSAGES_POST_TO, topic.getName(), String.valueOf(topic.getId())));
 
         if (driversTableURL != null) {
             statusMessages.append("\n[Pickup Manager Drivers Table](").append(driversTableURL).append(")");
@@ -885,7 +879,7 @@ public class Main {
     }
 
     private static String generateDriversTablePost(ApiClient apiClient, DriverPostFormat driverPostFormat,
-           long topic, StringBuilder statusMessages) {
+           Topic topic, StringBuilder statusMessages) {
 
         if (! (driverPostFormat instanceof DriverPostFormatV300)) {
             return null;
@@ -895,7 +889,7 @@ public class Main {
 
         Post post = new Post();
         post.title = "Generated Drivers Table Post";
-        post.topic_id = topic;
+        post.topic_id = topic.getId();
         post.raw = driverPostFormatV300.generateDriversTablePost();
         post.createdAt = ZonedDateTime.now(ZoneId.systemDefault())
                 .format(DateTimeFormatter.ofPattern("uuuu.MM.dd.HH.mm.ss"));
@@ -920,8 +914,8 @@ public class Main {
         return null;
     }
 
-    private static String generateOrdersTablePost(ApiClient apiClient, DriverPostFormat driverPostFormat,
-                                                   long topic, StringBuilder statusMessages) {
+    private static String generateOrdersTablePost(ApiClient apiClient,
+              DriverPostFormat driverPostFormat, Topic topic, StringBuilder statusMessages) {
 
         if (! (driverPostFormat instanceof DriverPostFormatV300)) {
             return null;
@@ -931,7 +925,7 @@ public class Main {
 
         Post post = new Post();
         post.title = "Generated Orders Table Post";
-        post.topic_id = topic;
+        post.topic_id = topic.getId();
         post.raw = driverPostFormatV300.generateOrdersTablePost();
         post.createdAt = ZonedDateTime.now(ZoneId.systemDefault())
                 .format(DateTimeFormatter.ofPattern("uuuu.MM.dd.HH.mm.ss"));
@@ -956,8 +950,8 @@ public class Main {
         return null;
     }
 
-    private static String generateBackupDriversPost(ApiClient apiClient, DriverPostFormat driverPostFormat,
-                                                  long topic, StringBuilder statusMessages) {
+    private static String generateBackupDriversPost(ApiClient apiClient,
+                DriverPostFormat driverPostFormat, Topic topic, StringBuilder statusMessages) {
 
         if (! (driverPostFormat instanceof DriverPostFormatV200)) {
             return null;
@@ -965,7 +959,7 @@ public class Main {
 
         Post post = new Post();
         post.title = "Generated Backup Driver Post";
-        post.topic_id = topic;
+        post.topic_id = topic.getId();
         post.raw = driverPostFormat.generateBackupDriverPost();
         post.createdAt = ZonedDateTime.now(ZoneId.systemDefault())
                 .format(DateTimeFormatter.ofPattern("uuuu.MM.dd.HH.mm.ss"));
@@ -1002,7 +996,7 @@ public class Main {
         try {
             reply = requestHandler.getLastReply();
         } catch (MemberDataException ex) {
-            LOGGER.warn("getLastReply failed: " + ex + "\n" + ex.getMessage());
+            LOGGER.warn("getLastReply failed: {}\n{}", ex, ex.getMessage());
             requestHandler.postStatus(WorkRequestHandler.RequestStatus.Failed, ex.getMessage());
             return;
         }
@@ -1108,7 +1102,7 @@ public class Main {
         try {
             reply = requestHandler.getLastReply();
         } catch (MemberDataException ex) {
-            LOGGER.warn("getLastReply failed: " + ex + "\n" + ex.getMessage());
+            LOGGER.warn("getLastReply failed: {}\n{}", ex, ex.getMessage());
             requestHandler.postStatus(WorkRequestHandler.RequestStatus.Failed, ex.getMessage());
             return;
         }
@@ -1333,7 +1327,7 @@ public class Main {
         try {
             reply = requestHandler.getLastReply();
         } catch (MemberDataException ex) {
-            LOGGER.warn("getLastReply failed: " + ex + "\n" + ex.getMessage());
+            LOGGER.warn("getLastReply failed: {}\n{}", ex, ex.getMessage());
             requestHandler.postStatus(WorkRequestHandler.RequestStatus.Failed, ex.getMessage());
             return;
         }
@@ -1358,7 +1352,7 @@ public class Main {
         try {
             reply = requestHandler.getLastReply();
         } catch (MemberDataException ex) {
-            LOGGER.warn("getLastReply failed: " + ex + "\n" + ex.getMessage());
+            LOGGER.warn("getLastReply failed: {}\n{}", ex, ex.getMessage());
             requestHandler.postStatus(WorkRequestHandler.RequestStatus.Failed, ex.getMessage());
             return;
         }
@@ -1565,19 +1559,21 @@ public class Main {
 
         for (Object rowObj : apiQueryResult.rows) {
             Object[] columns = (Object[]) rowObj;
-            assert columns.length == 4 : columns.length;
+            assert columns.length == 5 : columns.length;
 
             Long topicId = (Long)columns[topicIdIndex];
             Long postNumber = (Long)columns[postNumberIndex];
             String raw = (String)columns[rawIndex];
+            String topicName = (String)columns[rawIndex];
 
-            WorkRequestHandler requestHandler = new WorkRequestHandler(apiClient, topicId, postNumber, raw);
+            WorkRequestHandler requestHandler = new WorkRequestHandler(
+                    apiClient, new Topic(topicName, topicId), postNumber, raw);
             WorkRequestHandler.Reply reply;
 
             try {
                 reply = requestHandler.getLastReply();
             } catch (MemberDataException ex) {
-                LOGGER.warn("getLastReply failed: " + ex + "\n" + ex.getMessage());
+                LOGGER.warn("getLastReply failed: {}\n{}", ex, ex.getMessage());
                 requestHandler.postStatus(WorkRequestHandler.RequestStatus.Failed, ex.getMessage());
                 continue;
             }
@@ -1616,66 +1612,4 @@ public class Main {
             }
         }
     }
-
-    private static void testRequest(ApiClient apiClient, String usersFile) {
-        String json = apiClient.runQuery(Constants.QUERY_GET_LAST_TEST_REQUEST);
-        ApiQueryResult apiQueryResult = HBParser.parseQueryResult(json);
-
-        assert apiQueryResult.rows.length == 1 : apiQueryResult.rows.length;
-        Integer topicIdIndex = apiQueryResult.getColumnIndex(Constants.DISCOURSE_COLUMN_TOPIC_ID);
-        assert topicIdIndex != null;
-        Integer postNumberIndex = apiQueryResult.getColumnIndex(Constants.DISCOURSE_COLUMN_POST_NUMBER);
-        assert postNumberIndex != null;
-        Integer rawIndex = apiQueryResult.getColumnIndex(Constants.DISCOURSE_COLUMN_RAW);
-        assert rawIndex != null;
-
-        Object rowObj = apiQueryResult.rows[0];
-        Object[] columns = (Object[]) rowObj;
-        assert columns.length == 4 : columns.length;
-        Long topicId = (Long)columns[topicIdIndex];
-        Long postNumber = (Long)columns[postNumberIndex];
-        String raw = (String)columns[rawIndex];
-
-        WorkRequestHandler requestHandler = new WorkRequestHandler(apiClient, topicId, postNumber, raw);
-        WorkRequestHandler.Reply reply;
-
-        try {
-            reply = requestHandler.getLastReply();
-
-            // Nothing to do.
-            if (reply instanceof WorkRequestHandler.Status) {
-                return;
-            }
-
-            // Parse users files
-            String csvData = Files.readString(Paths.get(usersFile));
-            Map<String, User> users = new Tables(HBParser.users(csvData)).mapByUserName();
-
-            WorkRequestHandler.WorkRequest request = (WorkRequestHandler.WorkRequest) reply;
-            request.setTestTopic();
-//             doOneKitchenDriverMessages(apiClient, request, users);
-            doDriverMessages(apiClient, request, users);
-        } catch (MemberDataException | IOException | CsvException ex) {
-            LOGGER.warn("getLastReply failed: " + ex + "\n" + ex.getMessage());
-            requestHandler.postStatus(WorkRequestHandler.RequestStatus.Failed, ex.getMessage());
-        }
-    }
-
-//    private static void testQuery(ApiClient apiClient) {
-//
-////        String json = apiClient.runQuery(5);
-//        String json = apiClient.runQueryWithParam(5, "limit", "100000");
-//        ApiQueryResult apiQueryResult = HBParser.parseQueryResult(json);
-//
-////        json = apiClient.runQuery(5);
-////        apiQueryResult = HBParser.parseQueryResult(json);
-//
-////
-//        System.exit(0);
-//
-////        String json = apiClient.runQuery(Constants.QUERY_GET_GROUP_USERS_ID);
-////        ApiQueryResult apiQueryResult = HBParser.parseQueryResult(json);
-////        Map<String, List<Long>> groupUsers = HBParser.groupUsers(groupNames, apiQueryResult);
-//
-//    }
 }

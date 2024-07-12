@@ -36,6 +36,8 @@ public abstract class WorkflowParser {
             "Driver {0}, delivery for {1} at line {2} occurs before pickup from {3} at line {4}.\n";
 
     protected final ControlBlock controlBlock;
+    // Keep the line numbers in sync with the workflow sheet.
+    // CsvToBeanBuilder swallows the header row and nextRow() pre-increments line number
     protected int lineNumber = 1;
     protected final PeekingIterator<WorkflowBean> iterator;
     protected Map<String, Restaurant> globalRestaurants;

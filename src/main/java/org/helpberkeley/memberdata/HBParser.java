@@ -458,7 +458,7 @@ public class HBParser {
 
             int index = raw.indexOf('\n');
             if (index == -1) {
-                LOGGER.warn("Cannot parse daily deliver post: " + raw);
+                LOGGER.warn("Cannot parse daily deliver post: {}", raw);
                 continue;
             }
             String date = raw.substring(0, index);
@@ -585,7 +585,10 @@ public class HBParser {
         userName = matcher.group(1);
         String details = raw.replaceAll("\n", " ").replaceAll("\\s+", " ").trim();
 
-        detailsMap.computeIfAbsent(userName, DetailsPost::new);
+        if (! detailsMap.containsKey(userName)) {
+            detailsMap.put(userName, new DetailsPost());
+        }
+
         DetailsPost detailsPost = detailsMap.get(userName);
 
         if (handling == DetailsHandling.LAST_POST_WINS) {
@@ -749,8 +752,8 @@ public class HBParser {
             String[] columns = lines[1].split(Constants.CSV_SEPARATOR, -1);
             assert columns[0].equals("0") : lines[1];
             assert columns[1].equals("0") : lines[1];
-            assert columns[2].equals("") : lines[1];
-            assert ! columns[3].equals("") : lines[1];
+            assert columns[2].isEmpty() : lines[1];
+            assert !columns[3].isEmpty() : lines[1];
             orderHistoryThroughDate = columns[3].trim();
         }
 
