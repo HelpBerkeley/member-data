@@ -122,7 +122,7 @@ public class WorkflowExporter extends Exporter {
         } else {
             warningString.append(" |");
         }
-        value = user.getAddress();
+        value = user.getFullAddress();
         if (! escapeCommas(value).equals(escapeCommas(bean.getAddress()))) {
             bean.setAddress(value);
             warningString.append(" Updated |");
