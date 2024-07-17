@@ -709,8 +709,9 @@ public class Main {
         ApiQueryResult apiQueryResult = HBParser.parseQueryResult(json);
         Map<String, DetailsPost> deliveryDetails = HBParser.deliveryDetails(apiQueryResult);
 
-        String workflowFileName = request.uploadFile.getFileName();
-        String deliveries = apiClient.downloadFile(workflowFileName);
+        String originalWorkflowFileName = request.uploadFile.getOriginalFileName();
+        String fileName = request.uploadFile.getFileName();
+        String deliveries = apiClient.downloadFile(fileName);
         request.postStatus(WorkRequestHandler.RequestStatus.Processing, "");
 
         WorkflowParser parser;
@@ -726,10 +727,10 @@ public class Main {
             return;
         }
 
-        exporter.writeFile(workflowFileName, updatedCSVData);
-        Upload upload = new Upload(apiClient, workflowFileName);
+        exporter.writeFile(originalWorkflowFileName, updatedCSVData);
+        Upload upload = new Upload(apiClient, originalWorkflowFileName);
         String statusMessage = "Spreadsheet with updated member data uploaded: ["
-                + workflowFileName + "|attachment](" + upload.getShortURL() + ")\n"
+                + originalWorkflowFileName + "|attachment](" + upload.getShortURL() + ")\n"
                 + "\n" + "The table below shows which data was updated: \n" + exporter.getWarnings();
 
         request.postStatus(WorkRequestHandler.RequestStatus.Succeeded, statusMessage);

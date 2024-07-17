@@ -30,19 +30,26 @@ public class WorkflowExporter extends Exporter {
     public static final String TOO_MANY_MEMBERS_ERROR = "This is many more members (at least {0}) than the typical run, " +
             "does this sheet contain more members than just the drivers and consumers for this run?\n";
     public static final String NO_MATCHING_MEMBER_ERROR = "UserName {0} at line {1}" +
-            " does not match any current members, please update to a current member.\n";
+            " does not match any current members, please update to a current member. Note that UserName IS case-sensitive.\n";
     public static final String DRIVER_IS_CONSUMER_ERROR = "Line number {0} begins with TRUE TRUE. " +
             "Is this a driver who is also a consumer? If so, the consumer column must be set to false.\n";
+    public static final String HEADER_MISMATCH = "Header mismatch:\n {0} \n {1}\n\n " +
+            "If you don't see a mismatch, there may be scratch-work/data in columns to the right that don't have a name, please check and remove it.";
 
     private final StringBuilder updateWarnings = new StringBuilder();
     private final WorkflowParser parser;
     private final List<WorkflowBean> updatedBeans = new ArrayList<>();
+    private final Set<String> updatedUsers = new HashSet<>();
     private int member_limit = Constants.AVG_RUN_SIZE*10;
+    private String incomingHeader;
 
     public WorkflowExporter(WorkflowParser parser) {
         this.parser = parser;
         updateWarnings.append("| UserName | Name | Phone | Phone 2 | Neighborhood | City | Address | Condo | Details |\n");
         updateWarnings.append("|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|\n");
+
+        //remove trailing commas from header
+        incomingHeader = parser.normalizedCSVData.substring(0, parser.normalizedCSVData.indexOf('\n')).replaceAll(",*$", "");
     }
 
     public String getWarnings() { return updateWarnings.toString(); }
@@ -70,13 +77,14 @@ public class WorkflowExporter extends Exporter {
             }
             addBean(bean);
         }
+        String updatedCSVData = updatedWorkflowToString();
+        String outgoingHeader = updatedCSVData.substring(0, updatedCSVData.indexOf('\n'));
+        if (! incomingHeader.equals(outgoingHeader)) {
+            errors.append(MessageFormat.format(HEADER_MISMATCH, incomingHeader, outgoingHeader));
+        }
         if (errors.length() != 0) {
             throw new MemberDataException(errors.toString());
         }
-        String incomingHeader = parser.normalizedCSVData.substring(0, parser.normalizedCSVData.indexOf('\n'));
-        String updatedCSVData = updatedWorkflowToString();
-        String outgoingHeader = updatedCSVData.substring(0, updatedCSVData.indexOf('\n'));
-        assert incomingHeader.equals(outgoingHeader) : "header mismatch:\n" + incomingHeader + "\n" + outgoingHeader;
         return updatedCSVData;
     }
 
@@ -144,7 +152,10 @@ public class WorkflowExporter extends Exporter {
             warningString.append(" |");
         }
 
-        updateWarnings.append(warningString).append("\n");
+        if (warningString.toString().contains("Updated") && (! updatedUsers.contains(bean.getUserName()))) {
+            updatedUsers.add(bean.getUserName());
+            updateWarnings.append(warningString).append("\n");
+        }
     }
 
     private void addBean(WorkflowBean bean) {
@@ -165,5 +176,9 @@ public class WorkflowExporter extends Exporter {
 
     public void changeMemberLimit(int limit) {
         member_limit = limit;
+    }
+
+    public void changeIncomingHeader(String incomingHeader) {
+        this.incomingHeader = incomingHeader;
     }
 }
