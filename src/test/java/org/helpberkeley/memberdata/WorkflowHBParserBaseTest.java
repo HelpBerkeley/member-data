@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-2021 helpberkeley.org
+ * Copyright (c) 2020-2024 helpberkeley.org
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -43,6 +43,7 @@ public abstract class WorkflowHBParserBaseTest extends TestBase {
 
     public abstract List<String> getColumnNames();
     public abstract String getMinimumControlBlock();
+    public abstract String getHeader();
 
     @Test
     public void missingHeaderRowTest() {
@@ -60,7 +61,7 @@ public abstract class WorkflowHBParserBaseTest extends TestBase {
         List<String> columnNames = getColumnNames();
 
         for (int columnNum = 0; columnNum < columnNames.size(); columnNum++) {
-            // Build header with with columnNum column missing
+            // Build header with columnNum column missing
 
             StringBuilder header = new StringBuilder();
             for (int index = 0; index < columnNames.size(); index++) {
@@ -79,6 +80,48 @@ public abstract class WorkflowHBParserBaseTest extends TestBase {
             Throwable thrown = catchThrowable(() -> WorkflowParser.create(Collections.emptyMap(), expected));
             assertThat(thrown).isInstanceOf(MemberDataException.class);
             assertThat(thrown).hasMessageContaining(columnNames.get(columnNum));
+        }
+    }
+
+    @Test
+    public void invalidColumnNameTest() {
+
+        List<String> columnNames = List.of(
+                Constants.WORKFLOW_CONSUMER_COLUMN,
+                Constants.WORKFLOW_DRIVER_COLUMN,
+                Constants.WORKFLOW_NAME_COLUMN,
+                Constants.WORKFLOW_USER_NAME_COLUMN,
+                Constants.WORKFLOW_PHONE_COLUMN,
+                Constants.WORKFLOW_ALT_PHONE_COLUMN,
+                Constants.WORKFLOW_NEIGHBORHOOD_COLUMN,
+                Constants.WORKFLOW_CITY_COLUMN,
+                Constants.WORKFLOW_ADDRESS_COLUMN,
+                Constants.WORKFLOW_CONDO_COLUMN,
+                Constants.WORKFLOW_DETAILS_COLUMN);
+
+        for (int columnNum = 0; columnNum < columnNames.size(); columnNum++) {
+
+            String columnName = columnNames.get(columnNum);
+            String delimitedColumnName = "";
+            String delimitedReplacement = "";
+
+            if (columnNum != 0) {
+                delimitedColumnName = ",";
+                delimitedReplacement = ",";
+            }
+
+            delimitedColumnName += columnName + ",";
+            delimitedReplacement += "bogus" + columnNum + ",";
+
+            String minimumControlBlock = (getHeader() + getMinimumControlBlock()).replace(
+                    delimitedColumnName, delimitedReplacement);
+
+            Throwable thrown = catchThrowable(() ->
+                    WorkflowParser.create(Collections.emptyMap(), minimumControlBlock));
+
+            assertThat(thrown).isInstanceOf(MemberDataException.class);
+            assertThat(thrown).hasMessageContaining(MessageFormat.format(
+                    WorkflowParser.ERROR_MISSING_HEADER_COLUMN, columnName));
         }
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-2021 helpberkeley.org
+ * Copyright (c) 2020-2024 helpberkeley.org
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -125,7 +125,7 @@ public class WorkflowParserV300 extends WorkflowParser {
         StringBuilder errors = new StringBuilder();
         for (String columnName : columnNames) {
             if (! set.contains(columnName)) {
-                errors.append("Missing column header: ").append(columnName).append("\n");
+                errors.append(MessageFormat.format(ERROR_MISSING_HEADER_COLUMN, columnName)).append("\n");
                 numErrors++;
             }
         }

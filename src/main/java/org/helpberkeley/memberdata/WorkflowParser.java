@@ -34,6 +34,7 @@ public abstract class WorkflowParser {
 
     public static final String ERROR_DELIVERY_BEFORE_PICKUP =
             "Driver {0}, delivery for {1} at line {2} occurs before pickup from {3} at line {4}.\n";
+    public static final String ERROR_MISSING_HEADER_COLUMN = "Missing header column: {0}";
 
     protected final ControlBlock controlBlock;
     // Keep the line numbers in sync with the workflow sheet.
