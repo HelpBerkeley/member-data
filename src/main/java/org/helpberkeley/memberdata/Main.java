@@ -717,12 +717,10 @@ public class Main {
         String deliveries = apiClient.downloadFile(fileName);
         request.postStatus(WorkRequestHandler.RequestStatus.Processing, "");
 
-        WorkflowParser parser;
         WorkflowExporter exporter;
         String updatedCSVData;
         try {
-            parser = WorkflowParser.create(Collections.emptyMap(), deliveries);
-            exporter = new WorkflowExporter(parser);
+            exporter = new WorkflowExporter(WorkflowParser.create(Collections.emptyMap(), deliveries));
             updatedCSVData = exporter.updateMemberData(users, deliveryDetails);
         } catch (MemberDataException ex) {
             LOGGER.warn("updatedMemberData failed: " + ex + "\n" + ex.getMessage());
