@@ -852,24 +852,18 @@ public class MainTest extends TestBase {
     }
 
     @Test
-    public void updateMemberDataHeaderMismatch() {
-        String deliveries = readResourceFile("update-member-data-multiple-updates.csv");
-        WorkflowParser parser = WorkflowParser.create(Collections.emptyMap(), deliveries);
-        ApiClient apiSim = createApiSimulator();
-        List<User> userList = new Loader(apiSim).load();
-        Map<String, User> users = new Tables(userList).mapByUserName();
-        String json = apiSim.runQuery(Constants.QUERY_GET_DELIVERY_DETAILS);
-        ApiQueryResult apiQueryResult = HBParser.parseQueryResult(json);
-        Map<String, DetailsPost> deliveryDetails = HBParser.deliveryDetails(apiQueryResult);
-        WorkflowExporter exporter = new WorkflowExporter(parser);
-        String wrongHeader = "Consumer,Driver,Name,User Fame,Phone #,Phone2 #,City,Neighborhood,Address,Condo," +
-                "Details,Restaurants,std meals,alt meals,type meal,std grocery,alt grocery,type grocery";
-        String rightHeader = "Consumer,Driver,Name,User Name,Phone #,Phone2 #,Neighborhood,City,Address,Condo," +
-                "Details,Restaurants,std meals,alt meals,type meal,std grocery,alt grocery,type grocery";
-        exporter.changeIncomingHeader(wrongHeader);
-        Throwable thrown = catchThrowable(() -> exporter.updateMemberData(users, deliveryDetails));
-        assertThat(thrown).isInstanceOf(MemberDataException.class);
-        assertThat(thrown).hasMessageContaining(MessageFormat.format(WorkflowExporter.HEADER_MISMATCH, wrongHeader, rightHeader));
+    public void updateMemberDataNoUpdatesTest() throws IOException, CsvException {
+        String request = readResourceFile(DATA_REQUEST_TEMPLATE)
+                .replace("REPLACE_DATE", yesterday())
+                .replaceAll("REPLACE_FILENAME", "update-member-data-no-updates.csv");
+        HttpClientSimulator.setQueryResponseData(
+                Constants.QUERY_GET_REQUESTS_LAST_REPLIES, request);
+        String usersFile = findFile(Constants.MEMBERDATA_RAW_FILE, "csv");
+        String[] args = {Options.COMMAND_WORK_REQUESTS, usersFile};
+        Main.main(args);
+        assertThat(WorkRequestHandler.getLastStatusPost()).isNotNull();
+        assertThat(WorkRequestHandler.getLastStatusPost().raw).contains("Status: Succeeded");
+        assertThat(WorkRequestHandler.getLastStatusPost().raw).contains("is already up-to-date. There are no changes/updates for these members.");
     }
 
     @Test

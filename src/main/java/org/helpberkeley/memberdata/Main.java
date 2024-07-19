@@ -710,6 +710,7 @@ public class Main {
         Map<String, DetailsPost> deliveryDetails = HBParser.deliveryDetails(apiQueryResult);
 
         String originalWorkflowFileName = request.uploadFile.getOriginalFileName();
+        String updatedFileName = originalWorkflowFileName.replace(".csv", "-upd.csv");
         String fileName = request.uploadFile.getFileName();
         String deliveries = apiClient.downloadFile(fileName);
         request.postStatus(WorkRequestHandler.RequestStatus.Processing, "");
@@ -726,13 +727,17 @@ public class Main {
             request.postStatus(WorkRequestHandler.RequestStatus.Failed, ex.getMessage());
             return;
         }
-
-        exporter.writeFile(originalWorkflowFileName, updatedCSVData);
-        Upload upload = new Upload(apiClient, originalWorkflowFileName);
-        String statusMessage = "Spreadsheet with updated member data uploaded: ["
-                + originalWorkflowFileName + "|attachment](" + upload.getShortURL() + ")\n"
-                + "\n" + "The table below shows which data was updated: \n" + exporter.getWarnings();
-
+        String statusMessage;
+        if (exporter.getUpdatedUsers().isEmpty()) {
+            statusMessage = "The uploaded spreadsheet " + originalWorkflowFileName + " is already up-to-date. " +
+                    "There are no changes/updates for these members.";
+        } else {
+            exporter.writeFile(updatedFileName, updatedCSVData);
+            Upload upload = new Upload(apiClient, updatedFileName);
+            statusMessage = "Spreadsheet with updated member data uploaded: ["
+                    + updatedFileName + "|attachment](" + upload.getShortURL() + ")\n"
+                    + "\n" + "The table below shows which data was updated: \n" + exporter.getWarnings();
+        }
         request.postStatus(WorkRequestHandler.RequestStatus.Succeeded, statusMessage);
     }
 
