@@ -98,6 +98,8 @@ public class Main {
     static final String DATE_IS_IN_THE_FUTURE = "Invalid date, {0} is in the future.";
     static final String MESSAGES_POST_TO =
             "**Messages Posted to [{0}](https://go.helpberkeley.org/t/{1})**\n\n";
+    static final String UPDATE_USERS_NO_UPDATES = "The uploaded spreadsheet {0} is already up-to-date. " +
+            "There are no changes/updates for these members.";
 
     public static void main(String[] args) throws IOException, CsvException {
 
@@ -729,8 +731,7 @@ public class Main {
         }
         String statusMessage;
         if (exporter.getUpdatedUsers().isEmpty()) {
-            statusMessage = "The uploaded spreadsheet " + originalWorkflowFileName + " is already up-to-date. " +
-                    "There are no changes/updates for these members.";
+            statusMessage = MessageFormat.format(UPDATE_USERS_NO_UPDATES, originalWorkflowFileName);
         } else {
             exporter.writeFile(updatedFileName, updatedCSVData);
             Upload upload = new Upload(apiClient, updatedFileName);

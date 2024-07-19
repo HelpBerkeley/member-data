@@ -863,7 +863,7 @@ public class MainTest extends TestBase {
         Main.main(args);
         assertThat(WorkRequestHandler.getLastStatusPost()).isNotNull();
         assertThat(WorkRequestHandler.getLastStatusPost().raw).contains("Status: Succeeded");
-        assertThat(WorkRequestHandler.getLastStatusPost().raw).contains("is already up-to-date. There are no changes/updates for these members.");
+        assertThat(WorkRequestHandler.getLastStatusPost().raw).contains(MessageFormat.format(Main.UPDATE_USERS_NO_UPDATES, "update-member-data-no-updates.csv"));
     }
 
     @Test
