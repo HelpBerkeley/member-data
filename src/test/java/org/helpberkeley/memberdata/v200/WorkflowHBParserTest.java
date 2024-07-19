@@ -23,6 +23,7 @@
 package org.helpberkeley.memberdata.v200;
 
 import org.helpberkeley.memberdata.*;
+import org.helpberkeley.memberdata.v300.ControlBlockTest;
 import org.junit.Test;
 
 import java.text.MessageFormat;
@@ -79,6 +80,11 @@ public class WorkflowHBParserTest extends WorkflowHBParserBaseTest {
         return "FALSE,FALSE," + Constants.CONTROL_BLOCK_BEGIN + ",,,,,,,,,,,,\n" +
                 "FALSE,FALSE,,Version,,,,2-0-0,,,,,,,\n" +
                 "FALSE,FALSE," + Constants.CONTROL_BLOCK_END + ",,,,,,,,,,,,\n";
+    }
+
+    @Override
+    public String getHeader() {
+        return new ControlBlockTest().getHeader();
     }
 
     @Test
