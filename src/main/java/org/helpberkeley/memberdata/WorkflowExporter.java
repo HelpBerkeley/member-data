@@ -30,22 +30,31 @@ public class WorkflowExporter extends Exporter {
     public static final String TOO_MANY_MEMBERS_ERROR = "This is many more members (at least {0}) than the typical run, " +
             "does this sheet contain more members than just the drivers and consumers for this run?\n";
     public static final String NO_MATCHING_MEMBER_ERROR = "UserName {0} at line {1}" +
-            " does not match any current members, please update to a current member.\n";
+            " does not match any current members, please update to a current member. Note that UserName is case-sensitive.\n";
     public static final String DRIVER_IS_CONSUMER_ERROR = "Line number {0} begins with TRUE TRUE. " +
             "Is this a driver who is also a consumer? If so, the consumer column must be set to false.\n";
+    public static final String HEADER_MISMATCH = "Header mismatch:\n {0} \n {1}\n\n " +
+            "If you don't see a mismatch, there may be scratch-work/data in columns to the right that don't have a name, please check and remove it.";
 
     private final StringBuilder updateWarnings = new StringBuilder();
     private final WorkflowParser parser;
     private final List<WorkflowBean> updatedBeans = new ArrayList<>();
+    private final Set<String> updatedUsers = new HashSet<>();
     private int member_limit = Constants.AVG_RUN_SIZE*10;
 
     public WorkflowExporter(WorkflowParser parser) {
         this.parser = parser;
-        updateWarnings.append("| UserName | Name | Phone | Phone 2 | Neighborhood | City | Address | Condo | Details |\n");
+        updateWarnings.append("| ").append(Constants.WORKFLOW_USER_NAME_COLUMN).append(" | ").append(Constants.WORKFLOW_NAME_COLUMN)
+                .append(" | ").append(Constants.WORKFLOW_PHONE_COLUMN).append(" | ").append(Constants.WORKFLOW_ALT_PHONE_COLUMN)
+                .append(" | ").append(Constants.WORKFLOW_NEIGHBORHOOD_COLUMN).append(" | ").append(Constants.WORKFLOW_CITY_COLUMN)
+                .append(" | ").append(Constants.WORKFLOW_ADDRESS_COLUMN).append(" | ").append(Constants.WORKFLOW_CONDO_COLUMN)
+                .append(" | ").append(Constants.WORKFLOW_DETAILS_COLUMN).append(" |\n");
         updateWarnings.append("|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|\n");
     }
 
     public String getWarnings() { return updateWarnings.toString(); }
+
+    public Set<String> getUpdatedUsers() { return updatedUsers; }
 
     public String updateMemberData(Map<String, User> users, Map<String, DetailsPost> deliveryDetails) {
         StringBuilder errors = new StringBuilder();
@@ -70,13 +79,16 @@ public class WorkflowExporter extends Exporter {
             }
             addBean(bean);
         }
+        //remove trailing commas from header
+        String incomingHeader = parser.normalizedCSVData.substring(0, parser.normalizedCSVData.indexOf('\n')).replaceAll(",*$", "");
+        String updatedCSVData = updatedWorkflowToString();
+        String outgoingHeader = updatedCSVData.substring(0, updatedCSVData.indexOf('\n'));
+        if (! incomingHeader.equals(outgoingHeader)) {
+            errors.append(MessageFormat.format(HEADER_MISMATCH, incomingHeader, outgoingHeader));
+        }
         if (errors.length() != 0) {
             throw new MemberDataException(errors.toString());
         }
-        String incomingHeader = parser.normalizedCSVData.substring(0, parser.normalizedCSVData.indexOf('\n'));
-        String updatedCSVData = updatedWorkflowToString();
-        String outgoingHeader = updatedCSVData.substring(0, updatedCSVData.indexOf('\n'));
-        assert incomingHeader.equals(outgoingHeader) : "header mismatch:\n" + incomingHeader + "\n" + outgoingHeader;
         return updatedCSVData;
     }
 
@@ -122,7 +134,7 @@ public class WorkflowExporter extends Exporter {
         } else {
             warningString.append(" |");
         }
-        value = user.getAddress();
+        value = user.getFullAddress();
         if (! escapeCommas(value).equals(escapeCommas(bean.getAddress()))) {
             bean.setAddress(value);
             warningString.append(" Updated |");
@@ -144,7 +156,11 @@ public class WorkflowExporter extends Exporter {
             warningString.append(" |");
         }
 
-        updateWarnings.append(warningString).append("\n");
+        //drivers will be duplicated on the spreadsheet, so we ensure only 1 update warning per updated member
+        if (warningString.toString().contains("Updated") && (! updatedUsers.contains(bean.getUserName()))) {
+            updatedUsers.add(bean.getUserName());
+            updateWarnings.append(warningString).append("\n");
+        }
     }
 
     private void addBean(WorkflowBean bean) {

@@ -98,6 +98,8 @@ public class Main {
     static final String DATE_IS_IN_THE_FUTURE = "Invalid date, {0} is in the future.";
     static final String MESSAGES_POST_TO =
             "**Messages Posted to [{0}](https://go.helpberkeley.org/t/{1})**\n\n";
+    static final String UPDATE_USERS_NO_UPDATES = "The uploaded spreadsheet {0} is already up-to-date. " +
+            "There are no changes/updates for these members.";
 
     public static void main(String[] args) throws IOException, CsvException {
 
@@ -709,27 +711,32 @@ public class Main {
         ApiQueryResult apiQueryResult = HBParser.parseQueryResult(json);
         Map<String, DetailsPost> deliveryDetails = HBParser.deliveryDetails(apiQueryResult);
 
-        String workflowFileName = request.uploadFile.getFileName();
-        String deliveries = apiClient.downloadFile(workflowFileName);
+        String originalWorkflowFileName = request.uploadFile.getOriginalFileName();
+        String updatedFileName = originalWorkflowFileName.replace(".csv", "-upd.csv");
+        String fileName = request.uploadFile.getFileName();
+        String deliveries = apiClient.downloadFile(fileName);
         request.postStatus(WorkRequestHandler.RequestStatus.Processing, "");
 
-        WorkflowParser parser = WorkflowParser.create(Collections.emptyMap(), deliveries);
-        WorkflowExporter exporter = new WorkflowExporter(parser);
+        WorkflowExporter exporter;
         String updatedCSVData;
         try {
+            exporter = new WorkflowExporter(WorkflowParser.create(Collections.emptyMap(), deliveries));
             updatedCSVData = exporter.updateMemberData(users, deliveryDetails);
         } catch (MemberDataException ex) {
             LOGGER.warn("updatedMemberData failed: " + ex + "\n" + ex.getMessage());
             request.postStatus(WorkRequestHandler.RequestStatus.Failed, ex.getMessage());
             return;
         }
-
-        exporter.writeFile(workflowFileName, updatedCSVData);
-        Upload upload = new Upload(apiClient, workflowFileName);
-        String statusMessage = "Spreadsheet with updated member data uploaded: ["
-                + workflowFileName + "|attachment](" + upload.getShortURL() + ")\n"
-                + "\n" + "The table below shows which data was updated: \n" + exporter.getWarnings();
-
+        String statusMessage;
+        if (exporter.getUpdatedUsers().isEmpty()) {
+            statusMessage = MessageFormat.format(UPDATE_USERS_NO_UPDATES, originalWorkflowFileName);
+        } else {
+            exporter.writeFile(updatedFileName, updatedCSVData);
+            Upload upload = new Upload(apiClient, updatedFileName);
+            statusMessage = "Spreadsheet with updated member data uploaded: ["
+                    + updatedFileName + "|attachment](" + upload.getShortURL() + ")\n"
+                    + "\n" + "The table below shows which data was updated: \n" + exporter.getWarnings();
+        }
         request.postStatus(WorkRequestHandler.RequestStatus.Succeeded, statusMessage);
     }
 

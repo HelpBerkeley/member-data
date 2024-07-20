@@ -752,19 +752,19 @@ public class MainTest extends TestBase {
         String updatedCSVData = exporter.updateMemberData(users, deliveryDetails);
         assertThat(updatedCSVData).doesNotContain("Cust Name");
         assertThat(updatedCSVData).contains(
-                "Ms. Somebody,Somebody,123-456-7890,510-015-5151,Unknown,Berkeley,542 11dy 7th Street,FALSE");
+                "Ms. Somebody,Somebody,123-456-7890,510-015-5151,Unknown,Berkeley,\"542 11dy 7th Street, Berkeley, CA\",FALSE");
         assertThat(updatedCSVData).contains(
-                "\"Mr. Somebody, Esq.\",SomebodyElse,123-456-7890,510-015-5151,Unknown,Berkeley,\"542 11dy 7th Street, Apt 3g\",FALSE");
+                "\"Mr. Somebody, Esq.\",SomebodyElse,123-456-7890,510-015-5151,Unknown,Berkeley,\"542 11dy 7th Street, Apt 3g, Berkeley, CA\",FALSE");
         assertThat(updatedCSVData).contains(
-                "THE THIRD PERSON,ThirdPerson,123-456-7890,510-222-7777,Unknown,Berkeley,4 Fortieth Blvd,FALSE,\"something, with, a, lot, of commas.\"");
+                "THE THIRD PERSON,ThirdPerson,123-456-7890,510-222-7777,Unknown,Berkeley,\"4 Fortieth Blvd, Berkeley, CA\",FALSE,\"something, with, a, lot, of commas.\"");
         assertThat(updatedCSVData).contains(
-                "X Y ZZY,Xyzzy,555-555-5555,123-456-0000,N.BerkHills/Tilden,Berkeley,1223 Main St.,FALSE");
+                "X Y ZZY,Xyzzy,555-555-5555,123-456-0000,N.BerkHills/Tilden,Berkeley,\"1223 Main St., Berkeley, CA\",FALSE");
         assertThat(updatedCSVData).contains(
-                "Zees McZeesy,ZZZ,123-456-7890,none,unknown,Berkeley,3 Place Place Square,TRUE");
+                "Zees McZeesy,ZZZ,123-456-7890,none,unknown,Berkeley,\"3 Place Place Square, Berkeley, CA\",TRUE");
         assertThat(updatedCSVData).contains(
-                "Joseph R. Volunteer,JVol,123-456-7890,none,unknown,Berkeley,47 74th Ave,TRUE");
+                "Joseph R. Volunteer,JVol,123-456-7890,none,unknown,Berkeley,\"47 74th Ave, Berkeley, CA\",TRUE");
         assertThat(updatedCSVData).contains(
-                "Scotty J Backup 772th,MrBackup772,123-456-7890,none,unknown,Berkeley,38 38th Ave,TRUE");
+                "Scotty J Backup 772th,MrBackup772,123-456-7890,none,unknown,Berkeley,\"38 38th Ave, Berkeley, CA\",TRUE");
     }
 
     @Test
@@ -779,15 +779,15 @@ public class MainTest extends TestBase {
         Main.main(args);
         assertThat(WorkRequestHandler.getLastStatusPost()).isNotNull();
         assertThat(WorkRequestHandler.getLastStatusPost().raw).contains("Status: Succeeded");
-        assertThat(WorkRequestHandler.getLastStatusPost().raw).contains("| jbDriver | | | | Updated | | | Updated | |");
+        assertThat(WorkRequestHandler.getLastStatusPost().raw).contains("| jbDriver | | | | Updated | | Updated | Updated | |");
         assertThat(WorkRequestHandler.getLastStatusPost().raw).contains("| Somebody | | Updated | Updated | Updated | | Updated | | Updated |");
         assertThat(WorkRequestHandler.getLastStatusPost().raw).contains("| SomebodyElse | Updated | Updated | Updated | Updated | | Updated | | Updated |");
         assertThat(WorkRequestHandler.getLastStatusPost().raw).contains("| ThirdPerson | Updated | Updated | Updated | Updated | | Updated | | Updated |");
-        assertThat(WorkRequestHandler.getLastStatusPost().raw).contains("| Xyzzy | Updated | Updated | Updated | Updated | | | | |");
+        assertThat(WorkRequestHandler.getLastStatusPost().raw).contains("| Xyzzy | Updated | Updated | Updated | Updated | | Updated | | |");
         assertThat(WorkRequestHandler.getLastStatusPost().raw).contains("| ZZZ | Updated | | | Updated | | Updated | | Updated |");
         assertThat(WorkRequestHandler.getLastStatusPost().raw).contains("| JVol | Updated | Updated | | Updated | | Updated | Updated | |");
         assertThat(WorkRequestHandler.getLastStatusPost().raw).contains("| MrBackup772 | Updated | Updated | | Updated | | Updated | Updated | |");
-        assertThat(WorkRequestHandler.getLastStatusPost().raw).contains("| jbDriver | | | | Updated | | | Updated | |");
+        assertThat(WorkRequestHandler.getLastStatusPost().raw).contains("| jbDriver | | | | Updated | | Updated | Updated | |");
     }
 
     @Test
@@ -849,6 +849,21 @@ public class MainTest extends TestBase {
         Throwable thrown = catchThrowable(() -> exporter.updateMemberData(users, deliveryDetails));
         assertThat(thrown).isInstanceOf(MemberDataException.class);
         assertThat(thrown).hasMessageContaining(MessageFormat.format(WorkflowExporter.TOO_MANY_MEMBERS_ERROR, 3));
+    }
+
+    @Test
+    public void updateMemberDataNoUpdatesTest() throws IOException, CsvException {
+        String request = readResourceFile(DATA_REQUEST_TEMPLATE)
+                .replace("REPLACE_DATE", yesterday())
+                .replaceAll("REPLACE_FILENAME", "update-member-data-no-updates.csv");
+        HttpClientSimulator.setQueryResponseData(
+                Constants.QUERY_GET_REQUESTS_LAST_REPLIES, request);
+        String usersFile = findFile(Constants.MEMBERDATA_RAW_FILE, "csv");
+        String[] args = {Options.COMMAND_WORK_REQUESTS, usersFile};
+        Main.main(args);
+        assertThat(WorkRequestHandler.getLastStatusPost()).isNotNull();
+        assertThat(WorkRequestHandler.getLastStatusPost().raw).contains("Status: Succeeded");
+        assertThat(WorkRequestHandler.getLastStatusPost().raw).contains(MessageFormat.format(Main.UPDATE_USERS_NO_UPDATES, "update-member-data-no-updates.csv"));
     }
 
     @Test
