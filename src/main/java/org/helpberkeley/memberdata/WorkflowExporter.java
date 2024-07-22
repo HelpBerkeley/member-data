@@ -41,6 +41,7 @@ public class WorkflowExporter extends Exporter {
     private final List<WorkflowBean> updatedBeans = new ArrayList<>();
     private final Set<String> updatedUsers = new HashSet<>();
     private int member_limit = Constants.AVG_RUN_SIZE*10;
+    private int overrided_member_limit = Constants.AVG_RUN_SIZE*200;
 
     public WorkflowExporter(WorkflowParser parser) {
         this.parser = parser;
@@ -182,4 +183,8 @@ public class WorkflowExporter extends Exporter {
     public void changeMemberLimit(int limit) {
         member_limit = limit;
     }
+
+    public void overrideMemberLimit() { changeMemberLimit(overrided_member_limit); }
+
 }
+

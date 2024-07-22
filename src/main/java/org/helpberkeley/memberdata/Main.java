@@ -720,8 +720,11 @@ public class Main {
         WorkflowExporter exporter;
         String updatedCSVData;
         try {
-            exporter = new WorkflowExporter(WorkflowParser.create(Collections.emptyMap(), deliveries));
-            updatedCSVData = exporter.updateMemberData(users, deliveryDetails);
+            exporter = new WorkflowExporter(WorkflowParser.create(Collections.emptyMap(), deliveries)); //exporter created here
+            if (request.disableMemberLimitAudit()){
+                exporter.overrideMemberLimit();
+            }
+            updatedCSVData = exporter.updateMemberData(users, deliveryDetails); //must change limit before this function invoked
         } catch (MemberDataException ex) {
             LOGGER.warn("updatedMemberData failed: " + ex + "\n" + ex.getMessage());
             request.postStatus(WorkRequestHandler.RequestStatus.Failed, ex.getMessage());
