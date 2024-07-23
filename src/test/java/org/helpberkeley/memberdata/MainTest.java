@@ -22,16 +22,21 @@
  */
 package org.helpberkeley.memberdata;
 
+import com.opencsv.CSVReader;
+import com.opencsv.CSVWriter;
 import com.opencsv.exceptions.CsvException;
 import org.junit.*;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.StringReader;
+import java.io.StringWriter;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.text.MessageFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -1118,6 +1123,60 @@ public class MainTest extends TestBase {
         assertThat(statusPost).isNotNull();
         assertThat(statusPost.raw).contains("Status: Succeeded");
         assertThat(statusPost.topic_id).isEqualTo(Constants.TOPIC_POST_RESTAURANT_TEMPLATE.getId());
+    }
+
+    @Test
+    public void nameWithCommaTest() throws UserException, IOException, CsvException {
+        User u1 = createUserWithNoRequestsNoGroups("My name has, one comma");
+        User u2 = createUserWithVolunteerRequest("My name, has, two commas", "Drive");
+
+        UserExporter exporter = new UserExporter(List.of(u1, u2));
+
+        String exportDataCSV = exporter.allMembersRaw();
+        // Verify that we can parse it
+        List<User> users = HBParser.users(exportDataCSV);
+    }
+
+    @Test
+    public void csvWriterTest() throws IOException, CsvException {
+        StringWriter writer1 = new StringWriter();
+        CSVWriter csvWriter1 = new CSVWriter(writer1);
+        StringWriter writer2 = new StringWriter();
+        CSVWriter csvWriter2 = new CSVWriter(writer2);
+        List<String[]> dataToEncode = new ArrayList<>();
+
+        String col0 = "";
+        String col1 = "simple";
+        String col2 = "simple with space";
+        String col3 = "has, a single comma";
+        String col4 = "has, a pair of, commas";
+        String col5 = "has, a single quote \"";
+        String col6 = "has a \"quoted string\"";
+        String col7 = "has multiple \"quoted\" \"strings\"";
+        String col8 = "has a comma, and a \"quoted string\"";
+        String col9 = "has, multiple commas, and \"quoted\" \"strings\"";
+        String col10 = "has, a, comma, \"inside, quoted\" string";
+
+        String[] row = {col0, col1, col2, col3, col4, col5, col6, col7, col8, col9, col10};
+        dataToEncode.add(row);
+
+        csvWriter1.writeAll(dataToEncode);
+        csvWriter1.close();
+        csvWriter2.writeNext(row);
+        csvWriter2.close();
+
+        String encodedCSV1 = writer1.toString();
+        String encodedCSV2 = writer2.toString();
+
+        CSVReader csvReader = new CSVReader(new StringReader(encodedCSV1));
+        List<String[]> csvParsed = csvReader.readAll();
+        String[] parsedRow = csvParsed.get(0);
+
+        // check that the encoded row is not the same as the decoded row.
+        assertThat(dataToEncode).isNotEqualTo(csvParsed);
+
+        // Validate roundtrip
+        assertThat(row).isEqualTo(parsedRow);
     }
 
     private String findFile(final String prefix, final String suffix) {

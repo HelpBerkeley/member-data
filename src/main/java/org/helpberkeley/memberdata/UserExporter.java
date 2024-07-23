@@ -22,13 +22,17 @@
 package org.helpberkeley.memberdata;
 
 import com.opencsv.CSVReader;
+import com.opencsv.CSVWriter;
 import com.opencsv.exceptions.CsvException;
 
 import java.io.IOException;
 import java.io.StringReader;
+import java.io.StringWriter;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -163,101 +167,130 @@ public class UserExporter extends Exporter {
     String workflow(final String restaurantBlock,
         Map<String, DetailsPost> deliveryDetails) throws IOException, CsvException {
 
-        StringBuilder rows = new StringBuilder();
+//        StringBuilder rows = new StringBuilder();
+        StringWriter writer = new StringWriter();
+        CSVWriter csvWriter = new CSVWriter(writer);
+        List<String[]> dataToEncode = new ArrayList<>();
 
         if (restaurantBlock.isEmpty()) {
-            rows.append(workflowHeaders());
+//            rows.append(workflowHeaders());
+            csvWriter.writeNext(workflowHeaders());
         } else {
             auditWorkflowData(restaurantBlock, workflowHeaders());
-            rows.append(restaurantBlock);
+            CSVReader csvReader = new CSVReader(new StringReader(restaurantBlock));
+            List<String[]> parsedRestaurantBlock = csvReader.readAll();
+            csvWriter.writeAll(parsedRestaurantBlock);
+//            rows.append(restaurantBlock);
         }
 
         for (User user : tables.sortByConsumerThenDriverThenName()) {
 
             DetailsPost details = deliveryDetails.get(user.getUserName());
 
-            rows.append(user.isConsumer());
-            rows.append(separator);
-            rows.append(user.isDriver());
-            rows.append(separator);
-            rows.append(escapeCommas(user.getName()));
-            rows.append(separator);
-            rows.append(user.getUserName());
-            rows.append(separator);
-            rows.append(user.getPhoneNumber());
-            rows.append(separator);
-            rows.append(user.getAltPhoneNumber());
-            rows.append(separator);
-            rows.append(escapeCommas(user.getNeighborhood()));
-            rows.append(separator);
-            rows.append(escapeCommas(user.getCity()));
-            rows.append(separator);
-            rows.append(escapeCommas(user.getFullAddress()));
-            rows.append(separator);
-            rows.append(user.isCondo());
-            rows.append(separator);
-            rows.append(details == null ? "" : escapeCommas(details.getDetails()));
-            rows.append(separator);
-            rows.append(separator);
-            rows.append(separator);
-            rows.append(separator);
-            rows.append('\n');
+            String[] row = {user.isConsumer().toString(), user.isDriver().toString(), user.getName(), user.getUserName(),
+                    user.getPhoneNumber(), user.getAltPhoneNumber(), user.getNeighborhood(), user.getCity(), user.getFullAddress(),
+                    user.isCondo().toString(), details == null ? "" : details.getDetails()};
+            dataToEncode.add(row);
+
+//            rows.append(user.isConsumer());
+//            rows.append(separator);
+//            rows.append(user.isDriver());
+//            rows.append(separator);
+//            rows.append(escapeCommas(user.getName()));
+//            rows.append(separator);
+//            rows.append(user.getUserName());
+//            rows.append(separator);
+//            rows.append(user.getPhoneNumber());
+//            rows.append(separator);
+//            rows.append(user.getAltPhoneNumber());
+//            rows.append(separator);
+//            rows.append(escapeCommas(user.getNeighborhood()));
+//            rows.append(separator);
+//            rows.append(escapeCommas(user.getCity()));
+//            rows.append(separator);
+//            rows.append(escapeCommas(user.getFullAddress()));
+//            rows.append(separator);
+//            rows.append(user.isCondo());
+//            rows.append(separator);
+//            rows.append(details == null ? "" : escapeCommas(details.getDetails()));
+//            rows.append(separator);
+//            rows.append(separator);
+//            rows.append(separator);
+//            rows.append(separator);
+//            rows.append('\n');
         }
 
-        return rows.toString();
+        csvWriter.writeAll(dataToEncode);
+        csvWriter.close();
+        return writer.toString();
     }
 
     String oneKitchenWorkflow(final String restaurantBlock,
                     Map<String, DetailsPost> deliveryDetails) throws IOException, CsvException {
 
-        StringBuilder rows = new StringBuilder();
+        StringWriter writer = new StringWriter();
+        CSVWriter csvWriter = new CSVWriter(writer);
+        List<String[]> dataToEncode = new ArrayList<>();
+
+//        StringBuilder rows = new StringBuilder();
 
         if (restaurantBlock.isEmpty()) {
-            rows.append(workflowHeaders());
+//            rows.append(workflowHeaders());
+            csvWriter.writeNext(workflowHeaders());
         } else {
             auditWorkflowData(restaurantBlock, oneKitchenWorkflowHeaders());
-            rows.append(restaurantBlock);
+            CSVReader csvReader = new CSVReader(new StringReader(restaurantBlock));
+            List<String[]> parsedRestaurantBlock = csvReader.readAll();
+            csvWriter.writeAll(parsedRestaurantBlock);
+//            rows.append(restaurantBlock);
         }
 
         for (User user : tables.sortByConsumerThenDriverThenName()) {
 
             DetailsPost details = deliveryDetails.get(user.getUserName());
 
-            rows.append(user.isConsumer());
-            rows.append(separator);
-            rows.append(user.isDriver());
-            rows.append(separator);
-            rows.append(escapeCommas(user.getName()));
-            rows.append(separator);
-            rows.append(user.getUserName());
-            rows.append(separator);
-            rows.append(user.getPhoneNumber());
-            rows.append(separator);
-            rows.append(user.getAltPhoneNumber());
-            rows.append(separator);
-            rows.append(escapeCommas(user.getNeighborhood()));
-            rows.append(separator);
-            rows.append(escapeCommas(user.getCity()));
-            rows.append(separator);
-            rows.append(escapeCommas(user.getFullAddress()));
-            rows.append(separator);
-            rows.append(user.isCondo());
-            rows.append(separator);
-            rows.append(details == null ? "" : escapeCommas(details.getDetails()));
-            rows.append(separator);
-            rows.append(separator);
-            rows.append(separator);
-            rows.append(separator);
-            rows.append('\n');
+            String[] row = {user.isConsumer().toString(), user.isDriver().toString(), user.getName(), user.getUserName(),
+                    user.getPhoneNumber(), user.getAltPhoneNumber(), user.getNeighborhood(), user.getCity(), user.getFullAddress(),
+                    user.isCondo().toString(), details == null ? "" : details.getDetails()};
+            dataToEncode.add(row);
+
+//            rows.append(user.isConsumer());
+//            rows.append(separator);
+//            rows.append(user.isDriver());
+//            rows.append(separator);
+//            rows.append(escapeCommas(user.getName()));
+//            rows.append(separator);
+//            rows.append(user.getUserName());
+//            rows.append(separator);
+//            rows.append(user.getPhoneNumber());
+//            rows.append(separator);
+//            rows.append(user.getAltPhoneNumber());
+//            rows.append(separator);
+//            rows.append(escapeCommas(user.getNeighborhood()));
+//            rows.append(separator);
+//            rows.append(escapeCommas(user.getCity()));
+//            rows.append(separator);
+//            rows.append(escapeCommas(user.getFullAddress()));
+//            rows.append(separator);
+//            rows.append(user.isCondo());
+//            rows.append(separator);
+//            rows.append(details == null ? "" : escapeCommas(details.getDetails()));
+//            rows.append(separator);
+//            rows.append(separator);
+//            rows.append(separator);
+//            rows.append(separator);
+//            rows.append('\n');
         }
 
-        return rows.toString();
+        csvWriter.writeAll(dataToEncode);
+        csvWriter.close();
+        return writer.toString();
     }
 
     // Audit that all of the columns are expected column names are present, in the expected order
     // and that all of the rows contain the same number of columns.
     //
-    private void auditWorkflowData(String workflowData, String headers) throws IOException, CsvException {
+    private void auditWorkflowData(String workflowData, String[] headers) throws IOException, CsvException {
 
         // Normalize EOL - FIX THIS, DS: doe CSVReader do this already?
         String csvData = workflowData.replaceAll("\\r\\n?", "\n");
@@ -269,7 +302,7 @@ public class UserExporter extends Exporter {
         assert ! rows.isEmpty() : "missing work flow data";
         String[] headerColumns = rows.get(0);
 
-        if (! headers.equals(lines[0] + "\n")) {
+        if (! Arrays.equals(headers, headerColumns)) {
             throw new Error("Header mismatch: " + lines[0] + " != " + headers);
         }
 
@@ -298,38 +331,41 @@ public class UserExporter extends Exporter {
         return outputFileName;
     }
 
-    String workflowHeaders() {
+    String[] workflowHeaders() {
 
-        return User.CONSUMER_COLUMN
-            + separator
-            + User.DRIVER_COLUMN
-            + separator
-            + User.NAME_COLUMN
-            + separator
-            + User.USERNAME_COLUMN
-            + separator
-            + User.PHONE_NUMBER_COLUMN
-            + separator
-            + User.ALT_PHONE_NUMBER_COLUMN
-            + separator
-            + User.NEIGHBORHOOD_COLUMN
-            + separator
-            + User.CITY_COLUMN
-            + separator
-            + User.ADDRESS_COLUMN
-            + separator
-            + User.CONDO_COLUMN
-            + separator
-            + "Details"
-            + separator
-            + "Restaurants"
-            + separator
-            + "normal"
-            + separator
-            + "veggie"
-            + separator
-            + "#orders"
-            + '\n';
+        return new String[]{User.CONSUMER_COLUMN, User.DRIVER_COLUMN, User.NAME_COLUMN, User.USERNAME_COLUMN, User.PHONE_NUMBER_COLUMN,
+                User.ALT_PHONE_NUMBER_COLUMN, User.NEIGHBORHOOD_COLUMN, User.CITY_COLUMN, User.ADDRESS_COLUMN,
+                User.CONDO_COLUMN, "Details", "Restaurants", "normal", "veggie", "#orders"};
+//        return User.CONSUMER_COLUMN
+//            + separator
+//            + User.DRIVER_COLUMN
+//            + separator
+//            + User.NAME_COLUMN
+//            + separator
+//            + User.USERNAME_COLUMN
+//            + separator
+//            + User.PHONE_NUMBER_COLUMN
+//            + separator
+//            + User.ALT_PHONE_NUMBER_COLUMN
+//            + separator
+//            + User.NEIGHBORHOOD_COLUMN
+//            + separator
+//            + User.CITY_COLUMN
+//            + separator
+//            + User.ADDRESS_COLUMN
+//            + separator
+//            + User.CONDO_COLUMN
+//            + separator
+//            + "Details"
+//            + separator
+//            + "Restaurants"
+//            + separator
+//            + "normal"
+//            + separator
+//            + "veggie"
+//            + separator
+//            + "#orders"
+//            + '\n';
     }
 
     String oneKitchenWorkflowToFile(final String restaurantBlock, Map<String, DetailsPost> deliveryDetails,
@@ -341,44 +377,49 @@ public class UserExporter extends Exporter {
         return outputFileName;
     }
 
-    String oneKitchenWorkflowHeaders() {
+    String[] oneKitchenWorkflowHeaders() {
 
-        return User.CONSUMER_COLUMN
-                + separator
-                + User.DRIVER_COLUMN
-                + separator
-                + User.NAME_COLUMN
-                + separator
-                + User.USERNAME_COLUMN
-                + separator
-                + User.PHONE_NUMBER_COLUMN
-                + separator
-                + User.ALT_PHONE_NUMBER_COLUMN
-                + separator
-                + User.NEIGHBORHOOD_COLUMN
-                + separator
-                + User.CITY_COLUMN
-                + separator
-                + User.ADDRESS_COLUMN
-                + separator
-                + User.CONDO_COLUMN
-                + separator
-                + Constants.WORKFLOW_DETAILS_COLUMN
-                + separator
-                + Constants.WORKFLOW_RESTAURANTS_COLUMN
-                + separator
-                + Constants.WORKFLOW_STD_MEALS_COLUMN
-                + separator
-                + Constants.WORKFLOW_ALT_MEALS_COLUMN
-                + separator
-                + Constants.WORKFLOW_TYPE_MEAL_COLUMN
-                + separator
-                + Constants.WORKFLOW_STD_GROCERY_COLUMN
-                + separator
-                + Constants.WORKFLOW_ALT_GROCERY_COLUMN
-                + separator
-                + Constants.WORKFLOW_TYPE_GROCERY_COLUMN
-                + '\n';
+        return new String[]{User.CONSUMER_COLUMN, User.DRIVER_COLUMN, User.NAME_COLUMN, User.USERNAME_COLUMN, User.PHONE_NUMBER_COLUMN,
+                User.ALT_PHONE_NUMBER_COLUMN, User.NEIGHBORHOOD_COLUMN, User.CITY_COLUMN, User.ADDRESS_COLUMN, User.CONDO_COLUMN,
+                Constants.WORKFLOW_DETAILS_COLUMN, Constants.WORKFLOW_RESTAURANTS_COLUMN, Constants.WORKFLOW_STD_MEALS_COLUMN,
+                Constants.WORKFLOW_ALT_MEALS_COLUMN, Constants.WORKFLOW_TYPE_MEAL_COLUMN, Constants.WORKFLOW_STD_GROCERY_COLUMN,
+                Constants.WORKFLOW_ALT_GROCERY_COLUMN, Constants.WORKFLOW_TYPE_GROCERY_COLUMN};
+//        return User.CONSUMER_COLUMN
+//                + separator
+//                + User.DRIVER_COLUMN
+//                + separator
+//                + User.NAME_COLUMN
+//                + separator
+//                + User.USERNAME_COLUMN
+//                + separator
+//                + User.PHONE_NUMBER_COLUMN
+//                + separator
+//                + User.ALT_PHONE_NUMBER_COLUMN
+//                + separator
+//                + User.NEIGHBORHOOD_COLUMN
+//                + separator
+//                + User.CITY_COLUMN
+//                + separator
+//                + User.ADDRESS_COLUMN
+//                + separator
+//                + User.CONDO_COLUMN
+//                + separator
+//                + Constants.WORKFLOW_DETAILS_COLUMN
+//                + separator
+//                + Constants.WORKFLOW_RESTAURANTS_COLUMN
+//                + separator
+//                + Constants.WORKFLOW_STD_MEALS_COLUMN
+//                + separator
+//                + Constants.WORKFLOW_ALT_MEALS_COLUMN
+//                + separator
+//                + Constants.WORKFLOW_TYPE_MEAL_COLUMN
+//                + separator
+//                + Constants.WORKFLOW_STD_GROCERY_COLUMN
+//                + separator
+//                + Constants.WORKFLOW_ALT_GROCERY_COLUMN
+//                + separator
+//                + Constants.WORKFLOW_TYPE_GROCERY_COLUMN
+//                + '\n';
     }
 
     String inreach(OrderHistory orderHistory) {

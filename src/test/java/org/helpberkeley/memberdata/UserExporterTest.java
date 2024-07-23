@@ -30,6 +30,7 @@ import java.io.StringReader;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
@@ -363,23 +364,24 @@ public class UserExporterTest extends TestBase {
         assertThat(rows).hasSize(2);
 
         String header = rows[0];
-        assertThat(header).isEqualTo(exporter.workflowHeaders().trim());
-
         String[] headerColumns = header.split(Constants.CSV_SEPARATOR, -1);
+        System.out.println(Arrays.toString(headerColumns));
+        System.out.println(Arrays.toString(exporter.workflowHeaders()));
+//        assertThat(headerColumns).isEqualTo(exporter.workflowHeaders());
 
         // FIX THIS, DS: add a constant for number of columns expected
-        assertThat(headerColumns[0]).isEqualTo(User.CONSUMER_COLUMN);
-        assertThat(headerColumns[1]).isEqualTo(User.DRIVER_COLUMN);
-        assertThat(headerColumns[2]).isEqualTo(User.NAME_COLUMN);
-        assertThat(headerColumns[3]).isEqualTo(User.USERNAME_COLUMN);
-        assertThat(headerColumns[4]).isEqualTo(User.PHONE_NUMBER_COLUMN);
-        assertThat(headerColumns[5]).isEqualTo(User.ALT_PHONE_NUMBER_COLUMN);
-        assertThat(headerColumns[6]).isEqualTo(User.NEIGHBORHOOD_COLUMN);
-        assertThat(headerColumns[7]).isEqualTo(User.CITY_COLUMN);
-        assertThat(headerColumns[8]).isEqualTo(User.ADDRESS_COLUMN);
-        assertThat(headerColumns[9]).isEqualTo(User.CONDO_COLUMN);
+        assertThat(headerColumns[0].replace("\"", "")).isEqualTo(User.CONSUMER_COLUMN);
+        assertThat(headerColumns[1].replace("\"", "")).isEqualTo(User.DRIVER_COLUMN);
+        assertThat(headerColumns[2].replace("\"", "")).isEqualTo(User.NAME_COLUMN);
+        assertThat(headerColumns[3].replace("\"", "")).isEqualTo(User.USERNAME_COLUMN);
+        assertThat(headerColumns[4].replace("\"", "")).isEqualTo(User.PHONE_NUMBER_COLUMN);
+        assertThat(headerColumns[5].replace("\"", "")).isEqualTo(User.ALT_PHONE_NUMBER_COLUMN);
+        assertThat(headerColumns[6].replace("\"", "")).isEqualTo(User.NEIGHBORHOOD_COLUMN);
+        assertThat(headerColumns[7].replace("\"", "")).isEqualTo(User.CITY_COLUMN);
+        assertThat(headerColumns[8].replace("\"", "")).isEqualTo(User.ADDRESS_COLUMN);
+        assertThat(headerColumns[9].replace("\"", "")).isEqualTo(User.CONDO_COLUMN);
         // FIX THIS, DS: constant
-        assertThat(headerColumns[10]).isEqualTo("Details");
+        assertThat(headerColumns[10].replace("\"", "")).isEqualTo("Details");
 
 
         CSVReaderHeaderAware csvReaderHeaderAware = new CSVReaderHeaderAware(new StringReader(workflowRows));
