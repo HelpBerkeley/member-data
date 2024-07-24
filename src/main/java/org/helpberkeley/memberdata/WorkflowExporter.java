@@ -41,7 +41,7 @@ public class WorkflowExporter extends Exporter {
     private final List<WorkflowBean> updatedBeans = new ArrayList<>();
     private final Set<String> updatedUsers = new HashSet<>();
     private int member_limit = Constants.AVG_RUN_SIZE*10;
-    private int overrided_member_limit = Constants.AVG_RUN_SIZE*200;
+    private boolean override_member_limit = false;
 
     public WorkflowExporter(WorkflowParser parser) {
         this.parser = parser;
@@ -65,7 +65,7 @@ public class WorkflowExporter extends Exporter {
         while ((bean = parser.nextRow()) != null) {
             if (parser.isMemberRow(bean)) {
                 numMembers++;
-                if (numMembers > member_limit) {
+                if (numMembers > member_limit && !override_member_limit) {
                     throw new MemberDataException(MessageFormat.format(TOO_MANY_MEMBERS_ERROR, numMembers));
                 }
 
@@ -184,7 +184,7 @@ public class WorkflowExporter extends Exporter {
         member_limit = limit;
     }
 
-    public void overrideMemberLimit() { changeMemberLimit(overrided_member_limit); }
+    public void overrideMemberLimit() { override_member_limit = true; }
 
 }
 
