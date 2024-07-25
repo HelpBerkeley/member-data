@@ -867,6 +867,28 @@ public class MainTest extends TestBase {
     }
 
     @Test
+    public void updateMemberDataOverrideMemberLimitSucceed() throws IOException, CsvException {
+        String request = readResourceFile("last-replies-data-request-template-extra.json")
+                .replace("REPLACE_DATE", yesterday())
+                .replace("REPLACE_EXTRA", "disable size audit")
+                .replaceAll("REPLACE_FILENAME","update-member-data-multiple-updates.csv");
+        HttpClientSimulator.setQueryResponseData(
+                Constants.QUERY_GET_REQUESTS_LAST_REPLIES, request);
+        String usersFile = findFile(Constants.MEMBERDATA_RAW_FILE, "csv");
+        String[] args = { Options.COMMAND_WORK_REQUESTS, usersFile };
+        try {
+            WorkflowExporter.changeMemberLimit(2);
+            Main.main(args);
+            assertThat(WorkflowExporter.memberLimit() == 15); //size of user list in users.json
+        } finally {
+            WorkflowExporter.changeMemberLimit(WorkflowExporter.getDefaultMemberLimit());
+        }
+        assertThat(WorkRequestHandler.getLastStatusPost()).isNotNull();
+        assertThat(WorkRequestHandler.getLastStatusPost().raw).contains("Status: Succeeded");
+
+    }
+
+    @Test
     public void completedOneKitchenV200Test() throws IOException, CsvException {
         completedOneKitchenWrongTopic("routed-deliveries-v200.csv", "2-0-0");
     }

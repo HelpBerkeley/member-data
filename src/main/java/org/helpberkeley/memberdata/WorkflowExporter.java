@@ -25,6 +25,7 @@ package org.helpberkeley.memberdata;
 import java.text.MessageFormat;
 import java.util.*;
 
+
 public class WorkflowExporter extends Exporter {
 
     public static final String TOO_MANY_MEMBERS_ERROR = "This is many more members (at least {0}) than the typical run, " +
@@ -40,8 +41,9 @@ public class WorkflowExporter extends Exporter {
     private final WorkflowParser parser;
     private final List<WorkflowBean> updatedBeans = new ArrayList<>();
     private final Set<String> updatedUsers = new HashSet<>();
-    private int member_limit = Constants.AVG_RUN_SIZE*10;
-    private boolean override_member_limit = false;
+    public static int getDefaultMemberLimit() { return Constants.AVG_RUN_SIZE*10; }
+    public static int member_limit = getDefaultMemberLimit();
+    public static int memberLimit() { return member_limit; } //inelegant solution?
 
     public WorkflowExporter(WorkflowParser parser) {
         this.parser = parser;
@@ -65,7 +67,7 @@ public class WorkflowExporter extends Exporter {
         while ((bean = parser.nextRow()) != null) {
             if (parser.isMemberRow(bean)) {
                 numMembers++;
-                if (numMembers > member_limit && !override_member_limit) {
+                if (numMembers > member_limit) {
                     throw new MemberDataException(MessageFormat.format(TOO_MANY_MEMBERS_ERROR, numMembers));
                 }
 
@@ -180,11 +182,8 @@ public class WorkflowExporter extends Exporter {
         return updatedData.toString();
     }
 
-    public void changeMemberLimit(int limit) {
+    public static void changeMemberLimit(int limit) {
         member_limit = limit;
     }
-
-    public void overrideMemberLimit() { override_member_limit = true; }
-
 }
 

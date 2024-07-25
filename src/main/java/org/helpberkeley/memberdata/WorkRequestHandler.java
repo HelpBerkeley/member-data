@@ -64,7 +64,7 @@ public class WorkRequestHandler {
             "Topic: no longer supported as directive. Use \"Test topic\" instead.";
 
     public static final String DISABLE_DATE_AUDIT = "disable date audit";
-    public static final String DISABLE_MEMBER_LIMIT_AUDIT = "disable member limit audit";
+    public static final String DISABLE_MEMBER_LIMIT_AUDIT = "disable size audit";
 
     private final ApiClient apiClient;
     private final Query query;
