@@ -879,7 +879,7 @@ public class MainTest extends TestBase {
         try {
             WorkflowExporter.changeMemberLimit(2);
             Main.main(args);
-            assertThat(WorkflowExporter.memberLimit() == 15); //size of user list in users.json
+            assertThat(WorkflowExporter.member_limit == 15); //size of user list in users.json
         } finally {
             WorkflowExporter.changeMemberLimit(WorkflowExporter.getDefaultMemberLimit());
         }

@@ -43,7 +43,6 @@ public class WorkflowExporter extends Exporter {
     private final Set<String> updatedUsers = new HashSet<>();
     public static int getDefaultMemberLimit() { return Constants.AVG_RUN_SIZE*10; }
     public static int member_limit = getDefaultMemberLimit();
-    public static int memberLimit() { return member_limit; } //inelegant solution?
 
     public WorkflowExporter(WorkflowParser parser) {
         this.parser = parser;
