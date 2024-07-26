@@ -721,7 +721,7 @@ public class Main {
         String updatedCSVData;
         try {
             exporter = new WorkflowExporter(WorkflowParser.create(Collections.emptyMap(), deliveries)); //exporter created here
-            if (request.disableMemberLimitAudit()){
+            if (request.disableMemberLimitAudit){
                 WorkflowExporter.changeMemberLimit(users.size());
             }
             updatedCSVData = exporter.updateMemberData(users, deliveryDetails); //must change limit before this function invoked
