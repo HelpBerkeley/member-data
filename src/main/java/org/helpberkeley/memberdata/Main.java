@@ -722,7 +722,7 @@ public class Main {
         try {
             exporter = new WorkflowExporter(WorkflowParser.create(Collections.emptyMap(), deliveries)); //exporter created here
             if (request.disableMemberLimitAudit){
-                WorkflowExporter.changeMemberLimit(users.size());
+                WorkflowExporter.setMemberLimit(users.size());
             }
             updatedCSVData = exporter.updateMemberData(users, deliveryDetails); //must change limit before this function invoked
         } catch (MemberDataException ex) {

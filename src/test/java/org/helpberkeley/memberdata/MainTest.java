@@ -877,11 +877,11 @@ public class MainTest extends TestBase {
         String usersFile = findFile(Constants.MEMBERDATA_RAW_FILE, "csv");
         String[] args = { Options.COMMAND_WORK_REQUESTS, usersFile };
         try {
-            WorkflowExporter.changeMemberLimit(2);
+            WorkflowExporter.setMemberLimit(2);
             Main.main(args);
-            assertThat(WorkflowExporter.member_limit == 15); //size of user list in users.json
+            assertThat(WorkflowExporter.getMemberLimit() == 15); //size of user list in users.json
         } finally {
-            WorkflowExporter.changeMemberLimit(WorkflowExporter.getDefaultMemberLimit());
+            WorkflowExporter.setMemberLimit(WorkflowExporter.DEFAULT_MEMBER_LIMIT);
         }
         assertThat(WorkRequestHandler.getLastStatusPost()).isNotNull();
         assertThat(WorkRequestHandler.getLastStatusPost().raw).contains("Status: Succeeded");

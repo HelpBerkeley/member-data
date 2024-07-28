@@ -25,7 +25,6 @@ package org.helpberkeley.memberdata;
 import java.text.MessageFormat;
 import java.util.*;
 
-
 public class WorkflowExporter extends Exporter {
 
     public static final String TOO_MANY_MEMBERS_ERROR = "This is many more members (at least {0}) than the typical run, " +
@@ -41,8 +40,8 @@ public class WorkflowExporter extends Exporter {
     private final WorkflowParser parser;
     private final List<WorkflowBean> updatedBeans = new ArrayList<>();
     private final Set<String> updatedUsers = new HashSet<>();
-    public static int getDefaultMemberLimit() { return Constants.AVG_RUN_SIZE*10; }
-    public static int member_limit = getDefaultMemberLimit();
+    public static final int DEFAULT_MEMBER_LIMIT = Constants.AVG_RUN_SIZE*10;
+    private static int memberLimit = DEFAULT_MEMBER_LIMIT;
 
     public WorkflowExporter(WorkflowParser parser) {
         this.parser = parser;
@@ -58,6 +57,8 @@ public class WorkflowExporter extends Exporter {
 
     public Set<String> getUpdatedUsers() { return updatedUsers; }
 
+    public static int getMemberLimit() { return memberLimit; }
+
     public String updateMemberData(Map<String, User> users, Map<String, DetailsPost> deliveryDetails) {
         StringBuilder errors = new StringBuilder();
         WorkflowBean bean;
@@ -66,7 +67,7 @@ public class WorkflowExporter extends Exporter {
         while ((bean = parser.nextRow()) != null) {
             if (parser.isMemberRow(bean)) {
                 numMembers++;
-                if (numMembers > member_limit) {
+                if (numMembers > getMemberLimit()) {
                     throw new MemberDataException(MessageFormat.format(TOO_MANY_MEMBERS_ERROR, numMembers));
                 }
 
@@ -181,8 +182,8 @@ public class WorkflowExporter extends Exporter {
         return updatedData.toString();
     }
 
-    public static void changeMemberLimit(int limit) {
-        member_limit = limit;
+    public static void setMemberLimit(int limit) {
+        memberLimit = limit;
     }
 }
 
