@@ -845,7 +845,7 @@ public class MainTest extends TestBase {
         ApiQueryResult apiQueryResult = HBParser.parseQueryResult(json);
         Map<String, DetailsPost> deliveryDetails = HBParser.deliveryDetails(apiQueryResult);
         WorkflowExporter exporter = new WorkflowExporter(parser);
-        exporter.changeMemberLimit(2);
+        exporter.setMemberLimit(2);
         Throwable thrown = catchThrowable(() -> exporter.updateMemberData(users, deliveryDetails));
         assertThat(thrown).isInstanceOf(MemberDataException.class);
         assertThat(thrown).hasMessageContaining(MessageFormat.format(WorkflowExporter.TOO_MANY_MEMBERS_ERROR, 3));
