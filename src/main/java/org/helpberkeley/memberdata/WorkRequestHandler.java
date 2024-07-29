@@ -64,6 +64,7 @@ public class WorkRequestHandler {
             "Topic: no longer supported as directive. Use \"Test topic\" instead.";
 
     public static final String DISABLE_DATE_AUDIT = "disable date audit";
+    public static final String DISABLE_MEMBER_LIMIT_AUDIT = "disable size audit";
 
     private final ApiClient apiClient;
     private final Query query;
@@ -230,9 +231,10 @@ public class WorkRequestHandler {
         final String version;
         final boolean disableDateAudit;
         final RequestType requestType;
+        final boolean disableMemberLimitAudit;
 
         WorkRequest(Reply reply, String date, UploadFile uploadFile,
-                    Topic destinationTopic, String version, boolean disableDateAudit) {
+                    Topic destinationTopic, String version, boolean disableDateAudit, boolean disableMemberLimitAudit) {
             super(reply);
             this.date = date;
             this.uploadFile = uploadFile;
@@ -240,6 +242,7 @@ public class WorkRequestHandler {
             this.version = version;
             this.disableDateAudit = disableDateAudit;
             this.requestType = RequestType.UPLOAD;
+            this.disableMemberLimitAudit = disableMemberLimitAudit;
         }
 
         WorkRequest(Reply reply, String date, RequestType requestType) {
@@ -250,7 +253,10 @@ public class WorkRequestHandler {
             this.destinationTopic = reply.requestTopic;
             this.disableDateAudit = false;
             this.version = null;
+            this.disableMemberLimitAudit = false;
+
         }
+
 
         RequestType getRequestType() {
             return requestType;
@@ -304,6 +310,7 @@ public class WorkRequestHandler {
             ListIterator<String> iterator = lines.listIterator(1);
             String version = null;
             boolean disableDateAudit = false;
+            boolean disableMemberLimitAudit = false;
             Topic destinationTopic = null;
 
             while (iterator.hasNext()) {
@@ -323,6 +330,8 @@ public class WorkRequestHandler {
                     version = line.replaceAll("Version:", "").trim();
                 } else if (line.toLowerCase().startsWith(DISABLE_DATE_AUDIT)) {
                     disableDateAudit = true;
+                } else if (line.toLowerCase().startsWith(DISABLE_MEMBER_LIMIT_AUDIT)) {
+                    disableMemberLimitAudit = true;
                 } else if (line.contains(Constants.UPLOAD_URI_PREFIX)) {
                     String shortURL =  HBParser.shortURLDiscoursePost(line);
                     String fileName = HBParser.downloadFileName(line);
@@ -330,7 +339,7 @@ public class WorkRequestHandler {
                     UploadFile uploadFile = new UploadFile(fileName, shortURL);
 
                     return new WorkRequest(lastReply, dateLine,
-                            uploadFile, destinationTopic, version, disableDateAudit);
+                            uploadFile, destinationTopic, version, disableDateAudit, disableMemberLimitAudit);
                 } else if (line.equalsIgnoreCase(Constants.ONE_KITCHEN_WORKFLOW)
                     || line.equalsIgnoreCase(Constants.DAILY_WORKFLOW)) {
                     return new WorkRequest(lastReply, dateLine, RequestType.fromString(line));
