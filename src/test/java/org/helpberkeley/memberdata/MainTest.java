@@ -847,10 +847,14 @@ public class MainTest extends TestBase {
         ApiQueryResult apiQueryResult = HBParser.parseQueryResult(json);
         Map<String, DetailsPost> deliveryDetails = HBParser.deliveryDetails(apiQueryResult);
         WorkflowExporter exporter = new WorkflowExporter(parser);
-        exporter.changeMemberLimit(2);
-        Throwable thrown = catchThrowable(() -> exporter.updateMemberData(users, deliveryDetails));
-        assertThat(thrown).isInstanceOf(MemberDataException.class);
-        assertThat(thrown).hasMessageContaining(MessageFormat.format(WorkflowExporter.TOO_MANY_MEMBERS_ERROR, 3));
+        try {
+            WorkflowExporter.setMemberLimit(2);
+            Throwable thrown = catchThrowable(() -> exporter.updateMemberData(users, deliveryDetails));
+            assertThat(thrown).isInstanceOf(MemberDataException.class);
+            assertThat(thrown).hasMessageContaining(MessageFormat.format(WorkflowExporter.TOO_MANY_MEMBERS_ERROR, 3));
+        } finally {
+            WorkflowExporter.setMemberLimit(WorkflowExporter.DEFAULT_MEMBER_LIMIT);
+        }
     }
 
     @Test
@@ -866,6 +870,28 @@ public class MainTest extends TestBase {
         assertThat(WorkRequestHandler.getLastStatusPost()).isNotNull();
         assertThat(WorkRequestHandler.getLastStatusPost().raw).contains("Status: Succeeded");
         assertThat(WorkRequestHandler.getLastStatusPost().raw).contains(MessageFormat.format(Main.UPDATE_USERS_NO_UPDATES, "update-member-data-no-updates.csv"));
+    }
+
+    @Test
+    public void updateMemberDataOverrideMemberLimitSucceed() throws IOException, CsvException {
+        String request = readResourceFile("last-replies-data-request-template-extra.json")
+                .replace("REPLACE_DATE", yesterday())
+                .replace("REPLACE_EXTRA", "disable size audit")
+                .replaceAll("REPLACE_FILENAME","update-member-data-multiple-updates.csv");
+        HttpClientSimulator.setQueryResponseData(
+                Constants.QUERY_GET_REQUESTS_LAST_REPLIES, request);
+        String usersFile = findFile(Constants.MEMBERDATA_RAW_FILE, "csv");
+        String[] args = { Options.COMMAND_WORK_REQUESTS, usersFile };
+        try {
+            WorkflowExporter.setMemberLimit(2);
+            Main.main(args);
+            assertThat(WorkflowExporter.getMemberLimit() == 15); //size of user list in users.json
+        } finally {
+            WorkflowExporter.setMemberLimit(WorkflowExporter.DEFAULT_MEMBER_LIMIT);
+        }
+        assertThat(WorkRequestHandler.getLastStatusPost()).isNotNull();
+        assertThat(WorkRequestHandler.getLastStatusPost().raw).contains("Status: Succeeded");
+
     }
 
     @Test
