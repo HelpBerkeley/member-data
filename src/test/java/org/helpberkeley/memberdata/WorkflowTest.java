@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020. helpberkeley.org
+ * Copyright (c) 2020-2024. helpberkeley.org
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -26,6 +26,7 @@ import com.opencsv.exceptions.CsvException;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.io.StringWriter;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.HashMap;
@@ -68,10 +69,14 @@ public class WorkflowTest extends TestBase {
     }
 
     @Test
-    public void badRestaurantRowsTest() {
+    public void badRestaurantRowsTest() throws IOException {
         UserExporter exporter = new UserExporter(List.of());
 
-        String restaurantTemplate = exporter.workflowHeaders() + "these,ducks are, not in,a, row\n";
+        StringWriter writer = new StringWriter();
+        CSVListWriter csvWriter = new CSVListWriter(writer);
+        csvWriter.writeNextToList(exporter.workflowHeaders());
+        csvWriter.close();
+        String restaurantTemplate = writer + "these,ducks are, not in,a, row\n";
 
         Throwable thrown = catchThrowable(() -> exporter.workflow(restaurantTemplate, Map.of()));
         assertThat(thrown).isInstanceOf(Error.class);

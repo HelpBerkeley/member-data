@@ -50,7 +50,6 @@ public class CSVListReader extends CSVReader {
 
     public List<String> readNextToList() throws IOException, CsvException {
         String[] row = readNext();
-        List<String> rowList = new ArrayList<>(Arrays.asList(row));
-        return rowList;
+        return new ArrayList<>(Arrays.asList(row));
     }
 }

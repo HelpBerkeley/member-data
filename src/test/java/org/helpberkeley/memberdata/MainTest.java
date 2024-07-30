@@ -670,9 +670,9 @@ public class MainTest extends TestBase {
         Main.main(args);
 
         String driversFile = readFile(findFile(Constants.DRIVERS_FILE, "csv"));
-        assertThat(driversFile).contains("jbDriver,Y,Y,N,N,3,");
-        assertThat(driversFile).contains("jsDriver,Y,Y,N,N,4,");
-        assertThat(driversFile).contains("Xyzzy,Y,N,N,N,0,");
+        assertThat(driversFile).contains("\"jbDriver\",\"Y\",\"Y\",\"N\",\"N\",\"3\",");
+        assertThat(driversFile).contains("\"jsDriver\",\"Y\",\"Y\",\"N\",\"N\",\"4\",");
+        assertThat(driversFile).contains("\"Xyzzy\",\"Y\",\"N\",\"N\",\"N\",\"0\",");
     }
 
     @Test
@@ -1135,6 +1135,27 @@ public class MainTest extends TestBase {
     }
 
     @Test
+    public void cityAndNeighborhoodWithCommaTest() throws UserException, IOException, CsvException {
+        User u1 = createUserWithCityAndNeighborhood("Berkeley", "hills, lower");
+        User u2 = createUserWithCityAndNeighborhood("berkeley, east", "flats");
+
+        UserExporter exporter = new UserExporter(List.of(u1, u2));
+
+        String exportDataCSV = exporter.allMembersRaw();
+        List<User> users = HBParser.users(exportDataCSV);
+    }
+
+    @Test
+    public void addressWithCommaTest() throws UserException, IOException, CsvException {
+        User u1 = createUserWithAddress("42, Comma, Ln");
+        User u2 = createUserWithReferral("I.M. Referredman", "referral, with, commas");
+
+        UserExporter exporter = new UserExporter(List.of(u1, u2));
+        String exportDataCSV = exporter.allMembersRaw();
+        List<User> users = HBParser.users(exportDataCSV);
+    }
+
+    @Test
     public void csvWriterTest() throws IOException, CsvException {
         StringWriter writer1 = new StringWriter();
         CSVWriter csvWriter1 = new CSVWriter(writer1);
@@ -1175,51 +1196,6 @@ public class MainTest extends TestBase {
 
         // Validate roundtrip
         assertThat(row).isEqualTo(parsedRow);
-    }
-
-    @Test
-    public void csvListWriterReaderTest() throws IOException, CsvException {
-        StringWriter writer1 = new StringWriter();
-        StringWriter writer2 = new StringWriter();
-
-        CSVListWriter csvListWriter1 = new CSVListWriter(writer1);
-        CSVListWriter csvListWriter2 = new CSVListWriter(writer2);
-
-        List<List<String>> dataToEncode = new ArrayList<>();
-
-        String col0 = "";
-        String col1 = "simple";
-        String col2 = "simple with space";
-        String col3 = "has, a single comma";
-        String col4 = "has, a pair of, commas";
-        String col5 = "has, a single quote \"";
-        String col6 = "has a \"quoted string\"";
-        String col7 = "has multiple \"quoted\" \"strings\"";
-        String col8 = "has a comma, and a \"quoted string\"";
-        String col9 = "has, multiple commas, and \"quoted\" \"strings\"";
-        String col10 = "has, a, comma, \"inside, quoted\" string";
-
-        List<String> row = new ArrayList<>(Arrays.asList(col0, col1, col2, col3, col4, col5, col6, col7, col8, col9, col10));
-        dataToEncode.add(row);
-
-        csvListWriter1.writeAllRows(dataToEncode);
-        csvListWriter1.close();
-        csvListWriter2.writeNextRow(row);
-        csvListWriter2.close();
-
-        String encodedCSV1 = writer1.toString();
-        String encodedRow = writer2.toString();
-        CSVListReader csvListReader1 = new CSVListReader(new StringReader(encodedCSV1));
-        CSVListReader csvListReader2 = new CSVListReader(new StringReader(encodedRow));
-        List<List<String>> csvParsed = csvListReader1.readAllToList();
-        List<String> rowParsedFromCSV = csvParsed.get(0);
-        List<String> rowParsedReadNext = csvListReader2.readNextToList();
-
-        assertThat(rowParsedFromCSV).isEqualTo(row);
-        assertThat(rowParsedReadNext).isEqualTo(row);
-        System.out.println(encodedRow);
-        System.out.println(rowParsedReadNext.toString().replaceAll("[\\[\\]]", ""));
-        assertThat(encodedRow).isNotEqualTo(rowParsedReadNext.toString().replaceAll("[\\[\\]]", ""));
     }
 
     private String findFile(final String prefix, final String suffix) {

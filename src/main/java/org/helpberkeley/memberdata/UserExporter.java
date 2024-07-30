@@ -21,8 +21,6 @@
 //
 package org.helpberkeley.memberdata;
 
-import com.opencsv.CSVReader;
-import com.opencsv.CSVWriter;
 import com.opencsv.exceptions.CsvException;
 
 import java.io.IOException;
@@ -67,16 +65,19 @@ public class UserExporter extends Exporter {
         return outputFileName;
     }
 
-    String consumerRequests() {
-
-        StringBuilder rows = new StringBuilder();
-        rows.append(User.rawCSVHeaders());
+    String consumerRequests() throws IOException {
+        StringWriter writer = new StringWriter();
+        CSVListWriter csvWriter = new CSVListWriter(writer);
+        List<List<String>> rows = new ArrayList<>();
+        rows.add(User.rawCSVHeaders());
 
         for (User user : tables.consumerRequests()) {
-            rows.append(user.rawToCSV());
+            rows.add(user.rawToCSV());
         }
 
-        return rows.toString();
+        csvWriter.writeAllToList(rows);
+        csvWriter.close();
+        return writer.toString();
     }
 
     String consumerRequestsToFile(final String fileName) throws IOException {
@@ -87,16 +88,19 @@ public class UserExporter extends Exporter {
         return outputFileName;
     }
 
-    String volunteerRequests() {
-
-        StringBuilder rows = new StringBuilder();
-        rows.append(User.rawCSVHeaders());
+    String volunteerRequests() throws IOException {
+        StringWriter writer = new StringWriter();
+        CSVListWriter csvWriter = new CSVListWriter(writer);
+        List<List<String>> rows = new ArrayList<>();
+        rows.add(User.rawCSVHeaders());
 
         for (User user : tables.volunteerRequests()) {
-            rows.append(user.rawToCSV());
+            rows.add(user.rawToCSV());
         }
 
-        return rows.toString();
+        csvWriter.writeAllToList(rows);
+        csvWriter.close();
+        return writer.toString();
     }
 
     String volunteerRequestsToFile(final String fileName) throws IOException {
@@ -114,28 +118,36 @@ public class UserExporter extends Exporter {
         return outputFileName;
     }
 
-    String allMembersRaw() {
+    String allMembersRaw() throws IOException {
 
-        StringBuilder csvData = new StringBuilder();
-        csvData.append(User.rawCSVHeaders());
+        StringWriter writer = new StringWriter();
+        CSVListWriter csvWriter = new CSVListWriter(writer);
+        List<List<String>> dataToEncode = new ArrayList<>();
+        dataToEncode.add(User.rawCSVHeaders());
 
         for (User user : tables.sortByUserName()) {
-            csvData.append(user.rawToCSV());
+            dataToEncode.add(user.rawToCSV());
         }
 
-        return csvData.toString();
+        csvWriter.writeAllToList(dataToEncode);
+        csvWriter.close();
+        return writer.toString();
     }
 
-    String allMembersReport() {
+    String allMembersReport() throws IOException {
 
-        StringBuilder csvData = new StringBuilder();
-        csvData.append(User.reportCSVHeaders());
+        StringWriter writer = new StringWriter();
+        CSVListWriter csvWriter = new CSVListWriter(writer);
+        List<List<String>> dataToEncode = new ArrayList<>();
+        dataToEncode.add(User.reportCSVHeaders());
 
         for (User user : tables.sortByUserId()) {
-            csvData.append(user.reportToCSV());
+            dataToEncode.add(user.reportToCSV());
         }
 
-        return csvData.toString();
+        csvWriter.writeAllToList(dataToEncode);
+        csvWriter.close();
+        return writer.toString();
     }
 
     String allMembersReportToFile(final String fileName) throws IOException {
@@ -145,17 +157,21 @@ public class UserExporter extends Exporter {
         return outputFileName;
     }
 
-    String allMembersWithEmailReport(final Map<Long, String> emailAddresses) {
+    String allMembersWithEmailReport(final Map<Long, String> emailAddresses) throws IOException {
 
-        StringBuilder csvData = new StringBuilder();
-        csvData.append(User.reportWithEmailCSVHeaders());
+        StringWriter writer = new StringWriter();
+        CSVListWriter csvWriter = new CSVListWriter(writer);
+        List<List<String>> dataToEncode = new ArrayList<>();
+        dataToEncode.add(User.reportWithEmailCSVHeaders());
 
         for (User user : tables.sortByUserId()) {
             String emailAddress = emailAddresses.getOrDefault(user.getId(), "");
-            csvData.append(user.reportWithEMailToCSV(emailAddress));
+            dataToEncode.add(user.reportWithEMailToCSV(emailAddress));
         }
 
-        return csvData.toString();
+        csvWriter.writeAllToList(dataToEncode);
+        csvWriter.close();
+        return writer.toString();
     }
 
     void allMembersWithEmailReportToFile(final Map<Long, String> emailAddresses) throws IOException {
@@ -167,60 +183,30 @@ public class UserExporter extends Exporter {
     String workflow(final String restaurantBlock,
         Map<String, DetailsPost> deliveryDetails) throws IOException, CsvException {
 
-//        StringBuilder rows = new StringBuilder();
         StringWriter writer = new StringWriter();
-        CSVWriter csvWriter = new CSVWriter(writer);
-        List<String[]> dataToEncode = new ArrayList<>();
+        CSVListWriter csvWriter = new CSVListWriter(writer);
+        List<List<String>> dataToEncode = new ArrayList<>();
 
         if (restaurantBlock.isEmpty()) {
-//            rows.append(workflowHeaders());
-            csvWriter.writeNext(workflowHeaders());
+            csvWriter.writeNextToList(workflowHeaders());
         } else {
             auditWorkflowData(restaurantBlock, workflowHeaders());
-            CSVReader csvReader = new CSVReader(new StringReader(restaurantBlock));
-            List<String[]> parsedRestaurantBlock = csvReader.readAll();
-            csvWriter.writeAll(parsedRestaurantBlock);
-//            rows.append(restaurantBlock);
+            CSVListReader csvReader = new CSVListReader(new StringReader(restaurantBlock));
+            List<List<String>> parsedRestaurantBlock = csvReader.readAllToList();
+            csvWriter.writeAllToList(parsedRestaurantBlock);
         }
 
         for (User user : tables.sortByConsumerThenDriverThenName()) {
 
             DetailsPost details = deliveryDetails.get(user.getUserName());
 
-            String[] row = {user.isConsumer().toString(), user.isDriver().toString(), user.getName(), user.getUserName(),
+            List<String> row = new ArrayList<>(Arrays.asList(user.isConsumer().toString(), user.isDriver().toString(), user.getName(), user.getUserName(),
                     user.getPhoneNumber(), user.getAltPhoneNumber(), user.getNeighborhood(), user.getCity(), user.getFullAddress(),
-                    user.isCondo().toString(), details == null ? "" : details.getDetails()};
+                    user.isCondo().toString(), details == null ? "" : details.getDetails(), "", "", "", ""));
             dataToEncode.add(row);
-
-//            rows.append(user.isConsumer());
-//            rows.append(separator);
-//            rows.append(user.isDriver());
-//            rows.append(separator);
-//            rows.append(escapeCommas(user.getName()));
-//            rows.append(separator);
-//            rows.append(user.getUserName());
-//            rows.append(separator);
-//            rows.append(user.getPhoneNumber());
-//            rows.append(separator);
-//            rows.append(user.getAltPhoneNumber());
-//            rows.append(separator);
-//            rows.append(escapeCommas(user.getNeighborhood()));
-//            rows.append(separator);
-//            rows.append(escapeCommas(user.getCity()));
-//            rows.append(separator);
-//            rows.append(escapeCommas(user.getFullAddress()));
-//            rows.append(separator);
-//            rows.append(user.isCondo());
-//            rows.append(separator);
-//            rows.append(details == null ? "" : escapeCommas(details.getDetails()));
-//            rows.append(separator);
-//            rows.append(separator);
-//            rows.append(separator);
-//            rows.append(separator);
-//            rows.append('\n');
         }
 
-        csvWriter.writeAll(dataToEncode);
+        csvWriter.writeAllToList(dataToEncode);
         csvWriter.close();
         return writer.toString();
     }
@@ -229,60 +215,29 @@ public class UserExporter extends Exporter {
                     Map<String, DetailsPost> deliveryDetails) throws IOException, CsvException {
 
         StringWriter writer = new StringWriter();
-        CSVWriter csvWriter = new CSVWriter(writer);
-        List<String[]> dataToEncode = new ArrayList<>();
-
-//        StringBuilder rows = new StringBuilder();
+        CSVListWriter csvWriter = new CSVListWriter(writer);
+        List<List<String>> dataToEncode = new ArrayList<>();
 
         if (restaurantBlock.isEmpty()) {
-//            rows.append(workflowHeaders());
-            csvWriter.writeNext(workflowHeaders());
+            csvWriter.writeNextToList(workflowHeaders());
         } else {
             auditWorkflowData(restaurantBlock, oneKitchenWorkflowHeaders());
-            CSVReader csvReader = new CSVReader(new StringReader(restaurantBlock));
-            List<String[]> parsedRestaurantBlock = csvReader.readAll();
-            csvWriter.writeAll(parsedRestaurantBlock);
-//            rows.append(restaurantBlock);
+            CSVListReader csvReader = new CSVListReader(new StringReader(restaurantBlock));
+            List<List<String>> parsedRestaurantBlock = csvReader.readAllToList();
+            csvWriter.writeAllToList(parsedRestaurantBlock);
         }
 
         for (User user : tables.sortByConsumerThenDriverThenName()) {
 
             DetailsPost details = deliveryDetails.get(user.getUserName());
 
-            String[] row = {user.isConsumer().toString(), user.isDriver().toString(), user.getName(), user.getUserName(),
+            List<String> row = new ArrayList<>(Arrays.asList(user.isConsumer().toString(), user.isDriver().toString(), user.getName(), user.getUserName(),
                     user.getPhoneNumber(), user.getAltPhoneNumber(), user.getNeighborhood(), user.getCity(), user.getFullAddress(),
-                    user.isCondo().toString(), details == null ? "" : details.getDetails()};
+                    user.isCondo().toString(), details == null ? "" : details.getDetails(), "", "", "", ""));
             dataToEncode.add(row);
-
-//            rows.append(user.isConsumer());
-//            rows.append(separator);
-//            rows.append(user.isDriver());
-//            rows.append(separator);
-//            rows.append(escapeCommas(user.getName()));
-//            rows.append(separator);
-//            rows.append(user.getUserName());
-//            rows.append(separator);
-//            rows.append(user.getPhoneNumber());
-//            rows.append(separator);
-//            rows.append(user.getAltPhoneNumber());
-//            rows.append(separator);
-//            rows.append(escapeCommas(user.getNeighborhood()));
-//            rows.append(separator);
-//            rows.append(escapeCommas(user.getCity()));
-//            rows.append(separator);
-//            rows.append(escapeCommas(user.getFullAddress()));
-//            rows.append(separator);
-//            rows.append(user.isCondo());
-//            rows.append(separator);
-//            rows.append(details == null ? "" : escapeCommas(details.getDetails()));
-//            rows.append(separator);
-//            rows.append(separator);
-//            rows.append(separator);
-//            rows.append(separator);
-//            rows.append('\n');
         }
 
-        csvWriter.writeAll(dataToEncode);
+        csvWriter.writeAllToList(dataToEncode);
         csvWriter.close();
         return writer.toString();
     }
@@ -290,33 +245,33 @@ public class UserExporter extends Exporter {
     // Audit that all of the columns are expected column names are present, in the expected order
     // and that all of the rows contain the same number of columns.
     //
-    private void auditWorkflowData(String workflowData, String[] headers) throws IOException, CsvException {
+    private void auditWorkflowData(String workflowData, List<String> headers) throws IOException, CsvException {
 
         // Normalize EOL - FIX THIS, DS: doe CSVReader do this already?
         String csvData = workflowData.replaceAll("\\r\\n?", "\n");
         String[] lines = csvData.split("\n");
         assert lines.length != 0 : "missing work flow data";
 
-        CSVReader csvReader = new CSVReader(new StringReader(csvData));
-        List<String[]> rows = csvReader.readAll();
+        CSVListReader csvReader = new CSVListReader(new StringReader(csvData));
+        List<List<String>> rows = csvReader.readAllToList();
         assert ! rows.isEmpty() : "missing work flow data";
-        String[] headerColumns = rows.get(0);
+        List<String> headerColumns = rows.get(0);
 
-        if (! Arrays.equals(headers, headerColumns)) {
+        if (! headers.equals(headerColumns)) {
             throw new Error("Header mismatch: " + lines[0] + " != " + headers);
         }
 
         for (int row = 1; row < rows.size(); row++) {
 
-            String[] columns = rows.get(row);
+            List<String> columns = rows.get(row);
 
-            if (columns.length != headerColumns.length) {
+            if (columns.size() != headerColumns.size()) {
                 throw new Error("wrong number of columns in line "
                         + row + 1
                         + " ("
-                        + columns.length
+                        + columns.size()
                         + " != "
-                        + headerColumns.length
+                        + headerColumns.size()
                         + ")");
             }
         }
@@ -331,41 +286,11 @@ public class UserExporter extends Exporter {
         return outputFileName;
     }
 
-    String[] workflowHeaders() {
+    List<String> workflowHeaders() {
 
-        return new String[]{User.CONSUMER_COLUMN, User.DRIVER_COLUMN, User.NAME_COLUMN, User.USERNAME_COLUMN, User.PHONE_NUMBER_COLUMN,
+        return new ArrayList<>(Arrays.asList(User.CONSUMER_COLUMN, User.DRIVER_COLUMN, User.NAME_COLUMN, User.USERNAME_COLUMN, User.PHONE_NUMBER_COLUMN,
                 User.ALT_PHONE_NUMBER_COLUMN, User.NEIGHBORHOOD_COLUMN, User.CITY_COLUMN, User.ADDRESS_COLUMN,
-                User.CONDO_COLUMN, "Details", "Restaurants", "normal", "veggie", "#orders"};
-//        return User.CONSUMER_COLUMN
-//            + separator
-//            + User.DRIVER_COLUMN
-//            + separator
-//            + User.NAME_COLUMN
-//            + separator
-//            + User.USERNAME_COLUMN
-//            + separator
-//            + User.PHONE_NUMBER_COLUMN
-//            + separator
-//            + User.ALT_PHONE_NUMBER_COLUMN
-//            + separator
-//            + User.NEIGHBORHOOD_COLUMN
-//            + separator
-//            + User.CITY_COLUMN
-//            + separator
-//            + User.ADDRESS_COLUMN
-//            + separator
-//            + User.CONDO_COLUMN
-//            + separator
-//            + "Details"
-//            + separator
-//            + "Restaurants"
-//            + separator
-//            + "normal"
-//            + separator
-//            + "veggie"
-//            + separator
-//            + "#orders"
-//            + '\n';
+                User.CONDO_COLUMN, "Details", "Restaurants", "normal", "veggie", "#orders"));
     }
 
     String oneKitchenWorkflowToFile(final String restaurantBlock, Map<String, DetailsPost> deliveryDetails,
@@ -377,94 +302,36 @@ public class UserExporter extends Exporter {
         return outputFileName;
     }
 
-    String[] oneKitchenWorkflowHeaders() {
+    List<String> oneKitchenWorkflowHeaders() {
 
-        return new String[]{User.CONSUMER_COLUMN, User.DRIVER_COLUMN, User.NAME_COLUMN, User.USERNAME_COLUMN, User.PHONE_NUMBER_COLUMN,
+        return new ArrayList<>(Arrays.asList(User.CONSUMER_COLUMN, User.DRIVER_COLUMN, User.NAME_COLUMN, User.USERNAME_COLUMN, User.PHONE_NUMBER_COLUMN,
                 User.ALT_PHONE_NUMBER_COLUMN, User.NEIGHBORHOOD_COLUMN, User.CITY_COLUMN, User.ADDRESS_COLUMN, User.CONDO_COLUMN,
                 Constants.WORKFLOW_DETAILS_COLUMN, Constants.WORKFLOW_RESTAURANTS_COLUMN, Constants.WORKFLOW_STD_MEALS_COLUMN,
                 Constants.WORKFLOW_ALT_MEALS_COLUMN, Constants.WORKFLOW_TYPE_MEAL_COLUMN, Constants.WORKFLOW_STD_GROCERY_COLUMN,
-                Constants.WORKFLOW_ALT_GROCERY_COLUMN, Constants.WORKFLOW_TYPE_GROCERY_COLUMN};
-//        return User.CONSUMER_COLUMN
-//                + separator
-//                + User.DRIVER_COLUMN
-//                + separator
-//                + User.NAME_COLUMN
-//                + separator
-//                + User.USERNAME_COLUMN
-//                + separator
-//                + User.PHONE_NUMBER_COLUMN
-//                + separator
-//                + User.ALT_PHONE_NUMBER_COLUMN
-//                + separator
-//                + User.NEIGHBORHOOD_COLUMN
-//                + separator
-//                + User.CITY_COLUMN
-//                + separator
-//                + User.ADDRESS_COLUMN
-//                + separator
-//                + User.CONDO_COLUMN
-//                + separator
-//                + Constants.WORKFLOW_DETAILS_COLUMN
-//                + separator
-//                + Constants.WORKFLOW_RESTAURANTS_COLUMN
-//                + separator
-//                + Constants.WORKFLOW_STD_MEALS_COLUMN
-//                + separator
-//                + Constants.WORKFLOW_ALT_MEALS_COLUMN
-//                + separator
-//                + Constants.WORKFLOW_TYPE_MEAL_COLUMN
-//                + separator
-//                + Constants.WORKFLOW_STD_GROCERY_COLUMN
-//                + separator
-//                + Constants.WORKFLOW_ALT_GROCERY_COLUMN
-//                + separator
-//                + Constants.WORKFLOW_TYPE_GROCERY_COLUMN
-//                + '\n';
+                Constants.WORKFLOW_ALT_GROCERY_COLUMN, Constants.WORKFLOW_TYPE_GROCERY_COLUMN));
     }
 
-    String inreach(OrderHistory orderHistory) {
+    String inreach(OrderHistory orderHistory) throws IOException {
 
-        StringBuilder rows = new StringBuilder();
-
-        rows.append(inreachHeaders());
+        StringWriter writer = new StringWriter();
+        CSVListWriter csvWriter = new CSVListWriter(writer);
+        List<List<String>> dataToEncode = new ArrayList<>();
+        dataToEncode.add(inreachHeaders());
 
         for (User user : tables.inreach()) {
             OrderHistory.Row userOrderHistory = orderHistory.getRow(user.getId());
 
-            rows.append(user.getSimpleCreateTime());
-            rows.append(separator);
-            rows.append(escapeCommas(user.getName()));
-            rows.append(separator);
-            rows.append(user.getUserName());
-            rows.append(separator);
-            rows.append(user.getPhoneNumber());
-            rows.append(separator);
-            rows.append(user.getAltPhoneNumber());
-            rows.append(separator);
-            rows.append(escapeCommas(user.getCity()));
-            rows.append(separator);
-            rows.append(escapeCommas(user.getAddress()));
-            rows.append(separator);
-            rows.append(user.isCondo());
-            rows.append(separator);
-            rows.append(Boolean.valueOf(userOrderHistory != null));
-            rows.append(separator);
-            rows.append(userOrderHistory != null ? userOrderHistory.getNumOrders() : "");
-            rows.append(separator);
-            rows.append(userOrderHistory != null ? userOrderHistory.getFirstOrderDate() : "");
-            rows.append(separator);
-            rows.append(userOrderHistory != null ? userOrderHistory.getLastOrderDate() : "");
-            rows.append(separator);
-            rows.append(user.isConsumer());
-            rows.append(separator);
-            rows.append(user.isDispatcher());
-            rows.append(separator);
-            rows.append(user.isDriver());
-            rows.append('\n');
+            List<String> row = new ArrayList<>(Arrays.asList(user.getSimpleCreateTime(), user.getName(), user.getUserName(),
+                    user.getPhoneNumber(), user.getAltPhoneNumber(), user.getCity(), user.getAddress(), user.isCondo().toString(),
+                    String.valueOf(userOrderHistory != null), userOrderHistory != null ? String.valueOf(userOrderHistory.getNumOrders()) : "",
+                    userOrderHistory != null ? userOrderHistory.getFirstOrderDate() : "", userOrderHistory != null ? userOrderHistory.getLastOrderDate() : "",
+                    user.isConsumer().toString(), user.isDispatcher().toString(), user.isDriver().toString()));
+            dataToEncode.add(row);
         }
 
-        return rows.toString();
-
+        csvWriter.writeAllToList(dataToEncode);
+        csvWriter.close();
+        return writer.toString();
     }
 
     String inreachToFile(OrderHistory orderHistory) throws IOException {
@@ -473,90 +340,32 @@ public class UserExporter extends Exporter {
         return outputFileName;
     }
 
-    String inreachHeaders() {
-        return User.CREATED_AT_COLUMN
-            + separator
-            + User.NAME_COLUMN
-            + separator
-            + User.USERNAME_COLUMN
-            + separator
-            + User.PHONE_NUMBER_COLUMN
-            + separator
-            + User.ALT_PHONE_NUMBER_COLUMN
-            + separator
-            + User.CITY_COLUMN
-            + separator
-            + User.ADDRESS_COLUMN
-            + separator
-            + User.CONDO_COLUMN
-            + separator
-            + Constants.ORDER_STATUS_COLUMN
-            + separator
-            + Constants.ORDER_NUMBER_COLUMN
-            + separator
-            + Constants.FIRST_ORDER_DATE_COLUMN
-            + separator
-            + Constants.LAST_ORDER_DATE_COLUMN
-            + separator
-            + User.CONSUMER_COLUMN
-            + separator
-            + User.DISPATCHER_COLUMN
-            + separator
-            + User.DRIVER_COLUMN
-            + '\n';
+    List<String> inreachHeaders() {
+        return new ArrayList<>(Arrays.asList(User.CREATED_AT_COLUMN, User.NAME_COLUMN, User.USERNAME_COLUMN, User.PHONE_NUMBER_COLUMN,
+                User.ALT_PHONE_NUMBER_COLUMN, User.CITY_COLUMN, User.ADDRESS_COLUMN, User.CONDO_COLUMN, Constants.ORDER_STATUS_COLUMN,
+                Constants.ORDER_NUMBER_COLUMN, Constants.FIRST_ORDER_DATE_COLUMN, Constants.LAST_ORDER_DATE_COLUMN, User.CONSUMER_COLUMN,
+                User.DISPATCHER_COLUMN, User.DRIVER_COLUMN));
     }
 
-    String dispatchers() {
+    String dispatchers() throws IOException {
 
-        StringBuilder rows = new StringBuilder();
-
-        rows.append(dispatchersHeaders());
+        StringWriter writer = new StringWriter();
+        CSVListWriter csvWriter = new CSVListWriter(writer);
+        List<List<String>> dataToEncode = new ArrayList<>();
+        dataToEncode.add(dispatchersHeaders());
 
         for (User user : tables.dispatchers()) {
-            rows.append(user.getSimpleCreateTime());
-            rows.append(separator);
-            rows.append(escapeCommas(user.getName()));
-            rows.append(separator);
-            rows.append(user.getUserName());
-            rows.append(separator);
-            rows.append(user.getPhoneNumber());
-            rows.append(separator);
-            rows.append(escapeCommas(user.getNeighborhood()));
-            rows.append(separator);
-            rows.append(escapeCommas(user.getCity()));
-            rows.append(separator);
-            rows.append(escapeCommas(user.getAddress()));
-            rows.append(separator);
-            rows.append(user.isCondo());
-            rows.append(separator);
-            rows.append(user.isDriver());
-            rows.append(separator);
-            rows.append(user.isConsumer());
-            rows.append(separator);
-            rows.append(user.isDispatcher());
-            rows.append(separator);
-            rows.append(user.isBHS());
-            rows.append(separator);
-            rows.append(user.isHelpLine());
-            rows.append(separator);
-            rows.append(user.isSiteLine());
-            rows.append(separator);
-            rows.append(user.isInReach());
-            rows.append(separator);
-            rows.append(user.isOutReach());
-            rows.append(separator);
-            rows.append(user.isMarketing());
-            rows.append(separator);
-            rows.append(user.isModerator());
-            rows.append(separator);
-            rows.append(user.isSpecialist());
-            rows.append(separator);
-            rows.append(user.isWorkflow());
-            rows.append('\n');
+            List<String> row = new ArrayList<>(Arrays.asList(user.getSimpleCreateTime(), user.getName(), user.getUserName(),
+                    user.getPhoneNumber(), user.getNeighborhood(), user.getCity(), user.getAddress(), user.isCondo().toString(),
+                    user.isDriver().toString(), user.isConsumer().toString(), user.isDispatcher().toString(), user.isBHS().toString(),
+                    user.isHelpLine().toString(), user.isSiteLine().toString(), user.isInReach().toString(), user.isOutReach().toString(),
+                    user.isMarketing().toString(), user.isModerator().toString(), user.isSpecialist().toString(), user.isWorkflow().toString()));
+            dataToEncode.add(row);
         }
 
-        return rows.toString();
-
+        csvWriter.writeAllToList(dataToEncode);
+        csvWriter.close();
+        return writer.toString();
     }
 
     String dispatchersToFile(final String fileName) throws IOException {
@@ -567,47 +376,12 @@ public class UserExporter extends Exporter {
         return outputFileName;
     }
 
-    String dispatchersHeaders() {
-        return User.CREATED_AT_COLUMN
-                + separator
-                + User.NAME_COLUMN
-                + separator
-                + User.USERNAME_COLUMN
-                + separator
-                + User.PHONE_NUMBER_COLUMN
-                + separator
-                + User.NEIGHBORHOOD_COLUMN
-                + separator
-                + User.CITY_COLUMN
-                + separator
-                + User.ADDRESS_COLUMN
-                + separator
-                + User.CONDO_COLUMN
-                + separator
-                + User.DRIVER_COLUMN
-                + separator
-                + User.CONSUMER_COLUMN
-                + separator
-                + User.DISPATCHER_COLUMN
-                + separator
-                + User.BHS_COLUMN
-                + separator
-                + User.HELPLINE_COLUMN
-                + separator
-                + User.SITELINE_COLUMN
-                + separator
-                + User.INREACH_COLUMN
-                + separator
-                + User.OUTREACH_COLUMN
-                + separator
-                + User.MARKETING_COLUMN
-                + separator
-                + User.MODERATORS_COLUMN
-                + separator
-                + User.SPECIALIST_COLUMN
-                + separator
-                + User.WORKFLOW_COLUMN
-                + '\n';
+    List<String> dispatchersHeaders() {
+        return new ArrayList<>(Arrays.asList(User.CREATED_AT_COLUMN, User.NAME_COLUMN, User.USERNAME_COLUMN, User.PHONE_NUMBER_COLUMN,
+                User.NEIGHBORHOOD_COLUMN, User.CITY_COLUMN, User.ADDRESS_COLUMN, User.CONDO_COLUMN, User.DRIVER_COLUMN,
+                User.CONSUMER_COLUMN, User.DISPATCHER_COLUMN, User.BHS_COLUMN, User.HELPLINE_COLUMN, User.SITELINE_COLUMN,
+                User.INREACH_COLUMN, User.OUTREACH_COLUMN, User.MARKETING_COLUMN, User.MODERATORS_COLUMN, User.SPECIALIST_COLUMN,
+                User.WORKFLOW_COLUMN));
     }
 
     String customerCareMemberDataPost() {

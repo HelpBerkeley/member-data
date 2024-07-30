@@ -34,13 +34,13 @@ public class CSVListWriter extends CSVWriter {
         super(writer);
     }
 
-    public void writeNextRow(List<String> row) {
-        String[] simpleArray = new String[ row.size() ];
-        row.toArray( simpleArray );
+    public void writeNextToList(List<String> row) {
+        String[] simpleArray = new String[row.size()];
+        row.toArray(simpleArray);
         writeNext(simpleArray);
     }
 
-    public void writeAllRows(List<List<String>> csvData) {
+    public void writeAllToList(List<List<String>> csvData) {
         List<String[]> listOfArrays = new ArrayList<>();
 
         for (List<String> innerList : csvData) {
