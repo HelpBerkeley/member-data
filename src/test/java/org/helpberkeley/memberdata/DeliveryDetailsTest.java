@@ -95,4 +95,24 @@ public class DeliveryDetailsTest extends TestBase {
         detailsPost = deliveryDetails.get("testUser");
         assertThat(detailsPost.getDetails()).isEqualTo(expected);
     }
+
+    @Test
+    public void detailsWithCommasAndQuotesTest() {
+
+        Map<String, DetailsPost> deliveryDetails = new HashMap<>();
+
+        String userSpec = "@testUser\n";
+        String details = "simple";
+
+        HBParser.parseDetails(1, userSpec + details, HBParser.DetailsHandling.LAST_POST_WINS, deliveryDetails);
+        assertThat(deliveryDetails).containsKey("testUser");
+        DetailsPost detailsPost = deliveryDetails.get("testUser");
+        assertThat(detailsPost.getDetails()).isEqualTo(details);
+
+        details = "I like \"big punctuation\", and, I cannot lie.";
+
+        HBParser.parseDetails(1, userSpec + details, HBParser.DetailsHandling.LAST_POST_WINS, deliveryDetails);
+        detailsPost = deliveryDetails.get("testUser");
+        assertThat(detailsPost.getDetails()).isEqualTo(details);
+    }
 }
