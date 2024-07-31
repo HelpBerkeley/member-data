@@ -30,6 +30,11 @@ import java.util.*;
  */
 public class User {
 
+    public enum ReportHeaderOption {
+        ADD_EMAIL,
+        NO_EMAIL
+    }
+
     static final String ID_FIELD = "id";
 
     static final String ID_COLUMN = "ID";
@@ -1173,11 +1178,6 @@ public class User {
         }
 
         return user;
-    }
-
-    public enum ReportHeaderOption {
-        ADD_EMAIL,
-        NO_EMAIL
     }
 
     static List<String> reportWithEmailCSVHeaders() {
