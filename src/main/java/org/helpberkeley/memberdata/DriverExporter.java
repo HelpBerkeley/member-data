@@ -68,14 +68,31 @@ public class DriverExporter extends Exporter {
             List<Integer> weeklyHistory =
                     (history != null) ? history.getWeeklyRunTotals() : List.of(0, 0, 0, 0, 0, 0, 0);
 
-            List<String> row = new ArrayList<>(Arrays.asList(user.getCreateDate(), user.getName(), user.getUserName(),
-                    shortBoolean(user.isAvailableDriver()), shortBoolean(user.isTrainedDriver()), shortBoolean(user.isBiker()),
-                    shortBoolean(user.isLimitedRuns()), history != null ? String.valueOf(history.totalRuns()) : "0",
-                    weeklyHistory.get(6) != 0 ? "🟢" : "", weeklyHistory.get(5) != 0 ? "🟢" : "", weeklyHistory.get(4) != 0 ? "🟢" : "",
-                    weeklyHistory.get(3) != 0 ? "🟢" : "", weeklyHistory.get(2) != 0 ? "🟢" : "", weeklyHistory.get(1) != 0 ? "🟢" : "",
-                    weeklyHistory.get(0) != 0 ? "🟢" : "", user.getPhoneNumber(), user.getAltPhoneNumber(), user.getCity(),
-                    user.getAddress(), shortBoolean(user.isAtRisk()), shortBoolean(user.isGone()), shortBoolean(user.isOut()),
-                    shortBoolean(user.isOtherDrivers()), shortBoolean(user.isEventDriver()), shortBoolean(user.isTrainedEventDriver()),
+            List<String> row = new ArrayList<>(List.of(user.getCreateDate(),
+                    user.getName(),
+                    user.getUserName(),
+                    shortBoolean(user.isAvailableDriver()),
+                    shortBoolean(user.isTrainedDriver()),
+                    shortBoolean(user.isBiker()),
+                    shortBoolean(user.isLimitedRuns()),
+                    history != null ? String.valueOf(history.totalRuns()) : "0",
+                    weeklyHistory.get(6) != 0 ? "🟢" : "",
+                    weeklyHistory.get(5) != 0 ? "🟢" : "",
+                    weeklyHistory.get(4) != 0 ? "🟢" : "",
+                    weeklyHistory.get(3) != 0 ? "🟢" : "",
+                    weeklyHistory.get(2) != 0 ? "🟢" : "",
+                    weeklyHistory.get(1) != 0 ? "🟢" : "",
+                    weeklyHistory.get(0) != 0 ? "🟢" : "",
+                    user.getPhoneNumber(),
+                    user.getAltPhoneNumber(),
+                    user.getCity(),
+                    user.getAddress(),
+                    shortBoolean(user.isAtRisk()),
+                    shortBoolean(user.isGone()),
+                    shortBoolean(user.isOut()),
+                    shortBoolean(user.isOtherDrivers()),
+                    shortBoolean(user.isEventDriver()),
+                    shortBoolean(user.isTrainedEventDriver()),
                     details));
             dataToEncode.add(row);
         }
@@ -87,12 +104,32 @@ public class DriverExporter extends Exporter {
 
 
     List<String> driverHeaders() {
-       return new ArrayList<>(Arrays.asList(User.CREATED_AT_COLUMN, User.NAME_COLUMN, User.USERNAME_COLUMN, IN_COLUMN,
-               User.SHORT_TRAINED_DRIVER_COLUMN, User.SHORT_BIKERS_COLUMN, User.SHORT_LIMITED_RUNS_COLUMN, TOTAL_RUNS_COLUMNS,
-               SIX_WEEKS_AGO_COLUMN, FIVE_WEEKS_AGO_COLUMN, FOUR_WEEKS_AGO_COLUMN, THREE_WEEKS_AGO_COLUMN, TWO_WEEKS_AGO_COLUMN,
-               ONE_WEEK_AGO_COLUMN, THIS_WEEK_COLUMN, User.PHONE_NUMBER_COLUMN, User.ALT_PHONE_NUMBER_COLUMN, User.CITY_COLUMN,
-               User.ADDRESS_COLUMN, User.SHORT_AT_RISK_COLUMN, User.SHORT_GONE_COLUMN, User.SHORT_OUT_COLUMN, User.SHORT_OTHER_DRIVERS_COLUMN,
-               User.SHORT_EVENTS_DRIVER_COLUMN, User.SHORT_TRAINED_EVENT_DRIVER_COLUMN, User.SHORT_DRIVER_DETAILS_COLUMN));
+       return new ArrayList<>(List.of(User.CREATED_AT_COLUMN,
+               User.NAME_COLUMN,
+               User.USERNAME_COLUMN,
+               IN_COLUMN,
+               User.SHORT_TRAINED_DRIVER_COLUMN,
+               User.SHORT_BIKERS_COLUMN,
+               User.SHORT_LIMITED_RUNS_COLUMN,
+               TOTAL_RUNS_COLUMNS,
+               SIX_WEEKS_AGO_COLUMN,
+               FIVE_WEEKS_AGO_COLUMN,
+               FOUR_WEEKS_AGO_COLUMN,
+               THREE_WEEKS_AGO_COLUMN,
+               TWO_WEEKS_AGO_COLUMN,
+               ONE_WEEK_AGO_COLUMN,
+               THIS_WEEK_COLUMN,
+               User.PHONE_NUMBER_COLUMN,
+               User.ALT_PHONE_NUMBER_COLUMN,
+               User.CITY_COLUMN,
+               User.ADDRESS_COLUMN,
+               User.SHORT_AT_RISK_COLUMN,
+               User.SHORT_GONE_COLUMN,
+               User.SHORT_OUT_COLUMN,
+               User.SHORT_OTHER_DRIVERS_COLUMN,
+               User.SHORT_EVENTS_DRIVER_COLUMN,
+               User.SHORT_TRAINED_EVENT_DRIVER_COLUMN,
+               User.SHORT_DRIVER_DETAILS_COLUMN));
     }
 
     String driversToFile() throws IOException {

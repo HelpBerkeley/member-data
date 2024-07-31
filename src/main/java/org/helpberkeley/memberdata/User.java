@@ -1175,29 +1175,68 @@ public class User {
         return user;
     }
 
+    public enum ReportHeaderOption {
+        ADD_EMAIL,
+        NO_EMAIL
+    }
+
     static List<String> reportWithEmailCSVHeaders() {
-        return reportHeaders(true);
+        return reportHeaders(ReportHeaderOption.ADD_EMAIL);
     }
 
     static List<String> reportCSVHeaders() {
-        return reportHeaders(false);
+        return reportHeaders(ReportHeaderOption.NO_EMAIL);
     }
 
-    private static List<String> reportHeaders(boolean addEmail) {
+    private static List<String> reportHeaders(ReportHeaderOption option) {
 
-        List<String> headers = new ArrayList<>(Arrays.asList(SHORT_ID_COLUMN, SHORT_CREATED_AT_COLUMN, SHORT_NAME_COLUMN, SHORT_USERNAME_COLUMN));
-        if (addEmail) {
+        List<String> headers = new ArrayList<>(List.of(SHORT_ID_COLUMN,
+                SHORT_CREATED_AT_COLUMN, SHORT_NAME_COLUMN,
+                SHORT_USERNAME_COLUMN));
+        if (option == ReportHeaderOption.ADD_EMAIL) {
             headers.add(SHORT_EMAIL_COLUMN);
         }
-        List<String> headersContinued = new ArrayList<>(Arrays.asList(SHORT_PHONE_NUMBER_COLUMN, SHORT_ALT_PHONE_NUMBER_COLUMN,
-                SHORT_NEIGHBORHOOD_COLUMN, SHORT_CITY_COLUMN, SHORT_ADDRESS_COLUMN, SHORT_CONDO_COLUMN, SHORT_REFERRAL_COLUMN,
-                SHORT_CONSUMER_COLUMN, SHORT_VOICEONLY_COLUMN, SHORT_FRVOICEONLY_COLUMN, SHORT_DRIVER_COLUMN, SHORT_TRAINED_DRIVER_COLUMN,
-                SHORT_DISPATCHER_COLUMN, SHORT_WORKFLOW_COLUMN, SHORT_INREACH_COLUMN, SHORT_OUTREACH_COLUMN, SHORT_HELPLINE_COLUMN,
-                SHORT_SITELINE_COLUMN, SHORT_TRAINED_CUSTOMER_CARE_A_COLUMN, SHORT_TRAINED_CUSTOMER_CARE_B_COLUMN, SHORT_MARKETING_COLUMN,
-                SHORT_MODERATORS_COLUMN, SHORT_TRUST_LEVEL_4_COLUMN, SHORT_SPECIALIST_COLUMN, SHORT_LOGISTICS_COLUMN, SHORT_BHS_COLUMN,
-                SHORT_CUSTOMER_INFO_COLUMN, SHORT_ADVISOR_COLUMN, SHORT_BOARD_COLUMN, SHORT_COORDINATOR_COLUMN, SHORT_LIMITED_RUNS_COLUMN,
-                SHORT_AT_RISK_COLUMN, SHORT_BIKERS_COLUMN, SHORT_OUT_COLUMN, SHORT_EVENTS_DRIVER_COLUMN, SHORT_TRAINED_EVENT_DRIVER_COLUMN,
-                SHORT_GONE_COLUMN, SHORT_OTHER_DRIVERS_COLUMN, SHORT_ADMIN_COLUMN, SHORT_CONSUMER_REQUEST_COLUMN, SHORT_VOLUNTEER_REQUEST_COLUMN));
+        List<String> headersContinued = new ArrayList<>(List.of(SHORT_PHONE_NUMBER_COLUMN,
+                SHORT_ALT_PHONE_NUMBER_COLUMN,
+                SHORT_NEIGHBORHOOD_COLUMN,
+                SHORT_CITY_COLUMN,
+                SHORT_ADDRESS_COLUMN,
+                SHORT_CONDO_COLUMN,
+                SHORT_REFERRAL_COLUMN,
+                SHORT_CONSUMER_COLUMN,
+                SHORT_VOICEONLY_COLUMN,
+                SHORT_FRVOICEONLY_COLUMN,
+                SHORT_DRIVER_COLUMN,
+                SHORT_TRAINED_DRIVER_COLUMN,
+                SHORT_DISPATCHER_COLUMN,
+                SHORT_WORKFLOW_COLUMN,
+                SHORT_INREACH_COLUMN,
+                SHORT_OUTREACH_COLUMN,
+                SHORT_HELPLINE_COLUMN,
+                SHORT_SITELINE_COLUMN,
+                SHORT_TRAINED_CUSTOMER_CARE_A_COLUMN,
+                SHORT_TRAINED_CUSTOMER_CARE_B_COLUMN,
+                SHORT_MARKETING_COLUMN,
+                SHORT_MODERATORS_COLUMN,
+                SHORT_TRUST_LEVEL_4_COLUMN,
+                SHORT_SPECIALIST_COLUMN,
+                SHORT_LOGISTICS_COLUMN,
+                SHORT_BHS_COLUMN,
+                SHORT_CUSTOMER_INFO_COLUMN,
+                SHORT_ADVISOR_COLUMN,
+                SHORT_BOARD_COLUMN,
+                SHORT_COORDINATOR_COLUMN,
+                SHORT_LIMITED_RUNS_COLUMN,
+                SHORT_AT_RISK_COLUMN,
+                SHORT_BIKERS_COLUMN,
+                SHORT_OUT_COLUMN,
+                SHORT_EVENTS_DRIVER_COLUMN,
+                SHORT_TRAINED_EVENT_DRIVER_COLUMN,
+                SHORT_GONE_COLUMN,
+                SHORT_OTHER_DRIVERS_COLUMN,
+                SHORT_ADMIN_COLUMN,
+                SHORT_CONSUMER_REQUEST_COLUMN,
+                SHORT_VOLUNTEER_REQUEST_COLUMN));
 
         headers.addAll(headersContinued);
         return headers;
@@ -1205,54 +1244,170 @@ public class User {
 
     static List<String> rawCSVHeaders() {
 
-        return new ArrayList<>(Arrays.asList(ID_COLUMN, NAME_COLUMN, USERNAME_COLUMN, PHONE_NUMBER_COLUMN, ALT_PHONE_NUMBER_COLUMN,
-                NEIGHBORHOOD_COLUMN, CITY_COLUMN, ADDRESS_COLUMN, CONSUMER_COLUMN, VOICEONLY_COLUMN, FRVOICEONLY_COLUMN,
-                DISPATCHER_COLUMN, DRIVER_COLUMN, TRAINED_DRIVER_COLUMN, CREATED_AT_COLUMN, CONDO_COLUMN, REFERRAL_COLUMN,
-                EMAIL_VERIFIED_COLUMN, CONSUMER_REQUEST_COLUMN, VOLUNTEER_REQUEST_COLUMN, SPECIALIST_COLUMN, LOGISTICS_COLUMN,
-                BHS_COLUMN, HELPLINE_COLUMN, SITELINE_COLUMN, TRAINED_CUSTOMER_CARE_A_COLUMN, TRAINED_CUSTOMER_CARE_B_COLUMN,
-                INREACH_COLUMN, OUTREACH_COLUMN, MARKETING_COLUMN, MODERATORS_COLUMN, TRUST_LEVEL_4_COLUMN, WORKFLOW_COLUMN,
-                CUSTOMER_INFO_COLUMN, ADVISOR_COLUMN, BOARD_COLUMN, COORDINATOR_COLUMN, LIMITED_RUNS_COLUMN, AT_RISK_COLUMN,
-                BIKERS_COLUMN, OUT_COLUMN, EVENTS_DRIVER_COLUMN, TRAINED_EVENT_DRIVER_COLUMN, GONE_COLUMN, OTHER_DRIVERS_COLUMN,
-                ADMIN_COLUMN, GROUPS_OWNED_COLUMN, MONDAY_FRREG_COLUMN, WEDNESDAY_FRREG_COLUMN, THURSDAY_FRREG_COLUMN, EVOLUNTEERS_COLUMN));
+        return new ArrayList<>(List.of(ID_COLUMN,
+                NAME_COLUMN,
+                USERNAME_COLUMN,
+                PHONE_NUMBER_COLUMN,
+                ALT_PHONE_NUMBER_COLUMN,
+                NEIGHBORHOOD_COLUMN,
+                CITY_COLUMN,
+                ADDRESS_COLUMN,
+                CONSUMER_COLUMN,
+                VOICEONLY_COLUMN,
+                FRVOICEONLY_COLUMN,
+                DISPATCHER_COLUMN,
+                DRIVER_COLUMN,
+                TRAINED_DRIVER_COLUMN,
+                CREATED_AT_COLUMN,
+                CONDO_COLUMN,
+                REFERRAL_COLUMN,
+                EMAIL_VERIFIED_COLUMN,
+                CONSUMER_REQUEST_COLUMN,
+                VOLUNTEER_REQUEST_COLUMN,
+                SPECIALIST_COLUMN,
+                LOGISTICS_COLUMN,
+                BHS_COLUMN,
+                HELPLINE_COLUMN,
+                SITELINE_COLUMN,
+                TRAINED_CUSTOMER_CARE_A_COLUMN,
+                TRAINED_CUSTOMER_CARE_B_COLUMN,
+                INREACH_COLUMN,
+                OUTREACH_COLUMN,
+                MARKETING_COLUMN,
+                MODERATORS_COLUMN,
+                TRUST_LEVEL_4_COLUMN,
+                WORKFLOW_COLUMN,
+                CUSTOMER_INFO_COLUMN,
+                ADVISOR_COLUMN,
+                BOARD_COLUMN,
+                COORDINATOR_COLUMN,
+                LIMITED_RUNS_COLUMN,
+                AT_RISK_COLUMN,
+                BIKERS_COLUMN,
+                OUT_COLUMN,
+                EVENTS_DRIVER_COLUMN,
+                TRAINED_EVENT_DRIVER_COLUMN,
+                GONE_COLUMN,
+                OTHER_DRIVERS_COLUMN,
+                ADMIN_COLUMN,
+                GROUPS_OWNED_COLUMN,
+                MONDAY_FRREG_COLUMN,
+                WEDNESDAY_FRREG_COLUMN,
+                THURSDAY_FRREG_COLUMN,
+                EVOLUNTEERS_COLUMN));
     }
 
     List<String> rawToCSV() {
-        return new ArrayList<>(Arrays.asList(String.valueOf(getId()), getName(), getUserName(), getPhoneNumber(),
-                getAltPhoneNumber(), getNeighborhood(), getCity(), getAddress(), isConsumer().toString(), isVoiceOnly().toString(),
-                isFRVoiceOnly().toString(), isDispatcher().toString(), isDriver().toString(), isTrainedDriver().toString(),
-                getCreateTime(), isCondo().toString(), getReferral(), getEmailVerified().toString(), hasConsumerRequest().toString(),
-                getVolunteerRequest(), isSpecialist().toString(), isLogistics().toString(), isBHS().toString(), isHelpLine().toString(),
-                isSiteLine().toString(), isTrainedCustomerCareA().toString(), isTrainedCustomerCareB().toString(), isInReach().toString(),
-                isOutReach().toString(), isMarketing().toString(), isModerator().toString(), isTrustLevel4().toString(),
-                isWorkflow().toString(), isCustomerInfo().toString(), isAdvisor().toString(), isBoard().toString(),
-                isCoordinator().toString(), isLimitedRuns().toString(), isAtRisk().toString(), isBiker().toString(),
-                isOut().toString(), isEventDriver().toString(), isTrainedEventDriver().toString(), isGone().toString(),
-                isOtherDrivers().toString(), isAdmin().toString(), groupsOwned(), isMondayFrreg().toString(), isWednesdayFrreg().toString(),
-                isThursdayFrreg().toString(), isEVolunteers().toString()));
+        return new ArrayList<>(List.of(String.valueOf(getId()),
+                getName(),
+                getUserName(),
+                getPhoneNumber(),
+                getAltPhoneNumber(),
+                getNeighborhood(),
+                getCity(),
+                getAddress(),
+                isConsumer().toString(),
+                isVoiceOnly().toString(),
+                isFRVoiceOnly().toString(),
+                isDispatcher().toString(),
+                isDriver().toString(),
+                isTrainedDriver().toString(),
+                getCreateTime(),
+                isCondo().toString(),
+                getReferral(),
+                getEmailVerified().toString(),
+                hasConsumerRequest().toString(),
+                getVolunteerRequest(),
+                isSpecialist().toString(),
+                isLogistics().toString(),
+                isBHS().toString(),
+                isHelpLine().toString(),
+                isSiteLine().toString(),
+                isTrainedCustomerCareA().toString(),
+                isTrainedCustomerCareB().toString(),
+                isInReach().toString(),
+                isOutReach().toString(),
+                isMarketing().toString(),
+                isModerator().toString(),
+                isTrustLevel4().toString(),
+                isWorkflow().toString(),
+                isCustomerInfo().toString(),
+                isAdvisor().toString(),
+                isBoard().toString(),
+                isCoordinator().toString(),
+                isLimitedRuns().toString(),
+                isAtRisk().toString(),
+                isBiker().toString(),
+                isOut().toString(),
+                isEventDriver().toString(),
+                isTrainedEventDriver().toString(),
+                isGone().toString(),
+                isOtherDrivers().toString(),
+                isAdmin().toString(),
+                groupsOwned(),
+                isMondayFrreg().toString(),
+                isWednesdayFrreg().toString(),
+                isThursdayFrreg().toString(),
+                isEVolunteers().toString()));
     }
 
     List<String> reportWithEMailToCSV(final String emailAddress) {
-        return report(true, emailAddress);
+        return report(ReportHeaderOption.ADD_EMAIL, emailAddress);
     }
     List<String> reportToCSV() {
-        return report(false, "");
+        return report(ReportHeaderOption.NO_EMAIL, "");
     }
 
-    private List<String> report(boolean addEmail, final String emailAddress) {
+    private List<String> report(ReportHeaderOption option, final String emailAddress) {
 
-        List<String> reportRow = new ArrayList<>(Arrays.asList(String.valueOf(getId()), getSimpleCreateTime(), getName(), getUserName()));
-        if (addEmail) {
+        List<String> reportRow = new ArrayList<>(List.of(String.valueOf(getId()),
+                getSimpleCreateTime(),
+                getName(),
+                getUserName()));
+        if (option == ReportHeaderOption.ADD_EMAIL) {
             reportRow.add(emailAddress);
         }
-        List<String> reportRowContinued = new ArrayList<>(Arrays.asList(getPhoneNumber(), getAltPhoneNumber(), getNeighborhood(),
-                getCity(), getAddress(), isCondo().toString(), getReferral(), isConsumer().toString(), isVoiceOnly().toString(),
-                isFRVoiceOnly().toString(), isDriver().toString(), isTrainedDriver().toString(), isDispatcher().toString(),
-                isWorkflow().toString(), isInReach().toString(), isOutReach().toString(), isHelpLine().toString(), isSiteLine().toString(),
-                isTrainedCustomerCareA().toString(), isTrainedCustomerCareB().toString(), isMarketing().toString(), isModerator().toString(),
-                isTrustLevel4().toString(), isSpecialist().toString(), isLogistics().toString(), isBHS().toString(), isCustomerInfo().toString(),
-                isAdvisor().toString(), isBoard().toString(), isCoordinator().toString(), isLimitedRuns().toString(), isAtRisk().toString(),
-                isBiker().toString(), isOut().toString(), isEventDriver().toString(), isTrainedEventDriver().toString(), isGone().toString(),
-                isOtherDrivers().toString(), isAdmin().toString(), hasConsumerRequest().toString(), getVolunteerRequest()));
+        List<String> reportRowContinued = new ArrayList<>(List.of(getPhoneNumber(),
+                getAltPhoneNumber(),
+                getNeighborhood(),
+                getCity(),
+                getAddress(),
+                isCondo().toString(),
+                getReferral(),
+                isConsumer().toString(),
+                isVoiceOnly().toString(),
+                isFRVoiceOnly().toString(),
+                isDriver().toString(),
+                isTrainedDriver().toString(),
+                isDispatcher().toString(),
+                isWorkflow().toString(),
+                isInReach().toString(),
+                isOutReach().toString(),
+                isHelpLine().toString(),
+                isSiteLine().toString(),
+                isTrainedCustomerCareA().toString(),
+                isTrainedCustomerCareB().toString(),
+                isMarketing().toString(),
+                isModerator().toString(),
+                isTrustLevel4().toString(),
+                isSpecialist().toString(),
+                isLogistics().toString(),
+                isBHS().toString(),
+                isCustomerInfo().toString(),
+                isAdvisor().toString(),
+                isBoard().toString(),
+                isCoordinator().toString(),
+                isLimitedRuns().toString(),
+                isAtRisk().toString(),
+                isBiker().toString(),
+                isOut().toString(),
+                isEventDriver().toString(),
+                isTrainedEventDriver().toString(),
+                isGone().toString(),
+                isOtherDrivers().toString(),
+                isAdmin().toString(),
+                hasConsumerRequest().toString(),
+                getVolunteerRequest()));
         reportRow.addAll(reportRowContinued);
         return reportRow;
     }

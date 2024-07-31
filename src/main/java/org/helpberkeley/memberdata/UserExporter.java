@@ -200,9 +200,21 @@ public class UserExporter extends Exporter {
 
             DetailsPost details = deliveryDetails.get(user.getUserName());
 
-            List<String> row = new ArrayList<>(Arrays.asList(user.isConsumer().toString(), user.isDriver().toString(), user.getName(), user.getUserName(),
-                    user.getPhoneNumber(), user.getAltPhoneNumber(), user.getNeighborhood(), user.getCity(), user.getFullAddress(),
-                    user.isCondo().toString(), details == null ? "" : details.getDetails(), "", "", "", ""));
+            List<String> row = new ArrayList<>(List.of(user.isConsumer().toString(),
+                    user.isDriver().toString(),
+                    user.getName(),
+                    user.getUserName(),
+                    user.getPhoneNumber(),
+                    user.getAltPhoneNumber(),
+                    user.getNeighborhood(),
+                    user.getCity(),
+                    user.getFullAddress(),
+                    user.isCondo().toString(),
+                    details == null ? "" : details.getDetails(),
+                    "",
+                    "",
+                    "",
+                    ""));
             dataToEncode.add(row);
         }
 
@@ -231,9 +243,21 @@ public class UserExporter extends Exporter {
 
             DetailsPost details = deliveryDetails.get(user.getUserName());
 
-            List<String> row = new ArrayList<>(Arrays.asList(user.isConsumer().toString(), user.isDriver().toString(), user.getName(), user.getUserName(),
-                    user.getPhoneNumber(), user.getAltPhoneNumber(), user.getNeighborhood(), user.getCity(), user.getFullAddress(),
-                    user.isCondo().toString(), details == null ? "" : details.getDetails(), "", "", "", ""));
+            List<String> row = new ArrayList<>(List.of(user.isConsumer().toString(),
+                    user.isDriver().toString(),
+                    user.getName(),
+                    user.getUserName(),
+                    user.getPhoneNumber(),
+                    user.getAltPhoneNumber(),
+                    user.getNeighborhood(),
+                    user.getCity(),
+                    user.getFullAddress(),
+                    user.isCondo().toString(),
+                    details == null ? "" : details.getDetails(),
+                    "",
+                    "",
+                    "",
+                    ""));
             dataToEncode.add(row);
         }
 
@@ -288,9 +312,21 @@ public class UserExporter extends Exporter {
 
     List<String> workflowHeaders() {
 
-        return new ArrayList<>(Arrays.asList(User.CONSUMER_COLUMN, User.DRIVER_COLUMN, User.NAME_COLUMN, User.USERNAME_COLUMN, User.PHONE_NUMBER_COLUMN,
-                User.ALT_PHONE_NUMBER_COLUMN, User.NEIGHBORHOOD_COLUMN, User.CITY_COLUMN, User.ADDRESS_COLUMN,
-                User.CONDO_COLUMN, "Details", "Restaurants", "normal", "veggie", "#orders"));
+        return new ArrayList<>(List.of(User.CONSUMER_COLUMN,
+                User.DRIVER_COLUMN,
+                User.NAME_COLUMN,
+                User.USERNAME_COLUMN,
+                User.PHONE_NUMBER_COLUMN,
+                User.ALT_PHONE_NUMBER_COLUMN,
+                User.NEIGHBORHOOD_COLUMN,
+                User.CITY_COLUMN,
+                User.ADDRESS_COLUMN,
+                User.CONDO_COLUMN,
+                "Details",
+                "Restaurants",
+                "normal",
+                "veggie",
+                "#orders"));
     }
 
     String oneKitchenWorkflowToFile(final String restaurantBlock, Map<String, DetailsPost> deliveryDetails,
@@ -304,11 +340,24 @@ public class UserExporter extends Exporter {
 
     List<String> oneKitchenWorkflowHeaders() {
 
-        return new ArrayList<>(Arrays.asList(User.CONSUMER_COLUMN, User.DRIVER_COLUMN, User.NAME_COLUMN, User.USERNAME_COLUMN, User.PHONE_NUMBER_COLUMN,
-                User.ALT_PHONE_NUMBER_COLUMN, User.NEIGHBORHOOD_COLUMN, User.CITY_COLUMN, User.ADDRESS_COLUMN, User.CONDO_COLUMN,
-                Constants.WORKFLOW_DETAILS_COLUMN, Constants.WORKFLOW_RESTAURANTS_COLUMN, Constants.WORKFLOW_STD_MEALS_COLUMN,
-                Constants.WORKFLOW_ALT_MEALS_COLUMN, Constants.WORKFLOW_TYPE_MEAL_COLUMN, Constants.WORKFLOW_STD_GROCERY_COLUMN,
-                Constants.WORKFLOW_ALT_GROCERY_COLUMN, Constants.WORKFLOW_TYPE_GROCERY_COLUMN));
+        return new ArrayList<>(List.of(User.CONSUMER_COLUMN,
+                User.DRIVER_COLUMN,
+                User.NAME_COLUMN,
+                User.USERNAME_COLUMN,
+                User.PHONE_NUMBER_COLUMN,
+                User.ALT_PHONE_NUMBER_COLUMN,
+                User.NEIGHBORHOOD_COLUMN,
+                User.CITY_COLUMN,
+                User.ADDRESS_COLUMN,
+                User.CONDO_COLUMN,
+                Constants.WORKFLOW_DETAILS_COLUMN,
+                Constants.WORKFLOW_RESTAURANTS_COLUMN,
+                Constants.WORKFLOW_STD_MEALS_COLUMN,
+                Constants.WORKFLOW_ALT_MEALS_COLUMN,
+                Constants.WORKFLOW_TYPE_MEAL_COLUMN,
+                Constants.WORKFLOW_STD_GROCERY_COLUMN,
+                Constants.WORKFLOW_ALT_GROCERY_COLUMN,
+                Constants.WORKFLOW_TYPE_GROCERY_COLUMN));
     }
 
     String inreach(OrderHistory orderHistory) throws IOException {
@@ -321,11 +370,21 @@ public class UserExporter extends Exporter {
         for (User user : tables.inreach()) {
             OrderHistory.Row userOrderHistory = orderHistory.getRow(user.getId());
 
-            List<String> row = new ArrayList<>(Arrays.asList(user.getSimpleCreateTime(), user.getName(), user.getUserName(),
-                    user.getPhoneNumber(), user.getAltPhoneNumber(), user.getCity(), user.getAddress(), user.isCondo().toString(),
-                    String.valueOf(userOrderHistory != null), userOrderHistory != null ? String.valueOf(userOrderHistory.getNumOrders()) : "",
-                    userOrderHistory != null ? userOrderHistory.getFirstOrderDate() : "", userOrderHistory != null ? userOrderHistory.getLastOrderDate() : "",
-                    user.isConsumer().toString(), user.isDispatcher().toString(), user.isDriver().toString()));
+            List<String> row = new ArrayList<>(List.of(user.getSimpleCreateTime(),
+                    user.getName(),
+                    user.getUserName(),
+                    user.getPhoneNumber(),
+                    user.getAltPhoneNumber(),
+                    user.getCity(),
+                    user.getAddress(),
+                    user.isCondo().toString(),
+                    String.valueOf(userOrderHistory != null),
+                    userOrderHistory != null ? String.valueOf(userOrderHistory.getNumOrders()) : "",
+                    userOrderHistory != null ? userOrderHistory.getFirstOrderDate() : "",
+                    userOrderHistory != null ? userOrderHistory.getLastOrderDate() : "",
+                    user.isConsumer().toString(),
+                    user.isDispatcher().toString(),
+                    user.isDriver().toString()));
             dataToEncode.add(row);
         }
 
@@ -341,10 +400,21 @@ public class UserExporter extends Exporter {
     }
 
     List<String> inreachHeaders() {
-        return new ArrayList<>(Arrays.asList(User.CREATED_AT_COLUMN, User.NAME_COLUMN, User.USERNAME_COLUMN, User.PHONE_NUMBER_COLUMN,
-                User.ALT_PHONE_NUMBER_COLUMN, User.CITY_COLUMN, User.ADDRESS_COLUMN, User.CONDO_COLUMN, Constants.ORDER_STATUS_COLUMN,
-                Constants.ORDER_NUMBER_COLUMN, Constants.FIRST_ORDER_DATE_COLUMN, Constants.LAST_ORDER_DATE_COLUMN, User.CONSUMER_COLUMN,
-                User.DISPATCHER_COLUMN, User.DRIVER_COLUMN));
+        return new ArrayList<>(List.of(User.CREATED_AT_COLUMN,
+                User.NAME_COLUMN,
+                User.USERNAME_COLUMN,
+                User.PHONE_NUMBER_COLUMN,
+                User.ALT_PHONE_NUMBER_COLUMN,
+                User.CITY_COLUMN,
+                User.ADDRESS_COLUMN,
+                User.CONDO_COLUMN,
+                Constants.ORDER_STATUS_COLUMN,
+                Constants.ORDER_NUMBER_COLUMN,
+                Constants.FIRST_ORDER_DATE_COLUMN,
+                Constants.LAST_ORDER_DATE_COLUMN,
+                User.CONSUMER_COLUMN,
+                User.DISPATCHER_COLUMN,
+                User.DRIVER_COLUMN));
     }
 
     String dispatchers() throws IOException {
@@ -355,11 +425,26 @@ public class UserExporter extends Exporter {
         dataToEncode.add(dispatchersHeaders());
 
         for (User user : tables.dispatchers()) {
-            List<String> row = new ArrayList<>(Arrays.asList(user.getSimpleCreateTime(), user.getName(), user.getUserName(),
-                    user.getPhoneNumber(), user.getNeighborhood(), user.getCity(), user.getAddress(), user.isCondo().toString(),
-                    user.isDriver().toString(), user.isConsumer().toString(), user.isDispatcher().toString(), user.isBHS().toString(),
-                    user.isHelpLine().toString(), user.isSiteLine().toString(), user.isInReach().toString(), user.isOutReach().toString(),
-                    user.isMarketing().toString(), user.isModerator().toString(), user.isSpecialist().toString(), user.isWorkflow().toString()));
+            List<String> row = new ArrayList<>(List.of(user.getSimpleCreateTime(),
+                    user.getName(),
+                    user.getUserName(),
+                    user.getPhoneNumber(),
+                    user.getNeighborhood(),
+                    user.getCity(),
+                    user.getAddress(),
+                    user.isCondo().toString(),
+                    user.isDriver().toString(),
+                    user.isConsumer().toString(),
+                    user.isDispatcher().toString(),
+                    user.isBHS().toString(),
+                    user.isHelpLine().toString(),
+                    user.isSiteLine().toString(),
+                    user.isInReach().toString(),
+                    user.isOutReach().toString(),
+                    user.isMarketing().toString(),
+                    user.isModerator().toString(),
+                    user.isSpecialist().toString(),
+                    user.isWorkflow().toString()));
             dataToEncode.add(row);
         }
 
@@ -377,10 +462,25 @@ public class UserExporter extends Exporter {
     }
 
     List<String> dispatchersHeaders() {
-        return new ArrayList<>(Arrays.asList(User.CREATED_AT_COLUMN, User.NAME_COLUMN, User.USERNAME_COLUMN, User.PHONE_NUMBER_COLUMN,
-                User.NEIGHBORHOOD_COLUMN, User.CITY_COLUMN, User.ADDRESS_COLUMN, User.CONDO_COLUMN, User.DRIVER_COLUMN,
-                User.CONSUMER_COLUMN, User.DISPATCHER_COLUMN, User.BHS_COLUMN, User.HELPLINE_COLUMN, User.SITELINE_COLUMN,
-                User.INREACH_COLUMN, User.OUTREACH_COLUMN, User.MARKETING_COLUMN, User.MODERATORS_COLUMN, User.SPECIALIST_COLUMN,
+        return new ArrayList<>(List.of(User.CREATED_AT_COLUMN,
+                User.NAME_COLUMN,
+                User.USERNAME_COLUMN,
+                User.PHONE_NUMBER_COLUMN,
+                User.NEIGHBORHOOD_COLUMN,
+                User.CITY_COLUMN,
+                User.ADDRESS_COLUMN,
+                User.CONDO_COLUMN,
+                User.DRIVER_COLUMN,
+                User.CONSUMER_COLUMN,
+                User.DISPATCHER_COLUMN,
+                User.BHS_COLUMN,
+                User.HELPLINE_COLUMN,
+                User.SITELINE_COLUMN,
+                User.INREACH_COLUMN,
+                User.OUTREACH_COLUMN,
+                User.MARKETING_COLUMN,
+                User.MODERATORS_COLUMN,
+                User.SPECIALIST_COLUMN,
                 User.WORKFLOW_COLUMN));
     }
 

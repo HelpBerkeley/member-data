@@ -22,6 +22,8 @@
  */
 package org.helpberkeley.memberdata;
 
+import com.opencsv.CSVReader;
+import com.opencsv.CSVWriter;
 import com.opencsv.exceptions.CsvException;
 import org.junit.Test;
 
@@ -58,7 +60,7 @@ public class CSVListWriterTest {
         String col9 = "has, multiple commas, and \"quoted\" \"strings\"";
         String col10 = "has, a, comma, \"inside, quoted\" string";
 
-        List<String> row = new ArrayList<>(Arrays.asList(col0, col1, col2, col3, col4, col5, col6, col7, col8, col9, col10));
+        List<String> row = new ArrayList<>(List.of(col0, col1, col2, col3, col4, col5, col6, col7, col8, col9, col10));
         dataToEncode.add(row);
 
         csvListWriter1.writeAllToList(dataToEncode);
@@ -79,5 +81,39 @@ public class CSVListWriterTest {
         System.out.println(encodedRow);
         System.out.println(rowParsedReadNext.toString().replaceAll("[\\[\\]]", ""));
         assertThat(encodedRow).isNotEqualTo(rowParsedReadNext.toString().replaceAll("[\\[\\]]", ""));
+    }
+
+    @Test
+    public void csvWriterTest() throws IOException, CsvException {
+        StringWriter writer = new StringWriter();
+        CSVWriter csvWriter = new CSVWriter(writer);
+        List<String[]> dataToEncode = new ArrayList<>();
+
+        String col0 = "";
+        String col1 = "simple";
+        String col2 = "simple with space";
+        String col3 = "has, a single comma";
+        String col4 = "has, a pair of, commas";
+        String col5 = "has, a single quote \"";
+        String col6 = "has a \"quoted string\"";
+        String col7 = "has multiple \"quoted\" \"strings\"";
+        String col8 = "has a comma, and a \"quoted string\"";
+        String col9 = "has, multiple commas, and \"quoted\" \"strings\"";
+        String col10 = "has, a, comma, \"inside, quoted\" string";
+
+        String[] row = {col0, col1, col2, col3, col4, col5, col6, col7, col8, col9, col10};
+        dataToEncode.add(row);
+
+        csvWriter.writeAll(dataToEncode);
+        csvWriter.close();
+
+        String encodedCSV = writer.toString();
+
+        CSVReader csvReader = new CSVReader(new StringReader(encodedCSV));
+        List<String[]> csvParsed = csvReader.readAll();
+        String[] parsedRow = csvParsed.get(0);
+
+        // Validate roundtrip
+        assertThat(row).isEqualTo(parsedRow);
     }
 }
