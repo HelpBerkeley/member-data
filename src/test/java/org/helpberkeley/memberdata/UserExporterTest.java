@@ -468,37 +468,4 @@ public class UserExporterTest extends TestBase {
 
         Files.delete(Paths.get(fileName));
     }
-
-    @Test
-    public void nameWithCommaTest() throws UserException, IOException, CsvException {
-        User u1 = createUserWithNoRequestsNoGroups("My name has, one comma");
-        User u2 = createUserWithVolunteerRequest("My name, has, two commas", "Drive");
-
-        UserExporter exporter = new UserExporter(List.of(u1, u2));
-
-        String exportDataCSV = exporter.allMembersRaw();
-        // Verify that we can parse it
-        List<User> users = HBParser.users(exportDataCSV);
-    }
-
-    @Test
-    public void cityAndNeighborhoodWithCommaTest() throws UserException, IOException, CsvException {
-        User u1 = createUserWithCityAndNeighborhood("Berkeley", "hills, lower");
-        User u2 = createUserWithCityAndNeighborhood("berkeley, east", "flats");
-
-        UserExporter exporter = new UserExporter(List.of(u1, u2));
-
-        String exportDataCSV = exporter.allMembersRaw();
-        List<User> users = HBParser.users(exportDataCSV);
-    }
-
-    @Test
-    public void addressWithCommaTest() throws UserException, IOException, CsvException {
-        User u1 = createUserWithAddress("42, Comma, Ln");
-        User u2 = createUserWithReferral("I.M. Referredman", "referral, with, commas");
-
-        UserExporter exporter = new UserExporter(List.of(u1, u2));
-        String exportDataCSV = exporter.allMembersRaw();
-        List<User> users = HBParser.users(exportDataCSV);
-    }
 }

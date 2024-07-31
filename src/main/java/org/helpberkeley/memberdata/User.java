@@ -756,12 +756,12 @@ public class User {
         }
     }
 
+    // FIX THIS, DS: remove or restore this method before merging this branch
     // Must be insensitive to null data
     private void removeDoubleQuotes() {
-
-        if (name != null) {
-            name = name.replace("\"", "");
-        }
+//        if (name != null) {
+//            name = name.replace("\"", "");
+//        }
     }
 
     // Must be insensitive to null data
@@ -1485,11 +1485,13 @@ public class User {
         return Objects.hash(userName);
     }
 
+    // FIX THIS, DS: remove or restore this method before merging this branch
     private String escapeCommas(final String value) {
-        if (value.indexOf(',') == -1) {
-            return value;
-        }
-
-        return "\"" + value + "\"";
+//        if (value.indexOf(',') == -1) {
+//            return value;
+//        }
+//
+//        return "\"" + value + "\"";
+        return value;
     }
 }

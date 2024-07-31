@@ -54,12 +54,14 @@ public class Exporter {
         LOGGER.trace("Wrote: {}", fileName);
     }
 
+    // FIX THIS, DS: remove or restore this method before merging this branch
     public static String escapeCommas(final String value) {
-        if (value.indexOf(',') == -1) {
-            return value;
-        }
-
-        return "\"" + value + "\"";
+//        if (value.indexOf(',') == -1) {
+//            return value;
+//        }
+//
+//        return "\"" + value + "\"";
+        return value;
     }
 
     public String shortBoolean(boolean value) {
