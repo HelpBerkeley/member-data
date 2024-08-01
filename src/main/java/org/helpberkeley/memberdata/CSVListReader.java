@@ -28,7 +28,6 @@ import com.opencsv.exceptions.CsvException;
 import java.io.IOException;
 import java.io.Reader;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class CSVListReader extends CSVReader {
@@ -42,7 +41,10 @@ public class CSVListReader extends CSVReader {
         List<List<String>> listOfLists = new ArrayList<>();
 
         for (String[] array : rows) {
-            List<String> list = new ArrayList<>(Arrays.asList(array));
+            List<String> list = new ArrayList<>();
+            for (String s: array) {
+                list.add(s.trim());
+            }
             listOfLists.add(list);
         }
         return listOfLists;
@@ -50,6 +52,10 @@ public class CSVListReader extends CSVReader {
 
     public List<String> readNextToList() throws IOException, CsvException {
         String[] row = readNext();
-        return new ArrayList<>(Arrays.asList(row));
+        List<String> rowList = new ArrayList<>();
+        for (String s: row) {
+            rowList.add(s.trim());
+        }
+        return rowList;
     }
 }

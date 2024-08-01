@@ -107,6 +107,7 @@ public class DriverExporterTest extends TestBase {
 
         CSVListReader csvReader = new CSVListReader(new StringReader(csvData));
         List<List<String>> rows = csvReader.readAllToList();
+        csvReader.close();
 
         List<String> header = rows.get(0);
         assertThat(header).isEqualTo(exporter.driverHeaders());

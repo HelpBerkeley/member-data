@@ -23,8 +23,10 @@
 package org.helpberkeley.memberdata.v300;
 
 import com.opencsv.bean.CsvToBeanBuilder;
+import com.opencsv.exceptions.CsvException;
 import org.helpberkeley.memberdata.*;
 
+import java.io.IOException;
 import java.io.StringReader;
 import java.text.MessageFormat;
 import java.util.*;
@@ -74,7 +76,7 @@ public class WorkflowParserV300 extends WorkflowParser {
     public static final String DUPLICATE_PICKUP =
             "Restaurant {0} appears more than once for driver {1}.\n";
 
-    public WorkflowParserV300(final String csvData) {
+    public WorkflowParserV300(final String csvData) throws IOException, CsvException {
         super(csvData);
     }
 
@@ -94,7 +96,7 @@ public class WorkflowParserV300 extends WorkflowParser {
      * @throws MemberDataException If there are any missing columns.
      */
     @Override
-    protected void auditColumnNames(final String csvData) {
+    protected void auditColumnNames(final String csvData) throws IOException, CsvException {
         List<String> columnNames = List.of(
                 Constants.WORKFLOW_ADDRESS_COLUMN,
                 Constants.WORKFLOW_ALT_PHONE_COLUMN,
@@ -115,11 +117,11 @@ public class WorkflowParserV300 extends WorkflowParser {
                 Constants.WORKFLOW_ALT_GROCERY_COLUMN,
                 Constants.WORKFLOW_TYPE_GROCERY_COLUMN);
 
-        // get the header line
-        String header = csvData.substring(0, csvData.indexOf('\n'));
+        CSVListReader csvReader = new CSVListReader(new StringReader(csvData));
+        List<String> headerColumns = csvReader.readNextToList();
+        csvReader.close();
 
-        String[] columns = header.split(",");
-        Set<String> set = new HashSet<>(Arrays.asList(columns));
+        Set<String> set = new HashSet<>(headerColumns);
 
         int numErrors = 0;
         StringBuilder errors = new StringBuilder();

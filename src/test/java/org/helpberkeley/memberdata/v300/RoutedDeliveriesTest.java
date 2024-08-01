@@ -22,9 +22,11 @@
  */
 package org.helpberkeley.memberdata.v300;
 
+import com.opencsv.exceptions.CsvException;
 import org.helpberkeley.memberdata.*;
 import org.junit.Test;
 
+import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.List;
 import java.util.Map;
@@ -42,7 +44,7 @@ public class RoutedDeliveriesTest extends TestBase {
     }
 
     @Test
-    public void singleDriverTest() {
+    public void singleDriverTest() throws IOException, CsvException {
         String csvData = readResourceFile("routed-deliveries-v300.csv");
 
         DriverPostFormat driverPostFormat = DriverPostFormat.create(createApiSimulator(), users, csvData);
@@ -194,7 +196,7 @@ public class RoutedDeliveriesTest extends TestBase {
     }
 
     @Test
-    public void multiDriverTest() {
+    public void multiDriverTest() throws IOException, CsvException {
         String csvData = readResourceFile("routed-deliveries-multi-driver-v300.csv");
 
         DriverPostFormat driverPostFormat = DriverPostFormat.create(createApiSimulator(), users, csvData);
@@ -381,7 +383,7 @@ public class RoutedDeliveriesTest extends TestBase {
     }
 
     @Test
-    public void singleDriverMultiPickupTest() {
+    public void singleDriverMultiPickupTest() throws IOException, CsvException {
         String csvData = readResourceFile("routed-deliveries-multi-pickup-v300.csv");
 
         DriverPostFormat driverPostFormat =

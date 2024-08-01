@@ -22,8 +22,10 @@
  */
 package org.helpberkeley.memberdata;
 
+import com.opencsv.exceptions.CsvException;
 import org.junit.Test;
 
+import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.List;
 import java.util.Map;
@@ -49,7 +51,7 @@ public abstract class DriverPostTest extends TestBase {
     public abstract String getEmptyRow();
 
     @Test
-    public void emptyTest() {
+    public void emptyTest() throws IOException, CsvException {
         HttpClientSimulator.setQueryResponseData(getDriverPostFormatQuery(), createMessageBlock(""));
         String routedDeliveries = readResourceFile(getRoutedDeliveriesFileName());
         DriverPostFormat driverPostFormat =
@@ -60,7 +62,7 @@ public abstract class DriverPostTest extends TestBase {
     }
 
     @Test
-    public void literalStringTest() {
+    public void literalStringTest() throws IOException, CsvException {
         String literal = "Fhqwhgads"; // Everybody to the Limit!
 
         HttpClientSimulator.setQueryResponseData(getDriverPostFormatQuery(), createMessageBlock(quote(literal)));
@@ -73,7 +75,7 @@ public abstract class DriverPostTest extends TestBase {
     }
 
     @Test
-    public void deliveriesTest() {
+    public void deliveriesTest() throws IOException, CsvException {
         String format = "LOOP &{Consumer} { "
                 + " &{Consumer.Name}"
                 + "\"|\""
@@ -99,7 +101,7 @@ public abstract class DriverPostTest extends TestBase {
     }
 
     @Test
-    public void invalidContinueTest() {
+    public void invalidContinueTest() throws IOException, CsvException {
 
         HttpClientSimulator.setQueryResponseData(getDriverPostFormatQuery(), createMessageBlock("CONTINUE"));
         String routedDeliveries = readResourceFile(getRoutedDeliveriesFileName());
@@ -111,7 +113,7 @@ public abstract class DriverPostTest extends TestBase {
     }
 
     @Test
-    public void singleLevelContinueTest() {
+    public void singleLevelContinueTest() throws IOException, CsvException {
         String format = "LOOP &{Consumer} { "
                 + " IF NOT &{Consumer.IsCondo} THEN { CONTINUE }"
                 + " &{Consumer.Name}"
@@ -162,7 +164,7 @@ public abstract class DriverPostTest extends TestBase {
     }
 
     @Test
-    public void unknownPickupsListRefVariableTest() {
+    public void unknownPickupsListRefVariableTest() throws IOException, CsvException {
         String format = "LOOP &{ThisDriverRestaurant} { "
                 + " &{ThisDriverRestaurant.HasPurpleSnowCones}"
                 + " }";
@@ -203,7 +205,7 @@ public abstract class DriverPostTest extends TestBase {
     }
 
     @Test
-    public void unknownStructVariableTest() {
+    public void unknownStructVariableTest() throws IOException, CsvException {
         String format = "LOOP &{BackupDriver} { ${BackupDriver.FavoriteColor} }";
         HttpClientSimulator.setQueryResponseData(getGroupInstructionsFormatQuery(), createMessageBlock(format));
         String routedDeliveries = readResourceFile(getRoutedDeliveriesFileName());
@@ -219,7 +221,7 @@ public abstract class DriverPostTest extends TestBase {
     }
 
     @Test
-    public void unknownListNameTest() {
+    public void unknownListNameTest() throws IOException, CsvException {
         String format = "LOOP &{TheLoop} { \"Hi\" }";
         HttpClientSimulator.setQueryResponseData(getGroupInstructionsFormatQuery(), createMessageBlock(format));
         String routedDeliveries = readResourceFile(getRoutedDeliveriesFileName());

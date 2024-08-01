@@ -22,6 +22,7 @@
  */
 package org.helpberkeley.memberdata;
 
+import com.opencsv.exceptions.CsvException;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.Test;
@@ -44,7 +45,7 @@ public abstract class WorkflowExporterTestBase extends TestBase {
     }
 
     @Test
-    public void workflowExporterValidateUpdatedDataTest() throws IOException {
+    public void workflowExporterValidateUpdatedDataTest() throws IOException, CsvException {
         String deliveries = getResourceFile();
         WorkflowParser parser = WorkflowParser.create(Collections.emptyMap(), deliveries);
         ApiClient apiSim = createApiSimulator();
@@ -53,7 +54,7 @@ public abstract class WorkflowExporterTestBase extends TestBase {
         String json = apiSim.runQuery(Constants.QUERY_GET_DELIVERY_DETAILS);
         ApiQueryResult apiQueryResult = HBParser.parseQueryResult(json);
         Map<String, DetailsPost> deliveryDetails = HBParser.deliveryDetails(apiQueryResult);
-        DriverPostFormat driverPostFormatPreUpdate = DriverPostFormat.create(apiSim, users, deliveries);
+//        DriverPostFormat driverPostFormatPreUpdate = DriverPostFormat.create(apiSim, users, deliveries);
         WorkflowExporter exporter = new WorkflowExporter(parser);
         String updatedCSVData = exporter.updateMemberData(users, deliveryDetails);
         DriverPostFormat driverPostFormatPostUpdate = DriverPostFormat.create(apiSim, users, updatedCSVData);

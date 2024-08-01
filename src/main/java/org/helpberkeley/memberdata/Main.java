@@ -636,7 +636,7 @@ public class Main {
     }
 
     private static void doDriverMessages(
-            ApiClient apiClient, WorkRequestHandler.WorkRequest request, Map<String, User> users) {
+            ApiClient apiClient, WorkRequestHandler.WorkRequest request, Map<String, User> users) throws IOException, CsvException {
 
         LOGGER.info("Driver message request found:\n{}", request);
 
@@ -705,7 +705,7 @@ public class Main {
     }
 
     private static void doUpdateMemberData(
-            ApiClient apiClient, WorkRequestHandler.WorkRequest request, Map<String, User> users) throws IOException {
+            ApiClient apiClient, WorkRequestHandler.WorkRequest request, Map<String, User> users) throws IOException, CsvException {
 
         String json = apiClient.runQuery(Constants.QUERY_GET_DELIVERY_DETAILS);
         ApiQueryResult apiQueryResult = HBParser.parseQueryResult(json);
@@ -744,7 +744,7 @@ public class Main {
     }
 
     private static void doOneKitchenDriverMessages(
-            ApiClient apiClient, WorkRequestHandler.WorkRequest request, Map<String, User> users) {
+            ApiClient apiClient, WorkRequestHandler.WorkRequest request, Map<String, User> users) throws IOException, CsvException {
 
         Topic topic = (request.destinationTopic != null) ? request.destinationTopic : Constants.TOPIC_DRIVERS_POST_STAGING;
 
@@ -1028,7 +1028,7 @@ public class Main {
     }
 
     private static void doCompletedDailyOrders(
-            ApiClient apiClient, WorkRequestHandler.WorkRequest request, Map<String, User> users) {
+            ApiClient apiClient, WorkRequestHandler.WorkRequest request, Map<String, User> users) throws IOException, CsvException {
 
         try {
             if (! request.disableDateAudit) {
@@ -1134,7 +1134,7 @@ public class Main {
     }
 
     private static void doCompletedOneKitchenOrders(
-            ApiClient apiClient, WorkRequestHandler.WorkRequest request, Map<String, User> users) {
+            ApiClient apiClient, WorkRequestHandler.WorkRequest request, Map<String, User> users) throws IOException, CsvException {
 
         try {
             if (! request.disableDateAudit) {
@@ -1325,7 +1325,7 @@ public class Main {
                 DRIVER_HISTORY_TITLE, ONE_KITCHEN_DRIVER_HISTORY_POST_ID);
     }
 
-    private static void restaurantTemplate(ApiClient apiClient) {
+    private static void restaurantTemplate(ApiClient apiClient) throws IOException, CsvException {
 
         Query query = new Query(
                 Constants.QUERY_GET_LAST_RESTAURANT_TEMPLATE_REPLY,
@@ -1350,7 +1350,7 @@ public class Main {
         doRestaurantTemplate(apiClient, request);
     }
 
-    private static void oneKitchenRestaurantTemplate(ApiClient apiClient) {
+    private static void oneKitchenRestaurantTemplate(ApiClient apiClient) throws IOException, CsvException {
 
         Query query = new Query(
                 Constants.QUERY_GET_LAST_ONE_KITCHEN_RESTAURANT_TEMPLATE_REPLY,
@@ -1376,7 +1376,7 @@ public class Main {
     }
 
     private static void doRestaurantTemplate(
-            ApiClient apiClient, WorkRequestHandler.WorkRequest request) {
+            ApiClient apiClient, WorkRequestHandler.WorkRequest request) throws IOException, CsvException {
 
         LOGGER.info("Downloading restaurant template update {}",
                 request.uploadFile.getOriginalFileName());
@@ -1434,7 +1434,7 @@ public class Main {
     }
 
     private static void doOneKitchenRestaurantTemplate(
-            ApiClient apiClient, WorkRequestHandler.WorkRequest request) {
+            ApiClient apiClient, WorkRequestHandler.WorkRequest request) throws IOException, CsvException {
 
         LOGGER.info("Downloading one kitchen restaurant template update {}",
                 request.uploadFile.getOriginalFileName());

@@ -24,7 +24,6 @@ package org.helpberkeley.memberdata.v200;
 
 import com.opencsv.bean.CsvBindByName;
 import org.helpberkeley.memberdata.Constants;
-import org.helpberkeley.memberdata.Exporter;
 import org.helpberkeley.memberdata.WorkflowBean;
 
 import java.util.ArrayList;
@@ -255,21 +254,21 @@ public class WorkflowBeanV200 implements WorkflowBean {
     }
 
     public List<String> toCSVListRow() {
-        return new ArrayList<>(List.of(Exporter.escapeCommas(consumer),
-                Exporter.escapeCommas(driver),
-                Exporter.escapeCommas(name),
-                Exporter.escapeCommas(userName),
-                Exporter.escapeCommas(phone),
-                Exporter.escapeCommas(altPhone),
-                Exporter.escapeCommas(neighborhood),
-                Exporter.escapeCommas(city),
-                Exporter.escapeCommas(address),
-                Exporter.escapeCommas(condo),
-                Exporter.escapeCommas(details),
-                Exporter.escapeCommas(restaurant),
-                Exporter.escapeCommas(normal),
-                Exporter.escapeCommas(veggie),
-                Exporter.escapeCommas(orders)));
+        return new ArrayList<>(List.of(consumer,
+                driver,
+                name,
+                userName,
+                phone,
+                altPhone,
+                neighborhood,
+                city,
+                address,
+                condo,
+                details,
+                restaurant,
+                normal,
+                veggie,
+                orders));
     }
 
     public List<String> getCSVHeader() {

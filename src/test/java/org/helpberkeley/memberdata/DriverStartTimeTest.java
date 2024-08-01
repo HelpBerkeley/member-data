@@ -22,11 +22,13 @@
  */
 package org.helpberkeley.memberdata;
 
+import com.opencsv.exceptions.CsvException;
 import org.helpberkeley.memberdata.v200.DriverV200;
 import org.helpberkeley.memberdata.v200.RestaurantV200;
 import org.helpberkeley.memberdata.v200.WorkflowBeanV200;
 import org.junit.Test;
 
+import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -59,7 +61,7 @@ public class DriverStartTimeTest extends TestBase {
     private final ControlBlock controlBlock;
     private final Map<String, Restaurant> restaurants;
 
-    public DriverStartTimeTest() {
+    public DriverStartTimeTest() throws IOException, CsvException {
         String csvData = readResourceFile("restaurant-template-route-test.csv");
         controlBlock = ControlBlock.create(csvData);
         restaurants = RestaurantTemplateParser.create(csvData).restaurants();

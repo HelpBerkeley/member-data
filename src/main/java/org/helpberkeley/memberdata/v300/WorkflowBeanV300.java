@@ -26,7 +26,6 @@ import com.opencsv.bean.CsvBindByName;
 import org.helpberkeley.memberdata.Constants;
 import org.helpberkeley.memberdata.MemberDataException;
 import org.helpberkeley.memberdata.WorkflowBean;
-import org.helpberkeley.memberdata.Exporter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -294,24 +293,24 @@ public class WorkflowBeanV300 implements WorkflowBean {
     }
 
     public List<String> toCSVListRow() {
-        return new ArrayList<>(List.of(Exporter.escapeCommas(consumer),
-                Exporter.escapeCommas(driver),
-                Exporter.escapeCommas(name),
-                Exporter.escapeCommas(userName),
-                Exporter.escapeCommas(phone),
-                Exporter.escapeCommas(altPhone),
-                Exporter.escapeCommas(neighborhood),
-                Exporter.escapeCommas(city),
-                Exporter.escapeCommas(address),
-                Exporter.escapeCommas(condo),
-                Exporter.escapeCommas(details),
-                Exporter.escapeCommas(restaurant),
-                Exporter.escapeCommas(stdMeals),
-                Exporter.escapeCommas(altMeals),
-                Exporter.escapeCommas(typeMeal),
-                Exporter.escapeCommas(stdGrocery),
-                Exporter.escapeCommas(altGrocery),
-                Exporter.escapeCommas(typeGrocery)));
+        return new ArrayList<>(List.of(consumer,
+                driver,
+                name,
+                userName,
+                phone,
+                altPhone,
+                neighborhood,
+                city,
+                address,
+                condo,
+                details,
+                restaurant,
+                stdMeals,
+                altMeals,
+                typeMeal,
+                stdGrocery,
+                altGrocery,
+                typeGrocery));
     }
 
     public List<String> getCSVHeader() {

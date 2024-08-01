@@ -24,9 +24,11 @@ package org.helpberkeley.memberdata;
 
 import com.google.common.collect.Iterators;
 import com.google.common.collect.PeekingIterator;
+import com.opencsv.exceptions.CsvException;
 import org.helpberkeley.memberdata.v200.WorkflowParserV200;
 import org.helpberkeley.memberdata.v300.WorkflowParserV300;
 
+import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.*;
 
@@ -44,14 +46,14 @@ public abstract class WorkflowParser {
     protected Map<String, Restaurant> globalRestaurants;
     protected final String normalizedCSVData;
 
-    protected WorkflowParser(final String csvData) {
+    protected WorkflowParser(final String csvData) throws IOException, CsvException {
         // Normalize EOL
         normalizedCSVData = csvData.replaceAll("\\r\\n?", "\n");
         controlBlock = ControlBlock.create(normalizedCSVData);
         iterator = initializeIterator(normalizedCSVData);
     }
 
-    public static WorkflowParser create(Map<String, Restaurant> globalRestaurants, String csvData) {
+    public static WorkflowParser create(Map<String, Restaurant> globalRestaurants, String csvData) throws IOException, CsvException {
 
         ControlBlock controlBlock = ControlBlock.create(csvData);
         String version = controlBlock.getVersion();
@@ -78,14 +80,14 @@ public abstract class WorkflowParser {
      * @param csvData Normalized workflow spreadsheet data
      * @throws MemberDataException If there are any missing columns.
      */
-    protected abstract void auditColumnNames(final String csvData);
+    protected abstract void auditColumnNames(final String csvData) throws IOException, CsvException;
 
     protected abstract Delivery processDelivery(WorkflowBean bean);
     protected abstract void versionSpecificAudit(Driver driver);
     protected abstract void auditDeliveryBeforePickup(Driver driver);
     protected abstract void auditPickupDeliveryMismatch(Driver driver);
 
-    private PeekingIterator<WorkflowBean> initializeIterator(final String csvData) {
+    private PeekingIterator<WorkflowBean> initializeIterator(final String csvData) throws IOException, CsvException {
         assert ! csvData.isEmpty() : "empty workflow";
         auditColumnNames(csvData);
 

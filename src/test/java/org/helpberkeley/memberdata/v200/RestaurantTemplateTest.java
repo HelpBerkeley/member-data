@@ -22,9 +22,11 @@
  */
 package org.helpberkeley.memberdata.v200;
 
+import com.opencsv.exceptions.CsvException;
 import org.helpberkeley.memberdata.*;
 import org.junit.Test;
 
+import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.Map;
 
@@ -66,7 +68,7 @@ public class RestaurantTemplateTest extends RestaurantTemplateTestBase {
     }
 
     @Test
-    public void missingEmojiTest() {
+    public void missingEmojiTest() throws IOException, CsvException {
         String csvData = CONTROL_BLOCK
                 + "Solano Route,,,,,,,,,,TRUE,Cafe Raj,:open_umbrella:,5:10 PM,10:00 PM\n"
                 + "Shattuck Route,,,,,,,,,,TRUE,Jot Mahal,,5:10 PM,9:00 PM\n";
@@ -80,7 +82,7 @@ public class RestaurantTemplateTest extends RestaurantTemplateTestBase {
     }
 
     @Test
-    public void inactiveRestaurantTest() {
+    public void inactiveRestaurantTest() throws IOException, CsvException {
         String templateData = readResourceFile("restaurant-template-v200.csv");
         RestaurantTemplateParser parser = RestaurantTemplateParser.create(templateData);
 
@@ -90,7 +92,7 @@ public class RestaurantTemplateTest extends RestaurantTemplateTestBase {
     }
 
     @Test
-    public void turkeyTemplateTest() {
+    public void turkeyTemplateTest() throws IOException, CsvException {
         String templateData = readResourceFile("restaurant-template-turkey.csv");
         RestaurantTemplateParser parser = RestaurantTemplateParser.create(templateData);
 

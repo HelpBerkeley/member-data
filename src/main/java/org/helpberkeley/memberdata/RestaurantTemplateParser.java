@@ -23,9 +23,11 @@
 package org.helpberkeley.memberdata;
 
 
+import com.opencsv.exceptions.CsvException;
 import org.helpberkeley.memberdata.v200.RestaurantTemplateParserV200;
 import org.helpberkeley.memberdata.v300.RestaurantTemplateParserV300;
 
+import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.*;
 
@@ -63,7 +65,7 @@ public abstract class RestaurantTemplateParser {
         iterator = restaurantBeans.iterator();
     }
 
-    public static RestaurantTemplateParser create(String csvData) {
+    public static RestaurantTemplateParser create(String csvData) throws IOException, CsvException {
 
         // Normalize EOL
         String normalizedCSV = csvData.replaceAll("\\r\\n?", "\n");

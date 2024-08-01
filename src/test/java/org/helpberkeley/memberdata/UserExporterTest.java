@@ -113,6 +113,7 @@ public class UserExporterTest extends TestBase {
         String allMemberRows = exporter.allMembersRaw();
         CSVListReader csvReader = new CSVListReader(new StringReader(allMemberRows));
         List<List<String>> rows = csvReader.readAllToList();
+        csvReader.close();
         assertThat(rows).hasSize(2);
 
         List<String> header = rows.get(0);
@@ -222,6 +223,7 @@ public class UserExporterTest extends TestBase {
         String allMemberRows = exporter.allMembersReport();
         CSVListReader csvReader = new CSVListReader(new StringReader(allMemberRows));
         List<List<String>> rows = csvReader.readAllToList();
+        csvReader.close();
         assertThat(rows).hasSize(2);
 
         List<String> header = rows.get(0);
@@ -354,6 +356,7 @@ public class UserExporterTest extends TestBase {
         String workflowRows = exporter.workflow("", new HashMap<>());
         CSVListReader csvReader = new CSVListReader(new StringReader(workflowRows));
         List<List<String>> rows = csvReader.readAllToList();
+        csvReader.close();
         assertThat(rows).hasSize(2);
 
         List<String> header = rows.get(0);
@@ -397,6 +400,7 @@ public class UserExporterTest extends TestBase {
         String dispatcherRows = exporter.dispatchers();
         CSVListReader csvReader = new CSVListReader(new StringReader(dispatcherRows));
         List<List<String>> rows = csvReader.readAllToList();
+        csvReader.close();
         assertThat(rows).hasSize(2);
 
         List<String> header = rows.get(0);

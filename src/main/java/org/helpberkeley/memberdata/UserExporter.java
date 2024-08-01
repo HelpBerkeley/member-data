@@ -30,7 +30,6 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -193,6 +192,7 @@ public class UserExporter extends Exporter {
             auditWorkflowData(restaurantBlock, workflowHeaders());
             CSVListReader csvReader = new CSVListReader(new StringReader(restaurantBlock));
             List<List<String>> parsedRestaurantBlock = csvReader.readAllToList();
+            csvReader.close();
             csvWriter.writeAllToList(parsedRestaurantBlock);
         }
 
@@ -237,6 +237,7 @@ public class UserExporter extends Exporter {
             CSVListReader csvReader = new CSVListReader(new StringReader(restaurantBlock));
             List<List<String>> parsedRestaurantBlock = csvReader.readAllToList();
             csvWriter.writeAllToList(parsedRestaurantBlock);
+            csvReader.close();
         }
 
         for (User user : tables.sortByConsumerThenDriverThenName()) {
@@ -278,6 +279,7 @@ public class UserExporter extends Exporter {
 
         CSVListReader csvReader = new CSVListReader(new StringReader(csvData));
         List<List<String>> rows = csvReader.readAllToList();
+        csvReader.close();
         assert ! rows.isEmpty() : "missing work flow data";
         List<String> headerColumns = rows.get(0);
 

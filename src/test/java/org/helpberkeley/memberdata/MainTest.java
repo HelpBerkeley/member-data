@@ -22,15 +22,11 @@
  */
 package org.helpberkeley.memberdata;
 
-import com.opencsv.CSVReader;
-import com.opencsv.CSVWriter;
 import com.opencsv.exceptions.CsvException;
 import org.junit.*;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.StringReader;
-import java.io.StringWriter;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.text.MessageFormat;
@@ -741,7 +737,7 @@ public class MainTest extends TestBase {
     }
 
     @Test
-    public void workflowParserUpdateMemberDataTest() {
+    public void workflowParserUpdateMemberDataTest() throws IOException, CsvException {
         String deliveries = readResourceFile("update-member-data-multiple-updates.csv");
         WorkflowParser parser = WorkflowParser.create(Collections.emptyMap(), deliveries);
         ApiClient apiSim = createApiSimulator();
@@ -754,19 +750,19 @@ public class MainTest extends TestBase {
         String updatedCSVData = exporter.updateMemberData(users, deliveryDetails);
         assertThat(updatedCSVData).doesNotContain("Cust Name");
         assertThat(updatedCSVData).contains(
-                "Ms. Somebody,Somebody,123-456-7890,510-015-5151,Unknown,Berkeley,\"542 11dy 7th Street, Berkeley, CA\",FALSE");
+                "\"Ms. Somebody\",\"Somebody\",\"123-456-7890\",\"510-015-5151\",\"Unknown\",\"Berkeley\",\"542 11dy 7th Street, Berkeley, CA\",\"FALSE\"");
         assertThat(updatedCSVData).contains(
-                "\"Mr. Somebody, Esq.\",SomebodyElse,123-456-7890,510-015-5151,Unknown,Berkeley,\"542 11dy 7th Street, Apt 3g, Berkeley, CA\",FALSE");
+                "\"Mr. Somebody, Esq.\",\"SomebodyElse\",\"123-456-7890\",\"510-015-5151\",\"Unknown\",\"Berkeley\",\"542 11dy 7th Street, Apt 3g, Berkeley, CA\",\"FALSE\"");
         assertThat(updatedCSVData).contains(
-                "THE THIRD PERSON,ThirdPerson,123-456-7890,510-222-7777,Unknown,Berkeley,\"4 Fortieth Blvd, Berkeley, CA\",FALSE,\"something, with, a, lot, of commas.\"");
+                "\"THE THIRD PERSON\",\"ThirdPerson\",\"123-456-7890\",\"510-222-7777\",\"Unknown\",\"Berkeley\",\"4 Fortieth Blvd, Berkeley, CA\",\"FALSE\",\"something, with, a, lot, of commas.\"");
         assertThat(updatedCSVData).contains(
-                "X Y ZZY,Xyzzy,555-555-5555,123-456-0000,N.BerkHills/Tilden,Berkeley,\"1223 Main St., Berkeley, CA\",FALSE");
+                "\"X Y ZZY\",\"Xyzzy\",\"555-555-5555\",\"123-456-0000\",\"N.BerkHills/Tilden\",\"Berkeley\",\"1223 Main St., Berkeley, CA\",\"FALSE\"");
         assertThat(updatedCSVData).contains(
-                "Zees McZeesy,ZZZ,123-456-7890,none,unknown,Berkeley,\"3 Place Place Square, Berkeley, CA\",TRUE");
+                "\"Zees McZeesy\",\"ZZZ\",\"123-456-7890\",\"none\",\"unknown\",\"Berkeley\",\"3 Place Place Square, Berkeley, CA\",\"TRUE\"");
         assertThat(updatedCSVData).contains(
-                "Joseph R. Volunteer,JVol,123-456-7890,none,unknown,Berkeley,\"47 74th Ave, Berkeley, CA\",TRUE");
+                "\"Joseph R. Volunteer\",\"JVol\",\"123-456-7890\",\"none\",\"unknown\",\"Berkeley\",\"47 74th Ave, Berkeley, CA\",\"TRUE\"");
         assertThat(updatedCSVData).contains(
-                "Scotty J Backup 772th,MrBackup772,123-456-7890,none,unknown,Berkeley,\"38 38th Ave, Berkeley, CA\",TRUE");
+                "\"Scotty J Backup 772th\",\"MrBackup772\",\"123-456-7890\",\"none\",\"unknown\",\"Berkeley\",\"38 38th Ave, Berkeley, CA\",\"TRUE\"");
     }
 
     @Test
@@ -837,7 +833,7 @@ public class MainTest extends TestBase {
     }
 
     @Test
-    public void updateMemberDataTooManyMembers() {
+    public void updateMemberDataTooManyMembers() throws IOException, CsvException {
         String deliveries = readResourceFile("update-member-data-multiple-updates.csv");
         WorkflowParser parser = WorkflowParser.create(Collections.emptyMap(), deliveries);
         ApiClient apiSim = createApiSimulator();
@@ -1157,4 +1153,5 @@ public class MainTest extends TestBase {
         assertThat(files).hasSize(1);
         return files[0].getName();
     }
+
 }

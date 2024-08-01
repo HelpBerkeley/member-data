@@ -115,22 +115,10 @@ public abstract class ControlBlock {
 
     public static ControlBlock create(String csvData) throws IOException, CsvException {
 
-//        // Normalize lines
-//        String normalized = csvData.replaceAll("\\r\\n?", "\n");
-//        // Break into lines
-//        String[] lines = normalized.split("\n");
-//
-//        String header = lines[0];
-
         CSVListReader csvReader = new CSVListReader(new StringReader(csvData));
         List<List<String>> lines = csvReader.readAllToList();
         List<String> header = lines.get(0);
         csvReader.close();
-
-
-//        if (! header.contains(Constants.CSV_SEPARATOR)) {
-//            throw new MemberDataException(BAD_HEADER_ROW);
-//        }
 
         String version = new VersionParser(lines).version();
 
@@ -676,10 +664,7 @@ public abstract class ControlBlock {
 
                 lineNumber++;
 
-//                if (! line.startsWith("FALSE,FALSE,")) {
-//                    continue;
-//                }
-                if (! (line.get(0).equals("False") && line.get(1).equals("False"))) {
+                if (! (line.get(0).equals("FALSE") && line.get(1).equals("FALSE"))) {
                     continue;
                 }
 

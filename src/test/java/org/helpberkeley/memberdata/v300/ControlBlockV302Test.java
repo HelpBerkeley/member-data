@@ -22,11 +22,16 @@
  */
 package org.helpberkeley.memberdata.v300;
 
+import com.opencsv.exceptions.CsvException;
+
+import java.io.IOException;
+
 public class ControlBlockV302Test extends ControlBlockTest {
 
     public static final String CONTROL_BLOCK_VERSION_ROW = "FALSE,FALSE,,Version ,,,,3-0-2,,,,,,,,,,\n";
 
-    public ControlBlockV302Test() {
+    public ControlBlockV302Test() throws IOException, CsvException {
+        super();
     }
 
     @Override

@@ -22,9 +22,11 @@
  */
 package org.helpberkeley.memberdata.v200;
 
+import com.opencsv.exceptions.CsvException;
 import org.helpberkeley.memberdata.*;
 import org.junit.Test;
 
+import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.Collections;
 import java.util.List;
@@ -39,7 +41,7 @@ public class ControlBlockTest extends ControlBlockTestBase {
 
     private final Map<String, Restaurant> allRestaurants;
 
-    public ControlBlockTest() {
+    public ControlBlockTest() throws IOException, CsvException {
         RestaurantTemplateParser parser =
                 RestaurantTemplateParser.create(readResourceFile("restaurant-template-v200.csv"));
         allRestaurants = parser.restaurants();
@@ -97,7 +99,7 @@ public class ControlBlockTest extends ControlBlockTestBase {
     }
 
     @Test
-    public void altMealOptionsTest() {
+    public void altMealOptionsTest() throws IOException, CsvException {
         String key = Constants.CONTROL_BLOCK_ALT_MEAL_OPTIONS;
         String value = "\"none, veggie, noRed,noPork \"";
 
@@ -114,7 +116,7 @@ public class ControlBlockTest extends ControlBlockTestBase {
     }
 
     @Test
-    public void altGroceryOptionsTest() {
+    public void altGroceryOptionsTest() throws IOException, CsvException {
         String key = Constants.CONTROL_BLOCK_ALT_GROCERY_OPTIONS;
         String value = "\"none, veg, custom pick\"";
 
@@ -131,7 +133,7 @@ public class ControlBlockTest extends ControlBlockTestBase {
     }
 
     @Test
-    public void startTimesTest() {
+    public void startTimesTest() throws IOException, CsvException {
         String key = Constants.CONTROL_BLOCK_START_TIMES;
         String value = "\"3:00, 3:10, 3:15\"";
 
@@ -148,7 +150,7 @@ public class ControlBlockTest extends ControlBlockTestBase {
     }
 
     @Test
-    public void pickupManagersTest() {
+    public void pickupManagersTest() throws IOException, CsvException {
         String key = Constants.CONTROL_BLOCK_PICKUP_MANAGER;
         String value = "JVol";
 
@@ -177,7 +179,7 @@ public class ControlBlockTest extends ControlBlockTestBase {
 
     /** Verify disabled audit of a split restaurant not having a cleanup driver in the control block */
     @Test
-    public void disabledAuditSplitRestaurantNoCleanupTest() {
+    public void disabledAuditSplitRestaurantNoCleanupTest() throws IOException, CsvException {
         DriverPostFormat.create(createApiSimulator(), users,
                 readResourceFile("routed-deliveries-split-missing-cleanup-audit-disabled.csv"));
     }

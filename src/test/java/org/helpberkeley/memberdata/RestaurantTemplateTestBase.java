@@ -22,8 +22,10 @@
  */
 package org.helpberkeley.memberdata;
 
+import com.opencsv.exceptions.CsvException;
 import org.junit.Test;
 
+import java.io.IOException;
 import java.text.MessageFormat;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -71,7 +73,7 @@ public abstract class RestaurantTemplateTestBase extends TestBase {
     }
 
     @Test
-    public void unknownControlBlockDirectiveTest() {
+    public void unknownControlBlockDirectiveTest() throws IOException, CsvException {
         String badDirective = "Commenrt";
         String badDirectiveRow = getControlBlockDirectiveRow(badDirective);
 

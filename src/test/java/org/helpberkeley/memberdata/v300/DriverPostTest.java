@@ -22,9 +22,11 @@
  */
 package org.helpberkeley.memberdata.v300;
 
+import com.opencsv.exceptions.CsvException;
 import org.helpberkeley.memberdata.*;
 import org.junit.Test;
 
+import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.List;
 
@@ -79,7 +81,7 @@ public class DriverPostTest extends org.helpberkeley.memberdata.DriverPostTest {
     }
 
     @Test
-    public void v300SingleDriverDeliveriesTest() {
+    public void v300SingleDriverDeliveriesTest() throws IOException, CsvException {
         String format = "LOOP &{Consumer} { "
                 + " &{Consumer.Name}"
                 + "\"|\""
@@ -112,7 +114,7 @@ public class DriverPostTest extends org.helpberkeley.memberdata.DriverPostTest {
     }
 
     @Test
-    public void v300MultiDriverDeliveriesTest() {
+    public void v300MultiDriverDeliveriesTest() throws IOException, CsvException {
         String format = "LOOP &{Consumer} { "
                 + " &{Consumer.Name}"
                 + "\"|\""
@@ -146,7 +148,7 @@ public class DriverPostTest extends org.helpberkeley.memberdata.DriverPostTest {
     }
 
     @Test
-    public void v300ImplicitBooleanTest() {
+    public void v300ImplicitBooleanTest() throws IOException, CsvException {
         String format = "LOOP &{Consumer} { "
                 + " &{Consumer.Name}"
                 + "\"|\""
@@ -178,7 +180,7 @@ public class DriverPostTest extends org.helpberkeley.memberdata.DriverPostTest {
     }
 
     @Test
-    public void thisDriverRestaurantTest() {
+    public void thisDriverRestaurantTest() throws IOException, CsvException {
         String format = "LOOP &{ThisDriverRestaurant} { "
                 + " &{ThisDriverRestaurant.Name}"
                 + "\"|\""
@@ -209,7 +211,7 @@ public class DriverPostTest extends org.helpberkeley.memberdata.DriverPostTest {
     }
 
     @Test
-    public void v300PickupsBooleansTest() {
+    public void v300PickupsBooleansTest() throws IOException, CsvException {
         String format = "LOOP &{ThisDriverRestaurant} { "
                 + " IF &{ThisDriverRestaurant.AnyMealsOrGroceries} THEN { \"HasMealsOrGroceries\" }"
                 + "\"|\""
@@ -231,7 +233,7 @@ public class DriverPostTest extends org.helpberkeley.memberdata.DriverPostTest {
     }
 
     @Test
-    public void v300SingleLocationPickupsTest() {
+    public void v300SingleLocationPickupsTest() throws IOException, CsvException {
         String format = "LOOP &{ThisDriverRestaurant} {"
                 + " &{ThisDriverRestaurant.Name} \"\\n\""
                 + " &{ThisDriverRestaurant.StandardMeals}"
@@ -257,7 +259,7 @@ public class DriverPostTest extends org.helpberkeley.memberdata.DriverPostTest {
     }
 
     @Test
-    public void v300MultiLocationPickupsTest() {
+    public void v300MultiLocationPickupsTest() throws IOException, CsvException {
         String format = "LOOP &{ThisDriverRestaurant} {"
                 + " &{ThisDriverRestaurant.Name} "
                 + "\"|\""
@@ -286,7 +288,7 @@ public class DriverPostTest extends org.helpberkeley.memberdata.DriverPostTest {
     }
 
     @Test
-    public void alternateMealsTest() {
+    public void alternateMealsTest() throws IOException, CsvException {
         String format = "LOOP &{AlternateMeals} {"
                 + "&{AlternateMeals.Type} "
                 + "\":\""
@@ -301,7 +303,7 @@ public class DriverPostTest extends org.helpberkeley.memberdata.DriverPostTest {
     }
 
     @Test
-    public void alternateGroceriesTest() {
+    public void alternateGroceriesTest() throws IOException, CsvException {
         String format = "LOOP &{AlternateGroceries} {"
                 + "&{AlternateGroceries.Type} "
                 + "\":\""
@@ -316,7 +318,7 @@ public class DriverPostTest extends org.helpberkeley.memberdata.DriverPostTest {
     }
 
     @Test
-    public void startTimeTest() {
+    public void startTimeTest() throws IOException, CsvException {
         String format = "\"Start time: \" ${ThisDriverFirstRestaurantStartTime} \"\n\"";
         HttpClientSimulator.setQueryResponseData(getDriverPostFormatQuery(), createMessageBlock(format));
         String routedDeliveries = readResourceFile(getRoutedDeliveriesFileName());
@@ -327,7 +329,7 @@ public class DriverPostTest extends org.helpberkeley.memberdata.DriverPostTest {
     }
 
     @Test
-    public void v300FirstPickupLocationTest() {
+    public void v300FirstPickupLocationTest() throws IOException, CsvException {
         String format = "LOOP &{Driver} {"
                 + " ${FirstPickupLocation} \"\\n\""
                 + "}";
@@ -340,7 +342,7 @@ public class DriverPostTest extends org.helpberkeley.memberdata.DriverPostTest {
     }
 
     @Test
-    public void v300BackupDriversTest() {
+    public void v300BackupDriversTest() throws IOException, CsvException {
         String format = "LOOP &{BackupDriver} {"
                 + " ${BackupDriver.UserName} \"\\n\""
                 + "}";
@@ -389,7 +391,7 @@ public class DriverPostTest extends org.helpberkeley.memberdata.DriverPostTest {
     }
 
     @Test
-    public void generateNoWarningsSummaryTest() {
+    public void generateNoWarningsSummaryTest() throws IOException, CsvException {
         DriverBlockBuilder driverBlock = new DriverBlockBuilder();
         driverBlock.withRestaurant(new RestaurantBuilder());
         driverBlock.withDelivery(new DeliveryBuilder().withStdMeals("1"));
@@ -405,7 +407,7 @@ public class DriverPostTest extends org.helpberkeley.memberdata.DriverPostTest {
     }
 
     @Test
-    public void generateSummaryWithUnvisitedRestaurantTest() {
+    public void generateSummaryWithUnvisitedRestaurantTest() throws IOException, CsvException {
         DriverBlockBuilder driverBlock = new DriverBlockBuilder();
         driverBlock.withRestaurant(new RestaurantBuilder());
         driverBlock.withDelivery(new DeliveryBuilder().withStdMeals("1"));
@@ -420,7 +422,7 @@ public class DriverPostTest extends org.helpberkeley.memberdata.DriverPostTest {
     }
 
     @Test
-    public void generateEmptyDeliveryWarningSummaryTest() {
+    public void generateEmptyDeliveryWarningSummaryTest() throws IOException, CsvException {
         DriverBlockBuilder driverBlock = new DriverBlockBuilder();
         driverBlock.withRestaurant(new RestaurantBuilder());
         driverBlock.withRestaurant(new RestaurantBuilder().withName("BFN"));
@@ -437,7 +439,7 @@ public class DriverPostTest extends org.helpberkeley.memberdata.DriverPostTest {
     }
 
     @Test
-    public void mondayMessageFormatTest() {
+    public void mondayMessageFormatTest() throws IOException, CsvException {
         String routedDeliveries = readResourceFile(getRoutedDeliveriesFileName());
 
         String driverFormat = "Monday driver message";
@@ -471,7 +473,7 @@ public class DriverPostTest extends org.helpberkeley.memberdata.DriverPostTest {
     }
 
     @Test
-    public void wednesdayMessageFormatTest() {
+    public void wednesdayMessageFormatTest() throws IOException, CsvException {
         String routedDeliveries = readResourceFile(getRoutedDeliveriesFileName());
 
         String driverFormat = "Wednesday driver message";
@@ -505,7 +507,7 @@ public class DriverPostTest extends org.helpberkeley.memberdata.DriverPostTest {
     }
 
     @Test
-    public void specialMessageFormatTest() {
+    public void specialMessageFormatTest() throws IOException, CsvException {
         String routedDeliveries = readResourceFile("routed-deliveries-special-v300.csv");
 
         String driverFormat = "Thursday driver message";
@@ -539,7 +541,7 @@ public class DriverPostTest extends org.helpberkeley.memberdata.DriverPostTest {
     }
 
     @Test
-    public void thursdayMessageFormatTest() {
+    public void thursdayMessageFormatTest() throws IOException, CsvException {
         String routedDeliveries = readResourceFile("routed-deliveries-thursday-v300.csv");
 
         String driverFormat = "Thursday driver message";
@@ -573,7 +575,7 @@ public class DriverPostTest extends org.helpberkeley.memberdata.DriverPostTest {
     }
 
     @Test
-    public void backupDriverIsADriverTest() {
+    public void backupDriverIsADriverTest() throws IOException, CsvException {
         DeliveryBuilder delivery = new DeliveryBuilder();
         delivery.withStdMeals("1");
         DriverBlockBuilder driverBlock = new DriverBlockBuilder();

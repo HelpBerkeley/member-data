@@ -692,7 +692,6 @@ public class User {
         removeNewlines();
         removeLeadingTrailingWhitespace();
         // FIX THIS, DS: can we escape them?
-        removeDoubleQuotes();
         auditAndNormalizePhoneNumber();
         auditAndNormalizeAltPhoneNumber();
         auditAndNormalizeCity();
@@ -759,14 +758,6 @@ public class User {
         if (referral != null) {
             referral = referral.strip();
         }
-    }
-
-    // FIX THIS, DS: remove or restore this method before merging this branch
-    // Must be insensitive to null data
-    private void removeDoubleQuotes() {
-//        if (name != null) {
-//            name = name.replace("\"", "");
-//        }
     }
 
     // Must be insensitive to null data
@@ -1483,15 +1474,5 @@ public class User {
     @Override
     public int hashCode() {
         return Objects.hash(userName);
-    }
-
-    // FIX THIS, DS: remove or restore this method before merging this branch
-    private String escapeCommas(final String value) {
-//        if (value.indexOf(',') == -1) {
-//            return value;
-//        }
-//
-//        return "\"" + value + "\"";
-        return value;
     }
 }

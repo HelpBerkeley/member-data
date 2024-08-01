@@ -22,9 +22,11 @@
  */
 package org.helpberkeley.memberdata.v300;
 
+import com.opencsv.exceptions.CsvException;
 import org.helpberkeley.memberdata.*;
 import org.junit.Test;
 
+import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.List;
 import java.util.Map;
@@ -47,7 +49,7 @@ public class WorkflowHBParserTest extends WorkflowHBParserBaseTest {
             Map.of("RevFoodTruck", Restaurant.createRestaurant(controlBlock, "RevFoodTruck", 1),
                     "BFN", Restaurant.createRestaurant(controlBlock, "BFN", 2));
 
-    public WorkflowHBParserTest() {
+    public WorkflowHBParserTest() throws IOException, CsvException {
         super();
     }
 
@@ -79,12 +81,12 @@ public class WorkflowHBParserTest extends WorkflowHBParserBaseTest {
     }
 
     @Override
-    public String getHeader() {
+    public String getHeader() throws IOException, CsvException {
         return new ControlBlockTest().getHeader();
     }
 
     @Test
-    public void badValueStandardMealsTest() {
+    public void badValueStandardMealsTest() throws IOException, CsvException {
         String badCount = "NaN";
 
         DeliveryBuilder delivery = new DeliveryBuilder();
@@ -104,7 +106,7 @@ public class WorkflowHBParserTest extends WorkflowHBParserBaseTest {
     }
 
     @Test
-    public void badValueAltMealsTest() {
+    public void badValueAltMealsTest() throws IOException, CsvException {
         String badCount = "mauvaise valeur";
 
         DeliveryBuilder delivery = new DeliveryBuilder();
@@ -125,7 +127,7 @@ public class WorkflowHBParserTest extends WorkflowHBParserBaseTest {
     }
 
     @Test
-    public void missingMealTypeTest() {
+    public void missingMealTypeTest() throws IOException, CsvException {
         DeliveryBuilder delivery = new DeliveryBuilder();
         delivery.withAltMeals("1");
         DriverBlockBuilder driverBlock = new DriverBlockBuilder();
@@ -143,7 +145,7 @@ public class WorkflowHBParserTest extends WorkflowHBParserBaseTest {
     }
 
     @Test
-    public void mismatchMealTypeTest() {
+    public void mismatchMealTypeTest() throws IOException, CsvException {
         String unknownMealType = "ginger sling with a pineapple heart";
         DeliveryBuilder delivery = new DeliveryBuilder();
         delivery.withAltMeals("1").withTypeMeal(unknownMealType);
@@ -163,7 +165,7 @@ public class WorkflowHBParserTest extends WorkflowHBParserBaseTest {
     }
 
     @Test
-    public void emptyAltMealTest() {
+    public void emptyAltMealTest() throws IOException, CsvException {
         String mealType = "coffee only";
         DeliveryBuilder delivery = new DeliveryBuilder();
         delivery.withAltMeals("1").withTypeMeal(mealType);
@@ -183,7 +185,7 @@ public class WorkflowHBParserTest extends WorkflowHBParserBaseTest {
     }
 
     @Test
-    public void emptyAltGroceryTest() {
+    public void emptyAltGroceryTest() throws IOException, CsvException {
         String groceryType = "kosher";
         DeliveryBuilder delivery = new DeliveryBuilder();
         delivery.withAltGrocery("1").withTypeGrocery(groceryType);
@@ -205,7 +207,7 @@ public class WorkflowHBParserTest extends WorkflowHBParserBaseTest {
 
 
     @Test
-    public void badValueStandardGroceryTest() {
+    public void badValueStandardGroceryTest() throws IOException, CsvException {
         String badCount = "Also NaN";
 
         DeliveryBuilder delivery = new DeliveryBuilder();
@@ -225,7 +227,7 @@ public class WorkflowHBParserTest extends WorkflowHBParserBaseTest {
     }
 
     @Test
-    public void badValueAltGroceryTest() {
+    public void badValueAltGroceryTest() throws IOException, CsvException {
         String badCount = "encore une mauvaise valeur";
 
         DeliveryBuilder delivery = new DeliveryBuilder();
@@ -245,7 +247,7 @@ public class WorkflowHBParserTest extends WorkflowHBParserBaseTest {
     }
 
     @Test
-    public void missingGroceryTypeTest() {
+    public void missingGroceryTypeTest() throws IOException, CsvException {
 
         DeliveryBuilder delivery = new DeliveryBuilder();
         delivery.withAltGrocery("1");
@@ -265,7 +267,7 @@ public class WorkflowHBParserTest extends WorkflowHBParserBaseTest {
     }
 
     @Test
-    public void mismatchGroceryTypeTest() {
+    public void mismatchGroceryTypeTest() throws IOException, CsvException {
         String unknownGroceryType = "blue foods";
         DeliveryBuilder delivery = new DeliveryBuilder();
         delivery.withAltGrocery("1").withTypeGrocery(unknownGroceryType);
@@ -285,7 +287,7 @@ public class WorkflowHBParserTest extends WorkflowHBParserBaseTest {
     }
 
     @Test
-    public void missingConsumerNameTest() {
+    public void missingConsumerNameTest() throws IOException, CsvException {
         DriverBlockBuilder driverBlock = new DriverBlockBuilder();
         driverBlock.withRestaurant(new RestaurantBuilder());
         driverBlock.withDelivery(new DeliveryBuilder().withConsumerName(""));
@@ -301,7 +303,7 @@ public class WorkflowHBParserTest extends WorkflowHBParserBaseTest {
     }
 
     @Test
-    public void missingConsumerUserNameTest() {
+    public void missingConsumerUserNameTest() throws IOException, CsvException {
         DriverBlockBuilder driverBlock = new DriverBlockBuilder();
         driverBlock.withRestaurant(new RestaurantBuilder());
         driverBlock.withDelivery(new DeliveryBuilder().withConsumerUserName(""));
@@ -318,7 +320,7 @@ public class WorkflowHBParserTest extends WorkflowHBParserBaseTest {
     }
 
     @Test
-    public void missingCityTest() {
+    public void missingCityTest() throws IOException, CsvException {
         DriverBlockBuilder driverBlock = new DriverBlockBuilder();
         driverBlock.withRestaurant(new RestaurantBuilder());
         driverBlock.withDelivery(new DeliveryBuilder().withCity(""));
@@ -335,7 +337,7 @@ public class WorkflowHBParserTest extends WorkflowHBParserBaseTest {
     }
 
     @Test
-    public void missingAddressTest() {
+    public void missingAddressTest() throws IOException, CsvException {
         DriverBlockBuilder driverBlock = new DriverBlockBuilder();
         driverBlock.withRestaurant(new RestaurantBuilder());
         driverBlock.withDelivery(new DeliveryBuilder().withAddress(""));
@@ -352,7 +354,7 @@ public class WorkflowHBParserTest extends WorkflowHBParserBaseTest {
     }
 
     @Test
-    public void missingPhoneTest() {
+    public void missingPhoneTest() throws IOException, CsvException {
         DriverBlockBuilder driverBlock = new DriverBlockBuilder();
         driverBlock.withRestaurant(new RestaurantBuilder());
         driverBlock.withDelivery(new DeliveryBuilder().withPhone(""));
@@ -369,7 +371,7 @@ public class WorkflowHBParserTest extends WorkflowHBParserBaseTest {
     }
 
     @Test
-    public void emptyGrocerySourceTest() {
+    public void emptyGrocerySourceTest() throws IOException, CsvException {
         DriverBlockBuilder driverBlock = new DriverBlockBuilder();
         driverBlock.withRestaurant(new RestaurantBuilder());
         driverBlock.withDelivery(new DeliveryBuilder().withPhone(""));
@@ -383,7 +385,7 @@ public class WorkflowHBParserTest extends WorkflowHBParserBaseTest {
     }
 
     @Test
-    public void emptyMealSourceTest() {
+    public void emptyMealSourceTest() throws IOException, CsvException {
         DriverBlockBuilder driverBlock = new DriverBlockBuilder();
         driverBlock.withRestaurant(new RestaurantBuilder());
         driverBlock.withDelivery(new DeliveryBuilder().withStdGrocery("1"));
@@ -397,7 +399,7 @@ public class WorkflowHBParserTest extends WorkflowHBParserBaseTest {
     }
 
     @Test
-    public void unknownPickupManagerTest() {
+    public void unknownPickupManagerTest() throws IOException, CsvException {
         String notAMember = "Fred";
         DriverBlockBuilder driverBlock = new DriverBlockBuilder();
         driverBlock.withRestaurant(new RestaurantBuilder());
@@ -414,7 +416,7 @@ public class WorkflowHBParserTest extends WorkflowHBParserBaseTest {
     }
 
     @Test
-    public void duplicatePickupRestaurantTest() {
+    public void duplicatePickupRestaurantTest() throws IOException, CsvException {
         DriverBlockBuilder driverBlock = new DriverBlockBuilder();
         driverBlock.withRestaurant(new RestaurantBuilder());
         driverBlock.withRestaurant(new RestaurantBuilder());
@@ -431,7 +433,7 @@ public class WorkflowHBParserTest extends WorkflowHBParserBaseTest {
     }
 
     @Test
-    public void emptyDeliveryTest() {
+    public void emptyDeliveryTest() throws IOException, CsvException {
         DriverBlockBuilder driverBlock = new DriverBlockBuilder();
         driverBlock.withRestaurant(new RestaurantBuilder());
         driverBlock.withDelivery(new DeliveryBuilder().withStdMeals("0"));
@@ -448,7 +450,7 @@ public class WorkflowHBParserTest extends WorkflowHBParserBaseTest {
     }
 
     @Test
-    public void mixedPickupsAndDeliveriesTest() {
+    public void mixedPickupsAndDeliveriesTest() throws IOException, CsvException {
         DriverBlockBuilder driverBlock = new DriverBlockBuilder();
         driverBlock.withRestaurant(new RestaurantBuilder());
         driverBlock.withDelivery(new DeliveryBuilder().withStdMeals("1"));
@@ -487,7 +489,7 @@ public class WorkflowHBParserTest extends WorkflowHBParserBaseTest {
     }
 
     @Test
-    public void deliveryBeforePickupTest() {
+    public void deliveryBeforePickupTest() throws IOException, CsvException {
         DriverBlockBuilder driverBlock = new DriverBlockBuilder();
         driverBlock.withDelivery(new DeliveryBuilder().withStdMeals("1"));
         driverBlock.withRestaurant(new RestaurantBuilder());
@@ -503,7 +505,7 @@ public class WorkflowHBParserTest extends WorkflowHBParserBaseTest {
     }
 
     @Test
-    public void emptyPickupsNoDeliveriesTest() {
+    public void emptyPickupsNoDeliveriesTest() throws IOException, CsvException {
         DriverBlockBuilder driverBlock = new DriverBlockBuilder();
         driverBlock.withRestaurant(new RestaurantBuilder());
         driverBlock.withRestaurant(new RestaurantBuilder().withName("BFN"));
@@ -532,7 +534,7 @@ public class WorkflowHBParserTest extends WorkflowHBParserBaseTest {
     }
 
     @Test
-    public void missingMealSourceTest() {
+    public void missingMealSourceTest() throws IOException, CsvException {
         ControlBlockBuilder controlBlock = new ControlBlockBuilder()
                 .withFoodSources("|BFN");
         DriverBlockBuilder driverBlock = new DriverBlockBuilder();
@@ -551,7 +553,7 @@ public class WorkflowHBParserTest extends WorkflowHBParserBaseTest {
     }
 
     @Test
-    public void missingGrocerySourceTest() {
+    public void missingGrocerySourceTest() throws IOException, CsvException {
         ControlBlockBuilder controlBlock = new ControlBlockBuilder()
                 .withFoodSources("RevFoodTruck|");
         DriverBlockBuilder driverBlock = new DriverBlockBuilder();
@@ -570,7 +572,7 @@ public class WorkflowHBParserTest extends WorkflowHBParserBaseTest {
     }
 
     @Test
-    public void stdMealCountOnPickupRowTest() {
+    public void stdMealCountOnPickupRowTest() throws IOException, CsvException {
         ControlBlockBuilder controlBlock = new ControlBlockBuilder();
         RestaurantBuilder restaurantBuilder = new RestaurantBuilder()
                 .withStdMealCount("1");
@@ -589,7 +591,7 @@ public class WorkflowHBParserTest extends WorkflowHBParserBaseTest {
     }
 
     @Test
-    public void altMealCountOnPickupRowTest() {
+    public void altMealCountOnPickupRowTest() throws IOException, CsvException {
         ControlBlockBuilder controlBlock = new ControlBlockBuilder();
         RestaurantBuilder restaurantBuilder = new RestaurantBuilder()
                 .withAltMealCount("1");
@@ -608,7 +610,7 @@ public class WorkflowHBParserTest extends WorkflowHBParserBaseTest {
     }
 
     @Test
-    public void altMealTypeOnPickupRowTest() {
+    public void altMealTypeOnPickupRowTest() throws IOException, CsvException {
         ControlBlockBuilder controlBlock = new ControlBlockBuilder();
         RestaurantBuilder restaurantBuilder = new RestaurantBuilder()
                 .withAltMealType("a ginger sling with a pineapple heart");
@@ -627,7 +629,7 @@ public class WorkflowHBParserTest extends WorkflowHBParserBaseTest {
     }
 
     @Test
-    public void stdGroceryCountOnPickupRowTest() {
+    public void stdGroceryCountOnPickupRowTest() throws IOException, CsvException {
         ControlBlockBuilder controlBlock = new ControlBlockBuilder();
         RestaurantBuilder restaurantBuilder = new RestaurantBuilder()
                 .withStdGroceryCount("1");
@@ -646,7 +648,7 @@ public class WorkflowHBParserTest extends WorkflowHBParserBaseTest {
     }
 
     @Test
-    public void altGroceryCountOnPickupRowTest() {
+    public void altGroceryCountOnPickupRowTest() throws IOException, CsvException {
         ControlBlockBuilder controlBlock = new ControlBlockBuilder();
         RestaurantBuilder restaurantBuilder = new RestaurantBuilder()
                 .withAltGroceryCount("1");
@@ -665,7 +667,7 @@ public class WorkflowHBParserTest extends WorkflowHBParserBaseTest {
     }
 
     @Test
-    public void altGroceryTypeOnPickupRowTest() {
+    public void altGroceryTypeOnPickupRowTest() throws IOException, CsvException {
         ControlBlockBuilder controlBlock = new ControlBlockBuilder();
         RestaurantBuilder restaurantBuilder = new RestaurantBuilder()
                 .withAltGroceryType("inorganic");
@@ -684,7 +686,7 @@ public class WorkflowHBParserTest extends WorkflowHBParserBaseTest {
     }
 
     @Test
-    public void allTypeAndCountErrorsOnPickupRowTest() {
+    public void allTypeAndCountErrorsOnPickupRowTest() throws IOException, CsvException {
         ControlBlockBuilder controlBlock = new ControlBlockBuilder();
         RestaurantBuilder restaurantBuilder = new RestaurantBuilder()
                 .withStdMealCount("1")
@@ -719,7 +721,7 @@ public class WorkflowHBParserTest extends WorkflowHBParserBaseTest {
     }
 
     @Test
-    public void driverBooleanWhitespaceTest() {
+    public void driverBooleanWhitespaceTest() throws IOException, CsvException {
         DriverBlockBuilder driverBlock = new DriverBlockBuilder();
         driverBlock.withRestaurant(new RestaurantBuilder());
         driverBlock.withDelivery(new DeliveryBuilder().withStdMeals("1"));
@@ -757,7 +759,7 @@ public class WorkflowHBParserTest extends WorkflowHBParserBaseTest {
     }
 
     @Test
-    public void consumerBooleanWhitespaceTest() {
+    public void consumerBooleanWhitespaceTest() throws IOException, CsvException {
         DriverBlockBuilder driverBlock = new DriverBlockBuilder();
         driverBlock.withRestaurant(new RestaurantBuilder());
         driverBlock.withDelivery(new DeliveryBuilder().withStdMeals("1"));

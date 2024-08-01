@@ -22,8 +22,10 @@
  */
 package org.helpberkeley.memberdata;
 
+import com.opencsv.exceptions.CsvException;
 import org.junit.Test;
 
+import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.List;
 import java.util.Map;
@@ -53,7 +55,7 @@ public abstract class ControlBlockTestBase extends TestBase {
 
     /** Test that true in a consumer column throws an exception */
     @Test
-    public void consumerTrueTest() {
+    public void consumerTrueTest() throws IOException, CsvException {
 
         String workFlowData = getHeader()
                 + getBeginRow()
@@ -70,7 +72,7 @@ public abstract class ControlBlockTestBase extends TestBase {
 
     /** Test that true in a driver column throws an exception */
     @Test
-    public void driverTrueTest() {
+    public void driverTrueTest() throws IOException, CsvException {
 
         String workFlowData = getHeader()
                 + getBeginRow()
@@ -87,7 +89,7 @@ public abstract class ControlBlockTestBase extends TestBase {
 
 
     @Test
-    public void unknownDirectiveTest() {
+    public void unknownDirectiveTest() throws IOException, CsvException {
 
         String badDirective = "notADirective";
 
@@ -106,7 +108,7 @@ public abstract class ControlBlockTestBase extends TestBase {
     }
 
     @Test
-    public void unknownVariableTest() {
+    public void unknownVariableTest() throws IOException, CsvException {
 
         String badVariableName = "thisIsABadVariable";
 
@@ -123,7 +125,7 @@ public abstract class ControlBlockTestBase extends TestBase {
     }
 
     @Test
-    public void missingOpsManagerValueSeparatorTest() {
+    public void missingOpsManagerValueSeparatorTest() throws IOException, CsvException {
 
         String key = "OpsManager (UserName|Phone)";
         String value = "fred 123-456-7890";
@@ -142,7 +144,7 @@ public abstract class ControlBlockTestBase extends TestBase {
     }
 
     @Test
-    public void tooManyOpsManagerValueSeparatorTest() {
+    public void tooManyOpsManagerValueSeparatorTest() throws IOException, CsvException {
 
         String key = "OpsManager (UserName|Phone)";
         String value = "|fred|123-456-7890|";
@@ -161,7 +163,7 @@ public abstract class ControlBlockTestBase extends TestBase {
     }
 
     @Test
-    public void opsManagerEmptyUserNameTest() {
+    public void opsManagerEmptyUserNameTest() throws IOException, CsvException {
 
         String key = "OpsManager (UserName|Phone)";
         String value = "|123-456-7890";
@@ -180,7 +182,7 @@ public abstract class ControlBlockTestBase extends TestBase {
     }
 
     @Test
-    public void opsManagerUserNameWithAtSignTest() {
+    public void opsManagerUserNameWithAtSignTest() throws IOException, CsvException {
 
         String key = "OpsManager (UserName|Phone)";
         String value = "@fred|123-456-7890";
@@ -199,7 +201,7 @@ public abstract class ControlBlockTestBase extends TestBase {
     }
 
     @Test
-    public void opsManagerUserNameWithWithSpacesTest() {
+    public void opsManagerUserNameWithWithSpacesTest() throws IOException, CsvException {
 
         String key = "OpsManager (UserName|Phone)";
         String value = "fred e mercury|123-456-7890";
@@ -220,7 +222,7 @@ public abstract class ControlBlockTestBase extends TestBase {
 
     /** Test the audit for an ops manager that is not a known user */
     @Test
-    public void opsManagerUnknownUserTest() {
+    public void opsManagerUnknownUserTest() throws IOException, CsvException {
 
         String key = "OpsManager (UserName|Phone)";
         String value = "UnknownDudette|123-456-7890";
@@ -241,7 +243,7 @@ public abstract class ControlBlockTestBase extends TestBase {
     }
 
     @Test
-    public void opsManagerEmptyPhoneTest() {
+    public void opsManagerEmptyPhoneTest() throws IOException, CsvException {
 
         String key = "OpsManager (UserName|Phone)";
         String value = "biff|";
@@ -260,7 +262,7 @@ public abstract class ControlBlockTestBase extends TestBase {
     }
 
     @Test
-    public void opsManagerMismatchedPhoneTest() {
+    public void opsManagerMismatchedPhoneTest() throws IOException, CsvException {
 
         String key = "OpsManager (UserName|Phone)";
         String value = "JVol|222-222-2222";
@@ -280,7 +282,7 @@ public abstract class ControlBlockTestBase extends TestBase {
     }
 
     @Test
-    public void missingSplitRestaurantValueSeparatorTest() {
+    public void missingSplitRestaurantValueSeparatorTest() throws IOException, CsvException {
 
         String key = "SplitRestaurant (Name|CleanupDriverUserName)";
         String value = "MickeyDs bobbyjo";
@@ -300,7 +302,7 @@ public abstract class ControlBlockTestBase extends TestBase {
     }
 
     @Test
-    public void tooManySplitRestaurantValueSeparatorTest() {
+    public void tooManySplitRestaurantValueSeparatorTest() throws IOException, CsvException {
 
         String key = "SplitRestaurant (Name|CleanupDriverUserName)";
         String value = "|Max's|buzz|";
@@ -320,7 +322,7 @@ public abstract class ControlBlockTestBase extends TestBase {
     }
 
     @Test
-    public void splitRestaurantRestaurantNameTest() {
+    public void splitRestaurantRestaurantNameTest() throws IOException, CsvException {
 
         String key = "SplitRestaurant (Name|CleanupDriverUserName)";
         String value = "|buzz";
@@ -339,7 +341,7 @@ public abstract class ControlBlockTestBase extends TestBase {
     }
 
     @Test
-    public void splitRestaurantCleanupDriverUserNameWithAtSignTest() {
+    public void splitRestaurantCleanupDriverUserNameWithAtSignTest() throws IOException, CsvException {
 
         String key = "SplitRestaurant (Name|CleanupDriverUserName)";
         String value = "Bopshop|@fred";
@@ -359,7 +361,7 @@ public abstract class ControlBlockTestBase extends TestBase {
     }
 
     @Test
-    public void splitRestaurantCleanupDriverUserNameWithWithSpacesTest() {
+    public void splitRestaurantCleanupDriverUserNameWithWithSpacesTest() throws IOException, CsvException {
 
         String key = "SplitRestaurant (Name|CleanupDriverUserName)";
         String value = "Bopshop|fred e mercury";
@@ -379,7 +381,7 @@ public abstract class ControlBlockTestBase extends TestBase {
     }
 
     @Test
-    public void splitRestaurantEmptyCleanupDriverUserNameTest() {
+    public void splitRestaurantEmptyCleanupDriverUserNameTest() throws IOException, CsvException {
 
         String key = "SplitRestaurant (Name|CleanupDriverUserName)";
         String value = "Bopshop|";
@@ -398,7 +400,7 @@ public abstract class ControlBlockTestBase extends TestBase {
     }
 
     @Test
-    public void backupDriverUserNameWithSeparatorTest() {
+    public void backupDriverUserNameWithSeparatorTest() throws IOException, CsvException {
 
         String key = "BackupDriverUserName";
         String value = "bligzhfzzt|";
@@ -418,7 +420,7 @@ public abstract class ControlBlockTestBase extends TestBase {
     }
 
     @Test
-    public void emptyBackupDriverUserNameTest() {
+    public void emptyBackupDriverUserNameTest() throws IOException, CsvException {
 
         String key = "BackupDriverUserName";
         String value = "";
@@ -437,7 +439,7 @@ public abstract class ControlBlockTestBase extends TestBase {
     }
 
     @Test
-    public void backupDriverUserNameWithAtSignTest() {
+    public void backupDriverUserNameWithAtSignTest() throws IOException, CsvException {
 
         String key = "BackupDriverUserName";
         String value = "@roygbv";
@@ -456,7 +458,7 @@ public abstract class ControlBlockTestBase extends TestBase {
     }
 
     @Test
-    public void backupDriverUserNameWithSpacesTest() {
+    public void backupDriverUserNameWithSpacesTest() throws IOException, CsvException {
 
         String key = "BackupDriverUserName";
         String value = "billy joe bob boy";
@@ -476,7 +478,7 @@ public abstract class ControlBlockTestBase extends TestBase {
     }
 
     @Test
-    public void missingOpsManagerTest() {
+    public void missingOpsManagerTest() throws IOException, CsvException {
 
         String workFlowData = getHeader()
                 + getBeginRow()
@@ -492,7 +494,7 @@ public abstract class ControlBlockTestBase extends TestBase {
 
 
     @Test
-    public void opsManagerUserNameDefaultValueTest() {
+    public void opsManagerUserNameDefaultValueTest() throws IOException, CsvException {
 
         String key = "OpsManager (UserName|Phone)";
         String value = "ReplaceThisByUserName | 510-555-1212";
@@ -512,7 +514,7 @@ public abstract class ControlBlockTestBase extends TestBase {
     }
 
     @Test
-    public void opsManagerPhoneDefaultValueTest() {
+    public void opsManagerPhoneDefaultValueTest() throws IOException, CsvException {
 
         String key = "OpsManager (UserName|Phone)";
         String value = "FredZ | ReplaceThisByPhone#In510-555-1212Format";
@@ -532,7 +534,7 @@ public abstract class ControlBlockTestBase extends TestBase {
     }
 
     @Test
-    public void multipleOpsManagersTest() {
+    public void multipleOpsManagersTest() throws IOException, CsvException {
 
         String key = "OpsManager (UserName|Phone)";
         String value1 = "FredZ | 510-555-1212";
@@ -553,7 +555,7 @@ public abstract class ControlBlockTestBase extends TestBase {
     }
 
     @Test
-    public void splitRestaurantNameDefaultValueTest() {
+    public void splitRestaurantNameDefaultValueTest() throws IOException, CsvException {
 
         String opsKey = "OpsManager (UserName|Phone)";
         String opsValue = "FredZ | 510-555-1212";
@@ -576,7 +578,7 @@ public abstract class ControlBlockTestBase extends TestBase {
     }
 
     @Test
-    public void splitRestaurantCleanupDefaultValueTest() {
+    public void splitRestaurantCleanupDefaultValueTest() throws IOException, CsvException {
 
         String opsKey = "OpsManager (UserName|Phone)";
         String opsValue = "FredZ | 510-555-1212";
@@ -599,7 +601,7 @@ public abstract class ControlBlockTestBase extends TestBase {
     }
 
     @Test
-    public void noBackupDriversTest() {
+    public void noBackupDriversTest() throws IOException, CsvException {
 
         String opsKey = "OpsManager (UserName|Phone)";
         String opsValue = "JVol | 123-456-7890";
@@ -635,7 +637,7 @@ public abstract class ControlBlockTestBase extends TestBase {
 //
     /** Verify audit failure for unknown backup driver */
     @Test
-    public void unknownBackupDriverTest() {
+    public void unknownBackupDriverTest() throws IOException, CsvException {
 
         String opsKey = "OpsManager (UserName|Phone)";
         String opsValue = "FredZ | 510-555-1212";
@@ -659,7 +661,7 @@ public abstract class ControlBlockTestBase extends TestBase {
 
     /** Verify audit warning for backup not being a driver */
     @Test
-    public void backupNotADriverTest() {
+    public void backupNotADriverTest() throws IOException, CsvException {
 
         String opsKey = "OpsManager (UserName|Phone)";
         String opsValue = "JVol | 123-456-7890";
@@ -682,7 +684,7 @@ public abstract class ControlBlockTestBase extends TestBase {
     }
 
     @Test
-    public void lateStartAuditBadValueTest() {
+    public void lateStartAuditBadValueTest() throws IOException, CsvException {
 
         String key = Constants.CONTROL_BLOCK_LATE_ARRIVAL_AUDIT;
         String value = "TRUE";
@@ -702,7 +704,7 @@ public abstract class ControlBlockTestBase extends TestBase {
     }
 
     @Test
-    public void unvisitedRestaurantsAuditBadValueTest() {
+    public void unvisitedRestaurantsAuditBadValueTest() throws IOException, CsvException {
 
         String key = Constants.CONTROL_BLOCK_UNVISITED_RESTAURANTS_AUDIT;
         String value = "TRUE";
@@ -723,7 +725,7 @@ public abstract class ControlBlockTestBase extends TestBase {
     }
 
     @Test
-    public void splitRestaurantsAuditBadValueTest() {
+    public void splitRestaurantsAuditBadValueTest() throws IOException, CsvException {
 
         String key = Constants.CONTROL_BLOCK_SPLIT_RESTAURANT_AUDITS;
         String value = "TRUE";
@@ -743,7 +745,7 @@ public abstract class ControlBlockTestBase extends TestBase {
     }
 
     @Test
-    public void lateStartAuditDisableTest() {
+    public void lateStartAuditDisableTest() throws IOException, CsvException {
 
         String key = Constants.CONTROL_BLOCK_LATE_ARRIVAL_AUDIT;
         String value = "disable";
@@ -762,7 +764,7 @@ public abstract class ControlBlockTestBase extends TestBase {
     }
 
     @Test
-    public void splitRestaurantAuditsDisableTest() {
+    public void splitRestaurantAuditsDisableTest() throws IOException, CsvException {
 
         String key = Constants.CONTROL_BLOCK_SPLIT_RESTAURANT_AUDITS;
         String value = "disable";
@@ -781,7 +783,7 @@ public abstract class ControlBlockTestBase extends TestBase {
     }
 
     @Test
-    public void unvisitedRestaurantsAuditDisableTest() {
+    public void unvisitedRestaurantsAuditDisableTest() throws IOException, CsvException {
 
         String key = Constants.CONTROL_BLOCK_UNVISITED_RESTAURANTS_AUDIT;
         String value = "disable";
@@ -800,7 +802,7 @@ public abstract class ControlBlockTestBase extends TestBase {
     }
 
     @Test
-    public void auditDefaultsTest() {
+    public void auditDefaultsTest() throws IOException, CsvException {
 
         String workFlowData = getHeader()
                 + getBeginRow()
@@ -815,7 +817,7 @@ public abstract class ControlBlockTestBase extends TestBase {
     }
 
     @Test
-    public void lateStartAuditEnableTest() {
+    public void lateStartAuditEnableTest() throws IOException, CsvException {
 
         String key1 = Constants.CONTROL_BLOCK_UNVISITED_RESTAURANTS_AUDIT;
         String value1 = "enable";
@@ -840,7 +842,7 @@ public abstract class ControlBlockTestBase extends TestBase {
     }
 
     @Test
-    public void splitRestaurantAuditsEnableTest() {
+    public void splitRestaurantAuditsEnableTest() throws IOException, CsvException {
 
         String key1 = Constants.CONTROL_BLOCK_UNVISITED_RESTAURANTS_AUDIT;
         String value1 = "disable";
@@ -865,7 +867,7 @@ public abstract class ControlBlockTestBase extends TestBase {
     }
 
     @Test
-    public void unvisitedRestaurantsAuditEnableTest() {
+    public void unvisitedRestaurantsAuditEnableTest() throws IOException, CsvException {
 
         String key1 = Constants.CONTROL_BLOCK_UNVISITED_RESTAURANTS_AUDIT;
         String value1 = "enable";

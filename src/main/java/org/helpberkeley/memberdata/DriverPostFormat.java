@@ -22,11 +22,13 @@
  */
 package org.helpberkeley.memberdata;
 
+import com.opencsv.exceptions.CsvException;
 import org.helpberkeley.memberdata.v200.DriverPostFormatV200;
 import org.helpberkeley.memberdata.v300.DriverPostFormatV300;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.*;
 
@@ -55,19 +57,19 @@ public abstract class DriverPostFormat {
     protected final List<MessageBlock> backupDriverMessageBlocks = new ArrayList<>();
 
     public static DriverPostFormat create(
-            ApiClient apiClient, Map<String, User> users, String routedDeliveries) {
+            ApiClient apiClient, Map<String, User> users, String routedDeliveries) throws IOException, CsvException {
 
         return doCreate(apiClient, users, routedDeliveries, RequestType.MessageGeneration);
     }
 
     public static DriverPostFormat createForRouteRequest(
-            ApiClient apiClient, Map<String, User> users, String routedDeliveries) {
+            ApiClient apiClient, Map<String, User> users, String routedDeliveries) throws IOException, CsvException {
 
         return doCreate(apiClient, users, routedDeliveries, RequestType.Routing);
     }
 
     private static DriverPostFormat doCreate(ApiClient apiClient,
-         Map<String, User> users, String routedDeliveries, RequestType requestType) {
+         Map<String, User> users, String routedDeliveries, RequestType requestType) throws IOException, CsvException {
 
         // Normalize lines
         String normalized = routedDeliveries.replaceAll("\\r\\n?", "\n");
@@ -99,7 +101,7 @@ public abstract class DriverPostFormat {
     }
 
     public abstract ControlBlock getControlBlock();
-    protected abstract void initialize(String routedDeliveries, RequestType requestType);
+    protected abstract void initialize(String routedDeliveries, RequestType requestType) throws IOException, CsvException;
     protected abstract int restaurantTemplateQueryID();
     protected abstract int driverTemplateQueryID();
     protected abstract int groupTemplateQueryID();
@@ -189,7 +191,7 @@ public abstract class DriverPostFormat {
         return restaurants;
     }
 
-    protected final void loadLastRestaurantTemplate() {
+    protected final void loadLastRestaurantTemplate() throws IOException, CsvException {
         String  json = apiClient.runQuery(restaurantTemplateQueryID());
         ApiQueryResult apiQueryResult = HBParser.parseQueryResult(json);
         assert apiQueryResult.rows.length == 1;

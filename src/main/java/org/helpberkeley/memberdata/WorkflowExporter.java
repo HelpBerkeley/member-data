@@ -89,10 +89,8 @@ public class WorkflowExporter extends Exporter {
         }
         CSVListReader csvReader = new CSVListReader(new StringReader(parser.normalizedCSVData));
         List<String> incomingHeader = csvReader.readNextToList();
+        csvReader.close();
         List<String> outgoingHeader = updatedBeans.get(0).getCSVHeader();
-//        String incomingHeader = parser.normalizedCSVData.substring(0, parser.normalizedCSVData.indexOf('\n')).replaceAll(",*$", "");
-//        String updatedCSVData = updatedWorkflowToString();
-//        String outgoingHeader = updatedCSVData.substring(0, updatedCSVData.indexOf('\n'));
         if (! incomingHeader.equals(outgoingHeader)) {
             errors.append(MessageFormat.format(HEADER_MISMATCH, incomingHeader, outgoingHeader));
         }
@@ -110,7 +108,7 @@ public class WorkflowExporter extends Exporter {
         DetailsPost details = deliveryDetails.get(user.getUserName());
 
         String value = user.getName();
-        if (! escapeCommas(value).equals(escapeCommas(bean.getName()))) {
+        if (! value.equals(bean.getName())) {
             bean.setName(value);
             warningString.append(" Updated |");
         } else {
@@ -131,21 +129,21 @@ public class WorkflowExporter extends Exporter {
             warningString.append(" |");
         }
         value = user.getNeighborhood();
-        if (! escapeCommas(value).equals(escapeCommas(bean.getNeighborhood()))) {
+        if (! value.equals(bean.getNeighborhood())) {
             bean.setNeighborhood(value);
             warningString.append(" Updated |");
         } else {
             warningString.append(" |");
         }
         value = user.getCity();
-        if (! escapeCommas(value).equals(escapeCommas(bean.getCity()))) {
+        if (! value.equals(bean.getCity())) {
             bean.setCity(value);
             warningString.append(" Updated |");
         } else {
             warningString.append(" |");
         }
         value = user.getFullAddress();
-        if (! escapeCommas(value).equals(escapeCommas(bean.getAddress()))) {
+        if (! value.equals(bean.getAddress())) {
             bean.setAddress(value);
             warningString.append(" Updated |");
         } else {
@@ -159,7 +157,7 @@ public class WorkflowExporter extends Exporter {
             warningString.append(" |");
         }
         value = details == null ? "" : details.getDetails();
-        if (! escapeCommas(value).equals(escapeCommas(bean.getDetails()))) {
+        if (! value.equals(bean.getDetails())) {
             bean.setDetails(value);
             warningString.append(" Updated |");
         } else {

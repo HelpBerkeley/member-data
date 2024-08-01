@@ -22,9 +22,11 @@
  */
 package org.helpberkeley.memberdata.v200;
 
+import com.opencsv.exceptions.CsvException;
 import org.helpberkeley.memberdata.*;
 import org.junit.Test;
 
+import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.List;
 
@@ -115,7 +117,7 @@ public class DriverPostTest extends org.helpberkeley.memberdata.DriverPostTest {
     }
 
     @Test
-    public void singleDriverMessageTest() {
+    public void singleDriverMessageTest() throws IOException, CsvException {
         String routedDeliveries = readResourceFile("routed-deliveries-single.csv");
         DriverPostFormat driverPostFormat =
                 DriverPostFormat.create(createApiSimulator(), users, routedDeliveries);
@@ -133,7 +135,7 @@ public class DriverPostTest extends org.helpberkeley.memberdata.DriverPostTest {
     }
 
     @Test
-    public void multiDriverMessageTest() {
+    public void multiDriverMessageTest() throws IOException, CsvException {
         String routedDeliveries = readResourceFile(getRoutedDeliveriesFileName());
         DriverPostFormat driverPostFormat =
                 DriverPostFormat.create(createApiSimulator(), users, routedDeliveries);
@@ -170,7 +172,7 @@ public class DriverPostTest extends org.helpberkeley.memberdata.DriverPostTest {
         assertThat(post).contains("Cust Name 7");
     }
 
-    @Test public void multiDriverWithSplitMessageTest() {
+    @Test public void multiDriverWithSplitMessageTest() throws IOException, CsvException {
         String routedDeliveries = readResourceFile("routed-deliveries-with-split-restaurant.csv");
         DriverPostFormat driverPostFormat =
                 DriverPostFormat.create(createApiSimulator(), users, routedDeliveries);
@@ -179,7 +181,7 @@ public class DriverPostTest extends org.helpberkeley.memberdata.DriverPostTest {
         assertThat(posts).hasSize(4);
     }
 
-    @Test public void multiDriverWithMultiSplitsMessageTest() {
+    @Test public void multiDriverWithMultiSplitsMessageTest() throws IOException, CsvException {
         String routedDeliveries = readResourceFile("routed-deliveries-with-split-restaurants.csv");
         DriverPostFormat driverPostFormat =
                 DriverPostFormat.create(createApiSimulator(), users, routedDeliveries);
@@ -201,7 +203,7 @@ public class DriverPostTest extends org.helpberkeley.memberdata.DriverPostTest {
         assertThat(post).contains("No drivers going to Crepevine");
     }
 
-    @Test public void multiDriverWithMultiSplitsMessageDisableRestaurantAuditTest() {
+    @Test public void multiDriverWithMultiSplitsMessageDisableRestaurantAuditTest() throws IOException, CsvException {
         String routedDeliveries =
                 readResourceFile("routed-deliveries-with-split-restaurants-audit-disabled.csv");
         DriverPostFormat driverPostFormat =
@@ -214,7 +216,7 @@ public class DriverPostTest extends org.helpberkeley.memberdata.DriverPostTest {
     }
 
     @Test
-    public void generateGroupInstructionsNoSplitsPostTest() {
+    public void generateGroupInstructionsNoSplitsPostTest() throws IOException, CsvException {
         String routedDeliveries = readResourceFile(getRoutedDeliveriesFileName());
         DriverPostFormat driverPostFormat =
                 DriverPostFormat.create(createApiSimulator(), users, routedDeliveries);
@@ -226,7 +228,7 @@ public class DriverPostTest extends org.helpberkeley.memberdata.DriverPostTest {
     }
 
     @Test
-    public void generateGroupInstructionsWithSplitsPostTest() {
+    public void generateGroupInstructionsWithSplitsPostTest() throws IOException, CsvException {
         String routedDeliveries = readResourceFile("routed-deliveries-with-split-restaurant.csv");
         DriverPostFormat driverPostFormat =
                 DriverPostFormat.create(createApiSimulator(), users, routedDeliveries);
@@ -240,7 +242,7 @@ public class DriverPostTest extends org.helpberkeley.memberdata.DriverPostTest {
     }
 
     @Test
-    public void generateBackupDriverPostTest() {
+    public void generateBackupDriverPostTest() throws IOException, CsvException {
         String routedDeliveries = readResourceFile(getRoutedDeliveriesFileName());
         DriverPostFormat driverPostFormat =
                 DriverPostFormat.create(createApiSimulator(), users, routedDeliveries);
@@ -250,7 +252,7 @@ public class DriverPostTest extends org.helpberkeley.memberdata.DriverPostTest {
     }
 
     @Test
-    public void noDeliveriesTest() {
+    public void noDeliveriesTest() throws IOException, CsvException {
         String routedDeliveries = readResourceFile("routed-deliveries-pickup-only.csv");
         DriverPostFormat driverPostFormat =
                 DriverPostFormat.create(createApiSimulator(), users, routedDeliveries);
@@ -274,7 +276,7 @@ public class DriverPostTest extends org.helpberkeley.memberdata.DriverPostTest {
 
     // FIX THIS, DS: add V200 specific variables
     @Test
-    public void thisDriverRestaurantTest() {
+    public void thisDriverRestaurantTest() throws IOException, CsvException {
         String format = "LOOP &{ThisDriverRestaurant} { "
                 + " &{ThisDriverRestaurant.Name}"
                 + "\"|\""
@@ -309,7 +311,7 @@ public class DriverPostTest extends org.helpberkeley.memberdata.DriverPostTest {
     }
 
     @Test
-    public void thisDriverRestaurantPickupTest() {
+    public void thisDriverRestaurantPickupTest() throws IOException, CsvException {
         String format = "LOOP &{ThisDriverRestaurant} { "
                 + "LOOP &{ThisDriverRestaurant.Pickup} { "
                 + " &{ThisDriverRestaurant.Name}"
@@ -336,7 +338,7 @@ public class DriverPostTest extends org.helpberkeley.memberdata.DriverPostTest {
     }
 
     @Test
-    public void deliveriesV200Test() {
+    public void deliveriesV200Test() throws IOException, CsvException {
         String format = "LOOP &{Consumer} { "
                 + " &{Consumer.Name}"
                 + "\"|\""
@@ -372,7 +374,7 @@ public class DriverPostTest extends org.helpberkeley.memberdata.DriverPostTest {
     }
 
     @Test
-    public void backupDriverIsADriverTest() {
+    public void backupDriverIsADriverTest() throws IOException, CsvException {
         String routedDeliveries = readResourceFile("routed-deliveries-backup-dup.csv");
         DriverPostFormat driverPostFormat =
                 DriverPostFormat.create(createApiSimulator(), users, routedDeliveries);
@@ -381,7 +383,7 @@ public class DriverPostTest extends org.helpberkeley.memberdata.DriverPostTest {
     }
 
     @Test
-    public void itineraryNoDeliveriesTest() {
+    public void itineraryNoDeliveriesTest() throws IOException, CsvException {
         String format = "LOOP &{Itinerary} {\n"
                 + " IF &{Itinerary.IsRestaurant} THEN {\n"
                 + " &{IRestaurant.Name} \"|\""
@@ -422,7 +424,7 @@ public class DriverPostTest extends org.helpberkeley.memberdata.DriverPostTest {
     }
 
     @Test
-    public void itineraryTest() {
+    public void itineraryTest() throws IOException, CsvException {
         HttpClientSimulator.setQueryResponseData(getDriverPostFormatQuery(), createMessageBlock(itineraryFormat));
         String routedDeliveries = readResourceFile(getRoutedDeliveriesFileName());
         DriverPostFormat driverPostFormat =
@@ -444,7 +446,7 @@ public class DriverPostTest extends org.helpberkeley.memberdata.DriverPostTest {
     }
 
     @Test
-    public void itineraryMixedPickupDeliveriesTest() {
+    public void itineraryMixedPickupDeliveriesTest() throws IOException, CsvException {
 
         DriverBlockBuilder driverBlock = new DriverBlockBuilder();
         driverBlock.withRestaurant(new RestaurantBuilder().withOrders("1"));
@@ -490,7 +492,7 @@ public class DriverPostTest extends org.helpberkeley.memberdata.DriverPostTest {
 
     /** Test audit against using IConsumer for an Itinerary.IsPickup itinerary stop. */
     @Test
-    public void itineraryNotDeliveryTest() {
+    public void itineraryNotDeliveryTest() throws IOException, CsvException {
         String itineraryFormat = "LOOP &{Itinerary} {\n"
                 + "&{IConsumer.Name}"
                 + " }\n"
@@ -509,7 +511,7 @@ public class DriverPostTest extends org.helpberkeley.memberdata.DriverPostTest {
 
     /** Test audit against using IRestaurant for an Itinerary.IsDelivery itinerary stop. */
     @Test
-    public void itineraryNotPickupTest() {
+    public void itineraryNotPickupTest() throws IOException, CsvException {
         String itineraryFormat = "LOOP &{Itinerary} {\n"
                 + "IF &{Itinerary.IsDelivery} THEN {"
                 + "&{IRestaurant.Name}"
@@ -528,7 +530,7 @@ public class DriverPostTest extends org.helpberkeley.memberdata.DriverPostTest {
     }
 
     @Test
-    public void itineraryWrongVarRestaurantTest() {
+    public void itineraryWrongVarRestaurantTest() throws IOException, CsvException {
         String format = "LOOP &{Itinerary} {\n"
                 + "IF &{Itinerary.IsDelivery} THEN {"
                 + "&{ThisDriverRestaurant.Name}"
@@ -548,7 +550,7 @@ public class DriverPostTest extends org.helpberkeley.memberdata.DriverPostTest {
     }
 
     @Test
-    public void itineraryWrongVarConsumerTest() {
+    public void itineraryWrongVarConsumerTest() throws IOException, CsvException {
         String format = "LOOP &{Itinerary} {\n"
                 + "IF &{Itinerary.IsDelivery} THEN {"
                 + "&{Consumer.Name}"
@@ -568,7 +570,7 @@ public class DriverPostTest extends org.helpberkeley.memberdata.DriverPostTest {
     }
 
     @Test
-    public void iConsumerWithoutItineraryTest() {
+    public void iConsumerWithoutItineraryTest() throws IOException, CsvException {
         String format = "&{IConsumer.Name}\n";
         HttpClientSimulator.setQueryResponseData(getDriverPostFormatQuery(), createMessageBlock(format));
         String routedDeliveries = readResourceFile(getRoutedDeliveriesFileName());
@@ -583,7 +585,7 @@ public class DriverPostTest extends org.helpberkeley.memberdata.DriverPostTest {
     }
 
     @Test
-    public void iRestaurantWithoutItineraryTest() {
+    public void iRestaurantWithoutItineraryTest() throws IOException, CsvException {
         String format = "&{IRestaurant.Name}\n";
         HttpClientSimulator.setQueryResponseData(getDriverPostFormatQuery(), createMessageBlock(format));
         String routedDeliveries = readResourceFile(getRoutedDeliveriesFileName());

@@ -22,8 +22,11 @@
  */
 package org.helpberkeley.memberdata;
 
+import com.opencsv.exceptions.CsvException;
 import org.junit.Test;
 
+import java.io.IOException;
+import java.io.StringReader;
 import java.text.MessageFormat;
 import java.util.Collections;
 import java.util.List;
@@ -43,17 +46,20 @@ public abstract class WorkflowHBParserBaseTest extends TestBase {
 
     public abstract List<String> getColumnNames();
     public abstract String getMinimumControlBlock();
-    public abstract String getHeader();
+    public abstract String getHeader() throws IOException, CsvException;
 
     @Test
-    public void missingHeaderRowTest() {
+    public void missingHeaderRowTest() throws IOException, CsvException {
         String controlBlock = getMinimumControlBlock();
         // Remove header line
         String headerless = controlBlock.substring(controlBlock.indexOf('\n') + 1 );
+        CSVListReader csvReader = new CSVListReader(new StringReader(headerless));
+        List<String> badHeader = csvReader.readNextToList();
+        csvReader.close();
         Throwable thrown = catchThrowable(() -> DriverPostFormat.create(createApiSimulator(), users, headerless));
         assertThat(thrown).isInstanceOf(MemberDataException.class);
         assertThat(thrown).hasMessage(MessageFormat.format(
-                ControlBlock.MISSING_OR_INVALID_HEADER_ROW, "duplicate element: FALSE"));
+                ControlBlock.MISSING_OR_INVALID_HEADER_ROW, badHeader.toString()));
     }
 
     @Test
@@ -84,7 +90,7 @@ public abstract class WorkflowHBParserBaseTest extends TestBase {
     }
 
     @Test
-    public void invalidColumnNameTest() {
+    public void invalidColumnNameTest() throws IOException, CsvException {
 
         List<String> columnNames = List.of(
                 Constants.WORKFLOW_CONSUMER_COLUMN,

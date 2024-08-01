@@ -22,10 +22,12 @@
  */
 package org.helpberkeley.memberdata.v200;
 
+import com.opencsv.exceptions.CsvException;
 import org.helpberkeley.memberdata.*;
 import org.helpberkeley.memberdata.v300.ControlBlockTest;
 import org.junit.Test;
 
+import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.List;
 import java.util.Map;
@@ -49,7 +51,7 @@ public class WorkflowHBParserTest extends WorkflowHBParserBaseTest {
                     "Bopshop", Restaurant.createRestaurant(controlBlock, "Bopshop", 2),
                     "Kim's Cafe", Restaurant.createRestaurant(controlBlock, "Kim's Cafe", 3));
 
-    public WorkflowHBParserTest() {
+    public WorkflowHBParserTest() throws IOException, CsvException {
         for (Restaurant restaurant : restaurants.values()) {
             restaurant.setStartTime("5:00");
             restaurant.setClosingTime("7:00");
@@ -83,12 +85,12 @@ public class WorkflowHBParserTest extends WorkflowHBParserBaseTest {
     }
 
     @Override
-    public String getHeader() {
+    public String getHeader() throws IOException, CsvException {
         return new ControlBlockTest().getHeader();
     }
 
     @Test
-    public void splitRestaurantsTest() {
+    public void splitRestaurantsTest() throws IOException, CsvException {
         String routedDeliveries = readResourceFile("routed-deliveries-with-split-restaurant.csv");
         DriverPostFormat driverPostFormat =
                 DriverPostFormat.create(createApiSimulator(), users, routedDeliveries);
@@ -219,7 +221,7 @@ public class WorkflowHBParserTest extends WorkflowHBParserBaseTest {
     }
 
     @Test
-    public void singleDriverSingleDeliveryTest() {
+    public void singleDriverSingleDeliveryTest() throws IOException, CsvException {
         DriverBlockBuilder driverBlock = new DriverBlockBuilder();
         driverBlock.withRestaurant(new RestaurantBuilder().withOrders("1"));
         driverBlock.withDelivery(new DeliveryBuilder().withNormalMeals("1"));
@@ -252,7 +254,7 @@ public class WorkflowHBParserTest extends WorkflowHBParserBaseTest {
     }
 
     @Test
-    public void deliveryBeforePickupTest() {
+    public void deliveryBeforePickupTest() throws IOException, CsvException {
         DriverBlockBuilder driverBlock = new DriverBlockBuilder();
         driverBlock.withDelivery(new DeliveryBuilder().withNormalMeals("1"));
         driverBlock.withRestaurant(new RestaurantBuilder().withOrders("1"));
@@ -268,7 +270,7 @@ public class WorkflowHBParserTest extends WorkflowHBParserBaseTest {
     }
 
     @Test
-    public void emptyPickupsNoDeliveriesTest() {
+    public void emptyPickupsNoDeliveriesTest() throws IOException, CsvException {
         DriverBlockBuilder driverBlock = new DriverBlockBuilder();
         driverBlock.withRestaurant(new RestaurantBuilder().withOrders("0"));
         driverBlock.withRestaurant(new RestaurantBuilder().withName("Bopshop").withOrders("0"));
@@ -306,7 +308,7 @@ public class WorkflowHBParserTest extends WorkflowHBParserBaseTest {
     }
 
     @Test
-    public void consumerBooleanWhitespaceTest() {
+    public void consumerBooleanWhitespaceTest() throws IOException, CsvException {
         DriverBlockBuilder driverBlock = new DriverBlockBuilder();
         driverBlock.withRestaurant(new RestaurantBuilder().withOrders("1"));
         driverBlock.withDelivery(new DeliveryBuilder().withIsConsumer("TRUE ").withNormalMeals("1"));
