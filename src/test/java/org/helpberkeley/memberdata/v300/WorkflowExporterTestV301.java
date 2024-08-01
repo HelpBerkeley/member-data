@@ -22,11 +22,15 @@
  */
 package org.helpberkeley.memberdata.v300;
 
+import com.opencsv.exceptions.CsvException;
+import org.helpberkeley.memberdata.DetailsPost;
+import org.helpberkeley.memberdata.UserExporter;
 import org.helpberkeley.memberdata.WorkflowExporterTestBase;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Map;
 
 public class WorkflowExporterTestV301 extends WorkflowExporterTestBase {
 
@@ -34,5 +38,16 @@ public class WorkflowExporterTestV301 extends WorkflowExporterTestBase {
     public String getResourceFile() throws IOException {
         String changedFilename = changeResourceCBVersion("update-member-data-multiple-updates.csv", "3-0-1");
         return Files.readString(Paths.get(changedFilename));
+    }
+
+    @Override
+    public String getRestaurantTemplate() {
+        return readResourceFile("restaurant-template-v301.csv");
+    }
+
+    @Override
+    public String generateWorkflow(UserExporter exporter, String restaurantTemplate, Map<String,
+            DetailsPost> details) throws IOException, CsvException {
+        return exporter.oneKitchenWorkflow(restaurantTemplate, details);
     }
 }

@@ -28,9 +28,13 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 public abstract class WorkflowExporterTestBase extends TestBase {
 
@@ -45,6 +49,10 @@ public abstract class WorkflowExporterTestBase extends TestBase {
     }
 
     public abstract String getResourceFile() throws IOException;
+    public abstract String getRestaurantTemplate();
+    public abstract String generateWorkflow(
+            UserExporter exporter, String restaurantTemplate, Map<String, DetailsPost> details)
+            throws IOException, CsvException;
 
     @Test
     public void workflowExporterValidateUpdatedDataTest() throws IOException, CsvException {
@@ -60,5 +68,42 @@ public abstract class WorkflowExporterTestBase extends TestBase {
         WorkflowExporter exporter = new WorkflowExporter(parser);
         String updatedCSVData = exporter.updateMemberData(users, deliveryDetails);
         DriverPostFormat driverPostFormatPostUpdate = DriverPostFormat.create(apiSim, users, updatedCSVData);
+    }
+
+    @Test
+    public void deliveryDetailsWithPunctuationTest() throws IOException, CsvException {
+        String deliveries = getResourceFile();
+        WorkflowParser parser = WorkflowParser.create(Collections.emptyMap(), deliveries);
+
+        // Read/parse the members data
+        ApiClient apiSim = createApiSimulator();
+        List<User> users = new Loader(apiSim).load();
+
+        String restaurantTemplate = getRestaurantTemplate();
+
+        // Gin up some punctuated delivery details for the delivery recipients
+        String somebodyDetails = "put the \"bags\", all of them, on the \"bird feeder\"";
+        DetailsPost somebodyDetailsPost = new DetailsPost();
+        somebodyDetailsPost.setDetails(0, somebodyDetails);
+
+        String somebodyElseDetails = "knock not \"once\", not \"twice\", but \"thrice!\"";
+        DetailsPost somebodyElseDetailsPost = new DetailsPost();
+        somebodyElseDetailsPost.setDetails(0, somebodyElseDetails);
+
+        Map<String, DetailsPost> deliveryDetails = Map.of(
+                "Somebody", somebodyDetailsPost,
+                "SomebodyElse", somebodyElseDetailsPost);
+
+        String workflowCSV = generateWorkflow(new UserExporter(users), restaurantTemplate, deliveryDetails);
+
+        for (String line : workflowCSV.split("\n")) {
+            if (line.contains("\"Somebody\"")) {
+                // CSVWriter will have changed "something" to ""something""
+                assertThat(line).contains(somebodyDetails.replaceAll("\"", "\"\""));
+            } else if (line.contains("\"SomebodyElse\"")) {
+                // CSVWriter will have changed "something" to ""something""
+                assertThat(line).contains(somebodyElseDetails.replaceAll("\"", "\"\""));
+            }
+        }
     }
 }
