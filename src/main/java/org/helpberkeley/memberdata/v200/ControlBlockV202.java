@@ -25,9 +25,11 @@ package org.helpberkeley.memberdata.v200;
 
 import org.helpberkeley.memberdata.Constants;
 
+import java.util.List;
+
 public class ControlBlockV202 extends ControlBlockV200 {
 
-     public ControlBlockV202(String header) {
+     public ControlBlockV202(List<String> header) {
          super(header);
     }
 

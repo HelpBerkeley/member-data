@@ -22,12 +22,15 @@
  */
 package org.helpberkeley.memberdata;
 
+import com.opencsv.exceptions.CsvException;
 import org.helpberkeley.memberdata.v200.ControlBlockV200;
 import org.helpberkeley.memberdata.v200.ControlBlockV202;
 import org.helpberkeley.memberdata.v300.ControlBlockV300;
 import org.helpberkeley.memberdata.v300.ControlBlockV301;
 import org.helpberkeley.memberdata.v300.ControlBlockV302;
 
+import java.io.IOException;
+import java.io.StringReader;
 import java.text.MessageFormat;
 import java.util.*;
 
@@ -87,12 +90,11 @@ public abstract class ControlBlock {
 
     protected final StringBuilder warnings = new StringBuilder();
 
-    protected ControlBlock(String header) {
+    protected ControlBlock(List<String> header) {
 
-        try {
-            columnNames = Set.of(header.split(Constants.CSV_SEPARATOR));
-        } catch (IllegalArgumentException ex) {
-            throw new MemberDataException(MessageFormat.format(MISSING_OR_INVALID_HEADER_ROW, ex.getMessage()));
+        columnNames = new HashSet<>(header);
+        if (columnNames.size() != header.size()) {
+            throw new MemberDataException(MessageFormat.format(MISSING_OR_INVALID_HEADER_ROW, header.toString()));
         }
         auditColumnNames();
     }
@@ -111,18 +113,24 @@ public abstract class ControlBlock {
         }
     }
 
-    public static ControlBlock create(String csvData) {
+    public static ControlBlock create(String csvData) throws IOException, CsvException {
 
-        // Normalize lines
-        String normalized = csvData.replaceAll("\\r\\n?", "\n");
-        // Break into lines
-        String[] lines = normalized.split("\n");
+//        // Normalize lines
+//        String normalized = csvData.replaceAll("\\r\\n?", "\n");
+//        // Break into lines
+//        String[] lines = normalized.split("\n");
+//
+//        String header = lines[0];
 
-        String header = lines[0];
+        CSVListReader csvReader = new CSVListReader(new StringReader(csvData));
+        List<List<String>> lines = csvReader.readAllToList();
+        List<String> header = lines.get(0);
+        csvReader.close();
 
-        if (! header.contains(Constants.CSV_SEPARATOR)) {
-            throw new MemberDataException(BAD_HEADER_ROW);
-        }
+
+//        if (! header.contains(Constants.CSV_SEPARATOR)) {
+//            throw new MemberDataException(BAD_HEADER_ROW);
+//        }
 
         String version = new VersionParser(lines).version();
 
@@ -653,9 +661,9 @@ public abstract class ControlBlock {
 
     private static class VersionParser {
 
-        final String[] lines;
+        final List<List<String>> lines;
 
-        VersionParser(String[] lines) {
+        VersionParser(List<List<String>> lines) {
             this.lines = lines;
         }
 
@@ -664,11 +672,14 @@ public abstract class ControlBlock {
             boolean lookingForControlBlock = true;
 
             int lineNumber = 0;
-            for (String line : lines) {
+            for (List<String> line : lines) {
 
                 lineNumber++;
 
-                if (! line.startsWith("FALSE,FALSE,")) {
+//                if (! line.startsWith("FALSE,FALSE,")) {
+//                    continue;
+//                }
+                if (! (line.get(0).equals("False") && line.get(1).equals("False"))) {
                     continue;
                 }
 
@@ -693,19 +704,19 @@ public abstract class ControlBlock {
             return Constants.CONTROL_BLOCK_VERSION_UNKNOWN;
         }
 
-        private String parseVersion(String line, int lineNumber) {
+        private String parseVersion(List<String> line, int lineNumber) {
             // remove whitespace and split into columns
-            String[] columns = line.replaceAll(" ", "").split(",");
+//            String[] columns = line.replaceAll(" ", "").split(",");
             String value = null;
             int versionTags = 0;
             int values = 0;
 
-            assert columns.length > 1 : lineNumber + ": " + line;
-            assert columns[0].equalsIgnoreCase("FALSE") : lineNumber + ": " + line;
-            assert columns[1].equalsIgnoreCase("FALSE") : lineNumber + ": " + line;
+            assert line.size() > 1 : lineNumber + ": " + line;
+            assert line.get(0).equalsIgnoreCase("FALSE") : lineNumber + ": " + line;
+            assert line.get(1).equalsIgnoreCase("FALSE") : lineNumber + ": " + line;
 
             int columnNumber = 0;
-            for (String column : columns) {
+            for (String column : line) {
 
                 columnNumber++;
 
@@ -730,9 +741,9 @@ public abstract class ControlBlock {
             return value;
         }
 
-        private void raiseException(String error, String line, int lineNumber) {
+        private void raiseException(String error, List<String> line, int lineNumber) {
             throw new MemberDataException("Line " + lineNumber + ": "
-                    + error + ":\n" + line + "\n");
+                    + error + ":\n" + line.toString() + "\n");
         }
     }
 }

@@ -30,7 +30,7 @@ import java.util.Map;
 
 public class ControlBlockV200 extends ControlBlock {
 
-     public ControlBlockV200(String header) {
+     public ControlBlockV200(List<String> header) {
          super(header);
     }
 

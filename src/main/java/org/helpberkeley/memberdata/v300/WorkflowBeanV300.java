@@ -28,6 +28,9 @@ import org.helpberkeley.memberdata.MemberDataException;
 import org.helpberkeley.memberdata.WorkflowBean;
 import org.helpberkeley.memberdata.Exporter;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class WorkflowBeanV300 implements WorkflowBean {
 
     @CsvBindByName(column = Constants.WORKFLOW_CONSUMER_COLUMN)
@@ -290,46 +293,46 @@ public class WorkflowBeanV300 implements WorkflowBean {
         this.typeGrocery = typeGrocery;
     }
 
-    public String toCSVString() {
-        return Exporter.escapeCommas(consumer) + Constants.CSV_SEPARATOR +
-                Exporter.escapeCommas(driver) + Constants.CSV_SEPARATOR +
-                Exporter.escapeCommas(name) + Constants.CSV_SEPARATOR +
-                Exporter.escapeCommas(userName) + Constants.CSV_SEPARATOR +
-                Exporter.escapeCommas(phone) + Constants.CSV_SEPARATOR +
-                Exporter.escapeCommas(altPhone) + Constants.CSV_SEPARATOR +
-                Exporter.escapeCommas(neighborhood) + Constants.CSV_SEPARATOR +
-                Exporter.escapeCommas(city) + Constants.CSV_SEPARATOR +
-                Exporter.escapeCommas(address) + Constants.CSV_SEPARATOR +
-                Exporter.escapeCommas(condo) + Constants.CSV_SEPARATOR +
-                Exporter.escapeCommas(details) + Constants.CSV_SEPARATOR +
-                Exporter.escapeCommas(restaurant) + Constants.CSV_SEPARATOR +
-                Exporter.escapeCommas(stdMeals) + Constants.CSV_SEPARATOR +
-                Exporter.escapeCommas(altMeals) + Constants.CSV_SEPARATOR +
-                Exporter.escapeCommas(typeMeal) + Constants.CSV_SEPARATOR +
-                Exporter.escapeCommas(stdGrocery) + Constants.CSV_SEPARATOR +
-                Exporter.escapeCommas(altGrocery) + Constants.CSV_SEPARATOR +
-                Exporter.escapeCommas(typeGrocery);
+    public List<String> toCSVListRow() {
+        return new ArrayList<>(List.of(Exporter.escapeCommas(consumer),
+                Exporter.escapeCommas(driver),
+                Exporter.escapeCommas(name),
+                Exporter.escapeCommas(userName),
+                Exporter.escapeCommas(phone),
+                Exporter.escapeCommas(altPhone),
+                Exporter.escapeCommas(neighborhood),
+                Exporter.escapeCommas(city),
+                Exporter.escapeCommas(address),
+                Exporter.escapeCommas(condo),
+                Exporter.escapeCommas(details),
+                Exporter.escapeCommas(restaurant),
+                Exporter.escapeCommas(stdMeals),
+                Exporter.escapeCommas(altMeals),
+                Exporter.escapeCommas(typeMeal),
+                Exporter.escapeCommas(stdGrocery),
+                Exporter.escapeCommas(altGrocery),
+                Exporter.escapeCommas(typeGrocery)));
     }
 
-    public String getCSVHeader() {
-        return Constants.WORKFLOW_CONSUMER_COLUMN + Constants.CSV_SEPARATOR +
-                Constants.WORKFLOW_DRIVER_COLUMN + Constants.CSV_SEPARATOR +
-                Constants.WORKFLOW_NAME_COLUMN + Constants.CSV_SEPARATOR +
-                Constants.WORKFLOW_USER_NAME_COLUMN + Constants.CSV_SEPARATOR +
-                Constants.WORKFLOW_PHONE_COLUMN + Constants.CSV_SEPARATOR +
-                Constants.WORKFLOW_ALT_PHONE_COLUMN + Constants.CSV_SEPARATOR +
-                Constants.WORKFLOW_NEIGHBORHOOD_COLUMN + Constants.CSV_SEPARATOR +
-                Constants.WORKFLOW_CITY_COLUMN + Constants.CSV_SEPARATOR +
-                Constants.WORKFLOW_ADDRESS_COLUMN + Constants.CSV_SEPARATOR +
-                Constants.WORKFLOW_CONDO_COLUMN + Constants.CSV_SEPARATOR +
-                Constants.WORKFLOW_DETAILS_COLUMN + Constants.CSV_SEPARATOR +
-                Constants.WORKFLOW_RESTAURANTS_COLUMN + Constants.CSV_SEPARATOR +
-                Constants.WORKFLOW_STD_MEALS_COLUMN + Constants.CSV_SEPARATOR +
-                Constants.WORKFLOW_ALT_MEALS_COLUMN + Constants.CSV_SEPARATOR +
-                Constants.WORKFLOW_TYPE_MEAL_COLUMN + Constants.CSV_SEPARATOR +
-                Constants.WORKFLOW_STD_GROCERY_COLUMN + Constants.CSV_SEPARATOR +
-                Constants.WORKFLOW_ALT_GROCERY_COLUMN + Constants.CSV_SEPARATOR +
-                Constants.WORKFLOW_TYPE_GROCERY_COLUMN;
+    public List<String> getCSVHeader() {
+        return new ArrayList<>(List.of(Constants.WORKFLOW_CONSUMER_COLUMN,
+                Constants.WORKFLOW_DRIVER_COLUMN,
+                Constants.WORKFLOW_NAME_COLUMN,
+                Constants.WORKFLOW_USER_NAME_COLUMN,
+                Constants.WORKFLOW_PHONE_COLUMN,
+                Constants.WORKFLOW_ALT_PHONE_COLUMN,
+                Constants.WORKFLOW_NEIGHBORHOOD_COLUMN,
+                Constants.WORKFLOW_CITY_COLUMN,
+                Constants.WORKFLOW_ADDRESS_COLUMN,
+                Constants.WORKFLOW_CONDO_COLUMN,
+                Constants.WORKFLOW_DETAILS_COLUMN,
+                Constants.WORKFLOW_RESTAURANTS_COLUMN,
+                Constants.WORKFLOW_STD_MEALS_COLUMN,
+                Constants.WORKFLOW_ALT_MEALS_COLUMN,
+                Constants.WORKFLOW_TYPE_MEAL_COLUMN,
+                Constants.WORKFLOW_STD_GROCERY_COLUMN,
+                Constants.WORKFLOW_ALT_GROCERY_COLUMN,
+                Constants.WORKFLOW_TYPE_GROCERY_COLUMN));
     }
 
     @Override

@@ -22,6 +22,11 @@
  */
 package org.helpberkeley.memberdata;
 
+import com.opencsv.exceptions.CsvException;
+
+import java.io.IOException;
+import java.io.StringReader;
+import java.io.StringWriter;
 import java.text.MessageFormat;
 import java.util.*;
 
@@ -59,7 +64,7 @@ public class WorkflowExporter extends Exporter {
 
     public static int getMemberLimit() { return memberLimit; }
 
-    public String updateMemberData(Map<String, User> users, Map<String, DetailsPost> deliveryDetails) {
+    public String updateMemberData(Map<String, User> users, Map<String, DetailsPost> deliveryDetails) throws IOException, CsvException {
         StringBuilder errors = new StringBuilder();
         WorkflowBean bean;
         int numMembers = 0;
@@ -82,17 +87,19 @@ public class WorkflowExporter extends Exporter {
             }
             addBean(bean);
         }
-        //remove trailing commas from header
-        String incomingHeader = parser.normalizedCSVData.substring(0, parser.normalizedCSVData.indexOf('\n')).replaceAll(",*$", "");
-        String updatedCSVData = updatedWorkflowToString();
-        String outgoingHeader = updatedCSVData.substring(0, updatedCSVData.indexOf('\n'));
+        CSVListReader csvReader = new CSVListReader(new StringReader(parser.normalizedCSVData));
+        List<String> incomingHeader = csvReader.readNextToList();
+        List<String> outgoingHeader = updatedBeans.get(0).getCSVHeader();
+//        String incomingHeader = parser.normalizedCSVData.substring(0, parser.normalizedCSVData.indexOf('\n')).replaceAll(",*$", "");
+//        String updatedCSVData = updatedWorkflowToString();
+//        String outgoingHeader = updatedCSVData.substring(0, updatedCSVData.indexOf('\n'));
         if (! incomingHeader.equals(outgoingHeader)) {
             errors.append(MessageFormat.format(HEADER_MISMATCH, incomingHeader, outgoingHeader));
         }
         if (errors.length() != 0) {
             throw new MemberDataException(errors.toString());
         }
-        return updatedCSVData;
+        return updatedWorkflowToString();
     }
 
     private void updateUser(User user, WorkflowBean bean, Map<String, DetailsPost> deliveryDetails) {
@@ -170,16 +177,20 @@ public class WorkflowExporter extends Exporter {
         updatedBeans.add(bean);
     }
 
-    private String updatedWorkflowToString() {
-        StringBuilder updatedData = new StringBuilder();
+    private String updatedWorkflowToString() throws IOException {
+        StringWriter writer = new StringWriter();
+        CSVListWriter csvWriter = new CSVListWriter(writer);
+        List<List<String>> updatedData = new ArrayList<>();
 
         // append header, since bean initializes to row 2
-        updatedData.append(updatedBeans.get(0).getCSVHeader()).append("\n");
+        updatedData.add(updatedBeans.get(0).getCSVHeader());
         for (WorkflowBean bean : updatedBeans) {
-            updatedData.append(bean.toCSVString()).append("\n");
+            updatedData.add(bean.toCSVListRow());
         }
 
-        return updatedData.toString();
+        csvWriter.writeAllToList(updatedData);
+        csvWriter.close();
+        return writer.toString();
     }
 
     public static void setMemberLimit(int limit) {
