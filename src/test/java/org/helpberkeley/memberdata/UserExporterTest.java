@@ -31,6 +31,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -471,5 +472,46 @@ public class UserExporterTest extends TestBase {
         assertThat(fileData).doesNotContain(TEST_USER_NAME_3);
 
         Files.delete(Paths.get(fileName));
+    }
+
+    @Test
+    public void allMembersNameWithCommasTest() throws UserException, IOException, CsvException {
+        User u1 = createUserWithName("My name has, one comma");
+        User u2 = createUserWithName("My name, has, two commas");
+
+        UserExporter exporter = new UserExporter(List.of(u1, u2));
+        String exportDataCSV = exporter.allMembersRaw();
+        // Verify that we can parse it
+        List<User> users = HBParser.users(exportDataCSV);
+        assertThat(users).containsExactlyInAnyOrder(u1, u2);
+    }
+
+    @Test
+    public void allMembersRawNameWithQuotesTest() throws UserException, IOException, CsvException {
+        User u1 = createUserWithName("my is \"Bob\"");
+        User u2 = createUserWithName("my \"name\" is \"secret\"");
+
+        UserExporter exporter = new UserExporter(List.of(u1, u2));
+
+        String exportDataCSV = exporter.allMembersRaw();
+        // Verify that we can parse it
+        List<User> users = HBParser.users(exportDataCSV);
+        assertThat(users).containsExactlyInAnyOrder(u1, u2);
+    }
+
+    @Test
+    public void allMembersRawNameWithQuotesAndCommasTest()
+            throws UserException, IOException, CsvException {
+        User u1 = createUserWithName("my is \"Bob\"");
+        User u2 = createUserWithName("my \"name\" is \"secret\"");
+        User u3 = createUserWithName("comma, and \"quotes\" in my name");
+        User u4 = createUserWithName("comma, and \"quotes\" and \"quoted, commas,\" in my name");
+
+        UserExporter exporter = new UserExporter(List.of(u1, u2, u3, u4));
+
+        String exportDataCSV = exporter.allMembersRaw();
+        // Verify that we can parse it
+        List<User> users = HBParser.users(exportDataCSV);
+        assertThat(users).containsExactlyInAnyOrder(u1, u2, u3, u4);
     }
 }

@@ -44,6 +44,8 @@ public abstract class WorkflowExporterTestBase extends TestBase {
         cleanupGeneratedFiles();
     }
 
+    public abstract String getResourceFile() throws IOException;
+
     @Test
     public void workflowExporterValidateUpdatedDataTest() throws IOException, CsvException {
         String deliveries = getResourceFile();
@@ -58,9 +60,5 @@ public abstract class WorkflowExporterTestBase extends TestBase {
         WorkflowExporter exporter = new WorkflowExporter(parser);
         String updatedCSVData = exporter.updateMemberData(users, deliveryDetails);
         DriverPostFormat driverPostFormatPostUpdate = DriverPostFormat.create(apiSim, users, updatedCSVData);
-    }
-
-    public String getResourceFile() throws IOException {
-        return readResourceFile("update-member-data-multiple-updates.csv");
     }
 }
