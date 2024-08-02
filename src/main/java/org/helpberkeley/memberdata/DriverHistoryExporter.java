@@ -22,8 +22,6 @@
  */
 package org.helpberkeley.memberdata;
 
-import java.io.IOException;
-
 public class DriverHistoryExporter extends Exporter {
 
     private final String driverHistory;
@@ -32,7 +30,7 @@ public class DriverHistoryExporter extends Exporter {
         this.driverHistory = driverHistory;
     }
 
-    String driverHistoryToFile(String prefix) throws IOException {
+    String driverHistoryToFile(String prefix) {
 
         String outputFileName = generateFileName(prefix + Constants.DRIVER_HISTORY_FILE, "csv");
         writeFile(outputFileName, driverHistory);

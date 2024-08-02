@@ -22,7 +22,6 @@
  */
 package org.helpberkeley.memberdata;
 
-import com.opencsv.exceptions.CsvException;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -39,7 +38,7 @@ import static org.assertj.core.api.ThrowableAssert.catchThrowable;
 public class WorkflowTest extends TestBase {
 
     @Test
-    public void workflowToFileTest() throws UserException, IOException, CsvException {
+    public void workflowToFileTest() throws UserException, IOException {
 
         User u1 = createUserWithGroup(TEST_USER_NAME_1, Constants.GROUP_CONSUMERS);
         User u2 = createUserWithGroup(TEST_USER_NAME_2, Constants.GROUP_DRIVERS);

@@ -22,12 +22,10 @@
  */
 package org.helpberkeley.memberdata.v300;
 
-import com.opencsv.exceptions.CsvException;
 import org.helpberkeley.memberdata.*;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.List;
 import java.util.Map;
@@ -124,7 +122,7 @@ public class ControlBlockTest extends ControlBlockTestBase {
     }
 
     @Test
-    public void altMealOptionsTest() throws IOException, CsvException {
+    public void altMealOptionsTest() {
         String key = Constants.CONTROL_BLOCK_ALT_MEAL_OPTIONS;
         String value = "\"none, veggie , noRed,noPork \"";
 
@@ -140,7 +138,7 @@ public class ControlBlockTest extends ControlBlockTestBase {
     }
 
     @Test
-    public void altMealOptionsNoneTest() throws IOException, CsvException {
+    public void altMealOptionsNoneTest() {
 
         String none = "none";
         controlBlockBuilder.withAltMealOptions(none);
@@ -155,7 +153,7 @@ public class ControlBlockTest extends ControlBlockTestBase {
     }
 
     @Test
-    public void altGroceryOptionsTest() throws IOException, CsvException {
+    public void altGroceryOptionsTest() {
         String value = "none, veg, custom pick";
         String workFlowData = controlBlockBuilder.withAltGroceryOptions(value).build();
         WorkflowParser workflowParser = WorkflowParser.create(Map.of(), workFlowData);
@@ -165,7 +163,7 @@ public class ControlBlockTest extends ControlBlockTestBase {
     }
 
     @Test
-    public void altGroceryOptionsNoneTest() throws IOException, CsvException {
+    public void altGroceryOptionsNoneTest() {
 
         String none = "none";
         controlBlockBuilder.withAltGroceryOptions(none);
@@ -180,7 +178,7 @@ public class ControlBlockTest extends ControlBlockTestBase {
     }
 
     @Test
-    public void foodSourcesTest() throws IOException, CsvException {
+    public void foodSourcesTest() {
         String mealSource = "Meals'R'Us";
         String grocerySource = "Groceryland";
         String value = mealSource + '|' + grocerySource;
@@ -193,7 +191,7 @@ public class ControlBlockTest extends ControlBlockTestBase {
     }
 
     @Test
-    public void foodSourcesBadValueTest() throws IOException, CsvException {
+    public void foodSourcesBadValueTest() {
         String mealSource = "Meals'R'Us";
         String grocerySource = "Groceryland";
         String value = mealSource + ':' + grocerySource;
@@ -205,7 +203,7 @@ public class ControlBlockTest extends ControlBlockTestBase {
     }
 
     @Test
-    public void startTimesTest() throws IOException, CsvException {
+    public void startTimesTest() {
         String value = "3:00, 3:10, 3:15";
         String workFlowData = controlBlockBuilder.withStartTimes(value).build();
         WorkflowParser workflowParser = WorkflowParser.create(Map.of(), workFlowData);
@@ -215,7 +213,7 @@ public class ControlBlockTest extends ControlBlockTestBase {
     }
 
     @Test
-    public void pickupManagersTest() throws IOException, CsvException {
+    public void pickupManagersTest() {
         String value1 = "ZZZ";
         String value2 = "ThirdPerson";
         String value3 = "JVol";
@@ -231,7 +229,7 @@ public class ControlBlockTest extends ControlBlockTestBase {
     }
 
     @Test
-    public void startTimesAuditWarningsTest() throws IOException, CsvException {
+    public void startTimesAuditWarningsTest() {
         String value = "3:00, 3:10, 3:15";
         String workFlowData = controlBlockBuilder.withStartTimes(value).build();
         WorkflowParser workflowParser = WorkflowParser.create(Map.of(), workFlowData);
@@ -242,7 +240,7 @@ public class ControlBlockTest extends ControlBlockTestBase {
     }
 
     @Test
-    public void invalidStartTimesTest() throws IOException, CsvException {
+    public void invalidStartTimesTest() {
         String key = Constants.CONTROL_BLOCK_START_TIMES;
         String[] values = {
                 "", "Seven", "1130", "9:O3"
@@ -260,7 +258,7 @@ public class ControlBlockTest extends ControlBlockTestBase {
     }
 
     @Test
-    public void validStartTimesTest() throws IOException, CsvException {
+    public void validStartTimesTest() {
         String[] values = {
                 "3:59", "03:11", "4:19 PM", "21:42"
         };
@@ -276,7 +274,7 @@ public class ControlBlockTest extends ControlBlockTestBase {
     }
 
     @Test
-    public void tooManyStartTimesTest() throws IOException, CsvException {
+    public void tooManyStartTimesTest() {
         String startTimes = "3:59";
 
         String workFlowData = controlBlockBuilder
@@ -290,7 +288,7 @@ public class ControlBlockTest extends ControlBlockTestBase {
     }
 
     @Test
-    public void missingStartTimesTest() throws IOException, CsvException {
+    public void missingStartTimesTest() {
 
         String workFlowData = controlBlockBuilder.withoutStartTimes().build();
 
@@ -303,7 +301,7 @@ public class ControlBlockTest extends ControlBlockTestBase {
     }
 
     @Test
-    public void tooManyFoodSourcesTest() throws IOException, CsvException {
+    public void tooManyFoodSourcesTest() {
         String key = Constants.CONTROL_BLOCK_FOOD_SOURCES;
         String mealSource = "Meals'R'Us";
         String grocerySource = "Groceryland";
@@ -323,7 +321,7 @@ public class ControlBlockTest extends ControlBlockTestBase {
     }
 
     @Test
-    public void missingFoodSourcesTest() throws IOException, CsvException {
+    public void missingFoodSourcesTest() {
 
         String workFlowData = controlBlockBuilder.withoutFoodSources().build();
         WorkflowParser workflowParser = WorkflowParser.create(Map.of(), workFlowData);
@@ -335,7 +333,7 @@ public class ControlBlockTest extends ControlBlockTestBase {
     }
 
     @Test
-    public void missingAltMealOptionsTest() throws IOException, CsvException {
+    public void missingAltMealOptionsTest() {
 
         String workFlowData = controlBlockBuilder.withoutAltMealOptions().build();
         WorkflowParser workflowParser = WorkflowParser.create(Map.of(), workFlowData);
@@ -347,7 +345,7 @@ public class ControlBlockTest extends ControlBlockTestBase {
     }
 
     @Test
-    public void tooManyAltMealOptionsTest() throws IOException, CsvException {
+    public void tooManyAltMealOptionsTest() {
 
         String altMealOptions = ControlBlockBuilder.DEFAULT_ALT_MEAL_OPTIONS;
 
@@ -362,7 +360,7 @@ public class ControlBlockTest extends ControlBlockTestBase {
     }
 
     @Test
-    public void missingAltGroceryOptionsTest() throws IOException, CsvException {
+    public void missingAltGroceryOptionsTest() {
 
         String workFlowData = controlBlockBuilder.withoutAltGroceryOptions().build();
         WorkflowParser workflowParser = WorkflowParser.create(Map.of(), workFlowData);
@@ -374,7 +372,7 @@ public class ControlBlockTest extends ControlBlockTestBase {
     }
 
     @Test
-    public void tooManyAltGroceryOptionsTest() throws IOException, CsvException {
+    public void tooManyAltGroceryOptionsTest() {
 
         String altGroceryOptions = "x, y, z";
         String workFlowData = controlBlockBuilder
@@ -388,7 +386,7 @@ public class ControlBlockTest extends ControlBlockTestBase {
     }
 
     @Test
-    public void missingPickupManagersTest() throws IOException, CsvException {
+    public void missingPickupManagersTest() {
 
         String workFlowData = controlBlockBuilder.withoutPickupManager().build();
         WorkflowParser workflowParser = WorkflowParser.create(Map.of(), workFlowData);
@@ -400,7 +398,7 @@ public class ControlBlockTest extends ControlBlockTestBase {
     }
 
     @Test
-    public void missingMessageFormatTest() throws IOException, CsvException {
+    public void missingMessageFormatTest() {
 
         String workFlowData = controlBlockBuilder.withoutMessageFormat().build();
         WorkflowParser workflowParser = WorkflowParser.create(Map.of(), workFlowData);
@@ -412,7 +410,7 @@ public class ControlBlockTest extends ControlBlockTestBase {
     }
 
     @Test
-    public void invalidMessageFormatTest() throws IOException, CsvException {
+    public void invalidMessageFormatTest() {
         String badFormat = "TuesdayWeld";
         String workFlowData = controlBlockBuilder.withMessageFormat(badFormat).build();
         WorkflowParser workflowParser = WorkflowParser.create(Map.of(), workFlowData);
@@ -423,7 +421,7 @@ public class ControlBlockTest extends ControlBlockTestBase {
     }
 
     @Test
-    public void tooManyMessageFormatTest() throws IOException, CsvException {
+    public void tooManyMessageFormatTest() {
         String format1 = MessageSpecFormat.MONDAY.getFormat();
         String format2 = MessageSpecFormat.MONDAY.getFormat();
         String workFlowData = controlBlockBuilder
@@ -437,7 +435,7 @@ public class ControlBlockTest extends ControlBlockTestBase {
     }
 
     @Test
-    public void mealsOnlyFoodSourceTest() throws IOException, CsvException {
+    public void mealsOnlyFoodSourceTest() {
 
         String mealSource = "Chez McDo";
         controlBlockBuilder.withFoodSources(mealSource + "|");
@@ -451,7 +449,7 @@ public class ControlBlockTest extends ControlBlockTestBase {
     }
 
     @Test
-    public void groceriesOnlyFoodSourceTest() throws IOException, CsvException {
+    public void groceriesOnlyFoodSourceTest() {
 
         String grocerySource = "Big Red Barn Productions";
         controlBlockBuilder.withFoodSources("|" + grocerySource);
@@ -465,7 +463,7 @@ public class ControlBlockTest extends ControlBlockTestBase {
     }
 
     @Test
-    public void opsManagerFullMacroNoPhone() throws IOException, CsvException {
+    public void opsManagerFullMacroNoPhone() {
         // JVol | 123-456-7890
         String value = "JVol";
 
@@ -477,7 +475,7 @@ public class ControlBlockTest extends ControlBlockTestBase {
     }
 
     @Test
-    public void opsManagerFullMacroWithPhone() throws IOException, CsvException {
+    public void opsManagerFullMacroWithPhone() {
         String value = "JVol|123-456-7890";
         String csvData = controlBlockBuilder.withOpsManager(value).build();
 
@@ -487,7 +485,7 @@ public class ControlBlockTest extends ControlBlockTestBase {
     }
 
     @Test
-    public void opsManagerShortMacroNoPhone() throws IOException, CsvException {
+    public void opsManagerShortMacroNoPhone() {
         String value = "JVol";
 
         String csvData = controlBlockBuilder
@@ -500,7 +498,7 @@ public class ControlBlockTest extends ControlBlockTestBase {
     }
 
     @Test
-    public void opsManagerShortMacroWithPhone() throws IOException, CsvException {
+    public void opsManagerShortMacroWithPhone() {
         String value = "JVol|123-456-7890";
         String csvData = controlBlockBuilder
                 .withOpsManagerMacro(value, Constants.CONTROL_BLOCK_OPS_MANAGER_USERNAME_ONLY)

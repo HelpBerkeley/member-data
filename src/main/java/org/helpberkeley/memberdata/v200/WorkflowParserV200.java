@@ -33,7 +33,7 @@ import java.util.*;
 
 public class WorkflowParserV200 extends WorkflowParser {
 
-    public WorkflowParserV200(final String csvData) throws IOException, CsvException {
+    public WorkflowParserV200(final String csvData) {
         super(csvData);
     }
 
@@ -53,7 +53,7 @@ public class WorkflowParserV200 extends WorkflowParser {
      * @throws MemberDataException If there are any missing columns.
      */
     @Override
-    protected void auditColumnNames(final String csvData) throws IOException, CsvException {
+    protected void auditColumnNames(final String csvData) {
         List<String> columnNames = List.of(
                 Constants.WORKFLOW_ADDRESS_COLUMN,
                 Constants.WORKFLOW_ALT_PHONE_COLUMN,
@@ -71,9 +71,14 @@ public class WorkflowParserV200 extends WorkflowParser {
                 Constants.WORKFLOW_USER_NAME_COLUMN,
                 Constants.WORKFLOW_VEGGIE_COLUMN);
 
-        CSVListReader csvReader = new CSVListReader(new StringReader(csvData));
-        List<String> headerColumns = csvReader.readNextToList();
-        csvReader.close();
+        List<String> headerColumns;
+
+        try (StringReader stringReader = new StringReader(csvData)) {
+            CSVListReader csvReader = new CSVListReader(stringReader);
+            headerColumns = csvReader.readNextToList();
+        } catch (IOException | CsvException ex) {
+            throw new MemberDataException(ex);
+        }
 
         Set<String> set = new HashSet<>(headerColumns);
 

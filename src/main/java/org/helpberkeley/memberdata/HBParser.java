@@ -192,13 +192,19 @@ public class HBParser {
     }
 
     // From raw form
-    static List<User> users(final String csvData) throws IOException, CsvException {
+    static List<User> users(final String csvData) {
 
-        CSVReader cvsReader = new CSVReader(new StringReader(csvData));
-        List<String[]> lines = cvsReader.readAll();
-        assert ! lines.isEmpty();
+        List<String[]> lines;
+
+        try (StringReader stringReader = new StringReader(csvData)) {
+            CSVReader cvsReader = new CSVReader(stringReader);
+            lines = cvsReader.readAll();
+            assert !lines.isEmpty();
+        } catch (IOException | CsvException ex) {
+            throw new MemberDataException(ex);
+        }
+
         String[] headers = lines.get(0);
-
         assert headers.length == 51 : headers.length;
 
         int index = 0;
@@ -899,7 +905,7 @@ public class HBParser {
     }
 
     static Collection<String> parseOneKitchenBackupDrivers(
-            String fileName, String deliveryData) throws IOException, CsvException {
+            String fileName, String deliveryData) {
 
         WorkflowParser parser = WorkflowParser.create(Collections.emptyMap(), deliveryData);
         ControlBlock controlBlock = parser.controlBlock();

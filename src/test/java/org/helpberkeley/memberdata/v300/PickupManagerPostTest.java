@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2022. helpberkeley.org
+ * Copyright (c) 2021-2024. helpberkeley.org
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,11 +22,9 @@
  */
 package org.helpberkeley.memberdata.v300;
 
-import com.opencsv.exceptions.CsvException;
 import org.helpberkeley.memberdata.*;
 import org.junit.Test;
 
-import java.io.IOException;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -47,7 +45,7 @@ public class PickupManagerPostTest extends TestBase {
     }
 
     @Test
-    public void v300SingleDriverLoopTest() throws IOException, CsvException {
+    public void v300SingleDriverLoopTest() {
         String format = "LOOP &{Driver} { "
                 + " LOOP &{Driver.Consumer} {"
                 + "    &{Driver.Name}"
@@ -89,7 +87,7 @@ public class PickupManagerPostTest extends TestBase {
     }
 
     @Test
-    public void v300MultiDriverLoopTest() throws IOException, CsvException {
+    public void v300MultiDriverLoopTest() {
         String format = "LOOP &{Driver} { "
                 + " LOOP &{Driver.Consumer} {"
                 + "    &{Driver.Name}"
@@ -131,7 +129,7 @@ public class PickupManagerPostTest extends TestBase {
     }
 
     @Test
-    public void v300DriversTableSingleDriverTest() throws IOException, CsvException {
+    public void v300DriversTableSingleDriverTest() {
         String format = "LOOP &{Driver} { "
                 + "  &{Driver.StartTime}"
                 + "  \"|\""
@@ -161,7 +159,7 @@ public class PickupManagerPostTest extends TestBase {
     }
 
     @Test
-    public void v300DriversTableMultiDriverTest() throws IOException, CsvException {
+    public void v300DriversTableMultiDriverTest() {
         String format = "LOOP &{Driver} { "
                 + "  &{Driver.StartTime}"
                 + "  \"|\""
@@ -194,7 +192,7 @@ public class PickupManagerPostTest extends TestBase {
     }
 
     @Test
-    public void v300TotalsSingleDriverTest() throws IOException, CsvException {
+    public void v300TotalsSingleDriverTest() {
         String format = "${TotalStandardMeal}"
                 + "\"|\""
                 + "LOOP &{AlternateMeals} {"
@@ -217,7 +215,7 @@ public class PickupManagerPostTest extends TestBase {
     }
 
     @Test
-    public void v300TotalsMultipleDriverTest() throws IOException, CsvException {
+    public void v300TotalsMultipleDriverTest() {
         String format = "${TotalStandardMeal}"
                 + "\"|\""
                 + "LOOP &{AlternateMeals} {"
@@ -240,7 +238,7 @@ public class PickupManagerPostTest extends TestBase {
     }
 
     @Test
-    public void v300PickupManagersTest() throws IOException, CsvException {
+    public void v300PickupManagersTest() {
         String format = "LOOP &{PickupManager} {"
                 + "&{PickupManager.UserName}"
                 + "\"|\""
@@ -255,7 +253,7 @@ public class PickupManagerPostTest extends TestBase {
     }
 
     @Test
-    public void v300MealsOnlyTest() throws IOException, CsvException {
+    public void v300MealsOnlyTest() {
 
         String format = "IF ${MealsOnlyRun} THEN { \"true\" } "
                 + "\"|\""
@@ -277,7 +275,7 @@ public class PickupManagerPostTest extends TestBase {
     }
 
     @Test
-    public void v300GroceriesOnlyTest() throws IOException, CsvException {
+    public void v300GroceriesOnlyTest() {
 
         String format = "IF ${MealsOnlyRun} THEN { \"true\" } "
                 + "\"|\""
@@ -299,7 +297,7 @@ public class PickupManagerPostTest extends TestBase {
     }
 
     @Test
-    public void v300SingleBackupDriverTest() throws IOException, CsvException {
+    public void v300SingleBackupDriverTest() {
         String format = "LOOP &{BackupDriver} {"
                 + "&{BackupDriver.Name}\",\""
                 + "&{BackupDriver.UserName}\",\""
@@ -319,7 +317,7 @@ public class PickupManagerPostTest extends TestBase {
     }
 
     @Test
-    public void v300MultiBackupDriverTest() throws IOException, CsvException {
+    public void v300MultiBackupDriverTest() {
         String format = "LOOP &{BackupDriver} {"
                 + "&{BackupDriver.Name}\",\""
                 + "&{BackupDriver.UserName}\",\""

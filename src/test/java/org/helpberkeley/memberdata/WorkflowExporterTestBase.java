@@ -50,7 +50,7 @@ public abstract class WorkflowExporterTestBase extends TestBase {
     public abstract String getRestaurantTemplate();
     public abstract String generateWorkflow(
             UserExporter exporter, String restaurantTemplate, Map<String, DetailsPost> details)
-            throws IOException, CsvException;
+            ;
 
     @Test
     public void workflowExporterValidateUpdatedDataTest() throws IOException, CsvException {
@@ -69,7 +69,7 @@ public abstract class WorkflowExporterTestBase extends TestBase {
     }
 
     @Test
-    public void deliveryDetailsWithPunctuationTest() throws IOException, CsvException {
+    public void deliveryDetailsWithPunctuationTest() throws IOException {
         String deliveries = getResourceFile();
         WorkflowParser parser = WorkflowParser.create(Collections.emptyMap(), deliveries);
 

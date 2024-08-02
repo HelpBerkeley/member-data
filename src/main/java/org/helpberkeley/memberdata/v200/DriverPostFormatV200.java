@@ -22,12 +22,10 @@
  */
 package org.helpberkeley.memberdata.v200;
 
-import com.opencsv.exceptions.CsvException;
 import org.helpberkeley.memberdata.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -48,7 +46,7 @@ public class DriverPostFormatV200 extends DriverPostFormat {
     }
 
     @Override
-    protected void initialize(String routedDeliveries, RequestType requestType) throws IOException, CsvException {
+    protected void initialize(String routedDeliveries, RequestType requestType) {
         loadLastRestaurantTemplate();
         loadDriverPostFormat();
         loadGroupPostFormat();
@@ -220,7 +218,7 @@ public class DriverPostFormatV200 extends DriverPostFormat {
         }
     }
 
-    private void loadRoutedDeliveries(final String routedDeliveries) throws IOException, CsvException {
+    private void loadRoutedDeliveries(final String routedDeliveries) {
         WorkflowParser parser = WorkflowParser.create(restaurants, routedDeliveries);
         drivers = parser.drivers();
         ControlBlock cb = parser.getControlBlock();

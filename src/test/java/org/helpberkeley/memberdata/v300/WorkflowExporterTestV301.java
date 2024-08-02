@@ -22,7 +22,6 @@
  */
 package org.helpberkeley.memberdata.v300;
 
-import com.opencsv.exceptions.CsvException;
 import org.helpberkeley.memberdata.DetailsPost;
 import org.helpberkeley.memberdata.UserExporter;
 import org.helpberkeley.memberdata.WorkflowExporterTestBase;
@@ -47,7 +46,7 @@ public class WorkflowExporterTestV301 extends WorkflowExporterTestBase {
 
     @Override
     public String generateWorkflow(UserExporter exporter, String restaurantTemplate, Map<String,
-            DetailsPost> details) throws IOException, CsvException {
+            DetailsPost> details) {
         return exporter.oneKitchenWorkflow(restaurantTemplate, details);
     }
 }

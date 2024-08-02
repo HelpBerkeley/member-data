@@ -474,7 +474,7 @@ public class UserExporterTest extends TestBase {
     }
 
     @Test
-    public void allMembersNameWithCommasTest() throws UserException, IOException, CsvException {
+    public void allMembersNameWithCommasTest() throws UserException, IOException {
         User u1 = createUserWithName("My name has, one comma");
         User u2 = createUserWithName("My name, has, two commas");
 
@@ -486,7 +486,7 @@ public class UserExporterTest extends TestBase {
     }
 
     @Test
-    public void allMembersRawNameWithQuotesTest() throws UserException, IOException, CsvException {
+    public void allMembersRawNameWithQuotesTest() throws UserException, IOException {
         User u1 = createUserWithName("my is \"Bob\"");
         User u2 = createUserWithName("my \"name\" is \"secret\"");
 
@@ -500,7 +500,7 @@ public class UserExporterTest extends TestBase {
 
     @Test
     public void allMembersRawNameWithQuotesAndCommasTest()
-            throws UserException, IOException, CsvException {
+            throws UserException, IOException {
         User u1 = createUserWithName("my is \"Bob\"");
         User u2 = createUserWithName("my \"name\" is \"secret\"");
         User u3 = createUserWithName("comma, and \"quotes\" in my name");

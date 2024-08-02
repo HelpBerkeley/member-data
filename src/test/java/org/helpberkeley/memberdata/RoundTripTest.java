@@ -21,7 +21,6 @@
 //
 package org.helpberkeley.memberdata;
 
-import com.opencsv.exceptions.CsvException;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -32,7 +31,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class RoundTripTest extends TestBase {
 
     @Test
-    public void roundTripTest() throws UserException, IOException, CsvException {
+    public void roundTripTest() throws UserException, IOException {
 
         User u1 = createUserWithGroups(
                 Constants.GROUP_CONSUMERS,

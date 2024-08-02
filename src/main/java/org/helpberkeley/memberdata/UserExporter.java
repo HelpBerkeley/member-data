@@ -44,7 +44,7 @@ public class UserExporter extends Exporter {
         tables = new Tables(users);
     }
 
-    String errorsToFile(final String fileName) throws IOException {
+    String errorsToFile(final String fileName) {
 
         StringBuilder fileData = new StringBuilder();
 
@@ -180,110 +180,129 @@ public class UserExporter extends Exporter {
     }
 
     public String workflow(final String restaurantBlock,
-        Map<String, DetailsPost> deliveryDetails) throws IOException, CsvException {
+        Map<String, DetailsPost> deliveryDetails) {
 
-        StringWriter writer = new StringWriter();
-        CSVListWriter csvWriter = new CSVListWriter(writer);
-        List<List<String>> dataToEncode = new ArrayList<>();
+        try (StringWriter writer = new StringWriter()) {
 
-        if (restaurantBlock.isEmpty()) {
-            csvWriter.writeNextToList(workflowHeaders());
-        } else {
-            auditWorkflowData(restaurantBlock, workflowHeaders());
-            CSVListReader csvReader = new CSVListReader(new StringReader(restaurantBlock));
-            List<List<String>> parsedRestaurantBlock = csvReader.readAllToList();
-            csvReader.close();
-            csvWriter.writeAllToList(parsedRestaurantBlock);
+            CSVListWriter csvWriter = new CSVListWriter(writer);
+            List<List<String>> dataToEncode = new ArrayList<>();
+
+            if (restaurantBlock.isEmpty()) {
+                csvWriter.writeNextToList(workflowHeaders());
+            }
+            else {
+                auditWorkflowData(restaurantBlock, workflowHeaders());
+                CSVListReader csvReader = new CSVListReader(new StringReader(restaurantBlock));
+                List<List<String>> parsedRestaurantBlock = csvReader.readAllToList();
+                csvReader.close();
+                csvWriter.writeAllToList(parsedRestaurantBlock);
+            }
+
+            for (User user : tables.sortByConsumerThenDriverThenName()) {
+
+                DetailsPost details = deliveryDetails.get(user.getUserName());
+
+                List<String> row = new ArrayList<>(List.of(user.isConsumer().toString(),
+                        user.isDriver().toString(),
+                        user.getName(),
+                        user.getUserName(),
+                        user.getPhoneNumber(),
+                        user.getAltPhoneNumber(),
+                        user.getNeighborhood(),
+                        user.getCity(),
+                        user.getFullAddress(),
+                        user.isCondo().toString(),
+                        details == null ? "" : details.getDetails(),
+                        "",
+                        "",
+                        "",
+                        ""));
+                dataToEncode.add(row);
+            }
+
+            csvWriter.writeAllToList(dataToEncode);
+            return writer.toString();
         }
-
-        for (User user : tables.sortByConsumerThenDriverThenName()) {
-
-            DetailsPost details = deliveryDetails.get(user.getUserName());
-
-            List<String> row = new ArrayList<>(List.of(user.isConsumer().toString(),
-                    user.isDriver().toString(),
-                    user.getName(),
-                    user.getUserName(),
-                    user.getPhoneNumber(),
-                    user.getAltPhoneNumber(),
-                    user.getNeighborhood(),
-                    user.getCity(),
-                    user.getFullAddress(),
-                    user.isCondo().toString(),
-                    details == null ? "" : details.getDetails(),
-                    "",
-                    "",
-                    "",
-                    ""));
-            dataToEncode.add(row);
+        catch (IOException | CsvException ex) {
+            throw new MemberDataException(ex);
         }
-
-        csvWriter.writeAllToList(dataToEncode);
-        csvWriter.close();
-        return writer.toString();
     }
 
     public String oneKitchenWorkflow(final String restaurantBlock,
-                    Map<String, DetailsPost> deliveryDetails) throws IOException, CsvException {
+                    Map<String, DetailsPost> deliveryDetails) {
 
-        StringWriter writer = new StringWriter();
-        CSVListWriter csvWriter = new CSVListWriter(writer);
-        List<List<String>> dataToEncode = new ArrayList<>();
+        try(StringWriter writer = new StringWriter()) {
+            CSVListWriter csvWriter = new CSVListWriter(writer);
+            List<List<String>> dataToEncode = new ArrayList<>();
 
-        if (restaurantBlock.isEmpty()) {
-            csvWriter.writeNextToList(workflowHeaders());
-        } else {
-            auditWorkflowData(restaurantBlock, oneKitchenWorkflowHeaders());
-            CSVListReader csvReader = new CSVListReader(new StringReader(restaurantBlock));
-            List<List<String>> parsedRestaurantBlock = csvReader.readAllToList();
-            csvWriter.writeAllToList(parsedRestaurantBlock);
-            csvReader.close();
+            if (restaurantBlock.isEmpty()) {
+                csvWriter.writeNextToList(workflowHeaders());
+            }
+            else {
+                auditWorkflowData(restaurantBlock, oneKitchenWorkflowHeaders());
+
+                try (StringReader reader = new StringReader(restaurantBlock)) {
+                    CSVListReader csvReader = new CSVListReader(new StringReader(restaurantBlock));
+                    List<List<String>> parsedRestaurantBlock = csvReader.readAllToList();
+                    csvWriter.writeAllToList(parsedRestaurantBlock);
+                } catch (IOException | CsvException ex) {
+                    throw new MemberDataException(ex);
+                }
+            }
+
+            for (User user : tables.sortByConsumerThenDriverThenName()) {
+
+                DetailsPost details = deliveryDetails.get(user.getUserName());
+
+                List<String> row = new ArrayList<>(List.of(user.isConsumer().toString(),
+                        user.isDriver().toString(),
+                        user.getName(),
+                        user.getUserName(),
+                        user.getPhoneNumber(),
+                        user.getAltPhoneNumber(),
+                        user.getNeighborhood(),
+                        user.getCity(),
+                        user.getFullAddress(),
+                        user.isCondo().toString(),
+                        details == null ? "" : details.getDetails(),
+                        "",
+                        "",
+                        "",
+                        ""));
+                dataToEncode.add(row);
+            }
+
+            csvWriter.writeAllToList(dataToEncode);
+            return writer.toString();
+        } catch (IOException ex) {
+            throw new MemberDataException(ex);
         }
-
-        for (User user : tables.sortByConsumerThenDriverThenName()) {
-
-            DetailsPost details = deliveryDetails.get(user.getUserName());
-
-            List<String> row = new ArrayList<>(List.of(user.isConsumer().toString(),
-                    user.isDriver().toString(),
-                    user.getName(),
-                    user.getUserName(),
-                    user.getPhoneNumber(),
-                    user.getAltPhoneNumber(),
-                    user.getNeighborhood(),
-                    user.getCity(),
-                    user.getFullAddress(),
-                    user.isCondo().toString(),
-                    details == null ? "" : details.getDetails(),
-                    "",
-                    "",
-                    "",
-                    ""));
-            dataToEncode.add(row);
-        }
-
-        csvWriter.writeAllToList(dataToEncode);
-        csvWriter.close();
-        return writer.toString();
     }
 
     // Audit that all of the columns are expected column names are present, in the expected order
     // and that all of the rows contain the same number of columns.
     //
-    private void auditWorkflowData(String workflowData, List<String> headers) throws IOException, CsvException {
+    private void auditWorkflowData(String workflowData, List<String> headers) {
 
-        // Normalize EOL - FIX THIS, DS: doe CSVReader do this already?
+        // Normalize EOL - FIX THIS, DS: does CSVReader do this already?
         String csvData = workflowData.replaceAll("\\r\\n?", "\n");
         String[] lines = csvData.split("\n");
         assert lines.length != 0 : "missing work flow data";
 
-        CSVListReader csvReader = new CSVListReader(new StringReader(csvData));
-        List<List<String>> rows = csvReader.readAllToList();
-        csvReader.close();
-        assert ! rows.isEmpty() : "missing work flow data";
+        List<List<String>> rows;
+
+        try (StringReader stringReader = new StringReader(csvData)) {
+            CSVListReader csvReader = new CSVListReader(new StringReader(csvData));
+            rows = csvReader.readAllToList();
+        }
+        catch (IOException | CsvException ex) {
+            throw new MemberDataException(ex);
+        }
+
+        assert !rows.isEmpty() : "missing work flow data";
         List<String> headerColumns = rows.get(0);
 
-        if (! headers.equals(headerColumns)) {
+        if (!headers.equals(headerColumns)) {
             throw new Error("Header mismatch: " + lines[0] + " != " + headers);
         }
 
@@ -304,7 +323,7 @@ public class UserExporter extends Exporter {
     }
 
     String workflowToFile(final String restaurantBlock, Map<String, DetailsPost> deliveryDetails,
-        final String fileName) throws IOException, CsvException {
+        final String fileName) {
 
         String outputFileName = generateFileName(fileName, "csv");
         writeFile(outputFileName, workflow(restaurantBlock, deliveryDetails));
@@ -332,7 +351,7 @@ public class UserExporter extends Exporter {
     }
 
     String oneKitchenWorkflowToFile(final String restaurantBlock, Map<String, DetailsPost> deliveryDetails,
-                          final String fileName) throws IOException, CsvException {
+                          final String fileName) {
 
         String outputFileName = generateFileName(fileName, "csv");
         writeFile(outputFileName, oneKitchenWorkflow(restaurantBlock, deliveryDetails));

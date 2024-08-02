@@ -45,13 +45,16 @@ public class Exporter {
         return fileName + '-' + timestamp + '.' + suffix;
     }
 
-    public void writeFile(final String fileName, final String fileData) throws IOException {
-        Path filePath = Paths.get(fileName);
-        Files.deleteIfExists(filePath);
-        Files.createFile(filePath);
-        Files.writeString(filePath, fileData);
-
-        LOGGER.trace("Wrote: {}", fileName);
+    public void writeFile(final String fileName, final String fileData) {
+        try {
+            Path filePath = Paths.get(fileName);
+            Files.deleteIfExists(filePath);
+            Files.createFile(filePath);
+            Files.writeString(filePath, fileData);
+            LOGGER.trace("Wrote: {}", fileName);
+        } catch (IOException ex) {
+            throw new MemberDataException(ex);
+        }
     }
 
     public String shortBoolean(boolean value) {

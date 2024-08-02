@@ -267,7 +267,7 @@ public class Main {
     }
 
     private static void postConsumerRequests(ApiClient apiClient, final String fileName)
-            throws IOException, CsvException {
+            throws IOException {
 
         String csvData = Files.readString(Paths.get(fileName));
         List<User> users = HBParser.users(csvData);
@@ -315,7 +315,7 @@ public class Main {
     }
 
     private static void postVolunteerRequests(ApiClient apiClient, final String fileName)
-            throws IOException, CsvException {
+            throws IOException {
 
         String csvData = Files.readString(Paths.get(fileName));
         List<User> users = HBParser.users(csvData);
@@ -457,7 +457,7 @@ public class Main {
                 "" : "failed " + response.statusCode() + ": " + response.body());
     }
 
-    private static void generateInreach(ApiClient apiClient, String usersFile) throws IOException, CsvException {
+    private static void generateInreach(ApiClient apiClient, String usersFile) throws IOException {
         String csvData = Files.readString(Paths.get(usersFile));
         List<User> users = HBParser.users(csvData);
 
@@ -475,7 +475,7 @@ public class Main {
     }
 
     private static void generateEmail(ApiClient apiClient, final String usersFile)
-            throws IOException, CsvException {
+            throws IOException {
         String csvData = Files.readString(Paths.get(usersFile));
         List<User> users = HBParser.users(csvData);
 
@@ -485,7 +485,7 @@ public class Main {
     }
 
     private static void generateWorkflow(ApiClient apiClient, final String usersFile, boolean postStatus)
-            throws IOException, CsvException {
+            throws IOException {
 
         // Read/parse the members data
         String csvData = Files.readString(Paths.get(usersFile));
@@ -542,7 +542,7 @@ public class Main {
     }
 
     private static void generateOneKitchenWorkflow(ApiClient apiClient, final String usersFile, boolean postStatus)
-            throws IOException, CsvException {
+            throws IOException {
 
         // Read/parse the members data
         String csvData = Files.readString(Paths.get(usersFile));
@@ -608,7 +608,7 @@ public class Main {
      * @param allMembersFile CSV file of all current members
      */
     private static void driverMessages(ApiClient apiClient, String allMembersFile)
-            throws IOException, CsvException {
+            throws IOException {
         Query query = new Query(
                 Constants.QUERY_GET_LAST_REQUEST_DRIVER_MESSAGES_REPLY, Constants.TOPIC_REQUEST_DRIVER_MESSAGES);
         WorkRequestHandler requestHandler = new WorkRequestHandler(apiClient, query);
@@ -636,7 +636,7 @@ public class Main {
     }
 
     private static void doDriverMessages(
-            ApiClient apiClient, WorkRequestHandler.WorkRequest request, Map<String, User> users) throws IOException, CsvException {
+            ApiClient apiClient, WorkRequestHandler.WorkRequest request, Map<String, User> users) {
 
         LOGGER.info("Driver message request found:\n{}", request);
 
@@ -674,7 +674,7 @@ public class Main {
      * @param allMembersFile CSV file of all current members
      */
     private static void oneKitchenDriverMessages(ApiClient apiClient, String allMembersFile)
-            throws IOException, CsvException {
+            throws IOException {
         Query query = new Query(
                 Constants.QUERY_GET_LAST_REQUEST_ONE_KITCHEN_DRIVER_MESSAGES_REPLY,
                 Constants.TOPIC_REQUEST_ONE_KITCHEN_DRIVER_MESSAGES);
@@ -744,7 +744,7 @@ public class Main {
     }
 
     private static void doOneKitchenDriverMessages(
-            ApiClient apiClient, WorkRequestHandler.WorkRequest request, Map<String, User> users) throws IOException, CsvException {
+            ApiClient apiClient, WorkRequestHandler.WorkRequest request, Map<String, User> users) {
 
         Topic topic = (request.destinationTopic != null) ? request.destinationTopic : Constants.TOPIC_DRIVERS_POST_STAGING;
 
@@ -996,7 +996,7 @@ public class Main {
 
     // Process the last request in the Post completed daily orders topic
     private static void completedDailyOrders(
-            ApiClient apiClient, String allMembersFile) throws IOException, CsvException {
+            ApiClient apiClient, String allMembersFile) throws IOException {
         Query query = new Query(
                 Constants.QUERY_GET_LAST_COMPLETED_DAILY_ORDERS_REPLY, Constants.TOPIC_POST_COMPLETED_DAILY_ORDERS);
         WorkRequestHandler requestHandler = new WorkRequestHandler(apiClient, query);
@@ -1028,7 +1028,7 @@ public class Main {
     }
 
     private static void doCompletedDailyOrders(
-            ApiClient apiClient, WorkRequestHandler.WorkRequest request, Map<String, User> users) throws IOException, CsvException {
+            ApiClient apiClient, WorkRequestHandler.WorkRequest request, Map<String, User> users) {
 
         try {
             if (! request.disableDateAudit) {
@@ -1102,7 +1102,7 @@ public class Main {
 
     // Process the last request in the Post completed daily orders topic
     private static void completedOneKitchenOrders(
-            ApiClient apiClient, String allMembersFile) throws IOException, CsvException {
+            ApiClient apiClient, String allMembersFile) throws IOException {
         Query query = new Query(Constants.QUERY_GET_LAST_COMPLETED_ONEKITCHEN_ORDERS_REPLY,
                 Constants.TOPIC_POST_COMPLETED_ONEKITCHEN_ORDERS);
         WorkRequestHandler requestHandler = new WorkRequestHandler(apiClient, query);
@@ -1134,7 +1134,7 @@ public class Main {
     }
 
     private static void doCompletedOneKitchenOrders(
-            ApiClient apiClient, WorkRequestHandler.WorkRequest request, Map<String, User> users) throws IOException, CsvException {
+            ApiClient apiClient, WorkRequestHandler.WorkRequest request, Map<String, User> users) {
 
         try {
             if (! request.disableDateAudit) {
@@ -1524,7 +1524,7 @@ public class Main {
     }
 
     private static void customerCarePost(
-            ApiClient apiClient, String usersFile) throws IOException, CsvException {
+            ApiClient apiClient, String usersFile) throws IOException {
         // Load users
         String csvData = Files.readString(Paths.get(usersFile));
         List<User> users = HBParser.users(csvData);
@@ -1540,7 +1540,7 @@ public class Main {
     }
 
     private static void frreg(
-            ApiClient apiClient, String usersFile) throws IOException, CsvException {
+            ApiClient apiClient, String usersFile) throws IOException {
         // Load users
         String csvData = Files.readString(Paths.get(usersFile));
         List<User> users = HBParser.users(csvData);
