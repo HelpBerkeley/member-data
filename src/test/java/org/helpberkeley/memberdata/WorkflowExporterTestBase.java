@@ -28,8 +28,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -64,7 +62,7 @@ public abstract class WorkflowExporterTestBase extends TestBase {
         String json = apiSim.runQuery(Constants.QUERY_GET_DELIVERY_DETAILS);
         ApiQueryResult apiQueryResult = HBParser.parseQueryResult(json);
         Map<String, DetailsPost> deliveryDetails = HBParser.deliveryDetails(apiQueryResult);
-//        DriverPostFormat driverPostFormatPreUpdate = DriverPostFormat.create(apiSim, users, deliveries);
+        DriverPostFormat driverPostFormatPreUpdate = DriverPostFormat.create(apiSim, users, deliveries);
         WorkflowExporter exporter = new WorkflowExporter(parser);
         String updatedCSVData = exporter.updateMemberData(users, deliveryDetails);
         DriverPostFormat driverPostFormatPostUpdate = DriverPostFormat.create(apiSim, users, updatedCSVData);

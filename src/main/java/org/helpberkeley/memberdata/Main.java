@@ -1325,7 +1325,7 @@ public class Main {
                 DRIVER_HISTORY_TITLE, ONE_KITCHEN_DRIVER_HISTORY_POST_ID);
     }
 
-    private static void restaurantTemplate(ApiClient apiClient) throws IOException, CsvException {
+    private static void restaurantTemplate(ApiClient apiClient) {
 
         Query query = new Query(
                 Constants.QUERY_GET_LAST_RESTAURANT_TEMPLATE_REPLY,
@@ -1350,7 +1350,7 @@ public class Main {
         doRestaurantTemplate(apiClient, request);
     }
 
-    private static void oneKitchenRestaurantTemplate(ApiClient apiClient) throws IOException, CsvException {
+    private static void oneKitchenRestaurantTemplate(ApiClient apiClient) {
 
         Query query = new Query(
                 Constants.QUERY_GET_LAST_ONE_KITCHEN_RESTAURANT_TEMPLATE_REPLY,
@@ -1376,7 +1376,7 @@ public class Main {
     }
 
     private static void doRestaurantTemplate(
-            ApiClient apiClient, WorkRequestHandler.WorkRequest request) throws IOException, CsvException {
+            ApiClient apiClient, WorkRequestHandler.WorkRequest request) {
 
         LOGGER.info("Downloading restaurant template update {}",
                 request.uploadFile.getOriginalFileName());
@@ -1434,7 +1434,7 @@ public class Main {
     }
 
     private static void doOneKitchenRestaurantTemplate(
-            ApiClient apiClient, WorkRequestHandler.WorkRequest request) throws IOException, CsvException {
+            ApiClient apiClient, WorkRequestHandler.WorkRequest request) {
 
         LOGGER.info("Downloading one kitchen restaurant template update {}",
                 request.uploadFile.getOriginalFileName());

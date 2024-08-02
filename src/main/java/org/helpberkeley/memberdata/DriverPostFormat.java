@@ -191,7 +191,7 @@ public abstract class DriverPostFormat {
         return restaurants;
     }
 
-    protected final void loadLastRestaurantTemplate() throws IOException, CsvException {
+    protected final void loadLastRestaurantTemplate() {
         String  json = apiClient.runQuery(restaurantTemplateQueryID());
         ApiQueryResult apiQueryResult = HBParser.parseQueryResult(json);
         assert apiQueryResult.rows.length == 1;

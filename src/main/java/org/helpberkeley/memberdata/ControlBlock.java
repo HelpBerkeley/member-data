@@ -113,13 +113,18 @@ public abstract class ControlBlock {
         }
     }
 
-    public static ControlBlock create(String csvData) throws IOException, CsvException {
+    public static ControlBlock create(String csvData) {
 
-        CSVListReader csvReader = new CSVListReader(new StringReader(csvData));
-        List<List<String>> lines = csvReader.readAllToList();
+        List<List<String>> lines;
+
+        try (StringReader reader = new StringReader(csvData)) {
+            lines = new CSVListReader(reader).readAllToList();
+        }
+        catch (IOException |CsvException ex) {
+            throw new MemberDataException(ex);
+        }
+
         List<String> header = lines.get(0);
-        csvReader.close();
-
         String version = new VersionParser(lines).version();
 
         switch (version) {

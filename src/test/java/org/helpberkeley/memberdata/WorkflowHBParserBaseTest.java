@@ -46,7 +46,7 @@ public abstract class WorkflowHBParserBaseTest extends TestBase {
 
     public abstract List<String> getColumnNames();
     public abstract String getMinimumControlBlock();
-    public abstract String getHeader() throws IOException, CsvException;
+    public abstract String getHeader();
 
     @Test
     public void missingHeaderRowTest() throws IOException, CsvException {
@@ -90,7 +90,7 @@ public abstract class WorkflowHBParserBaseTest extends TestBase {
     }
 
     @Test
-    public void invalidColumnNameTest() throws IOException, CsvException {
+    public void invalidColumnNameTest() {
 
         List<String> columnNames = List.of(
                 Constants.WORKFLOW_CONSUMER_COLUMN,

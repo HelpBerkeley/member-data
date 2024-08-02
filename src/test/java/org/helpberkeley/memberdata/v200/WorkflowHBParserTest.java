@@ -51,7 +51,7 @@ public class WorkflowHBParserTest extends WorkflowHBParserBaseTest {
                     "Bopshop", Restaurant.createRestaurant(controlBlock, "Bopshop", 2),
                     "Kim's Cafe", Restaurant.createRestaurant(controlBlock, "Kim's Cafe", 3));
 
-    public WorkflowHBParserTest() throws IOException, CsvException {
+    public WorkflowHBParserTest() {
         for (Restaurant restaurant : restaurants.values()) {
             restaurant.setStartTime("5:00");
             restaurant.setClosingTime("7:00");
@@ -85,7 +85,7 @@ public class WorkflowHBParserTest extends WorkflowHBParserBaseTest {
     }
 
     @Override
-    public String getHeader() throws IOException, CsvException {
+    public String getHeader() {
         return new ControlBlockTest().getHeader();
     }
 

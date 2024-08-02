@@ -41,7 +41,7 @@ public class ControlBlockTest extends ControlBlockTestBase {
 
     private final Map<String, Restaurant> allRestaurants;
 
-    public ControlBlockTest() throws IOException, CsvException {
+    public ControlBlockTest() {
         RestaurantTemplateParser parser =
                 RestaurantTemplateParser.create(readResourceFile("restaurant-template-v200.csv"));
         allRestaurants = parser.restaurants();

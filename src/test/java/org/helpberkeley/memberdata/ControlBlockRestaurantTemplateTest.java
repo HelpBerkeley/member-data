@@ -22,11 +22,9 @@
  */
 package org.helpberkeley.memberdata;
 
-import com.opencsv.exceptions.CsvException;
 import org.helpberkeley.memberdata.v200.RestaurantV200;
 import org.junit.Test;
 
-import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.List;
 import java.util.Map;
@@ -193,7 +191,7 @@ public class ControlBlockRestaurantTemplateTest extends TestBase {
     }
 
     @Test
-    public void emptyRowInRouteBlockTest() throws IOException, CsvException {
+    public void emptyRowInRouteBlockTest() {
 
         final String csvData = readResourceFile("restaurant-template-empty-route-row.csv");
 
@@ -215,7 +213,7 @@ public class ControlBlockRestaurantTemplateTest extends TestBase {
     }
 
     @Test
-    public void noPicsRestaurantTest() throws IOException, CsvException {
+    public void noPicsRestaurantTest() {
         final String csvData = readResourceFile("restaurant-template-v200.csv");
         RestaurantTemplateParser parser = RestaurantTemplateParser.create(csvData);
 

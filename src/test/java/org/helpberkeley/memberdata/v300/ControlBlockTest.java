@@ -49,7 +49,7 @@ public class ControlBlockTest extends ControlBlockTestBase {
     public static final String  CONTROL_BLOCK_END_ROW =   "FALSE,FALSE,ControlEnd  ,,,,,,,,,,,,,,,\n";
     public static final String  CONTROL_BLOCK_VERSION_ROW = "FALSE,FALSE,,Version ,,,,3-0-0,,,,,,,,,,\n";
 
-    public ControlBlockTest() throws IOException, CsvException {
+    public ControlBlockTest() {
         List<User> userList = new Loader(createApiSimulator()).load();
         users = new Tables(userList).mapByUserName();
 

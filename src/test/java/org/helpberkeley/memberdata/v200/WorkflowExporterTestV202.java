@@ -33,7 +33,7 @@ import java.util.Map;
 public class WorkflowExporterTestV202 extends WorkflowExporterTestBase {
 
     @Override
-    public String getResourceFile() throws IOException {
+    public String getResourceFile() {
         return readResourceFile("update-member-data-v202.csv");
     }
 

@@ -49,7 +49,7 @@ public class WorkflowHBParserTest extends WorkflowHBParserBaseTest {
             Map.of("RevFoodTruck", Restaurant.createRestaurant(controlBlock, "RevFoodTruck", 1),
                     "BFN", Restaurant.createRestaurant(controlBlock, "BFN", 2));
 
-    public WorkflowHBParserTest() throws IOException, CsvException {
+    public WorkflowHBParserTest() {
         super();
     }
 
@@ -81,7 +81,7 @@ public class WorkflowHBParserTest extends WorkflowHBParserBaseTest {
     }
 
     @Override
-    public String getHeader() throws IOException, CsvException {
+    public String getHeader() {
         return new ControlBlockTest().getHeader();
     }
 

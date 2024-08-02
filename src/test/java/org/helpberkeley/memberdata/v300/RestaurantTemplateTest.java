@@ -22,12 +22,9 @@
  */
 package org.helpberkeley.memberdata.v300;
 
-import com.opencsv.exceptions.CsvException;
 import org.helpberkeley.memberdata.RestaurantTemplateParser;
 import org.helpberkeley.memberdata.RestaurantTemplateTestBase;
 import org.junit.Test;
-
-import java.io.IOException;
 
 import static org.helpberkeley.memberdata.v300.ControlBlockTest.EMPTY_ROW;
 
@@ -54,7 +51,7 @@ public class RestaurantTemplateTest extends RestaurantTemplateTestBase {
     }
 
     @Test
-    public void testTemplateValidation() throws IOException, CsvException {
+    public void testTemplateValidation() {
         String template = readResourceFile("restaurant-template-v300.csv");
         RestaurantTemplateParser parser = RestaurantTemplateParser.create(template);
         parser.restaurants();
