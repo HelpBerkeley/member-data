@@ -41,7 +41,7 @@ public class LoaderTest extends TestBase {
     }
 
     @Test
-    public void loadTest() throws IOException {
+    public void loadTest() {
         Loader loader = new Loader(apiClient);
 
         List<User> users = loader.load();

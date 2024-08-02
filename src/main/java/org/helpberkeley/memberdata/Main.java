@@ -225,7 +225,7 @@ public class Main {
         return properties;
     }
 
-    private static void fetch(ApiClient apiClient) throws IOException {
+    private static void fetch(ApiClient apiClient) {
         // Create a User loader
         Loader loader = new Loader(apiClient);
 
@@ -704,7 +704,7 @@ public class Main {
     }
 
     private static void doUpdateMemberData(
-            ApiClient apiClient, WorkRequestHandler.WorkRequest request, Map<String, User> users) throws IOException {
+            ApiClient apiClient, WorkRequestHandler.WorkRequest request, Map<String, User> users) {
 
         String json = apiClient.runQuery(Constants.QUERY_GET_DELIVERY_DETAILS);
         ApiQueryResult apiQueryResult = HBParser.parseQueryResult(json);

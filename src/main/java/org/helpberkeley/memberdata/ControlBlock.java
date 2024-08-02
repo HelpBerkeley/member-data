@@ -690,8 +690,6 @@ public abstract class ControlBlock {
         }
 
         private String parseVersion(List<String> line, int lineNumber) {
-            // remove whitespace and split into columns
-//            String[] columns = line.replaceAll(" ", "").split(",");
             String value = null;
             int versionTags = 0;
             int values = 0;

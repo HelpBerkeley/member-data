@@ -736,7 +736,7 @@ public class MainTest extends TestBase {
     }
 
     @Test
-    public void workflowParserUpdateMemberDataTest() throws IOException {
+    public void workflowParserUpdateMemberDataTest() {
         String deliveries = readResourceFile("update-member-data-multiple-updates.csv");
         WorkflowParser parser = WorkflowParser.create(Collections.emptyMap(), deliveries);
         ApiClient apiSim = createApiSimulator();

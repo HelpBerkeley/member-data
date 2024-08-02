@@ -62,7 +62,7 @@ public class UserExporter extends Exporter {
         return outputFileName;
     }
 
-    String consumerRequests() throws IOException {
+    String consumerRequests() {
         try (StringWriter writer = new StringWriter()) {
             CSVListWriter csvWriter = new CSVListWriter(writer);
             List<List<String>> rows = new ArrayList<>();
@@ -74,10 +74,12 @@ public class UserExporter extends Exporter {
 
             csvWriter.writeAllToList(rows);
             return writer.toString();
+        } catch (IOException ex) {
+            throw new MemberDataException(ex);
         }
     }
 
-    String consumerRequestsToFile(final String fileName) throws IOException {
+    String consumerRequestsToFile(final String fileName) {
 
         String outputFileName = generateFileName(fileName, "csv");
         writeFile(outputFileName, consumerRequests());
@@ -85,7 +87,7 @@ public class UserExporter extends Exporter {
         return outputFileName;
     }
 
-    String volunteerRequests() throws IOException {
+    String volunteerRequests() {
         try (StringWriter writer = new StringWriter()) {
             CSVListWriter csvWriter = new CSVListWriter(writer);
             List<List<String>> rows = new ArrayList<>();
@@ -97,10 +99,12 @@ public class UserExporter extends Exporter {
 
             csvWriter.writeAllToList(rows);
             return writer.toString();
+        } catch (IOException ex) {
+            throw new MemberDataException(ex);
         }
     }
 
-    String volunteerRequestsToFile(final String fileName) throws IOException {
+    String volunteerRequestsToFile(final String fileName) {
 
         String outputFileName = generateFileName(fileName, "csv");
         writeFile(outputFileName, volunteerRequests());
@@ -108,14 +112,14 @@ public class UserExporter extends Exporter {
         return outputFileName;
     }
 
-    String allMembersRawToFile(final String fileName) throws IOException {
+    String allMembersRawToFile(final String fileName) {
 
         String outputFileName = generateFileName(fileName, "csv");
         writeFile(outputFileName, allMembersRaw());
         return outputFileName;
     }
 
-    String allMembersRaw() throws IOException {
+    String allMembersRaw() {
         try (StringWriter writer = new StringWriter()) {
             CSVListWriter csvWriter = new CSVListWriter(writer);
             List<List<String>> dataToEncode = new ArrayList<>();
@@ -127,10 +131,12 @@ public class UserExporter extends Exporter {
 
             csvWriter.writeAllToList(dataToEncode);
             return writer.toString();
+        } catch (IOException ex) {
+            throw new MemberDataException(ex);
         }
     }
 
-    String allMembersReport() throws IOException {
+    String allMembersReport() {
         try (StringWriter writer = new StringWriter()) {
             CSVListWriter csvWriter = new CSVListWriter(writer);
             List<List<String>> dataToEncode = new ArrayList<>();
@@ -142,17 +148,19 @@ public class UserExporter extends Exporter {
 
             csvWriter.writeAllToList(dataToEncode);
             return writer.toString();
+        } catch (IOException ex) {
+            throw new MemberDataException(ex);
         }
     }
 
-    String allMembersReportToFile(final String fileName) throws IOException {
+    String allMembersReportToFile(final String fileName) {
 
         String outputFileName = generateFileName(fileName, "csv");
         writeFile(outputFileName, allMembersReport());
         return outputFileName;
     }
 
-    String allMembersWithEmailReport(final Map<Long, String> emailAddresses) throws IOException {
+    String allMembersWithEmailReport(final Map<Long, String> emailAddresses) {
         try (StringWriter writer = new StringWriter()) {
             CSVListWriter csvWriter = new CSVListWriter(writer);
             List<List<String>> dataToEncode = new ArrayList<>();
@@ -165,10 +173,12 @@ public class UserExporter extends Exporter {
 
             csvWriter.writeAllToList(dataToEncode);
             return writer.toString();
+        } catch (IOException ex) {
+            throw new MemberDataException(ex);
         }
     }
 
-    void allMembersWithEmailReportToFile(final Map<Long, String> emailAddresses) throws IOException {
+    void allMembersWithEmailReportToFile(final Map<Long, String> emailAddresses) {
 
         String outputFileName = generateFileName(Constants.MEMBERDATA_WITH_EMAIL_REPORT_FILE, "csv");
         writeFile(outputFileName, allMembersWithEmailReport(emailAddresses));
@@ -373,7 +383,7 @@ public class UserExporter extends Exporter {
                 Constants.WORKFLOW_TYPE_GROCERY_COLUMN));
     }
 
-    String inreach(OrderHistory orderHistory) throws IOException {
+    String inreach(OrderHistory orderHistory) {
 
         try (StringWriter writer = new StringWriter()) {
             CSVListWriter csvWriter = new CSVListWriter(writer);
@@ -403,10 +413,12 @@ public class UserExporter extends Exporter {
 
             csvWriter.writeAllToList(dataToEncode);
             return writer.toString();
+        } catch (IOException ex) {
+            throw new MemberDataException(ex);
         }
     }
 
-    String inreachToFile(OrderHistory orderHistory) throws IOException {
+    String inreachToFile(OrderHistory orderHistory) {
         String outputFileName = generateFileName(Constants.INREACH_FILE, "csv");
         writeFile(outputFileName, inreach(orderHistory));
         return outputFileName;
@@ -430,7 +442,7 @@ public class UserExporter extends Exporter {
                 User.DRIVER_COLUMN));
     }
 
-    String dispatchers() throws IOException {
+    String dispatchers() {
 
         try (StringWriter writer = new StringWriter()) {
             CSVListWriter csvWriter = new CSVListWriter(writer);
@@ -463,10 +475,12 @@ public class UserExporter extends Exporter {
 
             csvWriter.writeAllToList(dataToEncode);
             return writer.toString();
+        } catch (IOException ex) {
+            throw new MemberDataException(ex);
         }
     }
 
-    String dispatchersToFile(final String fileName) throws IOException {
+    String dispatchersToFile(final String fileName) {
 
         String outputFileName = generateFileName(fileName, "csv");
         writeFile(outputFileName, dispatchers());

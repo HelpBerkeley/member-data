@@ -54,7 +54,7 @@ public class DriverExporter extends Exporter {
         this.driverHistory = driverHistory;
     }
 
-    String drivers() throws IOException {
+    String drivers() {
         try (StringWriter writer = new StringWriter()) {
             CSVListWriter csvWriter = new CSVListWriter(writer);
             List<List<String>> dataToEncode = new ArrayList<>();
@@ -99,6 +99,8 @@ public class DriverExporter extends Exporter {
 
             csvWriter.writeAllToList(dataToEncode);
             return writer.toString();
+        } catch (IOException ex) {
+            throw new MemberDataException(ex);
         }
     }
 
@@ -132,7 +134,7 @@ public class DriverExporter extends Exporter {
                User.SHORT_DRIVER_DETAILS_COLUMN));
     }
 
-    String driversToFile() throws IOException {
+    String driversToFile() {
 
         String outputFileName = generateFileName(Constants.DRIVERS_FILE, "csv");
         writeFile(outputFileName, drivers());

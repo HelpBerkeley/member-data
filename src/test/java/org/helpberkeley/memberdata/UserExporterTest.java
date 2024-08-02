@@ -105,7 +105,7 @@ public class UserExporterTest extends TestBase {
     }
 
     @Test
-    public void allMembersRawColumnsTest() throws UserException, IOException {
+    public void allMembersRawColumnsTest() throws UserException {
         User u1 = createTestUser1();
         UserExporter exporter = new UserExporter(List.of(u1));
 
@@ -217,7 +217,7 @@ public class UserExporterTest extends TestBase {
     }
 
     @Test
-    public void allMembersReportColumnsTest() throws UserException, IOException {
+    public void allMembersReportColumnsTest() throws UserException {
         User u1 = createTestUser1();
         UserExporter exporter = new UserExporter(List.of(u1));
 
@@ -398,7 +398,7 @@ public class UserExporterTest extends TestBase {
     }
 
     @Test
-    public void dispatchersColumnsTest() throws UserException, IOException {
+    public void dispatchersColumnsTest() throws UserException {
         User u1 = createUserWithGroup("u1", Constants.GROUP_DISPATCHERS);
         UserExporter exporter = new UserExporter(List.of(u1));
 
@@ -481,7 +481,7 @@ public class UserExporterTest extends TestBase {
     }
 
     @Test
-    public void allMembersNameWithCommasTest() throws UserException, IOException {
+    public void allMembersNameWithCommasTest() throws UserException {
         User u1 = createUserWithName("My name has, one comma");
         User u2 = createUserWithName("My name, has, two commas");
 
@@ -493,7 +493,7 @@ public class UserExporterTest extends TestBase {
     }
 
     @Test
-    public void allMembersRawNameWithQuotesTest() throws UserException, IOException {
+    public void allMembersRawNameWithQuotesTest() throws UserException {
         User u1 = createUserWithName("my is \"Bob\"");
         User u2 = createUserWithName("my \"name\" is \"secret\"");
 
@@ -507,7 +507,7 @@ public class UserExporterTest extends TestBase {
 
     @Test
     public void allMembersRawNameWithQuotesAndCommasTest()
-            throws UserException, IOException {
+            throws UserException {
         User u1 = createUserWithName("my is \"Bob\"");
         User u2 = createUserWithName("my \"name\" is \"secret\"");
         User u3 = createUserWithName("comma, and \"quotes\" in my name");

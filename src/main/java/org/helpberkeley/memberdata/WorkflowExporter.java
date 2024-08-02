@@ -62,7 +62,7 @@ public class WorkflowExporter extends Exporter {
 
     public static int getMemberLimit() { return memberLimit; }
 
-    public String updateMemberData(Map<String, User> users, Map<String, DetailsPost> deliveryDetails) throws IOException {
+    public String updateMemberData(Map<String, User> users, Map<String, DetailsPost> deliveryDetails) {
         StringBuilder errors = new StringBuilder();
         WorkflowBean bean;
         int numMembers = 0;
@@ -175,7 +175,7 @@ public class WorkflowExporter extends Exporter {
         updatedBeans.add(bean);
     }
 
-    private String updatedWorkflowToString() throws IOException {
+    private String updatedWorkflowToString() {
         try (StringWriter writer = new StringWriter()) {
             CSVListWriter csvWriter = new CSVListWriter(writer);
             List<List<String>> updatedData = new ArrayList<>();
@@ -188,6 +188,8 @@ public class WorkflowExporter extends Exporter {
 
             csvWriter.writeAllToList(updatedData);
             return writer.toString();
+        } catch (IOException ex) {
+            throw new MemberDataException(ex);
         }
     }
 
