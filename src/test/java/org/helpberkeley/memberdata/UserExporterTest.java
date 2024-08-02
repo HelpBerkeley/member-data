@@ -21,7 +21,6 @@
 //
 package org.helpberkeley.memberdata;
 
-import com.opencsv.exceptions.CsvException;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -106,14 +105,16 @@ public class UserExporterTest extends TestBase {
     }
 
     @Test
-    public void allMembersRawColumnsTest() throws UserException, IOException, CsvException {
+    public void allMembersRawColumnsTest() throws UserException, IOException {
         User u1 = createTestUser1();
         UserExporter exporter = new UserExporter(List.of(u1));
 
         String allMemberRows = exporter.allMembersRaw();
-        CSVListReader csvReader = new CSVListReader(new StringReader(allMemberRows));
-        List<List<String>> rows = csvReader.readAllToList();
-        csvReader.close();
+        List<List<String>> rows;
+        try (StringReader reader = new StringReader(allMemberRows)) {
+            CSVListReader csvReader = new CSVListReader(reader);
+            rows = csvReader.readAllToList();
+        }
         assertThat(rows).hasSize(2);
 
         List<String> header = rows.get(0);
@@ -216,14 +217,16 @@ public class UserExporterTest extends TestBase {
     }
 
     @Test
-    public void allMembersReportColumnsTest() throws UserException, IOException, CsvException {
+    public void allMembersReportColumnsTest() throws UserException, IOException {
         User u1 = createTestUser1();
         UserExporter exporter = new UserExporter(List.of(u1));
 
         String allMemberRows = exporter.allMembersReport();
-        CSVListReader csvReader = new CSVListReader(new StringReader(allMemberRows));
-        List<List<String>> rows = csvReader.readAllToList();
-        csvReader.close();
+        List<List<String>> rows;
+        try (StringReader reader = new StringReader(allMemberRows)) {
+            CSVListReader csvReader = new CSVListReader(reader);
+            rows = csvReader.readAllToList();
+        }
         assertThat(rows).hasSize(2);
 
         List<String> header = rows.get(0);
@@ -349,14 +352,16 @@ public class UserExporterTest extends TestBase {
     }
 
     @Test
-    public void workflowColumnsTest() throws UserException, IOException, CsvException {
+    public void workflowColumnsTest() throws UserException {
         User u1 = createTestUser1();
         UserExporter exporter = new UserExporter(List.of(u1));
 
         String workflowRows = exporter.workflow("", new HashMap<>());
-        CSVListReader csvReader = new CSVListReader(new StringReader(workflowRows));
-        List<List<String>> rows = csvReader.readAllToList();
-        csvReader.close();
+        List<List<String>> rows;
+        try (StringReader reader = new StringReader(workflowRows)) {
+            CSVListReader csvReader = new CSVListReader(reader);
+            rows = csvReader.readAllToList();
+        }
         assertThat(rows).hasSize(2);
 
         List<String> header = rows.get(0);
@@ -393,14 +398,16 @@ public class UserExporterTest extends TestBase {
     }
 
     @Test
-    public void dispatchersColumnsTest() throws UserException, IOException, CsvException {
+    public void dispatchersColumnsTest() throws UserException, IOException {
         User u1 = createUserWithGroup("u1", Constants.GROUP_DISPATCHERS);
         UserExporter exporter = new UserExporter(List.of(u1));
 
         String dispatcherRows = exporter.dispatchers();
-        CSVListReader csvReader = new CSVListReader(new StringReader(dispatcherRows));
-        List<List<String>> rows = csvReader.readAllToList();
-        csvReader.close();
+        List<List<String>> rows;
+        try (StringReader reader = new StringReader(dispatcherRows)) {
+            CSVListReader csvReader = new CSVListReader(reader);
+            rows = csvReader.readAllToList();
+        }
         assertThat(rows).hasSize(2);
 
         List<String> header = rows.get(0);

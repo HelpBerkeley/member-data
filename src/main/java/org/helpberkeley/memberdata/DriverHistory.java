@@ -98,7 +98,7 @@ public class DriverHistory {
      * Generate a table of all driver history:
      *     DriverName, DeliveryDate
      */
-    public static String generateDriverHistory(ApiClient apiClient) throws IOException, CsvException {
+    public static String generateDriverHistory(ApiClient apiClient) {
         // Get the order history data posts
         OrderHistoryDataPosts orderHistoryDataPosts =
                 new OrderHistoryDataPosts(apiClient, Constants.QUERY_GET_ORDER_HISTORY_DATA_POSTS);
@@ -143,7 +143,7 @@ public class DriverHistory {
      * Generate a table of all OneKitchen driver history:
      *     DriverName, DeliveryDate
      */
-    public static String generateOneKitchenDriverHistory(ApiClient apiClient) throws IOException, CsvException {
+    public static String generateOneKitchenDriverHistory(ApiClient apiClient) {
         // Get the OneKitchen order history data posts
         OrderHistoryDataPosts orderHistoryDataPosts =
                 new OrderHistoryDataPosts(apiClient, Constants.QUERY_GET_ONE_KITCHEN_ORDER_HISTORY_DATA_POSTS);
@@ -211,7 +211,7 @@ public class DriverHistory {
     }
 
     public static Map<String, DriverHistory> getDriverHistory(
-            ApiClient apiClient) throws IOException, CsvException {
+            ApiClient apiClient) {
 
         Map<String, DriverHistory> history = new HashMap<>();
         doGetDriverHistory(apiClient, Main.DRIVER_HISTORY_POST_ID, history);
@@ -221,12 +221,16 @@ public class DriverHistory {
     }
 
     private static void doGetDriverHistory(ApiClient apiClient,
-           long postID, Map<String, DriverHistory> driverHistory) throws IOException, CsvException {
+           long postID, Map<String, DriverHistory> driverHistory) {
 
         String driverRuns = getDriverRuns(apiClient, postID);
 
-        CSVReader cvsReader = new CSVReader(new StringReader(driverRuns));
-        List<String[]> lines = cvsReader.readAll();
+        List<String[]> lines;
+        try (StringReader reader = new StringReader(driverRuns)) {
+            lines = new CSVReader(reader).readAll();
+        } catch (IOException | CsvException ex) {
+            throw new MemberDataException(ex);
+        }
         assert ! lines.isEmpty();
         String[] headers = lines.get(0);
         assert headers.length == 2 : headers.length;

@@ -70,12 +70,12 @@ public class WorkflowTest extends TestBase {
     @Test
     public void badRestaurantRowsTest() throws IOException {
         UserExporter exporter = new UserExporter(List.of());
-
-        StringWriter writer = new StringWriter();
-        CSVListWriter csvWriter = new CSVListWriter(writer);
-        csvWriter.writeNextToList(exporter.workflowHeaders());
-        csvWriter.close();
-        String restaurantTemplate = writer + "these,ducks are, not in,a, row\n";
+        String restaurantTemplate;
+        try (StringWriter writer = new StringWriter()) {
+            CSVListWriter csvWriter = new CSVListWriter(writer);
+            csvWriter.writeNextToList(exporter.workflowHeaders());
+            restaurantTemplate = writer + "these,ducks are, not in,a, row\n";
+        }
 
         Throwable thrown = catchThrowable(() -> exporter.workflow(restaurantTemplate, Map.of()));
         assertThat(thrown).isInstanceOf(Error.class);

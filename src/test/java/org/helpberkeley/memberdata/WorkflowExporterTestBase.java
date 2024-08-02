@@ -22,7 +22,6 @@
  */
 package org.helpberkeley.memberdata;
 
-import com.opencsv.exceptions.CsvException;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.Test;
@@ -53,7 +52,7 @@ public abstract class WorkflowExporterTestBase extends TestBase {
             ;
 
     @Test
-    public void workflowExporterValidateUpdatedDataTest() throws IOException, CsvException {
+    public void workflowExporterValidateUpdatedDataTest() throws IOException {
         String deliveries = getResourceFile();
         WorkflowParser parser = WorkflowParser.create(Collections.emptyMap(), deliveries);
         ApiClient apiSim = createApiSimulator();

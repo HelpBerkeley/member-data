@@ -22,8 +22,6 @@
  */
 package org.helpberkeley.memberdata;
 
-import com.opencsv.exceptions.CsvException;
-
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
@@ -64,7 +62,7 @@ public class WorkflowExporter extends Exporter {
 
     public static int getMemberLimit() { return memberLimit; }
 
-    public String updateMemberData(Map<String, User> users, Map<String, DetailsPost> deliveryDetails) throws IOException, CsvException {
+    public String updateMemberData(Map<String, User> users, Map<String, DetailsPost> deliveryDetails) throws IOException {
         StringBuilder errors = new StringBuilder();
         WorkflowBean bean;
         int numMembers = 0;
@@ -87,9 +85,11 @@ public class WorkflowExporter extends Exporter {
             }
             addBean(bean);
         }
-        CSVListReader csvReader = new CSVListReader(new StringReader(parser.normalizedCSVData));
-        List<String> incomingHeader = csvReader.readNextToList();
-        csvReader.close();
+        List<String> incomingHeader;
+        try (StringReader reader = new StringReader(parser.normalizedCSVData)) {
+            CSVListReader csvReader = new CSVListReader(reader);
+            incomingHeader = csvReader.readNextToList();
+        }
         List<String> outgoingHeader = updatedBeans.get(0).getCSVHeader();
         if (! incomingHeader.equals(outgoingHeader)) {
             errors.append(MessageFormat.format(HEADER_MISMATCH, incomingHeader, outgoingHeader));
@@ -176,19 +176,19 @@ public class WorkflowExporter extends Exporter {
     }
 
     private String updatedWorkflowToString() throws IOException {
-        StringWriter writer = new StringWriter();
-        CSVListWriter csvWriter = new CSVListWriter(writer);
-        List<List<String>> updatedData = new ArrayList<>();
+        try (StringWriter writer = new StringWriter()) {
+            CSVListWriter csvWriter = new CSVListWriter(writer);
+            List<List<String>> updatedData = new ArrayList<>();
 
-        // append header, since bean initializes to row 2
-        updatedData.add(updatedBeans.get(0).getCSVHeader());
-        for (WorkflowBean bean : updatedBeans) {
-            updatedData.add(bean.toCSVListRow());
+            // append header, since bean initializes to row 2
+            updatedData.add(updatedBeans.get(0).getCSVHeader());
+            for (WorkflowBean bean : updatedBeans) {
+                updatedData.add(bean.toCSVListRow());
+            }
+
+            csvWriter.writeAllToList(updatedData);
+            return writer.toString();
         }
-
-        csvWriter.writeAllToList(updatedData);
-        csvWriter.close();
-        return writer.toString();
     }
 
     public static void setMemberLimit(int limit) {

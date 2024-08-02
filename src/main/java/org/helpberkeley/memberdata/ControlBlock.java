@@ -22,14 +22,12 @@
  */
 package org.helpberkeley.memberdata;
 
-import com.opencsv.exceptions.CsvException;
 import org.helpberkeley.memberdata.v200.ControlBlockV200;
 import org.helpberkeley.memberdata.v200.ControlBlockV202;
 import org.helpberkeley.memberdata.v300.ControlBlockV300;
 import org.helpberkeley.memberdata.v300.ControlBlockV301;
 import org.helpberkeley.memberdata.v300.ControlBlockV302;
 
-import java.io.IOException;
 import java.io.StringReader;
 import java.text.MessageFormat;
 import java.util.*;
@@ -119,9 +117,6 @@ public abstract class ControlBlock {
 
         try (StringReader reader = new StringReader(csvData)) {
             lines = new CSVListReader(reader).readAllToList();
-        }
-        catch (IOException |CsvException ex) {
-            throw new MemberDataException(ex);
         }
 
         List<String> header = lines.get(0);

@@ -23,10 +23,8 @@
 package org.helpberkeley.memberdata.v200;
 
 import com.opencsv.bean.CsvToBeanBuilder;
-import com.opencsv.exceptions.CsvException;
 import org.helpberkeley.memberdata.*;
 
-import java.io.IOException;
 import java.io.StringReader;
 import java.text.MessageFormat;
 import java.util.*;
@@ -76,8 +74,6 @@ public class WorkflowParserV200 extends WorkflowParser {
         try (StringReader stringReader = new StringReader(csvData)) {
             CSVListReader csvReader = new CSVListReader(stringReader);
             headerColumns = csvReader.readNextToList();
-        } catch (IOException | CsvException ex) {
-            throw new MemberDataException(ex);
         }
 
         Set<String> set = new HashSet<>(headerColumns);

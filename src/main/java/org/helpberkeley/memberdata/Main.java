@@ -21,7 +21,6 @@
 //
 package org.helpberkeley.memberdata;
 
-import com.opencsv.exceptions.CsvException;
 import org.helpberkeley.memberdata.v200.DriverPostFormatV200;
 import org.helpberkeley.memberdata.v300.DriverPostFormatV300;
 import org.slf4j.Logger;
@@ -101,7 +100,7 @@ public class Main {
     static final String UPDATE_USERS_NO_UPDATES = "The uploaded spreadsheet {0} is already up-to-date. " +
             "There are no changes/updates for these members.";
 
-    public static void main(String[] args) throws IOException, CsvException {
+    public static void main(String[] args) throws IOException {
 
         Options options = new Options(args);
         try {
@@ -226,7 +225,7 @@ public class Main {
         return properties;
     }
 
-    private static void fetch(ApiClient apiClient) throws IOException, CsvException {
+    private static void fetch(ApiClient apiClient) throws IOException {
         // Create a User loader
         Loader loader = new Loader(apiClient);
 
@@ -705,7 +704,7 @@ public class Main {
     }
 
     private static void doUpdateMemberData(
-            ApiClient apiClient, WorkRequestHandler.WorkRequest request, Map<String, User> users) throws IOException, CsvException {
+            ApiClient apiClient, WorkRequestHandler.WorkRequest request, Map<String, User> users) throws IOException {
 
         String json = apiClient.runQuery(Constants.QUERY_GET_DELIVERY_DETAILS);
         ApiQueryResult apiQueryResult = HBParser.parseQueryResult(json);
@@ -1188,7 +1187,7 @@ public class Main {
     }
 
     private static void orderHistory(ApiClient apiClient, String usersFile)
-            throws IOException, CsvException {
+            throws IOException {
 
         // Load users
         String csvData = Files.readString(Paths.get(usersFile));
@@ -1219,7 +1218,7 @@ public class Main {
         orderHistoryDataPosts.updateLastProcessedPost();
     }
 
-    private static void drivers(ApiClient apiClient, String usersFile) throws IOException, CsvException {
+    private static void drivers(ApiClient apiClient, String usersFile) throws IOException {
         // Load users
         String csvData = Files.readString(Paths.get(usersFile));
         List<User> users = HBParser.users(csvData);
@@ -1294,7 +1293,7 @@ public class Main {
         }
     }
 
-    private static void driverHistory(ApiClient apiClient) throws IOException, CsvException {
+    private static void driverHistory(ApiClient apiClient) {
         // Generate the driver history table
         String driverHistoryTable = DriverHistory.generateDriverHistory(apiClient);
 
@@ -1309,7 +1308,7 @@ public class Main {
                 DRIVER_HISTORY_TITLE, DRIVER_HISTORY_POST_ID);
     }
 
-    private static void oneKitchenDriverHistory(ApiClient apiClient) throws IOException, CsvException {
+    private static void oneKitchenDriverHistory(ApiClient apiClient) {
 
         // Generate the OneKitchen driver history table
         String driverHistoryTable = DriverHistory.generateOneKitchenDriverHistory(apiClient);
@@ -1555,7 +1554,7 @@ public class Main {
         assert response.statusCode() == HTTP_OK : "failed " + response.statusCode() + ": " + response.body();
     }
 
-    private static void workRequests(ApiClient apiClient, String usersFile) throws IOException, CsvException {
+    private static void workRequests(ApiClient apiClient, String usersFile) throws IOException {
         String json = apiClient.runQuery(Constants.QUERY_GET_REQUESTS_LAST_REPLIES);
         ApiQueryResult apiQueryResult = HBParser.parseQueryResult(json);
 

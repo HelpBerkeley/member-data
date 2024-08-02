@@ -36,8 +36,13 @@ public class CSVListReader extends CSVReader {
         super(reader);
     }
 
-    public List<List<String>> readAllToList() throws IOException, CsvException {
-        List<String[]> rows = readAll();
+    public List<List<String>> readAllToList() {
+        List<String[]> rows;
+        try {
+            rows = readAll();
+        } catch (IOException | CsvException ex) {
+            throw new MemberDataException(ex);
+        }
         List<List<String>> listOfLists = new ArrayList<>();
 
         for (String[] array : rows) {
@@ -50,8 +55,13 @@ public class CSVListReader extends CSVReader {
         return listOfLists;
     }
 
-    public List<String> readNextToList() throws IOException, CsvException {
-        String[] row = readNext();
+    public List<String> readNextToList() {
+        String[] row;
+        try {
+            row = readNext();
+        } catch (IOException | CsvException ex) {
+            throw new MemberDataException(ex);
+        }
         List<String> rowList = new ArrayList<>();
         for (String s: row) {
             rowList.add(s.trim());

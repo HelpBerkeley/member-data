@@ -22,10 +22,8 @@
  */
 package org.helpberkeley.memberdata;
 
-import com.opencsv.exceptions.CsvException;
 import org.junit.Test;
 
-import java.io.IOException;
 import java.io.StringReader;
 import java.text.MessageFormat;
 import java.util.Collections;
@@ -49,13 +47,15 @@ public abstract class WorkflowHBParserBaseTest extends TestBase {
     public abstract String getHeader();
 
     @Test
-    public void missingHeaderRowTest() throws IOException, CsvException {
+    public void missingHeaderRowTest() {
         String controlBlock = getMinimumControlBlock();
         // Remove header line
         String headerless = controlBlock.substring(controlBlock.indexOf('\n') + 1 );
-        CSVListReader csvReader = new CSVListReader(new StringReader(headerless));
-        List<String> badHeader = csvReader.readNextToList();
-        csvReader.close();
+        List<String> badHeader;
+        try (StringReader reader = new StringReader(headerless)) {
+            CSVListReader csvReader = new CSVListReader(reader);
+            badHeader = csvReader.readNextToList();
+        }
         Throwable thrown = catchThrowable(() -> DriverPostFormat.create(createApiSimulator(), users, headerless));
         assertThat(thrown).isInstanceOf(MemberDataException.class);
         assertThat(thrown).hasMessage(MessageFormat.format(

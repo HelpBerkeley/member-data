@@ -55,51 +55,51 @@ public class DriverExporter extends Exporter {
     }
 
     String drivers() throws IOException {
-        StringWriter writer = new StringWriter();
-        CSVListWriter csvWriter = new CSVListWriter(writer);
-        List<List<String>> dataToEncode = new ArrayList<>();
-        dataToEncode.add(driverHeaders());
+        try (StringWriter writer = new StringWriter()) {
+            CSVListWriter csvWriter = new CSVListWriter(writer);
+            List<List<String>> dataToEncode = new ArrayList<>();
+            dataToEncode.add(driverHeaders());
 
-        for (User user : tables.drivers()) {
+            for (User user : tables.drivers()) {
 
-            DetailsPost detailsPost = driverDetails.get(user.getUserName());
-            String details = (detailsPost == null) ? "" : detailsPost.getDetails();
-            DriverHistory history = driverHistory.get(user.getUserName().toLowerCase());
-            List<Integer> weeklyHistory =
-                    (history != null) ? history.getWeeklyRunTotals() : List.of(0, 0, 0, 0, 0, 0, 0);
+                DetailsPost detailsPost = driverDetails.get(user.getUserName());
+                String details = (detailsPost == null) ? "" : detailsPost.getDetails();
+                DriverHistory history = driverHistory.get(user.getUserName().toLowerCase());
+                List<Integer> weeklyHistory =
+                        (history != null) ? history.getWeeklyRunTotals() : List.of(0, 0, 0, 0, 0, 0, 0);
 
-            List<String> row = new ArrayList<>(List.of(user.getCreateDate(),
-                    user.getName(),
-                    user.getUserName(),
-                    shortBoolean(user.isAvailableDriver()),
-                    shortBoolean(user.isTrainedDriver()),
-                    shortBoolean(user.isBiker()),
-                    shortBoolean(user.isLimitedRuns()),
-                    history != null ? String.valueOf(history.totalRuns()) : "0",
-                    weeklyHistory.get(6) != 0 ? "🟢" : "",
-                    weeklyHistory.get(5) != 0 ? "🟢" : "",
-                    weeklyHistory.get(4) != 0 ? "🟢" : "",
-                    weeklyHistory.get(3) != 0 ? "🟢" : "",
-                    weeklyHistory.get(2) != 0 ? "🟢" : "",
-                    weeklyHistory.get(1) != 0 ? "🟢" : "",
-                    weeklyHistory.get(0) != 0 ? "🟢" : "",
-                    user.getPhoneNumber(),
-                    user.getAltPhoneNumber(),
-                    user.getCity(),
-                    user.getAddress(),
-                    shortBoolean(user.isAtRisk()),
-                    shortBoolean(user.isGone()),
-                    shortBoolean(user.isOut()),
-                    shortBoolean(user.isOtherDrivers()),
-                    shortBoolean(user.isEventDriver()),
-                    shortBoolean(user.isTrainedEventDriver()),
-                    details));
-            dataToEncode.add(row);
+                List<String> row = new ArrayList<>(List.of(user.getCreateDate(),
+                        user.getName(),
+                        user.getUserName(),
+                        shortBoolean(user.isAvailableDriver()),
+                        shortBoolean(user.isTrainedDriver()),
+                        shortBoolean(user.isBiker()),
+                        shortBoolean(user.isLimitedRuns()),
+                        history != null ? String.valueOf(history.totalRuns()) : "0",
+                        weeklyHistory.get(6) != 0 ? "🟢" : "",
+                        weeklyHistory.get(5) != 0 ? "🟢" : "",
+                        weeklyHistory.get(4) != 0 ? "🟢" : "",
+                        weeklyHistory.get(3) != 0 ? "🟢" : "",
+                        weeklyHistory.get(2) != 0 ? "🟢" : "",
+                        weeklyHistory.get(1) != 0 ? "🟢" : "",
+                        weeklyHistory.get(0) != 0 ? "🟢" : "",
+                        user.getPhoneNumber(),
+                        user.getAltPhoneNumber(),
+                        user.getCity(),
+                        user.getAddress(),
+                        shortBoolean(user.isAtRisk()),
+                        shortBoolean(user.isGone()),
+                        shortBoolean(user.isOut()),
+                        shortBoolean(user.isOtherDrivers()),
+                        shortBoolean(user.isEventDriver()),
+                        shortBoolean(user.isTrainedEventDriver()),
+                        details));
+                dataToEncode.add(row);
+            }
+
+            csvWriter.writeAllToList(dataToEncode);
+            return writer.toString();
         }
-
-        csvWriter.writeAllToList(dataToEncode);
-        csvWriter.close();
-        return writer.toString();
     }
 
 

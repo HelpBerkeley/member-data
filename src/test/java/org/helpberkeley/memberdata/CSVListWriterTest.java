@@ -38,7 +38,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class CSVListWriterTest {
 
     @Test
-    public void csvListWriterReaderTest() throws IOException, CsvException {
+    public void csvListWriterReaderTest() throws IOException {
         StringWriter writer1 = new StringWriter();
         StringWriter writer2 = new StringWriter();
 
@@ -84,8 +84,6 @@ public class CSVListWriterTest {
 
     @Test
     public void csvWriterTest() throws IOException, CsvException {
-        StringWriter writer = new StringWriter();
-        CSVWriter csvWriter = new CSVWriter(writer);
         List<String[]> dataToEncode = new ArrayList<>();
 
         String col0 = "";
@@ -102,14 +100,19 @@ public class CSVListWriterTest {
 
         String[] row = {col0, col1, col2, col3, col4, col5, col6, col7, col8, col9, col10};
         dataToEncode.add(row);
+        String encodedCSV;
+        try (StringWriter writer = new StringWriter()) {
+            CSVWriter csvWriter = new CSVWriter(writer);
+            csvWriter.writeAll(dataToEncode);
+            encodedCSV = writer.toString();
+        }
 
-        csvWriter.writeAll(dataToEncode);
-        csvWriter.close();
-
-        String encodedCSV = writer.toString();
-
-        CSVReader csvReader = new CSVReader(new StringReader(encodedCSV));
-        List<String[]> csvParsed = csvReader.readAll();
+        CSVReader csvReader;
+        List<String[]> csvParsed;
+        try (StringReader reader = new StringReader(encodedCSV)) {
+            csvReader = new CSVReader(reader);
+            csvParsed = csvReader.readAll();
+        }
         String[] parsedRow = csvParsed.get(0);
 
         // Validate roundtrip

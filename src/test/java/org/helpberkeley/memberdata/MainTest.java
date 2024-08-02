@@ -22,7 +22,6 @@
  */
 package org.helpberkeley.memberdata;
 
-import com.opencsv.exceptions.CsvException;
 import org.junit.*;
 
 import java.io.File;
@@ -44,7 +43,7 @@ import static org.assertj.core.api.Assertions.catchThrowable;
 public class MainTest extends TestBase {
 
     @Before
-    public void initialize() throws IOException, CsvException {
+    public void initialize() throws IOException {
         cleanupGeneratedFiles();
 
         // Fetches files that will be used by the tests.
@@ -61,13 +60,13 @@ public class MainTest extends TestBase {
     }
 
     @Test
-    public void postUserErrorsTest() throws IOException, CsvException {
+    public void postUserErrorsTest() throws IOException {
         String[] args = { Options.COMMAND_POST_ERRORS, TEST_FILE_NAME };
         Main.main(args);
     }
 
     @Test
-    public void postMemberDataTest() throws IOException, CsvException {
+    public void postMemberDataTest() throws IOException {
         String memberDataFile = findFile(Main.MEMBERDATA_REPORT_FILE, "csv");
         assertThat(memberDataFile).isNotNull();
 
@@ -76,7 +75,7 @@ public class MainTest extends TestBase {
     }
 
     @Test
-    public void postDriversTest() throws IOException, CsvException {
+    public void postDriversTest() throws IOException {
         String file = findFile(Constants.DRIVERS_FILE, "csv");
         assertThat(file).isNotNull();
 
@@ -85,49 +84,49 @@ public class MainTest extends TestBase {
     }
 
     @Test
-    public void postConsumerRequestsTest() throws IOException, CsvException {
+    public void postConsumerRequestsTest() throws IOException {
         String consumerRequestsFile = findFile(Constants.CONSUMER_REQUESTS_FILE, "csv");
         String[] args = { Options.COMMAND_POST_CONSUMER_REQUESTS, consumerRequestsFile };
         Main.main(args);
     }
 
     @Test
-    public void postVolunteerRequestsTest() throws IOException, CsvException {
+    public void postVolunteerRequestsTest() throws IOException {
         String consumerRequestsFile = findFile(Constants.VOLUNTEER_REQUESTS_FILE, "csv");
         String[] args = { Options.COMMAND_POST_VOLUNTEER_REQUESTS, consumerRequestsFile };
         Main.main(args);
     }
 
     @Test
-    public void postDispatchersTest() throws IOException, CsvException {
+    public void postDispatchersTest() throws IOException {
         String file = findFile(Constants.DISPATCHERS_FILE, "csv");
         String[] args = { Options.COMMAND_POST_DISPATCHERS, file, TEST_SHORT_URL };
         Main.main(args);
     }
 
     @Test
-    public void updateDispatchersTest() throws IOException, CsvException {
+    public void updateDispatchersTest() throws IOException {
         String dispatchersFile = findFile(Constants.DISPATCHERS_FILE, "csv");
         String[] args = { Options.COMMAND_UPDATE_DISPATCHERS, dispatchersFile };
         Main.main(args);
     }
 
     @Test
-    public void updateUserErrorsTest() throws IOException, CsvException {
+    public void updateUserErrorsTest() throws IOException {
         String errorsFile = findFile(Main.MEMBERDATA_ERRORS_FILE, "txt");
         String[] args = { Options.COMMAND_UPDATE_ERRORS, errorsFile };
         Main.main(args);
     }
 
     @Test
-    public void emailTest() throws IOException, CsvException {
+    public void emailTest() throws IOException {
         String file = findFile(Constants.MEMBERDATA_RAW_FILE, "csv");
         String[] args = { Options.COMMAND_EMAIL, file };
         Main.main(args);
     }
 
     @Test
-    public void inreachTest() throws IOException, CsvException {
+    public void inreachTest() throws IOException {
 
         String usersFile = findFile(Constants.MEMBERDATA_RAW_FILE, "csv");
 
@@ -139,21 +138,21 @@ public class MainTest extends TestBase {
     }
 
     @Test
-    public void workflowTest() throws IOException, CsvException {
+    public void workflowTest() throws IOException {
         String usersFile = findFile(Constants.MEMBERDATA_RAW_FILE, "csv");
         String[] args = { Options.COMMAND_WORKFLOW, usersFile };
         Main.main(args);
     }
 
     @Test
-    public void oneKitchenWorkflowTest() throws IOException, CsvException {
+    public void oneKitchenWorkflowTest() throws IOException {
         String usersFile = findFile(Constants.MEMBERDATA_RAW_FILE, "csv");
         String[] args = { Options.COMMAND_ONE_KITCHEN_WORKFLOW, usersFile };
         Main.main(args);
     }
 
     @Test
-    public void driverMessagesTest() throws IOException, CsvException {
+    public void driverMessagesTest() throws IOException {
         String usersFile = findFile(Constants.MEMBERDATA_RAW_FILE, "csv");
         String[] args = { Options.COMMAND_DRIVER_MESSAGES, usersFile };
         Main.main(args);
@@ -165,7 +164,7 @@ public class MainTest extends TestBase {
                 String.valueOf(Constants.TOPIC_DRIVERS_POST_STAGING.getId())));
     }
     @Test
-    public void driverMessagesTestTopicTest() throws IOException, CsvException {
+    public void driverMessagesTestTopicTest() throws IOException {
         String request = readResourceFile(REQUEST_TEMPLATE_EXTRA)
                 .replace("REPLACE_DATE", yesterday())
                 .replace("REPLACE_EXTRA", "Test topic")
@@ -185,21 +184,21 @@ public class MainTest extends TestBase {
     }
 
     @Test
-    public void driverMessagesSheetTestV300() throws IOException, CsvException {
+    public void driverMessagesSheetTestV300() throws IOException {
         driverMessagesSheetTest("routed-deliveries-v300.csv", "3-0-0");
     }
 
     @Test
-    public void driverMessagesSheetTestV301() throws IOException, CsvException {
+    public void driverMessagesSheetTestV301() throws IOException {
         driverMessagesSheetTest("routed-deliveries-v301.csv", "3-0-1");
     }
 
     @Test
-    public void driverMessagesSheetTestV302() throws IOException, CsvException {
+    public void driverMessagesSheetTestV302() throws IOException {
         driverMessagesSheetTest("routed-deliveries-v302.csv", "3-0-2");
     }
 
-    private void driverMessagesSheetTest(String filepath, String version) throws IOException, CsvException {
+    private void driverMessagesSheetTest(String filepath, String version) throws IOException {
         String request = readResourceFile(REQUEST_TEMPLATE)
                 .replace("REPLACE_DATE", yesterday())
                 .replaceAll("REPLACE_FILENAME", filepath);
@@ -218,7 +217,7 @@ public class MainTest extends TestBase {
     }
 
     @Test
-    public void driverMessagesUnsupportedVersionTest() throws IOException, CsvException {
+    public void driverMessagesUnsupportedVersionTest() throws IOException {
         String request = readResourceFile(REQUEST_TEMPLATE)
                 .replace("REPLACE_DATE", yesterday())
                 .replaceAll("REPLACE_FILENAME", "routed-deliveries-v1.csv");
@@ -238,7 +237,7 @@ public class MainTest extends TestBase {
     }
 
     @Test
-    public void oneKitchenDriverMessagesTest() throws IOException, CsvException {
+    public void oneKitchenDriverMessagesTest() throws IOException {
         String usersFile = findFile(Constants.MEMBERDATA_RAW_FILE, "csv");
         String[] args = { Options.COMMAND_ONE_KITCHEN_DRIVER_MESSAGES, usersFile };
         Main.main(args);
@@ -251,7 +250,7 @@ public class MainTest extends TestBase {
     }
 
     @Test
-    public void oneKitchenDriverMessagesTestTopicTest() throws IOException, CsvException {
+    public void oneKitchenDriverMessagesTestTopicTest() throws IOException {
         String request = readResourceFile(REQUEST_TEMPLATE_EXTRA)
                 .replace("REPLACE_DATE", yesterday())
                 .replace("REPLACE_EXTRA", "Test topic")
@@ -271,7 +270,7 @@ public class MainTest extends TestBase {
     }
 
     @Test
-    public void oneKitchenDriverMessagesMissingFormulaTest() throws IOException, CsvException {
+    public void oneKitchenDriverMessagesMissingFormulaTest() throws IOException {
         // FIX THIS, DS: update this test to send errors in the user request upload file
         //               see issue: Invalid formula not being detected #14
         String request = readResourceFile(REQUEST_TEMPLATE)
@@ -289,7 +288,7 @@ public class MainTest extends TestBase {
     }
 
     @Test
-    public void oneKitchenDriverMessagesMissingFormulaDirectiveTest() throws IOException, CsvException {
+    public void oneKitchenDriverMessagesMissingFormulaDirectiveTest() throws IOException {
         // FIX THIS, DS: update this test to send errors in the user request upload file
         //               see issue: Invalid formula not being detected #14
         String request = readResourceFile(REQUEST_TEMPLATE)
@@ -307,16 +306,16 @@ public class MainTest extends TestBase {
     }
 
     @Test
-    public void oneKitchenDriverMessagesV200SheetTest() throws IOException, CsvException {
+    public void oneKitchenDriverMessagesV200SheetTest() throws IOException {
         oneKitchenDriverMessagesWrongSheetTest("routed-deliveries-v200.csv", "2-0-0");
     }
 
     @Test
-    public void oneKitchenDriverMessagesV300SheetTest() throws IOException, CsvException {
+    public void oneKitchenDriverMessagesV300SheetTest() throws IOException {
         oneKitchenDriverMessagesRightSheetTest("routed-deliveries-v300.csv");
     }
 
-    private void oneKitchenDriverMessagesRightSheetTest(String filename) throws IOException, CsvException {
+    private void oneKitchenDriverMessagesRightSheetTest(String filename) throws IOException {
         String request = readResourceFile(REQUEST_TEMPLATE)
                 .replace("REPLACE_DATE", yesterday())
                 .replaceAll("REPLACE_FILENAME", filename);
@@ -335,7 +334,7 @@ public class MainTest extends TestBase {
         assertThat(statusPost.topic_id).isEqualTo(Constants.TOPIC_REQUEST_ONE_KITCHEN_DRIVER_MESSAGES.getId());
     }
 
-    private void oneKitchenDriverMessagesWrongSheetTest(String filename, String version) throws IOException, CsvException {
+    private void oneKitchenDriverMessagesWrongSheetTest(String filename, String version) throws IOException {
         String request = readResourceFile(REQUEST_TEMPLATE)
                 .replace("REPLACE_DATE", yesterday())
                 .replaceAll("REPLACE_FILENAME", filename);
@@ -355,7 +354,7 @@ public class MainTest extends TestBase {
     }
 
     @Test
-    public void oneKitchenDriverMessagesUnsupportedVersionTest() throws IOException, CsvException {
+    public void oneKitchenDriverMessagesUnsupportedVersionTest() throws IOException {
         String request = readResourceFile(REQUEST_TEMPLATE)
                 .replace("REPLACE_DATE", yesterday())
                 .replaceAll("REPLACE_FILENAME", "routed-deliveries-v1.csv");
@@ -375,7 +374,7 @@ public class MainTest extends TestBase {
     }
 
     @Test
-    public void getRoutedWorkflowStatusTest() throws IOException, CsvException {
+    public void getRoutedWorkflowStatusTest() throws IOException {
         String usersFile = findFile(Constants.MEMBERDATA_RAW_FILE, "csv");
         HttpClientSimulator.setQueryResponseFile(
                 Constants.QUERY_GET_LAST_REQUEST_DRIVER_MESSAGES_REPLY, "last-routed-workflow-status.json");
@@ -387,7 +386,7 @@ public class MainTest extends TestBase {
     }
 
     @Test
-    public void getRoutedWorkflowBadRequestTest() throws IOException, CsvException {
+    public void getRoutedWorkflowBadRequestTest() throws IOException {
         String usersFile = findFile(Constants.MEMBERDATA_RAW_FILE, "csv");
         HttpClientSimulator.setQueryResponseFile(
                 Constants.QUERY_GET_LAST_REQUEST_DRIVER_MESSAGES_REPLY, "last-routed-workflow-bad-request.json");
@@ -398,7 +397,7 @@ public class MainTest extends TestBase {
     }
 
     @Test
-    public void completedOrdersTest() throws IOException, CsvException {
+    public void completedOrdersTest() throws IOException {
         LocalDate yesterday = LocalDate.now(Constants.TIMEZONE).minusDays(1);
         DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy/MM/dd");
         String yesterdayStr = yesterday.format(format);
@@ -424,7 +423,7 @@ public class MainTest extends TestBase {
     }
 
     @Test
-    public void completedOrdersInvalidDateTest() throws IOException, CsvException {
+    public void completedOrdersInvalidDateTest() throws IOException {
         HttpClientSimulator.setQueryResponseFile(
                 Constants.QUERY_GET_LAST_COMPLETED_DAILY_ORDERS_REPLY, "workrequest-no-date.json");
         String usersFile = findFile(Constants.MEMBERDATA_RAW_FILE, "csv");
@@ -440,7 +439,7 @@ public class MainTest extends TestBase {
     }
 
     @Test
-    public void completedOrdersFutureDateTest() throws IOException, CsvException {
+    public void completedOrdersFutureDateTest() throws IOException {
         LocalDate nextWeek = LocalDate.now(Constants.TIMEZONE).plusWeeks(1);
         DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy/MM/dd");
         String nextWeekStr = nextWeek.format(format);
@@ -468,7 +467,7 @@ public class MainTest extends TestBase {
     }
 
     @Test
-    public void completedOrdersDateTooOldTest() throws IOException, CsvException {
+    public void completedOrdersDateTooOldTest() throws IOException {
         LocalDate lastYear = LocalDate.now(Constants.TIMEZONE).minusYears(1);
         DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy/MM/dd");
         String lastYearStr = lastYear.format(format);
@@ -496,16 +495,16 @@ public class MainTest extends TestBase {
     }
 
     @Test
-    public void completedOrdersDisableDateAuditV200Test() throws IOException, CsvException {
+    public void completedOrdersDisableDateAuditV200Test() throws IOException {
         completedOrdersDisableDateAudit("routed-deliveries-v200.csv");
     }
 
     @Test
-    public void completedOrdersDisableDateAuditV202Test() throws IOException, CsvException {
+    public void completedOrdersDisableDateAuditV202Test() throws IOException {
         completedOrdersDisableDateAudit("routed-deliveries-v202.csv");
     }
 
-    private void completedOrdersDisableDateAudit(String filepath) throws IOException, CsvException {
+    private void completedOrdersDisableDateAudit(String filepath) throws IOException {
         LocalDate lastYear = LocalDate.now(Constants.TIMEZONE).minusYears(1);
         DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy/MM/dd");
         String lastYearStr = lastYear.format(format);
@@ -533,21 +532,21 @@ public class MainTest extends TestBase {
     }
 
     @Test
-    public void completedOneKitchenOrdersV300Test() throws IOException, CsvException {
+    public void completedOneKitchenOrdersV300Test() throws IOException {
         completedOneKitchenOrders("routed-deliveries-v300.csv");
     }
 
     @Test
-    public void completedOneKitchenOrdersV301Test() throws IOException, CsvException {
+    public void completedOneKitchenOrdersV301Test() throws IOException {
         completedOneKitchenOrders("routed-deliveries-v301.csv");
     }
 
     @Test
-    public void completedOneKitchenOrdersV302Test() throws IOException, CsvException {
+    public void completedOneKitchenOrdersV302Test() throws IOException {
         completedOneKitchenOrders("routed-deliveries-v302.csv");
     }
 
-    private void completedOneKitchenOrders(String filepath) throws IOException, CsvException {
+    private void completedOneKitchenOrders(String filepath) throws IOException {
         LocalDate yesterday = LocalDate.now(Constants.TIMEZONE).minusDays(1);
         DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy/MM/dd");
         String yesterdayStr = yesterday.format(format);
@@ -572,21 +571,21 @@ public class MainTest extends TestBase {
     }
 
     @Test
-    public void completedOneKitchenOrdersInTheFutureNegativeV300Test() throws IOException, CsvException {
+    public void completedOneKitchenOrdersInTheFutureNegativeV300Test() throws IOException {
         completedOneKitchenOrdersInTheFutureNegative("routed-deliveries-v300.csv");
     }
 
     @Test
-    public void completedOneKitchenOrdersInTheFutureNegativeV301Test() throws IOException, CsvException {
+    public void completedOneKitchenOrdersInTheFutureNegativeV301Test() throws IOException {
         completedOneKitchenOrdersInTheFutureNegative("routed-deliveries-v301.csv");
     }
 
     @Test
-    public void completedOneKitchenOrdersInTheFutureNegativeV302Test() throws IOException, CsvException {
+    public void completedOneKitchenOrdersInTheFutureNegativeV302Test() throws IOException {
         completedOneKitchenOrdersInTheFutureNegative("routed-deliveries-v302.csv");
     }
 
-    private void completedOneKitchenOrdersInTheFutureNegative(String filepath) throws IOException, CsvException {
+    private void completedOneKitchenOrdersInTheFutureNegative(String filepath) throws IOException {
         LocalDate tomorrow = LocalDate.now(Constants.TIMEZONE).plusDays(1);
         DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy/MM/dd");
         String tomorrowStr = tomorrow.format(format);
@@ -612,21 +611,21 @@ public class MainTest extends TestBase {
     }
 
     @Test
-    public void completedOneKitchenOrdersInTheFutureDisableDateAuditV300Test() throws IOException, CsvException {
+    public void completedOneKitchenOrdersInTheFutureDisableDateAuditV300Test() throws IOException {
         completedOneKitchenOrdersInTheFutureDisableDateAudit("routed-deliveries-v300.csv");
     }
 
     @Test
-    public void completedOneKitchenOrdersInTheFutureDisableDateAuditV301Test() throws IOException, CsvException {
+    public void completedOneKitchenOrdersInTheFutureDisableDateAuditV301Test() throws IOException {
         completedOneKitchenOrdersInTheFutureDisableDateAudit("routed-deliveries-v301.csv");
     }
 
     @Test
-    public void completedOneKitchenOrdersInTheFutureDisableDateAuditV302Test() throws IOException, CsvException {
+    public void completedOneKitchenOrdersInTheFutureDisableDateAuditV302Test() throws IOException {
         completedOneKitchenOrdersInTheFutureDisableDateAudit("routed-deliveries-v302.csv");
     }
 
-    private void completedOneKitchenOrdersInTheFutureDisableDateAudit(String filepath) throws IOException, CsvException {
+    private void completedOneKitchenOrdersInTheFutureDisableDateAudit(String filepath) throws IOException {
         LocalDate tomorrow = LocalDate.now(Constants.TIMEZONE).plusDays(1);
         DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy/MM/dd");
         String tomorrowStr = tomorrow.format(format);
@@ -653,14 +652,14 @@ public class MainTest extends TestBase {
     }
 
     @Test
-    public void orderHistoryTest() throws IOException, CsvException {
+    public void orderHistoryTest() throws IOException {
         String usersFile = findFile(Constants.MEMBERDATA_RAW_FILE, "csv");
         String[] args = { Options.COMMAND_ORDER_HISTORY, usersFile };
         Main.main(args);
     }
     
     @Test
-    public void driversTest() throws IOException, CsvException {
+    public void driversTest() throws IOException {
         String usersFile = findFile(Constants.MEMBERDATA_RAW_FILE, "csv");
         String[] args = { Options.COMMAND_DRIVERS, usersFile };
         Main.main(args);
@@ -672,40 +671,40 @@ public class MainTest extends TestBase {
     }
 
     @Test
-    public void driverHistoryTest() throws IOException, CsvException {
+    public void driverHistoryTest() throws IOException {
         String[] args = { Options.COMMAND_DRIVER_HISTORY };
         Main.main(args);
     }
 
     @Test
-    public void oneKitchenDriverHistoryTest() throws IOException, CsvException {
+    public void oneKitchenDriverHistoryTest() throws IOException {
         String[] args = { Options.COMMAND_ONEKITCHEN_DRIVER_HISTORY };
         Main.main(args);
     }
 
     @Test
-    public void customerCareMemberPostTest() throws IOException, CsvException {
+    public void customerCareMemberPostTest() throws IOException {
         String usersFile = findFile(Constants.MEMBERDATA_RAW_FILE, "csv");
         String[] args = { Options.COMMAND_CUSTOMER_CARE_POST, usersFile };
         Main.main(args);
     }
 
     @Test
-    public void frregPostTest() throws IOException, CsvException {
+    public void frregPostTest() throws IOException {
         String usersFile = findFile(Constants.MEMBERDATA_RAW_FILE, "csv");
         String[] args = { Options.COMMAND_FRREG, usersFile };
         Main.main(args);
     }
 
     @Test
-    public void workRequestsNoRequestsTest() throws IOException, CsvException {
+    public void workRequestsNoRequestsTest() throws IOException {
         String usersFile = findFile(Constants.MEMBERDATA_RAW_FILE, "csv");
         String[] args = { Options.COMMAND_WORK_REQUESTS, usersFile };
         Main.main(args);
     }
 
     @Test
-    public void workRequestsAllRequestsTest() throws IOException, CsvException {
+    public void workRequestsAllRequestsTest() throws IOException {
         HttpClientSimulator.setQueryResponseFile(
                 Constants.QUERY_GET_REQUESTS_LAST_REPLIES, "last-replies-all-requests.json");
         String usersFile = findFile(Constants.MEMBERDATA_RAW_FILE, "csv");
@@ -715,7 +714,7 @@ public class MainTest extends TestBase {
     }
 
     @Test
-    public void workRequestsDailyWorkflowTest() throws IOException, CsvException {
+    public void workRequestsDailyWorkflowTest() throws IOException {
         HttpClientSimulator.setQueryResponseFile(
                 Constants.QUERY_GET_REQUESTS_LAST_REPLIES, "last-replies-daily-workflow-request.json");
         String usersFile = findFile(Constants.MEMBERDATA_RAW_FILE, "csv");
@@ -725,7 +724,7 @@ public class MainTest extends TestBase {
     }
 
     @Test
-    public void workRequestsBadPreviousRequestTest() throws IOException, CsvException {
+    public void workRequestsBadPreviousRequestTest() throws IOException {
         HttpClientSimulator.setQueryResponseFile(
                 Constants.QUERY_GET_REQUESTS_LAST_REPLIES, "last-replies-bad-request.json");
         String usersFile = findFile(Constants.MEMBERDATA_RAW_FILE, "csv");
@@ -737,7 +736,7 @@ public class MainTest extends TestBase {
     }
 
     @Test
-    public void workflowParserUpdateMemberDataTest() throws IOException, CsvException {
+    public void workflowParserUpdateMemberDataTest() throws IOException {
         String deliveries = readResourceFile("update-member-data-multiple-updates.csv");
         WorkflowParser parser = WorkflowParser.create(Collections.emptyMap(), deliveries);
         ApiClient apiSim = createApiSimulator();
@@ -766,7 +765,7 @@ public class MainTest extends TestBase {
     }
 
     @Test
-    public void updateMemberDataRequestMultipleUpdatesTest() throws IOException, CsvException {
+    public void updateMemberDataRequestMultipleUpdatesTest() throws IOException {
         String request = readResourceFile(DATA_REQUEST_TEMPLATE)
                 .replace("REPLACE_DATE", yesterday())
                 .replaceAll("REPLACE_FILENAME", "update-member-data-multiple-updates.csv");
@@ -789,7 +788,7 @@ public class MainTest extends TestBase {
     }
 
     @Test
-    public void updateMemberDataRequestMissingUsersTest() throws IOException, CsvException {
+    public void updateMemberDataRequestMissingUsersTest() throws IOException {
         String request = readResourceFile(DATA_REQUEST_TEMPLATE)
                 .replace("REPLACE_DATE", yesterday())
                 .replaceAll("REPLACE_FILENAME", "update-member-data-no-matching-users.csv");
@@ -817,7 +816,7 @@ public class MainTest extends TestBase {
     }
 
     @Test
-    public void updateMemberDataDriverIsConsumer() throws IOException, CsvException {
+    public void updateMemberDataDriverIsConsumer() throws IOException {
         String request = readResourceFile(DATA_REQUEST_TEMPLATE)
                 .replace("REPLACE_DATE", yesterday())
                 .replaceAll("REPLACE_FILENAME", "update-member-data-driver-is-consumer.csv");
@@ -854,7 +853,7 @@ public class MainTest extends TestBase {
     }
 
     @Test
-    public void updateMemberDataNoUpdatesTest() throws IOException, CsvException {
+    public void updateMemberDataNoUpdatesTest() throws IOException {
         String request = readResourceFile(DATA_REQUEST_TEMPLATE)
                 .replace("REPLACE_DATE", yesterday())
                 .replaceAll("REPLACE_FILENAME", "update-member-data-no-updates.csv");
@@ -869,7 +868,7 @@ public class MainTest extends TestBase {
     }
 
     @Test
-    public void updateMemberDataOverrideMemberLimitSucceed() throws IOException, CsvException {
+    public void updateMemberDataOverrideMemberLimitSucceed() throws IOException {
         String request = readResourceFile("last-replies-data-request-template-extra.json")
                 .replace("REPLACE_DATE", yesterday())
                 .replace("REPLACE_EXTRA", "disable size audit")
@@ -891,16 +890,16 @@ public class MainTest extends TestBase {
     }
 
     @Test
-    public void completedOneKitchenV200Test() throws IOException, CsvException {
+    public void completedOneKitchenV200Test() throws IOException {
         completedOneKitchenWrongTopic("routed-deliveries-v200.csv", "2-0-0");
     }
 
     @Test
-    public void completedOneKitchenV202Test() throws IOException, CsvException {
+    public void completedOneKitchenV202Test() throws IOException {
         completedOneKitchenWrongTopic("routed-deliveries-v202.csv", "2-0-2");
     }
 
-    private void completedOneKitchenWrongTopic(String filepath, String version) throws IOException, CsvException {
+    private void completedOneKitchenWrongTopic(String filepath, String version) throws IOException {
         String request = readResourceFile(REQUEST_TEMPLATE)
                 .replaceAll("REPLACE_FILENAME", filepath)
                 .replace("REPLACE_DATE", yesterday());
@@ -920,21 +919,21 @@ public class MainTest extends TestBase {
     }
 
     @Test
-    public void completedOneKitchenV300Test() throws IOException, CsvException {
+    public void completedOneKitchenV300Test() throws IOException {
         completedOneKitchenRightTopic("routed-deliveries-v300.csv");
     }
 
     @Test
-    public void completedOneKitchenV301Test() throws IOException, CsvException {
+    public void completedOneKitchenV301Test() throws IOException {
         completedOneKitchenRightTopic("routed-deliveries-v301.csv");
     }
 
     @Test
-    public void completedOneKitchenV302Test() throws IOException, CsvException {
+    public void completedOneKitchenV302Test() throws IOException {
         completedOneKitchenRightTopic("routed-deliveries-v302.csv");
     }
 
-    private void completedOneKitchenRightTopic(String filepath) throws IOException, CsvException {
+    private void completedOneKitchenRightTopic(String filepath) throws IOException {
         String request = readResourceFile(REQUEST_TEMPLATE)
                 .replaceAll("REPLACE_FILENAME", filepath)
                 .replace("REPLACE_DATE", yesterday());
@@ -950,21 +949,21 @@ public class MainTest extends TestBase {
     }
 
     @Test
-    public void completedDailyOrdersV300Test() throws IOException, CsvException {
+    public void completedDailyOrdersV300Test() throws IOException {
         completedDailyOrdersWrongTopic("routed-deliveries-v300.csv", "3-0-0");
     }
 
     @Test
-    public void completedDailyOrdersV301Test() throws IOException, CsvException {
+    public void completedDailyOrdersV301Test() throws IOException {
         completedDailyOrdersWrongTopic("routed-deliveries-v301.csv", "3-0-1");
     }
 
     @Test
-    public void completedDailyOrdersV302Test() throws IOException, CsvException {
+    public void completedDailyOrdersV302Test() throws IOException {
         completedDailyOrdersWrongTopic("routed-deliveries-v302.csv", "3-0-2");
     }
 
-    private void completedDailyOrdersWrongTopic(String filepath, String version) throws IOException, CsvException {
+    private void completedDailyOrdersWrongTopic(String filepath, String version) throws IOException {
         String request = readResourceFile(REQUEST_TEMPLATE)
                 .replaceAll("REPLACE_FILENAME", filepath)
                 .replace("REPLACE_DATE", yesterday());
@@ -984,16 +983,16 @@ public class MainTest extends TestBase {
     }
 
     @Test
-    public void completedDailyOrdersV200Test() throws IOException, CsvException {
+    public void completedDailyOrdersV200Test() throws IOException {
         completedDailyOrdersRightTopic("routed-deliveries-v200.csv");
     }
 
     @Test
-    public void completedDailyOrdersV202Test() throws IOException, CsvException {
+    public void completedDailyOrdersV202Test() throws IOException {
         completedDailyOrdersRightTopic("routed-deliveries-v202.csv");
     }
 
-    private void completedDailyOrdersRightTopic(String filepath) throws IOException, CsvException {
+    private void completedDailyOrdersRightTopic(String filepath) throws IOException {
         String request = readResourceFile(REQUEST_TEMPLATE)
                 .replaceAll("REPLACE_FILENAME", filepath)
                 .replace("REPLACE_DATE", yesterday());
@@ -1009,16 +1008,16 @@ public class MainTest extends TestBase {
     }
 
     @Test
-    public void postOneKitchenRestaurantTemplateV200Test() throws IOException, CsvException {
+    public void postOneKitchenRestaurantTemplateV200Test() throws IOException {
         postOneKitchenRestaurantTemplateWrongTopic("restaurant-template-v200.csv", "2-0-0");
     }
 
     @Test
-    public void postOneKitchenRestaurantTemplateV202Test() throws IOException, CsvException {
+    public void postOneKitchenRestaurantTemplateV202Test() throws IOException {
         postOneKitchenRestaurantTemplateWrongTopic("restaurant-template-v202.csv", "2-0-2");
     }
 
-    private void postOneKitchenRestaurantTemplateWrongTopic(String filepath, String version) throws IOException, CsvException {
+    private void postOneKitchenRestaurantTemplateWrongTopic(String filepath, String version) throws IOException {
         String request = readResourceFile(REQUEST_TEMPLATE)
                 .replaceAll("REPLACE_FILENAME", filepath)
                 .replace("REPLACE_DATE", yesterday());
@@ -1037,7 +1036,7 @@ public class MainTest extends TestBase {
     }
 
     @Test
-    public void postOneKitchenRestaurantTemplateMissingFormula() throws IOException, CsvException {
+    public void postOneKitchenRestaurantTemplateMissingFormula() throws IOException {
         String request = readResourceFile(REQUEST_TEMPLATE)
                 .replaceAll("REPLACE_FILENAME", "restaurant-template-v302-missing-formula.csv")
                 .replace("REPLACE_DATE", yesterday());
@@ -1054,26 +1053,26 @@ public class MainTest extends TestBase {
     }
 
     @Test
-    public void postOneKitchenRestaurantTemplateWithFormulas() throws IOException, CsvException {
+    public void postOneKitchenRestaurantTemplateWithFormulas() throws IOException {
         postOneKitchenRestaurantTemplateRightTopic("restaurant-template-v302-with-formulas.csv");
     }
 
     @Test
-    public void postOneKitchenRestaurantTemplateV300Test() throws IOException, CsvException {
+    public void postOneKitchenRestaurantTemplateV300Test() throws IOException {
         postOneKitchenRestaurantTemplateRightTopic("restaurant-template-v300.csv");
     }
 
     @Test
-    public void postOneKitchenRestaurantTemplateV301Test() throws IOException, CsvException {
+    public void postOneKitchenRestaurantTemplateV301Test() throws IOException {
         postOneKitchenRestaurantTemplateRightTopic("restaurant-template-v301.csv");
     }
 
     @Test
-    public void postOneKitchenRestaurantTemplateV302Test() throws IOException, CsvException {
+    public void postOneKitchenRestaurantTemplateV302Test() throws IOException {
         postOneKitchenRestaurantTemplateRightTopic("restaurant-template-v302.csv");
     }
 
-    private void postOneKitchenRestaurantTemplateRightTopic(String filepath) throws IOException, CsvException {
+    private void postOneKitchenRestaurantTemplateRightTopic(String filepath) throws IOException {
         String request = readResourceFile(REQUEST_TEMPLATE)
                 .replaceAll("REPLACE_FILENAME", filepath)
                 .replace("REPLACE_DATE", yesterday());
@@ -1088,21 +1087,21 @@ public class MainTest extends TestBase {
     }
 
     @Test
-    public void postRestaurantTemplateV300Test() throws IOException, CsvException {
+    public void postRestaurantTemplateV300Test() throws IOException {
         postRestaurantTemplateWrongTopic("restaurant-template-v300.csv", "3-0-0");
     }
 
     @Test
-    public void postRestaurantTemplateV301Test() throws IOException, CsvException {
+    public void postRestaurantTemplateV301Test() throws IOException {
         postRestaurantTemplateWrongTopic("restaurant-template-v301.csv", "3-0-1");
     }
 
     @Test
-    public void postRestaurantTemplateV302Test() throws IOException, CsvException {
+    public void postRestaurantTemplateV302Test() throws IOException {
         postRestaurantTemplateWrongTopic("restaurant-template-v302.csv", "3-0-2");
     }
 
-    private void postRestaurantTemplateWrongTopic(String filepath, String version) throws IOException, CsvException {
+    private void postRestaurantTemplateWrongTopic(String filepath, String version) throws IOException {
         String request = readResourceFile(REQUEST_TEMPLATE)
                 .replaceAll("REPLACE_FILENAME", filepath)
                 .replace("REPLACE_DATE", yesterday());
@@ -1121,16 +1120,16 @@ public class MainTest extends TestBase {
     }
 
     @Test
-    public void postRestaurantTemplateV200Test() throws IOException, CsvException {
+    public void postRestaurantTemplateV200Test() throws IOException {
         postRestaurantTemplateRightTopic("restaurant-template-v200.csv");
     }
 
     @Test
-    public void postRestaurantTemplateV202Test() throws IOException, CsvException {
+    public void postRestaurantTemplateV202Test() throws IOException {
         postRestaurantTemplateRightTopic("restaurant-template-v202.csv");
     }
 
-    private void postRestaurantTemplateRightTopic(String filepath) throws IOException, CsvException {
+    private void postRestaurantTemplateRightTopic(String filepath) throws IOException {
         String request = readResourceFile(REQUEST_TEMPLATE)
                 .replaceAll("REPLACE_FILENAME", filepath)
                 .replace("REPLACE_DATE", yesterday());

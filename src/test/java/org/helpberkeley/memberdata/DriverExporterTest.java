@@ -22,7 +22,6 @@
  */
 package org.helpberkeley.memberdata;
 
-import com.opencsv.exceptions.CsvException;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -55,7 +54,7 @@ public class DriverExporterTest extends TestBase {
     }
 
     @Test
-    public void wellFormedCSVTest() throws UserException, IOException, CsvException {
+    public void wellFormedCSVTest() throws UserException, IOException {
         User u1 = createTestUser1WithGroups(
                 Constants.GROUP_DRIVERS,
                 Constants.GROUP_TRAINED_DRIVERS,
@@ -105,9 +104,11 @@ public class DriverExporterTest extends TestBase {
         assertThat(csvData).contains(TEST_USER_NAME_2);
         assertThat(csvData).contains(TEST_USER_NAME_3);
 
-        CSVListReader csvReader = new CSVListReader(new StringReader(csvData));
-        List<List<String>> rows = csvReader.readAllToList();
-        csvReader.close();
+        List<List<String>> rows;
+        try (StringReader reader = new StringReader(csvData)) {
+            CSVListReader csvReader = new CSVListReader(reader);
+            rows = csvReader.readAllToList();
+        }
 
         List<String> header = rows.get(0);
         assertThat(header).isEqualTo(exporter.driverHeaders());
