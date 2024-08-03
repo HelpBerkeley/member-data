@@ -23,9 +23,13 @@
 
 package org.helpberkeley.memberdata.v300;
 
+import org.helpberkeley.memberdata.Constants;
+
 public class ControlBlockV301Test extends ControlBlockTest {
 
-    public static final String CONTROL_BLOCK_VERSION_ROW = "FALSE,FALSE,,Version ,,,,3-0-1,,,,,,,,,,\n";
+    public static final String  CONTROL_BLOCK_VERSION_ROW = "FALSE,FALSE,,Version ,,,,"
+            + Constants.CONTROL_BLOCK_VERSION_301
+            + ",,,,,,,,,,\n";
 
     public ControlBlockV301Test() {
         super();
@@ -34,5 +38,10 @@ public class ControlBlockV301Test extends ControlBlockTest {
     @Override
     public String getVersionRow() {
         return CONTROL_BLOCK_VERSION_ROW;
+    }
+
+    @Override
+    public String getVersion() {
+        return Constants.CONTROL_BLOCK_VERSION_301;
     }
 }

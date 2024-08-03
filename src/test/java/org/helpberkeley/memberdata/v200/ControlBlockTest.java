@@ -71,6 +71,11 @@ public class ControlBlockTest extends ControlBlockTestBase {
     }
 
     @Override
+    public String getVersion() {
+        return Constants.CONTROL_BLOCK_VERSION_200;
+    }
+
+    @Override
     public String getEmptyRow() {
         return EMPTY_ROW;
     }
