@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021. helpberkeley.org
+ * Copyright (c) 2021-2024. helpberkeley.org
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -26,10 +26,7 @@ import com.opencsv.bean.CsvToBeanBuilder;
 import org.helpberkeley.memberdata.*;
 
 import java.io.StringReader;
-import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 public class RestaurantTemplateParserV300 extends RestaurantTemplateParser {
 
@@ -77,16 +74,17 @@ public class RestaurantTemplateParserV300 extends RestaurantTemplateParser {
                 Constants.WORKFLOW_ALT_GROCERY_COLUMN,
                 Constants.WORKFLOW_TYPE_GROCERY_COLUMN);
 
-        // get the header line
-        String header = csvData.substring(0, csvData.indexOf('\n'));
+        List<String> headerColumns;
 
-        String[] columns = header.split(",");
-        Set<String> set = new HashSet<>(Arrays.asList(columns));
+        try (StringReader reader = new StringReader(csvData)) {
+            CSVListReader csvListReader = new CSVListReader(reader);
+            headerColumns = csvListReader.readNextToList();
+        }
 
         int numErrors = 0;
         StringBuilder errors = new StringBuilder();
         for (String columnName : columnNames) {
-            if (! set.contains(columnName)) {
+            if (! headerColumns.contains(columnName)) {
                 errors.append(MISSING_COLUMN_ERROR).append(columnName).append('\n');
                 numErrors++;
             }

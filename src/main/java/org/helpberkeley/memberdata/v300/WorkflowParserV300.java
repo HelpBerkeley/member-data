@@ -79,7 +79,7 @@ public class WorkflowParserV300 extends WorkflowParser {
     }
 
     @Override
-    protected List<WorkflowBean> parse(String csvData) {
+    protected List<WorkflowBean> parse() {
         try {
             return new CsvToBeanBuilder<WorkflowBean>(
                     new StringReader(csvData)).withType(WorkflowBeanV300.class).build().parse();
@@ -90,11 +90,10 @@ public class WorkflowParserV300 extends WorkflowParser {
 
     /**
      * Check for missing columns.
-     * @param csvData Normalized workflow spreadsheet data
      * @throws MemberDataException If there are any missing columns.
      */
     @Override
-    protected void auditColumnNames(final String csvData) {
+    protected void auditColumnNames() {
         List<String> columnNames = List.of(
                 Constants.WORKFLOW_ADDRESS_COLUMN,
                 Constants.WORKFLOW_ALT_PHONE_COLUMN,

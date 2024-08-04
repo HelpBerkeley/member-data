@@ -69,10 +69,7 @@ public abstract class DriverPostFormat {
     private static DriverPostFormat doCreate(ApiClient apiClient,
          Map<String, User> users, String routedDeliveries, RequestType requestType) {
 
-        // Normalize lines
-        String normalized = routedDeliveries.replaceAll("\\r\\n?", "\n");
-
-        ControlBlock controlBlock = ControlBlock.create(normalized);
+        ControlBlock controlBlock = ControlBlock.create(routedDeliveries);
 
         // FIX THIS, DS: check warnings here?
 

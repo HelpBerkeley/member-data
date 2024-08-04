@@ -807,11 +807,8 @@ public class HBParser {
     static List<UserOrder> parseOrders(String fileName, String deliveryData) {
         List<UserOrder> userOrders = new ArrayList<>();
 
-        // Normalize EOL
-        String csvData = deliveryData.replaceAll("\\r\\n?", "\n");
-
         List<String[]> rows;
-        try (StringReader reader = new StringReader(csvData)) {
+        try (StringReader reader = new StringReader(deliveryData)) {
             rows = new CSVReader(reader).readAll();
         } catch (IOException | CsvException ex) {
             throw new MemberDataException(ex);
@@ -860,11 +857,8 @@ public class HBParser {
     static Collection<String> parseDeliveryDrivers(String fileName, String deliveryData) {
         Set<String> drivers = new HashSet<>();
 
-        // Normalize EOL
-        String csvData = deliveryData.replaceAll("\\r\\n?", "\n");
-
         List<String[]> rows;
-        try (StringReader reader = new StringReader(csvData)) {
+        try (StringReader reader = new StringReader(deliveryData)) {
             rows = new CSVReader(reader).readAll();
         } catch (IOException | CsvException ex) {
             throw new MemberDataException(ex);
@@ -890,11 +884,8 @@ public class HBParser {
             String fileName, String deliveryData) {
         Set<String> drivers = new HashSet<>();
 
-        // Normalize EOL
-        String csvData = deliveryData.replaceAll("\\r\\n?", "\n");
-
         List<String[]> rows;
-        try (StringReader reader = new StringReader(csvData)) {
+        try (StringReader reader = new StringReader(deliveryData)) {
             rows = new CSVReader(reader).readAll();
         } catch (IOException | CsvException ex) {
             throw new MemberDataException(ex);

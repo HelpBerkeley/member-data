@@ -60,11 +60,14 @@ public class WorkflowTest extends TestBase {
     public void badRestaurantHeadersTest() {
         UserExporter exporter = new UserExporter(List.of());
 
-        String badRestauarantTemplate = "These,are,not,the,droids,we,are,looking,for";
-        Throwable thrown = catchThrowable(() -> exporter.workflow(badRestauarantTemplate, Map.of()));
-        assertThat(thrown).isInstanceOf(Error.class);
+        List<String> badHeaders = List.of(
+                "These","are","not","the","droids","we","are","looking","for");
+        String badRestaurantTemplate = badHeaders.toString();
+
+        Throwable thrown = catchThrowable(() -> exporter.workflow(badRestaurantTemplate, Map.of()));
+        assertThat(thrown).isInstanceOf(MemberDataException.class);
         assertThat(thrown).hasMessageContaining("Header mismatch");
-        assertThat(thrown).hasMessageContaining(badRestauarantTemplate);
+        assertThat(thrown).hasMessageContaining(badHeaders.toString());
     }
 
     @Test

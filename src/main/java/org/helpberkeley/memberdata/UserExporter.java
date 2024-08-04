@@ -289,14 +289,9 @@ public class UserExporter extends Exporter {
     //
     private void auditWorkflowData(String workflowData, List<String> headers) {
 
-        // Normalize EOL - FIX THIS, DS: does CSVReader do this already?
-        String csvData = workflowData.replaceAll("\\r\\n?", "\n");
-        String[] lines = csvData.split("\n");
-        assert lines.length != 0 : "missing work flow data";
-
         List<List<String>> rows;
 
-        try (StringReader stringReader = new StringReader(csvData)) {
+        try (StringReader stringReader = new StringReader(workflowData)) {
             CSVListReader csvReader = new CSVListReader(stringReader);
             rows = csvReader.readAllToList();
         }
@@ -305,7 +300,7 @@ public class UserExporter extends Exporter {
         List<String> headerColumns = rows.get(0);
 
         if (!headers.equals(headerColumns)) {
-            throw new Error("Header mismatch: " + lines[0] + " != " + headers);
+            throw new MemberDataException("Header mismatch: " + headerColumns + " != " + headers);
         }
 
         for (int row = 1; row < rows.size(); row++) {

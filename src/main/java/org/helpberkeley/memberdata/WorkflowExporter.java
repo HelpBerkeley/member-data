@@ -86,7 +86,7 @@ public class WorkflowExporter extends Exporter {
             addBean(bean);
         }
         List<String> incomingHeader;
-        try (StringReader reader = new StringReader(parser.normalizedCSVData)) {
+        try (StringReader reader = new StringReader(parser.csvData)) {
             CSVListReader csvReader = new CSVListReader(reader);
             incomingHeader = csvReader.readNextToList();
         }
