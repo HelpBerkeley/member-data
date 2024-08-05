@@ -23,6 +23,7 @@
 package org.helpberkeley.memberdata;
 
 import java.io.IOException;
+import java.io.StringWriter;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
@@ -54,131 +55,86 @@ public class DriverExporter extends Exporter {
     }
 
     String drivers() {
-        StringBuilder rows = new StringBuilder();
-        rows.append(driverHeaders());
+        try (StringWriter writer = new StringWriter()) {
+            CSVListWriter csvWriter = new CSVListWriter(writer);
+            List<List<String>> dataToEncode = new ArrayList<>();
+            dataToEncode.add(driverHeaders());
 
-        for (User user : tables.drivers()) {
+            for (User user : tables.drivers()) {
 
-            DetailsPost detailsPost = driverDetails.get(user.getUserName());
-            String details = (detailsPost == null) ? "" : detailsPost.getDetails();
-            DriverHistory history = driverHistory.get(user.getUserName().toLowerCase());
-            List<Integer> weeklyHistory =
-                    (history != null) ? history.getWeeklyRunTotals() : List.of(0, 0, 0, 0, 0, 0, 0);
+                DetailsPost detailsPost = driverDetails.get(user.getUserName());
+                String details = (detailsPost == null) ? "" : detailsPost.getDetails();
+                DriverHistory history = driverHistory.get(user.getUserName().toLowerCase());
+                List<Integer> weeklyHistory =
+                        (history != null) ? history.getWeeklyRunTotals() : List.of(0, 0, 0, 0, 0, 0, 0);
 
-            rows.append(user.getCreateDate());
-            rows.append(separator);
-            rows.append(escapeCommas(user.getName()));
-            rows.append(separator);
-            rows.append(user.getUserName());
-            rows.append(separator);
-            rows.append(shortBoolean(user.isAvailableDriver()));
-            rows.append(separator);
-            rows.append(shortBoolean(user.isTrainedDriver()));
-            rows.append(separator);
-            rows.append(shortBoolean(user.isBiker()));
-            rows.append(separator);
-            rows.append(shortBoolean(user.isLimitedRuns()));
-            rows.append(separator);
-            rows.append(history != null ? history.totalRuns() : 0);
-            rows.append(separator);
-            // Unicode Green Circle - FIX THIS, DS: use readable Unicode representation
-            rows.append(weeklyHistory.get(6) != 0 ? "🟢" : "");
-            rows.append(separator);
-            rows.append(weeklyHistory.get(5) != 0 ? "🟢" : "");
-            rows.append(separator);
-            rows.append(weeklyHistory.get(4) != 0 ? "🟢" : "");
-            rows.append(separator);
-            rows.append(weeklyHistory.get(3) != 0 ? "🟢" : "");
-            rows.append(separator);
-            rows.append(weeklyHistory.get(2) != 0 ? "🟢" : "");
-            rows.append(separator);
-            rows.append(weeklyHistory.get(1) != 0 ? "🟢" : "");
-            rows.append(separator);
-            rows.append(weeklyHistory.get(0) != 0 ? "🟢" : "");
-            rows.append(separator);
-            rows.append(user.getPhoneNumber());
-            rows.append(separator);
-            rows.append(user.getAltPhoneNumber());
-            rows.append(separator);
-            rows.append(escapeCommas(user.getCity()));
-            rows.append(separator);
-            rows.append(escapeCommas(user.getAddress()));
-            rows.append(separator);
-            rows.append(shortBoolean(user.isAtRisk()));
-            rows.append(separator);
-            rows.append(shortBoolean(user.isGone()));
-            rows.append(separator);
-            rows.append(shortBoolean(user.isOut()));
-            rows.append(separator);
-            rows.append(shortBoolean(user.isOtherDrivers()));
-            rows.append(separator);
-            rows.append(shortBoolean(user.isEventDriver()));
-            rows.append(separator);
-            rows.append(shortBoolean(user.isTrainedEventDriver()));
-            rows.append(separator);
-            rows.append(escapeCommas(details));
-            rows.append('\n');
+                List<String> row = new ArrayList<>(List.of(user.getCreateDate(),
+                        user.getName(),
+                        user.getUserName(),
+                        shortBoolean(user.isAvailableDriver()),
+                        shortBoolean(user.isTrainedDriver()),
+                        shortBoolean(user.isBiker()),
+                        shortBoolean(user.isLimitedRuns()),
+                        history != null ? String.valueOf(history.totalRuns()) : "0",
+                        weeklyHistory.get(6) != 0 ? "🟢" : "",
+                        weeklyHistory.get(5) != 0 ? "🟢" : "",
+                        weeklyHistory.get(4) != 0 ? "🟢" : "",
+                        weeklyHistory.get(3) != 0 ? "🟢" : "",
+                        weeklyHistory.get(2) != 0 ? "🟢" : "",
+                        weeklyHistory.get(1) != 0 ? "🟢" : "",
+                        weeklyHistory.get(0) != 0 ? "🟢" : "",
+                        user.getPhoneNumber(),
+                        user.getAltPhoneNumber(),
+                        user.getCity(),
+                        user.getAddress(),
+                        shortBoolean(user.isAtRisk()),
+                        shortBoolean(user.isGone()),
+                        shortBoolean(user.isOut()),
+                        shortBoolean(user.isOtherDrivers()),
+                        shortBoolean(user.isEventDriver()),
+                        shortBoolean(user.isTrainedEventDriver()),
+                        details));
+                dataToEncode.add(row);
+            }
+
+            csvWriter.writeAllToList(dataToEncode);
+            return writer.toString();
+        } catch (IOException ex) {
+            throw new MemberDataException(ex);
         }
-
-        return rows.toString();
     }
 
-    String driverHeaders() {
-        return User.CREATED_AT_COLUMN
-                + separator
-                + User.NAME_COLUMN
-                + separator
-                + User.USERNAME_COLUMN
-                + separator
-                + IN_COLUMN
-                + separator
-                + User.SHORT_TRAINED_DRIVER_COLUMN
-                + separator
-                + User.SHORT_BIKERS_COLUMN
-                + separator
-                + User.SHORT_LIMITED_RUNS_COLUMN
-                + separator
-                + TOTAL_RUNS_COLUMNS
-                + separator
-                + SIX_WEEKS_AGO_COLUMN
-                + separator
-                + FIVE_WEEKS_AGO_COLUMN
-                + separator
-                + FOUR_WEEKS_AGO_COLUMN
-                + separator
-                + THREE_WEEKS_AGO_COLUMN
-                + separator
-                + TWO_WEEKS_AGO_COLUMN
-                + separator
-                + ONE_WEEK_AGO_COLUMN
-                + separator
-                + THIS_WEEK_COLUMN
-                + separator
-                + User.PHONE_NUMBER_COLUMN
-                + separator
-                + User.ALT_PHONE_NUMBER_COLUMN
-                + separator
-                + User.CITY_COLUMN
-                + separator
-                + User.ADDRESS_COLUMN
-                + separator
-                + User.SHORT_AT_RISK_COLUMN
-                + separator
-                + User.SHORT_GONE_COLUMN
-                + separator
-                + User.SHORT_OUT_COLUMN
-                + separator
-                + User.SHORT_OTHER_DRIVERS_COLUMN
-                + separator
-                + User.SHORT_EVENTS_DRIVER_COLUMN
-                + separator
-                + User.SHORT_TRAINED_EVENT_DRIVER_COLUMN
-                + separator
-                + User.SHORT_DRIVER_DETAILS_COLUMN
-                + '\n';
+
+    List<String> driverHeaders() {
+       return new ArrayList<>(List.of(User.CREATED_AT_COLUMN,
+               User.NAME_COLUMN,
+               User.USERNAME_COLUMN,
+               IN_COLUMN,
+               User.SHORT_TRAINED_DRIVER_COLUMN,
+               User.SHORT_BIKERS_COLUMN,
+               User.SHORT_LIMITED_RUNS_COLUMN,
+               TOTAL_RUNS_COLUMNS,
+               SIX_WEEKS_AGO_COLUMN,
+               FIVE_WEEKS_AGO_COLUMN,
+               FOUR_WEEKS_AGO_COLUMN,
+               THREE_WEEKS_AGO_COLUMN,
+               TWO_WEEKS_AGO_COLUMN,
+               ONE_WEEK_AGO_COLUMN,
+               THIS_WEEK_COLUMN,
+               User.PHONE_NUMBER_COLUMN,
+               User.ALT_PHONE_NUMBER_COLUMN,
+               User.CITY_COLUMN,
+               User.ADDRESS_COLUMN,
+               User.SHORT_AT_RISK_COLUMN,
+               User.SHORT_GONE_COLUMN,
+               User.SHORT_OUT_COLUMN,
+               User.SHORT_OTHER_DRIVERS_COLUMN,
+               User.SHORT_EVENTS_DRIVER_COLUMN,
+               User.SHORT_TRAINED_EVENT_DRIVER_COLUMN,
+               User.SHORT_DRIVER_DETAILS_COLUMN));
     }
 
-    String driversToFile() throws IOException {
+    String driversToFile() {
 
         String outputFileName = generateFileName(Constants.DRIVERS_FILE, "csv");
         writeFile(outputFileName, drivers());

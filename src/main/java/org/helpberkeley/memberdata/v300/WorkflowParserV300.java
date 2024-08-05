@@ -79,7 +79,7 @@ public class WorkflowParserV300 extends WorkflowParser {
     }
 
     @Override
-    protected List<WorkflowBean> parse(String csvData) {
+    protected List<WorkflowBean> parse() {
         try {
             return new CsvToBeanBuilder<WorkflowBean>(
                     new StringReader(csvData)).withType(WorkflowBeanV300.class).build().parse();
@@ -90,11 +90,10 @@ public class WorkflowParserV300 extends WorkflowParser {
 
     /**
      * Check for missing columns.
-     * @param csvData Normalized workflow spreadsheet data
      * @throws MemberDataException If there are any missing columns.
      */
     @Override
-    protected void auditColumnNames(final String csvData) {
+    protected void auditColumnNames() {
         List<String> columnNames = List.of(
                 Constants.WORKFLOW_ADDRESS_COLUMN,
                 Constants.WORKFLOW_ALT_PHONE_COLUMN,
@@ -115,11 +114,14 @@ public class WorkflowParserV300 extends WorkflowParser {
                 Constants.WORKFLOW_ALT_GROCERY_COLUMN,
                 Constants.WORKFLOW_TYPE_GROCERY_COLUMN);
 
-        // get the header line
-        String header = csvData.substring(0, csvData.indexOf('\n'));
+        List<String> headerColumns;
 
-        String[] columns = header.split(",");
-        Set<String> set = new HashSet<>(Arrays.asList(columns));
+        try (StringReader stringReader = new StringReader(csvData)) {
+            CSVListReader csvReader = new CSVListReader(stringReader);
+            headerColumns = csvReader.readNextToList();
+        }
+
+        Set<String> set = new HashSet<>(headerColumns);
 
         int numErrors = 0;
         StringBuilder errors = new StringBuilder();

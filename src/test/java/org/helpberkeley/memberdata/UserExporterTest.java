@@ -21,8 +21,6 @@
 //
 package org.helpberkeley.memberdata;
 
-import com.opencsv.CSVReaderHeaderAware;
-import com.opencsv.exceptions.CsvException;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -112,90 +110,90 @@ public class UserExporterTest extends TestBase {
         UserExporter exporter = new UserExporter(List.of(u1));
 
         String allMemberRows = exporter.allMembersRaw();
-        String[] rows = allMemberRows.split("\n");
+        List<List<String>> rows;
+        try (StringReader reader = new StringReader(allMemberRows)) {
+            CSVListReader csvReader = new CSVListReader(reader);
+            rows = csvReader.readAllToList();
+        }
         assertThat(rows).hasSize(2);
 
-        String header = rows[0];
-        assertThat(header).isEqualTo(User.rawCSVHeaders().trim());
-
-        // FIX THIS, DS: use CSVReader
-        String[] headerColumns = header.split(Constants.CSV_SEPARATOR, -1);
+        List<String> header = rows.get(0);
+        assertThat(header).isEqualTo(User.rawCSVHeaders());
 
         // FIX THIS, DS: add a constant for number of columns expected
         int index = 0;
-        assertThat(headerColumns[index++]).isEqualTo(User.ID_COLUMN);
-        assertThat(headerColumns[index++]).isEqualTo(User.NAME_COLUMN);
-        assertThat(headerColumns[index++]).isEqualTo(User.USERNAME_COLUMN);
-        assertThat(headerColumns[index++]).isEqualTo(User.PHONE_NUMBER_COLUMN);
-        assertThat(headerColumns[index++]).isEqualTo(User.ALT_PHONE_NUMBER_COLUMN);
-        assertThat(headerColumns[index++]).isEqualTo(User.NEIGHBORHOOD_COLUMN);
-        assertThat(headerColumns[index++]).isEqualTo(User.CITY_COLUMN);
-        assertThat(headerColumns[index++]).isEqualTo(User.ADDRESS_COLUMN);
-        assertThat(headerColumns[index++]).isEqualTo(User.CONSUMER_COLUMN);
-        assertThat(headerColumns[index++]).isEqualTo(User.VOICEONLY_COLUMN);
-        assertThat(headerColumns[index++]).isEqualTo(User.FRVOICEONLY_COLUMN);
-        assertThat(headerColumns[index++]).isEqualTo(User.DISPATCHER_COLUMN);
-        assertThat(headerColumns[index++]).isEqualTo(User.DRIVER_COLUMN);
-        assertThat(headerColumns[index++]).isEqualTo(User.TRAINED_DRIVER_COLUMN);
-        assertThat(headerColumns[index++]).isEqualTo(User.CREATED_AT_COLUMN);
-        assertThat(headerColumns[index++]).isEqualTo(User.CONDO_COLUMN);
-        assertThat(headerColumns[index++]).isEqualTo(User.REFERRAL_COLUMN);
-        assertThat(headerColumns[index++]).isEqualTo(User.EMAIL_VERIFIED_COLUMN);
-        assertThat(headerColumns[index++]).isEqualTo(User.CONSUMER_REQUEST_COLUMN);
-        assertThat(headerColumns[index++]).isEqualTo(User.VOLUNTEER_REQUEST_COLUMN);
-        assertThat(headerColumns[index++]).isEqualTo(User.SPECIALIST_COLUMN);
-        assertThat(headerColumns[index++]).isEqualTo(User.LOGISTICS_COLUMN);
-        assertThat(headerColumns[index++]).isEqualTo(User.BHS_COLUMN);
-        assertThat(headerColumns[index++]).isEqualTo(User.HELPLINE_COLUMN);
-        assertThat(headerColumns[index++]).isEqualTo(User.SITELINE_COLUMN);
-        assertThat(headerColumns[index++]).isEqualTo(User.TRAINED_CUSTOMER_CARE_A_COLUMN);
-        assertThat(headerColumns[index++]).isEqualTo(User.TRAINED_CUSTOMER_CARE_B_COLUMN);
-        assertThat(headerColumns[index++]).isEqualTo(User.INREACH_COLUMN);
-        assertThat(headerColumns[index++]).isEqualTo(User.OUTREACH_COLUMN);
-        assertThat(headerColumns[index++]).isEqualTo(User.MARKETING_COLUMN);
-        assertThat(headerColumns[index++]).isEqualTo(User.MODERATORS_COLUMN);
-        assertThat(headerColumns[index++]).isEqualTo(User.TRUST_LEVEL_4_COLUMN);
+        assertThat(header.get(index++)).isEqualTo(User.ID_COLUMN);
+        assertThat(header.get(index++)).isEqualTo(User.NAME_COLUMN);
+        assertThat(header.get(index++)).isEqualTo(User.USERNAME_COLUMN);
+        assertThat(header.get(index++)).isEqualTo(User.PHONE_NUMBER_COLUMN);
+        assertThat(header.get(index++)).isEqualTo(User.ALT_PHONE_NUMBER_COLUMN);
+        assertThat(header.get(index++)).isEqualTo(User.NEIGHBORHOOD_COLUMN);
+        assertThat(header.get(index++)).isEqualTo(User.CITY_COLUMN);
+        assertThat(header.get(index++)).isEqualTo(User.ADDRESS_COLUMN);
+        assertThat(header.get(index++)).isEqualTo(User.CONSUMER_COLUMN);
+        assertThat(header.get(index++)).isEqualTo(User.VOICEONLY_COLUMN);
+        assertThat(header.get(index++)).isEqualTo(User.FRVOICEONLY_COLUMN);
+        assertThat(header.get(index++)).isEqualTo(User.DISPATCHER_COLUMN);
+        assertThat(header.get(index++)).isEqualTo(User.DRIVER_COLUMN);
+        assertThat(header.get(index++)).isEqualTo(User.TRAINED_DRIVER_COLUMN);
+        assertThat(header.get(index++)).isEqualTo(User.CREATED_AT_COLUMN);
+        assertThat(header.get(index++)).isEqualTo(User.CONDO_COLUMN);
+        assertThat(header.get(index++)).isEqualTo(User.REFERRAL_COLUMN);
+        assertThat(header.get(index++)).isEqualTo(User.EMAIL_VERIFIED_COLUMN);
+        assertThat(header.get(index++)).isEqualTo(User.CONSUMER_REQUEST_COLUMN);
+        assertThat(header.get(index++)).isEqualTo(User.VOLUNTEER_REQUEST_COLUMN);
+        assertThat(header.get(index++)).isEqualTo(User.SPECIALIST_COLUMN);
+        assertThat(header.get(index++)).isEqualTo(User.LOGISTICS_COLUMN);
+        assertThat(header.get(index++)).isEqualTo(User.BHS_COLUMN);
+        assertThat(header.get(index++)).isEqualTo(User.HELPLINE_COLUMN);
+        assertThat(header.get(index++)).isEqualTo(User.SITELINE_COLUMN);
+        assertThat(header.get(index++)).isEqualTo(User.TRAINED_CUSTOMER_CARE_A_COLUMN);
+        assertThat(header.get(index++)).isEqualTo(User.TRAINED_CUSTOMER_CARE_B_COLUMN);
+        assertThat(header.get(index++)).isEqualTo(User.INREACH_COLUMN);
+        assertThat(header.get(index++)).isEqualTo(User.OUTREACH_COLUMN);
+        assertThat(header.get(index++)).isEqualTo(User.MARKETING_COLUMN);
+        assertThat(header.get(index++)).isEqualTo(User.MODERATORS_COLUMN);
+        assertThat(header.get(index++)).isEqualTo(User.TRUST_LEVEL_4_COLUMN);
         //noinspection UnusedAssignment
-        assertThat(headerColumns[index++]).isEqualTo(User.WORKFLOW_COLUMN);
+        assertThat(header.get(index++)).isEqualTo(User.WORKFLOW_COLUMN);
 
-        // FIX THIS, DS: use CSVReader
-        String[] columns = rows[1].split(Constants.CSV_SEPARATOR, -1);
-        assertThat(headerColumns).hasSameSizeAs(columns);
+        List<String> columns = rows.get(1);
+        assertThat(header).hasSameSizeAs(columns);
 
         index = 0;
-        assertThat(columns[index++]).isEqualTo(String.valueOf(u1.getId()));
-        assertThat(columns[index++]).isEqualTo(u1.getName());
-        assertThat(columns[index++]).isEqualTo(u1.getUserName());
-        assertThat(columns[index++]).isEqualTo(u1.getPhoneNumber());
-        assertThat(columns[index++]).isEqualTo(u1.getAltPhoneNumber());
-        assertThat(columns[index++]).isEqualTo(u1.getNeighborhood());
-        assertThat(columns[index++]).isEqualTo(u1.getCity());
-        assertThat(columns[index++]).isEqualTo(u1.getAddress());
-        assertThat(columns[index++]).isEqualTo(String.valueOf(u1.isConsumer()));
-        assertThat(columns[index++]).isEqualTo(String.valueOf(u1.isVoiceOnly()));
-        assertThat(columns[index++]).isEqualTo(String.valueOf(u1.isFRVoiceOnly()));
-        assertThat(columns[index++]).isEqualTo(String.valueOf(u1.isDispatcher()));
-        assertThat(columns[index++]).isEqualTo(String.valueOf(u1.isDriver()));
-        assertThat(columns[index++]).isEqualTo(String.valueOf(u1.isTrainedDriver()));
-        assertThat(columns[index++]).isEqualTo(u1.getCreateTime());
-        assertThat(columns[index++]).isEqualTo(String.valueOf(u1.isCondo()));
-        assertThat(columns[index++]).isEqualTo(String.valueOf(u1.getReferral()));
-        assertThat(columns[index++]).isEqualTo(String.valueOf(u1.getEmailVerified()));
-        assertThat(columns[index++]).isEqualTo(String.valueOf(u1.hasConsumerRequest()));
-        assertThat(columns[index++]).isEqualTo(u1.getVolunteerRequest());
-        assertThat(columns[index++]).isEqualTo(String.valueOf(u1.isLogistics()));
-        assertThat(columns[index++]).isEqualTo(String.valueOf(u1.isSpecialist()));
-        assertThat(columns[index++]).isEqualTo(String.valueOf(u1.isBHS()));
-        assertThat(columns[index++]).isEqualTo(String.valueOf(u1.isHelpLine()));
-        assertThat(columns[index++]).isEqualTo(String.valueOf(u1.isSiteLine()));
-        assertThat(columns[index++]).isEqualTo(String.valueOf(u1.isTrainedCustomerCareA()));
-        assertThat(columns[index++]).isEqualTo(String.valueOf(u1.isTrainedCustomerCareB()));
-        assertThat(columns[index++]).isEqualTo(String.valueOf(u1.isInReach()));
-        assertThat(columns[index++]).isEqualTo(String.valueOf(u1.isOutReach()));
-        assertThat(columns[index++]).isEqualTo(String.valueOf(u1.isMarketing()));
-        assertThat(columns[index++]).isEqualTo(String.valueOf(u1.isModerator()));
+        assertThat(columns.get(index++)).isEqualTo(String.valueOf(u1.getId()));
+        assertThat(columns.get(index++)).isEqualTo(u1.getName());
+        assertThat(columns.get(index++)).isEqualTo(u1.getUserName());
+        assertThat(columns.get(index++)).isEqualTo(u1.getPhoneNumber());
+        assertThat(columns.get(index++)).isEqualTo(u1.getAltPhoneNumber());
+        assertThat(columns.get(index++)).isEqualTo(u1.getNeighborhood());
+        assertThat(columns.get(index++)).isEqualTo(u1.getCity());
+        assertThat(columns.get(index++)).isEqualTo(u1.getAddress());
+        assertThat(columns.get(index++)).isEqualTo(String.valueOf(u1.isConsumer()));
+        assertThat(columns.get(index++)).isEqualTo(String.valueOf(u1.isVoiceOnly()));
+        assertThat(columns.get(index++)).isEqualTo(String.valueOf(u1.isFRVoiceOnly()));
+        assertThat(columns.get(index++)).isEqualTo(String.valueOf(u1.isDispatcher()));
+        assertThat(columns.get(index++)).isEqualTo(String.valueOf(u1.isDriver()));
+        assertThat(columns.get(index++)).isEqualTo(String.valueOf(u1.isTrainedDriver()));
+        assertThat(columns.get(index++)).isEqualTo(u1.getCreateTime());
+        assertThat(columns.get(index++)).isEqualTo(String.valueOf(u1.isCondo()));
+        assertThat(columns.get(index++)).isEqualTo(String.valueOf(u1.getReferral()));
+        assertThat(columns.get(index++)).isEqualTo(String.valueOf(u1.getEmailVerified()));
+        assertThat(columns.get(index++)).isEqualTo(String.valueOf(u1.hasConsumerRequest()));
+        assertThat(columns.get(index++)).isEqualTo(u1.getVolunteerRequest());
+        assertThat(columns.get(index++)).isEqualTo(String.valueOf(u1.isLogistics()));
+        assertThat(columns.get(index++)).isEqualTo(String.valueOf(u1.isSpecialist()));
+        assertThat(columns.get(index++)).isEqualTo(String.valueOf(u1.isBHS()));
+        assertThat(columns.get(index++)).isEqualTo(String.valueOf(u1.isHelpLine()));
+        assertThat(columns.get(index++)).isEqualTo(String.valueOf(u1.isSiteLine()));
+        assertThat(columns.get(index++)).isEqualTo(String.valueOf(u1.isTrainedCustomerCareA()));
+        assertThat(columns.get(index++)).isEqualTo(String.valueOf(u1.isTrainedCustomerCareB()));
+        assertThat(columns.get(index++)).isEqualTo(String.valueOf(u1.isInReach()));
+        assertThat(columns.get(index++)).isEqualTo(String.valueOf(u1.isOutReach()));
+        assertThat(columns.get(index++)).isEqualTo(String.valueOf(u1.isMarketing()));
+        assertThat(columns.get(index++)).isEqualTo(String.valueOf(u1.isModerator()));
         //noinspection UnusedAssignment
-        assertThat(columns[index++]).isEqualTo(String.valueOf(u1.isWorkflow()));
+        assertThat(columns.get(index++)).isEqualTo(String.valueOf(u1.isWorkflow()));
 
         // FIX THIS, DS: check all of the columns
     }
@@ -224,115 +222,115 @@ public class UserExporterTest extends TestBase {
         UserExporter exporter = new UserExporter(List.of(u1));
 
         String allMemberRows = exporter.allMembersReport();
-        String[] rows = allMemberRows.split("\n");
+        List<List<String>> rows;
+        try (StringReader reader = new StringReader(allMemberRows)) {
+            CSVListReader csvReader = new CSVListReader(reader);
+            rows = csvReader.readAllToList();
+        }
         assertThat(rows).hasSize(2);
 
-        String header = rows[0];
-        assertThat(header).isEqualTo(User.reportCSVHeaders().trim());
-
-        // FIX THIS, DS: use CSVReader
-        String[] headerColumns = header.split(Constants.CSV_SEPARATOR, -1);
+        List<String> header = rows.get(0);
+        assertThat(header).isEqualTo(User.reportCSVHeaders());
 
         // FIX THIS, DS: add a constant for number of columns expected
         int index = 0;
-        assertThat(headerColumns[index++]).isEqualTo(User.SHORT_ID_COLUMN);
-        assertThat(headerColumns[index++]).isEqualTo(User.SHORT_CREATED_AT_COLUMN);
-        assertThat(headerColumns[index++]).isEqualTo(User.SHORT_NAME_COLUMN);
-        assertThat(headerColumns[index++]).isEqualTo(User.SHORT_USERNAME_COLUMN);
-        assertThat(headerColumns[index++]).isEqualTo(User.SHORT_PHONE_NUMBER_COLUMN);
-        assertThat(headerColumns[index++]).isEqualTo(User.SHORT_ALT_PHONE_NUMBER_COLUMN);
-        assertThat(headerColumns[index++]).isEqualTo(User.SHORT_NEIGHBORHOOD_COLUMN);
-        assertThat(headerColumns[index++]).isEqualTo(User.SHORT_CITY_COLUMN);
-        assertThat(headerColumns[index++]).isEqualTo(User.SHORT_ADDRESS_COLUMN);
-        assertThat(headerColumns[index++]).isEqualTo(User.SHORT_CONDO_COLUMN);
-        assertThat(headerColumns[index++]).isEqualTo(User.SHORT_REFERRAL_COLUMN);
-        assertThat(headerColumns[index++]).isEqualTo(User.SHORT_CONSUMER_COLUMN);
-        assertThat(headerColumns[index++]).isEqualTo(User.SHORT_VOICEONLY_COLUMN);
-        assertThat(headerColumns[index++]).isEqualTo(User.SHORT_FRVOICEONLY_COLUMN);
-        assertThat(headerColumns[index++]).isEqualTo(User.SHORT_DRIVER_COLUMN);
-        assertThat(headerColumns[index++]).isEqualTo(User.SHORT_TRAINED_DRIVER_COLUMN);
-        assertThat(headerColumns[index++]).isEqualTo(User.SHORT_DISPATCHER_COLUMN);
-        assertThat(headerColumns[index++]).isEqualTo(User.SHORT_WORKFLOW_COLUMN);
-        assertThat(headerColumns[index++]).isEqualTo(User.SHORT_INREACH_COLUMN);
-        assertThat(headerColumns[index++]).isEqualTo(User.SHORT_OUTREACH_COLUMN);
-        assertThat(headerColumns[index++]).isEqualTo(User.SHORT_HELPLINE_COLUMN);
-        assertThat(headerColumns[index++]).isEqualTo(User.SHORT_SITELINE_COLUMN);
-        assertThat(headerColumns[index++]).isEqualTo(User.SHORT_TRAINED_CUSTOMER_CARE_A_COLUMN);
-        assertThat(headerColumns[index++]).isEqualTo(User.SHORT_TRAINED_CUSTOMER_CARE_B_COLUMN);
-        assertThat(headerColumns[index++]).isEqualTo(User.SHORT_MARKETING_COLUMN);
-        assertThat(headerColumns[index++]).isEqualTo(User.SHORT_MODERATORS_COLUMN);
-        assertThat(headerColumns[index++]).isEqualTo(User.SHORT_TRUST_LEVEL_4_COLUMN);
-        assertThat(headerColumns[index++]).isEqualTo(User.SHORT_SPECIALIST_COLUMN);
-        assertThat(headerColumns[index++]).isEqualTo(User.SHORT_LOGISTICS_COLUMN);
-        assertThat(headerColumns[index++]).isEqualTo(User.SHORT_BHS_COLUMN);
-        assertThat(headerColumns[index++]).isEqualTo(User.SHORT_CUSTOMER_INFO_COLUMN);
-        assertThat(headerColumns[index++]).isEqualTo(User.SHORT_ADVISOR_COLUMN);
-        assertThat(headerColumns[index++]).isEqualTo(User.SHORT_BOARD_COLUMN);
-        assertThat(headerColumns[index++]).isEqualTo(User.SHORT_COORDINATOR_COLUMN);
-        assertThat(headerColumns[index++]).isEqualTo(User.SHORT_LIMITED_RUNS_COLUMN);
-        assertThat(headerColumns[index++]).isEqualTo(User.SHORT_AT_RISK_COLUMN);
-        assertThat(headerColumns[index++]).isEqualTo(User.SHORT_BIKERS_COLUMN);
-        assertThat(headerColumns[index++]).isEqualTo(User.SHORT_OUT_COLUMN);
-        assertThat(headerColumns[index++]).isEqualTo(User.SHORT_EVENTS_DRIVER_COLUMN);
-        assertThat(headerColumns[index++]).isEqualTo(User.SHORT_TRAINED_EVENT_DRIVER_COLUMN);
-        assertThat(headerColumns[index++]).isEqualTo(User.SHORT_GONE_COLUMN);
-        assertThat(headerColumns[index++]).isEqualTo(User.SHORT_OTHER_DRIVERS_COLUMN);
-        assertThat(headerColumns[index++]).isEqualTo(User.SHORT_ADMIN_COLUMN);
-        assertThat(headerColumns[index++]).isEqualTo(User.SHORT_CONSUMER_REQUEST_COLUMN);
+        assertThat(header.get(index++)).isEqualTo(User.SHORT_ID_COLUMN);
+        assertThat(header.get(index++)).isEqualTo(User.SHORT_CREATED_AT_COLUMN);
+        assertThat(header.get(index++)).isEqualTo(User.SHORT_NAME_COLUMN);
+        assertThat(header.get(index++)).isEqualTo(User.SHORT_USERNAME_COLUMN);
+        assertThat(header.get(index++)).isEqualTo(User.SHORT_PHONE_NUMBER_COLUMN);
+        assertThat(header.get(index++)).isEqualTo(User.SHORT_ALT_PHONE_NUMBER_COLUMN);
+        assertThat(header.get(index++)).isEqualTo(User.SHORT_NEIGHBORHOOD_COLUMN);
+        assertThat(header.get(index++)).isEqualTo(User.SHORT_CITY_COLUMN);
+        assertThat(header.get(index++)).isEqualTo(User.SHORT_ADDRESS_COLUMN);
+        assertThat(header.get(index++)).isEqualTo(User.SHORT_CONDO_COLUMN);
+        assertThat(header.get(index++)).isEqualTo(User.SHORT_REFERRAL_COLUMN);
+        assertThat(header.get(index++)).isEqualTo(User.SHORT_CONSUMER_COLUMN);
+        assertThat(header.get(index++)).isEqualTo(User.SHORT_VOICEONLY_COLUMN);
+        assertThat(header.get(index++)).isEqualTo(User.SHORT_FRVOICEONLY_COLUMN);
+        assertThat(header.get(index++)).isEqualTo(User.SHORT_DRIVER_COLUMN);
+        assertThat(header.get(index++)).isEqualTo(User.SHORT_TRAINED_DRIVER_COLUMN);
+        assertThat(header.get(index++)).isEqualTo(User.SHORT_DISPATCHER_COLUMN);
+        assertThat(header.get(index++)).isEqualTo(User.SHORT_WORKFLOW_COLUMN);
+        assertThat(header.get(index++)).isEqualTo(User.SHORT_INREACH_COLUMN);
+        assertThat(header.get(index++)).isEqualTo(User.SHORT_OUTREACH_COLUMN);
+        assertThat(header.get(index++)).isEqualTo(User.SHORT_HELPLINE_COLUMN);
+        assertThat(header.get(index++)).isEqualTo(User.SHORT_SITELINE_COLUMN);
+        assertThat(header.get(index++)).isEqualTo(User.SHORT_TRAINED_CUSTOMER_CARE_A_COLUMN);
+        assertThat(header.get(index++)).isEqualTo(User.SHORT_TRAINED_CUSTOMER_CARE_B_COLUMN);
+        assertThat(header.get(index++)).isEqualTo(User.SHORT_MARKETING_COLUMN);
+        assertThat(header.get(index++)).isEqualTo(User.SHORT_MODERATORS_COLUMN);
+        assertThat(header.get(index++)).isEqualTo(User.SHORT_TRUST_LEVEL_4_COLUMN);
+        assertThat(header.get(index++)).isEqualTo(User.SHORT_SPECIALIST_COLUMN);
+        assertThat(header.get(index++)).isEqualTo(User.SHORT_LOGISTICS_COLUMN);
+        assertThat(header.get(index++)).isEqualTo(User.SHORT_BHS_COLUMN);
+        assertThat(header.get(index++)).isEqualTo(User.SHORT_CUSTOMER_INFO_COLUMN);
+        assertThat(header.get(index++)).isEqualTo(User.SHORT_ADVISOR_COLUMN);
+        assertThat(header.get(index++)).isEqualTo(User.SHORT_BOARD_COLUMN);
+        assertThat(header.get(index++)).isEqualTo(User.SHORT_COORDINATOR_COLUMN);
+        assertThat(header.get(index++)).isEqualTo(User.SHORT_LIMITED_RUNS_COLUMN);
+        assertThat(header.get(index++)).isEqualTo(User.SHORT_AT_RISK_COLUMN);
+        assertThat(header.get(index++)).isEqualTo(User.SHORT_BIKERS_COLUMN);
+        assertThat(header.get(index++)).isEqualTo(User.SHORT_OUT_COLUMN);
+        assertThat(header.get(index++)).isEqualTo(User.SHORT_EVENTS_DRIVER_COLUMN);
+        assertThat(header.get(index++)).isEqualTo(User.SHORT_TRAINED_EVENT_DRIVER_COLUMN);
+        assertThat(header.get(index++)).isEqualTo(User.SHORT_GONE_COLUMN);
+        assertThat(header.get(index++)).isEqualTo(User.SHORT_OTHER_DRIVERS_COLUMN);
+        assertThat(header.get(index++)).isEqualTo(User.SHORT_ADMIN_COLUMN);
+        assertThat(header.get(index++)).isEqualTo(User.SHORT_CONSUMER_REQUEST_COLUMN);
         //noinspection UnusedAssignment
-        assertThat(headerColumns[index++]).isEqualTo(User.SHORT_VOLUNTEER_REQUEST_COLUMN);
+        assertThat(header.get(index++)).isEqualTo(User.SHORT_VOLUNTEER_REQUEST_COLUMN);
 
-        // FIX THIS, DS: use CSVReader
-        String[] columns = rows[1].split(Constants.CSV_SEPARATOR, -1);
-        assertThat(headerColumns).hasSameSizeAs(columns);
+        List<String> columns = rows.get(1);
+        assertThat(header).hasSameSizeAs(columns);
 
         index = 0;
-        assertThat(columns[index++]).isEqualTo(String.valueOf(u1.getId()));
-        assertThat(columns[index++]).isEqualTo(u1.getSimpleCreateTime());
-        assertThat(columns[index++]).isEqualTo(u1.getName());
-        assertThat(columns[index++]).isEqualTo(u1.getUserName());
-        assertThat(columns[index++]).isEqualTo(u1.getPhoneNumber());
-        assertThat(columns[index++]).isEqualTo(u1.getAltPhoneNumber());
-        assertThat(columns[index++]).isEqualTo(u1.getNeighborhood());
-        assertThat(columns[index++]).isEqualTo(u1.getCity());
-        assertThat(columns[index++]).isEqualTo(u1.getAddress());
-        assertThat(columns[index++]).isEqualTo(String.valueOf(u1.isCondo()));
-        assertThat(columns[index++]).isEqualTo(String.valueOf(u1.getReferral()));
-        assertThat(columns[index++]).isEqualTo(String.valueOf(u1.isConsumer()));
-        assertThat(columns[index++]).isEqualTo(String.valueOf(u1.isVoiceOnly()));
-        assertThat(columns[index++]).isEqualTo(String.valueOf(u1.isFRVoiceOnly()));
-        assertThat(columns[index++]).isEqualTo(String.valueOf(u1.isDriver()));
-        assertThat(columns[index++]).isEqualTo(String.valueOf(u1.isTrainedDriver()));
-        assertThat(columns[index++]).isEqualTo(String.valueOf(u1.isDispatcher()));
-        assertThat(columns[index++]).isEqualTo(String.valueOf(u1.isWorkflow()));
-        assertThat(columns[index++]).isEqualTo(String.valueOf(u1.isInReach()));
-        assertThat(columns[index++]).isEqualTo(String.valueOf(u1.isOutReach()));
-        assertThat(columns[index++]).isEqualTo(String.valueOf(u1.isHelpLine()));
-        assertThat(columns[index++]).isEqualTo(String.valueOf(u1.isSiteLine()));
-        assertThat(columns[index++]).isEqualTo(String.valueOf(u1.isTrainedCustomerCareA()));
-        assertThat(columns[index++]).isEqualTo(String.valueOf(u1.isTrainedCustomerCareB()));
-        assertThat(columns[index++]).isEqualTo(String.valueOf(u1.isMarketing()));
-        assertThat(columns[index++]).isEqualTo(String.valueOf(u1.isModerator()));
-        assertThat(columns[index++]).isEqualTo(String.valueOf(u1.isTrustLevel4()));
-        assertThat(columns[index++]).isEqualTo(String.valueOf(u1.isSpecialist()));
-        assertThat(columns[index++]).isEqualTo(String.valueOf(u1.isLogistics()));
-        assertThat(columns[index++]).isEqualTo(String.valueOf(u1.isBHS()));
-        assertThat(columns[index++]).isEqualTo(String.valueOf(u1.isCustomerInfo()));
-        assertThat(columns[index++]).isEqualTo(String.valueOf(u1.isAdvisor()));
-        assertThat(columns[index++]).isEqualTo(String.valueOf(u1.isBoard()));
-        assertThat(columns[index++]).isEqualTo(String.valueOf(u1.isCoordinator()));
-        assertThat(columns[index++]).isEqualTo(String.valueOf(u1.isLimitedRuns()));
-        assertThat(columns[index++]).isEqualTo(String.valueOf(u1.isAtRisk()));
-        assertThat(columns[index++]).isEqualTo(String.valueOf(u1.isBiker()));
-        assertThat(columns[index++]).isEqualTo(String.valueOf(u1.isOut()));
-        assertThat(columns[index++]).isEqualTo(String.valueOf(u1.isEventDriver()));
-        assertThat(columns[index++]).isEqualTo(String.valueOf(u1.isTrainedEventDriver()));
-        assertThat(columns[index++]).isEqualTo(String.valueOf(u1.isGone()));
-        assertThat(columns[index++]).isEqualTo(String.valueOf(u1.isOtherDrivers()));
-        assertThat(columns[index++]).isEqualTo(String.valueOf(u1.isAdmin()));
-        assertThat(columns[index++]).isEqualTo(String.valueOf(u1.hasConsumerRequest()));
+        assertThat(columns.get(index++)).isEqualTo(String.valueOf(u1.getId()));
+        assertThat(columns.get(index++)).isEqualTo(u1.getSimpleCreateTime());
+        assertThat(columns.get(index++)).isEqualTo(u1.getName());
+        assertThat(columns.get(index++)).isEqualTo(u1.getUserName());
+        assertThat(columns.get(index++)).isEqualTo(u1.getPhoneNumber());
+        assertThat(columns.get(index++)).isEqualTo(u1.getAltPhoneNumber());
+        assertThat(columns.get(index++)).isEqualTo(u1.getNeighborhood());
+        assertThat(columns.get(index++)).isEqualTo(u1.getCity());
+        assertThat(columns.get(index++)).isEqualTo(u1.getAddress());
+        assertThat(columns.get(index++)).isEqualTo(String.valueOf(u1.isCondo()));
+        assertThat(columns.get(index++)).isEqualTo(String.valueOf(u1.getReferral()));
+        assertThat(columns.get(index++)).isEqualTo(String.valueOf(u1.isConsumer()));
+        assertThat(columns.get(index++)).isEqualTo(String.valueOf(u1.isVoiceOnly()));
+        assertThat(columns.get(index++)).isEqualTo(String.valueOf(u1.isFRVoiceOnly()));
+        assertThat(columns.get(index++)).isEqualTo(String.valueOf(u1.isDriver()));
+        assertThat(columns.get(index++)).isEqualTo(String.valueOf(u1.isTrainedDriver()));
+        assertThat(columns.get(index++)).isEqualTo(String.valueOf(u1.isDispatcher()));
+        assertThat(columns.get(index++)).isEqualTo(String.valueOf(u1.isWorkflow()));
+        assertThat(columns.get(index++)).isEqualTo(String.valueOf(u1.isInReach()));
+        assertThat(columns.get(index++)).isEqualTo(String.valueOf(u1.isOutReach()));
+        assertThat(columns.get(index++)).isEqualTo(String.valueOf(u1.isHelpLine()));
+        assertThat(columns.get(index++)).isEqualTo(String.valueOf(u1.isSiteLine()));
+        assertThat(columns.get(index++)).isEqualTo(String.valueOf(u1.isTrainedCustomerCareA()));
+        assertThat(columns.get(index++)).isEqualTo(String.valueOf(u1.isTrainedCustomerCareB()));
+        assertThat(columns.get(index++)).isEqualTo(String.valueOf(u1.isMarketing()));
+        assertThat(columns.get(index++)).isEqualTo(String.valueOf(u1.isModerator()));
+        assertThat(columns.get(index++)).isEqualTo(String.valueOf(u1.isTrustLevel4()));
+        assertThat(columns.get(index++)).isEqualTo(String.valueOf(u1.isSpecialist()));
+        assertThat(columns.get(index++)).isEqualTo(String.valueOf(u1.isLogistics()));
+        assertThat(columns.get(index++)).isEqualTo(String.valueOf(u1.isBHS()));
+        assertThat(columns.get(index++)).isEqualTo(String.valueOf(u1.isCustomerInfo()));
+        assertThat(columns.get(index++)).isEqualTo(String.valueOf(u1.isAdvisor()));
+        assertThat(columns.get(index++)).isEqualTo(String.valueOf(u1.isBoard()));
+        assertThat(columns.get(index++)).isEqualTo(String.valueOf(u1.isCoordinator()));
+        assertThat(columns.get(index++)).isEqualTo(String.valueOf(u1.isLimitedRuns()));
+        assertThat(columns.get(index++)).isEqualTo(String.valueOf(u1.isAtRisk()));
+        assertThat(columns.get(index++)).isEqualTo(String.valueOf(u1.isBiker()));
+        assertThat(columns.get(index++)).isEqualTo(String.valueOf(u1.isOut()));
+        assertThat(columns.get(index++)).isEqualTo(String.valueOf(u1.isEventDriver()));
+        assertThat(columns.get(index++)).isEqualTo(String.valueOf(u1.isTrainedEventDriver()));
+        assertThat(columns.get(index++)).isEqualTo(String.valueOf(u1.isGone()));
+        assertThat(columns.get(index++)).isEqualTo(String.valueOf(u1.isOtherDrivers()));
+        assertThat(columns.get(index++)).isEqualTo(String.valueOf(u1.isAdmin()));
+        assertThat(columns.get(index++)).isEqualTo(String.valueOf(u1.hasConsumerRequest()));
         //noinspection UnusedAssignment
-        assertThat(columns[index++]).isEqualTo(u1.getVolunteerRequest());
+        assertThat(columns.get(index++)).isEqualTo(u1.getVolunteerRequest());
     }
 
     @Test
@@ -354,49 +352,49 @@ public class UserExporterTest extends TestBase {
     }
 
     @Test
-    public void workflowColumnsTest() throws UserException, IOException, CsvException {
+    public void workflowColumnsTest() throws UserException {
         User u1 = createTestUser1();
         UserExporter exporter = new UserExporter(List.of(u1));
 
         String workflowRows = exporter.workflow("", new HashMap<>());
-        String[] rows = workflowRows.split("\n");
+        List<List<String>> rows;
+        try (StringReader reader = new StringReader(workflowRows)) {
+            CSVListReader csvReader = new CSVListReader(reader);
+            rows = csvReader.readAllToList();
+        }
         assertThat(rows).hasSize(2);
 
-        String header = rows[0];
-        assertThat(header).isEqualTo(exporter.workflowHeaders().trim());
-
-        String[] headerColumns = header.split(Constants.CSV_SEPARATOR, -1);
+        List<String> header = rows.get(0);
+        assertThat(header).isEqualTo(exporter.workflowHeaders());
 
         // FIX THIS, DS: add a constant for number of columns expected
-        assertThat(headerColumns[0]).isEqualTo(User.CONSUMER_COLUMN);
-        assertThat(headerColumns[1]).isEqualTo(User.DRIVER_COLUMN);
-        assertThat(headerColumns[2]).isEqualTo(User.NAME_COLUMN);
-        assertThat(headerColumns[3]).isEqualTo(User.USERNAME_COLUMN);
-        assertThat(headerColumns[4]).isEqualTo(User.PHONE_NUMBER_COLUMN);
-        assertThat(headerColumns[5]).isEqualTo(User.ALT_PHONE_NUMBER_COLUMN);
-        assertThat(headerColumns[6]).isEqualTo(User.NEIGHBORHOOD_COLUMN);
-        assertThat(headerColumns[7]).isEqualTo(User.CITY_COLUMN);
-        assertThat(headerColumns[8]).isEqualTo(User.ADDRESS_COLUMN);
-        assertThat(headerColumns[9]).isEqualTo(User.CONDO_COLUMN);
-        // FIX THIS, DS: constant
-        assertThat(headerColumns[10]).isEqualTo("Details");
+        int index = 0;
+        assertThat(header.get(index++)).isEqualTo(User.CONSUMER_COLUMN);
+        assertThat(header.get(index++)).isEqualTo(User.DRIVER_COLUMN);
+        assertThat(header.get(index++)).isEqualTo(User.NAME_COLUMN);
+        assertThat(header.get(index++)).isEqualTo(User.USERNAME_COLUMN);
+        assertThat(header.get(index++)).isEqualTo(User.PHONE_NUMBER_COLUMN);
+        assertThat(header.get(index++)).isEqualTo(User.ALT_PHONE_NUMBER_COLUMN);
+        assertThat(header.get(index++)).isEqualTo(User.NEIGHBORHOOD_COLUMN);
+        assertThat(header.get(index++)).isEqualTo(User.CITY_COLUMN);
+        assertThat(header.get(index++)).isEqualTo(User.ADDRESS_COLUMN);
+        assertThat(header.get(index++)).isEqualTo(User.CONDO_COLUMN);
+        assertThat(header.get(index++)).isEqualTo(Constants.WORKFLOW_DETAILS_COLUMN);
 
+        List<String> columns = rows.get(1);
+        assertThat(header).hasSameSizeAs(columns);
 
-        CSVReaderHeaderAware csvReaderHeaderAware = new CSVReaderHeaderAware(new StringReader(workflowRows));
-
-        String[] columns = csvReaderHeaderAware.readNext();
-        assertThat(headerColumns).hasSameSizeAs(columns);
-
-        assertThat(columns[0]).isEqualTo(String.valueOf(u1.isConsumer()));
-        assertThat(columns[1]).isEqualTo(String.valueOf(u1.isDriver()));
-        assertThat(columns[2]).isEqualTo(u1.getName());
-        assertThat(columns[3]).isEqualTo(u1.getUserName());
-        assertThat(columns[4]).isEqualTo(u1.getPhoneNumber());
-        assertThat(columns[5]).isEqualTo(u1.getAltPhoneNumber());
-        assertThat(columns[6]).isEqualTo(u1.getNeighborhood());
-        assertThat(columns[7]).isEqualTo(u1.getCity());
-        assertThat(columns[8]).isEqualTo(u1.getFullAddress());
-        assertThat(columns[9]).isEqualTo(String.valueOf(u1.isCondo()));
+        index = 0;
+        assertThat(columns.get(index++)).isEqualTo(String.valueOf(u1.isConsumer()));
+        assertThat(columns.get(index++)).isEqualTo(String.valueOf(u1.isDriver()));
+        assertThat(columns.get(index++)).isEqualTo(u1.getName());
+        assertThat(columns.get(index++)).isEqualTo(u1.getUserName());
+        assertThat(columns.get(index++)).isEqualTo(u1.getPhoneNumber());
+        assertThat(columns.get(index++)).isEqualTo(u1.getAltPhoneNumber());
+        assertThat(columns.get(index++)).isEqualTo(u1.getNeighborhood());
+        assertThat(columns.get(index++)).isEqualTo(u1.getCity());
+        assertThat(columns.get(index++)).isEqualTo(u1.getFullAddress());
+        assertThat(columns.get(index++)).isEqualTo(String.valueOf(u1.isCondo()));
     }
 
     @Test
@@ -405,61 +403,63 @@ public class UserExporterTest extends TestBase {
         UserExporter exporter = new UserExporter(List.of(u1));
 
         String dispatcherRows = exporter.dispatchers();
-        String[] rows = dispatcherRows.split("\n");
+        List<List<String>> rows;
+        try (StringReader reader = new StringReader(dispatcherRows)) {
+            CSVListReader csvReader = new CSVListReader(reader);
+            rows = csvReader.readAllToList();
+        }
         assertThat(rows).hasSize(2);
 
-        String header = rows[0];
-        assertThat(header).isEqualTo(exporter.dispatchersHeaders().trim());
-
-        // FIX THIS, DS: use CSVReader
-        String[] headerColumns = header.split(Constants.CSV_SEPARATOR, -1);
+        List<String> header = rows.get(0);
+        assertThat(header).isEqualTo(exporter.dispatchersHeaders());
 
         // FIX THIS, DS: add a constant for number of columns expected
-        assertThat(headerColumns[0]).isEqualTo(User.CREATED_AT_COLUMN);
-        assertThat(headerColumns[1]).isEqualTo(User.NAME_COLUMN);
-        assertThat(headerColumns[2]).isEqualTo(User.USERNAME_COLUMN);
-        assertThat(headerColumns[3]).isEqualTo(User.PHONE_NUMBER_COLUMN);
-        assertThat(headerColumns[4]).isEqualTo(User.NEIGHBORHOOD_COLUMN);
-        assertThat(headerColumns[5]).isEqualTo(User.CITY_COLUMN);
-        assertThat(headerColumns[6]).isEqualTo(User.ADDRESS_COLUMN);
-        assertThat(headerColumns[7]).isEqualTo(User.CONDO_COLUMN);
-        assertThat(headerColumns[8]).isEqualTo(User.DRIVER_COLUMN);
-        assertThat(headerColumns[9]).isEqualTo(User.CONSUMER_COLUMN);
-        assertThat(headerColumns[10]).isEqualTo(User.DISPATCHER_COLUMN);
-        assertThat(headerColumns[11]).isEqualTo(User.BHS_COLUMN);
-        assertThat(headerColumns[12]).isEqualTo(User.HELPLINE_COLUMN);
-        assertThat(headerColumns[13]).isEqualTo(User.SITELINE_COLUMN);
-        assertThat(headerColumns[14]).isEqualTo(User.INREACH_COLUMN);
-        assertThat(headerColumns[15]).isEqualTo(User.OUTREACH_COLUMN);
-        assertThat(headerColumns[16]).isEqualTo(User.MARKETING_COLUMN);
-        assertThat(headerColumns[17]).isEqualTo(User.MODERATORS_COLUMN);
-        assertThat(headerColumns[18]).isEqualTo(User.SPECIALIST_COLUMN);
-        assertThat(headerColumns[19]).isEqualTo(User.WORKFLOW_COLUMN);
+        int index = 0;
+        assertThat(header.get(index++)).isEqualTo(User.CREATED_AT_COLUMN);
+        assertThat(header.get(index++)).isEqualTo(User.NAME_COLUMN);
+        assertThat(header.get(index++)).isEqualTo(User.USERNAME_COLUMN);
+        assertThat(header.get(index++)).isEqualTo(User.PHONE_NUMBER_COLUMN);
+        assertThat(header.get(index++)).isEqualTo(User.NEIGHBORHOOD_COLUMN);
+        assertThat(header.get(index++)).isEqualTo(User.CITY_COLUMN);
+        assertThat(header.get(index++)).isEqualTo(User.ADDRESS_COLUMN);
+        assertThat(header.get(index++)).isEqualTo(User.CONDO_COLUMN);
+        assertThat(header.get(index++)).isEqualTo(User.DRIVER_COLUMN);
+        assertThat(header.get(index++)).isEqualTo(User.CONSUMER_COLUMN);
+        assertThat(header.get(index++)).isEqualTo(User.DISPATCHER_COLUMN);
+        assertThat(header.get(index++)).isEqualTo(User.BHS_COLUMN);
+        assertThat(header.get(index++)).isEqualTo(User.HELPLINE_COLUMN);
+        assertThat(header.get(index++)).isEqualTo(User.SITELINE_COLUMN);
+        assertThat(header.get(index++)).isEqualTo(User.INREACH_COLUMN);
+        assertThat(header.get(index++)).isEqualTo(User.OUTREACH_COLUMN);
+        assertThat(header.get(index++)).isEqualTo(User.MARKETING_COLUMN);
+        assertThat(header.get(index++)).isEqualTo(User.MODERATORS_COLUMN);
+        assertThat(header.get(index++)).isEqualTo(User.SPECIALIST_COLUMN);
+        assertThat(header.get(index++)).isEqualTo(User.WORKFLOW_COLUMN);
 
-        // FIX THIS, DS: use CSVReader
-        String[] columns = rows[1].split(Constants.CSV_SEPARATOR, -1);
-        assertThat(headerColumns).hasSameSizeAs(columns);
+        List<String> columns = rows.get(1);
+        assertThat(header).hasSameSizeAs(columns);
 
-        assertThat(columns[0]).isEqualTo(u1.getSimpleCreateTime());
-        assertThat(columns[1]).isEqualTo(u1.getName());
-        assertThat(columns[2]).isEqualTo(u1.getUserName());
-        assertThat(columns[3]).isEqualTo(u1.getPhoneNumber());
-        assertThat(columns[4]).isEqualTo(u1.getNeighborhood());
-        assertThat(columns[5]).isEqualTo(u1.getCity());
-        assertThat(columns[6]).isEqualTo(u1.getAddress());
-        assertThat(columns[7]).isEqualTo(String.valueOf(u1.isCondo()));
-        assertThat(columns[8]).isEqualTo(String.valueOf(u1.isDriver()));
-        assertThat(columns[9]).isEqualTo(String.valueOf(u1.isConsumer()));
-        assertThat(columns[10]).isEqualTo(String.valueOf(u1.isDispatcher()));
-        assertThat(columns[11]).isEqualTo(String.valueOf(u1.isBHS()));
-        assertThat(columns[12]).isEqualTo(String.valueOf(u1.isHelpLine()));
-        assertThat(columns[13]).isEqualTo(String.valueOf(u1.isSiteLine()));
-        assertThat(columns[14]).isEqualTo(String.valueOf(u1.isInReach()));
-        assertThat(columns[15]).isEqualTo(String.valueOf(u1.isOutReach()));
-        assertThat(columns[16]).isEqualTo(String.valueOf(u1.isMarketing()));
-        assertThat(columns[17]).isEqualTo(String.valueOf(u1.isModerator()));
-        assertThat(columns[18]).isEqualTo(String.valueOf(u1.isSpecialist()));
-        assertThat(columns[19]).isEqualTo(String.valueOf(u1.isWorkflow()));
+        index = 0;
+        assertThat(columns.get(index++)).isEqualTo(u1.getSimpleCreateTime());
+        assertThat(columns.get(index++)).isEqualTo(u1.getName());
+        assertThat(columns.get(index++)).isEqualTo(u1.getUserName());
+        assertThat(columns.get(index++)).isEqualTo(u1.getPhoneNumber());
+        assertThat(columns.get(index++)).isEqualTo(u1.getNeighborhood());
+        assertThat(columns.get(index++)).isEqualTo(u1.getCity());
+        assertThat(columns.get(index++)).isEqualTo(u1.getAddress());
+        assertThat(columns.get(index++)).isEqualTo(String.valueOf(u1.isCondo()));
+        assertThat(columns.get(index++)).isEqualTo(String.valueOf(u1.isDriver()));
+        assertThat(columns.get(index++)).isEqualTo(String.valueOf(u1.isConsumer()));
+        assertThat(columns.get(index++)).isEqualTo(String.valueOf(u1.isDispatcher()));
+        assertThat(columns.get(index++)).isEqualTo(String.valueOf(u1.isBHS()));
+        assertThat(columns.get(index++)).isEqualTo(String.valueOf(u1.isHelpLine()));
+        assertThat(columns.get(index++)).isEqualTo(String.valueOf(u1.isSiteLine()));
+        assertThat(columns.get(index++)).isEqualTo(String.valueOf(u1.isInReach()));
+        assertThat(columns.get(index++)).isEqualTo(String.valueOf(u1.isOutReach()));
+        assertThat(columns.get(index++)).isEqualTo(String.valueOf(u1.isMarketing()));
+        assertThat(columns.get(index++)).isEqualTo(String.valueOf(u1.isModerator()));
+        assertThat(columns.get(index++)).isEqualTo(String.valueOf(u1.isSpecialist()));
+        assertThat(columns.get(index++)).isEqualTo(String.valueOf(u1.isWorkflow()));
     }
 
     @Test
@@ -478,5 +478,46 @@ public class UserExporterTest extends TestBase {
         assertThat(fileData).doesNotContain(TEST_USER_NAME_3);
 
         Files.delete(Paths.get(fileName));
+    }
+
+    @Test
+    public void allMembersNameWithCommasTest() throws UserException {
+        User u1 = createUserWithName("My name has, one comma");
+        User u2 = createUserWithName("My name, has, two commas");
+
+        UserExporter exporter = new UserExporter(List.of(u1, u2));
+        String exportDataCSV = exporter.allMembersRaw();
+        // Verify that we can parse it
+        List<User> users = HBParser.users(exportDataCSV);
+        assertThat(users).containsExactlyInAnyOrder(u1, u2);
+    }
+
+    @Test
+    public void allMembersRawNameWithQuotesTest() throws UserException {
+        User u1 = createUserWithName("my is \"Bob\"");
+        User u2 = createUserWithName("my \"name\" is \"secret\"");
+
+        UserExporter exporter = new UserExporter(List.of(u1, u2));
+
+        String exportDataCSV = exporter.allMembersRaw();
+        // Verify that we can parse it
+        List<User> users = HBParser.users(exportDataCSV);
+        assertThat(users).containsExactlyInAnyOrder(u1, u2);
+    }
+
+    @Test
+    public void allMembersRawNameWithQuotesAndCommasTest()
+            throws UserException {
+        User u1 = createUserWithName("my is \"Bob\"");
+        User u2 = createUserWithName("my \"name\" is \"secret\"");
+        User u3 = createUserWithName("comma, and \"quotes\" in my name");
+        User u4 = createUserWithName("comma, and \"quotes\" and \"quoted, commas,\" in my name");
+
+        UserExporter exporter = new UserExporter(List.of(u1, u2, u3, u4));
+
+        String exportDataCSV = exporter.allMembersRaw();
+        // Verify that we can parse it
+        List<User> users = HBParser.users(exportDataCSV);
+        assertThat(users).containsExactlyInAnyOrder(u1, u2, u3, u4);
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021. helpberkeley.org
+ * Copyright (c) 2021-2024. helpberkeley.org
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -34,7 +34,7 @@ public class BuilderConstants {
     public static final String CONTROL_BLOCK_END_ROW =
             "FALSE,FALSE," + Constants.CONTROL_BLOCK_END + ",,,,,,,,,,,,\n";
     public static final String CONTROL_BLOCK_VERSION_ROW =
-            "FALSE,FALSE,,Version,,,,2-0-0,,,,,,,\n";
+            "FALSE,FALSE,,Version,,,," + Constants.CONTROL_BLOCK_VERSION_200 + ",,,,,,,\n";
     public static final String DEFAULT_CONSUMER_NAME = "Cust name 1";
     public static final String DEFAULT_CONSUMER_USER_NAME = "cust1";
     public static final String DEFAULT_RESTAURANT_NAME = "Cafe Raj";

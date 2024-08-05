@@ -42,13 +42,12 @@ public abstract class WorkflowParser {
     protected int lineNumber = 1;
     protected final PeekingIterator<WorkflowBean> iterator;
     protected Map<String, Restaurant> globalRestaurants;
-    protected final String normalizedCSVData;
+    protected final String csvData;
 
     protected WorkflowParser(final String csvData) {
-        // Normalize EOL
-        normalizedCSVData = csvData.replaceAll("\\r\\n?", "\n");
-        controlBlock = ControlBlock.create(normalizedCSVData);
-        iterator = initializeIterator(normalizedCSVData);
+        this.csvData = csvData;
+        controlBlock = ControlBlock.create(csvData);
+        iterator = initializeIterator();
     }
 
     public static WorkflowParser create(Map<String, Restaurant> globalRestaurants, String csvData) {
@@ -72,24 +71,23 @@ public abstract class WorkflowParser {
         return workflowParser;
     }
 
-    protected abstract List<WorkflowBean> parse(String csvData);
+    protected abstract List<WorkflowBean> parse();
     /**
      * Check for missing columns.
-     * @param csvData Normalized workflow spreadsheet data
      * @throws MemberDataException If there are any missing columns.
      */
-    protected abstract void auditColumnNames(final String csvData);
+    protected abstract void auditColumnNames();
 
     protected abstract Delivery processDelivery(WorkflowBean bean);
     protected abstract void versionSpecificAudit(Driver driver);
     protected abstract void auditDeliveryBeforePickup(Driver driver);
     protected abstract void auditPickupDeliveryMismatch(Driver driver);
 
-    private PeekingIterator<WorkflowBean> initializeIterator(final String csvData) {
+    private PeekingIterator<WorkflowBean> initializeIterator() {
         assert ! csvData.isEmpty() : "empty workflow";
-        auditColumnNames(csvData);
+        auditColumnNames();
 
-        List<WorkflowBean> workflowBeans = parse(csvData);
+        List<WorkflowBean> workflowBeans = parse();
         return Iterators.peekingIterator(workflowBeans.iterator());
     }
 

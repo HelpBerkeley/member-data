@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-2024. helpberkeley.org
+ * Copyright (c) 2024 helpberkeley.org
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,42 +22,50 @@
  */
 package org.helpberkeley.memberdata;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.opencsv.CSVReader;
+import com.opencsv.exceptions.CsvException;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
+import java.io.Reader;
+import java.util.ArrayList;
+import java.util.List;
 
-public class Exporter {
+public class CSVListReader extends CSVReader {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(Exporter.class);
-
-    protected final String separator = Constants.CSV_SEPARATOR;
-
-    public String generateFileName(String fileName, String suffix) {
-        String timestamp = ZonedDateTime.now(ZoneId.systemDefault()).
-                format(DateTimeFormatter.ofPattern("uuMMdd-HHmm-ss"));
-        return fileName + '-' + timestamp + '.' + suffix;
+    public CSVListReader(Reader reader) {
+        super(reader);
     }
 
-    public void writeFile(final String fileName, final String fileData) {
+    public List<List<String>> readAllToList() {
+        List<String[]> rows;
         try {
-            Path filePath = Paths.get(fileName);
-            Files.deleteIfExists(filePath);
-            Files.createFile(filePath);
-            Files.writeString(filePath, fileData);
-            LOGGER.trace("Wrote: {}", fileName);
-        } catch (IOException ex) {
+            rows = readAll();
+        } catch (IOException | CsvException ex) {
             throw new MemberDataException(ex);
         }
+        List<List<String>> listOfLists = new ArrayList<>();
+
+        for (String[] array : rows) {
+            List<String> list = new ArrayList<>();
+            for (String s: array) {
+                list.add(s.trim());
+            }
+            listOfLists.add(list);
+        }
+        return listOfLists;
     }
 
-    public String shortBoolean(boolean value) {
-        return value ? "Y" : "N";
+    public List<String> readNextToList() {
+        String[] row;
+        try {
+            row = readNext();
+        } catch (IOException | CsvException ex) {
+            throw new MemberDataException(ex);
+        }
+        List<String> rowList = new ArrayList<>();
+        for (String s: row) {
+            rowList.add(s.trim());
+        }
+        return rowList;
     }
 }

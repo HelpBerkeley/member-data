@@ -24,6 +24,7 @@ package org.helpberkeley.memberdata;
 
 import org.junit.Test;
 
+import java.io.StringReader;
 import java.text.MessageFormat;
 import java.util.Collections;
 import java.util.List;
@@ -50,10 +51,15 @@ public abstract class WorkflowHBParserBaseTest extends TestBase {
         String controlBlock = getMinimumControlBlock();
         // Remove header line
         String headerless = controlBlock.substring(controlBlock.indexOf('\n') + 1 );
+        List<String> badHeader;
+        try (StringReader reader = new StringReader(headerless)) {
+            CSVListReader csvReader = new CSVListReader(reader);
+            badHeader = csvReader.readNextToList();
+        }
         Throwable thrown = catchThrowable(() -> DriverPostFormat.create(createApiSimulator(), users, headerless));
         assertThat(thrown).isInstanceOf(MemberDataException.class);
         assertThat(thrown).hasMessage(MessageFormat.format(
-                ControlBlock.MISSING_OR_INVALID_HEADER_ROW, "duplicate element: FALSE"));
+                ControlBlock.MISSING_OR_INVALID_HEADER_ROW, badHeader.toString()));
     }
 
     @Test

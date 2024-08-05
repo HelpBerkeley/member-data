@@ -65,8 +65,6 @@ public abstract class RestaurantTemplateParser {
 
     public static RestaurantTemplateParser create(String csvData) {
 
-        // Normalize EOL
-        String normalizedCSV = csvData.replaceAll("\\r\\n?", "\n");
         ControlBlock controlBlock;
 
         if (csvData.isEmpty()) {
@@ -74,7 +72,7 @@ public abstract class RestaurantTemplateParser {
         }
 
         try {
-            controlBlock = ControlBlock.create(normalizedCSV);
+            controlBlock = ControlBlock.create(csvData);
         } catch (MemberDataException ex) {
             throw new MemberDataException(TEMPLATE_ERROR + "\n" + ex.getMessage());
         }
@@ -83,9 +81,9 @@ public abstract class RestaurantTemplateParser {
         if (version.equals(Constants.CONTROL_BLOCK_VERSION_UNKNOWN)) {
             throw new MemberDataException("Restaurant template is missing the control block");
         } else if (controlBlock.versionIsCompatible(Constants.CONTROL_BLOCK_VERSION_200)) {
-            return new RestaurantTemplateParserV200(controlBlock, normalizedCSV);
+            return new RestaurantTemplateParserV200(controlBlock, csvData);
         } else if (controlBlock.versionIsCompatible(Constants.CONTROL_BLOCK_VERSION_300)) {
-            return new RestaurantTemplateParserV300(controlBlock, normalizedCSV);
+            return new RestaurantTemplateParserV300(controlBlock, csvData);
         } else {
             throw new MemberDataException(MessageFormat.format(
                     ControlBlock.UNSUPPORTED_VERSION_FOR, version, "restaurant templates."));

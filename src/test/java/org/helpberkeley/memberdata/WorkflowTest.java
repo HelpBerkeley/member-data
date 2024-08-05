@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020. helpberkeley.org
+ * Copyright (c) 2020-2024. helpberkeley.org
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,10 +22,10 @@
  */
 package org.helpberkeley.memberdata;
 
-import com.opencsv.exceptions.CsvException;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.io.StringWriter;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.HashMap;
@@ -38,7 +38,7 @@ import static org.assertj.core.api.ThrowableAssert.catchThrowable;
 public class WorkflowTest extends TestBase {
 
     @Test
-    public void workflowToFileTest() throws UserException, IOException, CsvException {
+    public void workflowToFileTest() throws UserException, IOException {
 
         User u1 = createUserWithGroup(TEST_USER_NAME_1, Constants.GROUP_CONSUMERS);
         User u2 = createUserWithGroup(TEST_USER_NAME_2, Constants.GROUP_DRIVERS);
@@ -60,18 +60,25 @@ public class WorkflowTest extends TestBase {
     public void badRestaurantHeadersTest() {
         UserExporter exporter = new UserExporter(List.of());
 
-        String badRestauarantTemplate = "These,are,not,the,droids,we,are,looking,for";
-        Throwable thrown = catchThrowable(() -> exporter.workflow(badRestauarantTemplate, Map.of()));
-        assertThat(thrown).isInstanceOf(Error.class);
+        List<String> badHeaders = List.of(
+                "These","are","not","the","droids","we","are","looking","for");
+        String badRestaurantTemplate = badHeaders.toString();
+
+        Throwable thrown = catchThrowable(() -> exporter.workflow(badRestaurantTemplate, Map.of()));
+        assertThat(thrown).isInstanceOf(MemberDataException.class);
         assertThat(thrown).hasMessageContaining("Header mismatch");
-        assertThat(thrown).hasMessageContaining(badRestauarantTemplate);
+        assertThat(thrown).hasMessageContaining(badHeaders.toString());
     }
 
     @Test
-    public void badRestaurantRowsTest() {
+    public void badRestaurantRowsTest() throws IOException {
         UserExporter exporter = new UserExporter(List.of());
-
-        String restaurantTemplate = exporter.workflowHeaders() + "these,ducks are, not in,a, row\n";
+        String restaurantTemplate;
+        try (StringWriter writer = new StringWriter()) {
+            CSVListWriter csvWriter = new CSVListWriter(writer);
+            csvWriter.writeNextToList(exporter.workflowHeaders());
+            restaurantTemplate = writer + "these,ducks are, not in,a, row\n";
+        }
 
         Throwable thrown = catchThrowable(() -> exporter.workflow(restaurantTemplate, Map.of()));
         assertThat(thrown).isInstanceOf(Error.class);

@@ -22,6 +22,8 @@
  */
 package org.helpberkeley.memberdata;
 
+import java.util.List;
+
 public interface WorkflowBean {
     String getVersion();
 
@@ -56,8 +58,8 @@ public interface WorkflowBean {
     String getControlBlockKey();
     String getControlBlockValue();
     String getGMapURL();
-    String toCSVString();
-    String getCSVHeader();
+    List<String> toCSVListRow();
+    List<String> getCSVHeader();
 
     default String unsupported(String columnName) {
         throw new MemberDataException("Column heading \""

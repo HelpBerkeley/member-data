@@ -192,13 +192,19 @@ public class HBParser {
     }
 
     // From raw form
-    static List<User> users(final String csvData) throws IOException, CsvException {
+    static List<User> users(final String csvData) {
 
-        CSVReader cvsReader = new CSVReader(new StringReader(csvData));
-        List<String[]> lines = cvsReader.readAll();
-        assert ! lines.isEmpty();
+        List<String[]> lines;
+
+        try (StringReader stringReader = new StringReader(csvData)) {
+            CSVReader cvsReader = new CSVReader(stringReader);
+            lines = cvsReader.readAll();
+            assert !lines.isEmpty();
+        } catch (IOException | CsvException ex) {
+            throw new MemberDataException(ex);
+        }
+
         String[] headers = lines.get(0);
-
         assert headers.length == 51 : headers.length;
 
         int index = 0;
@@ -808,14 +814,15 @@ public class HBParser {
         return confirmations;
     }
 
-    static List<UserOrder> parseOrders(String fileName, String deliveryData) throws IOException, CsvException {
+    static List<UserOrder> parseOrders(String fileName, String deliveryData) {
         List<UserOrder> userOrders = new ArrayList<>();
 
-        // Normalize EOL
-        String csvData = deliveryData.replaceAll("\\r\\n?", "\n");
-
-        CSVReader csvReader = new CSVReader(new StringReader(csvData));
-        List<String[]> rows = csvReader.readAll();
+        List<String[]> rows;
+        try (StringReader reader = new StringReader(deliveryData)) {
+            rows = new CSVReader(reader).readAll();
+        } catch (IOException | CsvException ex) {
+            throw new MemberDataException(ex);
+        }
         assert ! rows.isEmpty() : "parseOrders empty delivery data from " + fileName;
 
         DeliveryColumns indexes = new DeliveryColumns(fileName, rows.get(0));
@@ -857,14 +864,15 @@ public class HBParser {
         return userOrders;
     }
 
-    static Collection<String> parseDeliveryDrivers(String fileName, String deliveryData) throws IOException, CsvException {
+    static Collection<String> parseDeliveryDrivers(String fileName, String deliveryData) {
         Set<String> drivers = new HashSet<>();
 
-        // Normalize EOL
-        String csvData = deliveryData.replaceAll("\\r\\n?", "\n");
-
-        CSVReader csvReader = new CSVReader(new StringReader(csvData));
-        List<String[]> rows = csvReader.readAll();
+        List<String[]> rows;
+        try (StringReader reader = new StringReader(deliveryData)) {
+            rows = new CSVReader(reader).readAll();
+        } catch (IOException | CsvException ex) {
+            throw new MemberDataException(ex);
+        }
         assert ! rows.isEmpty() : "parseOrders empty delivery data from " + fileName;
 
         DeliveryColumns indexes = new DeliveryColumns(fileName, rows.get(0));
@@ -883,14 +891,15 @@ public class HBParser {
     }
 
     static Collection<String> parseOneKitchenDeliveryDrivers(
-            String fileName, String deliveryData) throws IOException, CsvException {
+            String fileName, String deliveryData) {
         Set<String> drivers = new HashSet<>();
 
-        // Normalize EOL
-        String csvData = deliveryData.replaceAll("\\r\\n?", "\n");
-
-        CSVReader csvReader = new CSVReader(new StringReader(csvData));
-        List<String[]> rows = csvReader.readAll();
+        List<String[]> rows;
+        try (StringReader reader = new StringReader(deliveryData)) {
+            rows = new CSVReader(reader).readAll();
+        } catch (IOException | CsvException ex) {
+            throw new MemberDataException(ex);
+        }
         assert ! rows.isEmpty() : "parseOrders empty delivery data from " + fileName;
 
         OneKitchenDeliveryColumns indexes = new OneKitchenDeliveryColumns(fileName, rows.get(0));

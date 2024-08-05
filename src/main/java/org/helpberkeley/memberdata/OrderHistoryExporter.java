@@ -22,8 +22,6 @@
  */
 package org.helpberkeley.memberdata;
 
-import java.io.IOException;
-
 public class OrderHistoryExporter extends Exporter {
 
     private final OrderHistory orderHistory;
@@ -32,7 +30,7 @@ public class OrderHistoryExporter extends Exporter {
         this.orderHistory = orderHistory;
     }
 
-    String orderHistoryToFile() throws IOException {
+    String orderHistoryToFile() {
 
         String outputFileName = generateFileName(Constants.ORDER_HISTORY_FILE, "csv");
         writeFile(outputFileName, orderHistory());

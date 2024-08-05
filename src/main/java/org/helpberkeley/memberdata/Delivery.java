@@ -116,12 +116,4 @@ public abstract class Delivery implements ItineraryStop {
     public String getFullAddress() {
         return address + ", " + city + ", " + "CA";
     }
-
-    protected final String csvEscapeCommas(String value) {
-        if (value.contains(",")) {
-            return "\"" + value + "\"";
-        } else {
-            return value;
-        }
-    }
 }
