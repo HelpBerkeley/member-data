@@ -22,14 +22,27 @@
  */
 package org.helpberkeley.memberdata.v200;
 
+import org.helpberkeley.memberdata.DetailsPost;
+import org.helpberkeley.memberdata.UserExporter;
 import org.helpberkeley.memberdata.WorkflowExporterTestBase;
 
-import java.io.IOException;
+import java.util.Map;
 
 public class WorkflowExporterTestV202 extends WorkflowExporterTestBase {
 
     @Override
-    public String getResourceFile() throws IOException {
+    public String getResourceFile() {
         return readResourceFile("update-member-data-v202.csv");
+    }
+
+    @Override
+    public String getRestaurantTemplate() {
+        return readResourceFile("restaurant-template-v202.csv");
+    }
+
+    @Override
+    public String generateWorkflow(UserExporter exporter, String restaurantTemplate,
+                   Map<String, DetailsPost> details) {
+        return exporter.workflow(restaurantTemplate, details);
     }
 }

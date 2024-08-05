@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021. helpberkeley.org
+ * Copyright (c) 2021-2024. helpberkeley.org
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -68,6 +68,11 @@ public class ControlBlockTest extends ControlBlockTestBase {
     @Override
     public String getVersionRow() {
         return CONTROL_BLOCK_VERSION_ROW;
+    }
+
+    @Override
+    public String getVersion() {
+        return Constants.CONTROL_BLOCK_VERSION_200;
     }
 
     @Override

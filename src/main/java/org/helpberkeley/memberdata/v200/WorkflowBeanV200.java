@@ -24,8 +24,10 @@ package org.helpberkeley.memberdata.v200;
 
 import com.opencsv.bean.CsvBindByName;
 import org.helpberkeley.memberdata.Constants;
-import org.helpberkeley.memberdata.Exporter;
 import org.helpberkeley.memberdata.WorkflowBean;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class WorkflowBeanV200 implements WorkflowBean {
 
@@ -251,39 +253,39 @@ public class WorkflowBeanV200 implements WorkflowBean {
         this.orders = orders;
     }
 
-    public String toCSVString() {
-        return Exporter.escapeCommas(consumer) + Constants.CSV_SEPARATOR +
-                Exporter.escapeCommas(driver) + Constants.CSV_SEPARATOR +
-                Exporter.escapeCommas(name) + Constants.CSV_SEPARATOR +
-                Exporter.escapeCommas(userName) + Constants.CSV_SEPARATOR +
-                Exporter.escapeCommas(phone) + Constants.CSV_SEPARATOR +
-                Exporter.escapeCommas(altPhone) + Constants.CSV_SEPARATOR +
-                Exporter.escapeCommas(neighborhood) + Constants.CSV_SEPARATOR +
-                Exporter.escapeCommas(city) + Constants.CSV_SEPARATOR +
-                Exporter.escapeCommas(address) + Constants.CSV_SEPARATOR +
-                Exporter.escapeCommas(condo) + Constants.CSV_SEPARATOR +
-                Exporter.escapeCommas(details) + Constants.CSV_SEPARATOR +
-                Exporter.escapeCommas(restaurant) + Constants.CSV_SEPARATOR +
-                Exporter.escapeCommas(normal) + Constants.CSV_SEPARATOR +
-                Exporter.escapeCommas(veggie) + Constants.CSV_SEPARATOR +
-                Exporter.escapeCommas(orders);
+    public List<String> toCSVListRow() {
+        return new ArrayList<>(List.of(consumer,
+                driver,
+                name,
+                userName,
+                phone,
+                altPhone,
+                neighborhood,
+                city,
+                address,
+                condo,
+                details,
+                restaurant,
+                normal,
+                veggie,
+                orders));
     }
 
-    public String getCSVHeader() {
-        return Constants.WORKFLOW_CONSUMER_COLUMN + Constants.CSV_SEPARATOR +
-                Constants.WORKFLOW_DRIVER_COLUMN + Constants.CSV_SEPARATOR +
-                Constants.WORKFLOW_NAME_COLUMN + Constants.CSV_SEPARATOR +
-                Constants.WORKFLOW_USER_NAME_COLUMN + Constants.CSV_SEPARATOR +
-                Constants.WORKFLOW_PHONE_COLUMN + Constants.CSV_SEPARATOR +
-                Constants.WORKFLOW_ALT_PHONE_COLUMN + Constants.CSV_SEPARATOR +
-                Constants.WORKFLOW_NEIGHBORHOOD_COLUMN + Constants.CSV_SEPARATOR +
-                Constants.WORKFLOW_CITY_COLUMN + Constants.CSV_SEPARATOR +
-                Constants.WORKFLOW_ADDRESS_COLUMN + Constants.CSV_SEPARATOR +
-                Constants.WORKFLOW_CONDO_COLUMN + Constants.CSV_SEPARATOR +
-                Constants.WORKFLOW_DETAILS_COLUMN + Constants.CSV_SEPARATOR +
-                Constants.WORKFLOW_RESTAURANTS_COLUMN + Constants.CSV_SEPARATOR +
-                Constants.WORKFLOW_NORMAL_COLUMN + Constants.CSV_SEPARATOR +
-                Constants.WORKFLOW_VEGGIE_COLUMN + Constants.CSV_SEPARATOR +
-                Constants.WORKFLOW_ORDERS_COLUMN;
+    public List<String> getCSVHeader() {
+        return new ArrayList<>(List.of(Constants.WORKFLOW_CONSUMER_COLUMN,
+                Constants.WORKFLOW_DRIVER_COLUMN,
+                Constants.WORKFLOW_NAME_COLUMN,
+                Constants.WORKFLOW_USER_NAME_COLUMN,
+                Constants.WORKFLOW_PHONE_COLUMN,
+                Constants.WORKFLOW_ALT_PHONE_COLUMN,
+                Constants.WORKFLOW_NEIGHBORHOOD_COLUMN,
+                Constants.WORKFLOW_CITY_COLUMN,
+                Constants.WORKFLOW_ADDRESS_COLUMN,
+                Constants.WORKFLOW_CONDO_COLUMN,
+                Constants.WORKFLOW_DETAILS_COLUMN,
+                Constants.WORKFLOW_RESTAURANTS_COLUMN,
+                Constants.WORKFLOW_NORMAL_COLUMN,
+                Constants.WORKFLOW_VEGGIE_COLUMN,
+                Constants.WORKFLOW_ORDERS_COLUMN));
     }
 }

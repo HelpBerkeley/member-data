@@ -22,11 +22,9 @@
  */
 package org.helpberkeley.memberdata;
 
-import com.opencsv.exceptions.CsvException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
@@ -84,7 +82,7 @@ public class OrderHistory {
      * @param dataPosts Posts from the Order History Data topic
      * @param usersByUserName All members
      */
-    void merge(OrderHistoryDataPosts dataPosts, Map<String, User> usersByUserName) throws IOException, CsvException {
+    void merge(OrderHistoryDataPosts dataPosts, Map<String, User> usersByUserName) {
 
         SortedMap<String, OrderHistoryData> newPosts = dataPosts.getNewPosts();
 
@@ -105,7 +103,7 @@ public class OrderHistory {
     }
 
     private void doMerge(ApiClient apiClient, Map<String, OrderHistoryData> postsToProcess,
-                 Map<String, User> usersByUserName) throws IOException, CsvException {
+                 Map<String, User> usersByUserName) {
 
         // If a reset of the order history has been done, we are going to download
         // all of the delivery files.  Avoid getting rate limited by Discourse, which

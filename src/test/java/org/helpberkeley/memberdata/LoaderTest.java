@@ -22,7 +22,6 @@
 package org.helpberkeley.memberdata;
 
 import com.opencsv.CSVReaderHeaderAware;
-import com.opencsv.exceptions.CsvException;
 import com.opencsv.exceptions.CsvValidationException;
 import org.junit.Test;
 
@@ -42,7 +41,7 @@ public class LoaderTest extends TestBase {
     }
 
     @Test
-    public void loadTest() throws IOException, CsvException {
+    public void loadTest() {
         Loader loader = new Loader(apiClient);
 
         List<User> users = loader.load();

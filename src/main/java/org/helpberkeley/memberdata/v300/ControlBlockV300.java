@@ -75,7 +75,7 @@ public class ControlBlockV300 extends ControlBlock {
     private String grocerySource = "";
     private String messageFormat = null;
 
-    public ControlBlockV300(String header) {
+    public ControlBlockV300(List<String> header) {
          super(header);
     }
 

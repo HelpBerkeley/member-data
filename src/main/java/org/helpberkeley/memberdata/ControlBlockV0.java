@@ -23,9 +23,11 @@
 
 package org.helpberkeley.memberdata;
 
+import java.util.List;
+
 class ControlBlockV0 extends ControlBlock {
 
-     ControlBlockV0(String header) {
+     ControlBlockV0(List<String> header) {
          super(header);
     }
 

@@ -22,19 +22,16 @@
  */
 package org.helpberkeley.memberdata.v300;
 
-import com.opencsv.exceptions.CsvException;
 import org.helpberkeley.memberdata.DriverHistory;
 import org.helpberkeley.memberdata.TestBase;
 import org.junit.Test;
-
-import java.io.IOException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class DriverHistoryTest extends TestBase {
 
     @Test
-    public void oneKitchenDriverHistoryTest() throws IOException, CsvException {
+    public void oneKitchenDriverHistoryTest() {
 
         String history = DriverHistory.generateOneKitchenDriverHistory(createApiSimulator());
         String[] lines = history.split("\n");

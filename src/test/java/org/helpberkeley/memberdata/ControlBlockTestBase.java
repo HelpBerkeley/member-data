@@ -43,6 +43,7 @@ public abstract class ControlBlockTestBase extends TestBase {
     public abstract String getEmptyRow();
     public abstract String getDirectiveRow(String directive);
     public abstract String getKeyValueRow(String key, String value);
+    public abstract String getVersion();
     public abstract void audit(ControlBlock controlBlock);
     protected abstract String addVersionSpecificRequiredVariables();
 
@@ -617,22 +618,6 @@ public abstract class ControlBlockTestBase extends TestBase {
         assertThat(controlBlock.getWarnings()).contains("No BackupDriverUserName set in the control block.\n");
     }
 
-    // FIX THIS, DS: move to generic testing
-//    @Test
-//    public void unsupportedVersionTest() {
-//        String unsupportedVersion = "42";
-//        String workFlowData = HEADER + CONTROL_BLOCK_BEGIN_ROW
-//                + "FALSE,FALSE,,Version,,,,"
-//                + unsupportedVersion
-//                + ",,,,,,,\n"
-//                + CONTROL_BLOCK_END_ROW;
-//
-//        Throwable thrown = catchThrowable(() -> WorkflowParser.create(
-//                WorkflowParser.Mode.DRIVER_MESSAGE_REQUEST, allRestaurants, workFlowData));
-//        assertThat(thrown).isInstanceOf(MemberDataException.class);
-//        assertThat(thrown).hasMessageContaining("Control block version " + unsupportedVersion + " is not supported.\n");
-//    }
-//
     /** Verify audit failure for unknown backup driver */
     @Test
     public void unknownBackupDriverTest() {

@@ -22,6 +22,9 @@
  */
 package org.helpberkeley.memberdata;
 
+import java.io.IOException;
+import java.io.StringReader;
+import java.io.StringWriter;
 import java.text.MessageFormat;
 import java.util.*;
 
@@ -82,17 +85,19 @@ public class WorkflowExporter extends Exporter {
             }
             addBean(bean);
         }
-        //remove trailing commas from header
-        String incomingHeader = parser.normalizedCSVData.substring(0, parser.normalizedCSVData.indexOf('\n')).replaceAll(",*$", "");
-        String updatedCSVData = updatedWorkflowToString();
-        String outgoingHeader = updatedCSVData.substring(0, updatedCSVData.indexOf('\n'));
+        List<String> incomingHeader;
+        try (StringReader reader = new StringReader(parser.csvData)) {
+            CSVListReader csvReader = new CSVListReader(reader);
+            incomingHeader = csvReader.readNextToList();
+        }
+        List<String> outgoingHeader = updatedBeans.get(0).getCSVHeader();
         if (! incomingHeader.equals(outgoingHeader)) {
             errors.append(MessageFormat.format(HEADER_MISMATCH, incomingHeader, outgoingHeader));
         }
         if (errors.length() != 0) {
             throw new MemberDataException(errors.toString());
         }
-        return updatedCSVData;
+        return updatedWorkflowToString();
     }
 
     private void updateUser(User user, WorkflowBean bean, Map<String, DetailsPost> deliveryDetails) {
@@ -103,7 +108,7 @@ public class WorkflowExporter extends Exporter {
         DetailsPost details = deliveryDetails.get(user.getUserName());
 
         String value = user.getName();
-        if (! escapeCommas(value).equals(escapeCommas(bean.getName()))) {
+        if (! value.equals(bean.getName())) {
             bean.setName(value);
             warningString.append(" Updated |");
         } else {
@@ -124,21 +129,21 @@ public class WorkflowExporter extends Exporter {
             warningString.append(" |");
         }
         value = user.getNeighborhood();
-        if (! escapeCommas(value).equals(escapeCommas(bean.getNeighborhood()))) {
+        if (! value.equals(bean.getNeighborhood())) {
             bean.setNeighborhood(value);
             warningString.append(" Updated |");
         } else {
             warningString.append(" |");
         }
         value = user.getCity();
-        if (! escapeCommas(value).equals(escapeCommas(bean.getCity()))) {
+        if (! value.equals(bean.getCity())) {
             bean.setCity(value);
             warningString.append(" Updated |");
         } else {
             warningString.append(" |");
         }
         value = user.getFullAddress();
-        if (! escapeCommas(value).equals(escapeCommas(bean.getAddress()))) {
+        if (! value.equals(bean.getAddress())) {
             bean.setAddress(value);
             warningString.append(" Updated |");
         } else {
@@ -152,7 +157,7 @@ public class WorkflowExporter extends Exporter {
             warningString.append(" |");
         }
         value = details == null ? "" : details.getDetails();
-        if (! escapeCommas(value).equals(escapeCommas(bean.getDetails()))) {
+        if (! value.equals(bean.getDetails())) {
             bean.setDetails(value);
             warningString.append(" Updated |");
         } else {
@@ -171,15 +176,21 @@ public class WorkflowExporter extends Exporter {
     }
 
     private String updatedWorkflowToString() {
-        StringBuilder updatedData = new StringBuilder();
+        try (StringWriter writer = new StringWriter()) {
+            CSVListWriter csvWriter = new CSVListWriter(writer);
+            List<List<String>> updatedData = new ArrayList<>();
 
-        // append header, since bean initializes to row 2
-        updatedData.append(updatedBeans.get(0).getCSVHeader()).append("\n");
-        for (WorkflowBean bean : updatedBeans) {
-            updatedData.append(bean.toCSVString()).append("\n");
+            // append header, since bean initializes to row 2
+            updatedData.add(updatedBeans.get(0).getCSVHeader());
+            for (WorkflowBean bean : updatedBeans) {
+                updatedData.add(bean.toCSVListRow());
+            }
+
+            csvWriter.writeAllToList(updatedData);
+            return writer.toString();
+        } catch (IOException ex) {
+            throw new MemberDataException(ex);
         }
-
-        return updatedData.toString();
     }
 
     public static void setMemberLimit(int limit) {

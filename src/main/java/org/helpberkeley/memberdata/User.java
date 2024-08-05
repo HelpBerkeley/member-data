@@ -30,6 +30,11 @@ import java.util.*;
  */
 public class User {
 
+    public enum ReportHeaderOption {
+        ADD_EMAIL,
+        NO_EMAIL
+    }
+
     static final String ID_FIELD = "id";
 
     static final String ID_COLUMN = "ID";
@@ -687,7 +692,6 @@ public class User {
         removeNewlines();
         removeLeadingTrailingWhitespace();
         // FIX THIS, DS: can we escape them?
-        removeDoubleQuotes();
         auditAndNormalizePhoneNumber();
         auditAndNormalizeAltPhoneNumber();
         auditAndNormalizeCity();
@@ -753,14 +757,6 @@ public class User {
         }
         if (referral != null) {
             referral = referral.strip();
-        }
-    }
-
-    // Must be insensitive to null data
-    private void removeDoubleQuotes() {
-
-        if (name != null) {
-            name = name.replace("\"", "");
         }
     }
 
@@ -1175,233 +1171,236 @@ public class User {
         return user;
     }
 
-    static String reportWithEmailCSVHeaders() {
-        return reportHeaders(true);
+    static List<String> reportWithEmailCSVHeaders() {
+        return reportHeaders(ReportHeaderOption.ADD_EMAIL);
     }
 
-    static String reportCSVHeaders() {
-        return reportHeaders(false);
+    static List<String> reportCSVHeaders() {
+        return reportHeaders(ReportHeaderOption.NO_EMAIL);
     }
 
-    private static String reportHeaders(boolean addEmail) {
+    private static List<String> reportHeaders(ReportHeaderOption option) {
 
-        return SHORT_ID_COLUMN + Constants.CSV_SEPARATOR
-                + SHORT_CREATED_AT_COLUMN + Constants.CSV_SEPARATOR
-                + SHORT_NAME_COLUMN + Constants.CSV_SEPARATOR
-                + SHORT_USERNAME_COLUMN + Constants.CSV_SEPARATOR
-                + (addEmail ? SHORT_EMAIL_COLUMN + Constants.CSV_SEPARATOR : "")
-                + SHORT_PHONE_NUMBER_COLUMN + Constants.CSV_SEPARATOR
-                + SHORT_ALT_PHONE_NUMBER_COLUMN + Constants.CSV_SEPARATOR
-                + SHORT_NEIGHBORHOOD_COLUMN + Constants.CSV_SEPARATOR
-                + SHORT_CITY_COLUMN + Constants.CSV_SEPARATOR
-                + SHORT_ADDRESS_COLUMN + Constants.CSV_SEPARATOR
-                + SHORT_CONDO_COLUMN + Constants.CSV_SEPARATOR
-                + SHORT_REFERRAL_COLUMN + Constants.CSV_SEPARATOR
-                + SHORT_CONSUMER_COLUMN + Constants.CSV_SEPARATOR
-                + SHORT_VOICEONLY_COLUMN + Constants.CSV_SEPARATOR
-                + SHORT_FRVOICEONLY_COLUMN + Constants.CSV_SEPARATOR
-                + SHORT_DRIVER_COLUMN + Constants.CSV_SEPARATOR
-                + SHORT_TRAINED_DRIVER_COLUMN + Constants.CSV_SEPARATOR
-                + SHORT_DISPATCHER_COLUMN + Constants.CSV_SEPARATOR
-                + SHORT_WORKFLOW_COLUMN + Constants.CSV_SEPARATOR
-                + SHORT_INREACH_COLUMN + Constants.CSV_SEPARATOR
-                + SHORT_OUTREACH_COLUMN + Constants.CSV_SEPARATOR
-                + SHORT_HELPLINE_COLUMN + Constants.CSV_SEPARATOR
-                + SHORT_SITELINE_COLUMN + Constants.CSV_SEPARATOR
-                + SHORT_TRAINED_CUSTOMER_CARE_A_COLUMN + Constants.CSV_SEPARATOR
-                + SHORT_TRAINED_CUSTOMER_CARE_B_COLUMN + Constants.CSV_SEPARATOR
-                + SHORT_MARKETING_COLUMN + Constants.CSV_SEPARATOR
-                + SHORT_MODERATORS_COLUMN + Constants.CSV_SEPARATOR
-                + SHORT_TRUST_LEVEL_4_COLUMN + Constants.CSV_SEPARATOR
-                + SHORT_SPECIALIST_COLUMN + Constants.CSV_SEPARATOR
-                + SHORT_LOGISTICS_COLUMN + Constants.CSV_SEPARATOR
-                + SHORT_BHS_COLUMN + Constants.CSV_SEPARATOR
-                + SHORT_CUSTOMER_INFO_COLUMN + Constants.CSV_SEPARATOR
-                + SHORT_ADVISOR_COLUMN + Constants.CSV_SEPARATOR
-                + SHORT_BOARD_COLUMN + Constants.CSV_SEPARATOR
-                + SHORT_COORDINATOR_COLUMN + Constants.CSV_SEPARATOR
-                + SHORT_LIMITED_RUNS_COLUMN + Constants.CSV_SEPARATOR
-                + SHORT_AT_RISK_COLUMN + Constants.CSV_SEPARATOR
-                + SHORT_BIKERS_COLUMN + Constants.CSV_SEPARATOR
-                + SHORT_OUT_COLUMN + Constants.CSV_SEPARATOR
-                + SHORT_EVENTS_DRIVER_COLUMN + Constants.CSV_SEPARATOR
-                + SHORT_TRAINED_EVENT_DRIVER_COLUMN + Constants.CSV_SEPARATOR
-                + SHORT_GONE_COLUMN + Constants.CSV_SEPARATOR
-                + SHORT_OTHER_DRIVERS_COLUMN + Constants.CSV_SEPARATOR
-                + SHORT_ADMIN_COLUMN + Constants.CSV_SEPARATOR
-                + SHORT_CONSUMER_REQUEST_COLUMN + Constants.CSV_SEPARATOR
-                + SHORT_VOLUNTEER_REQUEST_COLUMN
-                + "\n";
+        List<String> headers = new ArrayList<>(List.of(SHORT_ID_COLUMN,
+                SHORT_CREATED_AT_COLUMN, SHORT_NAME_COLUMN,
+                SHORT_USERNAME_COLUMN));
+        if (option == ReportHeaderOption.ADD_EMAIL) {
+            headers.add(SHORT_EMAIL_COLUMN);
+        }
+        List<String> headersContinued = new ArrayList<>(List.of(SHORT_PHONE_NUMBER_COLUMN,
+                SHORT_ALT_PHONE_NUMBER_COLUMN,
+                SHORT_NEIGHBORHOOD_COLUMN,
+                SHORT_CITY_COLUMN,
+                SHORT_ADDRESS_COLUMN,
+                SHORT_CONDO_COLUMN,
+                SHORT_REFERRAL_COLUMN,
+                SHORT_CONSUMER_COLUMN,
+                SHORT_VOICEONLY_COLUMN,
+                SHORT_FRVOICEONLY_COLUMN,
+                SHORT_DRIVER_COLUMN,
+                SHORT_TRAINED_DRIVER_COLUMN,
+                SHORT_DISPATCHER_COLUMN,
+                SHORT_WORKFLOW_COLUMN,
+                SHORT_INREACH_COLUMN,
+                SHORT_OUTREACH_COLUMN,
+                SHORT_HELPLINE_COLUMN,
+                SHORT_SITELINE_COLUMN,
+                SHORT_TRAINED_CUSTOMER_CARE_A_COLUMN,
+                SHORT_TRAINED_CUSTOMER_CARE_B_COLUMN,
+                SHORT_MARKETING_COLUMN,
+                SHORT_MODERATORS_COLUMN,
+                SHORT_TRUST_LEVEL_4_COLUMN,
+                SHORT_SPECIALIST_COLUMN,
+                SHORT_LOGISTICS_COLUMN,
+                SHORT_BHS_COLUMN,
+                SHORT_CUSTOMER_INFO_COLUMN,
+                SHORT_ADVISOR_COLUMN,
+                SHORT_BOARD_COLUMN,
+                SHORT_COORDINATOR_COLUMN,
+                SHORT_LIMITED_RUNS_COLUMN,
+                SHORT_AT_RISK_COLUMN,
+                SHORT_BIKERS_COLUMN,
+                SHORT_OUT_COLUMN,
+                SHORT_EVENTS_DRIVER_COLUMN,
+                SHORT_TRAINED_EVENT_DRIVER_COLUMN,
+                SHORT_GONE_COLUMN,
+                SHORT_OTHER_DRIVERS_COLUMN,
+                SHORT_ADMIN_COLUMN,
+                SHORT_CONSUMER_REQUEST_COLUMN,
+                SHORT_VOLUNTEER_REQUEST_COLUMN));
+
+        headers.addAll(headersContinued);
+        return headers;
     }
 
-    static String rawCSVHeaders() {
+    static List<String> rawCSVHeaders() {
 
-        return ID_COLUMN + Constants.CSV_SEPARATOR
-                + NAME_COLUMN + Constants.CSV_SEPARATOR
-                + USERNAME_COLUMN + Constants.CSV_SEPARATOR
-                + PHONE_NUMBER_COLUMN + Constants.CSV_SEPARATOR
-                + ALT_PHONE_NUMBER_COLUMN + Constants.CSV_SEPARATOR
-                + NEIGHBORHOOD_COLUMN + Constants.CSV_SEPARATOR
-                + CITY_COLUMN + Constants.CSV_SEPARATOR
-                + ADDRESS_COLUMN + Constants.CSV_SEPARATOR
-                + CONSUMER_COLUMN + Constants.CSV_SEPARATOR
-                + VOICEONLY_COLUMN + Constants.CSV_SEPARATOR
-                + FRVOICEONLY_COLUMN + Constants.CSV_SEPARATOR
-                + DISPATCHER_COLUMN + Constants.CSV_SEPARATOR
-                + DRIVER_COLUMN + Constants.CSV_SEPARATOR
-                + TRAINED_DRIVER_COLUMN + Constants.CSV_SEPARATOR
-                + CREATED_AT_COLUMN + Constants.CSV_SEPARATOR
-                + CONDO_COLUMN + Constants.CSV_SEPARATOR
-                + REFERRAL_COLUMN + Constants.CSV_SEPARATOR
-                + EMAIL_VERIFIED_COLUMN + Constants.CSV_SEPARATOR
-                + CONSUMER_REQUEST_COLUMN + Constants.CSV_SEPARATOR
-                + VOLUNTEER_REQUEST_COLUMN + Constants.CSV_SEPARATOR
-                + SPECIALIST_COLUMN + Constants.CSV_SEPARATOR
-                + LOGISTICS_COLUMN + Constants.CSV_SEPARATOR
-                + BHS_COLUMN + Constants.CSV_SEPARATOR
-                + HELPLINE_COLUMN + Constants.CSV_SEPARATOR
-                + SITELINE_COLUMN + Constants.CSV_SEPARATOR
-                + TRAINED_CUSTOMER_CARE_A_COLUMN + Constants.CSV_SEPARATOR
-                + TRAINED_CUSTOMER_CARE_B_COLUMN + Constants.CSV_SEPARATOR
-                + INREACH_COLUMN + Constants.CSV_SEPARATOR
-                + OUTREACH_COLUMN + Constants.CSV_SEPARATOR
-                + MARKETING_COLUMN + Constants.CSV_SEPARATOR
-                + MODERATORS_COLUMN + Constants.CSV_SEPARATOR
-                + TRUST_LEVEL_4_COLUMN + Constants.CSV_SEPARATOR
-                + WORKFLOW_COLUMN + Constants.CSV_SEPARATOR
-                + CUSTOMER_INFO_COLUMN + Constants.CSV_SEPARATOR
-                + ADVISOR_COLUMN + Constants.CSV_SEPARATOR
-                + BOARD_COLUMN + Constants.CSV_SEPARATOR
-                + COORDINATOR_COLUMN + Constants.CSV_SEPARATOR
-                + LIMITED_RUNS_COLUMN + Constants.CSV_SEPARATOR
-                + AT_RISK_COLUMN + Constants.CSV_SEPARATOR
-                + BIKERS_COLUMN + Constants.CSV_SEPARATOR
-                + OUT_COLUMN + Constants.CSV_SEPARATOR
-                + EVENTS_DRIVER_COLUMN + Constants.CSV_SEPARATOR
-                + TRAINED_EVENT_DRIVER_COLUMN + Constants.CSV_SEPARATOR
-                + GONE_COLUMN + Constants.CSV_SEPARATOR
-                + OTHER_DRIVERS_COLUMN + Constants.CSV_SEPARATOR
-                + ADMIN_COLUMN + Constants.CSV_SEPARATOR
-                + GROUPS_OWNED_COLUMN + Constants.CSV_SEPARATOR
-                + MONDAY_FRREG_COLUMN + Constants.CSV_SEPARATOR
-                + WEDNESDAY_FRREG_COLUMN + Constants.CSV_SEPARATOR
-                + THURSDAY_FRREG_COLUMN + Constants.CSV_SEPARATOR
-                + EVOLUNTEERS_COLUMN
-                + "\n";
+        return new ArrayList<>(List.of(ID_COLUMN,
+                NAME_COLUMN,
+                USERNAME_COLUMN,
+                PHONE_NUMBER_COLUMN,
+                ALT_PHONE_NUMBER_COLUMN,
+                NEIGHBORHOOD_COLUMN,
+                CITY_COLUMN,
+                ADDRESS_COLUMN,
+                CONSUMER_COLUMN,
+                VOICEONLY_COLUMN,
+                FRVOICEONLY_COLUMN,
+                DISPATCHER_COLUMN,
+                DRIVER_COLUMN,
+                TRAINED_DRIVER_COLUMN,
+                CREATED_AT_COLUMN,
+                CONDO_COLUMN,
+                REFERRAL_COLUMN,
+                EMAIL_VERIFIED_COLUMN,
+                CONSUMER_REQUEST_COLUMN,
+                VOLUNTEER_REQUEST_COLUMN,
+                SPECIALIST_COLUMN,
+                LOGISTICS_COLUMN,
+                BHS_COLUMN,
+                HELPLINE_COLUMN,
+                SITELINE_COLUMN,
+                TRAINED_CUSTOMER_CARE_A_COLUMN,
+                TRAINED_CUSTOMER_CARE_B_COLUMN,
+                INREACH_COLUMN,
+                OUTREACH_COLUMN,
+                MARKETING_COLUMN,
+                MODERATORS_COLUMN,
+                TRUST_LEVEL_4_COLUMN,
+                WORKFLOW_COLUMN,
+                CUSTOMER_INFO_COLUMN,
+                ADVISOR_COLUMN,
+                BOARD_COLUMN,
+                COORDINATOR_COLUMN,
+                LIMITED_RUNS_COLUMN,
+                AT_RISK_COLUMN,
+                BIKERS_COLUMN,
+                OUT_COLUMN,
+                EVENTS_DRIVER_COLUMN,
+                TRAINED_EVENT_DRIVER_COLUMN,
+                GONE_COLUMN,
+                OTHER_DRIVERS_COLUMN,
+                ADMIN_COLUMN,
+                GROUPS_OWNED_COLUMN,
+                MONDAY_FRREG_COLUMN,
+                WEDNESDAY_FRREG_COLUMN,
+                THURSDAY_FRREG_COLUMN,
+                EVOLUNTEERS_COLUMN));
     }
 
-    String rawToCSV() {
-
-        return getId() + Constants.CSV_SEPARATOR +
-                escapeCommas(getName()) + Constants.CSV_SEPARATOR +
-                getUserName() + Constants.CSV_SEPARATOR +
-                getPhoneNumber() + Constants.CSV_SEPARATOR +
-                getAltPhoneNumber() + Constants.CSV_SEPARATOR +
-                escapeCommas(getNeighborhood()) + Constants.CSV_SEPARATOR +
-                escapeCommas(getCity()) + Constants.CSV_SEPARATOR +
-                escapeCommas(getAddress()) + Constants.CSV_SEPARATOR +
-                isConsumer() + Constants.CSV_SEPARATOR +
-                isVoiceOnly() + Constants.CSV_SEPARATOR +
-                isFRVoiceOnly() + Constants.CSV_SEPARATOR +
-                isDispatcher() + Constants.CSV_SEPARATOR +
-                isDriver() + Constants.CSV_SEPARATOR +
-                isTrainedDriver() + Constants.CSV_SEPARATOR +
-                getCreateTime() + Constants.CSV_SEPARATOR +
-                isCondo() + Constants.CSV_SEPARATOR +
-                escapeCommas(getReferral()) + Constants.CSV_SEPARATOR +
-                getEmailVerified() + Constants.CSV_SEPARATOR +
-                hasConsumerRequest() + Constants.CSV_SEPARATOR +
-                escapeCommas(getVolunteerRequest()) + Constants.CSV_SEPARATOR +
-                isSpecialist() + Constants.CSV_SEPARATOR +
-                isLogistics() + Constants.CSV_SEPARATOR +
-                isBHS() + Constants.CSV_SEPARATOR +
-                isHelpLine() + Constants.CSV_SEPARATOR +
-                isSiteLine() + Constants.CSV_SEPARATOR +
-                isTrainedCustomerCareA() + Constants.CSV_SEPARATOR +
-                isTrainedCustomerCareB() + Constants.CSV_SEPARATOR +
-                isInReach() + Constants.CSV_SEPARATOR +
-                isOutReach() + Constants.CSV_SEPARATOR +
-                isMarketing() + Constants.CSV_SEPARATOR +
-                isModerator() + Constants.CSV_SEPARATOR +
-                isTrustLevel4() + Constants.CSV_SEPARATOR +
-                isWorkflow() + Constants.CSV_SEPARATOR +
-                isCustomerInfo() + Constants.CSV_SEPARATOR +
-                isAdvisor() + Constants.CSV_SEPARATOR +
-                isBoard() + Constants.CSV_SEPARATOR +
-                isCoordinator() + Constants.CSV_SEPARATOR +
-                isLimitedRuns() + Constants.CSV_SEPARATOR +
-                isAtRisk() + Constants.CSV_SEPARATOR +
-                isBiker() + Constants.CSV_SEPARATOR +
-                isOut() + Constants.CSV_SEPARATOR +
-                isEventDriver() + Constants.CSV_SEPARATOR +
-                isTrainedEventDriver() + Constants.CSV_SEPARATOR +
-                isGone() + Constants.CSV_SEPARATOR +
-                isOtherDrivers() + Constants.CSV_SEPARATOR +
-                isAdmin() + Constants.CSV_SEPARATOR +
-                groupsOwned() + Constants.CSV_SEPARATOR +
-                isMondayFrreg() + Constants.CSV_SEPARATOR +
-                isWednesdayFrreg() + Constants.CSV_SEPARATOR +
-                isThursdayFrreg() + Constants.CSV_SEPARATOR +
-                isEVolunteers() +
-                '\n';
+    List<String> rawToCSV() {
+        return new ArrayList<>(List.of(String.valueOf(getId()),
+                getName(),
+                getUserName(),
+                getPhoneNumber(),
+                getAltPhoneNumber(),
+                getNeighborhood(),
+                getCity(),
+                getAddress(),
+                isConsumer().toString(),
+                isVoiceOnly().toString(),
+                isFRVoiceOnly().toString(),
+                isDispatcher().toString(),
+                isDriver().toString(),
+                isTrainedDriver().toString(),
+                getCreateTime(),
+                isCondo().toString(),
+                getReferral(),
+                getEmailVerified().toString(),
+                hasConsumerRequest().toString(),
+                getVolunteerRequest(),
+                isSpecialist().toString(),
+                isLogistics().toString(),
+                isBHS().toString(),
+                isHelpLine().toString(),
+                isSiteLine().toString(),
+                isTrainedCustomerCareA().toString(),
+                isTrainedCustomerCareB().toString(),
+                isInReach().toString(),
+                isOutReach().toString(),
+                isMarketing().toString(),
+                isModerator().toString(),
+                isTrustLevel4().toString(),
+                isWorkflow().toString(),
+                isCustomerInfo().toString(),
+                isAdvisor().toString(),
+                isBoard().toString(),
+                isCoordinator().toString(),
+                isLimitedRuns().toString(),
+                isAtRisk().toString(),
+                isBiker().toString(),
+                isOut().toString(),
+                isEventDriver().toString(),
+                isTrainedEventDriver().toString(),
+                isGone().toString(),
+                isOtherDrivers().toString(),
+                isAdmin().toString(),
+                groupsOwned(),
+                isMondayFrreg().toString(),
+                isWednesdayFrreg().toString(),
+                isThursdayFrreg().toString(),
+                isEVolunteers().toString()));
     }
 
-    String reportWithEMailToCSV(final String emailAddress) {
-        return report(true, emailAddress);
+    List<String> reportWithEMailToCSV(final String emailAddress) {
+        return report(ReportHeaderOption.ADD_EMAIL, emailAddress);
     }
-    String reportToCSV() {
-        return report(false, "");
+    List<String> reportToCSV() {
+        return report(ReportHeaderOption.NO_EMAIL, "");
     }
 
-    private String report(boolean addEmail, final String emailAddress) {
+    private List<String> report(ReportHeaderOption option, final String emailAddress) {
 
-        return getId() + Constants.CSV_SEPARATOR +
-                getSimpleCreateTime() + Constants.CSV_SEPARATOR +
-                escapeCommas(getName()) + Constants.CSV_SEPARATOR +
-                getUserName() + Constants.CSV_SEPARATOR +
-                (addEmail ? emailAddress + Constants.CSV_SEPARATOR : "") +
-                getPhoneNumber() + Constants.CSV_SEPARATOR +
-                getAltPhoneNumber() + Constants.CSV_SEPARATOR +
-                escapeCommas(getNeighborhood()) + Constants.CSV_SEPARATOR +
-                escapeCommas(getCity()) + Constants.CSV_SEPARATOR +
-                escapeCommas(getAddress()) + Constants.CSV_SEPARATOR +
-                isCondo() + Constants.CSV_SEPARATOR +
-                escapeCommas(getReferral()) + Constants.CSV_SEPARATOR +
-                isConsumer() + Constants.CSV_SEPARATOR +
-                isVoiceOnly() + Constants.CSV_SEPARATOR +
-                isFRVoiceOnly() + Constants.CSV_SEPARATOR +
-                isDriver() + Constants.CSV_SEPARATOR +
-                isTrainedDriver() + Constants.CSV_SEPARATOR +
-                isDispatcher() + Constants.CSV_SEPARATOR +
-                isWorkflow() + Constants.CSV_SEPARATOR +
-                isInReach() + Constants.CSV_SEPARATOR +
-                isOutReach() + Constants.CSV_SEPARATOR +
-                isHelpLine() + Constants.CSV_SEPARATOR +
-                isSiteLine() + Constants.CSV_SEPARATOR +
-                isTrainedCustomerCareA() + Constants.CSV_SEPARATOR +
-                isTrainedCustomerCareB() + Constants.CSV_SEPARATOR +
-                isMarketing() + Constants.CSV_SEPARATOR +
-                isModerator() + Constants.CSV_SEPARATOR +
-                isTrustLevel4() + Constants.CSV_SEPARATOR +
-                isSpecialist() + Constants.CSV_SEPARATOR +
-                isLogistics() + Constants.CSV_SEPARATOR +
-                isBHS() + Constants.CSV_SEPARATOR +
-                isCustomerInfo() + Constants.CSV_SEPARATOR +
-                isAdvisor() + Constants.CSV_SEPARATOR +
-                isBoard() + Constants.CSV_SEPARATOR +
-                isCoordinator() + Constants.CSV_SEPARATOR +
-                isLimitedRuns() + Constants.CSV_SEPARATOR +
-                isAtRisk() + Constants.CSV_SEPARATOR +
-                isBiker() + Constants.CSV_SEPARATOR +
-                isOut() + Constants.CSV_SEPARATOR +
-                isEventDriver() + Constants.CSV_SEPARATOR +
-                isTrainedEventDriver() + Constants.CSV_SEPARATOR +
-                isGone() + Constants.CSV_SEPARATOR +
-                isOtherDrivers() + Constants.CSV_SEPARATOR +
-                isAdmin() + Constants.CSV_SEPARATOR +
-                hasConsumerRequest() + Constants.CSV_SEPARATOR +
-                getVolunteerRequest() +
-                '\n';
+        List<String> reportRow = new ArrayList<>(List.of(String.valueOf(getId()),
+                getSimpleCreateTime(),
+                getName(),
+                getUserName()));
+        if (option == ReportHeaderOption.ADD_EMAIL) {
+            reportRow.add(emailAddress);
+        }
+        List<String> reportRowContinued = new ArrayList<>(List.of(getPhoneNumber(),
+                getAltPhoneNumber(),
+                getNeighborhood(),
+                getCity(),
+                getAddress(),
+                isCondo().toString(),
+                getReferral(),
+                isConsumer().toString(),
+                isVoiceOnly().toString(),
+                isFRVoiceOnly().toString(),
+                isDriver().toString(),
+                isTrainedDriver().toString(),
+                isDispatcher().toString(),
+                isWorkflow().toString(),
+                isInReach().toString(),
+                isOutReach().toString(),
+                isHelpLine().toString(),
+                isSiteLine().toString(),
+                isTrainedCustomerCareA().toString(),
+                isTrainedCustomerCareB().toString(),
+                isMarketing().toString(),
+                isModerator().toString(),
+                isTrustLevel4().toString(),
+                isSpecialist().toString(),
+                isLogistics().toString(),
+                isBHS().toString(),
+                isCustomerInfo().toString(),
+                isAdvisor().toString(),
+                isBoard().toString(),
+                isCoordinator().toString(),
+                isLimitedRuns().toString(),
+                isAtRisk().toString(),
+                isBiker().toString(),
+                isOut().toString(),
+                isEventDriver().toString(),
+                isTrainedEventDriver().toString(),
+                isGone().toString(),
+                isOtherDrivers().toString(),
+                isAdmin().toString(),
+                hasConsumerRequest().toString(),
+                getVolunteerRequest()));
+        reportRow.addAll(reportRowContinued);
+        return reportRow;
     }
 
     @Override
@@ -1475,13 +1474,5 @@ public class User {
     @Override
     public int hashCode() {
         return Objects.hash(userName);
-    }
-
-    private String escapeCommas(final String value) {
-        if (value.indexOf(',') == -1) {
-            return value;
-        }
-
-        return "\"" + value + "\"";
     }
 }

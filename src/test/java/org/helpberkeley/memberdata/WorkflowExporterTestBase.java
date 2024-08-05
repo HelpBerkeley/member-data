@@ -31,6 +31,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+
 public abstract class WorkflowExporterTestBase extends TestBase {
 
     @Before
@@ -42,6 +44,12 @@ public abstract class WorkflowExporterTestBase extends TestBase {
     public static void cleanup() throws IOException {
         cleanupGeneratedFiles();
     }
+
+    public abstract String getResourceFile() throws IOException;
+    public abstract String getRestaurantTemplate();
+    public abstract String generateWorkflow(
+            UserExporter exporter, String restaurantTemplate, Map<String, DetailsPost> details)
+            ;
 
     @Test
     public void workflowExporterValidateUpdatedDataTest() throws IOException {
@@ -59,7 +67,40 @@ public abstract class WorkflowExporterTestBase extends TestBase {
         DriverPostFormat driverPostFormatPostUpdate = DriverPostFormat.create(apiSim, users, updatedCSVData);
     }
 
-    public String getResourceFile() throws IOException {
-        return readResourceFile("update-member-data-multiple-updates.csv");
+    @Test
+    public void deliveryDetailsWithPunctuationTest() throws IOException {
+        String deliveries = getResourceFile();
+        WorkflowParser parser = WorkflowParser.create(Collections.emptyMap(), deliveries);
+
+        // Read/parse the members data
+        ApiClient apiSim = createApiSimulator();
+        List<User> users = new Loader(apiSim).load();
+
+        String restaurantTemplate = getRestaurantTemplate();
+
+        // Gin up some punctuated delivery details for the delivery recipients
+        String somebodyDetails = "put the \"bags\", all of them, on the \"bird feeder\"";
+        DetailsPost somebodyDetailsPost = new DetailsPost();
+        somebodyDetailsPost.setDetails(0, somebodyDetails);
+
+        String somebodyElseDetails = "knock not \"once\", not \"twice\", but \"thrice!\"";
+        DetailsPost somebodyElseDetailsPost = new DetailsPost();
+        somebodyElseDetailsPost.setDetails(0, somebodyElseDetails);
+
+        Map<String, DetailsPost> deliveryDetails = Map.of(
+                "Somebody", somebodyDetailsPost,
+                "SomebodyElse", somebodyElseDetailsPost);
+
+        String workflowCSV = generateWorkflow(new UserExporter(users), restaurantTemplate, deliveryDetails);
+
+        for (String line : workflowCSV.split("\n")) {
+            if (line.contains("\"Somebody\"")) {
+                // CSVWriter will have changed "something" to ""something""
+                assertThat(line).contains(somebodyDetails.replaceAll("\"", "\"\""));
+            } else if (line.contains("\"SomebodyElse\"")) {
+                // CSVWriter will have changed "something" to ""something""
+                assertThat(line).contains(somebodyElseDetails.replaceAll("\"", "\"\""));
+            }
+        }
     }
 }

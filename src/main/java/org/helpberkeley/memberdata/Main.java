@@ -21,7 +21,6 @@
 //
 package org.helpberkeley.memberdata;
 
-import com.opencsv.exceptions.CsvException;
 import org.helpberkeley.memberdata.v200.DriverPostFormatV200;
 import org.helpberkeley.memberdata.v300.DriverPostFormatV300;
 import org.slf4j.Logger;
@@ -101,7 +100,7 @@ public class Main {
     static final String UPDATE_USERS_NO_UPDATES = "The uploaded spreadsheet {0} is already up-to-date. " +
             "There are no changes/updates for these members.";
 
-    public static void main(String[] args) throws IOException, CsvException {
+    public static void main(String[] args) throws IOException {
 
         Options options = new Options(args);
         try {
@@ -226,7 +225,7 @@ public class Main {
         return properties;
     }
 
-    private static void fetch(ApiClient apiClient) throws IOException, CsvException {
+    private static void fetch(ApiClient apiClient) {
         // Create a User loader
         Loader loader = new Loader(apiClient);
 
@@ -267,7 +266,7 @@ public class Main {
     }
 
     private static void postConsumerRequests(ApiClient apiClient, final String fileName)
-            throws IOException, CsvException {
+            throws IOException {
 
         String csvData = Files.readString(Paths.get(fileName));
         List<User> users = HBParser.users(csvData);
@@ -315,7 +314,7 @@ public class Main {
     }
 
     private static void postVolunteerRequests(ApiClient apiClient, final String fileName)
-            throws IOException, CsvException {
+            throws IOException {
 
         String csvData = Files.readString(Paths.get(fileName));
         List<User> users = HBParser.users(csvData);
@@ -457,7 +456,7 @@ public class Main {
                 "" : "failed " + response.statusCode() + ": " + response.body());
     }
 
-    private static void generateInreach(ApiClient apiClient, String usersFile) throws IOException, CsvException {
+    private static void generateInreach(ApiClient apiClient, String usersFile) throws IOException {
         String csvData = Files.readString(Paths.get(usersFile));
         List<User> users = HBParser.users(csvData);
 
@@ -475,7 +474,7 @@ public class Main {
     }
 
     private static void generateEmail(ApiClient apiClient, final String usersFile)
-            throws IOException, CsvException {
+            throws IOException {
         String csvData = Files.readString(Paths.get(usersFile));
         List<User> users = HBParser.users(csvData);
 
@@ -485,7 +484,7 @@ public class Main {
     }
 
     private static void generateWorkflow(ApiClient apiClient, final String usersFile, boolean postStatus)
-            throws IOException, CsvException {
+            throws IOException {
 
         // Read/parse the members data
         String csvData = Files.readString(Paths.get(usersFile));
@@ -542,7 +541,7 @@ public class Main {
     }
 
     private static void generateOneKitchenWorkflow(ApiClient apiClient, final String usersFile, boolean postStatus)
-            throws IOException, CsvException {
+            throws IOException {
 
         // Read/parse the members data
         String csvData = Files.readString(Paths.get(usersFile));
@@ -608,7 +607,7 @@ public class Main {
      * @param allMembersFile CSV file of all current members
      */
     private static void driverMessages(ApiClient apiClient, String allMembersFile)
-            throws IOException, CsvException {
+            throws IOException {
         Query query = new Query(
                 Constants.QUERY_GET_LAST_REQUEST_DRIVER_MESSAGES_REPLY, Constants.TOPIC_REQUEST_DRIVER_MESSAGES);
         WorkRequestHandler requestHandler = new WorkRequestHandler(apiClient, query);
@@ -674,7 +673,7 @@ public class Main {
      * @param allMembersFile CSV file of all current members
      */
     private static void oneKitchenDriverMessages(ApiClient apiClient, String allMembersFile)
-            throws IOException, CsvException {
+            throws IOException {
         Query query = new Query(
                 Constants.QUERY_GET_LAST_REQUEST_ONE_KITCHEN_DRIVER_MESSAGES_REPLY,
                 Constants.TOPIC_REQUEST_ONE_KITCHEN_DRIVER_MESSAGES);
@@ -705,7 +704,7 @@ public class Main {
     }
 
     private static void doUpdateMemberData(
-            ApiClient apiClient, WorkRequestHandler.WorkRequest request, Map<String, User> users) throws IOException {
+            ApiClient apiClient, WorkRequestHandler.WorkRequest request, Map<String, User> users) {
 
         String json = apiClient.runQuery(Constants.QUERY_GET_DELIVERY_DETAILS);
         ApiQueryResult apiQueryResult = HBParser.parseQueryResult(json);
@@ -996,7 +995,7 @@ public class Main {
 
     // Process the last request in the Post completed daily orders topic
     private static void completedDailyOrders(
-            ApiClient apiClient, String allMembersFile) throws IOException, CsvException {
+            ApiClient apiClient, String allMembersFile) throws IOException {
         Query query = new Query(
                 Constants.QUERY_GET_LAST_COMPLETED_DAILY_ORDERS_REPLY, Constants.TOPIC_POST_COMPLETED_DAILY_ORDERS);
         WorkRequestHandler requestHandler = new WorkRequestHandler(apiClient, query);
@@ -1102,7 +1101,7 @@ public class Main {
 
     // Process the last request in the Post completed daily orders topic
     private static void completedOneKitchenOrders(
-            ApiClient apiClient, String allMembersFile) throws IOException, CsvException {
+            ApiClient apiClient, String allMembersFile) throws IOException {
         Query query = new Query(Constants.QUERY_GET_LAST_COMPLETED_ONEKITCHEN_ORDERS_REPLY,
                 Constants.TOPIC_POST_COMPLETED_ONEKITCHEN_ORDERS);
         WorkRequestHandler requestHandler = new WorkRequestHandler(apiClient, query);
@@ -1188,7 +1187,7 @@ public class Main {
     }
 
     private static void orderHistory(ApiClient apiClient, String usersFile)
-            throws IOException, CsvException {
+            throws IOException {
 
         // Load users
         String csvData = Files.readString(Paths.get(usersFile));
@@ -1219,7 +1218,7 @@ public class Main {
         orderHistoryDataPosts.updateLastProcessedPost();
     }
 
-    private static void drivers(ApiClient apiClient, String usersFile) throws IOException, CsvException {
+    private static void drivers(ApiClient apiClient, String usersFile) throws IOException {
         // Load users
         String csvData = Files.readString(Paths.get(usersFile));
         List<User> users = HBParser.users(csvData);
@@ -1294,7 +1293,7 @@ public class Main {
         }
     }
 
-    private static void driverHistory(ApiClient apiClient) throws IOException, CsvException {
+    private static void driverHistory(ApiClient apiClient) {
         // Generate the driver history table
         String driverHistoryTable = DriverHistory.generateDriverHistory(apiClient);
 
@@ -1309,7 +1308,7 @@ public class Main {
                 DRIVER_HISTORY_TITLE, DRIVER_HISTORY_POST_ID);
     }
 
-    private static void oneKitchenDriverHistory(ApiClient apiClient) throws IOException, CsvException {
+    private static void oneKitchenDriverHistory(ApiClient apiClient) {
 
         // Generate the OneKitchen driver history table
         String driverHistoryTable = DriverHistory.generateOneKitchenDriverHistory(apiClient);
@@ -1524,7 +1523,7 @@ public class Main {
     }
 
     private static void customerCarePost(
-            ApiClient apiClient, String usersFile) throws IOException, CsvException {
+            ApiClient apiClient, String usersFile) throws IOException {
         // Load users
         String csvData = Files.readString(Paths.get(usersFile));
         List<User> users = HBParser.users(csvData);
@@ -1540,7 +1539,7 @@ public class Main {
     }
 
     private static void frreg(
-            ApiClient apiClient, String usersFile) throws IOException, CsvException {
+            ApiClient apiClient, String usersFile) throws IOException {
         // Load users
         String csvData = Files.readString(Paths.get(usersFile));
         List<User> users = HBParser.users(csvData);
@@ -1555,7 +1554,7 @@ public class Main {
         assert response.statusCode() == HTTP_OK : "failed " + response.statusCode() + ": " + response.body();
     }
 
-    private static void workRequests(ApiClient apiClient, String usersFile) throws IOException, CsvException {
+    private static void workRequests(ApiClient apiClient, String usersFile) throws IOException {
         String json = apiClient.runQuery(Constants.QUERY_GET_REQUESTS_LAST_REPLIES);
         ApiQueryResult apiQueryResult = HBParser.parseQueryResult(json);
 

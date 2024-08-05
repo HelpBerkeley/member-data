@@ -22,6 +22,7 @@
  */
 package org.helpberkeley.memberdata.v300;
 
+import org.assertj.core.api.ThrowableAssert;
 import org.helpberkeley.memberdata.*;
 import org.junit.Before;
 import org.junit.Test;
@@ -45,7 +46,9 @@ public class ControlBlockTest extends ControlBlockTestBase {
             + "Condo,Details,Restaurants,std meals,alt meals,type meal,std grocery,alt grocery,type grocery\n";
     public static final String  CONTROL_BLOCK_BEGIN_ROW = "FALSE,FALSE,ControlBegin,,,,,,,,,,,,,,,\n";
     public static final String  CONTROL_BLOCK_END_ROW =   "FALSE,FALSE,ControlEnd  ,,,,,,,,,,,,,,,\n";
-    public static final String  CONTROL_BLOCK_VERSION_ROW = "FALSE,FALSE,,Version ,,,,3-0-0,,,,,,,,,,\n";
+    public static final String  CONTROL_BLOCK_VERSION_ROW = "FALSE,FALSE,,Version ,,,,"
+                    + Constants.CONTROL_BLOCK_VERSION_300
+                    + ",,,,,,,,,,\n";
 
     public ControlBlockTest() {
         List<User> userList = new Loader(createApiSimulator()).load();
@@ -79,6 +82,11 @@ public class ControlBlockTest extends ControlBlockTestBase {
     @Override
     public String getVersionRow() {
         return CONTROL_BLOCK_VERSION_ROW;
+    }
+
+    @Override
+    public String getVersion() {
+        return Constants.CONTROL_BLOCK_VERSION_300;
     }
 
     @Override
@@ -507,5 +515,33 @@ public class ControlBlockTest extends ControlBlockTestBase {
         DriverPostFormat driverPostFormat = DriverPostFormat.create(createApiSimulator(), users, csvData);
         assertThat(driverPostFormat.getControlBlock().getFirstOpsManager().getUserName()).isEqualTo("JVol");
         assertThat(driverPostFormat.getControlBlock().getFirstOpsManager().getPhone()).isEqualTo("123-456-7890");
+    }
+
+    // This is here instead of in ControlBlockTestBase because it is testing
+    // exceptions in ControlBlock.create() that need version specific data,
+    // but will generate the same test results in each implementation.
+    @Test
+    public void unsupportedVersionTest() {
+        String unsupportedVersion = "42";
+        String header = getHeader();
+        String versionRow = getVersionRow().replace(getVersion(), unsupportedVersion);
+
+        Throwable thrown = ThrowableAssert.catchThrowable(() -> ControlBlock.create(header + versionRow));
+        assertThat(thrown).isInstanceOf(MemberDataException.class);
+        assertThat(thrown).hasMessage(MessageFormat.format(
+                ControlBlock.UNSUPPORTED_VERSION_GENERIC, unsupportedVersion));
+    }
+
+    // This is here instead of in ControlBlockTestBase because it is testing
+    // exceptions in ControlBlock.create() that need version specific data,
+    // but will generate the same test results in each implementation.
+    @Test
+    public void versionRowInvalidCSVTest() {
+        String header = getHeader();
+        String versionRow = "\"" + getVersionRow();
+
+        Throwable thrown = ThrowableAssert.catchThrowable(() -> ControlBlock.create(header + versionRow));
+        assertThat(thrown).isInstanceOf(MemberDataException.class);
+        assertThat(thrown).hasMessageContaining(getVersionRow());
     }
 }

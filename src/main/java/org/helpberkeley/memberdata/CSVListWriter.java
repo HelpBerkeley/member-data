@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024. helpberkeley.org
+ * Copyright (c) 2024 helpberkeley.org
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -20,27 +20,33 @@
  * SOFTWARE.
  *
  */
-package org.helpberkeley.memberdata.v300;
+package org.helpberkeley.memberdata;
 
-import org.helpberkeley.memberdata.Constants;
+import com.opencsv.CSVWriter;
 
-public class ControlBlockV302Test extends ControlBlockTest {
+import java.io.Writer;
+import java.util.ArrayList;
+import java.util.List;
 
-    public static final String  CONTROL_BLOCK_VERSION_ROW = "FALSE,FALSE,,Version ,,,,"
-            + Constants.CONTROL_BLOCK_VERSION_302
-            + ",,,,,,,,,,\n";
+public class CSVListWriter extends CSVWriter {
 
-    public ControlBlockV302Test() {
-        super();
+    public CSVListWriter(Writer writer) {
+        super(writer);
     }
 
-    @Override
-    public String getVersionRow() {
-        return CONTROL_BLOCK_VERSION_ROW;
+    public void writeNextToList(List<String> row) {
+        String[] simpleArray = new String[row.size()];
+        row.toArray(simpleArray);
+        writeNext(simpleArray);
     }
 
-    @Override
-    public String getVersion() {
-        return Constants.CONTROL_BLOCK_VERSION_302;
+    public void writeAllToList(List<List<String>> csvData) {
+        List<String[]> listOfArrays = new ArrayList<>();
+
+        for (List<String> innerList : csvData) {
+            String[] array = innerList.toArray(new String[0]);
+            listOfArrays.add(array);
+        }
+        writeAll(listOfArrays);
     }
 }

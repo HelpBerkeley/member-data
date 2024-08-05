@@ -22,10 +22,7 @@
  */
 package org.helpberkeley.memberdata;
 
-import com.opencsv.exceptions.CsvException;
 import org.junit.Test;
-
-import java.io.IOException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
@@ -33,7 +30,7 @@ import static org.assertj.core.api.Assertions.catchThrowable;
 public class DailyDeliveriesTest extends TestBase {
 
     @Test
-    public void expectedOrderColumnsTest() throws IOException, CsvException {
+    public void expectedOrderColumnsTest() {
         String header = Constants.WORKFLOW_CONSUMER_COLUMN + Constants.CSV_SEPARATOR
                 + Constants.WORKFLOW_DRIVER_COLUMN + Constants.CSV_SEPARATOR
                 + Constants.WORKFLOW_NAME_COLUMN + Constants.CSV_SEPARATOR
@@ -46,7 +43,7 @@ public class DailyDeliveriesTest extends TestBase {
     }
 
     @Test
-    public void outOfOrderColumnsTest() throws IOException, CsvException {
+    public void outOfOrderColumnsTest() {
         String header = Constants.WORKFLOW_CONSUMER_COLUMN + Constants.CSV_SEPARATOR
                 + Constants.WORKFLOW_NORMAL_COLUMN + Constants.CSV_SEPARATOR
                 + Constants.WORKFLOW_USER_NAME_COLUMN + Constants.CSV_SEPARATOR
@@ -59,7 +56,7 @@ public class DailyDeliveriesTest extends TestBase {
     }
 
     @Test
-    public void spaceyColumnNamesTest() throws IOException, CsvException {
+    public void spaceyColumnNamesTest() {
         String header = " " + Constants.WORKFLOW_CONSUMER_COLUMN + " " + Constants.CSV_SEPARATOR
                 + " " + Constants.WORKFLOW_DRIVER_COLUMN + " " + Constants.CSV_SEPARATOR
                 + " " + Constants.WORKFLOW_NORMAL_COLUMN + " " + Constants.CSV_SEPARATOR
@@ -72,7 +69,7 @@ public class DailyDeliveriesTest extends TestBase {
     }
 
     @Test
-    public void missingUserNameColumnTest() throws IOException, CsvException {
+    public void missingUserNameColumnTest() {
         String header = Constants.WORKFLOW_CONSUMER_COLUMN + Constants.CSV_SEPARATOR
                 + Constants.WORKFLOW_DRIVER_COLUMN + Constants.CSV_SEPARATOR
                 + Constants.WORKFLOW_NAME_COLUMN + Constants.CSV_SEPARATOR
@@ -84,7 +81,7 @@ public class DailyDeliveriesTest extends TestBase {
     }
 
     @Test
-    public void missingNameColumnTest() throws IOException, CsvException {
+    public void missingNameColumnTest() {
         String header = Constants.WORKFLOW_CONSUMER_COLUMN + Constants.CSV_SEPARATOR
                 + Constants.WORKFLOW_DRIVER_COLUMN + Constants.CSV_SEPARATOR
                 + Constants.WORKFLOW_USER_NAME_COLUMN + Constants.CSV_SEPARATOR
