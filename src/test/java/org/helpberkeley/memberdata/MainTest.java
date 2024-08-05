@@ -549,6 +549,21 @@ public class MainTest extends TestBase {
         completedOneKitchenOrders("routed-deliveries-v302.csv");
     }
 
+    @Test
+    public void WebURLcompletedOneKitchenOrdersV300Test() throws IOException, CsvException {
+        completedOneKitchenOrdersWebURL("routed-deliveries-v300.csv");
+    }
+
+    @Test
+    public void WebURLcompletedOneKitchenOrdersV301Test() throws IOException, CsvException {
+        completedOneKitchenOrdersWebURL("routed-deliveries-v301.csv");
+    }
+
+    @Test
+    public void WebURLcompletedOneKitchenOrdersV302Test() throws IOException, CsvException {
+        completedOneKitchenOrdersWebURL("routed-deliveries-v302.csv");
+    }
+
     private void completedOneKitchenOrders(String filepath) throws IOException, CsvException {
         LocalDate yesterday = LocalDate.now(Constants.TIMEZONE).minusDays(1);
         DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy/MM/dd");
@@ -572,6 +587,31 @@ public class MainTest extends TestBase {
         assertThat(statusPost.raw).contains("Status: Succeeded");
         assertThat(statusPost.topic_id).isEqualTo(Constants.TOPIC_POST_COMPLETED_ONEKITCHEN_ORDERS.getId());
     }
+
+    private void completedOneKitchenOrdersWebURL(String filepath) throws IOException, CsvException {
+        LocalDate yesterday = LocalDate.now(Constants.TIMEZONE).minusDays(1);
+        DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy/MM/dd");
+        String yesterdayStr = yesterday.format(format);
+
+        String completedOneKitchenOrdersRequest =
+                "{ \"success\": true, \"columns\": [ \"post_number\", \"deleted_at\", \"raw\" ], "
+                        + "\"rows\": [ "
+                        + "[ 42, null, \""
+                        + yesterdayStr
+                        + "\n[xyzzy.csv|attachment](https://go.helpberkeley.org/uploads/short-url/" + filepath + ") (5.8 KB)\" ] "
+                        + "] }";
+        HttpClientSimulator.setQueryResponseData(
+                Constants.QUERY_GET_LAST_COMPLETED_ONEKITCHEN_ORDERS_REPLY, completedOneKitchenOrdersRequest);
+        String usersFile = findFile(Constants.MEMBERDATA_RAW_FILE, "csv");
+        String[] args = { Options.COMMAND_COMPLETED_ONEKITCHEN_ORDERS, usersFile };
+        WorkRequestHandler.clearLastStatusPost();
+        Main.main(args);
+        Post statusPost = WorkRequestHandler.getLastStatusPost();
+        assertThat(statusPost).isNotNull();
+        assertThat(statusPost.raw).contains("Status: Succeeded");
+        assertThat(statusPost.topic_id).isEqualTo(Constants.TOPIC_POST_COMPLETED_ONEKITCHEN_ORDERS.getId());
+    }
+
 
     @Test
     public void completedOneKitchenOrdersInTheFutureNegativeV300Test() throws IOException, CsvException {

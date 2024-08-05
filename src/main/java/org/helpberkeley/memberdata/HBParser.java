@@ -600,9 +600,19 @@ public class HBParser {
     }
 
     public static String shortURLDiscoursePost(final String line) {
-        int index = line.indexOf(Constants.UPLOAD_URI_PREFIX);
+        int index;
+        int prefixLength;
+
+        if (line.contains(Constants.UPLOAD_URI_PREFIX)) {
+            index = line.indexOf(Constants.UPLOAD_URI_PREFIX);
+            prefixLength= Constants.UPLOAD_URI_PREFIX.length();
+        }
+        else {
+            index = line.indexOf(Constants.WEB_CSV_PREFIX);
+            prefixLength= Constants.WEB_CSV_PREFIX.length();
+        }
         assert index != -1 : line;
-        String shortURL = line.substring(index);
+        String shortURL = Constants.UPLOAD_URI_PREFIX.concat(line.substring(index + prefixLength));
         index = shortURL.indexOf(')');
         shortURL = shortURL.substring(0, index);
 

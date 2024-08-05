@@ -332,7 +332,7 @@ public class WorkRequestHandler {
                     disableDateAudit = true;
                 } else if (line.toLowerCase().startsWith(DISABLE_MEMBER_LIMIT_AUDIT)) {
                     disableMemberLimitAudit = true;
-                } else if (line.contains(Constants.UPLOAD_URI_PREFIX)) {
+                } else if (line.contains(Constants.UPLOAD_URI_PREFIX) || line.contains(Constants.WEB_CSV_PREFIX)) {
                     String shortURL =  HBParser.shortURLDiscoursePost(line);
                     String fileName = HBParser.downloadFileName(line);
 
