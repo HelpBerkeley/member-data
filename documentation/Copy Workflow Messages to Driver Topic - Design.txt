@@ -1,0 +1,48 @@
+﻿Workflow Messages to Driver Topic Design
+DocVersion: V1.4
+Last Updated: 8/5/2024
+Author: Kaelan Thouati, Cameron Thouati
+
+
+
+
+1. Work Requests:
+
+
+Design details: https://github.com/HelpBerkeley/member-data/blob/master/documentation/automated-request-handling.txt
+
+
+        1.1 Driver Messages Request with Target Topic
+
+
+A dispatcher posts a request either to the “Request driver messages” topic or the “Request OneKitchen driver messages” topic with an uploaded routed deliveries sheet along with an optional argument for a target topic to copy the messages to. If the optional argument “Topic: [TOPIC_URL]” is provided, messages will not be posted to the standard “Get driver messages” topic and will instead go directly to the target topic.
+        
+
+
+DES-WMD-001-1 Support optional argument
+
+
+Support optional “Topic: TOPIC_URL” argument in driver message request topics. TOPIC_URL must correspond to an existing topic in the Driver->Deliveries subcategory. Design should allow for typos including capitalization differences, removal of the colon, and extra whitespace within the “Topic: “ keyword. The only constraint for the topic URL is that it must contain the numeric topic ID. It may optionally contain a specific post number, which will be ignored.
+
+
+DES-WMD-001-2 Message ownership transfer
+
+
+Transfer ownership of all generated messages posted in target topic to the dispatcher who requested it. 
+
+
+DES-WMD-001-3 Status messages
+
+
+In case of failure, support relevant error messages to message requester in closet topic.
+
+
+New error messages would include:
+1. “Target topic not found, please check that your specified topic URL is correct, and try again.”
+2. “Target topic is not in the Drivers>Deliveries subcategory. Please check that the target topic is in the Drivers>Deliveries subcategory, and try again.”
+
+
+
+
+In case of success, the standard success message for “Request driver messages” request should be posted to the request topic with a change that reads:
+“Messages Posted to [name of target topic with link to first driver messages post] under the name of [message requester].”
