@@ -39,6 +39,14 @@ public class DeliveryData {
         audit();
     }
 
+    DeliveryData(String date, final String fileName, final String shortURL) {
+        this.date = date.trim();
+        this.uploadFile = new UploadFile(fileName, shortURL);
+        audit();
+    }
+
+
+
     // Validate the date string
     private void audit() {
         Matcher matcher = DATE_PATTERN.matcher(date);

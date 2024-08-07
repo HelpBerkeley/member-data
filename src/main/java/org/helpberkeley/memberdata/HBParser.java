@@ -490,7 +490,7 @@ public class HBParser {
             // FIX THIS, DS: use CSVReader
             String[] fields = lines[index].split(Constants.CSV_SEPARATOR, -1);
             assert fields.length == 3 : lines[index];
-            dailyDeliveries.add(new DeliveryData(fields[0], fields[2]));
+            dailyDeliveries.add(new DeliveryData(fields[0], fields[1], fields[2]));
         }
 
         return dailyDeliveries;
@@ -606,16 +606,6 @@ public class HBParser {
             detailsPost.appendDetails(postNumber, details);
         }
     }
-
-//    public static void auditFilePrefix (final String line)
-//            throws MemberDataException {
-//        if ((line.contains(Constants.UPLOAD_URI_PREFIX) || line.contains(Constants.WEB_CSV_PREFIX)) == false) {
-//            int prefixStart = line.lastIndexOf("]")+2;
-//            int prefixEnd = line.lastIndexOf("/")+1;
-//            throw new MemberDataException(
-//                    MessageFormat.format(ControlBlockV300.INVALID_FILE_PREFIX, line.substring(prefixStart,prefixEnd)));
-//        }
-//    }
 
     public static String shortURLDiscoursePost(final String line) {
         UploadFile.auditFilePrefix(line);

@@ -31,7 +31,7 @@ public class UploadFile {
     private final String fileName;
     private final String originalFileName;
 
-    private UploadFile(final String fileName, final String shortURL) {
+    public UploadFile(final String fileName, final String shortURL) {
         this.originalFileName = fileName;
         this.shortURL = shortURL;
         this.fileName = HBParser.fileNameFromShortURL(shortURL);
@@ -55,13 +55,12 @@ public class UploadFile {
         return new UploadFile(fileName, shortURL);
     }
 
-    public static boolean auditFilePrefix (final String line)
-            throws MemberDataException {
-        if ((line.contains(Constants.UPLOAD_URI_PREFIX) || line.contains(Constants.WEB_CSV_PREFIX)) == false) {
+    public static boolean auditFilePrefix (final String line) throws MemberDataException {
+        if (!(line.contains(Constants.UPLOAD_URI_PREFIX) || line.contains(Constants.WEB_CSV_PREFIX))) {
             int prefixStart = line.lastIndexOf("]")+2;
             int prefixEnd = line.lastIndexOf("/")+1;
             throw new MemberDataException(
-                    MessageFormat.format(ControlBlockV300.INVALID_FILE_PREFIX, line.substring(prefixStart,prefixEnd)));
+                    MessageFormat.format(ControlBlockV300.INVALID_FILE_PREFIX, line.substring(prefixStart, prefixEnd)));
         }
         return true;
     }
