@@ -33,9 +33,9 @@ public class DeliveryData {
     final String date;
     final UploadFile uploadFile;
 
-    DeliveryData(String date, final String fileName, String shortURL) {
+    DeliveryData(String date, final String data) {
         this.date = date.trim();
-        this.uploadFile = new UploadFile(fileName, shortURL);
+        this.uploadFile = UploadFile.createUploadFile(data);
         audit();
     }
 

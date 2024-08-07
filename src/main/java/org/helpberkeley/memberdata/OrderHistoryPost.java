@@ -27,8 +27,8 @@ public class OrderHistoryPost {
     final String historyThroughDate;
     final UploadFile uploadFile;
 
-    OrderHistoryPost(final String date, final String fileName, String shortURL) {
+    OrderHistoryPost(final String date, final String data) {
         historyThroughDate = date;
-        this.uploadFile = new UploadFile(fileName, shortURL);
+        this.uploadFile = UploadFile.createUploadFile(data);
     }
 }

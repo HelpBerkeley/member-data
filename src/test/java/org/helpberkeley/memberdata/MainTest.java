@@ -571,7 +571,7 @@ public class MainTest extends TestBase {
                         + "\"rows\": [ "
                         + "[ 42, null, \""
                         + yesterdayStr
-                        + "\n[xyzzy.csv|attachment](upload://" + filepath + ") (5.8 KB)\" ] "
+                        + "\n[xyzzy.csv|attachment](" + Constants.UPLOAD_URI_PREFIX + filepath + ") (5.8 KB)\" ] "
                         + "] }";
         HttpClientSimulator.setQueryResponseData(
                 Constants.QUERY_GET_LAST_COMPLETED_ONEKITCHEN_ORDERS_REPLY, completedOneKitchenOrdersRequest);
@@ -595,7 +595,7 @@ public class MainTest extends TestBase {
                         + "\"rows\": [ "
                         + "[ 42, null, \""
                         + yesterdayStr
-                        + "\n[xyzzy.csv|attachment](https://go.helpberkeley.org/uploads/short-url/" + filepath + ") (5.8 KB)\" ] "
+                        + "\n[xyzzy.csv|attachment](" + Constants.WEB_CSV_PREFIX + filepath + ") (5.8 KB)\" ] "
                         + "] }";
         HttpClientSimulator.setQueryResponseData(
                 Constants.QUERY_GET_LAST_COMPLETED_ONEKITCHEN_ORDERS_REPLY, completedOneKitchenOrdersRequest);

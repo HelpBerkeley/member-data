@@ -25,11 +25,13 @@ import com.cedarsoftware.io.JsonIo;
 import com.cedarsoftware.io.ReadOptionsBuilder;
 import com.opencsv.CSVReader;
 import com.opencsv.exceptions.CsvException;
+import org.helpberkeley.memberdata.v300.ControlBlockV300;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.StringReader;
+import java.text.MessageFormat;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -468,7 +470,7 @@ public class HBParser {
                 continue;
             }
             String date = raw.substring(0, index);
-            dailyDeliveries.add(new DeliveryData(date, downloadFileName(raw), shortURLDiscoursePost(raw)));
+            dailyDeliveries.add(new DeliveryData(date, raw));
         }
 
         return dailyDeliveries;
@@ -488,7 +490,7 @@ public class HBParser {
             // FIX THIS, DS: use CSVReader
             String[] fields = lines[index].split(Constants.CSV_SEPARATOR, -1);
             assert fields.length == 3 : lines[index];
-            dailyDeliveries.add(new DeliveryData(fields[0], fields[1], fields[2]));
+            dailyDeliveries.add(new DeliveryData(fields[0], fields[2]));
         }
 
         return dailyDeliveries;
@@ -605,15 +607,25 @@ public class HBParser {
         }
     }
 
-    public static String shortURLDiscoursePost(final String line) {
-        int index;
-        int prefixLength;
+//    public static void auditFilePrefix (final String line)
+//            throws MemberDataException {
+//        if ((line.contains(Constants.UPLOAD_URI_PREFIX) || line.contains(Constants.WEB_CSV_PREFIX)) == false) {
+//            int prefixStart = line.lastIndexOf("]")+2;
+//            int prefixEnd = line.lastIndexOf("/")+1;
+//            throw new MemberDataException(
+//                    MessageFormat.format(ControlBlockV300.INVALID_FILE_PREFIX, line.substring(prefixStart,prefixEnd)));
+//        }
+//    }
 
+    public static String shortURLDiscoursePost(final String line) {
+        UploadFile.auditFilePrefix(line);
+        int index = -1;
+        int prefixLength = 0;
         if (line.contains(Constants.UPLOAD_URI_PREFIX)) {
             index = line.indexOf(Constants.UPLOAD_URI_PREFIX);
             prefixLength= Constants.UPLOAD_URI_PREFIX.length();
         }
-        else {
+        else if (line.contains(Constants.WEB_CSV_PREFIX)){
             index = line.indexOf(Constants.WEB_CSV_PREFIX);
             prefixLength= Constants.WEB_CSV_PREFIX.length();
         }
@@ -626,7 +638,12 @@ public class HBParser {
     }
 
     static String shortURLUploadResponse(final String line) {
-        int index = line.indexOf(Constants.UPLOAD_URI_PREFIX);
+        UploadFile.auditFilePrefix(line);
+        int index = -1;
+        if(line.contains(Constants.UPLOAD_URI_PREFIX))
+            index = line.indexOf(Constants.UPLOAD_URI_PREFIX);
+        else if (line.contains(Constants.WEB_CSV_PREFIX))
+            index = line.indexOf(Constants.WEB_CSV_PREFIX);
         assert index != -1 : line;
         String shortURL = line.substring(index);
         index = shortURL.indexOf('"');
@@ -636,6 +653,7 @@ public class HBParser {
     }
 
     public static String downloadFileName(final String line) {
+        UploadFile.auditFilePrefix(line);
         int index = line.indexOf('[');
         assert index != -1 : line;
         int end = line.indexOf('|');
@@ -707,10 +725,9 @@ public class HBParser {
         String date = lines[0].substring(start.length());
         assert date.endsWith("**");
         date = date.substring(0, date.length() - 2);
-        String shortURL =  shortURLDiscoursePost(lines[2]);
-        String fileName = downloadFileName(lines[2]);
 
-        return new OrderHistoryPost(date, fileName, shortURL);
+
+        return new OrderHistoryPost(date, lines[2]);
     }
 
     static RestaurantTemplatePost restaurantTemplatePost(final String rawPost) {
@@ -723,9 +740,7 @@ public class HBParser {
 
         for (String line : rawPost.split("\n")) {
             if (line.contains(Constants.UPLOAD_URI_PREFIX)) {
-                String shortURL =  shortURLDiscoursePost(line);
-                String fileName = downloadFileName(line);
-                return new RestaurantTemplatePost(fileName, shortURL);
+                return new RestaurantTemplatePost(line);
             }
         }
 
@@ -735,11 +750,8 @@ public class HBParser {
     static UploadFile parseFileFromPost(String rawPost) {
 
         for (String line : rawPost.split("\n")) {
-            if (line.contains(Constants.UPLOAD_URI_PREFIX)) {
-                String shortURL =  shortURLDiscoursePost(line);
-                String fileName = downloadFileName(line);
-
-                return new UploadFile(fileName, shortURL);
+            if (line.contains(Constants.UPLOAD_URI_PREFIX) || line.contains(Constants.WEB_CSV_PREFIX)) {
+                return UploadFile.createUploadFile(line);
             }
         }
 
@@ -785,9 +797,16 @@ public class HBParser {
     }
 
     static String fileNameFromShortURL(final String shortURL) {
-        assert shortURL.startsWith(Constants.UPLOAD_URI_PREFIX);
-        assert shortURL.length() > Constants.UPLOAD_URI_PREFIX.length() : shortURL;
-        return shortURL.substring(Constants.UPLOAD_URI_PREFIX.length());
+        assert (shortURL.startsWith(Constants.UPLOAD_URI_PREFIX) || shortURL.startsWith(Constants.WEB_CSV_PREFIX));
+        String prefix;
+        if (shortURL.startsWith(Constants.UPLOAD_URI_PREFIX)) {
+            prefix = Constants.UPLOAD_URI_PREFIX;
+        }
+        else {
+            prefix = Constants.WEB_CSV_PREFIX;
+        }
+        assert shortURL.length() > prefix.length() : shortURL;
+        return shortURL.substring(prefix.length());
     }
 
     static Set<Long> emailConfirmations(final ApiQueryResult apiQueryResult) {

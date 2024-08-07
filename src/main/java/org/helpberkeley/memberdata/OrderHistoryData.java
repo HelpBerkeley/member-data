@@ -43,9 +43,7 @@ public class OrderHistoryData {
         assert index != -1 : "Invalid post: " + orderHistoryDataPost;
         date = orderHistoryDataPost.substring(0, index).trim();
 
-        uploadFile = new UploadFile(
-                HBParser.downloadFileName(orderHistoryDataPost),
-                HBParser.shortURLDiscoursePost(orderHistoryDataPost));
+        uploadFile = UploadFile.createUploadFile(orderHistoryDataPost);
         audit();
     }
 
