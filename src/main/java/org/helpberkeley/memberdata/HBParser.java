@@ -447,55 +447,6 @@ public class HBParser {
         return users;
     }
 
-    static List<DeliveryData> dailyDeliveryPosts(ApiQueryResult apiQueryResult) {
-        assert apiQueryResult.headers.length == 3 : apiQueryResult.headers.length;
-        assert apiQueryResult.headers[2].equals(Constants.DISCOURSE_COLUMN_RAW);
-
-        List<DeliveryData> dailyDeliveries = new ArrayList<>();
-
-        for (Object rowObj : apiQueryResult.rows) {
-            Object[] columns = (Object[]) rowObj;
-            assert columns.length == 3 : columns.length;
-
-            //
-            String raw = ((String)columns[2]).trim();
-
-            // 2020/03/28
-            //
-            //[HelpBerkeleyDeliveries - 3_28.csv|attachment](upload://xyzzy.csv) (828 Bytes)
-
-            int index = raw.indexOf('\n');
-            if (index == -1) {
-                LOGGER.warn("Cannot parse daily deliver post: {}", raw);
-                continue;
-            }
-            String date = raw.substring(0, index);
-            dailyDeliveries.add(new DeliveryData(date, raw));
-        }
-
-        return dailyDeliveries;
-    }
-
-    static List<DeliveryData> dailyDeliveryPosts(final String csvData) {
-
-        List<DeliveryData> dailyDeliveries = new ArrayList<>();
-
-        String[] lines = csvData.split("\n");
-        assert lines.length > 0;
-
-        String header = lines[0];
-        assert header.equals(DeliveryData.deliveryPostsHeader().trim());
-
-        for (int index = 1; index < lines.length; index++) {
-            // FIX THIS, DS: use CSVReader
-            String[] fields = lines[index].split(Constants.CSV_SEPARATOR, -1);
-            assert fields.length == 3 : lines[index];
-            dailyDeliveries.add(new DeliveryData(fields[0], fields[1], fields[2]));
-        }
-
-        return dailyDeliveries;
-    }
-
     static Map<String, DetailsPost> deliveryDetails(ApiQueryResult apiQueryResult) {
         assert apiQueryResult.headers.length == 3 : apiQueryResult.headers.length;
         assert apiQueryResult.headers[0].equals(Constants.DISCOURSE_COLUMN_POST_NUMBER);
