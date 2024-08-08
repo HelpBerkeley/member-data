@@ -10,7 +10,7 @@ import static org.assertj.core.api.Assertions.catchThrowable;
 import static org.helpberkeley.memberdata.UploadFile.auditFilePrefix;
 
 
-public class HBParserTest {
+public class HBParserTest extends TestBase {
 
     @Test
     public void auditFilePrefixTestTrue1() {
@@ -31,4 +31,11 @@ public class HBParserTest {
 
 
 
+    @Test
+    public void uploadResponseTest() {
+        UploadResponse uploadResponse =
+                HBParser.uploadResponse(readResourceFile("upload-response.json"));
+        assertThat(uploadResponse.getFileName()).isEqualTo("x.csv");
+        assertThat(uploadResponse.getShortURL()).isEqualTo("upload://6Gf8gG4nGnC7HiiEi6ZX79PFfX5.csv");
+    }
 }

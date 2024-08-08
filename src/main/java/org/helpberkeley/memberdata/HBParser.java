@@ -629,6 +629,19 @@ public class HBParser {
         return new PostResponse(topic_id, post_number, topicSlug);
     }
 
+    static UploadResponse uploadResponse(String json) {
+        @SuppressWarnings("unchecked")
+        Map<String, Object> map = (Map<String, Object>)JsonIo.toObjects(json,
+                new ReadOptionsBuilder().returnAsNativeJsonObjects().build(), Map.class);
+
+        assert map.containsKey("original_filename") : json;
+        String fileName = (String)map.get("original_filename");
+        assert map.containsKey("short_url") : json;
+        String shortURL = (String)map.get("short_url");
+
+        return new UploadResponse(fileName, shortURL);
+    }
+
     static Map<Long, String> emailAddresses(final ApiQueryResult queryResult) {
         assert queryResult.headers.length == 3 : queryResult;
         assert queryResult.headers[0].equals("user_id") : queryResult;
