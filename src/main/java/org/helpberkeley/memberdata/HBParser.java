@@ -25,11 +25,13 @@ import com.cedarsoftware.io.JsonIo;
 import com.cedarsoftware.io.ReadOptionsBuilder;
 import com.opencsv.CSVReader;
 import com.opencsv.exceptions.CsvException;
+import org.helpberkeley.memberdata.v300.ControlBlockV300;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.StringReader;
+import java.text.MessageFormat;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -445,55 +447,6 @@ public class HBParser {
         return users;
     }
 
-    static List<DeliveryData> dailyDeliveryPosts(ApiQueryResult apiQueryResult) {
-        assert apiQueryResult.headers.length == 3 : apiQueryResult.headers.length;
-        assert apiQueryResult.headers[2].equals(Constants.DISCOURSE_COLUMN_RAW);
-
-        List<DeliveryData> dailyDeliveries = new ArrayList<>();
-
-        for (Object rowObj : apiQueryResult.rows) {
-            Object[] columns = (Object[]) rowObj;
-            assert columns.length == 3 : columns.length;
-
-            //
-            String raw = ((String)columns[2]).trim();
-
-            // 2020/03/28
-            //
-            //[HelpBerkeleyDeliveries - 3_28.csv|attachment](upload://xyzzy.csv) (828 Bytes)
-
-            int index = raw.indexOf('\n');
-            if (index == -1) {
-                LOGGER.warn("Cannot parse daily deliver post: {}", raw);
-                continue;
-            }
-            String date = raw.substring(0, index);
-            dailyDeliveries.add(new DeliveryData(date, downloadFileName(raw), shortURLDiscoursePost(raw)));
-        }
-
-        return dailyDeliveries;
-    }
-
-    static List<DeliveryData> dailyDeliveryPosts(final String csvData) {
-
-        List<DeliveryData> dailyDeliveries = new ArrayList<>();
-
-        String[] lines = csvData.split("\n");
-        assert lines.length > 0;
-
-        String header = lines[0];
-        assert header.equals(DeliveryData.deliveryPostsHeader().trim());
-
-        for (int index = 1; index < lines.length; index++) {
-            // FIX THIS, DS: use CSVReader
-            String[] fields = lines[index].split(Constants.CSV_SEPARATOR, -1);
-            assert fields.length == 3 : lines[index];
-            dailyDeliveries.add(new DeliveryData(fields[0], fields[1], fields[2]));
-        }
-
-        return dailyDeliveries;
-    }
-
     static Map<String, DetailsPost> deliveryDetails(ApiQueryResult apiQueryResult) {
         assert apiQueryResult.headers.length == 3 : apiQueryResult.headers.length;
         assert apiQueryResult.headers[0].equals(Constants.DISCOURSE_COLUMN_POST_NUMBER);
@@ -606,9 +559,19 @@ public class HBParser {
     }
 
     public static String shortURLDiscoursePost(final String line) {
-        int index = line.indexOf(Constants.UPLOAD_URI_PREFIX);
+        UploadFile.auditFilePrefix(line);
+        int index = -1;
+        int prefixLength = 0;
+        if (line.contains(Constants.UPLOAD_URI_PREFIX)) {
+            index = line.indexOf(Constants.UPLOAD_URI_PREFIX);
+            prefixLength= Constants.UPLOAD_URI_PREFIX.length();
+        }
+        else if (line.contains(Constants.WEB_CSV_PREFIX)){
+            index = line.indexOf(Constants.WEB_CSV_PREFIX);
+            prefixLength= Constants.WEB_CSV_PREFIX.length();
+        }
         assert index != -1 : line;
-        String shortURL = line.substring(index);
+        String shortURL = Constants.UPLOAD_URI_PREFIX.concat(line.substring(index + prefixLength));
         index = shortURL.indexOf(')');
         shortURL = shortURL.substring(0, index);
 
@@ -616,7 +579,12 @@ public class HBParser {
     }
 
     static String shortURLUploadResponse(final String line) {
-        int index = line.indexOf(Constants.UPLOAD_URI_PREFIX);
+        UploadFile.auditFilePrefix(line);
+        int index = -1;
+        if(line.contains(Constants.UPLOAD_URI_PREFIX))
+            index = line.indexOf(Constants.UPLOAD_URI_PREFIX);
+        else if (line.contains(Constants.WEB_CSV_PREFIX))
+            index = line.indexOf(Constants.WEB_CSV_PREFIX);
         assert index != -1 : line;
         String shortURL = line.substring(index);
         index = shortURL.indexOf('"');
@@ -626,6 +594,7 @@ public class HBParser {
     }
 
     public static String downloadFileName(final String line) {
+        UploadFile.auditFilePrefix(line);
         int index = line.indexOf('[');
         assert index != -1 : line;
         int end = line.indexOf('|');
@@ -658,6 +627,19 @@ public class HBParser {
         String topicSlug = (String)map.get("topic_slug");
 
         return new PostResponse(topic_id, post_number, topicSlug);
+    }
+
+    static UploadResponse uploadResponse(String json) {
+        @SuppressWarnings("unchecked")
+        Map<String, Object> map = (Map<String, Object>)JsonIo.toObjects(json,
+                new ReadOptionsBuilder().returnAsNativeJsonObjects().build(), Map.class);
+
+        assert map.containsKey("original_filename") : json;
+        String fileName = (String)map.get("original_filename");
+        assert map.containsKey("short_url") : json;
+        String shortURL = (String)map.get("short_url");
+
+        return new UploadResponse(fileName, shortURL);
     }
 
     static Map<Long, String> emailAddresses(final ApiQueryResult queryResult) {
@@ -697,10 +679,9 @@ public class HBParser {
         String date = lines[0].substring(start.length());
         assert date.endsWith("**");
         date = date.substring(0, date.length() - 2);
-        String shortURL =  shortURLDiscoursePost(lines[2]);
-        String fileName = downloadFileName(lines[2]);
 
-        return new OrderHistoryPost(date, fileName, shortURL);
+
+        return new OrderHistoryPost(date, lines[2]);
     }
 
     static RestaurantTemplatePost restaurantTemplatePost(final String rawPost) {
@@ -713,9 +694,7 @@ public class HBParser {
 
         for (String line : rawPost.split("\n")) {
             if (line.contains(Constants.UPLOAD_URI_PREFIX)) {
-                String shortURL =  shortURLDiscoursePost(line);
-                String fileName = downloadFileName(line);
-                return new RestaurantTemplatePost(fileName, shortURL);
+                return new RestaurantTemplatePost(line);
             }
         }
 
@@ -725,11 +704,8 @@ public class HBParser {
     static UploadFile parseFileFromPost(String rawPost) {
 
         for (String line : rawPost.split("\n")) {
-            if (line.contains(Constants.UPLOAD_URI_PREFIX)) {
-                String shortURL =  shortURLDiscoursePost(line);
-                String fileName = downloadFileName(line);
-
-                return new UploadFile(fileName, shortURL);
+            if (line.contains(Constants.UPLOAD_URI_PREFIX) || line.contains(Constants.WEB_CSV_PREFIX)) {
+                return UploadFile.createUploadFile(line);
             }
         }
 
@@ -775,9 +751,16 @@ public class HBParser {
     }
 
     static String fileNameFromShortURL(final String shortURL) {
-        assert shortURL.startsWith(Constants.UPLOAD_URI_PREFIX);
-        assert shortURL.length() > Constants.UPLOAD_URI_PREFIX.length() : shortURL;
-        return shortURL.substring(Constants.UPLOAD_URI_PREFIX.length());
+        assert (shortURL.startsWith(Constants.UPLOAD_URI_PREFIX) || shortURL.startsWith(Constants.WEB_CSV_PREFIX));
+        String prefix;
+        if (shortURL.startsWith(Constants.UPLOAD_URI_PREFIX)) {
+            prefix = Constants.UPLOAD_URI_PREFIX;
+        }
+        else {
+            prefix = Constants.WEB_CSV_PREFIX;
+        }
+        assert shortURL.length() > prefix.length() : shortURL;
+        return shortURL.substring(prefix.length());
     }
 
     static Set<Long> emailConfirmations(final ApiQueryResult apiQueryResult) {
