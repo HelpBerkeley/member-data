@@ -21,6 +21,8 @@
 //
 package org.helpberkeley.memberdata;
 
+import com.cedarsoftware.io.JsonIo;
+import com.cedarsoftware.io.ReadOptionsBuilder;
 import org.helpberkeley.memberdata.v200.DriverPostFormatV200;
 import org.helpberkeley.memberdata.v300.DriverPostFormatV300;
 import org.slf4j.Logger;
@@ -745,11 +747,28 @@ public class Main {
     private static void doOneKitchenDriverMessages(
             ApiClient apiClient, WorkRequestHandler.WorkRequest request, Map<String, User> users) {
 
-        Topic topic = (request.destinationTopic != null) ? request.destinationTopic : Constants.TOPIC_DRIVERS_POST_STAGING;
+        Topic topic;
+        String warnings = "";
+        String requestPost = apiClient.getPost(request.postNumber);
+        @SuppressWarnings("unchecked")
+        Map<String, Object> map = (Map<String, Object>) JsonIo.toObjects(requestPost,
+                new ReadOptionsBuilder().returnAsNativeJsonObjects().build(), Map.class);
+        String dispatcherUsername = (String)map.get("username");
+        if (request.destinationTopic == null) {
+            topic = Constants.TOPIC_DRIVERS_POST_STAGING;
+        } else {
+            warnings = HBParser.auditDriverMessagesDestTopic(apiClient, request.destinationTopic);
+            if (warnings.isEmpty()) {
+                topic = request.destinationTopic;
+            } else {
+                topic = Constants.TOPIC_DRIVERS_POST_STAGING;
+            }
+        }
+//        = (request.destinationTopic != null) ? request.destinationTopic : Constants.TOPIC_DRIVERS_POST_STAGING;
 
         // Download file
         String routedDeliveries = apiClient.downloadFile(request.uploadFile.getFileName());
-        request.postStatus(WorkRequestHandler.RequestStatus.Processing, "");
+        request.postStatus(WorkRequestHandler.RequestStatus.Processing, warnings);
 
         try {
             ControlBlock cb = ControlBlock.create(routedDeliveries);
@@ -763,12 +782,11 @@ public class Main {
                         Constants.CONTROL_BLOCK_VERSION_300));
             }
             DriverPostFormat driverPostFormat = DriverPostFormat.create(apiClient, users, routedDeliveries);
-            String statusMessage = generateDriverPosts(apiClient, driverPostFormat, topic);
+            String statusMessage = generateDriverPosts(apiClient, driverPostFormat, topic, dispatcherUsername);
             request.postStatus(WorkRequestHandler.RequestStatus.Succeeded, statusMessage);
         } catch (MemberDataException ex) {
             String reason = ex.getCause() != null ? ex.getCause().getMessage() : ex.getMessage();
             request.postStatus(WorkRequestHandler.RequestStatus.Failed, reason);
-
         }
     }
 
@@ -781,10 +799,11 @@ public class Main {
     }
 
     private static String generateDriverPosts(
-            ApiClient apiClient, DriverPostFormat driverPostFormat, Topic topic) {
+            ApiClient apiClient, DriverPostFormat driverPostFormat, Topic topic, String dispatcherUsername) {
 
         StringBuilder statusMessages = new StringBuilder();
         List<String> postURLs = new ArrayList<>();
+        List<Long> postIds = new ArrayList<>();
         String groupPostURL = null;
 
         String driversTableURL = generateDriversTablePost(
@@ -808,6 +827,7 @@ public class Main {
                     .append(response.statusCode()).append(": ").append(response.body()).append("\n");
         } else {
             PostResponse postResponse = HBParser.postResponse((String)response.body());
+            postIds.add(postResponse.postNumber);
             groupPostURL = ("https://go.helpberkeley.org/t/"
                     + postResponse.topicSlug
                     + '/'
@@ -836,6 +856,7 @@ public class Main {
                         .append(response.statusCode()).append(": ").append(response.body()).append("\n");
             } else {
                 PostResponse postResponse = HBParser.postResponse((String)response.body());
+                postIds.add(postResponse.postNumber);
                 postURLs.add(
                         "["
                         + driverIterator.next().getUserName()
@@ -882,6 +903,10 @@ public class Main {
 
         if (backupDriversPostURL != null) {
             statusMessages.append("\n[Backup Drivers Message](").append(backupDriversPostURL).append(")");
+        }
+
+        if (!dispatcherUsername.isEmpty()) {
+
         }
 
         return statusMessages.toString();

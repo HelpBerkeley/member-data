@@ -605,6 +605,37 @@ public class HBParser {
         }
     }
 
+    public static Topic parseTopicFromURL(String url) {
+        int startIndex = url.indexOf("go.helpberkeley.org/t/");
+        if (startIndex == -1) {
+            throw new MemberDataException("Not a valid topic url.");
+        }
+
+        String remainingUrl = url.substring(startIndex + "go.helpberkeley.org/t/".length());
+        String[] parts = remainingUrl.split("/");
+
+        if (parts.length > 0 && !parts[1].isEmpty()) {
+            return new Topic(parts[0], Long.parseLong(parts[1]));
+        } else {
+            throw new MemberDataException("URL does not contain topic ID.");
+        }
+    }
+
+    public static String auditDriverMessagesDestTopic(ApiClient apiClient, Topic topic) {
+        String json = apiClient.getTopic(topic.getId());
+        @SuppressWarnings("unchecked")
+        Map<String, Object> map = (Map<String, Object>)JsonIo.toObjects(json,
+                new ReadOptionsBuilder().returnAsNativeJsonObjects().build(), Map.class);
+
+        assert map.containsKey("category_id") : json;
+        Integer categoryId = (Integer)map.get("category_id");
+        if (categoryId != Constants.DRIVER_DELIVERIES_CATEGORY) {
+            return "WARNING: The destination topic URL provided is not in the Drivers/Deliveries subcategory. These messages will" +
+                    "be posted to \"Get driver messages\" instead. Please try again with a topic URL in the Drivers/Deliveries subcategory.";
+        }
+        return "";
+    }
+
     public static String shortURLDiscoursePost(final String line) {
         int index = line.indexOf(Constants.UPLOAD_URI_PREFIX);
         assert index != -1 : line;

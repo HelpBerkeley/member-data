@@ -100,6 +100,7 @@ public class Constants {
     public static final int QUERY_GET_REQUESTS_LAST_REPLIES = QUERY_GET_LAST_REPLY_FROM_REQUEST_TOPICS_V24;
 
     public static final int AVG_RUN_SIZE = 30;
+    public static final int DRIVER_DELIVERIES_CATEGORY = 12;
 
     public static final Topic TOPIC_REQUEST_DATA = new Topic("Request Workflow User Updates", 10341);
     public static final Topic TOPIC_STONE_TEST_TOPIC = new Topic("Stone test topic", 422);

@@ -34,6 +34,7 @@ import java.net.http.HttpResponse;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
+import java.util.Arrays;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 
@@ -43,6 +44,7 @@ public class ApiClient {
     private static final String BASE_URL = "https://go.helpberkeley.org/";
     private static final String POSTS_ENDPOINT = BASE_URL + "posts.json";
     static final String POSTS_BASE = BASE_URL + "posts/";
+    static final String TOPICS_BASE = BASE_URL + "t/";
     static final String UPLOAD_ENDPOINT = BASE_URL + "uploads.json";
     private static final String DOWNLOAD_ENDPOINT = BASE_URL + "uploads/short-url/";
     static final String QUERY_BASE = BASE_URL + "admin/plugins/explorer/queries/";
@@ -242,6 +244,12 @@ public class ApiClient {
         return get(endpoint).body().replaceAll("\\r\\n?", "\n");
     }
 
+    String getTopic(long topicId) {
+        String endpoint = TOPICS_BASE + topicId + ".json";
+        // Normalize EOL
+        return get(endpoint).body();
+    }
+
     public HttpResponse<String> updatePost(long postId, final String body) {
 
         String endpoint =  POSTS_BASE + postId;
@@ -253,6 +261,35 @@ public class ApiClient {
                 .header("Api-Key", apiKey)
                 .header("Content-Type", "application/json")
                 .PUT(HttpRequest.BodyPublishers.ofString(postBody))
+                .build();
+
+        return send(request);
+    }
+
+    public HttpResponse<String> changePostOwner(long topicId, long[] postIds, String newOwnerUsername) {
+        String endpoint = TOPICS_BASE + topicId;
+
+        MultiPartBodyPublisher publisher = new MultiPartBodyPublisher()
+                .addPart("post_ids[]", Arrays.toString(postIds))
+                .addPart("username",
+                        new String(newOwnerUsername.getBytes(Charset.defaultCharset()), StandardCharsets.UTF_8));
+
+//        List<NameValuePair> formData = postIds.stream()
+//                .map(id -> new NameValuePair("post_ids[]", String.valueOf(id)))
+//                .collect(Collectors.toList());
+//        formData.add(new NameValuePair("username", username));
+//
+//        String formDataString = formData.stream()
+//                .map(pair -> pair.getName() + "=" + pair.getValue())
+//                .collect(Collectors.joining("&"));
+//        byte[] formDataBytes = formDataString.getBytes(StandardCharsets.UTF_8);
+//
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(endpoint))
+                .header("api-username", apiUser)
+                .header("api-key", apiKey)
+                .header("Content-Type", "application/x-www-form-urlencoded")
+                .POST(publisher.build())
                 .build();
 
         return send(request);

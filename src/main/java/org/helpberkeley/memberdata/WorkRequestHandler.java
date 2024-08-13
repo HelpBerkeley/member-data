@@ -320,10 +320,11 @@ public class WorkRequestHandler {
                     return null;
                 }
 
-                if (line.startsWith("Topic:")) {
-                    throw new MemberDataException(
-                            "Post #" + lastReply.postNumber + " is not a valid request\n"
-                                    + TOPIC_DIRECTIVE_NOT_SUPPORTED);
+                if (line.toLowerCase().startsWith("topic:")) {
+//                    throw new MemberDataException(
+//                            "Post #" + lastReply.postNumber + " is not a valid request\n"
+//                                    + TOPIC_DIRECTIVE_NOT_SUPPORTED);
+                    destinationTopic = HBParser.parseTopicFromURL(line.toLowerCase().replaceAll("topic:", "").trim());
                 } else if (line.equalsIgnoreCase("test topic")) {
                     destinationTopic = Constants.TOPIC_STONE_TEST_TOPIC;
                 } else if (line.startsWith("Version:")) {
