@@ -49,8 +49,7 @@ public abstract class WorkflowExporterTestBase extends TestBase {
     public abstract String getResourceFile() throws IOException;
     public abstract String getRestaurantTemplate();
     public abstract String generateWorkflow(
-            UserExporter exporter, String restaurantTemplate, Map<String, DetailsPost> details)
-            ;
+            UserExporter exporter, String restaurantTemplate, Map<String, DetailsPost> details);
 
     @Test
     public void workflowExporterValidateUpdatedDataTest() throws IOException {
