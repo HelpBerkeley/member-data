@@ -26,6 +26,7 @@ import org.junit.*;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.StringReader;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.text.MessageFormat;
@@ -149,6 +150,24 @@ public class MainTest extends TestBase {
         String usersFile = findFile(Constants.MEMBERDATA_RAW_FILE, "csv");
         String[] args = { Options.COMMAND_ONE_KITCHEN_WORKFLOW, usersFile };
         Main.main(args);
+    }
+
+    @Test
+    public void oneKitchenWorkflowHeadersTest() {
+        String restaurantBlock = readResourceFile("restaurant-template-v300.csv");
+        ApiClient apiSim = createApiSimulator();
+        List<User> userList = new Loader(apiSim).load();
+        UserExporter exporter = new UserExporter(userList);
+        String json = apiSim.runQuery(Constants.QUERY_GET_DELIVERY_DETAILS);
+        ApiQueryResult apiQueryResult = HBParser.parseQueryResult(json);
+        Map<String, DetailsPost> deliveryDetails = HBParser.deliveryDetails(apiQueryResult);
+        String workflow = exporter.oneKitchenWorkflow(restaurantBlock, deliveryDetails);
+        CSVListReader reader = new CSVListReader(new StringReader(workflow));
+        List<List<String>> workflowCSV = reader.readAllToList();
+        List<String> headers = workflowCSV.get(0);
+        List<String> firstUserRow = workflowCSV.get(70);
+        assertThat(headers).hasSameSizeAs(firstUserRow);
+        System.out.println(workflow);
     }
 
     @Test
