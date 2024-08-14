@@ -27,11 +27,12 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.io.StringReader;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public abstract class WorkflowExporterTestBase extends TestBase {
 
@@ -102,5 +103,27 @@ public abstract class WorkflowExporterTestBase extends TestBase {
                 assertThat(line).contains(somebodyElseDetails.replaceAll("\"", "\"\""));
             }
         }
+    }
+
+    @Test
+    public void workflowHeadersTest() {
+        String restaurantBlock = getRestaurantTemplate();
+        ApiClient apiSim = createApiSimulator();
+        List<User> userList = new Loader(apiSim).load();
+        UserExporter exporter = new UserExporter(userList);
+        String workflow = generateWorkflow(exporter, restaurantBlock, Map.of());
+
+        CSVListReader reader = new CSVListReader(new StringReader(workflow));
+        List<List<String>> workflowCSV = reader.readAllToList();
+        List<String> headers = workflowCSV.get(0);
+        // quick validation that we are looking at headers
+        assertThat(headers).contains(
+                Constants.WORKFLOW_CONSUMER_COLUMN,
+                Constants.WORKFLOW_DRIVER_COLUMN,
+                Constants.WORKFLOW_NAME_COLUMN,
+                Constants.WORKFLOW_USER_NAME_COLUMN);
+
+        List<String> firstUserRow = workflowCSV.get(restaurantBlock.split("\n").length);
+        assertThat(headers).hasSameSizeAs(firstUserRow);
     }
 }
