@@ -292,6 +292,7 @@ public class ApiClient {
                 .POST(publisher.build())
                 .build();
 
+        System.out.println(request);
         return send(request);
     }
 

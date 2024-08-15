@@ -121,6 +121,9 @@ public class Main {
         // testQuery(apiClient);
 
         switch (options.getCommand()) {
+            case "change-post-owner":
+                changePostOwner(apiClient);
+                break;
             case Options.COMMAND_WORK_REQUESTS:
                 workRequests(apiClient, options.getFileName());
                 break;
@@ -202,6 +205,20 @@ public class Main {
                 postDrivers(apiClient, options.getFileName());
                 break;
         }
+    }
+
+    private static void changePostOwner(ApiClient apiClient) {
+        long topicNumber = 10330;
+        long[] postIds = new long[]{106970, 107006};
+        String newOwnerUserName = "KaelanTestAccount";
+        apiClient.changePostOwner(topicNumber, postIds, newOwnerUserName);
+//        String requestPost = apiClient.getTopic(topicNumber);
+//        @SuppressWarnings("unchecked")
+//        Map<String, Object> map = (Map<String, Object>) JsonIo.toObjects(requestPost,
+//                new ReadOptionsBuilder().returnAsNativeJsonObjects().build(), Map.class);
+//        assert map.containsKey("username") : requestPost;
+//        String dispatcherUsername = (String)map.get("username");
+//        System.out.println(dispatcherUsername);
     }
 
     static Properties loadProperties() {
@@ -659,7 +676,7 @@ public class Main {
                         Constants.CONTROL_BLOCK_VERSION_200));
             }
             DriverPostFormat driverPostFormat = DriverPostFormat.create(apiClient, users, routedDeliveries);
-            String statusMessage = generateDriverPosts(apiClient, driverPostFormat, topic);
+            String statusMessage = generateDriverPosts(apiClient, driverPostFormat, topic, "");
             request.postStatus(WorkRequestHandler.RequestStatus.Succeeded, statusMessage);
         } catch (MemberDataException ex) {
             String reason = ex.getCause() != null ? ex.getCause().getMessage() : ex.getMessage();
@@ -753,6 +770,7 @@ public class Main {
         @SuppressWarnings("unchecked")
         Map<String, Object> map = (Map<String, Object>) JsonIo.toObjects(requestPost,
                 new ReadOptionsBuilder().returnAsNativeJsonObjects().build(), Map.class);
+        assert map.containsKey("username") : requestPost;
         String dispatcherUsername = (String)map.get("username");
         if (request.destinationTopic == null) {
             topic = Constants.TOPIC_DRIVERS_POST_STAGING;
