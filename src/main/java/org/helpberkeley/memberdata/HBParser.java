@@ -25,13 +25,11 @@ import com.cedarsoftware.io.JsonIo;
 import com.cedarsoftware.io.ReadOptionsBuilder;
 import com.opencsv.CSVReader;
 import com.opencsv.exceptions.CsvException;
-import org.helpberkeley.memberdata.v300.ControlBlockV300;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.StringReader;
-import java.text.MessageFormat;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -558,51 +556,6 @@ public class HBParser {
         }
     }
 
-    public static String shortURLDiscoursePost(final String line) {
-        UploadFile.auditFilePrefix(line);
-        int index = -1;
-        int prefixLength = 0;
-        if (line.contains(Constants.UPLOAD_URI_PREFIX)) {
-            index = line.indexOf(Constants.UPLOAD_URI_PREFIX);
-            prefixLength= Constants.UPLOAD_URI_PREFIX.length();
-        }
-        else if (line.contains(Constants.WEB_CSV_PREFIX)){
-            index = line.indexOf(Constants.WEB_CSV_PREFIX);
-            prefixLength= Constants.WEB_CSV_PREFIX.length();
-        }
-        assert index != -1 : line;
-        String shortURL = Constants.UPLOAD_URI_PREFIX.concat(line.substring(index + prefixLength));
-        index = shortURL.indexOf(')');
-        shortURL = shortURL.substring(0, index);
-
-        return shortURL;
-    }
-
-    static String shortURLUploadResponse(final String line) {
-        UploadFile.auditFilePrefix(line);
-        int index = -1;
-        if(line.contains(Constants.UPLOAD_URI_PREFIX))
-            index = line.indexOf(Constants.UPLOAD_URI_PREFIX);
-        else if (line.contains(Constants.WEB_CSV_PREFIX))
-            index = line.indexOf(Constants.WEB_CSV_PREFIX);
-        assert index != -1 : line;
-        String shortURL = line.substring(index);
-        index = shortURL.indexOf('"');
-        shortURL = shortURL.substring(0, index);
-
-        return shortURL;
-    }
-
-    public static String downloadFileName(final String line) {
-        UploadFile.auditFilePrefix(line);
-        int index = line.indexOf('[');
-        assert index != -1 : line;
-        int end = line.indexOf('|');
-        assert end > index : line;
-
-        return line.substring(index + 1, end);
-    }
-
     static String postBody(final String json) {
 
         @SuppressWarnings("unchecked")
@@ -680,7 +633,6 @@ public class HBParser {
         assert date.endsWith("**");
         date = date.substring(0, date.length() - 2);
 
-
         return new OrderHistoryPost(date, lines[2]);
     }
 
@@ -693,7 +645,7 @@ public class HBParser {
         // [HelpBerkeleyDeliveries - Template.csv|attachment](upload://89KcvxqdAnILkXELUtX939365ag.csv) (1.5 KB)"
 
         for (String line : rawPost.split("\n")) {
-            if (line.contains(Constants.UPLOAD_URI_PREFIX)) {
+            if (UploadFile.containsUploadFileURL(line)) {
                 return new RestaurantTemplatePost(line);
             }
         }

@@ -66,7 +66,6 @@ public class ControlBlockV300 extends ControlBlock {
             + "Leave the value column empty if there are no alternate choices.\n";
     public static final String INVALID_MESSAGE_FORMAT = "\"{0}\" is not valid for "
             + Constants.CONTROL_BLOCK_MESSAGE_FORMAT + "\n";
-    public static final String INVALID_FILE_PREFIX = "\"{0}\" is not a supported file prefix";
 
     private List<String> pickupManagers = null;
     private List<String> altMealOptions = null;

@@ -22,10 +22,6 @@
  */
 package org.helpberkeley.memberdata;
 
-import org.helpberkeley.memberdata.HBParser;
-import org.helpberkeley.memberdata.MemberDataException;
-import org.helpberkeley.memberdata.UploadFile;
-
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
