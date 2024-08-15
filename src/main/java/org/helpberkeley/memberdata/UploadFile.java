@@ -96,7 +96,6 @@ public class UploadFile {
             throw new MemberDataException(
                     MessageFormat.format(UploadFile.INVALID_FILE_PREFIX, line));
         }
-        return;
     }
 
     @Override

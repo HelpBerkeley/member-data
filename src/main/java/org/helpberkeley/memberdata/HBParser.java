@@ -656,7 +656,7 @@ public class HBParser {
     static UploadFile parseFileFromPost(String rawPost) {
 
         for (String line : rawPost.split("\n")) {
-            if (line.contains(Constants.UPLOAD_URI_PREFIX) || line.contains(Constants.WEB_CSV_PREFIX)) {
+            if (UploadFile.containsUploadFileURL(line)) {
                 return UploadFile.createUploadFile(line);
             }
         }
@@ -703,7 +703,7 @@ public class HBParser {
     }
 
     static String fileNameFromShortURL(final String shortURL) {
-        assert (shortURL.startsWith(Constants.UPLOAD_URI_PREFIX) || shortURL.startsWith(Constants.WEB_CSV_PREFIX));
+        assert (UploadFile.containsUploadFileURL(shortURL));
         String prefix;
         if (shortURL.startsWith(Constants.UPLOAD_URI_PREFIX)) {
             prefix = Constants.UPLOAD_URI_PREFIX;
