@@ -702,19 +702,6 @@ public class HBParser {
         return orderHistory;
     }
 
-    static String fileNameFromShortURL(final String shortURL) {
-        assert (UploadFile.containsUploadFileURL(shortURL));
-        String prefix;
-        if (shortURL.startsWith(Constants.UPLOAD_URI_PREFIX)) {
-            prefix = Constants.UPLOAD_URI_PREFIX;
-        }
-        else {
-            prefix = Constants.WEB_CSV_PREFIX;
-        }
-        assert shortURL.length() > prefix.length() : shortURL;
-        return shortURL.substring(prefix.length());
-    }
-
     static Set<Long> emailConfirmations(final ApiQueryResult apiQueryResult) {
         assert apiQueryResult.headers.length == 2 : apiQueryResult.headers.length;
         assert apiQueryResult.headers[0].equals("user_id") : apiQueryResult.headers[0];

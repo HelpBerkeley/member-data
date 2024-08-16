@@ -185,7 +185,7 @@ public class Options {
             }
         }
 
-        if ((shortURL != null) && (! shortURL.startsWith(Constants.UPLOAD_URI_PREFIX))) {
+        if ((shortURL != null) && (! UploadFile.containsUploadFileURL(shortURL))) {
                 dieMessage(BAD_SHORT_URL);
         }
     }

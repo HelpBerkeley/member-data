@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020. helpberkeley.org
+ * Copyright (c) 2020.2024. helpberkeley.org
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -30,12 +30,10 @@ public class UploadFile {
     private final String originalFileName;
     public static final String INVALID_FILE_PREFIX = "\"{0}\" does not contain a supported file prefix";
 
-
-
     private UploadFile(final String fileName, final String shortURL) {
         this.originalFileName = fileName;
         this.shortURL = shortURL;
-        this.fileName = HBParser.fileNameFromShortURL(shortURL);
+        this.fileName = fileNameFromShortURL(shortURL);
     }
 
     public String getShortURL() {
@@ -48,6 +46,19 @@ public class UploadFile {
 
     public final String getOriginalFileName() {
         return originalFileName;
+    }
+
+    private String fileNameFromShortURL(final String shortURL) {
+        assert (UploadFile.containsUploadFileURL(shortURL));
+        String prefix;
+        if (shortURL.startsWith(Constants.UPLOAD_URI_PREFIX)) {
+            prefix = Constants.UPLOAD_URI_PREFIX;
+        }
+        else {
+            prefix = Constants.WEB_CSV_PREFIX;
+        }
+        assert shortURL.length() > prefix.length() : shortURL;
+        return shortURL.substring(prefix.length());
     }
 
     private static String downloadFileName(final String line) {
