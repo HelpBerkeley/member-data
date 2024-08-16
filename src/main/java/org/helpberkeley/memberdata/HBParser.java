@@ -683,12 +683,14 @@ public class HBParser {
 
         assert map.containsKey("topic_id") : json;
         long topic_id = (long)map.get("topic_id");
+        assert  map.containsKey("id");
+        long id = (long)map.get("id");
         assert map.containsKey(Constants.DISCOURSE_COLUMN_POST_NUMBER);
         long post_number = (long)map.get(Constants.DISCOURSE_COLUMN_POST_NUMBER);
         assert map.containsKey("topic_slug") : json;
         String topicSlug = (String)map.get("topic_slug");
 
-        return new PostResponse(topic_id, post_number, topicSlug);
+        return new PostResponse(topic_id, id, post_number, topicSlug);
     }
 
     static Map<Long, String> emailAddresses(final ApiQueryResult queryResult) {

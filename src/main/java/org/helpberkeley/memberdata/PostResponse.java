@@ -25,11 +25,13 @@ package org.helpberkeley.memberdata;
 public class PostResponse {
 
     final long topicId;
+    final long postId;
     final long postNumber;
     final String topicSlug;
 
-    PostResponse(long topicId, long postNumber, final String topicSlug) {
+    PostResponse(long topicId, long postId, long postNumber, final String topicSlug) {
         this.topicId = topicId;
+        this.postId = postId;
         this.postNumber = postNumber;
         this.topicSlug = topicSlug;
     }

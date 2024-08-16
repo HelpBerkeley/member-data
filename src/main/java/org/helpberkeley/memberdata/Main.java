@@ -209,16 +209,21 @@ public class Main {
 
     private static void changePostOwner(ApiClient apiClient) {
         long topicNumber = 10330;
-        long[] postIds = new long[]{106970, 107006};
-        String newOwnerUserName = "KaelanTestAccount";
-        apiClient.changePostOwner(topicNumber, postIds, newOwnerUserName);
-//        String requestPost = apiClient.getTopic(topicNumber);
-//        @SuppressWarnings("unchecked")
-//        Map<String, Object> map = (Map<String, Object>) JsonIo.toObjects(requestPost,
-//                new ReadOptionsBuilder().returnAsNativeJsonObjects().build(), Map.class);
+//        long[] postIds = new long[]{109638, 109639};
+//        String newOwnerUserName = "camerontdt";
+//        apiClient.changePostOwner(topicNumber, postIds, newOwnerUserName);
+        String requestPost = apiClient.getTopic(topicNumber);
+//        String requestPost = apiClient.getPost(109638);
+
+        @SuppressWarnings("unchecked")
+        Map<String, Object> map = (Map<String, Object>) JsonIo.toObjects(requestPost,
+                new ReadOptionsBuilder().returnAsNativeJsonObjects().build(), Map.class);
+        assert map.containsKey(Constants.DISCOURSE_COLUMN_RAW) : "it's a no from me" + map;
+        System.out.println((String)map.get(Constants.DISCOURSE_COLUMN_RAW));
+        System.out.println("it's a yes from me" + map);
 //        assert map.containsKey("username") : requestPost;
-//        String dispatcherUsername = (String)map.get("username");
-//        System.out.println(dispatcherUsername);
+        String postStream = (String)map.get("post_stream");
+        System.out.println(postStream);
     }
 
     static Properties loadProperties() {
@@ -766,7 +771,7 @@ public class Main {
 
         Topic topic;
         String warnings = "";
-        String requestPost = apiClient.getPost(request.postNumber);
+        String requestPost = apiClient.getPost(request.);
         @SuppressWarnings("unchecked")
         Map<String, Object> map = (Map<String, Object>) JsonIo.toObjects(requestPost,
                 new ReadOptionsBuilder().returnAsNativeJsonObjects().build(), Map.class);
@@ -824,6 +829,7 @@ public class Main {
         List<Long> postIds = new ArrayList<>();
         String groupPostURL = null;
 
+        //TODO get these post Ids
         String driversTableURL = generateDriversTablePost(
                 apiClient, driverPostFormat, topic, statusMessages);
         String ordersTableURL = generateOrdersTablePost(
@@ -845,7 +851,7 @@ public class Main {
                     .append(response.statusCode()).append(": ").append(response.body()).append("\n");
         } else {
             PostResponse postResponse = HBParser.postResponse((String)response.body());
-            postIds.add(postResponse.postNumber);
+            postIds.add(postResponse.postId);
             groupPostURL = ("https://go.helpberkeley.org/t/"
                     + postResponse.topicSlug
                     + '/'
@@ -874,7 +880,7 @@ public class Main {
                         .append(response.statusCode()).append(": ").append(response.body()).append("\n");
             } else {
                 PostResponse postResponse = HBParser.postResponse((String)response.body());
-                postIds.add(postResponse.postNumber);
+                postIds.add(postResponse.postId);
                 postURLs.add(
                         "["
                         + driverIterator.next().getUserName()
@@ -924,7 +930,7 @@ public class Main {
         }
 
         if (!dispatcherUsername.isEmpty()) {
-
+            apiClient.changePostOwner(topic.getId(), postIds, dispatcherUsername);
         }
 
         return statusMessages.toString();

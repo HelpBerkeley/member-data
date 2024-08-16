@@ -345,7 +345,6 @@ public class WorkRequestHandler {
                     || line.equalsIgnoreCase(Constants.DAILY_WORKFLOW)) {
                     return new WorkRequest(lastReply, dateLine, RequestType.fromString(line));
                 }
-
             }
 
             throw new MemberDataException("Post #" + lastReply.postNumber + " is not a valid request");

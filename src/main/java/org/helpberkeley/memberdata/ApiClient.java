@@ -34,7 +34,7 @@ import java.net.http.HttpResponse;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
-import java.util.Arrays;
+import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 
@@ -266,33 +266,23 @@ public class ApiClient {
         return send(request);
     }
 
-    public HttpResponse<String> changePostOwner(long topicId, long[] postIds, String newOwnerUsername) {
-        String endpoint = TOPICS_BASE + topicId;
+    public HttpResponse<String> changePostOwner(long topicId, List<Long> postIds, String newOwnerUsername) {
+        String endpoint = TOPICS_BASE + topicId + "/change-owner.json";
 
-        MultiPartBodyPublisher publisher = new MultiPartBodyPublisher()
-                .addPart("post_ids[]", Arrays.toString(postIds))
-                .addPart("username",
-                        new String(newOwnerUsername.getBytes(Charset.defaultCharset()), StandardCharsets.UTF_8));
+        MultiPartBodyPublisher publisher = new MultiPartBodyPublisher();
+        for (long postId : postIds) {
+            publisher.addPart("post_ids[]", new String(String.valueOf(postId).getBytes(Charset.defaultCharset()), StandardCharsets.UTF_8));
+        }
+        publisher.addPart("username", new String(newOwnerUsername.getBytes(Charset.defaultCharset()), StandardCharsets.UTF_8));
 
-//        List<NameValuePair> formData = postIds.stream()
-//                .map(id -> new NameValuePair("post_ids[]", String.valueOf(id)))
-//                .collect(Collectors.toList());
-//        formData.add(new NameValuePair("username", username));
-//
-//        String formDataString = formData.stream()
-//                .map(pair -> pair.getName() + "=" + pair.getValue())
-//                .collect(Collectors.joining("&"));
-//        byte[] formDataBytes = formDataString.getBytes(StandardCharsets.UTF_8);
-//
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(endpoint))
-                .header("api-username", apiUser)
-                .header("api-key", apiKey)
-                .header("Content-Type", "application/x-www-form-urlencoded")
+                .setHeader("Content-Type", "multipart/form-data; charset=UTF-8; boundary=" + publisher.getBoundary())
+                .setHeader("Api-Key", apiKey)
+                .setHeader("Api-Username", apiUser)
                 .POST(publisher.build())
                 .build();
 
-        System.out.println(request);
         return send(request);
     }
 
