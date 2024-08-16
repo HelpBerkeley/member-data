@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020. helpberkeley.org
+ * Copyright (c) 2024. helpberkeley.org
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,13 +22,20 @@
  */
 package org.helpberkeley.memberdata;
 
-public class OrderHistoryPost {
+public class UploadResponse {
+    private final String fileName;
+    private final String shortURL;
 
-    final String historyThroughDate;
-    final UploadFile uploadFile;
+    public UploadResponse(String fileName, String shortURL) {
+        this.fileName = fileName;
+        this.shortURL = shortURL;
+    }
 
-    OrderHistoryPost(final String date, final String data) {
-        historyThroughDate = date;
-        this.uploadFile = UploadFile.createUploadFile(data);
+    public String getFileName() {
+        return fileName;
+    }
+
+    public String getShortURL() {
+        return shortURL;
     }
 }

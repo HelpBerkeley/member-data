@@ -445,55 +445,6 @@ public class HBParser {
         return users;
     }
 
-    static List<DeliveryData> dailyDeliveryPosts(ApiQueryResult apiQueryResult) {
-        assert apiQueryResult.headers.length == 3 : apiQueryResult.headers.length;
-        assert apiQueryResult.headers[2].equals(Constants.DISCOURSE_COLUMN_RAW);
-
-        List<DeliveryData> dailyDeliveries = new ArrayList<>();
-
-        for (Object rowObj : apiQueryResult.rows) {
-            Object[] columns = (Object[]) rowObj;
-            assert columns.length == 3 : columns.length;
-
-            //
-            String raw = ((String)columns[2]).trim();
-
-            // 2020/03/28
-            //
-            //[HelpBerkeleyDeliveries - 3_28.csv|attachment](upload://xyzzy.csv) (828 Bytes)
-
-            int index = raw.indexOf('\n');
-            if (index == -1) {
-                LOGGER.warn("Cannot parse daily deliver post: {}", raw);
-                continue;
-            }
-            String date = raw.substring(0, index);
-            dailyDeliveries.add(new DeliveryData(date, downloadFileName(raw), shortURLDiscoursePost(raw)));
-        }
-
-        return dailyDeliveries;
-    }
-
-    static List<DeliveryData> dailyDeliveryPosts(final String csvData) {
-
-        List<DeliveryData> dailyDeliveries = new ArrayList<>();
-
-        String[] lines = csvData.split("\n");
-        assert lines.length > 0;
-
-        String header = lines[0];
-        assert header.equals(DeliveryData.deliveryPostsHeader().trim());
-
-        for (int index = 1; index < lines.length; index++) {
-            // FIX THIS, DS: use CSVReader
-            String[] fields = lines[index].split(Constants.CSV_SEPARATOR, -1);
-            assert fields.length == 3 : lines[index];
-            dailyDeliveries.add(new DeliveryData(fields[0], fields[1], fields[2]));
-        }
-
-        return dailyDeliveries;
-    }
-
     static Map<String, DetailsPost> deliveryDetails(ApiQueryResult apiQueryResult) {
         assert apiQueryResult.headers.length == 3 : apiQueryResult.headers.length;
         assert apiQueryResult.headers[0].equals(Constants.DISCOURSE_COLUMN_POST_NUMBER);
@@ -605,35 +556,6 @@ public class HBParser {
         }
     }
 
-    public static String shortURLDiscoursePost(final String line) {
-        int index = line.indexOf(Constants.UPLOAD_URI_PREFIX);
-        assert index != -1 : line;
-        String shortURL = line.substring(index);
-        index = shortURL.indexOf(')');
-        shortURL = shortURL.substring(0, index);
-
-        return shortURL;
-    }
-
-    static String shortURLUploadResponse(final String line) {
-        int index = line.indexOf(Constants.UPLOAD_URI_PREFIX);
-        assert index != -1 : line;
-        String shortURL = line.substring(index);
-        index = shortURL.indexOf('"');
-        shortURL = shortURL.substring(0, index);
-
-        return shortURL;
-    }
-
-    public static String downloadFileName(final String line) {
-        int index = line.indexOf('[');
-        assert index != -1 : line;
-        int end = line.indexOf('|');
-        assert end > index : line;
-
-        return line.substring(index + 1, end);
-    }
-
     static String postBody(final String json) {
 
         @SuppressWarnings("unchecked")
@@ -658,6 +580,19 @@ public class HBParser {
         String topicSlug = (String)map.get("topic_slug");
 
         return new PostResponse(topic_id, post_number, topicSlug);
+    }
+
+    static UploadResponse uploadResponse(String json) {
+        @SuppressWarnings("unchecked")
+        Map<String, Object> map = (Map<String, Object>)JsonIo.toObjects(json,
+                new ReadOptionsBuilder().returnAsNativeJsonObjects().build(), Map.class);
+
+        assert map.containsKey("original_filename") : json;
+        String fileName = (String)map.get("original_filename");
+        assert map.containsKey("short_url") : json;
+        String shortURL = (String)map.get("short_url");
+
+        return new UploadResponse(fileName, shortURL);
     }
 
     static Map<Long, String> emailAddresses(final ApiQueryResult queryResult) {
@@ -697,10 +632,8 @@ public class HBParser {
         String date = lines[0].substring(start.length());
         assert date.endsWith("**");
         date = date.substring(0, date.length() - 2);
-        String shortURL =  shortURLDiscoursePost(lines[2]);
-        String fileName = downloadFileName(lines[2]);
 
-        return new OrderHistoryPost(date, fileName, shortURL);
+        return new OrderHistoryPost(date, lines[2]);
     }
 
     static RestaurantTemplatePost restaurantTemplatePost(final String rawPost) {
@@ -712,10 +645,8 @@ public class HBParser {
         // [HelpBerkeleyDeliveries - Template.csv|attachment](upload://89KcvxqdAnILkXELUtX939365ag.csv) (1.5 KB)"
 
         for (String line : rawPost.split("\n")) {
-            if (line.contains(Constants.UPLOAD_URI_PREFIX)) {
-                String shortURL =  shortURLDiscoursePost(line);
-                String fileName = downloadFileName(line);
-                return new RestaurantTemplatePost(fileName, shortURL);
+            if (UploadFile.containsUploadFileURL(line)) {
+                return new RestaurantTemplatePost(line);
             }
         }
 
@@ -725,11 +656,8 @@ public class HBParser {
     static UploadFile parseFileFromPost(String rawPost) {
 
         for (String line : rawPost.split("\n")) {
-            if (line.contains(Constants.UPLOAD_URI_PREFIX)) {
-                String shortURL =  shortURLDiscoursePost(line);
-                String fileName = downloadFileName(line);
-
-                return new UploadFile(fileName, shortURL);
+            if (UploadFile.containsUploadFileURL(line)) {
+                return UploadFile.createUploadFile(line);
             }
         }
 
@@ -772,12 +700,6 @@ public class HBParser {
         }
 
         return orderHistory;
-    }
-
-    static String fileNameFromShortURL(final String shortURL) {
-        assert shortURL.startsWith(Constants.UPLOAD_URI_PREFIX);
-        assert shortURL.length() > Constants.UPLOAD_URI_PREFIX.length() : shortURL;
-        return shortURL.substring(Constants.UPLOAD_URI_PREFIX.length());
     }
 
     static Set<Long> emailConfirmations(final ApiQueryResult apiQueryResult) {

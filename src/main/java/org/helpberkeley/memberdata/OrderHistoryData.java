@@ -22,10 +22,6 @@
  */
 package org.helpberkeley.memberdata;
 
-import org.helpberkeley.memberdata.HBParser;
-import org.helpberkeley.memberdata.MemberDataException;
-import org.helpberkeley.memberdata.UploadFile;
-
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -43,9 +39,7 @@ public class OrderHistoryData {
         assert index != -1 : "Invalid post: " + orderHistoryDataPost;
         date = orderHistoryDataPost.substring(0, index).trim();
 
-        uploadFile = new UploadFile(
-                HBParser.downloadFileName(orderHistoryDataPost),
-                HBParser.shortURLDiscoursePost(orderHistoryDataPost));
+        uploadFile = UploadFile.createUploadFile(orderHistoryDataPost);
         audit();
     }
 

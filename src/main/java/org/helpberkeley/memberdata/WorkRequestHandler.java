@@ -332,11 +332,8 @@ public class WorkRequestHandler {
                     disableDateAudit = true;
                 } else if (line.toLowerCase().startsWith(DISABLE_MEMBER_LIMIT_AUDIT)) {
                     disableMemberLimitAudit = true;
-                } else if (line.contains(Constants.UPLOAD_URI_PREFIX)) {
-                    String shortURL =  HBParser.shortURLDiscoursePost(line);
-                    String fileName = HBParser.downloadFileName(line);
-
-                    UploadFile uploadFile = new UploadFile(fileName, shortURL);
+                } else if (UploadFile.containsUploadFileURL(line)) {
+                    UploadFile uploadFile = UploadFile.createUploadFile(line);
 
                     return new WorkRequest(lastReply, dateLine,
                             uploadFile, destinationTopic, version, disableDateAudit, disableMemberLimitAudit);

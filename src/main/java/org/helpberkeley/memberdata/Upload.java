@@ -56,6 +56,6 @@ public class Upload {
             throw new MemberDataException("Failed uploading " + fileName + ": " + ex.getMessage());
         }
 
-        return HBParser.shortURLUploadResponse(responseBody);
+        return HBParser.uploadResponse(responseBody).getShortURL();
     }
 }
