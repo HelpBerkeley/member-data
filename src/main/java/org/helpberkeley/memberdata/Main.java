@@ -771,12 +771,7 @@ public class Main {
 
         Topic topic;
         String warnings = "";
-        String requestPost = apiClient.getPost(request.);
-        @SuppressWarnings("unchecked")
-        Map<String, Object> map = (Map<String, Object>) JsonIo.toObjects(requestPost,
-                new ReadOptionsBuilder().returnAsNativeJsonObjects().build(), Map.class);
-        assert map.containsKey("username") : requestPost;
-        String dispatcherUsername = (String)map.get("username");
+        String dispatcherUsername = request.posterUsername;
         if (request.destinationTopic == null) {
             topic = Constants.TOPIC_DRIVERS_POST_STAGING;
         } else {
@@ -787,7 +782,6 @@ public class Main {
                 topic = Constants.TOPIC_DRIVERS_POST_STAGING;
             }
         }
-//        = (request.destinationTopic != null) ? request.destinationTopic : Constants.TOPIC_DRIVERS_POST_STAGING;
 
         // Download file
         String routedDeliveries = apiClient.downloadFile(request.uploadFile.getFileName());
@@ -929,14 +923,14 @@ public class Main {
             statusMessages.append("\n[Backup Drivers Message](").append(backupDriversPostURL).append(")");
         }
 
-        if (!dispatcherUsername.isEmpty()) {
+        if (! topic.equals(Constants.TOPIC_DRIVERS_POST_STAGING)) {
             apiClient.changePostOwner(topic.getId(), postIds, dispatcherUsername);
         }
 
         return statusMessages.toString();
     }
 
-    private static String generateDriversTablePost(ApiClient apiClient, DriverPostFormat driverPostFormat,
+    private static Post generateDriversTablePost(ApiClient apiClient, DriverPostFormat driverPostFormat,
            Topic topic, StringBuilder statusMessages) {
 
         if (! (driverPostFormat instanceof DriverPostFormatV300)) {
@@ -952,27 +946,29 @@ public class Main {
         post.createdAt = ZonedDateTime.now(ZoneId.systemDefault())
                 .format(DateTimeFormatter.ofPattern("uuuu.MM.dd.HH.mm.ss"));
 
-        HttpResponse<?> response = apiClient.post(post.toJson());
-        LOGGER.info("generateDriversTablePost {}", response.statusCode() == HTTP_OK ?
-                "" : "failed " + response.statusCode() + ": " + response.body());
+        return post;
 
-        if (response.statusCode() != HTTP_OK) {
-            statusMessages.append("Failed posting pickup manager message: ")
-                    .append(response.statusCode()).append(": ").append(response.body()).append("\n");
-        } else {
-            PostResponse postResponse = HBParser.postResponse((String)response.body());
-            return "https://go.helpberkeley.org/t/"
-                    + postResponse.topicSlug
-                    + '/'
-                    + postResponse.topicId
-                    + '/'
-                    + postResponse.postNumber;
-        }
-
-        return null;
+//        HttpResponse<?> response = apiClient.post(post.toJson());
+//        LOGGER.info("generateDriversTablePost {}", response.statusCode() == HTTP_OK ?
+//                "" : "failed " + response.statusCode() + ": " + response.body());
+//
+//        if (response.statusCode() != HTTP_OK) {
+//            statusMessages.append("Failed posting pickup manager message: ")
+//                    .append(response.statusCode()).append(": ").append(response.body()).append("\n");
+//        } else {
+//            PostResponse postResponse = HBParser.postResponse((String)response.body());
+//            return "https://go.helpberkeley.org/t/"
+//                    + postResponse.topicSlug
+//                    + '/'
+//                    + postResponse.topicId
+//                    + '/'
+//                    + postResponse.postNumber;
+//        }
+//
+//        return null;
     }
 
-    private static String generateOrdersTablePost(ApiClient apiClient,
+    private static Post generateOrdersTablePost(ApiClient apiClient,
               DriverPostFormat driverPostFormat, Topic topic, StringBuilder statusMessages) {
 
         if (! (driverPostFormat instanceof DriverPostFormatV300)) {
@@ -988,24 +984,26 @@ public class Main {
         post.createdAt = ZonedDateTime.now(ZoneId.systemDefault())
                 .format(DateTimeFormatter.ofPattern("uuuu.MM.dd.HH.mm.ss"));
 
-        HttpResponse<?> response = apiClient.post(post.toJson());
-        LOGGER.info("generateOrdersTablePost {}", response.statusCode() == HTTP_OK ?
-                "" : "failed " + response.statusCode() + ": " + response.body());
+        return post;
 
-        if (response.statusCode() != HTTP_OK) {
-            statusMessages.append("Failed posting pickup manager message: ")
-                    .append(response.statusCode()).append(": ").append(response.body()).append("\n");
-        } else {
-            PostResponse postResponse = HBParser.postResponse((String)response.body());
-            return "https://go.helpberkeley.org/t/"
-                    + postResponse.topicSlug
-                    + '/'
-                    + postResponse.topicId
-                    + '/'
-                    + postResponse.postNumber;
-        }
-
-        return null;
+//        HttpResponse<?> response = apiClient.post(post.toJson());
+//        LOGGER.info("generateOrdersTablePost {}", response.statusCode() == HTTP_OK ?
+//                "" : "failed " + response.statusCode() + ": " + response.body());
+//
+//        if (response.statusCode() != HTTP_OK) {
+//            statusMessages.append("Failed posting pickup manager message: ")
+//                    .append(response.statusCode()).append(": ").append(response.body()).append("\n");
+//        } else {
+//            PostResponse postResponse = HBParser.postResponse((String)response.body());
+//            return "https://go.helpberkeley.org/t/"
+//                    + postResponse.topicSlug
+//                    + '/'
+//                    + postResponse.topicId
+//                    + '/'
+//                    + postResponse.postNumber;
+//        }
+//
+//        return null;
     }
 
     private static String generateBackupDriversPost(ApiClient apiClient,
@@ -1610,6 +1608,8 @@ public class Main {
         assert apiQueryResult.rows.length == 9 : apiQueryResult.rows.length;
         Integer postNumberIndex = apiQueryResult.getColumnIndex(Constants.DISCOURSE_COLUMN_POST_NUMBER);
         assert postNumberIndex != null;
+        Integer posterUsernameIndex = apiQueryResult.getColumnIndex(Constants.DISCOURSE_COLUMN_POSTER_USERNAME);
+        assert posterUsernameIndex != null;
         Integer rawIndex = apiQueryResult.getColumnIndex(Constants.DISCOURSE_COLUMN_RAW);
         assert rawIndex != null;
         Integer topicIdIndex = apiQueryResult.getColumnIndex(Constants.DISCOURSE_COLUMN_TOPIC_ID);
@@ -1621,11 +1621,12 @@ public class Main {
 
             Long topicId = (Long)columns[topicIdIndex];
             Long postNumber = (Long)columns[postNumberIndex];
+            String posterUsername = (String)columns[posterUsernameIndex];
             String raw = (String)columns[rawIndex];
             String topicName = (String)columns[rawIndex];
 
             WorkRequestHandler requestHandler = new WorkRequestHandler(
-                    apiClient, new Topic(topicName, topicId), postNumber, raw);
+                    apiClient, new Topic(topicName, topicId), postNumber, posterUsername, raw);
             WorkRequestHandler.Reply reply;
 
             try {
