@@ -24,6 +24,8 @@ package org.helpberkeley.memberdata;
 
 import org.junit.Test;
 
+import java.text.MessageFormat;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
 
@@ -93,13 +95,14 @@ public class WorkRequestHandlerTest extends TestBase {
     }
 
     @Test
-    public void topicDirectiveTest() {
+    public void badTopicDirectiveTest() {
+        String badURL = "go.helpberkeley.org/t/";
         String driverMessagesRequest =
                 "{ \"success\": true, \"columns\": [ \"post_number\", \"deleted_at\", \"raw\" ], "
                         + "\"rows\": [ "
                         + "[ 1, null, \""
                         + "2021/01/01"
-                        + "\nTopic: 543\n"
+                        + "\nTopic: " + badURL + "\n"
                         + "[xyzzy.csv|attachment](upload://routed-deliveries-v200.csv) (5.8 KB)\" ] "
                         + "] }";
         HttpClientSimulator.setQueryResponseData(
@@ -110,7 +113,7 @@ public class WorkRequestHandlerTest extends TestBase {
 
         Throwable thrown = catchThrowable(requestHandler::getLastReply);
         assertThat(thrown).isInstanceOf(MemberDataException.class);
-        assertThat(thrown).hasMessageContaining(WorkRequestHandler.TOPIC_DIRECTIVE_NOT_SUPPORTED);
+        assertThat(thrown).hasMessageContaining(MessageFormat.format(HBParser.INVALID_TOPIC_URL, badURL));
 
     }
 }
