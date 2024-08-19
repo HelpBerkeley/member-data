@@ -28,11 +28,14 @@ public class PostResponse {
     final long postId;
     final long postNumber;
     final String topicSlug;
+    final String URL;
 
     PostResponse(long topicId, long postId, long postNumber, final String topicSlug) {
         this.topicId = topicId;
         this.postId = postId;
         this.postNumber = postNumber;
         this.topicSlug = topicSlug;
+        this.URL = "https://go.helpberkeley.org/t/" + topicSlug + '/' + topicId + '/' + postNumber;
     }
+
 }

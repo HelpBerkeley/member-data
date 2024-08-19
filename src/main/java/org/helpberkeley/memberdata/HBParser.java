@@ -43,6 +43,9 @@ public class HBParser {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(HBParser.class);
 
+    private static final String DEST_TOPIC_NOT_IN_DRIVER_DELIVERIES = "WARNING: The destination topic URL provided is not in the Drivers/Deliveries subcategory. " +
+            "These messages will be posted to \"Get driver messages\" instead. Please try again with a topic URL in the Drivers/Deliveries subcategory.";
+
     public static ApiQueryResult parseQueryResult(final String queryResultJson) {
 
         Map<String, Object> map = JsonIo.toObjects(queryResultJson,
@@ -630,8 +633,7 @@ public class HBParser {
         assert map.containsKey("category_id") : json;
         Integer categoryId = (Integer)map.get("category_id");
         if (categoryId != Constants.DRIVER_DELIVERIES_CATEGORY) {
-            return "WARNING: The destination topic URL provided is not in the Drivers/Deliveries subcategory. These messages will" +
-                    "be posted to \"Get driver messages\" instead. Please try again with a topic URL in the Drivers/Deliveries subcategory.";
+            return DEST_TOPIC_NOT_IN_DRIVER_DELIVERIES;
         }
         return "";
     }
