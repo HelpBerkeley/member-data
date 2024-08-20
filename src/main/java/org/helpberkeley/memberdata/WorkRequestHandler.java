@@ -69,7 +69,6 @@ public class WorkRequestHandler {
     private final ApiClient apiClient;
     private final Query query;
     private Reply lastReply;
-//    private final String requesterUsername;
 
     // Support for end-to-end testing through main()
     private static Post lastStatusPost;
@@ -77,13 +76,11 @@ public class WorkRequestHandler {
     WorkRequestHandler(ApiClient apiClient, Query query) {
         this.apiClient = apiClient;
         this.query = query;
-//        this.requesterUsername = "";
     }
 
     WorkRequestHandler(ApiClient apiClient, Topic topic, long postNumber, String raw) {
         this.apiClient = apiClient;
         this.query = null;
-//        this.requesterUsername = posterUsername;
 
         // Normalize EOL
         this.lastReply = new Reply(apiClient, topic, postNumber, raw.replaceAll("\\r\\n?", "\n"));
@@ -173,8 +170,6 @@ public class WorkRequestHandler {
 
         Integer postNumberIndex = apiQueryResult.getColumnIndex(Constants.DISCOURSE_COLUMN_POST_NUMBER);
         assert postNumberIndex != null;
-//        Integer posterUsernameIndex = apiQueryResult.getColumnIndex(Constants.DISCOURSE_COLUMN_POSTER_USERNAME);
-//        assert posterUsernameIndex != null;
         Integer rawIndex = apiQueryResult.getColumnIndex(Constants.DISCOURSE_COLUMN_RAW);
         assert rawIndex != null;
 
@@ -186,7 +181,6 @@ public class WorkRequestHandler {
 
         Object[] columnObjs = (Object[]) apiQueryResult.rows[0];
         long postNumber = (Long)columnObjs[postNumberIndex];
-//        String posterUsername = (String)columnObjs[posterUsernameIndex];
         String lastReplyRaw = (String)columnObjs[rawIndex];
 
         // Normalize EOL
@@ -213,14 +207,12 @@ public class WorkRequestHandler {
         final ApiClient apiClient;
         final Topic requestTopic;
         final long postNumber;
-//        final String posterUsername;
         final String raw;
 
         Reply(final ApiClient apiClient, Topic requestTopic, long postNumber, final String raw) {
             this.apiClient = apiClient;
             this.requestTopic = requestTopic;
             this.postNumber = postNumber;
-//            this.posterUsername = posterUsername;
             this.raw = raw;
         }
 
@@ -228,7 +220,6 @@ public class WorkRequestHandler {
             this.apiClient = reply.apiClient;
             this.requestTopic = reply.requestTopic;
             this.postNumber = reply.postNumber;
-//            this.posterUsername = reply.posterUsername;
             this.raw = reply.raw;
         }
     }
@@ -241,7 +232,6 @@ public class WorkRequestHandler {
         final boolean disableDateAudit;
         final RequestType requestType;
         final boolean disableMemberLimitAudit;
-//        final String requesterUsername;
 
         WorkRequest(Reply reply, String date, UploadFile uploadFile,
                     Topic destinationTopic, String version, boolean disableDateAudit, boolean disableMemberLimitAudit) {
@@ -331,9 +321,6 @@ public class WorkRequestHandler {
                 }
 
                 if (line.toLowerCase().startsWith("topic:")) {
-//                    throw new MemberDataException(
-//                            "Post #" + lastReply.postNumber + " is not a valid request\n"
-//                                    + TOPIC_DIRECTIVE_NOT_SUPPORTED);
                     destinationTopic = HBParser.parseTopicFromURL(line.toLowerCase().replaceAll("topic:", "").trim());
                 } else if (line.equalsIgnoreCase("test topic")) {
                     destinationTopic = Constants.TOPIC_STONE_TEST_TOPIC;

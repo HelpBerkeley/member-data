@@ -115,7 +115,6 @@ public class Options {
         String arg = args[index++];
 
         switch (arg) {
-            case "change-post-owner":
             case COMMAND_FETCH:
             case COMMAND_DRIVER_HISTORY:
             case COMMAND_ONEKITCHEN_DRIVER_HISTORY:

@@ -21,8 +21,6 @@
 //
 package org.helpberkeley.memberdata;
 
-import com.cedarsoftware.io.JsonIo;
-import com.cedarsoftware.io.ReadOptionsBuilder;
 import org.helpberkeley.memberdata.v200.DriverPostFormatV200;
 import org.helpberkeley.memberdata.v300.DriverPostFormatV300;
 import org.slf4j.Logger;
@@ -121,9 +119,6 @@ public class Main {
         // testQuery(apiClient);
 
         switch (options.getCommand()) {
-            case "change-post-owner":
-                changePostOwner(apiClient);
-                break;
             case Options.COMMAND_WORK_REQUESTS:
                 workRequests(apiClient, options.getFileName());
                 break;
@@ -205,25 +200,6 @@ public class Main {
                 postDrivers(apiClient, options.getFileName());
                 break;
         }
-    }
-
-    private static void changePostOwner(ApiClient apiClient) {
-        long topicNumber = 10330;
-//        long[] postIds = new long[]{109638, 109639};
-//        String newOwnerUserName = "camerontdt";
-//        apiClient.changePostOwner(topicNumber, postIds, newOwnerUserName);
-        String requestPost = apiClient.getTopic(topicNumber);
-//        String requestPost = apiClient.getPost(109638);
-
-        @SuppressWarnings("unchecked")
-        Map<String, Object> map = (Map<String, Object>) JsonIo.toObjects(requestPost,
-                new ReadOptionsBuilder().returnAsNativeJsonObjects().build(), Map.class);
-        assert map.containsKey(Constants.DISCOURSE_COLUMN_RAW) : "it's a no from me" + map;
-        System.out.println((String)map.get(Constants.DISCOURSE_COLUMN_RAW));
-        System.out.println("it's a yes from me" + map);
-//        assert map.containsKey("username") : requestPost;
-        String postStream = (String)map.get("post_stream");
-        System.out.println(postStream);
     }
 
     static Properties loadProperties() {

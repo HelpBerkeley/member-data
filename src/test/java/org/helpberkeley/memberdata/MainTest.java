@@ -270,6 +270,28 @@ public class MainTest extends TestBase {
     }
 
     @Test
+    public void oneKitchenDriverMessagesBadDestTopicTest() throws IOException {
+        String uri = "https://go.helpberkeley.org/t/A_public_topic/12345/";
+        String request = readResourceFile(REQUEST_TEMPLATE_EXTRA)
+                .replace("REPLACE_DATE", yesterday())
+                .replace("REPLACE_EXTRA", "Topic: " + uri)
+                .replaceAll("REPLACE_FILENAME", "routed-deliveries-v300.csv");
+        HttpClientSimulator.setQueryResponseData(
+                Constants.QUERY_GET_LAST_REQUEST_ONE_KITCHEN_DRIVER_MESSAGES_REPLY, request);
+        HttpClientSimulator.setGetResponseFile(uri, "topic-response-bad-category.json");
+        String usersFile = findFile(Constants.MEMBERDATA_RAW_FILE, "csv");
+        String[] args = { Options.COMMAND_ONE_KITCHEN_DRIVER_MESSAGES, usersFile };
+        Main.main(args);
+        Post statusPost = WorkRequestHandler.getLastStatusPost();
+        assertThat(statusPost).isNotNull();
+        assertThat(statusPost.raw).contains("Status: Succeeded");
+        assertThat(statusPost.raw).contains(MessageFormat.format(Main.MESSAGES_POST_TO,
+                Constants.TOPIC_STONE_TEST_TOPIC.getName(),
+                String.valueOf(Constants.TOPIC_STONE_TEST_TOPIC.getId())));
+        assertThat(statusPost.topic_id).isEqualTo(Constants.TOPIC_REQUEST_ONE_KITCHEN_DRIVER_MESSAGES.getId());
+    }
+
+    @Test
     public void oneKitchenDriverMessagesMissingFormulaTest() throws IOException {
         // FIX THIS, DS: update this test to send errors in the user request upload file
         //               see issue: Invalid formula not being detected #14

@@ -54,6 +54,8 @@ public class HttpClientSimulator extends HttpClient {
 
     private static final Map<Integer, String> queryResponseFiles = new HashMap<>();
     private static final Map<Integer, String> queryResponseData = new HashMap<>();
+    private static final Map<String, String> getResponseFiles = new HashMap<>();
+    private static final Map<String, String> getResponseData = new HashMap<>();
     private static String getFileName = null;
     private static final AtomicInteger sendFailCount = new AtomicInteger(0);
     private static SendFailType sendFailType = null;
@@ -70,8 +72,16 @@ public class HttpClientSimulator extends HttpClient {
         sendFailCount.set(numFailures);
     }
 
-    static void setGetFileName(String fileName) {
-        getFileName = fileName;
+//    static void setGetFileName(String fileName) {
+//        getFileName = fileName;
+//    }
+
+    public static void setGetResponseData(String uri, String data) {
+        getResponseData.put(uri, data);
+    }
+
+    public static void setGetResponseFile(String uri, String filename) {
+        getResponseFiles.put(uri, filename);
     }
 
     @SuppressWarnings("unchecked")
@@ -272,19 +282,24 @@ public class HttpClientSimulator extends HttpClient {
     }
 
     private <T> HttpResponse<T> doGet(HttpRequest request) {
-        String fileName = request.uri().toString();
-        int index = fileName.lastIndexOf('/');
-        assertThat(index).as(fileName).isNotEqualTo(-1);
-        fileName = fileName.substring(index + 1);
+        String uri = request.uri().toString();
+        int index = uri.lastIndexOf('/');
+        assertThat(index).as(uri).isNotEqualTo(-1);
+//        if (fileName.contains("go.helpberkeley.org/t/")) {
+//            fileName = "topic-response-driver-deliveries.json";
+//        } else {
+        String fileName = uri.substring(index + 1);
 
-        if (getFileName != null) {
-            fileName = getFileName;
-            getFileName = null;
+//        if (getFileName != null) {
+//            fileName = getFileName;
+//            getFileName = null;
+        if (getResponseFiles.containsKey(uri)) {
+            fileName = getResponseFiles.get(uri);
         } else if (fileName.endsWith(Main.ORDER_HISTORY_POST_ID + ".json")) {
             fileName = "order-history.json";
         } else if (fileName.equals(Main.RESTAURANT_TEMPLATE_POST_ID + ".json")) {
             fileName = "restaurant-template-post.json";
-        } else if  (fileName.equals(Main.DRIVER_HISTORY_POST_ID + ".json")) {
+        } else if (fileName.equals(Main.DRIVER_HISTORY_POST_ID + ".json")) {
             fileName = "driver-history-post.json";
         } else if (fileName.equals(Main.ONE_KITCHEN_DRIVER_HISTORY_POST_ID + ".json")) {
             fileName = "driver-history-post.json";
