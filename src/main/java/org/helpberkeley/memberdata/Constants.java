@@ -219,6 +219,7 @@ public class Constants {
     public static final String CSV_SEPARATOR = ",";
 
     public static final String UPLOAD_URI_PREFIX = "upload://";
+    public static final String WEB_CSV_PREFIX = "go.helpberkeley.org/uploads/short-url/";
 
     // Control block values
     public static final String CONTROL_BLOCK_BEGIN = "ControlBegin";

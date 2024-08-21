@@ -273,6 +273,9 @@ public class UserExporter extends Exporter {
                         "",
                         "",
                         "",
+                        "",
+                        "",
+                        "",
                         ""));
                 dataToEncode.add(row);
             }
