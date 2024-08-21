@@ -1,4 +1,5 @@
 {
   "title": "A public topic",
-  "category_id": 12345
+  "id": 12345,
+  "category_id": 13
 }

@@ -44,8 +44,6 @@ public class HBParser {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(HBParser.class);
 
-    public static final String DEST_TOPIC_NOT_IN_DRIVER_DELIVERIES = "WARNING: The destination topic URL provided is not in the Drivers/Deliveries subcategory. " +
-            "These messages will be posted to \"Get driver messages\" instead. Please try again with a topic URL in the Drivers/Deliveries subcategory.";
     public static final String INVALID_TOPIC_URL = "{0} is not a valid topic URL. Please make sure your URL includes \"go.helpberkeley.org/t/TOPIC_NAME/TOPIC_ID\"";
 
     public static ApiQueryResult parseQueryResult(final String queryResultJson) {
@@ -610,7 +608,7 @@ public class HBParser {
         }
     }
 
-    public static Topic parseTopicFromURL(String url) {
+    public static Map<String, Object> parseTopicFromURL(ApiClient apiClient, String url) {
         int startIndex = url.indexOf("go.helpberkeley.org/t/");
         if (startIndex == -1) {
             throw new MemberDataException(MessageFormat.format(INVALID_TOPIC_URL, url));
@@ -621,26 +619,14 @@ public class HBParser {
 
         //parts[0] should be topic slug, parts[1] should be topic ID
         if (parts.length > 1 && !parts[1].isEmpty()) {
-            return new Topic(parts[0], Long.parseLong(parts[1]));
-        } else {
-            throw new MemberDataException(MessageFormat.format(INVALID_TOPIC_URL, url));
-        }
-    }
-
-    public static String auditDriverMessagesDestTopic(ApiClient apiClient, Topic topic) {
-        if (topic.getId() != Constants.TOPIC_STONE_TEST_TOPIC.getId()) {
-            String json = apiClient.getTopic(topic.getId());
+            String json = apiClient.getTopic(Long.parseLong(parts[1]));
             @SuppressWarnings("unchecked")
             Map<String, Object> map = (Map<String, Object>) JsonIo.toObjects(json,
                     new ReadOptionsBuilder().returnAsNativeJsonObjects().build(), Map.class);
-
-            assert map.containsKey("category_id") : json;
-            Integer categoryId = (Integer) map.get("category_id");
-            if (categoryId != Constants.DRIVER_DELIVERIES_CATEGORY) {
-                return DEST_TOPIC_NOT_IN_DRIVER_DELIVERIES;
-            }
+            return map;
+        } else {
+            throw new MemberDataException(MessageFormat.format(INVALID_TOPIC_URL, url));
         }
-        return "";
     }
 
     public static String shortURLDiscoursePost(final String line) {

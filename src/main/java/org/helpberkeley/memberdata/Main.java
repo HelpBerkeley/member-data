@@ -99,6 +99,8 @@ public class Main {
             "**Messages Posted to [{0}](https://go.helpberkeley.org/t/{1})**\n\n";
     static final String UPDATE_USERS_NO_UPDATES = "The uploaded spreadsheet {0} is already up-to-date. " +
             "There are no changes/updates for these members.";
+    public static final String DEST_TOPIC_NOT_IN_DRIVER_DELIVERIES = "WARNING: The destination topic URL provided is not in the Drivers/Deliveries subcategory. " +
+            "These messages will be posted to \"Get driver messages\" instead. Please try again with a topic URL in the Drivers/Deliveries subcategory.";
 
     public static void main(String[] args) throws IOException {
 
@@ -639,16 +641,17 @@ public class Main {
 
         LOGGER.info("Driver message request found:\n{}", request);
 
-        Topic topic;
+        Topic topic = Constants.TOPIC_DRIVERS_POST_STAGING;
         String warnings = "";
-        if (request.destinationTopic == null) {
-            topic = Constants.TOPIC_DRIVERS_POST_STAGING;
-        } else {
-            warnings = HBParser.auditDriverMessagesDestTopic(apiClient, request.destinationTopic);
-            if (warnings.isEmpty()) {
+        if (request.destinationTopic != null) {
+            if (request.destinationTopic.equals(Constants.TOPIC_STONE_TEST_TOPIC)) {
                 topic = request.destinationTopic;
             } else {
-                topic = Constants.TOPIC_DRIVERS_POST_STAGING;
+                if ((Long) request.destTopicJsonMap.get("category_id") == Constants.DRIVER_DELIVERIES_CATEGORY) {
+                    topic = request.destinationTopic;
+                } else {
+                    warnings = DEST_TOPIC_NOT_IN_DRIVER_DELIVERIES;
+                }
             }
         }
 
@@ -756,16 +759,17 @@ public class Main {
     private static void doOneKitchenDriverMessages(
             ApiClient apiClient, WorkRequestHandler.WorkRequest request, Map<String, User> users, String posterUsername) {
 
-        Topic topic;
+        Topic topic = Constants.TOPIC_DRIVERS_POST_STAGING;
         String warnings = "";
-        if (request.destinationTopic == null) {
-            topic = Constants.TOPIC_DRIVERS_POST_STAGING;
-        } else {
-            warnings = HBParser.auditDriverMessagesDestTopic(apiClient, request.destinationTopic);
-            if (warnings.isEmpty()) {
+        if (request.destinationTopic != null) {
+            if (request.destinationTopic.equals(Constants.TOPIC_STONE_TEST_TOPIC)) {
                 topic = request.destinationTopic;
             } else {
-                topic = Constants.TOPIC_DRIVERS_POST_STAGING;
+                if ((Long) request.destTopicJsonMap.get("category_id") == Constants.DRIVER_DELIVERIES_CATEGORY) {
+                    topic = request.destinationTopic;
+                } else {
+                    warnings = DEST_TOPIC_NOT_IN_DRIVER_DELIVERIES;
+                }
             }
         }
 
@@ -903,7 +907,10 @@ public class Main {
         }
 
         if (! topic.equals(Constants.TOPIC_DRIVERS_POST_STAGING)) {
-            apiClient.changePostOwner(topic.getId(), postIds, dispatcherUsername);
+            response = apiClient.changePostOwner(topic.getId(), postIds, dispatcherUsername);
+            if (response.statusCode() != HTTP_OK) {
+                statusMessages.append("Failed changing post ownership to: " + dispatcherUsername);
+            }
         }
 
         return statusMessages.toString();

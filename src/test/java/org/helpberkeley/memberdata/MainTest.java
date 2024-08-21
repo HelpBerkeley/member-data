@@ -184,6 +184,54 @@ public class MainTest extends TestBase {
     }
 
     @Test
+    public void driverMessagesBadDestTopicTest() throws IOException {
+        Topic topic = new Topic("A public topic", 12345);
+        String topicURL  = ApiClient.TOPICS_BASE + topic.getName() + '/' + topic.getId();
+        String request = readResourceFile(REQUEST_TEMPLATE_EXTRA)
+                .replace("REPLACE_DATE", yesterday())
+                .replace("REPLACE_EXTRA", "Topic: " + topicURL)
+                .replaceAll("REPLACE_FILENAME", "routed-deliveries-v200.csv");
+        HttpClientSimulator.setQueryResponseData(
+                Constants.QUERY_GET_LAST_REQUEST_DRIVER_MESSAGES_REPLY, request);
+        String uri = ApiClient.TOPICS_BASE + topic.getId() + ".json";
+        HttpClientSimulator.setGetResponseFile(uri, "topic-response-bad-category.json");
+        String usersFile = findFile(Constants.MEMBERDATA_RAW_FILE, "csv");
+        String[] args = { Options.COMMAND_DRIVER_MESSAGES, usersFile };
+        Main.main(args);
+        Post statusPost = WorkRequestHandler.getLastStatusPost();
+        assertThat(statusPost).isNotNull();
+        assertThat(statusPost.raw).contains("Status: Succeeded");
+        assertThat(statusPost.raw).contains(MessageFormat.format(Main.MESSAGES_POST_TO,
+                Constants.TOPIC_DRIVERS_POST_STAGING.getName(),
+                String.valueOf(Constants.TOPIC_DRIVERS_POST_STAGING.getId())));
+        assertThat(statusPost.topic_id).isEqualTo(Constants.TOPIC_REQUEST_DRIVER_MESSAGES.getId());
+    }
+
+    @Test
+    public void driverMessagesValidDestTopicTest() throws IOException {
+        Topic topic = new Topic("A private topic", 54321);
+        String topicURL  = ApiClient.TOPICS_BASE + topic.getName() + '/' + topic.getId();
+        String request = readResourceFile(REQUEST_TEMPLATE_EXTRA)
+                .replace("REPLACE_DATE", yesterday())
+                .replace("REPLACE_EXTRA", "Topic: " + topicURL)
+                .replaceAll("REPLACE_FILENAME", "routed-deliveries-v200.csv");
+        HttpClientSimulator.setQueryResponseData(
+                Constants.QUERY_GET_LAST_REQUEST_DRIVER_MESSAGES_REPLY, request);
+        String uri = ApiClient.TOPICS_BASE + topic.getId() + ".json";
+        HttpClientSimulator.setGetResponseFile(uri, "topic-response-driver-deliveries.json");
+        String usersFile = findFile(Constants.MEMBERDATA_RAW_FILE, "csv");
+        String[] args = { Options.COMMAND_DRIVER_MESSAGES, usersFile };
+        Main.main(args);
+        Post statusPost = WorkRequestHandler.getLastStatusPost();
+        assertThat(statusPost).isNotNull();
+        assertThat(statusPost.raw).contains("Status: Succeeded");
+        assertThat(statusPost.raw).contains(MessageFormat.format(Main.MESSAGES_POST_TO,
+                topic.getName(),
+                String.valueOf(topic.getId())));
+        assertThat(statusPost.topic_id).isEqualTo(Constants.TOPIC_REQUEST_DRIVER_MESSAGES.getId());
+    }
+
+    @Test
     public void driverMessagesSheetTestV300() throws IOException {
         driverMessagesSheetTest("routed-deliveries-v300.csv", "3-0-0");
     }
@@ -271,13 +319,15 @@ public class MainTest extends TestBase {
 
     @Test
     public void oneKitchenDriverMessagesBadDestTopicTest() throws IOException {
-        String uri = "https://go.helpberkeley.org/t/A_public_topic/12345/";
+        Topic topic = new Topic("A public topic", 12345);
+        String topicURL  = ApiClient.TOPICS_BASE + topic.getName() + '/' + topic.getId();
         String request = readResourceFile(REQUEST_TEMPLATE_EXTRA)
                 .replace("REPLACE_DATE", yesterday())
-                .replace("REPLACE_EXTRA", "Topic: " + uri)
+                .replace("REPLACE_EXTRA", "Topic: " + topicURL)
                 .replaceAll("REPLACE_FILENAME", "routed-deliveries-v300.csv");
         HttpClientSimulator.setQueryResponseData(
                 Constants.QUERY_GET_LAST_REQUEST_ONE_KITCHEN_DRIVER_MESSAGES_REPLY, request);
+        String uri = ApiClient.TOPICS_BASE + topic.getId() + ".json";
         HttpClientSimulator.setGetResponseFile(uri, "topic-response-bad-category.json");
         String usersFile = findFile(Constants.MEMBERDATA_RAW_FILE, "csv");
         String[] args = { Options.COMMAND_ONE_KITCHEN_DRIVER_MESSAGES, usersFile };
@@ -286,8 +336,32 @@ public class MainTest extends TestBase {
         assertThat(statusPost).isNotNull();
         assertThat(statusPost.raw).contains("Status: Succeeded");
         assertThat(statusPost.raw).contains(MessageFormat.format(Main.MESSAGES_POST_TO,
-                Constants.TOPIC_STONE_TEST_TOPIC.getName(),
-                String.valueOf(Constants.TOPIC_STONE_TEST_TOPIC.getId())));
+                Constants.TOPIC_DRIVERS_POST_STAGING.getName(),
+                String.valueOf(Constants.TOPIC_DRIVERS_POST_STAGING.getId())));
+        assertThat(statusPost.topic_id).isEqualTo(Constants.TOPIC_REQUEST_ONE_KITCHEN_DRIVER_MESSAGES.getId());
+    }
+
+    @Test
+    public void oneKitchenDriverMessagesValidDestTopicTest() throws IOException {
+        Topic topic = new Topic("A private topic", 54321);
+        String topicURL  = ApiClient.TOPICS_BASE + topic.getName() + '/' + topic.getId();
+        String request = readResourceFile(REQUEST_TEMPLATE_EXTRA)
+                .replace("REPLACE_DATE", yesterday())
+                .replace("REPLACE_EXTRA", "Topic: " + topicURL)
+                .replaceAll("REPLACE_FILENAME", "routed-deliveries-v300.csv");
+        HttpClientSimulator.setQueryResponseData(
+                Constants.QUERY_GET_LAST_REQUEST_ONE_KITCHEN_DRIVER_MESSAGES_REPLY, request);
+        String uri = ApiClient.TOPICS_BASE + topic.getId() + ".json";
+        HttpClientSimulator.setGetResponseFile(uri, "topic-response-driver-deliveries.json");
+        String usersFile = findFile(Constants.MEMBERDATA_RAW_FILE, "csv");
+        String[] args = { Options.COMMAND_ONE_KITCHEN_DRIVER_MESSAGES, usersFile };
+        Main.main(args);
+        Post statusPost = WorkRequestHandler.getLastStatusPost();
+        assertThat(statusPost).isNotNull();
+        assertThat(statusPost.raw).contains("Status: Succeeded");
+        assertThat(statusPost.raw).contains(MessageFormat.format(Main.MESSAGES_POST_TO,
+                topic.getName(),
+                String.valueOf(topic.getId())));
         assertThat(statusPost.topic_id).isEqualTo(Constants.TOPIC_REQUEST_ONE_KITCHEN_DRIVER_MESSAGES.getId());
     }
 

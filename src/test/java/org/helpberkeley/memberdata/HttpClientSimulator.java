@@ -72,10 +72,6 @@ public class HttpClientSimulator extends HttpClient {
         sendFailCount.set(numFailures);
     }
 
-//    static void setGetFileName(String fileName) {
-//        getFileName = fileName;
-//    }
-
     public static void setGetResponseData(String uri, String data) {
         getResponseData.put(uri, data);
     }
@@ -268,6 +264,8 @@ public class HttpClientSimulator extends HttpClient {
         // Is this an upload request?
         if (request.uri().toString().endsWith(ApiClient.UPLOAD_ENDPOINT)) {
             response = readFile("upload-response.json");
+        } else if (request.uri().toString().endsWith("change-owner.json")) {
+            response = readFile("change-owner-response.json");
         } else {
             response = readFile("post-response.json");
         }
@@ -285,16 +283,13 @@ public class HttpClientSimulator extends HttpClient {
         String uri = request.uri().toString();
         int index = uri.lastIndexOf('/');
         assertThat(index).as(uri).isNotEqualTo(-1);
-//        if (fileName.contains("go.helpberkeley.org/t/")) {
-//            fileName = "topic-response-driver-deliveries.json";
-//        } else {
         String fileName = uri.substring(index + 1);
+        String fileContent = "";
 
-//        if (getFileName != null) {
-//            fileName = getFileName;
-//            getFileName = null;
         if (getResponseFiles.containsKey(uri)) {
             fileName = getResponseFiles.get(uri);
+        } else if (getResponseData.containsKey(uri)) {
+            fileContent = getResponseData.get(uri);
         } else if (fileName.endsWith(Main.ORDER_HISTORY_POST_ID + ".json")) {
             fileName = "order-history.json";
         } else if (fileName.equals(Main.RESTAURANT_TEMPLATE_POST_ID + ".json")) {
@@ -307,7 +302,11 @@ public class HttpClientSimulator extends HttpClient {
 
         try {
             //noinspection unchecked
-            return (HttpResponse<T>) new HttpResponseSimulator<>(readFile(fileName));
+            if (! fileContent.isEmpty()) {
+                return (HttpResponse<T>) new HttpResponseSimulator<>(fileContent);
+            } else {
+                return (HttpResponse<T>) new HttpResponseSimulator<>(readFile(fileName));
+            }
         } catch (RuntimeException ex) {
             //noinspection unchecked
             return (HttpResponse<T>) new HttpResponseSimulator<>(ex.getMessage(), HTTP_NOT_FOUND);

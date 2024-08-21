@@ -29,6 +29,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -125,7 +126,7 @@ public class WorkRequestHandler {
 
         // If it is not a status reply, parse it as a WorkRequest
         if (reply == null) {
-            reply = WorkRequest.parse(lastReply, lines);
+            reply = WorkRequest.parse(apiClient, lastReply, lines);
         }
 
         // Fail it is neither.
@@ -228,17 +229,19 @@ public class WorkRequestHandler {
         final String date;
         final UploadFile uploadFile;
         final Topic destinationTopic;
+        final Map<String, Object> destTopicJsonMap;
         final String version;
         final boolean disableDateAudit;
         final RequestType requestType;
         final boolean disableMemberLimitAudit;
 
         WorkRequest(Reply reply, String date, UploadFile uploadFile,
-                    Topic destinationTopic, String version, boolean disableDateAudit, boolean disableMemberLimitAudit) {
+                    Topic destinationTopic, Map<String, Object> destTopicJsonMap, String version, boolean disableDateAudit, boolean disableMemberLimitAudit) {
             super(reply);
             this.date = date;
             this.uploadFile = uploadFile;
             this.destinationTopic = destinationTopic;
+            this.destTopicJsonMap = destTopicJsonMap;
             this.version = version;
             this.disableDateAudit = disableDateAudit;
             this.requestType = RequestType.UPLOAD;
@@ -251,6 +254,7 @@ public class WorkRequestHandler {
             this.requestType = requestType;
             this.uploadFile = null;
             this.destinationTopic = reply.requestTopic;
+            this.destTopicJsonMap = null;
             this.disableDateAudit = false;
             this.version = null;
             this.disableMemberLimitAudit = false;
@@ -292,7 +296,7 @@ public class WorkRequestHandler {
             assert response.statusCode() == HTTP_OK : "failed " + response.statusCode() + ": " + response.body();
         }
 
-        static Reply parse(Reply lastReply, final List<String> lines) {
+        static Reply parse(ApiClient apiClient, Reply lastReply, final List<String> lines) {
 
             assert ! lines.isEmpty();
             String dateLine = lines.get(0);
@@ -312,6 +316,7 @@ public class WorkRequestHandler {
             boolean disableDateAudit = false;
             boolean disableMemberLimitAudit = false;
             Topic destinationTopic = null;
+            Map<String, Object> destTopicMap = null;
 
             while (iterator.hasNext()) {
                 String line = iterator.next().trim();
@@ -321,7 +326,10 @@ public class WorkRequestHandler {
                 }
 
                 if (line.toLowerCase().startsWith("topic:")) {
-                    destinationTopic = HBParser.parseTopicFromURL(line.toLowerCase().replaceAll("topic:", "").trim());
+                    destTopicMap = HBParser.parseTopicFromURL(apiClient, line.toLowerCase().replaceAll("topic:", "").trim());
+                    assert destTopicMap.containsKey("id") : destTopicMap.toString();
+                    assert destTopicMap.containsKey("title") : destTopicMap.toString();
+                    destinationTopic = new Topic((String) destTopicMap.get("title"), (Long) destTopicMap.get("id"));
                 } else if (line.equalsIgnoreCase("test topic")) {
                     destinationTopic = Constants.TOPIC_STONE_TEST_TOPIC;
                 } else if (line.startsWith("Version:")) {
@@ -337,7 +345,7 @@ public class WorkRequestHandler {
                     UploadFile uploadFile = new UploadFile(fileName, shortURL);
 
                     return new WorkRequest(lastReply, dateLine,
-                            uploadFile, destinationTopic, version, disableDateAudit, disableMemberLimitAudit);
+                            uploadFile, destinationTopic, destTopicMap, version, disableDateAudit, disableMemberLimitAudit);
                 } else if (line.equalsIgnoreCase(Constants.ONE_KITCHEN_WORKFLOW)
                     || line.equalsIgnoreCase(Constants.DAILY_WORKFLOW)) {
                     return new WorkRequest(lastReply, dateLine, RequestType.fromString(line));
