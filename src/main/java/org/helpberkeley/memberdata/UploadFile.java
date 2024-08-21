@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020. helpberkeley.org
+ * Copyright (c) 2020.2024. helpberkeley.org
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,15 +22,18 @@
  */
 package org.helpberkeley.memberdata;
 
+import java.text.MessageFormat;
+
 public class UploadFile {
     private final String shortURL;
     private final String fileName;
     private final String originalFileName;
+    public static final String INVALID_FILE_PREFIX = "\"{0}\" does not contain a supported file prefix";
 
-    public UploadFile(final String fileName, final String shortURL) {
+    private UploadFile(final String fileName, final String shortURL) {
         this.originalFileName = fileName;
         this.shortURL = shortURL;
-        this.fileName = HBParser.fileNameFromShortURL(shortURL);
+        this.fileName = fileNameFromShortURL(shortURL);
     }
 
     public String getShortURL() {
@@ -43,6 +46,67 @@ public class UploadFile {
 
     public final String getOriginalFileName() {
         return originalFileName;
+    }
+
+    private String fileNameFromShortURL(final String shortURL) {
+        assert (UploadFile.containsUploadFileURL(shortURL));
+        String prefix;
+        if (shortURL.startsWith(Constants.UPLOAD_URI_PREFIX)) {
+            prefix = Constants.UPLOAD_URI_PREFIX;
+        }
+        else {
+            prefix = Constants.WEB_CSV_PREFIX;
+        }
+        assert shortURL.length() > prefix.length() : shortURL;
+        return shortURL.substring(prefix.length());
+    }
+
+    private static String downloadFileName(final String line) {
+        UploadFile.auditFilePrefix(line);
+        int index = line.indexOf('[');
+        assert index != -1 : line;
+        int end = line.indexOf('|');
+        assert end > index : line;
+
+        return line.substring(index + 1, end);
+    }
+
+    private static String shortURLDiscoursePost(final String line) {
+        UploadFile.auditFilePrefix(line);
+        int index = -1;
+        int prefixLength = 0;
+        if (line.contains(Constants.UPLOAD_URI_PREFIX)) {
+            index = line.indexOf(Constants.UPLOAD_URI_PREFIX);
+            prefixLength= Constants.UPLOAD_URI_PREFIX.length();
+        }
+        else if (line.contains(Constants.WEB_CSV_PREFIX)){
+            index = line.indexOf(Constants.WEB_CSV_PREFIX);
+            prefixLength= Constants.WEB_CSV_PREFIX.length();
+        }
+        assert index != -1 : line;
+        String shortURL = Constants.UPLOAD_URI_PREFIX.concat(line.substring(index + prefixLength));
+        index = shortURL.indexOf(')');
+        shortURL = shortURL.substring(0, index);
+
+        return shortURL;
+    }
+
+    public static UploadFile createUploadFile(String data){
+
+        String fileName = downloadFileName(data);
+        String shortURL = shortURLDiscoursePost(data);
+        return new UploadFile(fileName, shortURL);
+    }
+
+    public static boolean containsUploadFileURL(String line){
+        return line.contains(Constants.UPLOAD_URI_PREFIX) || line.contains(Constants.WEB_CSV_PREFIX);
+    }
+
+    public static void auditFilePrefix (final String line) throws MemberDataException {
+        if (!(containsUploadFileURL(line))) {
+            throw new MemberDataException(
+                    MessageFormat.format(UploadFile.INVALID_FILE_PREFIX, line));
+        }
     }
 
     @Override

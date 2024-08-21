@@ -26,7 +26,7 @@ public class RestaurantTemplatePost {
 
     final UploadFile uploadFile;
 
-    RestaurantTemplatePost(final String fileName, String shortURL) {
-        this.uploadFile = new UploadFile(fileName, shortURL);
+    RestaurantTemplatePost(final String data) {
+        this.uploadFile = UploadFile.createUploadFile(data);
     }
 }
