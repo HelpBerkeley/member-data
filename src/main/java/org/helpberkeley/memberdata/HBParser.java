@@ -44,7 +44,8 @@ public class HBParser {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(HBParser.class);
 
-    public static final String INVALID_TOPIC_URL = "{0} is not a valid topic URL. Please make sure your URL includes \"go.helpberkeley.org/t/TOPIC_NAME/TOPIC_ID\"";
+    public static final String INVALID_TOPIC_URL = "{0} is not a valid topic URL. Please make sure your URL includes" +
+            " \"go.helpberkeley.org/t/TOPIC_NAME/TOPIC_ID\"";
 
     public static ApiQueryResult parseQueryResult(final String queryResultJson) {
 
@@ -559,13 +560,13 @@ public class HBParser {
         }
     }
 
-    public static Map<String, Object> parseTopicFromURL(ApiClient apiClient, String url) {
-        int startIndex = url.indexOf("go.helpberkeley.org/t/");
+    public static TopicResponse parseTopicFromURL(ApiClient apiClient, String url) {
+        int startIndex = url.indexOf(Constants.BASE_DOMAIN + "/t/");
         if (startIndex == -1) {
             throw new MemberDataException(MessageFormat.format(INVALID_TOPIC_URL, url));
         }
 
-        String remainingUrl = url.substring(startIndex + "go.helpberkeley.org/t/".length());
+        String remainingUrl = url.substring(startIndex + (Constants.BASE_DOMAIN + "/t/").length());
         String[] parts = remainingUrl.split("/");
 
         //parts[0] should be topic slug, parts[1] should be topic ID
@@ -574,7 +575,11 @@ public class HBParser {
             @SuppressWarnings("unchecked")
             Map<String, Object> map = (Map<String, Object>) JsonIo.toObjects(json,
                     new ReadOptionsBuilder().returnAsNativeJsonObjects().build(), Map.class);
-            return map;
+            assert map.containsKey("id") : map.toString();
+            assert map.containsKey("title") : map.toString();
+            assert map.containsKey("category_id") : map.toString();
+            return new TopicResponse(new Topic((String)map.get("title"), (Long)map.get("id")),
+                    (Long)map.get("category_id"));
         } else {
             throw new MemberDataException(MessageFormat.format(INVALID_TOPIC_URL, url));
         }

@@ -100,7 +100,7 @@ public class Constants {
     public static final int QUERY_GET_REQUESTS_LAST_REPLIES = QUERY_GET_LAST_REPLY_FROM_REQUEST_TOPICS_V24;
 
     public static final int AVG_RUN_SIZE = 30;
-    public static final int DRIVER_DELIVERIES_CATEGORY = 12;
+    public static final long DRIVER_DELIVERIES_CATEGORY = 12;
 
     public static final Topic TOPIC_REQUEST_DATA = new Topic("Request Workflow User Updates", 10341);
     public static final Topic TOPIC_STONE_TEST_TOPIC = new Topic("Stone test topic", 422);
@@ -220,6 +220,16 @@ public class Constants {
 
     public static final String UPLOAD_URI_PREFIX = "upload://";
     public static final String WEB_CSV_PREFIX = "go.helpberkeley.org/uploads/short-url/";
+    public static final String BASE_DOMAIN = "go.helpberkeley.org";
+    public static final String PROTOCOL_HTTPS = "https://";
+    public static final String BASE_URL = PROTOCOL_HTTPS + BASE_DOMAIN + "/";
+    public static final String POSTS_ENDPOINT = BASE_URL + "posts.json";
+    public static final String POSTS_BASE = BASE_URL + "posts/";
+    public static final String TOPICS_BASE = BASE_URL + "t/";
+    public static final String UPLOAD_ENDPOINT = BASE_URL + "uploads.json";
+    public static final String DOWNLOAD_ENDPOINT = BASE_URL + "uploads/short-url/";
+    public static final String QUERY_BASE = BASE_URL + "admin/plugins/explorer/queries/";
+    public static final String CHANGE_OWNER = "/change-owner.json";
 
     // Control block values
     public static final String CONTROL_BLOCK_BEGIN = "ControlBegin";

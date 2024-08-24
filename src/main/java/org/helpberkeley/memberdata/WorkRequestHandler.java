@@ -29,7 +29,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ListIterator;
-import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -79,12 +78,13 @@ public class WorkRequestHandler {
         this.query = query;
     }
 
-    WorkRequestHandler(ApiClient apiClient, Topic topic, long postNumber, String raw) {
+    WorkRequestHandler(ApiClient apiClient, Topic topic, long postNumber, String raw, String posterUsername) {
         this.apiClient = apiClient;
         this.query = null;
 
         // Normalize EOL
-        this.lastReply = new Reply(apiClient, topic, postNumber, raw.replaceAll("\\r\\n?", "\n"));
+        this.lastReply = new Reply(apiClient, topic, postNumber, raw.replaceAll("\\r\\n?", "\n"),
+                posterUsername);
     }
 
     // Support for end-to-end testing through main()
@@ -187,7 +187,7 @@ public class WorkRequestHandler {
         // Normalize EOL
         lastReplyRaw = lastReplyRaw.replaceAll("\\r\\n?", "\n");
 
-        return new Reply(apiClient, query.getTopic(), postNumber, lastReplyRaw);
+        return new Reply(apiClient, query.getTopic(), postNumber, lastReplyRaw, "");
     }
 
     long getTopicId() {
@@ -209,12 +209,15 @@ public class WorkRequestHandler {
         final Topic requestTopic;
         final long postNumber;
         final String raw;
+        final String posterUsername;
 
-        Reply(final ApiClient apiClient, Topic requestTopic, long postNumber, final String raw) {
+        Reply(final ApiClient apiClient, Topic requestTopic, long postNumber, final String raw,
+              final String posterUsername) {
             this.apiClient = apiClient;
             this.requestTopic = requestTopic;
             this.postNumber = postNumber;
             this.raw = raw;
+            this.posterUsername = posterUsername;
         }
 
         Reply(Reply reply) {
@@ -222,6 +225,7 @@ public class WorkRequestHandler {
             this.requestTopic = reply.requestTopic;
             this.postNumber = reply.postNumber;
             this.raw = reply.raw;
+            this.posterUsername = reply.posterUsername;
         }
     }
 
@@ -229,19 +233,17 @@ public class WorkRequestHandler {
         final String date;
         final UploadFile uploadFile;
         final Topic destinationTopic;
-        final Map<String, Object> destTopicJsonMap;
         final String version;
         final boolean disableDateAudit;
         final RequestType requestType;
         final boolean disableMemberLimitAudit;
 
         WorkRequest(Reply reply, String date, UploadFile uploadFile,
-                    Topic destinationTopic, Map<String, Object> destTopicJsonMap, String version, boolean disableDateAudit, boolean disableMemberLimitAudit) {
+                    Topic destinationTopic, String version, boolean disableDateAudit, boolean disableMemberLimitAudit) {
             super(reply);
             this.date = date;
             this.uploadFile = uploadFile;
             this.destinationTopic = destinationTopic;
-            this.destTopicJsonMap = destTopicJsonMap;
             this.version = version;
             this.disableDateAudit = disableDateAudit;
             this.requestType = RequestType.UPLOAD;
@@ -254,7 +256,6 @@ public class WorkRequestHandler {
             this.requestType = requestType;
             this.uploadFile = null;
             this.destinationTopic = reply.requestTopic;
-            this.destTopicJsonMap = null;
             this.disableDateAudit = false;
             this.version = null;
             this.disableMemberLimitAudit = false;
@@ -316,7 +317,6 @@ public class WorkRequestHandler {
             boolean disableDateAudit = false;
             boolean disableMemberLimitAudit = false;
             Topic destinationTopic = null;
-            Map<String, Object> destTopicMap = null;
 
             while (iterator.hasNext()) {
                 String line = iterator.next().trim();
@@ -326,10 +326,8 @@ public class WorkRequestHandler {
                 }
 
                 if (line.toLowerCase().startsWith("topic:")) {
-                    destTopicMap = HBParser.parseTopicFromURL(apiClient, line.toLowerCase().replaceAll("topic:", "").trim());
-                    assert destTopicMap.containsKey("id") : destTopicMap.toString();
-                    assert destTopicMap.containsKey("title") : destTopicMap.toString();
-                    destinationTopic = new Topic((String) destTopicMap.get("title"), (Long) destTopicMap.get("id"));
+                    destinationTopic = HBParser.parseTopicFromURL(apiClient, line.toLowerCase().replaceAll(
+                            "topic:", "").trim());
                 } else if (line.equalsIgnoreCase("test topic")) {
                     destinationTopic = Constants.TOPIC_STONE_TEST_TOPIC;
                 } else if (line.startsWith("Version:")) {
@@ -342,7 +340,7 @@ public class WorkRequestHandler {
                     UploadFile uploadFile = UploadFile.createUploadFile(line);
 
                     return new WorkRequest(lastReply, dateLine,
-                            uploadFile, destinationTopic, destTopicMap, version, disableDateAudit, disableMemberLimitAudit);
+                            uploadFile, destinationTopic, version, disableDateAudit, disableMemberLimitAudit);
                 } else if (line.equalsIgnoreCase(Constants.ONE_KITCHEN_WORKFLOW)
                     || line.equalsIgnoreCase(Constants.DAILY_WORKFLOW)) {
                     return new WorkRequest(lastReply, dateLine, RequestType.fromString(line));

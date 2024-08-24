@@ -186,14 +186,14 @@ public class MainTest extends TestBase {
     @Test
     public void driverMessagesBadDestTopicTest() throws IOException {
         Topic topic = new Topic("A public topic", 12345);
-        String topicURL  = ApiClient.TOPICS_BASE + topic.getName() + '/' + topic.getId();
+        String topicURL  = Constants.TOPICS_BASE + topic.getName() + '/' + topic.getId();
         String request = readResourceFile(REQUEST_TEMPLATE_EXTRA)
                 .replace("REPLACE_DATE", yesterday())
                 .replace("REPLACE_EXTRA", "Topic: " + topicURL)
                 .replaceAll("REPLACE_FILENAME", "routed-deliveries-v200.csv");
         HttpClientSimulator.setQueryResponseData(
                 Constants.QUERY_GET_LAST_REQUEST_DRIVER_MESSAGES_REPLY, request);
-        String uri = ApiClient.TOPICS_BASE + topic.getId() + ".json";
+        String uri = Constants.TOPICS_BASE + topic.getId() + ".json";
         HttpClientSimulator.setGetResponseFile(uri, "topic-response-bad-category.json");
         String usersFile = findFile(Constants.MEMBERDATA_RAW_FILE, "csv");
         String[] args = { Options.COMMAND_DRIVER_MESSAGES, usersFile };
@@ -210,14 +210,14 @@ public class MainTest extends TestBase {
     @Test
     public void driverMessagesValidDestTopicTest() throws IOException {
         Topic topic = new Topic("A private topic", 54321);
-        String topicURL  = ApiClient.TOPICS_BASE + topic.getName() + '/' + topic.getId();
+        String topicURL  = Constants.TOPICS_BASE + topic.getName() + '/' + topic.getId();
         String request = readResourceFile(REQUEST_TEMPLATE_EXTRA)
                 .replace("REPLACE_DATE", yesterday())
                 .replace("REPLACE_EXTRA", "Topic: " + topicURL)
                 .replaceAll("REPLACE_FILENAME", "routed-deliveries-v200.csv");
         HttpClientSimulator.setQueryResponseData(
                 Constants.QUERY_GET_LAST_REQUEST_DRIVER_MESSAGES_REPLY, request);
-        String uri = ApiClient.TOPICS_BASE + topic.getId() + ".json";
+        String uri = Constants.TOPICS_BASE + topic.getId() + ".json";
         HttpClientSimulator.setGetResponseFile(uri, "topic-response-driver-deliveries.json");
         String usersFile = findFile(Constants.MEMBERDATA_RAW_FILE, "csv");
         String[] args = { Options.COMMAND_DRIVER_MESSAGES, usersFile };
@@ -320,14 +320,14 @@ public class MainTest extends TestBase {
     @Test
     public void oneKitchenDriverMessagesBadDestTopicTest() throws IOException {
         Topic topic = new Topic("A public topic", 12345);
-        String topicURL  = ApiClient.TOPICS_BASE + topic.getName() + '/' + topic.getId();
+        String topicURL  = Constants.TOPICS_BASE + topic.getName() + '/' + topic.getId();
         String request = readResourceFile(REQUEST_TEMPLATE_EXTRA)
                 .replace("REPLACE_DATE", yesterday())
                 .replace("REPLACE_EXTRA", "Topic: " + topicURL)
                 .replaceAll("REPLACE_FILENAME", "routed-deliveries-v300.csv");
         HttpClientSimulator.setQueryResponseData(
                 Constants.QUERY_GET_LAST_REQUEST_ONE_KITCHEN_DRIVER_MESSAGES_REPLY, request);
-        String uri = ApiClient.TOPICS_BASE + topic.getId() + ".json";
+        String uri = Constants.TOPICS_BASE + topic.getId() + ".json";
         HttpClientSimulator.setGetResponseFile(uri, "topic-response-bad-category.json");
         String usersFile = findFile(Constants.MEMBERDATA_RAW_FILE, "csv");
         String[] args = { Options.COMMAND_ONE_KITCHEN_DRIVER_MESSAGES, usersFile };
@@ -344,14 +344,14 @@ public class MainTest extends TestBase {
     @Test
     public void oneKitchenDriverMessagesValidDestTopicTest() throws IOException {
         Topic topic = new Topic("A private topic", 54321);
-        String topicURL  = ApiClient.TOPICS_BASE + topic.getName() + '/' + topic.getId();
+        String topicURL  = Constants.TOPICS_BASE + topic.getName() + '/' + topic.getId();
         String request = readResourceFile(REQUEST_TEMPLATE_EXTRA)
                 .replace("REPLACE_DATE", yesterday())
                 .replace("REPLACE_EXTRA", "Topic: " + topicURL)
                 .replaceAll("REPLACE_FILENAME", "routed-deliveries-v300.csv");
         HttpClientSimulator.setQueryResponseData(
                 Constants.QUERY_GET_LAST_REQUEST_ONE_KITCHEN_DRIVER_MESSAGES_REPLY, request);
-        String uri = ApiClient.TOPICS_BASE + topic.getId() + ".json";
+        String uri = Constants.TOPICS_BASE + topic.getId() + ".json";
         HttpClientSimulator.setGetResponseFile(uri, "topic-response-driver-deliveries.json");
         String usersFile = findFile(Constants.MEMBERDATA_RAW_FILE, "csv");
         String[] args = { Options.COMMAND_ONE_KITCHEN_DRIVER_MESSAGES, usersFile };
@@ -841,8 +841,11 @@ public class MainTest extends TestBase {
 
     @Test
     public void workRequestsAllRequestsTest() throws IOException {
-        HttpClientSimulator.setQueryResponseFile(
-                Constants.QUERY_GET_REQUESTS_LAST_REPLIES, "last-replies-all-requests.json");
+        LastRepliesBuilder repliesBuilder = new LastRepliesBuilder();
+        repliesBuilder.addAllRowsWithRequest();
+        String responseData = repliesBuilder.build();
+        HttpClientSimulator.setQueryResponseData(
+                Constants.QUERY_GET_REQUESTS_LAST_REPLIES, responseData);
         String usersFile = findFile(Constants.MEMBERDATA_RAW_FILE, "csv");
         String[] args = { Options.COMMAND_WORK_REQUESTS, usersFile };
         Main.main(args);
@@ -851,8 +854,11 @@ public class MainTest extends TestBase {
 
     @Test
     public void workRequestsDailyWorkflowTest() throws IOException {
-        HttpClientSimulator.setQueryResponseFile(
-                Constants.QUERY_GET_REQUESTS_LAST_REPLIES, "last-replies-daily-workflow-request.json");
+        LastRepliesBuilder repliesBuilder = new LastRepliesBuilder();
+        repliesBuilder.addRowWithRequestFile(Constants.TOPIC_REQUEST_WORKFLOW, "Daily");
+        String responseData = repliesBuilder.build();
+        HttpClientSimulator.setQueryResponseData(
+                Constants.QUERY_GET_REQUESTS_LAST_REPLIES, responseData);
         String usersFile = findFile(Constants.MEMBERDATA_RAW_FILE, "csv");
         String[] args = { Options.COMMAND_WORK_REQUESTS, usersFile };
         Main.main(args);
@@ -861,8 +867,10 @@ public class MainTest extends TestBase {
 
     @Test
     public void workRequestsBadPreviousRequestTest() throws IOException {
-        HttpClientSimulator.setQueryResponseFile(
-                Constants.QUERY_GET_REQUESTS_LAST_REPLIES, "last-replies-bad-request.json");
+        LastRepliesBuilder repliesBuilder = new LastRepliesBuilder();
+        repliesBuilder.addRowWithTopicAndStatus(Constants.TOPIC_REQUEST_DRIVER_MESSAGES, false);
+        String responseData = repliesBuilder.build();
+        HttpClientSimulator.setQueryResponseData(Constants.QUERY_GET_REQUESTS_LAST_REPLIES, responseData);
         String usersFile = findFile(Constants.MEMBERDATA_RAW_FILE, "csv");
         String[] args = { Options.COMMAND_WORK_REQUESTS, usersFile };
         Main.main(args);
@@ -902,9 +910,9 @@ public class MainTest extends TestBase {
 
     @Test
     public void updateMemberDataRequestMultipleUpdatesTest() throws IOException {
-        String request = readResourceFile(DATA_REQUEST_TEMPLATE)
-                .replace("REPLACE_DATE", yesterday())
-                .replaceAll("REPLACE_FILENAME", "update-member-data-multiple-updates.csv");
+        LastRepliesBuilder repliesBuilder = new LastRepliesBuilder();
+        repliesBuilder.addRowWithRequestFile(Constants.TOPIC_REQUEST_DATA, "update-member-data-multiple-updates.csv");
+        String request = repliesBuilder.build();
         HttpClientSimulator.setQueryResponseData(
                 Constants.QUERY_GET_REQUESTS_LAST_REPLIES, request);
         String usersFile = findFile(Constants.MEMBERDATA_RAW_FILE, "csv");
@@ -925,9 +933,9 @@ public class MainTest extends TestBase {
 
     @Test
     public void updateMemberDataRequestMissingUsersTest() throws IOException {
-        String request = readResourceFile(DATA_REQUEST_TEMPLATE)
-                .replace("REPLACE_DATE", yesterday())
-                .replaceAll("REPLACE_FILENAME", "update-member-data-no-matching-users.csv");
+        LastRepliesBuilder repliesBuilder = new LastRepliesBuilder();
+        repliesBuilder.addRowWithRequestFile(Constants.TOPIC_REQUEST_DATA, "update-member-data-no-matching-users.csv");
+        String request = repliesBuilder.build();
         HttpClientSimulator.setQueryResponseData(
                 Constants.QUERY_GET_REQUESTS_LAST_REPLIES, request);
         String usersFile = findFile(Constants.MEMBERDATA_RAW_FILE, "csv");
@@ -953,9 +961,9 @@ public class MainTest extends TestBase {
 
     @Test
     public void updateMemberDataDriverIsConsumer() throws IOException {
-        String request = readResourceFile(DATA_REQUEST_TEMPLATE)
-                .replace("REPLACE_DATE", yesterday())
-                .replaceAll("REPLACE_FILENAME", "update-member-data-driver-is-consumer.csv");
+        LastRepliesBuilder repliesBuilder = new LastRepliesBuilder();
+        repliesBuilder.addRowWithRequestFile(Constants.TOPIC_REQUEST_DATA, "update-member-data-driver-is-consumer.csv");
+        String request = repliesBuilder.build();
         HttpClientSimulator.setQueryResponseData(
                 Constants.QUERY_GET_REQUESTS_LAST_REPLIES, request);
         String usersFile = findFile(Constants.MEMBERDATA_RAW_FILE, "csv");
@@ -990,9 +998,9 @@ public class MainTest extends TestBase {
 
     @Test
     public void updateMemberDataNoUpdatesTest() throws IOException {
-        String request = readResourceFile(DATA_REQUEST_TEMPLATE)
-                .replace("REPLACE_DATE", yesterday())
-                .replaceAll("REPLACE_FILENAME", "update-member-data-no-updates.csv");
+        LastRepliesBuilder repliesBuilder = new LastRepliesBuilder();
+        repliesBuilder.addRowWithRequestFile(Constants.TOPIC_REQUEST_DATA, "update-member-data-no-updates.csv");
+        String request = repliesBuilder.build();
         HttpClientSimulator.setQueryResponseData(
                 Constants.QUERY_GET_REQUESTS_LAST_REPLIES, request);
         String usersFile = findFile(Constants.MEMBERDATA_RAW_FILE, "csv");

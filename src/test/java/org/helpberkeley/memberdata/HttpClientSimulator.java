@@ -116,18 +116,18 @@ public class HttpClientSimulator extends HttpClient {
     private boolean isQuery(HttpRequest request) {
 
         // FIX THIS, DS: is there a constant for this?
-        return request.method().equals("POST") && request.uri().toString().startsWith(ApiClient.QUERY_BASE);
+        return request.method().equals("POST") && request.uri().toString().startsWith(Constants.QUERY_BASE);
     }
 
     private boolean isPost(HttpRequest request) {
 
         // FIX THIS, DS: is there a constant for this?
-        return request.method().equals("POST") && (! request.uri().toString().startsWith(ApiClient.QUERY_BASE));
+        return request.method().equals("POST") && (! request.uri().toString().startsWith(Constants.QUERY_BASE));
     }
 
     private boolean isPut(HttpRequest request) {
         // FIX THIS, DS: is there a constant for this?
-        return request.method().equals("PUT") && (request.uri().toString().startsWith(ApiClient.POSTS_BASE));
+        return request.method().equals("PUT") && (request.uri().toString().startsWith(Constants.POSTS_BASE));
     }
 
     private boolean isGet(HttpRequest request) {
@@ -262,9 +262,9 @@ public class HttpClientSimulator extends HttpClient {
         String response;
 
         // Is this an upload request?
-        if (request.uri().toString().endsWith(ApiClient.UPLOAD_ENDPOINT)) {
+        if (request.uri().toString().endsWith(Constants.UPLOAD_ENDPOINT)) {
             response = readFile("upload-response.json");
-        } else if (request.uri().toString().endsWith("change-owner.json")) {
+        } else if (request.uri().toString().endsWith(Constants.CHANGE_OWNER)) {
             response = readFile("change-owner-response.json");
         } else {
             response = readFile("post-response.json");

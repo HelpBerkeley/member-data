@@ -99,8 +99,9 @@ public class Main {
             "**Messages Posted to [{0}](https://go.helpberkeley.org/t/{1})**\n\n";
     static final String UPDATE_USERS_NO_UPDATES = "The uploaded spreadsheet {0} is already up-to-date. " +
             "There are no changes/updates for these members.";
-    public static final String DEST_TOPIC_NOT_IN_DRIVER_DELIVERIES = "WARNING: The destination topic URL provided is not in the Drivers/Deliveries subcategory. " +
-            "These messages will be posted to \"Get driver messages\" instead. Please try again with a topic URL in the Drivers/Deliveries subcategory.";
+    public static final String DEST_TOPIC_NOT_IN_DRIVER_DELIVERIES = "WARNING: The destination topic URL provided " +
+            "is not in the Drivers/Deliveries subcategory. These messages will be posted to \"Get driver messages\" " +
+            "instead. Please try again with a topic URL in the Drivers/Deliveries subcategory.";
 
     public static void main(String[] args) throws IOException {
 
@@ -633,11 +634,11 @@ public class Main {
         Map<String, User> users = new Tables(HBParser.users(csvData)).mapByUserName();
 
         WorkRequestHandler.WorkRequest request = (WorkRequestHandler.WorkRequest) reply;
-        doDriverMessages(apiClient, request, users, "");
+        doDriverMessages(apiClient, request, users);
     }
 
     private static void doDriverMessages(
-            ApiClient apiClient, WorkRequestHandler.WorkRequest request, Map<String, User> users, String posterUsername) {
+            ApiClient apiClient, WorkRequestHandler.WorkRequest request, Map<String, User> users) {
 
         LOGGER.info("Driver message request found:\n{}", request);
 
@@ -647,7 +648,8 @@ public class Main {
             if (request.destinationTopic.equals(Constants.TOPIC_STONE_TEST_TOPIC)) {
                 topic = request.destinationTopic;
             } else {
-                if ((Long) request.destTopicJsonMap.get("category_id") == Constants.DRIVER_DELIVERIES_CATEGORY) {
+                assert request.destinationTopic instanceof TopicResponse : request.destinationTopic;
+                if (((TopicResponse)request.destinationTopic).getCategoryId() == Constants.DRIVER_DELIVERIES_CATEGORY) {
                     topic = request.destinationTopic;
                 } else {
                     warnings = DEST_TOPIC_NOT_IN_DRIVER_DELIVERIES;
@@ -671,7 +673,7 @@ public class Main {
                         Constants.CONTROL_BLOCK_VERSION_200));
             }
             DriverPostFormat driverPostFormat = DriverPostFormat.create(apiClient, users, routedDeliveries);
-            String statusMessage = generateDriverPosts(apiClient, driverPostFormat, topic, posterUsername);
+            String statusMessage = generateDriverPosts(apiClient, driverPostFormat, topic, request.posterUsername);
             request.postStatus(WorkRequestHandler.RequestStatus.Succeeded, statusMessage);
         } catch (MemberDataException ex) {
             String reason = ex.getCause() != null ? ex.getCause().getMessage() : ex.getMessage();
@@ -714,7 +716,7 @@ public class Main {
         String csvData = Files.readString(Paths.get(allMembersFile));
         Map<String, User> users = new Tables(HBParser.users(csvData)).mapByUserName();
 
-        doOneKitchenDriverMessages(apiClient, request, users, "");
+        doOneKitchenDriverMessages(apiClient, request, users);
     }
 
     private static void doUpdateMemberData(
@@ -733,11 +735,11 @@ public class Main {
         WorkflowExporter exporter;
         String updatedCSVData;
         try {
-            exporter = new WorkflowExporter(WorkflowParser.create(Collections.emptyMap(), deliveries)); //exporter created here
+            exporter = new WorkflowExporter(WorkflowParser.create(Collections.emptyMap(), deliveries));
             if (request.disableMemberLimitAudit){
                 WorkflowExporter.setMemberLimit(users.size());
             }
-            updatedCSVData = exporter.updateMemberData(users, deliveryDetails); //must change limit before this function invoked
+            updatedCSVData = exporter.updateMemberData(users, deliveryDetails);
         } catch (MemberDataException ex) {
             LOGGER.warn("updatedMemberData failed: " + ex + "\n" + ex.getMessage());
             request.postStatus(WorkRequestHandler.RequestStatus.Failed, ex.getMessage());
@@ -757,7 +759,7 @@ public class Main {
     }
 
     private static void doOneKitchenDriverMessages(
-            ApiClient apiClient, WorkRequestHandler.WorkRequest request, Map<String, User> users, String posterUsername) {
+            ApiClient apiClient, WorkRequestHandler.WorkRequest request, Map<String, User> users) {
 
         Topic topic = Constants.TOPIC_DRIVERS_POST_STAGING;
         String warnings = "";
@@ -765,7 +767,8 @@ public class Main {
             if (request.destinationTopic.equals(Constants.TOPIC_STONE_TEST_TOPIC)) {
                 topic = request.destinationTopic;
             } else {
-                if ((Long) request.destTopicJsonMap.get("category_id") == Constants.DRIVER_DELIVERIES_CATEGORY) {
+                assert request.destinationTopic instanceof TopicResponse : request.destinationTopic;
+                if (((TopicResponse)request.destinationTopic).getCategoryId() == Constants.DRIVER_DELIVERIES_CATEGORY) {
                     topic = request.destinationTopic;
                 } else {
                     warnings = DEST_TOPIC_NOT_IN_DRIVER_DELIVERIES;
@@ -789,7 +792,7 @@ public class Main {
                         Constants.CONTROL_BLOCK_VERSION_300));
             }
             DriverPostFormat driverPostFormat = DriverPostFormat.create(apiClient, users, routedDeliveries);
-            String statusMessage = generateDriverPosts(apiClient, driverPostFormat, topic, posterUsername);
+            String statusMessage = generateDriverPosts(apiClient, driverPostFormat, topic, request.posterUsername);
             request.postStatus(WorkRequestHandler.RequestStatus.Succeeded, statusMessage);
         } catch (MemberDataException ex) {
             String reason = ex.getCause() != null ? ex.getCause().getMessage() : ex.getMessage();
@@ -829,14 +832,9 @@ public class Main {
         LOGGER.info("generateGroupInstructionsPost {}", response.statusCode() == HTTP_OK ?
                 "" : "failed " + response.statusCode() + ": " + response.body());
 
-        if (response.statusCode() != HTTP_OK) {
-            statusMessages.append("Failed posting group instructions message: ")
-                    .append(response.statusCode()).append(": ").append(response.body()).append("\n");
-        } else {
-            PostResponse postResponse = HBParser.postResponse((String)response.body());
-            postIds.add(postResponse.postId);
-            groupPostURL = postResponse.URL;
-        }
+        PostResponse postResponse = HBParser.postResponse((String)response.body());
+        postIds.add(postResponse.postId);
+        groupPostURL = postResponse.URL;
 
         List<String> posts = driverPostFormat.generateDriverPosts();
         Iterator<Driver> driverIterator = driverPostFormat.getDrivers().iterator();
@@ -853,19 +851,14 @@ public class Main {
             LOGGER.info("generateDriversPosts {}", response.statusCode() == HTTP_OK ?
                     "" : "failed " + response.statusCode() + ": " + response.body());
 
-            if (response.statusCode() != HTTP_OK) {
-                statusMessages.append("Failed posting driver's message: ")
-                        .append(response.statusCode()).append(": ").append(response.body()).append("\n");
-            } else {
-                PostResponse postResponse = HBParser.postResponse((String)response.body());
-                postIds.add(postResponse.postId);
-                postURLs.add(
-                        "["
-                        + driverIterator.next().getUserName()
-                        + " message]("
-                        + postResponse.URL
-                        + ')');
-            }
+            postResponse = HBParser.postResponse((String)response.body());
+            postIds.add(postResponse.postId);
+            postURLs.add(
+                    "["
+                            + driverIterator.next().getUserName()
+                            + " message]("
+                            + postResponse.URL
+                            + ')');
         }
 
         PostResponse backupDriversPostResponse = generateBackupDriversPost(
@@ -908,9 +901,6 @@ public class Main {
 
         if (! topic.equals(Constants.TOPIC_DRIVERS_POST_STAGING)) {
             response = apiClient.changePostOwner(topic.getId(), postIds, dispatcherUsername);
-            if (response.statusCode() != HTTP_OK) {
-                statusMessages.append("Failed changing post ownership to: " + dispatcherUsername);
-            }
         }
 
         return statusMessages.toString();
@@ -936,14 +926,7 @@ public class Main {
         LOGGER.info("generateDriversTablePost {}", response.statusCode() == HTTP_OK ?
                 "" : "failed " + response.statusCode() + ": " + response.body());
 
-        if (response.statusCode() != HTTP_OK) {
-            statusMessages.append("Failed posting pickup manager message: ")
-                    .append(response.statusCode()).append(": ").append(response.body()).append("\n");
-        } else {
-            return HBParser.postResponse((String)response.body());
-        }
-
-        return null;
+        return HBParser.postResponse((String)response.body());
     }
 
     private static PostResponse generateOrdersTablePost(ApiClient apiClient,
@@ -966,14 +949,7 @@ public class Main {
         LOGGER.info("generateOrdersTablePost {}", response.statusCode() == HTTP_OK ?
                 "" : "failed " + response.statusCode() + ": " + response.body());
 
-        if (response.statusCode() != HTTP_OK) {
-            statusMessages.append("Failed posting pickup manager message: ")
-                    .append(response.statusCode()).append(": ").append(response.body()).append("\n");
-        } else {
-            return HBParser.postResponse((String)response.body());
-        }
-
-        return null;
+        return HBParser.postResponse((String)response.body());
     }
 
     private static PostResponse generateBackupDriversPost(ApiClient apiClient,
@@ -994,14 +970,7 @@ public class Main {
         LOGGER.info("generateBackupDriverPost {}", response.statusCode() == HTTP_OK ?
                 "" : "failed " + response.statusCode() + ": " + response.body());
 
-        if (response.statusCode() != HTTP_OK) {
-            statusMessages.append("Failed posting backup driver message: ")
-                    .append(response.statusCode()).append(": ").append(response.body()).append("\n");
-        } else {
-            return HBParser.postResponse((String)response.body());
-        }
-
-        return null;
+        return HBParser.postResponse((String)response.body());
     }
 
     // Process the last request in the Post completed daily orders topic
@@ -1079,16 +1048,8 @@ public class Main {
                 .format(DateTimeFormatter.ofPattern("uuuu.MM.dd.HH.mm.ss"));
 
         HttpResponse<String> response = apiClient.post(post.toJson());
-
-        if (response.statusCode() != HTTP_OK) {
-            // Send status message
-            request.postStatus(WorkRequestHandler.RequestStatus.Failed,
-                    "Archive of " + request.uploadFile.getOriginalFileName() + " failed: " + response.body());
-        } else {
-            // Send status message
-            request.postStatus(WorkRequestHandler.RequestStatus.Succeeded,
-                    request.uploadFile.getOriginalFileName() + " validated and archived for " + request.date);
-        }
+        request.postStatus(WorkRequestHandler.RequestStatus.Succeeded,
+                request.uploadFile.getOriginalFileName() + " validated and archived for " + request.date);
     }
 
     private static void auditCompletedOrdersDate(String date) {
@@ -1186,15 +1147,9 @@ public class Main {
 
         HttpResponse<String> response = apiClient.post(post.toJson());
 
-        if (response.statusCode() != HTTP_OK) {
-            // Send status message
-            request.postStatus(WorkRequestHandler.RequestStatus.Failed,
-                    "Archive of " + request.uploadFile.getOriginalFileName() + " failed: " + response.body());
-        } else {
-            // Send status message
-            request.postStatus(WorkRequestHandler.RequestStatus.Succeeded,
-                    request.uploadFile.getOriginalFileName() + " validated and archived for " + request.date);
-        }
+        // Send status message
+        request.postStatus(WorkRequestHandler.RequestStatus.Succeeded,
+                request.uploadFile.getOriginalFileName() + " validated and archived for " + request.date);
     }
 
     private static void orderHistory(ApiClient apiClient, String usersFile)
@@ -1426,20 +1381,11 @@ public class Main {
         HttpResponse<String> response = apiClient.post(post.toJson());
 
         String statusMessage = "Archive of " + request.uploadFile.getOriginalFileName()
-                + " to topic " + Constants.TOPIC_RESTAURANT_TEMPLATE_STORAGE.getId() + " ";
-        if (response.statusCode() != HTTP_OK) {
-            statusMessage += "failed: ";
-            statusMessage += response.body();
+                + " to topic " + Constants.TOPIC_RESTAURANT_TEMPLATE_STORAGE.getId()
+                + "validated and archived.";
 
-            // Send status message
-            request.postStatus(WorkRequestHandler.RequestStatus.Failed, statusMessage);
-        } else {
-            statusMessage += "validated and archived.";
-
-            // Send status message
-            request.postStatus(WorkRequestHandler.RequestStatus.Succeeded, statusMessage);
-        }
-
+        // Send status message
+        request.postStatus(WorkRequestHandler.RequestStatus.Succeeded, statusMessage);
         LOGGER.info(statusMessage);
     }
 
@@ -1484,20 +1430,11 @@ public class Main {
         HttpResponse<String> response = apiClient.post(post.toJson());
 
         String statusMessage = "Archive of " + request.uploadFile.getOriginalFileName()
-                + " to topic " + Constants.TOPIC_ONE_KITCHEN_RESTAURANT_TEMPLATE_STORAGE.getId() + " ";
-        if (response.statusCode() != HTTP_OK) {
-            statusMessage += "failed: ";
-            statusMessage += response.body();
+                + " to topic " + Constants.TOPIC_ONE_KITCHEN_RESTAURANT_TEMPLATE_STORAGE.getId()
+                + "validated and archived.";
 
-            // Send status message
-            request.postStatus(WorkRequestHandler.RequestStatus.Failed, statusMessage);
-        } else {
-            statusMessage += "validated and archived.";
-
-            // Send status message
-            request.postStatus(WorkRequestHandler.RequestStatus.Succeeded, statusMessage);
-        }
-
+        // Send status message
+        request.postStatus(WorkRequestHandler.RequestStatus.Succeeded, statusMessage);
         LOGGER.info(statusMessage);
     }
 
@@ -1590,7 +1527,7 @@ public class Main {
             String topicName = (String)columns[rawIndex];
 
             WorkRequestHandler requestHandler = new WorkRequestHandler(
-                    apiClient, new Topic(topicName, topicId), postNumber, raw);
+                    apiClient, new Topic(topicName, topicId), postNumber, raw, posterUsername);
             WorkRequestHandler.Reply reply;
 
             try {
@@ -1612,26 +1549,30 @@ public class Main {
 
             WorkRequestHandler.WorkRequest request = (WorkRequestHandler.WorkRequest) reply;
 
-            if (topicId == Constants.TOPIC_REQUEST_DRIVER_MESSAGES.getId()) {
-                doDriverMessages(apiClient, request, users, posterUsername);
-            } else if (topicId == Constants.TOPIC_POST_COMPLETED_DAILY_ORDERS.getId()) {
-                doCompletedDailyOrders(apiClient, request, users);
-            } else if (topicId == Constants.TOPIC_REQUEST_ONE_KITCHEN_DRIVER_MESSAGES.getId()) {
-                doOneKitchenDriverMessages(apiClient, request, users, posterUsername);
-            } else if (topicId == Constants.TOPIC_REQUEST_WORKFLOW.getId()) {
-                createWorkflowRequest(request);
-            } else if (topicId == Constants.TOPIC_POST_ONE_KITCHEN_RESTAURANT_TEMPLATE.getId()) {
-                doOneKitchenRestaurantTemplate(apiClient, request);
-            } else if (topicId == Constants.TOPIC_POST_RESTAURANT_TEMPLATE.getId()) {
-                doRestaurantTemplate(apiClient, request);
-            } else if (topicId == Constants.TOPIC_POST_COMPLETED_ONEKITCHEN_ORDERS.getId()) {
-                doCompletedOneKitchenOrders(apiClient, request, users);
-            } else if (topicId == Constants.TOPIC_REQUEST_DATA.getId()) {
-                doUpdateMemberData(apiClient, request, users);
-            } else {
-                assert topicId == Constants.TOPIC_REQUEST_DRIVER_ROUTES.getId() : topicId;
-                requestHandler.postStatus(WorkRequestHandler.RequestStatus.Failed,
-                        "Route requests not supported");
+            try {
+                if (topicId == Constants.TOPIC_REQUEST_DRIVER_MESSAGES.getId()) {
+                    doDriverMessages(apiClient, request, users);
+                } else if (topicId == Constants.TOPIC_POST_COMPLETED_DAILY_ORDERS.getId()) {
+                    doCompletedDailyOrders(apiClient, request, users);
+                } else if (topicId == Constants.TOPIC_REQUEST_ONE_KITCHEN_DRIVER_MESSAGES.getId()) {
+                    doOneKitchenDriverMessages(apiClient, request, users);
+                } else if (topicId == Constants.TOPIC_REQUEST_WORKFLOW.getId()) {
+                    createWorkflowRequest(request);
+                } else if (topicId == Constants.TOPIC_POST_ONE_KITCHEN_RESTAURANT_TEMPLATE.getId()) {
+                    doOneKitchenRestaurantTemplate(apiClient, request);
+                } else if (topicId == Constants.TOPIC_POST_RESTAURANT_TEMPLATE.getId()) {
+                    doRestaurantTemplate(apiClient, request);
+                } else if (topicId == Constants.TOPIC_POST_COMPLETED_ONEKITCHEN_ORDERS.getId()) {
+                    doCompletedOneKitchenOrders(apiClient, request, users);
+                } else if (topicId == Constants.TOPIC_REQUEST_DATA.getId()) {
+                    doUpdateMemberData(apiClient, request, users);
+                } else {
+                    assert topicId == Constants.TOPIC_REQUEST_DRIVER_ROUTES.getId() : topicId;
+                    requestHandler.postStatus(WorkRequestHandler.RequestStatus.Failed,
+                            "Route requests not supported");
+                }
+            } catch (MemberDataException ex) {
+                requestHandler.postStatus(WorkRequestHandler.RequestStatus.Failed, ex.getMessage());
             }
         }
     }
