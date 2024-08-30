@@ -46,6 +46,18 @@ public class LastRepliesBuilder {
             "10341", "[REPLACE_FILE|attachment](upload://REPLACE_FILE) (8.2 KB)"
     );
 
+    private Map<Topic, String> topicsDefaultUploadStrings = Map.of(
+            Constants.TOPIC_REQUEST_DATA, "[HelpBerkeleyDeliveries - 12_31.csv|attachment](upload://update-member-data-multiple-updates.csv) (8.2 KB)",
+            Constants.TOPIC_REQUEST_WORKFLOW, "OneKitchen\n",
+            Constants.TOPIC_REQUEST_ONE_KITCHEN_DRIVER_MESSAGES, "[routed-deliveries-v300.csv|attachment](upload://routed-deliveries-v300.csv)",
+            Constants.TOPIC_REQUEST_DRIVER_MESSAGES, "[routed deliveries|attachement](upload://routed-deliveries-v200.csv)",
+            Constants.TOPIC_REQUEST_DRIVER_ROUTES, "[unrouted deliveries|attachement](upload://unrouted-deliveries.csv)",
+            Constants.TOPIC_POST_COMPLETED_ONEKITCHEN_ORDERS, "[HelpBerkeleyDeliveries - 12_31.csv|attachment](upload://routed-deliveries-v300.csv) (8.2 KB)",
+            Constants.TOPIC_POST_COMPLETED_DAILY_ORDERS, "[HelpBerkeleyDeliveries - 12_31.csv|attachment](upload://routed-deliveries-v200.csv) (8.2 KB)",
+            Constants.TOPIC_POST_RESTAURANT_TEMPLATE, "[HelpBerkeleyDeliveries - TemplateV2-0-0.csv|attachment](upload://restaurant-template-v200.csv) (5.6 KB)",
+            Constants.TOPIC_POST_ONE_KITCHEN_RESTAURANT_TEMPLATE, "[HelpBerkeleyDeliveries - TemplateV2-0-0.csv|attachment](upload://restaurant-template-v300.csv) (5.6 KB)"
+    );
+
     private String lastRepliesConstantValues = "{\n" +
             "  \"success\": true,\n" +
             "  \"errors\": [],\n" +
@@ -85,7 +97,7 @@ public class LastRepliesBuilder {
             Constants.TOPIC_POST_COMPLETED_DAILY_ORDERS,
             Constants.TOPIC_POST_RESTAURANT_TEMPLATE,
             Constants.TOPIC_POST_ONE_KITCHEN_RESTAURANT_TEMPLATE
-            );
+    );
 
     public String build() {
         StringBuilder stringBuilder = new StringBuilder();
@@ -132,53 +144,60 @@ public class LastRepliesBuilder {
     }
 
     public void addRowWithRequestFile(Topic topic, String filename) {
-        StringBuilder row = new StringBuilder();
         String uploadString = topicsUploadTemplates.get(String.valueOf(topic.getId())).replace("REPLACE_FILE", filename);
-        row.append("[ ")
-                .append(topic.getId()).append(", ")
-                .append(123).append(", ")
-                .append("null, ")
-                .append(CONST_DATE).append("\n\n")
-                .append(uploadString).append("\", \"")
-                .append(topic.getName()).append("\", \"")
-                .append(usernames.get(random.nextInt(usernames.size())))
-                .append("\" ]");
-        rows.add(row.toString());
+        addRowWithRequestOptions(topic, uploadString, "");
+//        StringBuilder row = new StringBuilder();
+//        String uploadString = topicsUploadTemplates.get(String.valueOf(topic.getId())).replace("REPLACE_FILE", filename);
+//        row.append("[ ")
+//                .append(topic.getId()).append(", ")
+//                .append(123).append(", ")
+//                .append("null, ")
+//                .append(CONST_DATE).append("\n\n")
+//                .append(uploadString).append("\", \"")
+//                .append(topic.getName()).append("\", \"")
+//                .append(usernames.get(random.nextInt(usernames.size())))
+//                .append("\" ]");
+//        rows.add(row.toString());
+    }
+
+    public void addRowWithRequestFileAndExtra(Topic topic, String filename, String extra) {
+        String uploadString = topicsUploadTemplates.get(String.valueOf(topic.getId())).replace("REPLACE_FILE", filename);
+        addRowWithRequestOptions(topic, uploadString, extra);
+    }
+
+    public void addRowWithRequestTopicAndExtra(Topic topic, String extra) {
+        String uploadString = topicsDefaultUploadStrings.get(topic);
+        addRowWithRequestOptions(topic, uploadString, extra);
+//        StringBuilder row = new StringBuilder();
+//        String uploadString = topicsDefaultUploadStrings.get(topic);
+//        row.append("[ ")
+//                .append(topic.getId()).append(", ")
+//                .append(123).append(", ")
+//                .append("null, ")
+//                .append(CONST_DATE).append("\n")
+//                .append(extra).append("\n")
+//                .append(uploadString).append("\", \"")
+//                .append(topic.getName()).append("\", \"")
+//                .append(usernames.get(random.nextInt(usernames.size())))
+//                .append("\" ]");
+//        rows.add(row.toString());
     }
 
     public void addRowWithRequestTopic(Topic topic) {
-        StringBuilder row = new StringBuilder();
-        String uploadString = "";
-        if (topic.equals(Constants.TOPIC_REQUEST_DRIVER_MESSAGES)) {
-            uploadString = "[routed deliveries|attachement](upload://routed-deliveries-v200.csv)";
-        } else if (topic.equals(Constants.TOPIC_REQUEST_DRIVER_ROUTES)) {
-            uploadString = "[unrouted deliveries|attachement](upload://unrouted-deliveries.csv)";
-        } else if (topic.equals(Constants.TOPIC_REQUEST_ONE_KITCHEN_DRIVER_MESSAGES)) {
-            uploadString = "[HelpBerkeleyDeliveries - 7_3.csv|attachment](upload://routed-deliveries-turkey.csv)";
-        } else if (topic.equals(Constants.TOPIC_POST_RESTAURANT_TEMPLATE)) {
-            uploadString = "[HelpBerkeleyDeliveries - TemplateV2-0-0.csv|attachment](upload://restaurant-template-v200.csv) (5.6 KB)";
-        } else if (topic.equals(Constants.TOPIC_POST_ONE_KITCHEN_RESTAURANT_TEMPLATE)) {
-            uploadString = "[HelpBerkeleyDeliveries - TemplateV2-0-0.csv|attachment](upload://restaurant-template-v300.csv) (5.6 KB)";
-        } else if (topic.equals(Constants.TOPIC_POST_COMPLETED_DAILY_ORDERS)) {
-            uploadString = "[HelpBerkeleyDeliveries - 12_31.csv|attachment](upload://routed-deliveries-v200.csv) (8.2 KB)";
-        } else if (topic.equals(Constants.TOPIC_REQUEST_WORKFLOW)) {
-            uploadString = "OneKitchen\n";
-        } else if (topic.equals(Constants.TOPIC_POST_COMPLETED_ONEKITCHEN_ORDERS)) {
-            uploadString = "[HelpBerkeleyDeliveries - 12_31.csv|attachment](upload://routed-deliveries-v300.csv) (8.2 KB)";
-        } else if (topic.equals(Constants.TOPIC_REQUEST_DATA)) {
-            uploadString = "[HelpBerkeleyDeliveries - 12_31.csv|attachment](upload://update-member-data-multiple-updates.csv) (8.2 KB)";
-        }
-
-        row.append("[ ")
-                .append(topic.getId()).append(", ")
-                .append(123).append(", ")
-                .append("null, ")
-                .append(CONST_DATE).append("\n\n")
-                .append(uploadString).append("\", \"")
-                .append(topic.getName()).append("\", \"")
-                .append(usernames.get(random.nextInt(usernames.size())))
-                .append("\" ]");
-        rows.add(row.toString());
+        String uploadString = topicsDefaultUploadStrings.get(topic);
+        addRowWithRequestOptions(topic, uploadString, "");
+//        StringBuilder row = new StringBuilder();
+//        String uploadString = topicsDefaultUploadStrings.get(topic);
+//        row.append("[ ")
+//                .append(topic.getId()).append(", ")
+//                .append(123).append(", ")
+//                .append("null, ")
+//                .append(CONST_DATE).append("\n\n")
+//                .append(uploadString).append("\", \"")
+//                .append(topic.getName()).append("\", \"")
+//                .append(usernames.get(random.nextInt(usernames.size())))
+//                .append("\" ]");
+//        rows.add(row.toString());
     }
 
     public void addRow(String row) {
@@ -186,10 +205,13 @@ public class LastRepliesBuilder {
     }
 
     public void addRowWithTopicAndStatus(Topic topic, boolean statusSucceeded) {
+//        String uploadString = statusSucceeded ? ("Status: Succeeded\nFile: something from " + topic.getId() + "\n")
+//                        : ("Status: Failed\nSome error message\n");
+//        addRowWithRequestOptions(topic, uploadString, "");
         StringBuilder row = new StringBuilder();
         row.append("[ ")
                 .append(topic.getId()).append(", ")
-                .append(123).append(", ")
+                .append(random.nextInt(999)).append(", ")
                 .append("null, ")
                 .append(CONST_TIMESTAMP).append("\n\n")
                 .append(statusSucceeded ? ("Status: Succeeded\nFile: something from " + topic.getId() + "\n")
@@ -199,5 +221,41 @@ public class LastRepliesBuilder {
                 .append("\" ]");
         rows.add(row.toString());
     }
+
+    private void addRowWithRequestOptions(Topic topic, String uploadString, String extra) {
+        StringBuilder row = new StringBuilder();
+        row.append("[ ")
+                .append(topic.getId()).append(", ")
+                .append(random.nextInt(999)).append(", ")
+                .append("null, ")
+                .append(CONST_DATE).append("\n")
+                .append(extra).append("\n")
+                .append(uploadString).append("\", \"")
+                .append(topic.getName()).append("\", \"")
+                .append(usernames.get(random.nextInt(usernames.size())))
+                .append("\" ]");
+        rows.add(row.toString());
+    }
+
+    //        String uploadString = "";
+//        if (topic.equals(Constants.TOPIC_REQUEST_DRIVER_MESSAGES)) {
+//            uploadString = "[routed deliveries|attachement](upload://routed-deliveries-v200.csv)";
+//        } else if (topic.equals(Constants.TOPIC_REQUEST_DRIVER_ROUTES)) {
+//            uploadString = "[unrouted deliveries|attachement](upload://unrouted-deliveries.csv)";
+//        } else if (topic.equals(Constants.TOPIC_REQUEST_ONE_KITCHEN_DRIVER_MESSAGES)) {
+//            uploadString = "[routed-deliveries-v300.csv|attachment](upload://routed-deliveries-v300.csv)";
+//        } else if (topic.equals(Constants.TOPIC_POST_RESTAURANT_TEMPLATE)) {
+//            uploadString = "[HelpBerkeleyDeliveries - TemplateV2-0-0.csv|attachment](upload://restaurant-template-v200.csv) (5.6 KB)";
+//        } else if (topic.equals(Constants.TOPIC_POST_ONE_KITCHEN_RESTAURANT_TEMPLATE)) {
+//            uploadString = "[HelpBerkeleyDeliveries - TemplateV2-0-0.csv|attachment](upload://restaurant-template-v300.csv) (5.6 KB)";
+//        } else if (topic.equals(Constants.TOPIC_POST_COMPLETED_DAILY_ORDERS)) {
+//            uploadString = "[HelpBerkeleyDeliveries - 12_31.csv|attachment](upload://routed-deliveries-v200.csv) (8.2 KB)";
+//        } else if (topic.equals(Constants.TOPIC_REQUEST_WORKFLOW)) {
+//            uploadString = "OneKitchen\n";
+//        } else if (topic.equals(Constants.TOPIC_POST_COMPLETED_ONEKITCHEN_ORDERS)) {
+//            uploadString = "[HelpBerkeleyDeliveries - 12_31.csv|attachment](upload://routed-deliveries-v300.csv) (8.2 KB)";
+//        } else if (topic.equals(Constants.TOPIC_REQUEST_DATA)) {
+//            uploadString = "[HelpBerkeleyDeliveries - 12_31.csv|attachment](upload://update-member-data-multiple-updates.csv) (8.2 KB)";
+//        }
 
 }

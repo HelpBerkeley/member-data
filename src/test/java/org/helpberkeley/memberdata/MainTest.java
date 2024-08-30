@@ -153,8 +153,12 @@ public class MainTest extends TestBase {
 
     @Test
     public void driverMessagesTest() throws IOException {
+        LastRepliesBuilder repliesBuilder = new LastRepliesBuilder();
+        repliesBuilder.addRowWithRequestTopic(Constants.TOPIC_REQUEST_DRIVER_MESSAGES);
+        String request = repliesBuilder.build();
+        HttpClientSimulator.setQueryResponseData(Constants.QUERY_GET_REQUESTS_LAST_REPLIES, request);
         String usersFile = findFile(Constants.MEMBERDATA_RAW_FILE, "csv");
-        String[] args = { Options.COMMAND_DRIVER_MESSAGES, usersFile };
+        String[] args = { Options.COMMAND_WORK_REQUESTS, usersFile };
         Main.main(args);
         Post statusPost = WorkRequestHandler.getLastStatusPost();
         assertThat(statusPost).isNotNull();
@@ -165,14 +169,13 @@ public class MainTest extends TestBase {
     }
     @Test
     public void driverMessagesTestTopicTest() throws IOException {
-        String request = readResourceFile(REQUEST_TEMPLATE_EXTRA)
-                .replace("REPLACE_DATE", yesterday())
-                .replace("REPLACE_EXTRA", "Test topic")
-                .replaceAll("REPLACE_FILENAME", "routed-deliveries-v200.csv");
+        LastRepliesBuilder repliesBuilder = new LastRepliesBuilder();
+        repliesBuilder.addRowWithRequestTopicAndExtra(Constants.TOPIC_REQUEST_DRIVER_MESSAGES, "Test topic");
+        String request = repliesBuilder.build();
         HttpClientSimulator.setQueryResponseData(
-                Constants.QUERY_GET_LAST_REQUEST_DRIVER_MESSAGES_REPLY, request);
+                Constants.QUERY_GET_REQUESTS_LAST_REPLIES, request);
         String usersFile = findFile(Constants.MEMBERDATA_RAW_FILE, "csv");
-        String[] args = { Options.COMMAND_DRIVER_MESSAGES, usersFile };
+        String[] args = { Options.COMMAND_WORK_REQUESTS, usersFile };
         Main.main(args);
         Post statusPost = WorkRequestHandler.getLastStatusPost();
         assertThat(statusPost).isNotNull();
@@ -247,12 +250,12 @@ public class MainTest extends TestBase {
     }
 
     private void driverMessagesSheetTest(String filepath, String version) throws IOException {
-        String request = readResourceFile(REQUEST_TEMPLATE)
-                .replace("REPLACE_DATE", yesterday())
-                .replaceAll("REPLACE_FILENAME", filepath);
-        HttpClientSimulator.setQueryResponseData(Constants.QUERY_GET_LAST_REQUEST_DRIVER_MESSAGES_REPLY, request);
+        LastRepliesBuilder repliesBuilder = new LastRepliesBuilder();
+        repliesBuilder.addRowWithRequestFile(Constants.TOPIC_REQUEST_DRIVER_MESSAGES, filepath);
+        String request = repliesBuilder.build();
+        HttpClientSimulator.setQueryResponseData(Constants.QUERY_GET_REQUESTS_LAST_REPLIES, request);
         String usersFile = findFile(Constants.MEMBERDATA_RAW_FILE, "csv");
-        String[] args = { Options.COMMAND_DRIVER_MESSAGES, usersFile };
+        String[] args = { Options.COMMAND_WORK_REQUESTS, usersFile };
         Main.main(args);
         Post statusPost = WorkRequestHandler.getLastStatusPost();
         assertThat(statusPost).isNotNull();
@@ -266,13 +269,13 @@ public class MainTest extends TestBase {
 
     @Test
     public void driverMessagesUnsupportedVersionTest() throws IOException {
-        String request = readResourceFile(REQUEST_TEMPLATE)
-                .replace("REPLACE_DATE", yesterday())
-                .replaceAll("REPLACE_FILENAME", "routed-deliveries-v1.csv");
+        LastRepliesBuilder repliesBuilder = new LastRepliesBuilder();
+        repliesBuilder.addRowWithRequestFile(Constants.TOPIC_REQUEST_DRIVER_MESSAGES, "routed-deliveries-v1.csv");
+        String request = repliesBuilder.build();
         HttpClientSimulator.setQueryResponseData(
-                Constants.QUERY_GET_LAST_REQUEST_DRIVER_MESSAGES_REPLY, request);
+                Constants.QUERY_GET_REQUESTS_LAST_REPLIES, request);
         String usersFile = findFile(Constants.MEMBERDATA_RAW_FILE, "csv");
-        String[] args = { Options.COMMAND_DRIVER_MESSAGES, usersFile };
+        String[] args = { Options.COMMAND_WORK_REQUESTS, usersFile };
         Main.main(args);
         Post statusPost = WorkRequestHandler.getLastStatusPost();
         assertThat(statusPost).isNotNull();
@@ -287,7 +290,11 @@ public class MainTest extends TestBase {
     @Test
     public void oneKitchenDriverMessagesTest() throws IOException {
         String usersFile = findFile(Constants.MEMBERDATA_RAW_FILE, "csv");
-        String[] args = { Options.COMMAND_ONE_KITCHEN_DRIVER_MESSAGES, usersFile };
+        LastRepliesBuilder repliesBuilder = new LastRepliesBuilder();
+        repliesBuilder.addRowWithRequestTopic(Constants.TOPIC_REQUEST_ONE_KITCHEN_DRIVER_MESSAGES);
+        String request = repliesBuilder.build();
+        HttpClientSimulator.setQueryResponseData(Constants.QUERY_GET_REQUESTS_LAST_REPLIES, request);
+        String[] args = { Options.COMMAND_WORK_REQUESTS, usersFile };
         Main.main(args);
         Post statusPost = WorkRequestHandler.getLastStatusPost();
         assertThat(statusPost).isNotNull();
@@ -472,9 +479,19 @@ public class MainTest extends TestBase {
     @Test
     public void getRoutedWorkflowStatusTest() throws IOException {
         String usersFile = findFile(Constants.MEMBERDATA_RAW_FILE, "csv");
-        HttpClientSimulator.setQueryResponseFile(
-                Constants.QUERY_GET_LAST_REQUEST_DRIVER_MESSAGES_REPLY, "last-routed-workflow-status.json");
-        String[] args = { Options.COMMAND_DRIVER_MESSAGES, usersFile };
+//        HttpClientSimulator.setQueryResponseFile(
+//                Constants.QUERY_GET_LAST_REQUEST_DRIVER_MESSAGES_REPLY, "last-routed-workflow-status.json");
+        String row = "[\n" +
+                "      10,\n" +
+                "      null,\n" +
+                "      \"2020/06/21 21:41:53\n\nStatus: Processing\nFile: HelpBerkeleyDeliveries - 6_21 (1).csv\n\"\n" +
+                "    ]";
+        LastRepliesBuilder repliesBuilder = new LastRepliesBuilder();
+        repliesBuilder.addRowWithRequestFile(Constants.TOPIC_REQUEST_DRIVER_MESSAGES, "last-routed-workflow-status.json");
+        String request = repliesBuilder.build();
+        HttpClientSimulator.setQueryResponseData(Constants.QUERY_GET_REQUESTS_LAST_REPLIES, request);
+        String[] args = { Options.COMMAND_WORK_REQUESTS, usersFile };
+//        String[] args = { Options.COMMAND_DRIVER_MESSAGES, usersFile };
         Main.main(args);
         // There should be nothing to do. All topics have
         // status messages as their last reply.
