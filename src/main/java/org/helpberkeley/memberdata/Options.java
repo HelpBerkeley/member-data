@@ -128,8 +128,6 @@ public class Options {
             case COMMAND_POST_VOLUNTEER_REQUESTS:
             case COMMAND_UPDATE_ERRORS:
             case COMMAND_EMAIL:
-//            case COMMAND_DRIVER_MESSAGES:
-//            case COMMAND_ONE_KITCHEN_DRIVER_MESSAGES:
             case COMMAND_POST_ALL_MEMBERS:
             case COMMAND_POST_DRIVERS:
             case COMMAND_UPDATE_DISPATCHERS:

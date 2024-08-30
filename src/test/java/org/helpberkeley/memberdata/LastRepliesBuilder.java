@@ -146,18 +146,6 @@ public class LastRepliesBuilder {
     public void addRowWithRequestFile(Topic topic, String filename) {
         String uploadString = topicsUploadTemplates.get(String.valueOf(topic.getId())).replace("REPLACE_FILE", filename);
         addRowWithRequestOptions(topic, uploadString, "");
-//        StringBuilder row = new StringBuilder();
-//        String uploadString = topicsUploadTemplates.get(String.valueOf(topic.getId())).replace("REPLACE_FILE", filename);
-//        row.append("[ ")
-//                .append(topic.getId()).append(", ")
-//                .append(123).append(", ")
-//                .append("null, ")
-//                .append(CONST_DATE).append("\n\n")
-//                .append(uploadString).append("\", \"")
-//                .append(topic.getName()).append("\", \"")
-//                .append(usernames.get(random.nextInt(usernames.size())))
-//                .append("\" ]");
-//        rows.add(row.toString());
     }
 
     public void addRowWithRequestFileAndExtra(Topic topic, String filename, String extra) {
@@ -168,36 +156,11 @@ public class LastRepliesBuilder {
     public void addRowWithRequestTopicAndExtra(Topic topic, String extra) {
         String uploadString = topicsDefaultUploadStrings.get(topic);
         addRowWithRequestOptions(topic, uploadString, extra);
-//        StringBuilder row = new StringBuilder();
-//        String uploadString = topicsDefaultUploadStrings.get(topic);
-//        row.append("[ ")
-//                .append(topic.getId()).append(", ")
-//                .append(123).append(", ")
-//                .append("null, ")
-//                .append(CONST_DATE).append("\n")
-//                .append(extra).append("\n")
-//                .append(uploadString).append("\", \"")
-//                .append(topic.getName()).append("\", \"")
-//                .append(usernames.get(random.nextInt(usernames.size())))
-//                .append("\" ]");
-//        rows.add(row.toString());
     }
 
     public void addRowWithRequestTopic(Topic topic) {
         String uploadString = topicsDefaultUploadStrings.get(topic);
         addRowWithRequestOptions(topic, uploadString, "");
-//        StringBuilder row = new StringBuilder();
-//        String uploadString = topicsDefaultUploadStrings.get(topic);
-//        row.append("[ ")
-//                .append(topic.getId()).append(", ")
-//                .append(123).append(", ")
-//                .append("null, ")
-//                .append(CONST_DATE).append("\n\n")
-//                .append(uploadString).append("\", \"")
-//                .append(topic.getName()).append("\", \"")
-//                .append(usernames.get(random.nextInt(usernames.size())))
-//                .append("\" ]");
-//        rows.add(row.toString());
     }
 
     public void addRow(String row) {

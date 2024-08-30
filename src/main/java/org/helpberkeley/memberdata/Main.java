@@ -128,12 +128,6 @@ public class Main {
             case Options.COMMAND_FETCH:
                 fetch(apiClient);
                 break;
-//            case Options.COMMAND_DRIVER_MESSAGES:
-//                driverMessages(apiClient, options.getFileName());
-//                break;
-//            case Options.COMMAND_ONE_KITCHEN_DRIVER_MESSAGES:
-//                oneKitchenDriverMessages(apiClient, options.getFileName());
-//                break;
             case Options.COMMAND_ORDER_HISTORY:
                 orderHistory(apiClient, options.getFileName());
                 break;

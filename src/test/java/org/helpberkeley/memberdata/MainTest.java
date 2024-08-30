@@ -190,16 +190,21 @@ public class MainTest extends TestBase {
     public void driverMessagesBadDestTopicTest() throws IOException {
         Topic topic = new Topic("A public topic", 12345);
         String topicURL  = Constants.TOPICS_BASE + topic.getName() + '/' + topic.getId();
-        String request = readResourceFile(REQUEST_TEMPLATE_EXTRA)
-                .replace("REPLACE_DATE", yesterday())
-                .replace("REPLACE_EXTRA", "Topic: " + topicURL)
-                .replaceAll("REPLACE_FILENAME", "routed-deliveries-v200.csv");
+        LastRepliesBuilder repliesBuilder = new LastRepliesBuilder();
+        repliesBuilder.addRowWithRequestFileAndExtra(Constants.TOPIC_REQUEST_DRIVER_MESSAGES,
+                "routed-deliveries-v200.csv", "Topic: " + topicURL);
+        String request = repliesBuilder.build();
         HttpClientSimulator.setQueryResponseData(
-                Constants.QUERY_GET_LAST_REQUEST_DRIVER_MESSAGES_REPLY, request);
+                Constants.QUERY_GET_REQUESTS_LAST_REPLIES, request);
         String uri = Constants.TOPICS_BASE + topic.getId() + ".json";
-        HttpClientSimulator.setGetResponseFile(uri, "topic-response-bad-category.json");
+        String responseData = "{\n" +
+                "   \"title\": \"" + topic.getName() + "\",\n" +
+                "   \"id\": " + topic.getId() + ",\n" +
+                "   \"category_id\": 13\n" +
+                "}";
+        HttpClientSimulator.setGetResponseData(uri, responseData);
         String usersFile = findFile(Constants.MEMBERDATA_RAW_FILE, "csv");
-        String[] args = { Options.COMMAND_DRIVER_MESSAGES, usersFile };
+        String[] args = { Options.COMMAND_WORK_REQUESTS, usersFile };
         Main.main(args);
         Post statusPost = WorkRequestHandler.getLastStatusPost();
         assertThat(statusPost).isNotNull();
@@ -214,16 +219,21 @@ public class MainTest extends TestBase {
     public void driverMessagesValidDestTopicTest() throws IOException {
         Topic topic = new Topic("A private topic", 54321);
         String topicURL  = Constants.TOPICS_BASE + topic.getName() + '/' + topic.getId();
-        String request = readResourceFile(REQUEST_TEMPLATE_EXTRA)
-                .replace("REPLACE_DATE", yesterday())
-                .replace("REPLACE_EXTRA", "Topic: " + topicURL)
-                .replaceAll("REPLACE_FILENAME", "routed-deliveries-v200.csv");
+        LastRepliesBuilder repliesBuilder = new LastRepliesBuilder();
+        repliesBuilder.addRowWithRequestFileAndExtra(Constants.TOPIC_REQUEST_DRIVER_MESSAGES,
+                "routed-deliveries-v200.csv", "Topic: " + topicURL);
+        String request = repliesBuilder.build();
         HttpClientSimulator.setQueryResponseData(
-                Constants.QUERY_GET_LAST_REQUEST_DRIVER_MESSAGES_REPLY, request);
+                Constants.QUERY_GET_REQUESTS_LAST_REPLIES, request);
         String uri = Constants.TOPICS_BASE + topic.getId() + ".json";
-        HttpClientSimulator.setGetResponseFile(uri, "topic-response-driver-deliveries.json");
+        String responseData = "{\n" +
+                "   \"title\": \"" + topic.getName() + "\",\n" +
+                "   \"id\": " + topic.getId() + ",\n" +
+                "   \"category_id\": " + Constants.DRIVER_DELIVERIES_CATEGORY + "\n" +
+                "}";
+        HttpClientSimulator.setGetResponseData(uri, responseData);
         String usersFile = findFile(Constants.MEMBERDATA_RAW_FILE, "csv");
-        String[] args = { Options.COMMAND_DRIVER_MESSAGES, usersFile };
+        String[] args = { Options.COMMAND_WORK_REQUESTS, usersFile };
         Main.main(args);
         Post statusPost = WorkRequestHandler.getLastStatusPost();
         assertThat(statusPost).isNotNull();
@@ -335,7 +345,12 @@ public class MainTest extends TestBase {
         HttpClientSimulator.setQueryResponseData(
                 Constants.QUERY_GET_LAST_REQUEST_ONE_KITCHEN_DRIVER_MESSAGES_REPLY, request);
         String uri = Constants.TOPICS_BASE + topic.getId() + ".json";
-        HttpClientSimulator.setGetResponseFile(uri, "topic-response-bad-category.json");
+        String responseData = "{\n" +
+                "   \"title\": \"" + topic.getName() + "\",\n" +
+                "   \"id\": " + topic.getId() + ",\n" +
+                "   \"category_id\": 13\n" +
+                "}";
+        HttpClientSimulator.setGetResponseData(uri, responseData);
         String usersFile = findFile(Constants.MEMBERDATA_RAW_FILE, "csv");
         String[] args = { Options.COMMAND_ONE_KITCHEN_DRIVER_MESSAGES, usersFile };
         Main.main(args);
@@ -359,7 +374,12 @@ public class MainTest extends TestBase {
         HttpClientSimulator.setQueryResponseData(
                 Constants.QUERY_GET_LAST_REQUEST_ONE_KITCHEN_DRIVER_MESSAGES_REPLY, request);
         String uri = Constants.TOPICS_BASE + topic.getId() + ".json";
-        HttpClientSimulator.setGetResponseFile(uri, "topic-response-driver-deliveries.json");
+        String responseData = "{\n" +
+                "   \"title\": \"" + topic.getName() + "\",\n" +
+                "   \"id\": " + topic.getId() + ",\n" +
+                "   \"category_id\": " + Constants.DRIVER_DELIVERIES_CATEGORY + "\n" +
+                "}";
+        HttpClientSimulator.setGetResponseData(uri, responseData);
         String usersFile = findFile(Constants.MEMBERDATA_RAW_FILE, "csv");
         String[] args = { Options.COMMAND_ONE_KITCHEN_DRIVER_MESSAGES, usersFile };
         Main.main(args);
@@ -479,19 +499,14 @@ public class MainTest extends TestBase {
     @Test
     public void getRoutedWorkflowStatusTest() throws IOException {
         String usersFile = findFile(Constants.MEMBERDATA_RAW_FILE, "csv");
-//        HttpClientSimulator.setQueryResponseFile(
-//                Constants.QUERY_GET_LAST_REQUEST_DRIVER_MESSAGES_REPLY, "last-routed-workflow-status.json");
-        String row = "[\n" +
-                "      10,\n" +
-                "      null,\n" +
-                "      \"2020/06/21 21:41:53\n\nStatus: Processing\nFile: HelpBerkeleyDeliveries - 6_21 (1).csv\n\"\n" +
-                "    ]";
+        String row = "[ 2504, 10, null, " +
+                "\"2020/06/21 21:41:53\n\nStatus: Processing\nFile: HelpBerkeleyDeliveries - 6_21 (1).csv\n\", " +
+                "\"Request driver messages\", \"jsDriver\"]";
         LastRepliesBuilder repliesBuilder = new LastRepliesBuilder();
-        repliesBuilder.addRowWithRequestFile(Constants.TOPIC_REQUEST_DRIVER_MESSAGES, "last-routed-workflow-status.json");
+        repliesBuilder.addRow(row);
         String request = repliesBuilder.build();
         HttpClientSimulator.setQueryResponseData(Constants.QUERY_GET_REQUESTS_LAST_REPLIES, request);
         String[] args = { Options.COMMAND_WORK_REQUESTS, usersFile };
-//        String[] args = { Options.COMMAND_DRIVER_MESSAGES, usersFile };
         Main.main(args);
         // There should be nothing to do. All topics have
         // status messages as their last reply.
@@ -501,9 +516,14 @@ public class MainTest extends TestBase {
     @Test
     public void getRoutedWorkflowBadRequestTest() throws IOException {
         String usersFile = findFile(Constants.MEMBERDATA_RAW_FILE, "csv");
-        HttpClientSimulator.setQueryResponseFile(
-                Constants.QUERY_GET_LAST_REQUEST_DRIVER_MESSAGES_REPLY, "last-routed-workflow-bad-request.json");
-        String[] args = { Options.COMMAND_DRIVER_MESSAGES, usersFile };
+        String row = "[ 2504, 9, null, " +
+                "\"This line doesn't belong\n2020/06/21\n\n[routed-deliveries-v200.csv|attachment](upload://routed-deliveries-v200.csv)\", " +
+                "\"Request driver messages\", \"jsDriver\"]";
+        LastRepliesBuilder repliesBuilder = new LastRepliesBuilder();
+        repliesBuilder.addRow(row);
+        String request = repliesBuilder.build();
+        HttpClientSimulator.setQueryResponseData(Constants.QUERY_GET_REQUESTS_LAST_REPLIES, request);
+        String[] args = { Options.COMMAND_WORK_REQUESTS, usersFile };
         Main.main(args);
         assertThat(WorkRequestHandler.getLastStatusPost()).isNotNull();
         assertThat(WorkRequestHandler.getLastStatusPost().raw).contains("Status: Failed");

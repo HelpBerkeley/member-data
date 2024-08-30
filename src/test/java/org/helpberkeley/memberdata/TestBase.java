@@ -107,8 +107,6 @@ public class TestBase {
             Options.COMMAND_UPDATE_ERRORS,
             Options.COMMAND_EMAIL,
             Options.COMMAND_WORKFLOW,
-            Options.COMMAND_DRIVER_MESSAGES,
-            Options.COMMAND_ONE_KITCHEN_DRIVER_MESSAGES,
             Options.COMMAND_UPDATE_DISPATCHERS,
             Options.COMMAND_ORDER_HISTORY,
             Options.COMMAND_INREACH,
