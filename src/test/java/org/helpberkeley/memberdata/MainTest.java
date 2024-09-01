@@ -316,14 +316,13 @@ public class MainTest extends TestBase {
 
     @Test
     public void oneKitchenDriverMessagesTestTopicTest() throws IOException {
-        String request = readResourceFile(REQUEST_TEMPLATE_EXTRA)
-                .replace("REPLACE_DATE", yesterday())
-                .replace("REPLACE_EXTRA", "Test topic")
-                .replaceAll("REPLACE_FILENAME", "routed-deliveries-v300.csv");
+        LastRepliesBuilder repliesBuilder = new LastRepliesBuilder();
+        repliesBuilder.addRowWithRequestTopicAndExtra(Constants.TOPIC_REQUEST_ONE_KITCHEN_DRIVER_MESSAGES, "Test topic");
+        String request = repliesBuilder.build();
         HttpClientSimulator.setQueryResponseData(
-                Constants.QUERY_GET_LAST_REQUEST_ONE_KITCHEN_DRIVER_MESSAGES_REPLY, request);
+                Constants.QUERY_GET_REQUESTS_LAST_REPLIES, request);
         String usersFile = findFile(Constants.MEMBERDATA_RAW_FILE, "csv");
-        String[] args = { Options.COMMAND_ONE_KITCHEN_DRIVER_MESSAGES, usersFile };
+        String[] args = { Options.COMMAND_WORK_REQUESTS, usersFile };
         Main.main(args);
         Post statusPost = WorkRequestHandler.getLastStatusPost();
         assertThat(statusPost).isNotNull();
@@ -338,12 +337,12 @@ public class MainTest extends TestBase {
     public void oneKitchenDriverMessagesBadDestTopicTest() throws IOException {
         Topic topic = new Topic("A public topic", 12345);
         String topicURL  = Constants.TOPICS_BASE + topic.getName() + '/' + topic.getId();
-        String request = readResourceFile(REQUEST_TEMPLATE_EXTRA)
-                .replace("REPLACE_DATE", yesterday())
-                .replace("REPLACE_EXTRA", "Topic: " + topicURL)
-                .replaceAll("REPLACE_FILENAME", "routed-deliveries-v300.csv");
+        LastRepliesBuilder repliesBuilder = new LastRepliesBuilder();
+        repliesBuilder.addRowWithRequestFileAndExtra(Constants.TOPIC_REQUEST_ONE_KITCHEN_DRIVER_MESSAGES,
+                "routed-deliveries-v300.csv", "Topic: " + topicURL);
+        String request = repliesBuilder.build();
         HttpClientSimulator.setQueryResponseData(
-                Constants.QUERY_GET_LAST_REQUEST_ONE_KITCHEN_DRIVER_MESSAGES_REPLY, request);
+                Constants.QUERY_GET_REQUESTS_LAST_REPLIES, request);
         String uri = Constants.TOPICS_BASE + topic.getId() + ".json";
         String responseData = "{\n" +
                 "   \"title\": \"" + topic.getName() + "\",\n" +
@@ -352,7 +351,7 @@ public class MainTest extends TestBase {
                 "}";
         HttpClientSimulator.setGetResponseData(uri, responseData);
         String usersFile = findFile(Constants.MEMBERDATA_RAW_FILE, "csv");
-        String[] args = { Options.COMMAND_ONE_KITCHEN_DRIVER_MESSAGES, usersFile };
+        String[] args = { Options.COMMAND_WORK_REQUESTS, usersFile };
         Main.main(args);
         Post statusPost = WorkRequestHandler.getLastStatusPost();
         assertThat(statusPost).isNotNull();
@@ -367,12 +366,12 @@ public class MainTest extends TestBase {
     public void oneKitchenDriverMessagesValidDestTopicTest() throws IOException {
         Topic topic = new Topic("A private topic", 54321);
         String topicURL  = Constants.TOPICS_BASE + topic.getName() + '/' + topic.getId();
-        String request = readResourceFile(REQUEST_TEMPLATE_EXTRA)
-                .replace("REPLACE_DATE", yesterday())
-                .replace("REPLACE_EXTRA", "Topic: " + topicURL)
-                .replaceAll("REPLACE_FILENAME", "routed-deliveries-v300.csv");
+        LastRepliesBuilder repliesBuilder = new LastRepliesBuilder();
+        repliesBuilder.addRowWithRequestFileAndExtra(Constants.TOPIC_REQUEST_ONE_KITCHEN_DRIVER_MESSAGES,
+                "routed-deliveries-v300.csv", "Topic: " + topicURL);
+        String request = repliesBuilder.build();
         HttpClientSimulator.setQueryResponseData(
-                Constants.QUERY_GET_LAST_REQUEST_ONE_KITCHEN_DRIVER_MESSAGES_REPLY, request);
+                Constants.QUERY_GET_REQUESTS_LAST_REPLIES, request);
         String uri = Constants.TOPICS_BASE + topic.getId() + ".json";
         String responseData = "{\n" +
                 "   \"title\": \"" + topic.getName() + "\",\n" +
@@ -381,7 +380,7 @@ public class MainTest extends TestBase {
                 "}";
         HttpClientSimulator.setGetResponseData(uri, responseData);
         String usersFile = findFile(Constants.MEMBERDATA_RAW_FILE, "csv");
-        String[] args = { Options.COMMAND_ONE_KITCHEN_DRIVER_MESSAGES, usersFile };
+        String[] args = { Options.COMMAND_WORK_REQUESTS, usersFile };
         Main.main(args);
         Post statusPost = WorkRequestHandler.getLastStatusPost();
         assertThat(statusPost).isNotNull();
@@ -401,8 +400,13 @@ public class MainTest extends TestBase {
                 .replaceAll("REPLACE_FILENAME", "restaurant-template-v302-missing-formula.csv");
         HttpClientSimulator.setQueryResponseData(
                 Constants.QUERY_GET_CURRENT_VALIDATED_ONE_KITCHEN_RESTAURANT_TEMPLATE, request);
+        LastRepliesBuilder repliesBuilder = new LastRepliesBuilder();
+        repliesBuilder.addRowWithRequestTopic(Constants.TOPIC_REQUEST_ONE_KITCHEN_DRIVER_MESSAGES);
+        String request2 = repliesBuilder.build();
+        HttpClientSimulator.setQueryResponseData(
+                Constants.QUERY_GET_REQUESTS_LAST_REPLIES, request2);
         String usersFile = findFile(Constants.MEMBERDATA_RAW_FILE, "csv");
-        String[] args = { Options.COMMAND_ONE_KITCHEN_DRIVER_MESSAGES, usersFile };
+        String[] args = { Options.COMMAND_WORK_REQUESTS, usersFile };
         Main.main(args);
         Post statusPost = WorkRequestHandler.getLastStatusPost();
         assertThat(statusPost).isNotNull();
@@ -419,8 +423,13 @@ public class MainTest extends TestBase {
                 .replaceAll("REPLACE_FILENAME", "restaurant-template-v302-missing-formula-directive.csv");
         HttpClientSimulator.setQueryResponseData(
                 Constants.QUERY_GET_CURRENT_VALIDATED_ONE_KITCHEN_RESTAURANT_TEMPLATE, request);
+        LastRepliesBuilder repliesBuilder = new LastRepliesBuilder();
+        repliesBuilder.addRowWithRequestTopic(Constants.TOPIC_REQUEST_ONE_KITCHEN_DRIVER_MESSAGES);
+        String request2 = repliesBuilder.build();
         String usersFile = findFile(Constants.MEMBERDATA_RAW_FILE, "csv");
-        String[] args = { Options.COMMAND_ONE_KITCHEN_DRIVER_MESSAGES, usersFile };
+        HttpClientSimulator.setQueryResponseData(
+                Constants.QUERY_GET_REQUESTS_LAST_REPLIES, request2);
+        String[] args = { Options.COMMAND_WORK_REQUESTS, usersFile };
         Main.main(args);
         Post statusPost = WorkRequestHandler.getLastStatusPost();
         assertThat(statusPost).isNotNull();
@@ -439,13 +448,19 @@ public class MainTest extends TestBase {
     }
 
     private void oneKitchenDriverMessagesRightSheetTest(String filename) throws IOException {
-        String request = readResourceFile(REQUEST_TEMPLATE)
-                .replace("REPLACE_DATE", yesterday())
-                .replaceAll("REPLACE_FILENAME", filename);
+        LastRepliesBuilder repliesBuilder = new LastRepliesBuilder();
+        repliesBuilder.addRowWithRequestFile(Constants.TOPIC_REQUEST_ONE_KITCHEN_DRIVER_MESSAGES,
+                filename);
+        String request = repliesBuilder.build();
         HttpClientSimulator.setQueryResponseData(
-                Constants.QUERY_GET_LAST_REQUEST_ONE_KITCHEN_DRIVER_MESSAGES_REPLY, request);
+                Constants.QUERY_GET_REQUESTS_LAST_REPLIES, request);
+//        String request = readResourceFile(REQUEST_TEMPLATE)
+//                .replace("REPLACE_DATE", yesterday())
+//                .replaceAll("REPLACE_FILENAME", filename);
+//        HttpClientSimulator.setQueryResponseData(
+//                Constants.QUERY_GET_LAST_REQUEST_ONE_KITCHEN_DRIVER_MESSAGES_REPLY, request);
         String usersFile = findFile(Constants.MEMBERDATA_RAW_FILE, "csv");
-        String[] args = { Options.COMMAND_ONE_KITCHEN_DRIVER_MESSAGES, usersFile };
+        String[] args = { Options.COMMAND_WORK_REQUESTS, usersFile };
         Main.main(args);
         Post statusPost = WorkRequestHandler.getLastStatusPost();
         assertThat(statusPost).isNotNull();
@@ -458,13 +473,14 @@ public class MainTest extends TestBase {
     }
 
     private void oneKitchenDriverMessagesWrongSheetTest(String filename, String version) throws IOException {
-        String request = readResourceFile(REQUEST_TEMPLATE)
-                .replace("REPLACE_DATE", yesterday())
-                .replaceAll("REPLACE_FILENAME", filename);
+        LastRepliesBuilder repliesBuilder = new LastRepliesBuilder();
+        repliesBuilder.addRowWithRequestFile(Constants.TOPIC_REQUEST_ONE_KITCHEN_DRIVER_MESSAGES,
+                filename);
+        String request = repliesBuilder.build();
         HttpClientSimulator.setQueryResponseData(
-                Constants.QUERY_GET_LAST_REQUEST_ONE_KITCHEN_DRIVER_MESSAGES_REPLY, request);
+                Constants.QUERY_GET_REQUESTS_LAST_REPLIES, request);
         String usersFile = findFile(Constants.MEMBERDATA_RAW_FILE, "csv");
-        String[] args = { Options.COMMAND_ONE_KITCHEN_DRIVER_MESSAGES, usersFile };
+        String[] args = { Options.COMMAND_WORK_REQUESTS, usersFile };
         Main.main(args);
         Post statusPost = WorkRequestHandler.getLastStatusPost();
         assertThat(statusPost).isNotNull();
@@ -478,13 +494,13 @@ public class MainTest extends TestBase {
 
     @Test
     public void oneKitchenDriverMessagesUnsupportedVersionTest() throws IOException {
-        String request = readResourceFile(REQUEST_TEMPLATE)
-                .replace("REPLACE_DATE", yesterday())
-                .replaceAll("REPLACE_FILENAME", "routed-deliveries-v1.csv");
+        LastRepliesBuilder repliesBuilder = new LastRepliesBuilder();
+        repliesBuilder.addRowWithRequestFile(Constants.TOPIC_REQUEST_ONE_KITCHEN_DRIVER_MESSAGES, "routed-deliveries-v1.csv");
+        String request = repliesBuilder.build();
         HttpClientSimulator.setQueryResponseData(
-                Constants.QUERY_GET_LAST_REQUEST_ONE_KITCHEN_DRIVER_MESSAGES_REPLY, request);
+                Constants.QUERY_GET_REQUESTS_LAST_REPLIES, request);
         String usersFile = findFile(Constants.MEMBERDATA_RAW_FILE, "csv");
-        String[] args = { Options.COMMAND_ONE_KITCHEN_DRIVER_MESSAGES, usersFile };
+        String[] args = { Options.COMMAND_WORK_REQUESTS, usersFile };
         Main.main(args);
         Post statusPost = WorkRequestHandler.getLastStatusPost();
         assertThat(statusPost).isNotNull();
