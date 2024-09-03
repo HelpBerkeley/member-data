@@ -306,8 +306,6 @@ public class Main {
                 .format(DateTimeFormatter.ofPattern("uuuu.MM.dd.HH.mm.ss"));
 
         HttpResponse<?> response = apiClient.post(post.toJson());
-        LOGGER.info("postConsumerRequests {}", response.statusCode() == HTTP_OK ?
-            "" : "failed " + response.statusCode() + ": " + response.body());
     }
 
     private static void postVolunteerRequests(ApiClient apiClient, final String fileName)
@@ -352,8 +350,6 @@ public class Main {
                 .format(DateTimeFormatter.ofPattern("uuuu.MM.dd.HH.mm.ss"));
 
         HttpResponse<?> response = apiClient.post(post.toJson());
-        LOGGER.info("postVolunteerRequests {}", response.statusCode() == HTTP_OK ?
-                "" : "failed " + response.statusCode() + ": " + response.body());
     }
 
     private static void postUserErrors(ApiClient apiClient, final String fileName) throws IOException {
@@ -374,8 +370,6 @@ public class Main {
 
         post.raw = postRaw.toString();
         HttpResponse<?> response = apiClient.post(post.toJson());
-        LOGGER.info("postUserErrors {}", response.statusCode() == HTTP_OK ?
-                "" : "failed " + response.statusCode() + ": " + response.body());
     }
 
     private static void updateUserErrors(ApiClient apiClient, final String fileName) throws IOException {
@@ -431,8 +425,6 @@ public class Main {
                 "[" + fileName + "|attachment](" + shortUrl + ")";
 
         HttpResponse<?> response = apiClient.post(post.toJson());
-        LOGGER.info("postFile {} {}", fileName, response.statusCode() == HTTP_OK ?
-                "" : "failed " + response.statusCode() + ": " + response.body());
     }
 
     private static void updateFile(ApiClient apiClient, final String fileName,
@@ -532,8 +524,6 @@ public class Main {
             post.createdAt = timeStamp;
 
             HttpResponse<?> response = apiClient.post(post.toJson());
-            // FIX THIS, DS: what to do with this error?
-            assert response.statusCode() == HTTP_OK : "failed " + response.statusCode() + ": " + response.body();
         }
     }
 
@@ -591,8 +581,6 @@ public class Main {
             post.createdAt = timeStamp;
 
             HttpResponse<?> response = apiClient.post(post.toJson());
-            // FIX THIS, DS: what to do with this error?
-            assert response.statusCode() == HTTP_OK : "failed " + response.statusCode() + ": " + response.body();
         }
     }
 
@@ -750,8 +738,6 @@ public class Main {
                 .format(DateTimeFormatter.ofPattern("uuuu.MM.dd.HH.mm.ss"));
 
         HttpResponse<?> response = apiClient.post(post.toJson());
-        LOGGER.info("generateGroupInstructionsPost {}", response.statusCode() == HTTP_OK ?
-                "" : "failed " + response.statusCode() + ": " + response.body());
 
         PostResponse postResponse = HBParser.postResponse((String)response.body());
         postIds.add(postResponse.postId);
@@ -768,9 +754,6 @@ public class Main {
                     .format(DateTimeFormatter.ofPattern("uuuu.MM.dd.HH.mm.ss"));
 
             response = apiClient.post(post.toJson());
-
-            LOGGER.info("generateDriversPosts {}", response.statusCode() == HTTP_OK ?
-                    "" : "failed " + response.statusCode() + ": " + response.body());
 
             postResponse = HBParser.postResponse((String)response.body());
             postIds.add(postResponse.postId);
@@ -844,8 +827,6 @@ public class Main {
                 .format(DateTimeFormatter.ofPattern("uuuu.MM.dd.HH.mm.ss"));
 
         HttpResponse<?> response = apiClient.post(post.toJson());
-        LOGGER.info("generateDriversTablePost {}", response.statusCode() == HTTP_OK ?
-                "" : "failed " + response.statusCode() + ": " + response.body());
 
         return HBParser.postResponse((String)response.body());
     }
@@ -867,8 +848,6 @@ public class Main {
                 .format(DateTimeFormatter.ofPattern("uuuu.MM.dd.HH.mm.ss"));
 
         HttpResponse<?> response = apiClient.post(post.toJson());
-        LOGGER.info("generateOrdersTablePost {}", response.statusCode() == HTTP_OK ?
-                "" : "failed " + response.statusCode() + ": " + response.body());
 
         return HBParser.postResponse((String)response.body());
     }
@@ -888,8 +867,6 @@ public class Main {
                 .format(DateTimeFormatter.ofPattern("uuuu.MM.dd.HH.mm.ss"));
 
         HttpResponse<?> response = apiClient.post(post.toJson());
-        LOGGER.info("generateBackupDriverPost {}", response.statusCode() == HTTP_OK ?
-                "" : "failed " + response.statusCode() + ": " + response.body());
 
         return HBParser.postResponse((String)response.body());
     }
@@ -1165,8 +1142,6 @@ public class Main {
         if (value.isPresent()) {
             // post it
             response = apiClient.post(value.get().toJson());
-            // FIX THIS, DS: what to do with this error?
-            assert response.statusCode() == HTTP_OK : "failed " + response.statusCode() + ": " + response.body();
         }
 
         // Generate the drivers who are out post

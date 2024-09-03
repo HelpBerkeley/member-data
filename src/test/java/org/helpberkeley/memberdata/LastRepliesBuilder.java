@@ -26,15 +26,15 @@ import java.util.*;
 
 public class LastRepliesBuilder {
 
-    private Random random = new Random();
+    private final Random random = new Random();
 
-    private String CONST_DATE = "\"2021/02/28";
-    private String CONST_TIMESTAMP = CONST_DATE + " 16:42:27";
+    private final String CONST_DATE = "\"2021/02/28";
+    private final String CONST_TIMESTAMP = CONST_DATE + " 16:42:27";
 
-    private List<String> usernames = Arrays.asList("Somebody", "SomebodyElse", "ThirdPerson", "Xyzzy", "ZZZ", "JVol",
+    private final List<String> usernames = Arrays.asList("Somebody", "SomebodyElse", "ThirdPerson", "Xyzzy", "ZZZ", "JVol",
             "MrBackup772", "jsDriver", "jcDriver", "jdDriver", "jbDriver");
 
-    private Map<String, String> topicsUploadTemplates = Map.of(
+    private final Map<String, String> topicsUploadTemplates = Map.of(
             "2844", "[unrouted deliveries|attachement](upload://REPLACE_FILE)",
             "2504", "[routed deliveries|attachement](upload://REPLACE_FILE)",
             "4878", "[REPLACE_FILE|attachment](upload://REPLACE_FILE)",
@@ -46,7 +46,7 @@ public class LastRepliesBuilder {
             "10341", "[REPLACE_FILE|attachment](upload://REPLACE_FILE) (8.2 KB)"
     );
 
-    private Map<Topic, String> topicsDefaultUploadStrings = Map.of(
+    private final Map<Topic, String> topicsDefaultUploadStrings = Map.of(
             Constants.TOPIC_REQUEST_DATA, "[HelpBerkeleyDeliveries - 12_31.csv|attachment](upload://update-member-data-multiple-updates.csv) (8.2 KB)",
             Constants.TOPIC_REQUEST_WORKFLOW, "OneKitchen\n",
             Constants.TOPIC_REQUEST_ONE_KITCHEN_DRIVER_MESSAGES, "[routed-deliveries-v300.csv|attachment](upload://routed-deliveries-v300.csv)",
@@ -58,7 +58,7 @@ public class LastRepliesBuilder {
             Constants.TOPIC_POST_ONE_KITCHEN_RESTAURANT_TEMPLATE, "[HelpBerkeleyDeliveries - TemplateV2-0-0.csv|attachment](upload://restaurant-template-v300.csv) (5.6 KB)"
     );
 
-    private String lastRepliesConstantValues = "{\n" +
+    private final String lastRepliesConstantValues = "{\n" +
             "  \"success\": true,\n" +
             "  \"errors\": [],\n" +
             "  \"duration\": 7.9,\n" +
@@ -87,7 +87,7 @@ public class LastRepliesBuilder {
 
     private List<String> rows = new ArrayList<>();
 
-    private List<Topic> requestTopics = Arrays.asList(
+    private final List<Topic> requestTopics = List.of(
             Constants.TOPIC_REQUEST_DATA,
             Constants.TOPIC_REQUEST_WORKFLOW,
             Constants.TOPIC_REQUEST_ONE_KITCHEN_DRIVER_MESSAGES,
