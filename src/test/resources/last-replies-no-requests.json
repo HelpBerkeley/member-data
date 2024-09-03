@@ -20,7 +20,7 @@
     "deleted_at",
     "raw",
     "title",
-    "user_id"
+    "username"
   ],
   "default_limit": 1000,
   "rows": [

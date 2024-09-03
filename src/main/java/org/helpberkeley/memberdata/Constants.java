@@ -278,7 +278,7 @@ public class Constants {
     public static final String LIMITED_RUNS_EMOJI = ":red_circle:";
     public static final String GIFT_EMOJI = ":gift:";
 
-    public static final String DISCOURSE_COLUMN_POSTER_USERNAME = "user_id";
+    public static final String DISCOURSE_COLUMN_POSTER_USERNAME = "username";
     public static final String DISCOURSE_COLUMN_POST_NUMBER = "post_number";
     public static final String DISCOURSE_COLUMN_RAW = "raw";
     public static final String DISCOURSE_COLUMN_TOPIC_ID = "topic_id";
