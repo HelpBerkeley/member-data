@@ -85,7 +85,7 @@ public class LastRepliesBuilder {
             "  \"default_limit\": 1000,\n" +
             "  \"rows\": [\n";
 
-    private List<String> rows = new ArrayList<>();
+    private final List<String> rows = new ArrayList<>();
 
     private final List<Topic> requestTopics = List.of(
             Constants.TOPIC_REQUEST_DATA,
@@ -129,12 +129,7 @@ public class LastRepliesBuilder {
     private Long getTopicIdFromRow(String row) {
         row = row.replaceAll("\\[", "");
         String[] parts = row.split(",");
-        try {
-            return Long.parseLong(parts[0].trim());
-        } catch (NumberFormatException e) {
-            System.err.println("Invalid topic ID: " + parts[0]);
-            return null;
-        }
+        return Long.parseLong(parts[0].trim());
     }
 
     public void addAllRowsWithRequest() {

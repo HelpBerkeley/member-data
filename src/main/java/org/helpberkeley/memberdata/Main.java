@@ -305,7 +305,7 @@ public class Main {
         post.createdAt = ZonedDateTime.now(ZoneId.systemDefault())
                 .format(DateTimeFormatter.ofPattern("uuuu.MM.dd.HH.mm.ss"));
 
-        HttpResponse<?> response = apiClient.post(post.toJson());
+        apiClient.post(post.toJson());
     }
 
     private static void postVolunteerRequests(ApiClient apiClient, final String fileName)
@@ -349,7 +349,7 @@ public class Main {
         post.createdAt = ZonedDateTime.now(ZoneId.systemDefault())
                 .format(DateTimeFormatter.ofPattern("uuuu.MM.dd.HH.mm.ss"));
 
-        HttpResponse<?> response = apiClient.post(post.toJson());
+        apiClient.post(post.toJson());
     }
 
     private static void postUserErrors(ApiClient apiClient, final String fileName) throws IOException {
@@ -369,7 +369,7 @@ public class Main {
         postRaw.append(Files.readString(Paths.get(fileName)));
 
         post.raw = postRaw.toString();
-        HttpResponse<?> response = apiClient.post(post.toJson());
+        apiClient.post(post.toJson());
     }
 
     private static void updateUserErrors(ApiClient apiClient, final String fileName) throws IOException {
@@ -424,7 +424,7 @@ public class Main {
                 // postRaw.append("[" + fileName + "|attachment](upload://" + fileName + ") (5.49 KB)");
                 "[" + fileName + "|attachment](" + shortUrl + ")";
 
-        HttpResponse<?> response = apiClient.post(post.toJson());
+        apiClient.post(post.toJson());
     }
 
     private static void updateFile(ApiClient apiClient, final String fileName,
@@ -523,7 +523,7 @@ public class Main {
             post.raw = rawPost;
             post.createdAt = timeStamp;
 
-            HttpResponse<?> response = apiClient.post(post.toJson());
+            apiClient.post(post.toJson());
         }
     }
 
@@ -580,7 +580,7 @@ public class Main {
             post.raw = rawPost;
             post.createdAt = timeStamp;
 
-            HttpResponse<?> response = apiClient.post(post.toJson());
+            apiClient.post(post.toJson());
         }
     }
 
@@ -945,7 +945,7 @@ public class Main {
         post.createdAt = ZonedDateTime.now(ZoneId.systemDefault())
                 .format(DateTimeFormatter.ofPattern("uuuu.MM.dd.HH.mm.ss"));
 
-        HttpResponse<String> response = apiClient.post(post.toJson());
+        apiClient.post(post.toJson());
         request.postStatus(WorkRequestHandler.RequestStatus.Succeeded,
                 request.uploadFile.getOriginalFileName() + " validated and archived for " + request.date);
     }
@@ -1043,7 +1043,7 @@ public class Main {
         post.createdAt = ZonedDateTime.now(ZoneId.systemDefault())
                 .format(DateTimeFormatter.ofPattern("uuuu.MM.dd.HH.mm.ss"));
 
-        HttpResponse<String> response = apiClient.post(post.toJson());
+        apiClient.post(post.toJson());
 
         // Send status message
         request.postStatus(WorkRequestHandler.RequestStatus.Succeeded,
@@ -1141,7 +1141,7 @@ public class Main {
         // Post it, if there are any
         if (value.isPresent()) {
             // post it
-            response = apiClient.post(value.get().toJson());
+            apiClient.post(value.get().toJson());
         }
 
         // Generate the drivers who are out post
@@ -1274,7 +1274,7 @@ public class Main {
         post.createdAt = ZonedDateTime.now(ZoneId.systemDefault())
                 .format(DateTimeFormatter.ofPattern("uuuu.MM.dd.HH.mm.ss"));
 
-        HttpResponse<String> response = apiClient.post(post.toJson());
+        apiClient.post(post.toJson());
 
         String statusMessage = "Archive of " + request.uploadFile.getOriginalFileName()
                 + " to topic " + Constants.TOPIC_RESTAURANT_TEMPLATE_STORAGE.getId()
@@ -1323,7 +1323,7 @@ public class Main {
         post.createdAt = ZonedDateTime.now(ZoneId.systemDefault())
                 .format(DateTimeFormatter.ofPattern("uuuu.MM.dd.HH.mm.ss"));
 
-        HttpResponse<String> response = apiClient.post(post.toJson());
+        apiClient.post(post.toJson());
 
         String statusMessage = "Archive of " + request.uploadFile.getOriginalFileName()
                 + " to topic " + Constants.TOPIC_ONE_KITCHEN_RESTAURANT_TEMPLATE_STORAGE.getId()
