@@ -70,6 +70,7 @@ public class Constants {
     public static final int QUERY_GET_LAST_REPLY_FROM_REQUEST_TOPICS_V22 = 77;
     public static final int QUERY_GET_LAST_REPLY_FROM_REQUEST_TOPICS_V23 = 81;
     public static final int QUERY_GET_LAST_REPLY_FROM_REQUEST_TOPICS_V24 = 82;
+    public static final int QUERY_GET_LAST_REPLY_FROM_REQUEST_TOPICS_V25 = 83;
     public static final int QUERY_GET_CURRENT_VALIDATED_ONE_KITCHEN_RESTAURANT_TEMPLATE = 51;
     public static final int QUERY_GET_LAST_TEST_REQUEST = 52;
     public static final int QUERY_GET_ONE_KITCHEN_DRIVERS_POST_FORMAT_V300 = 53;
@@ -97,7 +98,7 @@ public class Constants {
     public static final int QUERY_GET_GROUP_INSTRUCTIONS_FORMAT = QUERY_GET_GROUP_INSTRUCTIONS_FORMAT_V22;
     public static final int QUERY_GET_BACKUP_DRIVER_FORMAT = QUERY_GET_BACKUP_DRIVER_FORMAT_V12;
     public static final int QUERY_EMAIL_CONFIRMATIONS = QUERY_EMAIL_CONFIRMATIONS_V1;
-    public static final int QUERY_GET_REQUESTS_LAST_REPLIES = QUERY_GET_LAST_REPLY_FROM_REQUEST_TOPICS_V24;
+    public static final int QUERY_GET_REQUESTS_LAST_REPLIES = QUERY_GET_LAST_REPLY_FROM_REQUEST_TOPICS_V25;
 
     public static final int AVG_RUN_SIZE = 30;
     public static final long DRIVER_DELIVERIES_CATEGORY = 12;
@@ -277,7 +278,7 @@ public class Constants {
     public static final String LIMITED_RUNS_EMOJI = ":red_circle:";
     public static final String GIFT_EMOJI = ":gift:";
 
-    public static final String DISCOURSE_COLUMN_POSTER_USERNAME = "username";
+    public static final String DISCOURSE_COLUMN_POSTER_USERNAME = "user_id";
     public static final String DISCOURSE_COLUMN_POST_NUMBER = "post_number";
     public static final String DISCOURSE_COLUMN_RAW = "raw";
     public static final String DISCOURSE_COLUMN_TOPIC_ID = "topic_id";

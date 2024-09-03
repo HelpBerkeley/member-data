@@ -80,7 +80,7 @@ public class LastRepliesBuilder {
             "    \"deleted_at\",\n" +
             "    \"raw\",\n" +
             "    \"title\",\n" +
-            "    \"username\"\n" +
+            "    \"user_id\"\n" +
             "  ],\n" +
             "  \"default_limit\": 1000,\n" +
             "  \"rows\": [\n";
