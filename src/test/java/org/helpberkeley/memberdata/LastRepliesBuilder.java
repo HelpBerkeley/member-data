@@ -197,25 +197,4 @@ public class LastRepliesBuilder {
         rows.add(row.toString());
     }
 
-    //        String uploadString = "";
-//        if (topic.equals(Constants.TOPIC_REQUEST_DRIVER_MESSAGES)) {
-//            uploadString = "[routed deliveries|attachement](upload://routed-deliveries-v200.csv)";
-//        } else if (topic.equals(Constants.TOPIC_REQUEST_DRIVER_ROUTES)) {
-//            uploadString = "[unrouted deliveries|attachement](upload://unrouted-deliveries.csv)";
-//        } else if (topic.equals(Constants.TOPIC_REQUEST_ONE_KITCHEN_DRIVER_MESSAGES)) {
-//            uploadString = "[routed-deliveries-v300.csv|attachment](upload://routed-deliveries-v300.csv)";
-//        } else if (topic.equals(Constants.TOPIC_POST_RESTAURANT_TEMPLATE)) {
-//            uploadString = "[HelpBerkeleyDeliveries - TemplateV2-0-0.csv|attachment](upload://restaurant-template-v200.csv) (5.6 KB)";
-//        } else if (topic.equals(Constants.TOPIC_POST_ONE_KITCHEN_RESTAURANT_TEMPLATE)) {
-//            uploadString = "[HelpBerkeleyDeliveries - TemplateV2-0-0.csv|attachment](upload://restaurant-template-v300.csv) (5.6 KB)";
-//        } else if (topic.equals(Constants.TOPIC_POST_COMPLETED_DAILY_ORDERS)) {
-//            uploadString = "[HelpBerkeleyDeliveries - 12_31.csv|attachment](upload://routed-deliveries-v200.csv) (8.2 KB)";
-//        } else if (topic.equals(Constants.TOPIC_REQUEST_WORKFLOW)) {
-//            uploadString = "OneKitchen\n";
-//        } else if (topic.equals(Constants.TOPIC_POST_COMPLETED_ONEKITCHEN_ORDERS)) {
-//            uploadString = "[HelpBerkeleyDeliveries - 12_31.csv|attachment](upload://routed-deliveries-v300.csv) (8.2 KB)";
-//        } else if (topic.equals(Constants.TOPIC_REQUEST_DATA)) {
-//            uploadString = "[HelpBerkeleyDeliveries - 12_31.csv|attachment](upload://update-member-data-multiple-updates.csv) (8.2 KB)";
-//        }
-
 }
