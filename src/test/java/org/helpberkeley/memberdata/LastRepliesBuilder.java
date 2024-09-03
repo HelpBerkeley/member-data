@@ -168,9 +168,6 @@ public class LastRepliesBuilder {
     }
 
     public void addRowWithTopicAndStatus(Topic topic, boolean statusSucceeded) {
-//        String uploadString = statusSucceeded ? ("Status: Succeeded\nFile: something from " + topic.getId() + "\n")
-//                        : ("Status: Failed\nSome error message\n");
-//        addRowWithRequestOptions(topic, uploadString, "");
         StringBuilder row = new StringBuilder();
         row.append("[ ")
                 .append(topic.getId()).append(", ")

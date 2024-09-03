@@ -596,41 +596,6 @@ public class Main {
         }
     }
 
-//    /**
-//     * Check the Request Driver Messages topic for a request.
-//     * Generate driver messages if a request is present.
-//     *
-//     * @param apiClient Discourse API handling
-//     * @param allMembersFile CSV file of all current members
-//     */
-//    private static void driverMessages(ApiClient apiClient, String allMembersFile)
-//            throws IOException {
-//        Query query = new Query(
-//                Constants.QUERY_GET_LAST_REQUEST_DRIVER_MESSAGES_REPLY, Constants.TOPIC_REQUEST_DRIVER_MESSAGES);
-//        WorkRequestHandler requestHandler = new WorkRequestHandler(apiClient, query);
-//        WorkRequestHandler.Reply reply;
-//
-//        try {
-//            reply = requestHandler.getLastReply();
-//        } catch (MemberDataException ex) {
-//            LOGGER.warn("getLastReply failed: {}\n{}", ex, ex.getMessage());
-//            requestHandler.postStatus(WorkRequestHandler.RequestStatus.Failed, ex.getMessage());
-//            return;
-//        }
-//
-//        // Nothing to do.
-//        if (reply instanceof WorkRequestHandler.Status) {
-//            return;
-//        }
-//
-//        // Parse users files
-//        String csvData = Files.readString(Paths.get(allMembersFile));
-//        Map<String, User> users = new Tables(HBParser.users(csvData)).mapByUserName();
-//
-//        WorkRequestHandler.WorkRequest request = (WorkRequestHandler.WorkRequest) reply;
-//        doDriverMessages(apiClient, request, users);
-//    }
-
     private static void doDriverMessages(
             ApiClient apiClient, WorkRequestHandler.WorkRequest request, Map<String, User> users) {
 
@@ -674,44 +639,6 @@ public class Main {
             request.postStatus(WorkRequestHandler.RequestStatus.Failed, reason);
         }
     }
-
-//    /**
-//     * Check the Request Driver Messages topic for a request.
-//     * Generate driver messages if a request is present.
-//     *
-//     * @param apiClient Discourse API handling
-//     * @param allMembersFile CSV file of all current members
-//     */
-//    private static void oneKitchenDriverMessages(ApiClient apiClient, String allMembersFile)
-//            throws IOException {
-//        Query query = new Query(
-//                Constants.QUERY_GET_LAST_REQUEST_ONE_KITCHEN_DRIVER_MESSAGES_REPLY,
-//                Constants.TOPIC_REQUEST_ONE_KITCHEN_DRIVER_MESSAGES);
-//        WorkRequestHandler requestHandler = new WorkRequestHandler(apiClient, query);
-//
-//        WorkRequestHandler.Reply reply;
-//
-//        try {
-//            reply = requestHandler.getLastReply();
-//        } catch (MemberDataException ex) {
-//            LOGGER.warn("getLastReply failed: {}\n{}", ex, ex.getMessage());
-//            requestHandler.postStatus(WorkRequestHandler.RequestStatus.Failed, ex.getMessage());
-//            return;
-//        }
-//
-//        // Nothing to do.
-//        if (reply instanceof WorkRequestHandler.Status) {
-//            return;
-//        }
-//
-//        WorkRequestHandler.WorkRequest request = (WorkRequestHandler.WorkRequest) reply;
-//
-//        // Parse users files
-//        String csvData = Files.readString(Paths.get(allMembersFile));
-//        Map<String, User> users = new Tables(HBParser.users(csvData)).mapByUserName();
-//
-//        doOneKitchenDriverMessages(apiClient, request, users);
-//    }
 
     private static void doUpdateMemberData(
             ApiClient apiClient, WorkRequestHandler.WorkRequest request, Map<String, User> users) {

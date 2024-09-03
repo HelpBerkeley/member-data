@@ -454,11 +454,6 @@ public class MainTest extends TestBase {
         String request = repliesBuilder.build();
         HttpClientSimulator.setQueryResponseData(
                 Constants.QUERY_GET_REQUESTS_LAST_REPLIES, request);
-//        String request = readResourceFile(REQUEST_TEMPLATE)
-//                .replace("REPLACE_DATE", yesterday())
-//                .replaceAll("REPLACE_FILENAME", filename);
-//        HttpClientSimulator.setQueryResponseData(
-//                Constants.QUERY_GET_LAST_REQUEST_ONE_KITCHEN_DRIVER_MESSAGES_REPLY, request);
         String usersFile = findFile(Constants.MEMBERDATA_RAW_FILE, "csv");
         String[] args = { Options.COMMAND_WORK_REQUESTS, usersFile };
         Main.main(args);
@@ -1061,15 +1056,16 @@ public class MainTest extends TestBase {
         Main.main(args);
         assertThat(WorkRequestHandler.getLastStatusPost()).isNotNull();
         assertThat(WorkRequestHandler.getLastStatusPost().raw).contains("Status: Succeeded");
-        assertThat(WorkRequestHandler.getLastStatusPost().raw).contains(MessageFormat.format(Main.UPDATE_USERS_NO_UPDATES, "update-member-data-no-updates.csv"));
+        assertThat(WorkRequestHandler.getLastStatusPost().raw).contains(MessageFormat.format(
+                Main.UPDATE_USERS_NO_UPDATES, "update-member-data-no-updates.csv"));
     }
 
     @Test
     public void updateMemberDataOverrideMemberLimitSucceed() throws IOException {
-        String request = readResourceFile("last-replies-data-request-template-extra.json")
-                .replace("REPLACE_DATE", yesterday())
-                .replace("REPLACE_EXTRA", "disable size audit")
-                .replaceAll("REPLACE_FILENAME","update-member-data-multiple-updates.csv");
+        LastRepliesBuilder repliesBuilder = new LastRepliesBuilder();
+        repliesBuilder.addRowWithRequestFileAndExtra(Constants.TOPIC_REQUEST_DATA,
+                "update-member-data-multiple-updates.csv", "disable size audit");
+        String request = repliesBuilder.build();
         HttpClientSimulator.setQueryResponseData(
                 Constants.QUERY_GET_REQUESTS_LAST_REPLIES, request);
         String usersFile = findFile(Constants.MEMBERDATA_RAW_FILE, "csv");

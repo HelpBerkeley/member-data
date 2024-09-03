@@ -56,6 +56,7 @@ public class HttpClientSimulator extends HttpClient {
     private static final Map<Integer, String> queryResponseData = new HashMap<>();
     private static final Map<String, String> getResponseFiles = new HashMap<>();
     private static final Map<String, String> getResponseData = new HashMap<>();
+    private static final Map<String, String> postResponseData = new HashMap<>();
     private static String getFileName = null;
     private static final AtomicInteger sendFailCount = new AtomicInteger(0);
     private static SendFailType sendFailType = null;
@@ -74,6 +75,10 @@ public class HttpClientSimulator extends HttpClient {
 
     public static void setGetResponseData(String uri, String data) {
         getResponseData.put(uri, data);
+    }
+
+    public static void setPostResponseData(String uri, String data) {
+        postResponseData.put(uri, data);
     }
 
     public static void setGetResponseFile(String uri, String filename) {
@@ -259,10 +264,12 @@ public class HttpClientSimulator extends HttpClient {
     }
 
     private <T> HttpResponse<T> doPost(HttpRequest request) {
+        String uri = request.uri().toString();
         String response;
 
-        // Is this an upload request?
-        if (request.uri().toString().endsWith(Constants.UPLOAD_ENDPOINT)) {
+        if (postResponseData.containsKey(uri)) {
+            response = postResponseData.get(uri);
+        } else if (request.uri().toString().endsWith(Constants.UPLOAD_ENDPOINT)) {
             response = readFile("upload-response.json");
         } else if (request.uri().toString().endsWith(Constants.CHANGE_OWNER)) {
             response = readFile("change-owner-response.json");
