@@ -24,6 +24,8 @@ package org.helpberkeley.memberdata;
 
 import org.junit.Test;
 
+import java.text.MessageFormat;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
 
@@ -93,13 +95,14 @@ public class WorkRequestHandlerTest extends TestBase {
     }
 
     @Test
-    public void topicDirectiveTest() {
+    public void incompleteTopicDirectiveTest() {
+        String incompleteURL = "go.helpberkeley.org/t/";
         String driverMessagesRequest =
                 "{ \"success\": true, \"columns\": [ \"post_number\", \"deleted_at\", \"raw\" ], "
                         + "\"rows\": [ "
                         + "[ 1, null, \""
                         + "2021/01/01"
-                        + "\nTopic: 543\n"
+                        + "\nTopic: " + incompleteURL + "\n"
                         + "[xyzzy.csv|attachment](upload://routed-deliveries-v200.csv) (5.8 KB)\" ] "
                         + "] }";
         HttpClientSimulator.setQueryResponseData(
@@ -110,7 +113,30 @@ public class WorkRequestHandlerTest extends TestBase {
 
         Throwable thrown = catchThrowable(requestHandler::getLastReply);
         assertThat(thrown).isInstanceOf(MemberDataException.class);
-        assertThat(thrown).hasMessageContaining(WorkRequestHandler.TOPIC_DIRECTIVE_NOT_SUPPORTED);
+        assertThat(thrown).hasMessageContaining(MessageFormat.format(HBParser.INVALID_TOPIC_URL, incompleteURL));
+
+    }
+
+    @Test
+    public void badTopicDirectiveTest() {
+        String badURL = "go.helpberkeley.org/topic_slug/12345";
+        String driverMessagesRequest =
+                "{ \"success\": true, \"columns\": [ \"post_number\", \"deleted_at\", \"raw\" ], "
+                        + "\"rows\": [ "
+                        + "[ 1, null, \""
+                        + "2021/01/01"
+                        + "\nTopic: " + badURL + "\n"
+                        + "[xyzzy.csv|attachment](upload://routed-deliveries-v200.csv) (5.8 KB)\" ] "
+                        + "] }";
+        HttpClientSimulator.setQueryResponseData(
+                Constants.QUERY_GET_LAST_REQUEST_DRIVER_MESSAGES_REPLY, driverMessagesRequest);
+
+        Query query = new Query(queryId, Constants.TOPIC_REQUEST_DRIVER_MESSAGES);
+        WorkRequestHandler requestHandler = new WorkRequestHandler(apiClient, query);
+
+        Throwable thrown = catchThrowable(requestHandler::getLastReply);
+        assertThat(thrown).isInstanceOf(MemberDataException.class);
+        assertThat(thrown).hasMessageContaining(MessageFormat.format(HBParser.INVALID_TOPIC_URL, badURL));
 
     }
 }

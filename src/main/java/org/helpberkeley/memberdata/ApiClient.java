@@ -34,18 +34,13 @@ import java.net.http.HttpResponse;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
+import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 
 import static java.net.HttpURLConnection.HTTP_OK;
 
 public class ApiClient {
-    private static final String BASE_URL = "https://go.helpberkeley.org/";
-    private static final String POSTS_ENDPOINT = BASE_URL + "posts.json";
-    static final String POSTS_BASE = BASE_URL + "posts/";
-    static final String UPLOAD_ENDPOINT = BASE_URL + "uploads.json";
-    private static final String DOWNLOAD_ENDPOINT = BASE_URL + "uploads/short-url/";
-    static final String QUERY_BASE = BASE_URL + "admin/plugins/explorer/queries/";
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ApiClient.class);
 
@@ -149,7 +144,7 @@ public class ApiClient {
 
         if (response.statusCode() != HTTP_OK) {
             throw new MemberDataException(
-                    "post(" + POSTS_ENDPOINT + " failed: " + response.statusCode() + ": " + response.body());
+                    "post(" + Constants.POSTS_ENDPOINT + " failed: " + response.statusCode() + ": " + response.body());
         }
 
         return response;
@@ -158,7 +153,7 @@ public class ApiClient {
     HttpResponse<String> post(final String json) {
 
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(POSTS_ENDPOINT))
+                .uri(URI.create(Constants.POSTS_ENDPOINT))
                 .header("Api-Username", apiUser)
                 .header("Api-Key", apiKey)
                 .header("Content-Type", "application/json")
@@ -169,7 +164,7 @@ public class ApiClient {
 
         if (response.statusCode() != HTTP_OK) {
             throw new MemberDataException(
-                    "post(" + POSTS_ENDPOINT + " failed: " + response.statusCode() + ": " + response.body());
+                    "post(" + Constants.POSTS_ENDPOINT + " failed: " + response.statusCode() + ": " + response.body());
         }
 
         return response;
@@ -182,7 +177,7 @@ public class ApiClient {
 
     private String doRunQuery(int queryId) {
 
-        String endpoint = QUERY_BASE + queryId + "/run";
+        String endpoint = Constants.QUERY_BASE + queryId + "/run";
 
 
         HttpRequest request = HttpRequest.newBuilder()
@@ -208,7 +203,7 @@ public class ApiClient {
 
     String runQueryWithParam(int queryId, String paramName, String paramValue) {
 
-        String endpoint = QUERY_BASE + queryId + "/run";
+        String endpoint = Constants.QUERY_BASE + queryId + "/run";
 
         MultiPartBodyPublisher publisher = new MultiPartBodyPublisher()
                 .addParamPart(paramName, paramValue);
@@ -237,14 +232,19 @@ public class ApiClient {
     }
 
     String getPost(long postId) {
-        String endpoint = POSTS_BASE + postId + ".json";
+        String endpoint = Constants.POSTS_BASE + postId + ".json";
         // Normalize EOL
         return get(endpoint).body().replaceAll("\\r\\n?", "\n");
     }
 
+    String getTopic(long topicId) {
+        String endpoint = Constants.TOPICS_BASE + topicId + ".json";
+        return get(endpoint).body();
+    }
+
     public HttpResponse<String> updatePost(long postId, final String body) {
 
-        String endpoint =  POSTS_BASE + postId;
+        String endpoint =  Constants.POSTS_BASE + postId;
         String postBody = "{ \"post\" : { \"raw\" : \"" + body + "\" } }";
 
         HttpRequest request = HttpRequest.newBuilder()
@@ -258,9 +258,38 @@ public class ApiClient {
         return send(request);
     }
 
+    public HttpResponse<String> changePostOwner(long topicId, List<Long> postIds, String newOwnerUsername) {
+        String endpoint = Constants.TOPICS_BASE + topicId + Constants.CHANGE_OWNER;
+
+        MultiPartBodyPublisher publisher = new MultiPartBodyPublisher();
+        for (long postId : postIds) {
+            publisher.addPart("post_ids[]", new String(String.valueOf(postId).getBytes(Charset.defaultCharset()),
+                    StandardCharsets.UTF_8));
+        }
+        publisher.addPart("username", new String(newOwnerUsername.getBytes(Charset.defaultCharset()),
+                StandardCharsets.UTF_8));
+
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(endpoint))
+                .setHeader("Content-Type", "multipart/form-data; charset=UTF-8; boundary="
+                        + publisher.getBoundary())
+                .setHeader("Api-Key", apiKey)
+                .setHeader("Api-Username", apiUser)
+                .POST(publisher.build())
+                .build();
+
+        HttpResponse<String> response = send(request);
+        if (response.statusCode() != HTTP_OK) {
+            throw new MemberDataException(
+                    "change post owner(" + endpoint + " failed: " + response.statusCode() + ": " + response.body());
+        }
+
+        return response;
+    }
+
     String downloadFile(final String shortURLFileName) {
 
-        String endpoint = DOWNLOAD_ENDPOINT + shortURLFileName;
+        String endpoint = Constants.DOWNLOAD_ENDPOINT + shortURLFileName;
 
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(endpoint))
@@ -304,7 +333,7 @@ public class ApiClient {
                 }, fileName, "text/plain");
 
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(new URI(UPLOAD_ENDPOINT))
+                .uri(new URI(Constants.UPLOAD_ENDPOINT))
                 .setHeader("Content-Type", "multipart/form-data; charset=UTF-8; boundary=" + publisher.getBoundary())
                 .setHeader("Api-Key", apiKey)
                 .setHeader("Api-Username", apiUser)

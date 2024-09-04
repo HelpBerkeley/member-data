@@ -54,6 +54,9 @@ public class HttpClientSimulator extends HttpClient {
 
     private static final Map<Integer, String> queryResponseFiles = new HashMap<>();
     private static final Map<Integer, String> queryResponseData = new HashMap<>();
+    private static final Map<String, String> getResponseFiles = new HashMap<>();
+    private static final Map<String, String> getResponseData = new HashMap<>();
+    private static final Map<String, String> postResponseData = new HashMap<>();
     private static String getFileName = null;
     private static final AtomicInteger sendFailCount = new AtomicInteger(0);
     private static SendFailType sendFailType = null;
@@ -70,8 +73,16 @@ public class HttpClientSimulator extends HttpClient {
         sendFailCount.set(numFailures);
     }
 
-    static void setGetFileName(String fileName) {
-        getFileName = fileName;
+    public static void setGetResponseData(String uri, String data) {
+        getResponseData.put(uri, data);
+    }
+
+    public static void setPostResponseData(String uri, String data) {
+        postResponseData.put(uri, data);
+    }
+
+    public static void setGetResponseFile(String uri, String filename) {
+        getResponseFiles.put(uri, filename);
     }
 
     @SuppressWarnings("unchecked")
@@ -110,18 +121,18 @@ public class HttpClientSimulator extends HttpClient {
     private boolean isQuery(HttpRequest request) {
 
         // FIX THIS, DS: is there a constant for this?
-        return request.method().equals("POST") && request.uri().toString().startsWith(ApiClient.QUERY_BASE);
+        return request.method().equals("POST") && request.uri().toString().startsWith(Constants.QUERY_BASE);
     }
 
     private boolean isPost(HttpRequest request) {
 
         // FIX THIS, DS: is there a constant for this?
-        return request.method().equals("POST") && (! request.uri().toString().startsWith(ApiClient.QUERY_BASE));
+        return request.method().equals("POST") && (! request.uri().toString().startsWith(Constants.QUERY_BASE));
     }
 
     private boolean isPut(HttpRequest request) {
         // FIX THIS, DS: is there a constant for this?
-        return request.method().equals("PUT") && (request.uri().toString().startsWith(ApiClient.POSTS_BASE));
+        return request.method().equals("PUT") && (request.uri().toString().startsWith(Constants.POSTS_BASE));
     }
 
     private boolean isGet(HttpRequest request) {
@@ -240,6 +251,7 @@ public class HttpClientSimulator extends HttpClient {
             case Constants.QUERY_GET_LAST_REPLY_FROM_REQUEST_TOPICS_V22:
             case Constants.QUERY_GET_LAST_REPLY_FROM_REQUEST_TOPICS_V23:
             case Constants.QUERY_GET_LAST_REPLY_FROM_REQUEST_TOPICS_V24:
+            case Constants.QUERY_GET_LAST_REPLY_FROM_REQUEST_TOPICS_V25:
                 dataFile = "last-replies-no-requests.json";
                 break;
             case Constants.QUERY_GET_LAST_ONE_KITCHEN_RESTAURANT_TEMPLATE_REPLY:
@@ -253,11 +265,15 @@ public class HttpClientSimulator extends HttpClient {
     }
 
     private <T> HttpResponse<T> doPost(HttpRequest request) {
+        String uri = request.uri().toString();
         String response;
 
-        // Is this an upload request?
-        if (request.uri().toString().endsWith(ApiClient.UPLOAD_ENDPOINT)) {
+        if (postResponseData.containsKey(uri)) {
+            response = postResponseData.get(uri);
+        } else if (request.uri().toString().endsWith(Constants.UPLOAD_ENDPOINT)) {
             response = readFile("upload-response.json");
+        } else if (request.uri().toString().endsWith(Constants.CHANGE_OWNER)) {
+            response = readFile("change-owner-response.json");
         } else {
             response = readFile("post-response.json");
         }
@@ -272,19 +288,21 @@ public class HttpClientSimulator extends HttpClient {
     }
 
     private <T> HttpResponse<T> doGet(HttpRequest request) {
-        String fileName = request.uri().toString();
-        int index = fileName.lastIndexOf('/');
-        assertThat(index).as(fileName).isNotEqualTo(-1);
-        fileName = fileName.substring(index + 1);
+        String uri = request.uri().toString();
+        int index = uri.lastIndexOf('/');
+        assertThat(index).as(uri).isNotEqualTo(-1);
+        String fileName = uri.substring(index + 1);
+        String fileContent = "";
 
-        if (getFileName != null) {
-            fileName = getFileName;
-            getFileName = null;
+        if (getResponseFiles.containsKey(uri)) {
+            fileName = getResponseFiles.get(uri);
+        } else if (getResponseData.containsKey(uri)) {
+            fileContent = getResponseData.get(uri);
         } else if (fileName.endsWith(Main.ORDER_HISTORY_POST_ID + ".json")) {
             fileName = "order-history.json";
         } else if (fileName.equals(Main.RESTAURANT_TEMPLATE_POST_ID + ".json")) {
             fileName = "restaurant-template-post.json";
-        } else if  (fileName.equals(Main.DRIVER_HISTORY_POST_ID + ".json")) {
+        } else if (fileName.equals(Main.DRIVER_HISTORY_POST_ID + ".json")) {
             fileName = "driver-history-post.json";
         } else if (fileName.equals(Main.ONE_KITCHEN_DRIVER_HISTORY_POST_ID + ".json")) {
             fileName = "driver-history-post.json";
@@ -292,7 +310,11 @@ public class HttpClientSimulator extends HttpClient {
 
         try {
             //noinspection unchecked
-            return (HttpResponse<T>) new HttpResponseSimulator<>(readFile(fileName));
+            if (! fileContent.isEmpty()) {
+                return (HttpResponse<T>) new HttpResponseSimulator<>(fileContent);
+            } else {
+                return (HttpResponse<T>) new HttpResponseSimulator<>(readFile(fileName));
+            }
         } catch (RuntimeException ex) {
             //noinspection unchecked
             return (HttpResponse<T>) new HttpResponseSimulator<>(ex.getMessage(), HTTP_NOT_FOUND);

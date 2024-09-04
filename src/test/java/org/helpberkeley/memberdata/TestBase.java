@@ -107,8 +107,6 @@ public class TestBase {
             Options.COMMAND_UPDATE_ERRORS,
             Options.COMMAND_EMAIL,
             Options.COMMAND_WORKFLOW,
-            Options.COMMAND_DRIVER_MESSAGES,
-            Options.COMMAND_ONE_KITCHEN_DRIVER_MESSAGES,
             Options.COMMAND_UPDATE_DISPATCHERS,
             Options.COMMAND_ORDER_HISTORY,
             Options.COMMAND_INREACH,
@@ -132,9 +130,7 @@ public class TestBase {
     static final String TEST_FILE_NAME = "pom.xml";
     static final String TEST_SHORT_URL = Constants.UPLOAD_URI_PREFIX + "ab34dezzAndSomethingY.csv";
   
-    static final String DATA_REQUEST_TEMPLATE = "last-replies-data-request-template.json";
     static final String REQUEST_TEMPLATE = "request-template.json";
-    static final String REQUEST_TEMPLATE_EXTRA = "request-template-extra.json";
 
     private static final Logger LOGGER = LoggerFactory.getLogger(TestBase.class);
     protected static void cleanupGeneratedFiles() throws IOException {

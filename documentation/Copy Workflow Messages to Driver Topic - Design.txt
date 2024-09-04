@@ -1,6 +1,6 @@
 ﻿Workflow Messages to Driver Topic Design
-DocVersion: V1.4
-Last Updated: 8/5/2024
+DocVersion: V1.5
+Last Updated: 8/21/2024
 Author: Kaelan Thouati, Cameron Thouati
 
 
@@ -25,6 +25,9 @@ DES-WMD-001-1 Support optional argument
 Support optional “Topic: TOPIC_URL” argument in driver message request topics. TOPIC_URL must correspond to an existing topic in the Driver->Deliveries subcategory. Design should allow for typos including capitalization differences, removal of the colon, and extra whitespace within the “Topic: “ keyword. The only constraint for the topic URL is that it must contain the numeric topic ID. It may optionally contain a specific post number, which will be ignored.
 
 
+If the topic is not in the Driver->Deliveries subcategory, post a warning message and post the driver messages to the standard “Get driver messages” topic. 
+
+
 DES-WMD-001-2 Message ownership transfer
 
 
@@ -37,9 +40,9 @@ DES-WMD-001-3 Status messages
 In case of failure, support relevant error messages to message requester in closet topic.
 
 
-New error messages would include:
-1. “Target topic not found, please check that your specified topic URL is correct, and try again.”
-2. “Target topic is not in the Drivers>Deliveries subcategory. Please check that the target topic is in the Drivers>Deliveries subcategory, and try again.”
+New error and warning messages would include:
+1. [URL] is not a valid topic URL. Please make sure your URL includes “go.helpberkeley.org/t/TOPIC_NAME/TOPIC_ID”. 
+2. WARNING: The destination topic URL provided is not in the Drivers/Deliveries subcategory. These messages will be posted to “Get driver messages” instead. Please try again with a topic URL in the Drivers/Deliveries subcategory. 
 
 
 

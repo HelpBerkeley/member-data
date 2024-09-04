@@ -30,6 +30,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.StringReader;
+import java.text.MessageFormat;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -42,6 +43,9 @@ public class HBParser {
     }
 
     private static final Logger LOGGER = LoggerFactory.getLogger(HBParser.class);
+
+    public static final String INVALID_TOPIC_URL = "{0} is not a valid topic URL. Please make sure your URL includes" +
+            " \"go.helpberkeley.org/t/TOPIC_NAME/TOPIC_ID\"";
 
     public static ApiQueryResult parseQueryResult(final String queryResultJson) {
 
@@ -556,6 +560,31 @@ public class HBParser {
         }
     }
 
+    public static TopicResponse parseTopicFromURL(ApiClient apiClient, String url) {
+        int startIndex = url.indexOf(Constants.BASE_DOMAIN + "/t/");
+        if (startIndex == -1) {
+            throw new MemberDataException(MessageFormat.format(INVALID_TOPIC_URL, url));
+        }
+
+        String remainingUrl = url.substring(startIndex + (Constants.BASE_DOMAIN + "/t/").length());
+        String[] parts = remainingUrl.split("/");
+
+        //parts[0] should be topic slug, parts[1] should be topic ID
+        if (parts.length > 1 && !parts[1].isEmpty()) {
+            String json = apiClient.getTopic(Long.parseLong(parts[1]));
+            @SuppressWarnings("unchecked")
+            Map<String, Object> map = (Map<String, Object>) JsonIo.toObjects(json,
+                    new ReadOptionsBuilder().returnAsNativeJsonObjects().build(), Map.class);
+            assert map.containsKey("id") : map.toString();
+            assert map.containsKey("title") : map.toString();
+            assert map.containsKey("category_id") : map.toString();
+            return new TopicResponse(new Topic((String)map.get("title"), (Long)map.get("id")),
+                    (Long)map.get("category_id"));
+        } else {
+            throw new MemberDataException(MessageFormat.format(INVALID_TOPIC_URL, url));
+        }
+    }
+
     static String postBody(final String json) {
 
         @SuppressWarnings("unchecked")
@@ -574,12 +603,14 @@ public class HBParser {
 
         assert map.containsKey("topic_id") : json;
         long topic_id = (long)map.get("topic_id");
+        assert  map.containsKey("id");
+        long id = (long)map.get("id");
         assert map.containsKey(Constants.DISCOURSE_COLUMN_POST_NUMBER);
         long post_number = (long)map.get(Constants.DISCOURSE_COLUMN_POST_NUMBER);
         assert map.containsKey("topic_slug") : json;
         String topicSlug = (String)map.get("topic_slug");
 
-        return new PostResponse(topic_id, post_number, topicSlug);
+        return new PostResponse(topic_id, id, post_number, topicSlug);
     }
 
     static UploadResponse uploadResponse(String json) {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020. helpberkeley.org
+ * Copyright (c) 2024. helpberkeley.org
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,21 +22,17 @@
  */
 package org.helpberkeley.memberdata;
 
-public class PostResponse {
+public class TopicResponse extends Topic {
+    private final long categoryId;
 
-    final long topicId;
-    final long postId;
-    final long postNumber;
-    final String topicSlug;
-    final String URL;
-
-    PostResponse(long topicId, long postId, long postNumber, final String topicSlug) {
-        this.topicId = topicId;
-        this.postId = postId;
-        this.postNumber = postNumber;
-        this.topicSlug = topicSlug;
-        this.URL = Constants.TOPICS_BASE + topicSlug + '/' + topicId + '/' + postNumber;
-
+    public TopicResponse(Topic topic, Long categoryId) {
+        super(topic.getName(), topic.getId());
+        this.categoryId = categoryId;
     }
 
+    public Long getCategoryId() { return categoryId; }
+
+    public Topic getTopic() {
+        return this;
+    }
 }

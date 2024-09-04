@@ -78,12 +78,13 @@ public class WorkRequestHandler {
         this.query = query;
     }
 
-    WorkRequestHandler(ApiClient apiClient, Topic topic, long postNumber, String raw) {
+    WorkRequestHandler(ApiClient apiClient, Topic topic, long postNumber, String raw, String posterUsername) {
         this.apiClient = apiClient;
         this.query = null;
 
         // Normalize EOL
-        this.lastReply = new Reply(apiClient, topic, postNumber, raw.replaceAll("\\r\\n?", "\n"));
+        this.lastReply = new Reply(apiClient, topic, postNumber, raw.replaceAll("\\r\\n?", "\n"),
+                posterUsername);
     }
 
     // Support for end-to-end testing through main()
@@ -125,7 +126,7 @@ public class WorkRequestHandler {
 
         // If it is not a status reply, parse it as a WorkRequest
         if (reply == null) {
-            reply = WorkRequest.parse(lastReply, lines);
+            reply = WorkRequest.parse(apiClient, lastReply, lines);
         }
 
         // Fail it is neither.
@@ -186,7 +187,7 @@ public class WorkRequestHandler {
         // Normalize EOL
         lastReplyRaw = lastReplyRaw.replaceAll("\\r\\n?", "\n");
 
-        return new Reply(apiClient, query.getTopic(), postNumber, lastReplyRaw);
+        return new Reply(apiClient, query.getTopic(), postNumber, lastReplyRaw, "");
     }
 
     long getTopicId() {
@@ -208,12 +209,15 @@ public class WorkRequestHandler {
         final Topic requestTopic;
         final long postNumber;
         final String raw;
+        final String posterUsername;
 
-        Reply(final ApiClient apiClient, Topic requestTopic, long postNumber, final String raw) {
+        Reply(final ApiClient apiClient, Topic requestTopic, long postNumber, final String raw,
+              final String posterUsername) {
             this.apiClient = apiClient;
             this.requestTopic = requestTopic;
             this.postNumber = postNumber;
             this.raw = raw;
+            this.posterUsername = posterUsername;
         }
 
         Reply(Reply reply) {
@@ -221,6 +225,7 @@ public class WorkRequestHandler {
             this.requestTopic = reply.requestTopic;
             this.postNumber = reply.postNumber;
             this.raw = reply.raw;
+            this.posterUsername = reply.posterUsername;
         }
     }
 
@@ -292,7 +297,7 @@ public class WorkRequestHandler {
             assert response.statusCode() == HTTP_OK : "failed " + response.statusCode() + ": " + response.body();
         }
 
-        static Reply parse(Reply lastReply, final List<String> lines) {
+        static Reply parse(ApiClient apiClient, Reply lastReply, final List<String> lines) {
 
             assert ! lines.isEmpty();
             String dateLine = lines.get(0);
@@ -320,10 +325,9 @@ public class WorkRequestHandler {
                     return null;
                 }
 
-                if (line.startsWith("Topic:")) {
-                    throw new MemberDataException(
-                            "Post #" + lastReply.postNumber + " is not a valid request\n"
-                                    + TOPIC_DIRECTIVE_NOT_SUPPORTED);
+                if (line.toLowerCase().startsWith("topic:")) {
+                    destinationTopic = HBParser.parseTopicFromURL(apiClient, line.toLowerCase().replaceAll(
+                            "topic:", "").trim());
                 } else if (line.equalsIgnoreCase("test topic")) {
                     destinationTopic = Constants.TOPIC_STONE_TEST_TOPIC;
                 } else if (line.startsWith("Version:")) {
@@ -341,7 +345,6 @@ public class WorkRequestHandler {
                     || line.equalsIgnoreCase(Constants.DAILY_WORKFLOW)) {
                     return new WorkRequest(lastReply, dateLine, RequestType.fromString(line));
                 }
-
             }
 
             throw new MemberDataException("Post #" + lastReply.postNumber + " is not a valid request");
