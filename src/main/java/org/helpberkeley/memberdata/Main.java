@@ -26,10 +26,6 @@ import org.helpberkeley.memberdata.v300.DriverPostFormatV300;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import org.quartz.Job;
-import org.quartz.JobExecutionContext;
-import org.quartz.JobExecutionException;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;

@@ -21,42 +21,21 @@
 //
 package org.helpberkeley.memberdata;
 
-import java.util.List;
-
 /**
- * Represents a task or unit of work that can be scheduled and executed by a Scheduler.
- * Each Job has specific dependencies (files or other resources) that must be fulfilled
- * before the Job is executed. The dependencies are defined by the Job and are managed
- * by the Scheduler to ensure they are available when the Job runs.
- *
- * If the Scheduler disallows concurrent Job execution, Jobs will be queued sequentially unless they are
- * interrupted by a job with a higher Priority.
+ * Represents an event that can trigger the execution of a scheduled Job.
  */
-public interface Job {
-
-    enum Priority {
-        LOW,
-        MEDIUM,
-        HIGH
-    }
-
+public interface Event {
     /**
-     * Set job priority. Default job priority is MEDIUM.
+     * Returns a unique identifier for the event.
      *
-     * @param priority
+     * @return the unique event ID
      */
-    void setPriority(Priority priority);
+    String getId();
 
     /**
-     * Return a list of strings representing cacheKeys for cached files. This is the list of dependencies required
-     * to execute the Job.
+     * Determines if the event has occurred.
      *
-     * @return List of CacheKeys representing dependencies
+     * @return true if the event has occurred, false otherwise
      */
-    List<JobDependency> getDependencies();
-
-    /**
-     * Execute Job after dependencies have been fulfilled.
-     */
-    void execute();
+    boolean hasOccurred();
 }

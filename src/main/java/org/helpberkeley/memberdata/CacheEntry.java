@@ -21,42 +21,34 @@
 //
 package org.helpberkeley.memberdata;
 
-import java.util.List;
+import java.sql.Timestamp;
 
 /**
- * Represents a task or unit of work that can be scheduled and executed by a Scheduler.
- * Each Job has specific dependencies (files or other resources) that must be fulfilled
- * before the Job is executed. The dependencies are defined by the Job and are managed
- * by the Scheduler to ensure they are available when the Job runs.
- *
- * If the Scheduler disallows concurrent Job execution, Jobs will be queued sequentially unless they are
- * interrupted by a job with a higher Priority.
+ * Represents a single entry in a cache that stores multiple versions of data.
+ * Each entry contains a key identifying the type of data, the data content itself,
+ * and a timestamp marking when this version was stored in the cache.
  */
-public interface Job {
-
-    enum Priority {
-        LOW,
-        MEDIUM,
-        HIGH
-    }
+public interface CacheEntry {
 
     /**
-     * Set job priority. Default job priority is MEDIUM.
+     * Retrieves the key identifying this cache entry, typically representing a
+     * specific dependency required by a Job.
      *
-     * @param priority
+     * @return the key that identifies the type of entry
      */
-    void setPriority(Priority priority);
+    JobDependency getKey();
 
     /**
-     * Return a list of strings representing cacheKeys for cached files. This is the list of dependencies required
-     * to execute the Job.
+     * Retrieves the data content stored in this cache entry.
      *
-     * @return List of CacheKeys representing dependencies
+     * @return the data content of this cache entry
      */
-    List<JobDependency> getDependencies();
+    String getData();
 
     /**
-     * Execute Job after dependencies have been fulfilled.
+     * Retrieves the timestamp marking when this data was stored in the cache.
+     *
+     * @return the timestamp for this cache entry
      */
-    void execute();
+    Timestamp getTimestamp();
 }

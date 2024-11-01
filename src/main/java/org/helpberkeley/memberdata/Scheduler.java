@@ -21,30 +21,38 @@
 //
 package org.helpberkeley.memberdata;
 
-import org.quartz.TriggerKey;
-
+/**
+ * Interface for scheduling and managing the execution of Jobs. The Scheduler is responsible
+ * for scheduling Jobs at specified times or intervals, as well as starting and stopping
+ * the scheduling process. It also handles dependency fulfillment for each Job before execution.
+ *
+ * If concurrent job execution is disallowed, jobs may only be interrupted by jobs with a higher Job.Priority.
+ */
 public interface Scheduler {
+
+    /**
+     * Create scheduler and specify whether jobs should execute concurrently.
+     *
+     * @param allowConcurrency if True, allow multithreading of jobs. Disallow if False.
+     */
+    void create(boolean allowConcurrency);
 
     /**
      * Schedule job to run at a set time.
      *
-     * @param cronFormat string representing the job schedule in Cron format
+     * @param job to be run
+     * @param cronFormat string representing the job schedule in Cron format:
+     *        <second> <minute> <hour> <day-of-month> <month> <day-of-week>
      */
-    void scheduleJob(String cronFormat);
-
-    /**
-     * Schedule job to run with a set interval in seconds.
-     *
-     * @param intervalSeconds long representing how frequently the job should run
-     */
-    void scheduleRecurringJob(long intervalSeconds);
+    void scheduleJob(Job job, String cronFormat);
 
     /**
      * Schedule job to run when a specific event is triggered.
      *
-     * @param triggerKey a key representing a Quartz trigger tied to a specific event happening
+     * @param job to be run
+     * @param event that triggers the job to run
      */
-    void scheduleJobWithTrigger(TriggerKey triggerKey);
+    void scheduleJobWithEventTrigger(Job job, Event event);
 
     /**
      * Start scheduler, run all jobs according to schedule.
@@ -55,4 +63,16 @@ public interface Scheduler {
      * Stop scheduler, stop running all scheduled jobs.
      */
     void stop();
+
+    /**
+     * Reports the current job schedule.
+     *
+     * @return a formatted String with the current job schedule
+     */
+    String getSchedule();
+
+    /**
+     * Remove all jobs from schedule.
+     */
+    void destroy();
 }
