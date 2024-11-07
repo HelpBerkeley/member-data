@@ -48,15 +48,15 @@ public interface Job {
     void setPriority(Priority priority);
 
     /**
-     * Return a list of strings representing cacheKeys for cached files. This is the list of dependencies required
+     * Return a list of JobDependency keys for CacheEntries. This is the list of dependencies required
      * to execute the Job.
      *
-     * @return List of CacheKeys representing dependencies
+     * @return List of JobDependencies
      */
     List<JobDependency> getDependencies();
 
     /**
      * Execute Job after dependencies have been fulfilled.
      */
-    void execute();
+    void execute(List<CacheEntry> dependencies);
 }

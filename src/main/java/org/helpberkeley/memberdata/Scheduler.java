@@ -35,7 +35,7 @@ public interface Scheduler {
      *
      * @param allowConcurrency if True, allow multithreading of jobs. Disallow if False.
      */
-    void create(boolean allowConcurrency);
+    Scheduler create(boolean allowConcurrency, Cache cache);
 
     /**
      * Schedule job to run at a set time.

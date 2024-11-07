@@ -1,0 +1,248 @@
+public class OnekitchenWorkflowJob implements Job {
+    private Priority priority = Priority.MEDIUM;
+    private List<JobDependency> dependencies = Arrays.asList(JobDependency.MEMBERDATA_RAW)
+
+    public void setPriority(Priority priority) {
+        this.priority = priority;
+    }
+
+    public List<JobDependency> getDependencies() {
+        return this.dependencies;
+
+    public void execute(List<CacheEntry> dependencies) {
+        generateOnekitchenWorkflow(dependencies[0].getData());
+    }
+
+    private void generateOnekitchenWorkflow(String memberdata) {
+        doGenerateOnekitchenWorkflow...
+    }
+}
+
+public class SchedulerCache implements Cache {
+    private Map<JobDependency, LinkedList<CacheEntry>> cache;
+    private int maxKeyDepth;
+
+    private SchedulerCache(int maxKeyDepth) {
+        this.cache = new HashMap<>();
+        this.maxKeyDepth = maxKeyDepth;
+    }
+
+    public SchedulerCache create(int maxKeyDepth) {
+        return new SchedulerCache(maxKeyDepth);
+    }
+
+    public Timestamp storeEntry(JobDependency key, String data) {
+        CacheEntry newEntry = new SimpleCacheEntry(key, data, new Timestamp(System.currentTimeMillis()));
+
+        cache.put(key, new LinkedList<>());
+        LinkedList<CacheEntry> entries = cache.get(key);
+
+        entries.addFirst(newEntry);
+        if (entries.size() > maxKeyDepth) {
+            entries.removeLast();
+        }
+
+        return newEntry.getTimestamp();
+    }
+
+    public List<CacheEntry> getAllVersions(JobDependency key) throws MemberDataException {
+        if (!cache.containsKey(key)) {
+            throw new MemberDataException("No entry found for key: " + key);
+        }
+        return cache.get(key);
+    }
+
+    public CacheEntry getLatestVersion(JobDependency key) throws MemberDataException {
+        if (!cache.containsKey(key)) {
+            throw new MemberDataException("No entry found for key: " + key);
+        }
+        return cache.get(key).getFirst();
+    }
+
+    public CacheEntry getVersion(JobDependency key, int depth) throws MemberDataException {
+        if (!cache.containsKey(key) || depth >= cache.get(key).size()) {
+            throw new MemberDataException("No entry found for key with specified depth: " + depth);
+        }
+        return cache.get(key).get(depth);
+    }
+
+    public CacheEntry getVersion(JobDependency key, Timestamp timestamp) throws MemberDataException {
+        LinkedList<CacheEntry> entries = cache.get(key);
+
+        for (CacheEntry entry : entries) {
+            if (entry.getTimestamp().equals(timestamp)) {
+                return entry;
+            }
+        }
+        throw new MemberDataException("No entry found for key with specified timestamp: " + timestamp);
+    }
+
+    public int getNumVersions(JobDependency key) {
+        return cache.get(key).size();
+    }
+
+    public boolean hasChanged(JobDependency key) throws MemberDataException {
+        LinkedList<CacheEntry> entries = cache.get(key);
+
+        if (entries.size() < 2) {
+            throw new MemberDataException("Not enough entries to compare changes for key: " + key);
+        }
+
+        CacheEntry latest = entries.get(0);
+        CacheEntry secondLatest = entries.get(1);
+
+        return !latest.getData().equals(secondLatest.getData());
+    }
+
+    public void removeEntries(JobDependency key) {
+        cache.remove(key);
+    }
+
+    public void destroy() {
+        cache.clear();
+    }
+}
+
+public class ConcurrentWorkRequestScheduler extends WorkRequestScheduler {
+    @Override
+    public void start() {
+        //use black magic (or Quartz) to run jobs concurrently
+    }
+}
+
+public class WorkRequestScheduler implements Scheduler {
+    private final Map<Job, String> cronSchedule;
+    private final Queue<Job> jobQueue; // can be Quartz or an extension of LinkedList/Queue class
+    private Cache cache;
+    private Boolean isRunning;
+
+    private WorkRequestScheduler(Cache cache) {
+        this.cache = cache;
+    }
+
+    public WorkRequestScheduler create(Boolean allowConcurrency, Cache cache) {
+        if (allowConcurrency) {
+            return new ConcurrentWorkRequestScheduler(cache);
+        } else {
+            return new WorkRequestScheduler(cache);
+        }
+    }
+
+    public void scheduleJob(Job job, String cron) {
+        jobQueue.addRecurring(job, cron); //implement timing logic in jobQueue
+    }
+
+    public void scheduleJobWithEventTrigger(Job job, Event event) {
+        jobQueue.addJobWithEventListener(job, event); //implement event listener in jobQueue
+    }
+
+    private void fullfillDependencies(Job job) {
+        for (JobDependency dependency : job.getDependencies()) {
+            String fetchedData = fetch(dependency);  //fetch latest data for dependency
+            cache.storeEntry(dependency, fetchedData);
+        }
+    }
+
+    public void start() {
+        while (isRunning && !jobQueue.isEmpty()) {
+            Job nextJob = jobQueue.poll();  //check for scheduled jobs or event-triggered jobs
+
+            if (!nextJob.isEmpty()) {
+                fullfillDependencies(nextJob);
+                nextJob.execute();
+            }
+        }
+    }
+
+    public void stop() {
+        isRunning = false;
+    }
+
+    public String getSchedule() {
+        StringBuilder schedule = new StringBuilder("Scheduled Jobs:\n");
+        for (Job job : jobQueue) {
+            schedule.append(job.toString()).append("\n");
+        }
+        return schedule.toString();
+    }
+
+    public void destroy() {
+        jobQueue.clear();
+        isRunning = false;
+    }
+}
+
+public class CacheChangeEvent implements Event {
+    private final JobDependency dependencyKey;
+    private final Cache cache;
+    private String eventId;
+
+    public CacheChangeEvent(Cache cache, JobDependency dependencyKey) {
+        this.eventId = random.nextInt(10000)
+        this.cache = cache;
+        this.dependencyKey = dependencyKey;
+    }
+
+    public String getId() {
+        return eventId;
+    }
+
+    public boolean hasOccurred() {
+        try {
+            return cache.hasChanged(dependencyKey);
+        } catch (MemberDataException e) {
+            System.err.println("No versions available to check for changes.");
+            return false;
+        }
+    }
+}
+
+public class CacheAddedEvent implements Event {
+    private final JobDependency dependencyKey;
+    private final Cache cache;
+    private String eventId;
+
+    public CacheAddedEvent(Cache cache, JobDependency dependencyKey) {
+        this.eventId = random.nextInt(10000)
+        this.cache = cache;
+        this.dependencyKey = dependencyKey;
+    }
+
+    public String getId() {
+        return eventId;
+    }
+
+    public boolean hasOccurred() {
+        return cache.containsKey(dependencyKey);
+    }
+}
+
+public class Example {
+    public static void main() {
+        Cache cache = schedulerCache.create(4);
+        Scheduler scheduler = WorkRequestScheduler.create(false);
+
+        JobDependency monitoredDependency = JobDependency.CONSUMER_REQUESTS;
+        cache.storeEntry(monitoredDependency, "old request");
+
+        JobDependency awaitedDependency = JobDependency.ONEKITCHEN_WORKFLOW_REQUEST;
+
+        Event consumerRequestChange = new CacheChangeEvent(cache, monitoredDependency);
+        Event oneKitchenWorkflowRequest = new CacheAddedEvent(cache, awaitedDependency);
+
+        Job postConsumerRequest = new PostConsumerRequestJob();
+        Job oneKitchenWorkflow = new OneKitchenWorkflowJob();
+        scheduler.scheduleJobWithEventTrigger(postConsumerRequest, consumerRequestChange);
+        scheduler.scheduleJobWithEventTrigger(oneKitchenWorkflow, oneKitchenWorkflowRequest);
+
+        scheduler.start();
+
+        cache.storeEntry(monitoredDependency, "new request"); // should trigger postConsumerRequest Job
+        cache.storeEntry(awaitedDependency, "onekitchen workflow requeset"); // should trigger oneKitchenWorkflow Job
+
+        scheduler.stop();
+        scheduler.destroy();
+        cache.destroy();
+    }
+
+}

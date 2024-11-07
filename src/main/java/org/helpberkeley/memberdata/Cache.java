@@ -37,7 +37,7 @@ public interface Cache {
      *
      * @param maxKeyDepth specifies how many files may be stored with the same JobDependency
      */
-    void create(int maxKeyDepth);
+    Cache create(int maxKeyDepth);
 
     /**
      * Store data in cache. Data will be timestamped by the system when it is stored. If max depth has already
