@@ -320,7 +320,7 @@ public class ApiClient {
         String clientId = "1234b591bb4848dd899b6e6ee0feaff9";
 
         MultiPartBodyPublisher publisher = new MultiPartBodyPublisher()
-                .addPart("type",
+                .addPart("upload_type",
                         new String("composer".getBytes(Charset.defaultCharset()), StandardCharsets.UTF_8))
                 .addPart("client_id",
                         new String(clientId.getBytes(Charset.defaultCharset()), StandardCharsets.UTF_8))
