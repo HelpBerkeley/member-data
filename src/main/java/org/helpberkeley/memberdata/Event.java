@@ -30,7 +30,7 @@ public interface Event {
      *
      * @return the unique event ID
      */
-    String getId();
+    Integer getId();
 
     /**
      * Determines if the event has occurred.

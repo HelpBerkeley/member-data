@@ -37,7 +37,7 @@ public interface Cache {
      *
      * @param maxKeyDepth specifies how many files may be stored with the same JobDependency
      */
-    Cache create(int maxKeyDepth);
+//    Cache create(int maxKeyDepth);
 
     /**
      * Store data in cache. Data will be timestamped by the system when it is stored. If max depth has already
@@ -115,5 +115,12 @@ public interface Cache {
      * Delete all files from cache.
      */
     void destroy();
+
+    /**
+     * Check if cache already contains an entry for the given key.
+     *
+     * @param key representing the type of file we are retrieving
+     */
+    boolean containsKey(JobDependency key);
 
 }
