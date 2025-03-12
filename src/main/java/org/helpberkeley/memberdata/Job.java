@@ -21,6 +21,8 @@
 //
 package org.helpberkeley.memberdata;
 
+import org.quartz.JobExecutionContext;
+
 import java.util.List;
 
 /**
@@ -32,20 +34,14 @@ import java.util.List;
  * If the Scheduler disallows concurrent Job execution, Jobs will be queued sequentially unless they are
  * interrupted by a job with a higher Priority.
  */
-public interface Job {
-
-    enum Priority {
-        LOW,
-        MEDIUM,
-        HIGH
-    }
+public interface Job extends org.quartz.Job {
 
     /**
      * Set job priority. Default job priority is MEDIUM.
      *
      * @param priority
      */
-    void setPriority(Priority priority);
+//    void setPriority(Integer priority);
 
     /**
      * Return a list of JobDependency keys for CacheEntries. This is the list of dependencies required
@@ -53,10 +49,12 @@ public interface Job {
      *
      * @return List of JobDependencies
      */
-    List<JobDependency> getDependencies();
+//    List<JobDependency> getDependencies();
 
     /**
      * Execute Job after dependencies have been fulfilled.
      */
-    void execute(List<CacheEntry> dependencies);
+//    void executeJob(List<CacheEntry> dependencies);
+
+    void execute(JobExecutionContext context);
 }

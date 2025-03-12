@@ -21,6 +21,10 @@
 //
 package org.helpberkeley.memberdata;
 
+import org.quartz.JobDetail;
+import org.quartz.JobListener;
+import org.quartz.SchedulerException;
+
 /**
  * Interface for scheduling and managing the execution of Jobs. The Scheduler is responsible
  * for scheduling Jobs at specified times or intervals, as well as starting and stopping
@@ -31,38 +35,24 @@ package org.helpberkeley.memberdata;
 public interface Scheduler {
 
     /**
-     * Create scheduler and specify whether jobs should execute concurrently.
-     *
-     * @param allowConcurrency if True, allow multithreading of jobs. Disallow if False.
-     */
-//    Scheduler create(boolean allowConcurrency, Cache cache);
-
-    /**
      * Schedule job to run at a set time.
      *
-     * @param job to be run
+     * @param jobDetail (org.Quartz) to be run
      * @param cronFormat string representing the job schedule in Cron format:
      *        <second> <minute> <hour> <day-of-month> <month> <day-of-week>
      */
-    void scheduleJob(Job job, String cronFormat);
+    void scheduleJobCronTrigger(JobDetail jobDetail, String cronFormat) throws SchedulerException;
 
-    /**
-     * Schedule job to run when a specific event is triggered.
-     *
-     * @param job to be run
-     * @param event that triggers the job to run
-     */
-    void scheduleJobWithEventTrigger(Job job, Event event);
 
     /**
      * Start scheduler, run all jobs according to schedule.
      */
-    void start();
+    void start() throws SchedulerException;
 
     /**
-     * Stop scheduler, stop running all scheduled jobs.
+     * Stop and shutdown scheduler, after all executing jobs have finished.
      */
-    void stop();
+    void stop() throws SchedulerException;
 
     /**
      * Reports the current job schedule.
@@ -72,7 +62,12 @@ public interface Scheduler {
     String getSchedule();
 
     /**
-     * Remove all jobs from schedule.
+     * Add a job listener which will execute some action after the job is completed.
+     *
+     * @param listener implementation
+     * @param jobDetail (org.Quartz) to add listener to
+     * @throws SchedulerException
      */
-    void destroy();
+    void addJobListener(JobListener listener, JobDetail jobDetail) throws SchedulerException;
+
 }
