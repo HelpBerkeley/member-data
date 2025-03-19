@@ -1,8 +1,11 @@
 package org.helpberkeley.memberdata;
 
 import org.quartz.JobExecutionContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class WorkflowJob implements Job {
+    private static final Logger LOGGER = LoggerFactory.getLogger(WorkflowJob.class);
 
     public WorkflowJob() {}
 
@@ -13,6 +16,6 @@ public class WorkflowJob implements Job {
      */
     @Override
     public void execute(JobExecutionContext context) {
-        System.out.println("Executing WorkflowJob.");
+        LOGGER.info("Executing WorkflowJob.");
     }
 }

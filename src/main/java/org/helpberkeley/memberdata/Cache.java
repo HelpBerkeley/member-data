@@ -33,13 +33,6 @@ import java.sql.Timestamp;
 public interface Cache {
 
     /**
-     * Create a new Cache.
-     *
-     * @param maxKeyDepth specifies how many files may be stored with the same JobDependency
-     */
-//    Cache create(int maxKeyDepth);
-
-    /**
      * Store data in cache. Data will be timestamped by the system when it is stored. If max depth has already
      * been reached for a particular JobDependency, then the oldest version will be deleted and replaced.
      *
@@ -122,5 +115,15 @@ public interface Cache {
      * @param key representing the type of file we are retrieving
      */
     boolean containsKey(JobDependency key);
+
+    /**
+     * Remove old files from cache.
+     */
+    void clean();
+
+    /**
+     * Fetch latest files from Discourse.
+     */
+    void fetch();
 
 }
