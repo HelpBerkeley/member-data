@@ -214,7 +214,8 @@ public class DriverHistory {
             ApiClient apiClient) {
 
         Map<String, DriverHistory> history = new HashMap<>();
-        doGetDriverHistory(apiClient, Main.DRIVER_HISTORY_POST_ID, history);
+//        FIX THIS, DS: clean up/remove pre-one-kitchen support
+//        doGetDriverHistory(apiClient, Main.DRIVER_HISTORY_POST_ID, history);
         doGetDriverHistory(apiClient, Main.ONE_KITCHEN_DRIVER_HISTORY_POST_ID, history);
 
         return history;
