@@ -229,7 +229,7 @@ public class Constants {
     public static final String TOPICS_BASE = BASE_URL + "t/";
     public static final String UPLOAD_ENDPOINT = BASE_URL + "uploads.json";
     public static final String DOWNLOAD_ENDPOINT = BASE_URL + "uploads/short-url/";
-    public static final String QUERY_BASE = BASE_URL + "admin/plugins/explorer/queries/";
+    public static final String QUERY_BASE = BASE_URL + "admin/plugins/discourse-data-explorer/queries/";
     public static final String CHANGE_OWNER = "/change-owner.json";
 
     // Control block values
