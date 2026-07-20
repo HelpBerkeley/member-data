@@ -186,7 +186,7 @@ public class ApiClient {
                 .header("Api-Key", apiKey)
                 .header("Accept", "application/json")
                 .header("Content-Type", "multipart/form-data")
-                .POST(HttpRequest.BodyPublishers.ofString("limit=1000000"))
+                .POST(HttpRequest.BodyPublishers.ofString("limit=10000"))
                 .build();
 
 
