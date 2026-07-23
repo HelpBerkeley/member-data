@@ -1,3 +1,4 @@
 .idea
 target
 **/apikey.properties/**
+memberdata.properties

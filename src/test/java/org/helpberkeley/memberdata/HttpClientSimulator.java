@@ -30,6 +30,8 @@ import java.net.http.HttpClient;
 import java.net.http.HttpHeaders;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.Duration;
@@ -37,7 +39,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executor;
+import java.util.concurrent.Flow;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static java.net.HttpURLConnection.HTTP_NOT_FOUND;
@@ -60,6 +64,9 @@ public class HttpClientSimulator extends HttpClient {
     private static String getFileName = null;
     private static final AtomicInteger sendFailCount = new AtomicInteger(0);
     private static SendFailType sendFailType = null;
+    // Captures the body of the most recent Data Explorer query request, so tests can assert
+    // the multipart form fields that were sent (params, limit).
+    static String lastQueryRequestBody = null;
 
     static void setQueryResponseFile(int queryId, final String fileName) {
         queryResponseFiles.put(queryId, fileName);
@@ -142,6 +149,7 @@ public class HttpClientSimulator extends HttpClient {
 
     private <T> HttpResponse<T> doQuery(HttpRequest request) {
 
+        lastQueryRequestBody = requestBody(request);
         int queryId = getQueryId(request);
         String responseData;
 
@@ -332,6 +340,39 @@ public class HttpClientSimulator extends HttpClient {
         queryId = queryId.substring(index + 1);
 
         return Integer.parseInt(queryId);
+    }
+
+    // Synchronously read an outgoing request's body into a String, for test assertions.
+    static String requestBody(HttpRequest request) {
+        if (request.bodyPublisher().isEmpty()) {
+            return "";
+        }
+        StringBuilder body = new StringBuilder();
+        CountDownLatch done = new CountDownLatch(1);
+        request.bodyPublisher().get().subscribe(new Flow.Subscriber<>() {
+            @Override
+            public void onSubscribe(Flow.Subscription subscription) {
+                subscription.request(Long.MAX_VALUE);
+            }
+            @Override
+            public void onNext(ByteBuffer item) {
+                body.append(StandardCharsets.UTF_8.decode(item));
+            }
+            @Override
+            public void onError(Throwable throwable) {
+                done.countDown();
+            }
+            @Override
+            public void onComplete() {
+                done.countDown();
+            }
+        });
+        try {
+            done.await();
+        } catch (InterruptedException ignored) {
+            Thread.currentThread().interrupt();
+        }
+        return body.toString();
     }
 
     private String readFile(final String fileName) {

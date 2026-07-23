@@ -35,6 +35,7 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 
@@ -202,11 +203,22 @@ public class ApiClient {
     }
 
     String runQueryWithParam(int queryId, String paramName, String paramValue) {
+        return runQueryWithParams(queryId, Map.of(paramName, paramValue));
+    }
+
+    String runQueryWithParams(int queryId, Map<String, String> params) {
 
         String endpoint = Constants.QUERY_BASE + queryId + "/run";
 
+        // Discourse's Data Explorer /run endpoint expects all query parameters bundled into a single
+        // "params" form field whose value is a JSON object (e.g. params={"topic_id":"8506"}), alongside
+        // a "limit" field. (The previous implementation sent each parameter as its own multipart field
+        // via addParamPart - which also emitted a malformed boundary - and never sent a limit, so
+        // Discourse silently ignored the parameters.)
         MultiPartBodyPublisher publisher = new MultiPartBodyPublisher()
-                .addParamPart(paramName, paramValue);
+                .addPart("params", paramsToJson(params))
+                .addPart("limit", "10000");
+
         try {
             HttpRequest request = HttpRequest.newBuilder()
                     .uri(new URI(endpoint))
@@ -229,6 +241,23 @@ public class ApiClient {
         } catch (URISyntaxException ex) {
             throw new MemberDataException("Failed runQueryWithParameters: " + ex.getMessage());
         }
+    }
+
+    // Serialize query parameters as a JSON object for the Data Explorer "params" field.
+    static String paramsToJson(Map<String, String> params) {
+        StringBuilder json = new StringBuilder("{");
+        String separator = "";
+        for (Map.Entry<String, String> entry : params.entrySet()) {
+            json.append(separator)
+                    .append('"').append(jsonEscape(entry.getKey())).append("\":\"")
+                    .append(jsonEscape(entry.getValue())).append('"');
+            separator = ",";
+        }
+        return json.append('}').toString();
+    }
+
+    private static String jsonEscape(String value) {
+        return value.replace("\\", "\\\\").replace("\"", "\\\"");
     }
 
     String getPost(long postId) {

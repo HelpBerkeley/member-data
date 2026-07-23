@@ -23,6 +23,8 @@ package org.helpberkeley.memberdata;
 
 import org.junit.Test;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Properties;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -134,5 +136,36 @@ public class ApiClientTest extends TestBase {
 
         String result = apiClient.runQueryWithParam(Constants.CURRENT_USERS_QUERY, "limit", "100");
         // FIX THIS, DS: update when query parameters are working with Discourse
+    }
+
+    @Test
+    public void paramsToJsonTest() {
+        assertThat(ApiClient.paramsToJson(Map.of("topic_id", "8506")))
+                .isEqualTo("{\"topic_id\":\"8506\"}");
+
+        // Values containing JSON metacharacters are escaped.
+        assertThat(ApiClient.paramsToJson(Map.of("name", "a\"b\\c")))
+                .isEqualTo("{\"name\":\"a\\\"b\\\\c\"}");
+
+        // Multiple parameters, in insertion order.
+        Map<String, String> params = new LinkedHashMap<>();
+        params.put("topic_id", "8506");
+        params.put("months_ago", "1");
+        assertThat(ApiClient.paramsToJson(params))
+                .isEqualTo("{\"topic_id\":\"8506\",\"months_ago\":\"1\"}");
+    }
+
+    @Test
+    public void runQueryWithParamSendsParamsAndLimitTest() {
+        ApiClient apiClient = createApiSimulator();
+
+        apiClient.runQueryWithParam(Constants.CURRENT_USERS_QUERY, "topic_id", "8506");
+
+        String body = HttpClientSimulator.lastQueryRequestBody;
+        // The parameters must be sent as a single "params" JSON field, plus a "limit" field.
+        assertThat(body).contains("name=\"params\"");
+        assertThat(body).contains("{\"topic_id\":\"8506\"}");
+        assertThat(body).contains("name=\"limit\"");
+        assertThat(body).contains("10000");
     }
 }

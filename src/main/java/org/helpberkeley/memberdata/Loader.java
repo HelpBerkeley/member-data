@@ -66,7 +66,10 @@ public class Loader {
     private void loadGroups() {
 
         assert apiClient != null;
-        String json = apiClient.runQuery(Constants.QUERY_GET_GROUPS_ID);
+        // Uses the parameterized query path (with no parameters) to exercise the "params"/"limit"
+        // request format against a live query. The Get Groups query takes no parameters, so an empty
+        // params map must return exactly what runQuery would have.
+        String json = apiClient.runQueryWithParams(Constants.QUERY_GET_GROUPS_ID, Map.of());
         ApiQueryResult apiQueryResult = HBParser.parseQueryResult(json);
         Map<Long, String> groupNames = HBParser.groupNames(apiQueryResult);
 
