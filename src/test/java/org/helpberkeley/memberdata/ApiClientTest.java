@@ -23,6 +23,8 @@ package org.helpberkeley.memberdata;
 
 import org.junit.Test;
 
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -153,6 +155,29 @@ public class ApiClientTest extends TestBase {
         params.put("months_ago", "1");
         assertThat(ApiClient.paramsToJson(params))
                 .isEqualTo("{\"topic_id\":\"8506\",\"months_ago\":\"1\"}");
+    }
+
+    @Test
+    public void downloadImageReturnsRawBytesTest() throws Exception {
+        ApiClient apiClient = createApiSimulator();
+
+        byte[] expected = Files.readAllBytes(Paths.get(Thread.currentThread()
+                .getContextClassLoader().getResource("test-image.png").toURI()));
+
+        // A site-relative upload URL.
+        byte[] relative = apiClient.downloadImage("/uploads/default/original/3X/a/b/test-image.png");
+        // An absolute (CDN) upload URL.
+        byte[] absolute = apiClient.downloadImage(
+                Constants.BASE_URL + "uploads/default/original/3X/a/b/test-image.png");
+        // A protocol-relative S3/CDN upload URL, as returned by Discourse's uploads.url.
+        byte[] protocolRelative = apiClient.downloadImage(
+                "//cdck-file-uploads-us1.s3.dualstack.us-west-2.amazonaws.com"
+                        + "/flex020/uploads/helpberkeley/original/2X/e/test-image.png");
+
+        // Bytes must be returned intact - no EOL normalization, no charset round-trip.
+        assertThat(relative).isEqualTo(expected);
+        assertThat(absolute).isEqualTo(expected);
+        assertThat(protocolRelative).isEqualTo(expected);
     }
 
     @Test

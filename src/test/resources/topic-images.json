@@ -1,0 +1,57 @@
+{
+  "success": true,
+  "errors": [],
+  "duration": 3.6,
+  "result_count": 4,
+  "params": {
+    "topic_id": "7253"
+  },
+  "columns": [
+    "post_id",
+    "post_number",
+    "upload_id",
+    "original_filename",
+    "extension",
+    "filesize",
+    "url"
+  ],
+  "default_limit": 1000,
+  "rows": [
+    [
+      71300,
+      1,
+      11460,
+      "cover.png",
+      "png",
+      12345,
+      "//cdn.example.com/flex020/uploads/helpberkeley/original/2X/a/test-image.png"
+    ],
+    [
+      71301,
+      32,
+      11463,
+      "image0.jpeg",
+      "jpeg",
+      100028,
+      "//cdn.example.com/flex020/uploads/helpberkeley/original/2X/e/test-image.png"
+    ],
+    [
+      71301,
+      32,
+      11464,
+      "image1.jpeg",
+      "jpeg",
+      97757,
+      "//cdn.example.com/flex020/uploads/helpberkeley/original/2X/5/test-image.png"
+    ],
+    [
+      71304,
+      33,
+      11465,
+      "photo.jpeg",
+      "jpeg",
+      235375,
+      "//cdn.example.com/flex020/uploads/helpberkeley/original/2X/6/test-image.png"
+    ]
+  ]
+}

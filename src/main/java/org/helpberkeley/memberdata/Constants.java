@@ -93,6 +93,11 @@ public class Constants {
     public static final int QUERY_GET_SPECIAL_ONE_KITCHEN_GROUP_POST_FORMAT_V300 = 75;
     public static final int QUERY_GET_SPECIAL_ONE_KITCHEN_DRIVERS_POST_FORMAT_V300 = 76;
 
+    // Returns one row per Discourse-hosted image upload in a topic's (non-deleted) posts.
+    // Parameterized by :topic_id. Columns: post_id, post_number, upload_id, original_filename,
+    // extension, filesize, url.
+    public static final int QUERY_GET_TOPIC_IMAGES = 90;
+
     // Current spec version for these queries
     public static final int QUERY_GET_DRIVERS_POST_FORMAT = QUERY_GET_DRIVERS_POST_FORMAT_V24;
     public static final int QUERY_GET_GROUP_INSTRUCTIONS_FORMAT = QUERY_GET_GROUP_INSTRUCTIONS_FORMAT_V22;

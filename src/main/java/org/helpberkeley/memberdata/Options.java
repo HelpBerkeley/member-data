@@ -52,6 +52,7 @@ public class Options {
     static final String COMMAND_CUSTOMER_CARE_POST = "customer-care";
     static final String COMMAND_FRREG = "frreg";
     static final String COMMAND_WORK_REQUESTS = "work-requests";
+    static final String COMMAND_DOWNLOAD_TOPIC_IMAGES = "download-topic-images";
 
     static final String USAGE_ERROR = "Usage error for command ";
     static final String UNKNOWN_COMMAND = USAGE_ERROR + ": unknown command: ";
@@ -59,7 +60,9 @@ public class Options {
     static final String COMMAND_REQUIRES_FILE_NAME = ": command requires a file name parameter";
     static final String COMMAND_REQUIRES_SHORT_URL = ": command requires a short URL";
     static final String COMMAND_REQUIRES_ONE_ARG = ": command requires an argument";
+    static final String COMMAND_REQUIRES_TOPIC_ID = ": command requires a numeric topic id";
     static final String BAD_SHORT_URL = USAGE_ERROR + ": short url syntax error";
+    static final String BAD_TOPIC_ID = USAGE_ERROR + ": topic id must be numeric: ";
     static final String FILE_DOES_NOT_EXIST = USAGE_ERROR + ": file does not exist: ";
 
     static final String USAGE =
@@ -86,13 +89,16 @@ public class Options {
                     + "    | " + COMMAND_CUSTOMER_CARE_POST + " all-members-file\n"
                     + "    | " + COMMAND_FRREG + " all-members-file\n"
                     + "    | " + COMMAND_RESTAURANT_TEMPLATE + "\n"
-                    + "    | " + COMMAND_ONE_KITCHEN_RESTAURANT_TEMPLATE + "\n";
+                    + "    | " + COMMAND_ONE_KITCHEN_RESTAURANT_TEMPLATE + "\n"
+                    + "    | " + COMMAND_DOWNLOAD_TOPIC_IMAGES + " topic-id [output-dir]\n";
 
     private final String[] args;
     private String command;
     private String fileName;
     private String shortURL;
     private boolean postStatus = false;
+    private long topicId;
+    private String outputDir;
 
 
     Options(final String[] args) {
@@ -167,6 +173,22 @@ public class Options {
                 }
                 shortURL = args[index++];
                 break;
+            case COMMAND_DOWNLOAD_TOPIC_IMAGES:
+                setCommand(arg);
+                if (index == args.length) {
+                    dieMessage(USAGE_ERROR + arg + COMMAND_REQUIRES_TOPIC_ID);
+                }
+                String topicIdArg = args[index++];
+                try {
+                    topicId = Long.parseLong(topicIdArg);
+                } catch (NumberFormatException ex) {
+                    dieMessage(BAD_TOPIC_ID + topicIdArg);
+                }
+
+                if (index < args.length) {
+                    outputDir = args[index++];
+                }
+                break;
             default:
                 dieMessage(UNKNOWN_COMMAND + arg);
         }
@@ -200,6 +222,14 @@ public class Options {
 
     boolean postStatus() {
         return postStatus;
+    }
+
+    long getTopicId() {
+        return topicId;
+    }
+
+    String getOutputDir() {
+        return outputDir;
     }
 
     private void setCommand(final String command) {

@@ -27,6 +27,7 @@ import org.junit.*;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.MessageFormat;
 import java.time.LocalDate;
@@ -109,6 +110,28 @@ public class MainTest extends TestBase {
         String dispatchersFile = findFile(Constants.DISPATCHERS_FILE, "csv");
         String[] args = { Options.COMMAND_UPDATE_DISPATCHERS, dispatchersFile };
         Main.main(args);
+    }
+
+    @Test
+    public void downloadTopicImagesTest() throws IOException {
+        Path outputDir = Files.createTempDirectory("main-download-topic-images");
+        try {
+            String[] args = {
+                    Options.COMMAND_DOWNLOAD_TOPIC_IMAGES, TEST_TOPIC_ID, outputDir.toString() };
+            Main.main(args);
+
+            File[] files = outputDir.toFile().listFiles();
+            assertThat(files).isNotNull();
+            assertThat(files).hasSize(4);
+        } finally {
+            File[] files = outputDir.toFile().listFiles();
+            if (files != null) {
+                for (File file : files) {
+                    file.delete();
+                }
+            }
+            outputDir.toFile().delete();
+        }
     }
 
     @Test

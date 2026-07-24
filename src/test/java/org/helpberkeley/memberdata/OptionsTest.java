@@ -181,6 +181,55 @@ public class OptionsTest extends TestBase {
     }
 
     @Test
+    public void topicIdTest() {
+        for (String command : COMMANDS_WITH_TOPIC_ID) {
+            Options options = new Options(new String[] { command, TEST_TOPIC_ID });
+            options.parse();
+            assertThat(options.getCommand()).isEqualTo(command);
+            assertThat(options.getTopicId()).isEqualTo(Long.parseLong(TEST_TOPIC_ID));
+            assertThat(options.getOutputDir()).isNull();
+        }
+    }
+
+    @Test
+    public void topicIdWithOutputDirTest() {
+        String outputDir = "some-output-dir";
+        for (String command : COMMANDS_WITH_TOPIC_ID) {
+            Options options = new Options(new String[] { command, TEST_TOPIC_ID, outputDir });
+            options.parse();
+            assertThat(options.getCommand()).isEqualTo(command);
+            assertThat(options.getTopicId()).isEqualTo(Long.parseLong(TEST_TOPIC_ID));
+            assertThat(options.getOutputDir()).isEqualTo(outputDir);
+        }
+    }
+
+    @Test
+    public void missingTopicIdTest() {
+        for (String command : COMMANDS_WITH_TOPIC_ID) {
+            Options options = new Options(new String[] { command });
+            Throwable thrown = catchThrowable(options::parse);
+            assertThat(thrown).isInstanceOf(MemberDataException.class);
+            assertThat(thrown).hasMessageContaining(command);
+            assertThat(thrown).hasMessageContaining(Options.USAGE_ERROR);
+            assertThat(thrown).hasMessageContaining(Options.COMMAND_REQUIRES_TOPIC_ID);
+            assertThat(thrown).hasMessageContaining(Options.USAGE);
+        }
+    }
+
+    @Test
+    public void badTopicIdTest() {
+        String badTopicId = "not-a-number";
+        for (String command : COMMANDS_WITH_TOPIC_ID) {
+            Options options = new Options(new String[] { command, badTopicId });
+            Throwable thrown = catchThrowable(options::parse);
+            assertThat(thrown).isInstanceOf(MemberDataException.class);
+            assertThat(thrown).hasMessageContaining(badTopicId);
+            assertThat(thrown).hasMessageContaining(Options.BAD_TOPIC_ID);
+            assertThat(thrown).hasMessageContaining(Options.USAGE);
+        }
+    }
+
+    @Test
     public void workflowStatusTest() {
         Options options = new Options(new String[] { Options.COMMAND_WORKFLOW, TEST_FILE_NAME, "true" });
         options.parse();

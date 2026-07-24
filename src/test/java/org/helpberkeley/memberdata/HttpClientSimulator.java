@@ -254,6 +254,9 @@ public class HttpClientSimulator extends HttpClient {
             case Constants.QUERY_GET_DRIVER_DETAILS:
                 dataFile = "driver-details-posts.json";
                 break;
+            case Constants.QUERY_GET_TOPIC_IMAGES:
+                dataFile = "topic-images.json";
+                break;
             case Constants.QUERY_GET_LAST_REPLY_FROM_REQUEST_TOPICS_V20:
             case Constants.QUERY_GET_LAST_REPLY_FROM_REQUEST_TOPICS_V21:
             case Constants.QUERY_GET_LAST_REPLY_FROM_REQUEST_TOPICS_V22:
@@ -300,6 +303,13 @@ public class HttpClientSimulator extends HttpClient {
         int index = uri.lastIndexOf('/');
         assertThat(index).as(uri).isNotEqualTo(-1);
         String fileName = uri.substring(index + 1);
+
+        // Binary (image) downloads return raw bytes from a resource file, not EOL-normalized text.
+        if (isImageFileName(fileName)) {
+            //noinspection unchecked
+            return (HttpResponse<T>) new HttpResponseSimulator<>(readBinaryFile(fileName));
+        }
+
         String fileContent = "";
 
         if (getResponseFiles.containsKey(uri)) {
@@ -387,6 +397,31 @@ public class HttpClientSimulator extends HttpClient {
         } catch (IOException|URISyntaxException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private byte[] readBinaryFile(final String fileName) {
+        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+        URL url = classLoader.getResource(fileName);
+
+        if (url == null) {
+            throw new RuntimeException("file " + fileName + " not found");
+        }
+        try {
+            return Files.readAllBytes(Paths.get(url.toURI()));
+        } catch (IOException|URISyntaxException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private static boolean isImageFileName(final String fileName) {
+        String lower = fileName.toLowerCase();
+        for (String extension : new String[] {
+                ".jpg", ".jpeg", ".png", ".gif", ".webp", ".heic", ".heif", ".bmp", ".tiff", ".svg" }) {
+            if (lower.endsWith(extension)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override

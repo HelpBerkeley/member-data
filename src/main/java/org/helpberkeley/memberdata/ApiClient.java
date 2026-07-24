@@ -97,11 +97,15 @@ public class ApiClient {
     }
 
     private HttpResponse<String> send(HttpRequest request) {
+        return send(request, HttpResponse.BodyHandlers.ofString());
+    }
+
+    private <T> HttpResponse<T> send(HttpRequest request, HttpResponse.BodyHandler<T> bodyHandler) {
 
         for (int retry = 0; retry < 10; retry++ ) {
             //noinspection LoggingSimilarMessage
             try {
-                HttpResponse <String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+                HttpResponse<T> response = client.send(request, bodyHandler);
                 switch (response.statusCode()) {
                     case Constants.HTTP_TOO_MANY_REQUESTS:
                     case Constants.HTTP_SERVICE_UNAVAILABLE:
@@ -343,6 +347,40 @@ public class ApiClient {
         }
 
         return fileData;
+    }
+
+    // Download the raw bytes of an upload (e.g. an image) given its Discourse upload URL.
+    // Unlike downloadFile, this does not normalize line endings, so binary data is returned intact.
+    // The url may be a site-relative path (e.g. "/uploads/...") or an absolute (CDN) URL.
+    byte[] downloadImage(final String url) {
+
+        // Discourse's uploads.url can be absolute (http(s)://...), protocol-relative (//host/path,
+        // e.g. an S3/CDN URL), site-relative (/uploads/...), or relative (uploads/...).
+        String endpoint;
+        if (url.startsWith("http")) {
+            endpoint = url;
+        } else if (url.startsWith("//")) {
+            endpoint = "https:" + url;
+        } else if (url.startsWith("/")) {
+            endpoint = Constants.BASE_URL + url.substring(1);
+        } else {
+            endpoint = Constants.BASE_URL + url;
+        }
+
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(endpoint))
+                .header("Api-Username", apiUser)
+                .header("Api-Key", apiKey)
+                .build();
+
+        HttpResponse<byte[]> response = send(request, HttpResponse.BodyHandlers.ofByteArray());
+
+        if (response.statusCode() != HTTP_OK) {
+            throw new MemberDataException(
+                    "downloadImage(" + endpoint + ") failed: " + response.statusCode());
+        }
+
+        return response.body();
     }
 
     String upload(String fileName) throws URISyntaxException {

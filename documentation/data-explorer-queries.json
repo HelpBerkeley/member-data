@@ -2,7 +2,7 @@
   "success": true,
   "errors": [],
   "duration": 0.3,
-  "result_count": 63,
+  "result_count": 64,
   "params": null,
   "columns": [
     "id",
@@ -453,6 +453,13 @@
       "Used by the remote member data fetcher. Do not modify or remove.",
       false,
       "SELECT\n  e.user_id,\n  e.confirmed\nFROM email_tokens as e"
+    ],
+    [
+      90,
+      "Get Topic Images",
+      "Used by the member-data topic image download/delete feature. Parameterized by :topic_id. Returns one row per Discourse-hosted image upload in the topic's non-deleted posts. Do not modify or remove.",
+      false,
+      "-- [params]\n-- int :topic_id = 1\nSELECT\n    p.id                AS post_id,\n    p.post_number       AS post_number,\n    u.id                AS upload_id,\n    u.original_filename AS original_filename,\n    u.extension         AS extension,\n    u.filesize          AS filesize,\n    u.url               AS url\nFROM posts p\nJOIN upload_references ur ON ur.target_type = 'Post' AND ur.target_id = p.id\nJOIN uploads u            ON u.id = ur.upload_id\nWHERE p.topic_id = :topic_id\n  AND p.deleted_at IS NULL\n  AND (u.width IS NOT NULL OR lower(u.extension) IN\n       ('jpg','jpeg','png','gif','webp','heic','heif','bmp','tiff','svg'))\nORDER BY p.post_number, u.id"
     ]
   ]
 }

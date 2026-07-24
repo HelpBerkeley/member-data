@@ -31,6 +31,7 @@ import java.io.InputStream;
 import java.net.URL;
 import java.net.http.HttpResponse;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.MessageFormat;
 import java.time.LocalDate;
@@ -192,6 +193,9 @@ public class Main {
             case Options.COMMAND_COMPLETED_ONEKITCHEN_ORDERS:
                 completedOneKitchenOrders(apiClient, options.getFileName());
                 break;
+            case Options.COMMAND_DOWNLOAD_TOPIC_IMAGES:
+                downloadTopicImages(apiClient, options.getTopicId(), options.getOutputDir());
+                break;
             default:
                 assert options.getCommand().equals(Options.COMMAND_POST_DRIVERS) : options.getCommand();
                 postDrivers(apiClient, options.getFileName());
@@ -260,6 +264,12 @@ public class Main {
 
         // Export drivers
         new DriverExporter(users, history, driverDetails).driversToFile();
+    }
+
+    private static void downloadTopicImages(ApiClient apiClient, long topicId, String outputDir) {
+        Path dir = (outputDir != null) ? Paths.get(outputDir) : TopicImages.defaultOutputDir(topicId);
+        TopicImages topicImages = new TopicImages(apiClient, topicId);
+        topicImages.downloadImages(dir);
     }
 
     private static void postConsumerRequests(ApiClient apiClient, final String fileName)

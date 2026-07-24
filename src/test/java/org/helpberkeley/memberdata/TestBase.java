@@ -127,6 +127,12 @@ public class TestBase {
             Options.COMMAND_ONE_KITCHEN_RESTAURANT_TEMPLATE,
     };
 
+    static final String[] COMMANDS_WITH_TOPIC_ID = {
+            Options.COMMAND_DOWNLOAD_TOPIC_IMAGES,
+    };
+
+    static final String TEST_TOPIC_ID = "7253";
+
     static final String TEST_FILE_NAME = "pom.xml";
     static final String TEST_SHORT_URL = Constants.UPLOAD_URI_PREFIX + "ab34dezzAndSomethingY.csv";
   
