@@ -196,6 +196,9 @@ public class Main {
             case Options.COMMAND_DOWNLOAD_TOPIC_IMAGES:
                 downloadTopicImages(apiClient, options.getTopicId(), options.getOutputDir());
                 break;
+            case Options.COMMAND_LIST_CATEGORY_IMAGES:
+                listCategoryImages(apiClient, options.getCategoryName());
+                break;
             default:
                 assert options.getCommand().equals(Options.COMMAND_POST_DRIVERS) : options.getCommand();
                 postDrivers(apiClient, options.getFileName());
@@ -270,6 +273,25 @@ public class Main {
         Path dir = (outputDir != null) ? Paths.get(outputDir) : TopicImages.defaultOutputDir(topicId);
         TopicImages topicImages = new TopicImages(apiClient, topicId);
         topicImages.downloadImages(dir);
+    }
+
+    private static void listCategoryImages(ApiClient apiClient, final String categoryName) {
+
+        List<Topic> topics = new CategoryTopics(apiClient, categoryName).getTopics();
+        for (Topic topic : topics) {
+            List<ImageRecord> imageRecords = new TopicImages(apiClient, topic.getId()).getImages();
+            for (ImageRecord imageRecord : imageRecords) {
+                System.out.println( topic.getName()
+                        + " "
+                        + imageRecord.filesize
+                        + " "
+                        + imageRecord.fileName());
+
+                try {
+                    Thread.sleep(500);
+                } catch (InterruptedException e) {}
+            }
+        }
     }
 
     private static void postConsumerRequests(ApiClient apiClient, final String fileName)

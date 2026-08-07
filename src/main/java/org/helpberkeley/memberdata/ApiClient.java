@@ -103,7 +103,6 @@ public class ApiClient {
     private <T> HttpResponse<T> send(HttpRequest request, HttpResponse.BodyHandler<T> bodyHandler) {
 
         for (int retry = 0; retry < 10; retry++ ) {
-            //noinspection LoggingSimilarMessage
             try {
                 HttpResponse<T> response = client.send(request, bodyHandler);
                 switch (response.statusCode()) {

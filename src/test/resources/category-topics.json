@@ -1,0 +1,68 @@
+{
+  "success": true,
+  "errors": [],
+  "duration": 6.6,
+  "result_count": 972,
+  "params": {
+    "category_name": "Deliveries"
+  },
+  "columns": [
+    "topic_id",
+    "title",
+    "created_at",
+    "closed",
+    "archived",
+    "visible"
+  ],
+  "default_limit": 1000,
+  "rows": [
+    [
+      193,
+      "Crestonia driver availability",
+      "2020-03-27T22:23:30.230Z",
+      false,
+      false,
+      true
+    ],
+    [
+      194,
+      "Coralbm Driver availability",
+      "2020-03-28T00:39:36.977Z",
+      false,
+      false,
+      true
+    ],
+    [
+      459,
+      "4/14 Delivery run 4/14",
+      "2020-04-13T07:30:25.383Z",
+      false,
+      false,
+      true
+    ],
+    [
+      10990,
+      "Free Groceries 3/23, 3pm-ish delivery run 3/23/26",
+      "2026-03-17T03:25:55.307Z",
+      false,
+      false,
+      true
+    ],
+    [
+      11009,
+      "Free Groceries 4/6, 3pm-ish delivery run 4/6/26",
+      "2026-04-01T04:57:00.244Z",
+      false,
+      false,
+      true
+    ],
+    [
+      11026,
+      "Free Groceries 4/20, 3pm-ish delivery run 4/20/26",
+      "2026-04-16T00:21:47.510Z",
+      false,
+      false,
+      true
+    ]
+  ]
+}

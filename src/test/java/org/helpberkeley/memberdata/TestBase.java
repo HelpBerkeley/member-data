@@ -131,6 +131,10 @@ public class TestBase {
             Options.COMMAND_DOWNLOAD_TOPIC_IMAGES,
     };
 
+    static final String[] COMMANDS_WITH_CATEGORY_NAME = {
+            Options.COMMAND_LIST_CATEGORY_IMAGES,
+    };
+
     static final String TEST_TOPIC_ID = "7253";
 
     static final String TEST_FILE_NAME = "pom.xml";

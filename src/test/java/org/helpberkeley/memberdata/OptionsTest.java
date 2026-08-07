@@ -217,6 +217,19 @@ public class OptionsTest extends TestBase {
     }
 
     @Test
+    public void missingCategoryNameTest() {
+        for (String command : COMMANDS_WITH_CATEGORY_NAME) {
+            Options options = new Options(new String[] { command });
+            Throwable thrown = catchThrowable(options::parse);
+            assertThat(thrown).isInstanceOf(MemberDataException.class);
+            assertThat(thrown).hasMessageContaining(command);
+            assertThat(thrown).hasMessageContaining(Options.USAGE_ERROR);
+            assertThat(thrown).hasMessageContaining(Options.COMMAND_REQUIRES_CATEGORY_NAME);
+            assertThat(thrown).hasMessageContaining(Options.USAGE);
+        }
+    }
+
+    @Test
     public void badTopicIdTest() {
         String badTopicId = "not-a-number";
         for (String command : COMMANDS_WITH_TOPIC_ID) {

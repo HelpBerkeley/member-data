@@ -268,6 +268,9 @@ public class HttpClientSimulator extends HttpClient {
             case Constants.QUERY_GET_LAST_ONE_KITCHEN_RESTAURANT_TEMPLATE_REPLY:
                 dataFile = "one-kitchen-restaurant-template-last-reply.json";
                 break;
+            case Constants.QUERY_GET_CATEGORY_TOPICS:
+                dataFile = "category-topics.json";
+                break;
             default:
                 throw new RuntimeException("FIX THIS: query " + queryId + " not supported by the simulator");
         }
@@ -327,7 +330,6 @@ public class HttpClientSimulator extends HttpClient {
         }
 
         try {
-            //noinspection unchecked
             if (! fileContent.isEmpty()) {
                 return (HttpResponse<T>) new HttpResponseSimulator<>(fileContent);
             } else {

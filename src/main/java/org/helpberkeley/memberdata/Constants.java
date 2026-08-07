@@ -98,6 +98,8 @@ public class Constants {
     // extension, filesize, url.
     public static final int QUERY_GET_TOPIC_IMAGES = 90;
 
+    public static final int QUERY_GET_CATEGORY_TOPICS = 91;
+
     // Current spec version for these queries
     public static final int QUERY_GET_DRIVERS_POST_FORMAT = QUERY_GET_DRIVERS_POST_FORMAT_V24;
     public static final int QUERY_GET_GROUP_INSTRUCTIONS_FORMAT = QUERY_GET_GROUP_INSTRUCTIONS_FORMAT_V22;

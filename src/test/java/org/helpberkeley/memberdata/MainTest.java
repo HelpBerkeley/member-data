@@ -135,6 +135,16 @@ public class MainTest extends TestBase {
     }
 
     @Test
+    public void listCategoryImagesTest() throws IOException {
+        String[] args = {
+                "list-category-images",
+                "Deliveries"
+        };
+
+        Main.main(args);
+    }
+
+    @Test
     public void updateUserErrorsTest() throws IOException {
         String errorsFile = findFile(Main.MEMBERDATA_ERRORS_FILE, "txt");
         String[] args = { Options.COMMAND_UPDATE_ERRORS, errorsFile };
