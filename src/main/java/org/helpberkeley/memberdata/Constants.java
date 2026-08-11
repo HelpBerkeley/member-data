@@ -238,6 +238,9 @@ public class Constants {
     public static final String DOWNLOAD_ENDPOINT = BASE_URL + "uploads/short-url/";
     public static final String QUERY_BASE = BASE_URL + "admin/plugins/discourse-data-explorer/queries/";
     public static final String CHANGE_OWNER = "/change-owner.json";
+    // Appended to a DELETE of POSTS_BASE + postId to make the deletion permanent rather than a
+    // soft delete. Requires an admin API user and the can_permanently_delete site setting.
+    public static final String FORCE_DESTROY = "?force_destroy=true";
 
     // Control block values
     public static final String CONTROL_BLOCK_BEGIN = "ControlBegin";

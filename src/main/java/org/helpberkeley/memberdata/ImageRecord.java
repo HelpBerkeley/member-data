@@ -1,6 +1,9 @@
 package org.helpberkeley.memberdata;
 
 class ImageRecord {
+    // The id of the post holding this image. Several ImageRecords can share one postId (a post with
+    // two uploads yields two rows), so anything acting per-post - see TopicImages.deleteImagePosts -
+    // must de-duplicate on it. Not used for downloading; do not remove as unused.
     final long postId;
     final long postNumber;
     final long uploadId;

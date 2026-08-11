@@ -135,6 +135,58 @@ public class MainTest extends TestBase {
     }
 
     @Test
+    public void deleteTopicImagePostsDryRunTest() throws IOException {
+        HttpClientSimulator.clearDeleteRequests();
+
+        String[] args = { Options.COMMAND_DELETE_TOPIC_IMAGE_POSTS, TEST_TOPIC_ID };
+        Main.main(args);
+
+        assertThat(HttpClientSimulator.getDeleteRequests()).isEmpty();
+    }
+
+    @Test
+    public void resolvePostIdsTest() throws IOException {
+        // Main builds everything internally, so this is the only place to disable the naps.
+        PostIdResolver.NAP_MILLISECONDS = 0;
+        Path input = Files.createTempFile("topic-posts", ".csv");
+        Path output = Files.createTempFile("post-ids", ".csv");
+        Files.writeString(input, "topic_id,post_number\n7253,32\n7253,33\n");
+
+        try {
+            String[] args = {
+                    Options.COMMAND_RESOLVE_POST_IDS, input.toString(), output.toString() };
+            Main.main(args);
+
+            // Resolved against the topic-images.json fixture: #32 is post 71301, #33 is 71304.
+            assertThat(PostDeleter.readPostIds(output.toString())).containsExactly(71301L, 71304L);
+        } finally {
+            Files.deleteIfExists(PostIdResolver.unresolvedFor(output));
+            Files.deleteIfExists(output);
+            Files.deleteIfExists(input);
+        }
+    }
+
+    @Test
+    public void deleteTopicImagePostsForceTest() throws IOException {
+        HttpClientSimulator.clearDeleteRequests();
+        // Main builds everything internally, so this is the only place to disable the naps.
+        TopicImages.NAP_MILLISECONDS = 0;
+        PostDeleter.PERMANENT_DELETE_WAIT_MILLISECONDS = 0;
+        PostDeleter.NAP_MILLISECONDS = 0;
+
+        String[] args = {
+                Options.COMMAND_DELETE_TOPIC_IMAGE_POSTS, TEST_TOPIC_ID, Options.FORCE_ARGUMENT };
+        Main.main(args);
+
+        // Posts 71301 and 71304 soft deleted, then permanently deleted. Post 71300 is post 1.
+        assertThat(HttpClientSimulator.getDeleteRequests()).containsExactly(
+                Constants.POSTS_BASE + "71301",
+                Constants.POSTS_BASE + "71304",
+                Constants.POSTS_BASE + "71301" + Constants.FORCE_DESTROY,
+                Constants.POSTS_BASE + "71304" + Constants.FORCE_DESTROY);
+    }
+
+    @Test
     public void listCategoryImagesTest() throws IOException {
         String[] args = {
                 "list-category-images",

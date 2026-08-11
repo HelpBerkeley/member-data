@@ -54,6 +54,14 @@ public class Options {
     static final String COMMAND_WORK_REQUESTS = "work-requests";
     static final String COMMAND_DOWNLOAD_TOPIC_IMAGES = "download-topic-images";
     static final String COMMAND_LIST_CATEGORY_IMAGES = "list-category-images";
+    static final String COMMAND_DELETE_TOPIC_IMAGE_POSTS = "delete-topic-image-posts";
+    static final String COMMAND_DELETE_POSTS = "delete-posts";
+    static final String COMMAND_RESOLVE_POST_IDS = "resolve-post-ids";
+
+    // Confirmation for delete-topic-image-posts. Deliberately an exact literal rather than
+    // Boolean.parseBoolean - that reads "yes" as false, and silently doing nothing is a bad
+    // failure mode for the confirmation on a command that permanently destroys posts.
+    static final String FORCE_ARGUMENT = "force";
 
     static final String USAGE_ERROR = "Usage error for command ";
     static final String UNKNOWN_COMMAND = USAGE_ERROR + ": unknown command: ";
@@ -64,6 +72,7 @@ public class Options {
     static final String COMMAND_REQUIRES_CATEGORY_NAME = ": command requires a category name";
     static final String BAD_SHORT_URL = USAGE_ERROR + ": short url syntax error";
     static final String BAD_TOPIC_ID = USAGE_ERROR + ": topic id must be numeric: ";
+    static final String BAD_FORCE_ARGUMENT = USAGE_ERROR + ": expected \"" + FORCE_ARGUMENT + "\", got: ";
     static final String FILE_DOES_NOT_EXIST = USAGE_ERROR + ": file does not exist: ";
 
     static final String USAGE =
@@ -92,7 +101,13 @@ public class Options {
                     + "    | " + COMMAND_RESTAURANT_TEMPLATE + "\n"
                     + "    | " + COMMAND_ONE_KITCHEN_RESTAURANT_TEMPLATE + "\n"
                     + "    | " + COMMAND_DOWNLOAD_TOPIC_IMAGES + " topic-id [output-dir]\n"
-                    + "    | " + COMMAND_LIST_CATEGORY_IMAGES + " category-name\n";
+                    + "    | " + COMMAND_LIST_CATEGORY_IMAGES + " category-name\n"
+                    + "    | " + COMMAND_DELETE_TOPIC_IMAGE_POSTS + " topic-id [" + FORCE_ARGUMENT
+                    + "] (without " + FORCE_ARGUMENT + " it is a dry run)\n"
+                    + "    | " + COMMAND_DELETE_POSTS + " post-list-file [" + FORCE_ARGUMENT
+                    + "] (csv with post_id and post_number columns)\n"
+                    + "    | " + COMMAND_RESOLVE_POST_IDS + " topic-post-list-file [output-file]"
+                    + " (csv with topic_id and post_number columns)\n";
 
     private final String[] args;
     private String command;
@@ -102,6 +117,8 @@ public class Options {
     private long topicId;
     private String categoryName;
     private String outputDir;
+    private String outputFileName;
+    private boolean force = false;
 
 
     Options(final String[] args) {
@@ -181,15 +198,43 @@ public class Options {
                 if (index == args.length) {
                     dieMessage(USAGE_ERROR + arg + COMMAND_REQUIRES_TOPIC_ID);
                 }
-                String topicIdArg = args[index++];
-                try {
-                    topicId = Long.parseLong(topicIdArg);
-                } catch (NumberFormatException ex) {
-                    dieMessage(BAD_TOPIC_ID + topicIdArg);
-                }
+                topicId = parseTopicId(args[index++]);
 
                 if (index < args.length) {
                     outputDir = args[index++];
+                }
+                break;
+            case COMMAND_DELETE_POSTS:
+                setCommand(arg);
+                if (index == args.length) {
+                    dieMessage(USAGE_ERROR + arg + COMMAND_REQUIRES_FILE_NAME);
+                }
+                fileName = args[index++];
+
+                if (index < args.length) {
+                    force = parseForce(args[index++]);
+                }
+                break;
+            case COMMAND_RESOLVE_POST_IDS:
+                setCommand(arg);
+                if (index == args.length) {
+                    dieMessage(USAGE_ERROR + arg + COMMAND_REQUIRES_FILE_NAME);
+                }
+                fileName = args[index++];
+
+                if (index < args.length) {
+                    outputFileName = args[index++];
+                }
+                break;
+            case COMMAND_DELETE_TOPIC_IMAGE_POSTS:
+                setCommand(arg);
+                if (index == args.length) {
+                    dieMessage(USAGE_ERROR + arg + COMMAND_REQUIRES_TOPIC_ID);
+                }
+                topicId = parseTopicId(args[index++]);
+
+                if (index < args.length) {
+                    force = parseForce(args[index++]);
                 }
                 break;
             case COMMAND_LIST_CATEGORY_IMAGES:
@@ -245,6 +290,32 @@ public class Options {
     String getCategoryName() {
         return categoryName;
     }
+
+    boolean force() {
+        return force;
+    }
+
+    /** Where resolve-post-ids writes. Null when the argument was omitted - see the command. */
+    String outputFileName() {
+        return outputFileName;
+    }
+
+    private boolean parseForce(final String forceArg) {
+        if (! forceArg.equals(FORCE_ARGUMENT)) {
+            dieMessage(BAD_FORCE_ARGUMENT + forceArg);
+        }
+        return true;
+    }
+
+    private long parseTopicId(final String topicIdArg) {
+        try {
+            return Long.parseLong(topicIdArg);
+        } catch (NumberFormatException ex) {
+            dieMessage(BAD_TOPIC_ID + topicIdArg);
+            return 0;   // not reached - dieMessage throws
+        }
+    }
+
     private void setCommand(final String command) {
         if (this.command != null) {
             dieMessage(TOO_MANY_COMMANDS);

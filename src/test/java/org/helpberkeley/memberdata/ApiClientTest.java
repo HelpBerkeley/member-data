@@ -21,14 +21,23 @@
 //
 package org.helpberkeley.memberdata;
 
+import org.junit.After;
 import org.junit.Test;
 
+import java.net.http.HttpResponse;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.TimeUnit;
 
+import static java.net.HttpURLConnection.HTTP_BAD_REQUEST;
+import static java.net.HttpURLConnection.HTTP_FORBIDDEN;
+import static java.net.HttpURLConnection.HTTP_INTERNAL_ERROR;
+import static java.net.HttpURLConnection.HTTP_NOT_FOUND;
+import static java.net.HttpURLConnection.HTTP_OK;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.ThrowableAssert.catchThrowable;
 
@@ -192,5 +201,213 @@ public class ApiClientTest extends TestBase {
         assertThat(body).contains("{\"topic_id\":\"8506\"}");
         assertThat(body).contains("name=\"limit\"");
         assertThat(body).contains("10000");
+    }
+
+    @Test
+    public void deletePostTest() {
+        HttpClientSimulator.clearDeleteRequests();
+        ApiClient apiClient = createApiSimulator();
+
+        assertThat(apiClient.deletePost(71301, false).statusCode()).isEqualTo(HTTP_OK);
+        assertThat(apiClient.deletePost(71301, true).statusCode()).isEqualTo(HTTP_OK);
+
+        // A soft delete carries no parameter. A permanent one adds force_destroy.
+        assertThat(HttpClientSimulator.getDeleteRequests()).containsExactly(
+                Constants.POSTS_BASE + "71301",
+                Constants.POSTS_BASE + "71301" + Constants.FORCE_DESTROY);
+    }
+
+    @Test
+    public void deletePostNotFoundTest() {
+        HttpClientSimulator.clearDeleteRequests();
+        HttpClientSimulator.setDeleteResponseStatus(71301, HTTP_NOT_FOUND);
+        ApiClient apiClient = createApiSimulator();
+
+        // Already gone is not a failure - a retried delete whose first response was lost returns 404.
+        assertThat(apiClient.deletePost(71301, true).statusCode()).isEqualTo(HTTP_NOT_FOUND);
+    }
+
+    @Test
+    public void deletePostForbiddenTest() {
+        HttpClientSimulator.clearDeleteRequests();
+        HttpClientSimulator.setDeleteResponseStatus(71301, HTTP_FORBIDDEN);
+        ApiClient apiClient = createApiSimulator();
+
+        // Returned, not thrown - the caller waits out the permanent delete timer and retries.
+        assertThat(apiClient.deletePost(71301, true).statusCode()).isEqualTo(HTTP_FORBIDDEN);
+    }
+
+    @Test
+    public void deletePostFailureTest() {
+        HttpClientSimulator.clearDeleteRequests();
+        // A client error, so it is reported straight away. Server errors are retried instead -
+        // see internalErrorIsRetriedTest.
+        HttpClientSimulator.setDeleteResponseStatus(71301, HTTP_BAD_REQUEST);
+        ApiClient apiClient = createApiSimulator();
+
+        Throwable thrown = catchThrowable(() -> apiClient.deletePost(71301, true));
+        assertThat(thrown).isInstanceOf(MemberDataException.class);
+        assertThat(thrown).hasMessageContaining("deletePost");
+        assertThat(thrown).hasMessageContaining(String.valueOf(HTTP_BAD_REQUEST));
+    }
+
+    @Test
+    public void deletePostRetryTest() {
+        HttpClientSimulator.clearDeleteRequests();
+        ApiClient.RETRY_NAP_MILLISECONDS = 0;
+        HttpClientSimulator.setSendFailure(HttpClientSimulator.SendFailType.SERVICE_UNAVAILABLE, 1);
+        ApiClient apiClient = createApiSimulator();
+
+        // DELETE goes through the same retry path as every other request.
+        assertThat(apiClient.deletePost(71301, false).statusCode()).isEqualTo(HTTP_OK);
+    }
+
+    // Retry nap length. The tests above zero RETRY_NAP_MILLISECONDS and it is a static shared by
+    // every test class in the fork, so these set what they depend on and restoreRetryNap() puts
+    // the default back.
+    @After
+    public void restoreRetryNap() {
+        ApiClient.RETRY_NAP_MILLISECONDS = DEFAULT_RETRY_NAP_MILLISECONDS;
+    }
+
+    private static final long DEFAULT_RETRY_NAP_MILLISECONDS = TimeUnit.SECONDS.toMillis(10);
+    // Discourse reports whole seconds rounded down, so ApiClient adds a second of margin.
+    private static final long MARGIN = TimeUnit.SECONDS.toMillis(1);
+
+    private static HttpResponse<String> rateLimited(String body, Map<String, List<String>> headers) {
+        return HttpClientSimulator.response(body, Constants.HTTP_TOO_MANY_REQUESTS, headers);
+    }
+
+    private static Map<String, List<String>> retryAfter(long seconds) {
+        return Map.of("Retry-After", List.of(String.valueOf(seconds)));
+    }
+
+    @Test
+    public void retryAfterHeaderHonoredTest() {
+        ApiClient.RETRY_NAP_MILLISECONDS = DEFAULT_RETRY_NAP_MILLISECONDS;
+        ApiClient apiClient = createApiSimulator();
+
+        assertThat(apiClient.retryNapMillis(rateLimited("", retryAfter(3))))
+                .isEqualTo(TimeUnit.SECONDS.toMillis(3) + MARGIN);
+    }
+
+    @Test
+    public void waitSecondsFromBodyHonoredTest() {
+        ApiClient.RETRY_NAP_MILLISECONDS = DEFAULT_RETRY_NAP_MILLISECONDS;
+        ApiClient apiClient = createApiSimulator();
+
+        // Discourse's application level rate limiter answers with no Retry-After header.
+        assertThat(apiClient.retryNapMillis(rateLimited(HttpClientSimulator.RATE_LIMITED_BODY, Map.of())))
+                .isEqualTo(TimeUnit.SECONDS.toMillis(HttpClientSimulator.RATE_LIMITED_WAIT_SECONDS) + MARGIN);
+    }
+
+    @Test
+    public void retryAfterHeaderPreferredOverBodyTest() {
+        ApiClient.RETRY_NAP_MILLISECONDS = DEFAULT_RETRY_NAP_MILLISECONDS;
+        ApiClient apiClient = createApiSimulator();
+
+        assertThat(apiClient.retryNapMillis(
+                rateLimited(HttpClientSimulator.RATE_LIMITED_BODY, retryAfter(7))))
+                .isEqualTo(TimeUnit.SECONDS.toMillis(7) + MARGIN);
+    }
+
+    @Test
+    public void noRetryHintFallsBackToFixedNapTest() {
+        ApiClient.RETRY_NAP_MILLISECONDS = DEFAULT_RETRY_NAP_MILLISECONDS;
+        ApiClient apiClient = createApiSimulator();
+
+        assertThat(apiClient.retryNapMillis(rateLimited("We are having technical difficulties", Map.of())))
+                .isEqualTo(DEFAULT_RETRY_NAP_MILLISECONDS);
+    }
+
+    @Test
+    public void unparsableRetryAfterFallsBackTest() {
+        ApiClient.RETRY_NAP_MILLISECONDS = DEFAULT_RETRY_NAP_MILLISECONDS;
+        ApiClient apiClient = createApiSimulator();
+
+        // The HTTP-date form of Retry-After, which Discourse does not use.
+        Map<String, List<String>> headers = Map.of("Retry-After", List.of("Wed, 21 Oct 2015 07:28:00 GMT"));
+
+        assertThat(apiClient.retryNapMillis(rateLimited("", headers)))
+                .isEqualTo(DEFAULT_RETRY_NAP_MILLISECONDS);
+    }
+
+    @Test
+    public void nonStringBodyFallsBackTest() {
+        ApiClient.RETRY_NAP_MILLISECONDS = DEFAULT_RETRY_NAP_MILLISECONDS;
+        ApiClient apiClient = createApiSimulator();
+
+        // Image downloads ask for a byte[] body. There is nothing to parse, and nothing may throw.
+        HttpResponse<byte[]> response = HttpClientSimulator.response(
+                new byte[] { 1, 2, 3 }, Constants.HTTP_TOO_MANY_REQUESTS, Map.of());
+
+        assertThat(apiClient.retryNapMillis(response)).isEqualTo(DEFAULT_RETRY_NAP_MILLISECONDS);
+    }
+
+    @Test
+    public void retryNapIsCappedTest() {
+        ApiClient.RETRY_NAP_MILLISECONDS = DEFAULT_RETRY_NAP_MILLISECONDS;
+        ApiClient apiClient = createApiSimulator();
+
+        assertThat(apiClient.retryNapMillis(rateLimited("", retryAfter(TimeUnit.DAYS.toSeconds(1)))))
+                .isEqualTo(ApiClient.MAX_RETRY_NAP_MILLISECONDS);
+    }
+
+    @Test
+    public void zeroedRetryNapIgnoresTheServerTest() {
+        // How the tests disable napping. It has to win over anything the server asked for, or an
+        // injected Retry-After stalls the suite.
+        ApiClient.RETRY_NAP_MILLISECONDS = 0;
+        ApiClient apiClient = createApiSimulator();
+
+        assertThat(apiClient.retryNapMillis(rateLimited("", retryAfter(30)))).isEqualTo(0);
+    }
+
+    @Test
+    public void rateLimitedRequestsCountedTest() {
+        ApiClient.RETRY_NAP_MILLISECONDS = 0;
+        HttpClientSimulator.setSendFailure(HttpClientSimulator.SendFailType.TOO_MANY_TIMES_429_RESULT, 2);
+        ApiClient apiClient = createApiSimulator();
+
+        apiClient.runQuery(Constants.QUERY_GET_EMAILS);
+
+        assertThat(apiClient.backpressureResponses()).isEqualTo(2);
+    }
+
+    @Test
+    public void serviceUnavailableIsBackpressureTest() {
+        ApiClient.RETRY_NAP_MILLISECONDS = 0;
+        HttpClientSimulator.setSendFailure(HttpClientSimulator.SendFailType.SERVICE_UNAVAILABLE, 1);
+        ApiClient apiClient = createApiSimulator();
+
+        apiClient.runQuery(Constants.QUERY_GET_EMAILS);
+
+        // A bulk write job is usually the reason the site is unhealthy, so it must slow down.
+        assertThat(apiClient.backpressureResponses()).isEqualTo(1);
+    }
+
+    @Test
+    public void internalErrorIsRetriedTest() {
+        HttpClientSimulator.clearDeleteRequests();
+        ApiClient.RETRY_NAP_MILLISECONDS = 0;
+        // One 500 then success. A transient upstream 500 once aborted a 4,000 post run.
+        HttpClientSimulator.setSendFailure(HttpClientSimulator.SendFailType.INTERNAL_ERROR, 1);
+        ApiClient apiClient = createApiSimulator();
+
+        assertThat(apiClient.deletePost(71301, false).statusCode()).isEqualTo(HTTP_OK);
+        assertThat(apiClient.backpressureResponses()).isEqualTo(1);
+    }
+
+    @Test
+    public void persistentInternalErrorReportsTheStatusTest() {
+        ApiClient.RETRY_NAP_MILLISECONDS = 0;
+        HttpClientSimulator.setSendFailure(HttpClientSimulator.SendFailType.INTERNAL_ERROR, 10);
+        ApiClient apiClient = createApiSimulator();
+
+        Throwable thrown = catchThrowable(() -> apiClient.runQuery(Constants.QUERY_GET_EMAILS));
+        assertThat(thrown).isInstanceOf(RuntimeException.class);
+        assertThat(thrown).hasMessageContaining("10 attempts");
+        // Giving up must say what it was failing with, not just that it gave up.
+        assertThat(thrown).hasMessageContaining(String.valueOf(HTTP_INTERNAL_ERROR));
     }
 }

@@ -35,7 +35,11 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.Duration;
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Deque;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
@@ -44,6 +48,7 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.Flow;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import static java.net.HttpURLConnection.HTTP_INTERNAL_ERROR;
 import static java.net.HttpURLConnection.HTTP_NOT_FOUND;
 import static java.net.HttpURLConnection.HTTP_OK;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
@@ -54,10 +59,21 @@ public class HttpClientSimulator extends HttpClient {
         GOAWAY_IOEXCEPTION,
         TOO_MANY_TIMES_429_RESULT,
         SERVICE_UNAVAILABLE,
+        INTERNAL_ERROR,
     }
 
+    // What Discourse's rate limiter actually returns, so the retry tests exercise ApiClient's
+    // parsing of it rather than a placeholder.
+    static final long RATE_LIMITED_WAIT_SECONDS = 3;
+    static final String RATE_LIMITED_BODY = "{\"errors\":[\"You've performed this action too many"
+            + " times. Please wait 3 seconds before trying again.\"],\"error_type\":\"rate_limit\","
+            + "\"extras\":{\"wait_seconds\":" + RATE_LIMITED_WAIT_SECONDS + "}}";
+
     private static final Map<Integer, String> queryResponseFiles = new HashMap<>();
-    private static final Map<Integer, String> queryResponseData = new HashMap<>();
+    // A queue per query id, not a single value - resolving several topics runs the same query id
+    // several times in one call, each needing a different answer. One enqueue and one poll behaves
+    // exactly as the single value version did.
+    private static final Map<Integer, Deque<String>> queryResponseData = new HashMap<>();
     private static final Map<String, String> getResponseFiles = new HashMap<>();
     private static final Map<String, String> getResponseData = new HashMap<>();
     private static final Map<String, String> postResponseData = new HashMap<>();
@@ -67,12 +83,29 @@ public class HttpClientSimulator extends HttpClient {
     // Captures the body of the most recent Data Explorer query request, so tests can assert
     // the multipart form fields that were sent (params, limit).
     static String lastQueryRequestBody = null;
+    // Every DELETE request URI seen, in order. A List, not a Set - tests assert on how many times
+    // a post was deleted, not just whether it was.
+    private static final List<String> deleteRequests = new ArrayList<>();
+    // Status to return for a DELETE, keyed by post id, so an override applies to both the
+    // soft delete and the ?force_destroy=true request for that post.
+    private static final Map<Long, Integer> deleteResponseStatus = new HashMap<>();
+    private static final Map<Long, String> deleteResponseBody = new HashMap<>();
 
     static void setQueryResponseFile(int queryId, final String fileName) {
         queryResponseFiles.put(queryId, fileName);
     }
+    /** Enqueue one response for the next run of this query. Call repeatedly to queue several. */
     public static void setQueryResponseData(int queryId, final String queryData) {
-        queryResponseData.put(queryId, queryData);
+        queryResponseData.computeIfAbsent(queryId, id -> new ArrayDeque<>()).add(queryData);
+    }
+
+    /**
+     * Discard queued query responses. A test that queues more than it consumes - because the code
+     * under test stopped early - would otherwise feed its leftovers to whatever test runs next,
+     * since the test classes share one fork.
+     */
+    public static void clearQueryResponseData() {
+        queryResponseData.clear();
     }
 
     static void setSendFailure(SendFailType failureType, int numFailures) {
@@ -92,6 +125,42 @@ public class HttpClientSimulator extends HttpClient {
         getResponseFiles.put(uri, filename);
     }
 
+    /** A response to hand to code under test directly, without going through send(). */
+    static <T> HttpResponse<T> response(
+            final T body, int statusCode, final Map<String, List<String>> headers) {
+        return new HttpResponseSimulator<>(body, statusCode, headers);
+    }
+
+    /** The URIs of the DELETE requests seen since the last clearDeleteRequests(), in order. */
+    static List<String> getDeleteRequests() {
+        return List.copyOf(deleteRequests);
+    }
+
+    static void setDeleteResponseStatus(long postId, int statusCode) {
+        deleteResponseStatus.put(postId, statusCode);
+    }
+
+    static void setDeleteResponseStatus(long postId, int statusCode, String body) {
+        deleteResponseStatus.put(postId, statusCode);
+        deleteResponseBody.put(postId, body);
+    }
+
+    private static int failAfterDeletes = -1;
+
+    /** Simulates the process dying mid-run, for resume testing. */
+    static void failAfterDeletes(int count) {
+        failAfterDeletes = count;
+    }
+
+    // These are static and the test classes share a JVM (surefire reuses one fork), so state
+    // leaks between test classes. Every test touching DELETE must start by clearing it.
+    static void clearDeleteRequests() {
+        failAfterDeletes = -1;
+        deleteRequests.clear();
+        deleteResponseStatus.clear();
+        deleteResponseBody.clear();
+    }
+
     @SuppressWarnings("unchecked")
     @Override
     public <T> HttpResponse<T> send(HttpRequest request,
@@ -105,10 +174,14 @@ public class HttpClientSimulator extends HttpClient {
             } else if (sendFailType == SendFailType.SERVICE_UNAVAILABLE) {
                 return (HttpResponse<T>) new HttpResponseSimulator<>(
                         "We are having technical difficulties", Constants.HTTP_SERVICE_UNAVAILABLE);
+            } else if (sendFailType == SendFailType.INTERNAL_ERROR) {
+                // Empty bodied, as the live upstream 500 was.
+                return (HttpResponse<T>) new HttpResponseSimulator<>("", HTTP_INTERNAL_ERROR);
             } else {
                 assertThat(sendFailType).isEqualTo(SendFailType.TOO_MANY_TIMES_429_RESULT);
                 return (HttpResponse<T>) new HttpResponseSimulator<>(
-                        "Too many times", Constants.HTTP_TOO_MANY_REQUESTS);
+                        RATE_LIMITED_BODY, Constants.HTTP_TOO_MANY_REQUESTS,
+                        Map.of("Retry-After", List.of(String.valueOf(RATE_LIMITED_WAIT_SECONDS))));
             }
         }
 
@@ -118,6 +191,8 @@ public class HttpClientSimulator extends HttpClient {
             return doPost(request);
         } else if (isPut(request)) {
             return doPut(request);
+        } else if (isDelete(request)) {
+            return doDelete(request);
         } else if (isGet(request)) {
             return doGet(request);
         }
@@ -142,6 +217,11 @@ public class HttpClientSimulator extends HttpClient {
         return request.method().equals("PUT") && (request.uri().toString().startsWith(Constants.POSTS_BASE));
     }
 
+    private boolean isDelete(HttpRequest request) {
+        // FIX THIS, DS: is there a constant for this?
+        return request.method().equals("DELETE") && request.uri().toString().startsWith(Constants.POSTS_BASE);
+    }
+
     private boolean isGet(HttpRequest request) {
         // FIX THIS, DS: is there a constant for this?
         return request.method().equals("GET");
@@ -156,8 +236,10 @@ public class HttpClientSimulator extends HttpClient {
         // Support for tests overriding the query response either with
         // a string or a file.
         //
-        if (queryResponseData.containsKey(queryId)) {
-            responseData = queryResponseData.remove(queryId);
+        Deque<String> queued = queryResponseData.get(queryId);
+
+        if ((queued != null) && (! queued.isEmpty())) {
+            responseData = queued.poll();
         } else {
             String dataFile = getQueryResponseFile(queryId);
             responseData = readFile(dataFile);
@@ -299,6 +381,30 @@ public class HttpClientSimulator extends HttpClient {
     private <T> HttpResponse<T> doPut(HttpRequest request) {
         //noinspection unchecked
         return (HttpResponse<T>) new HttpResponseSimulator<>("");
+    }
+
+    private <T> HttpResponse<T> doDelete(HttpRequest request) {
+        String uri = request.uri().toString();
+        deleteRequests.add(uri);
+        if ((failAfterDeletes >= 0) && (deleteRequests.size() > failAfterDeletes)) {
+            throw new RuntimeException("simulated process death");
+        }
+        long postId = postIdFromDeleteURI(uri);
+        int statusCode = deleteResponseStatus.getOrDefault(postId, HTTP_OK);
+        String body = deleteResponseBody.getOrDefault(postId, "");
+
+        //noinspection unchecked
+        return (HttpResponse<T>) new HttpResponseSimulator<>(body, statusCode);
+    }
+
+    // Pull the post id out of https://<site>/posts/<postId>[?force_destroy=true]
+    private static long postIdFromDeleteURI(final String uri) {
+        String postId = uri.substring(Constants.POSTS_BASE.length());
+        int query = postId.indexOf('?');
+        if (query != -1) {
+            postId = postId.substring(0, query);
+        }
+        return Long.parseLong(postId);
     }
 
     private <T> HttpResponse<T> doGet(HttpRequest request) {
@@ -485,15 +591,21 @@ public class HttpClientSimulator extends HttpClient {
 
         private final String responseBody;
         private final int statusCode;
+        private final HttpHeaders responseHeaders;
 
         HttpResponseSimulator(final String responseBody) {
-            this.responseBody = responseBody;
-            this.statusCode = HTTP_OK;
+            this(responseBody, HTTP_OK);
         }
 
         HttpResponseSimulator(final String responseBody, int statusCode) {
+            this(responseBody, statusCode, Map.of());
+        }
+
+        HttpResponseSimulator(final String responseBody, int statusCode,
+                Map<java.lang.String, List<java.lang.String>> headers) {
             this.statusCode = statusCode;
             this.responseBody = responseBody;
+            this.responseHeaders = HttpHeaders.of(headers, (name, value) -> true);
         }
 
         @Override
@@ -513,7 +625,7 @@ public class HttpClientSimulator extends HttpClient {
 
         @Override
         public HttpHeaders headers() {
-            return null;
+            return responseHeaders;
         }
 
         @Override

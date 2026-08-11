@@ -117,6 +117,8 @@ public class TestBase {
             Options.COMMAND_FRREG,
             Options.COMMAND_WORK_REQUESTS,
             Options.COMMAND_ONE_KITCHEN_WORKFLOW,
+            Options.COMMAND_DELETE_POSTS,
+            Options.COMMAND_RESOLVE_POST_IDS,
     };
 
     static final String[] COMMANDS_WITH_NO_PARAMETERS = {
@@ -128,6 +130,13 @@ public class TestBase {
     };
 
     static final String[] COMMANDS_WITH_TOPIC_ID = {
+            Options.COMMAND_DOWNLOAD_TOPIC_IMAGES,
+            Options.COMMAND_DELETE_TOPIC_IMAGE_POSTS,
+    };
+
+    // The subset of COMMANDS_WITH_TOPIC_ID taking an optional output directory after the topic id.
+    // delete-topic-image-posts takes its force confirmation there instead, and rejects anything else.
+    static final String[] COMMANDS_WITH_TOPIC_ID_AND_OUTPUT_DIR = {
             Options.COMMAND_DOWNLOAD_TOPIC_IMAGES,
     };
 
@@ -184,6 +193,11 @@ public class TestBase {
     @BeforeClass
     public static void installHttpClientSimulatorFactory() {
         ApiClient.httpClientFactory = new HttpClientSimulatorFactory();
+        // So mvn test needs no memberdata.properties. Real credentials would go unused anyway -
+        // every request is answered by HttpClientSimulator.
+        Main.testProperties = new Properties();
+        Main.testProperties.setProperty(Constants.API_USER_PROPERTY, "test-api-user");
+        Main.testProperties.setProperty(Constants.API_KEY_PROPERTY, "test-api-key");
     }
 
     protected ApiClient createApiSimulator() {

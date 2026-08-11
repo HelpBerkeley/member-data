@@ -199,6 +199,15 @@ public class Main {
             case Options.COMMAND_LIST_CATEGORY_IMAGES:
                 listCategoryImages(apiClient, options.getCategoryName());
                 break;
+            case Options.COMMAND_DELETE_TOPIC_IMAGE_POSTS:
+                deleteTopicImagePosts(apiClient, options.getTopicId(), options.force());
+                break;
+            case Options.COMMAND_DELETE_POSTS:
+                deletePosts(apiClient, options.getFileName(), options.force());
+                break;
+            case Options.COMMAND_RESOLVE_POST_IDS:
+                resolvePostIds(apiClient, options.getFileName(), options.outputFileName());
+                break;
             default:
                 assert options.getCommand().equals(Options.COMMAND_POST_DRIVERS) : options.getCommand();
                 postDrivers(apiClient, options.getFileName());
@@ -206,7 +215,15 @@ public class Main {
         }
     }
 
+    // Test support - lets the tests run without a memberdata.properties on the classpath. The
+    // simulated HTTP client never uses the credentials. Installed like ApiClient.httpClientFactory.
+    static Properties testProperties = null;
+
     static Properties loadProperties() {
+
+        if (testProperties != null) {
+            return testProperties;
+        }
 
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
         URL propertiesFile = classLoader.getResource(Constants.MEMBERDATA_PROPERTIES);
@@ -275,6 +292,27 @@ public class Main {
         topicImages.downloadImages(dir);
     }
 
+    private static void deletePosts(ApiClient apiClient, final String fileName, boolean force) {
+        List<Long> postIds = PostDeleter.readPostIds(fileName);
+        new PostDeleter(apiClient, postIds, PostDeleter.journalFor(fileName)).deletePosts(force);
+    }
+
+    private static void resolvePostIds(
+            ApiClient apiClient, final String fileName, final String outputFileName) {
+
+        List<PostIdResolver.TopicPost> topicPosts = PostIdResolver.readTopicPosts(fileName);
+        Path output = (outputFileName == null)
+                ? PostIdResolver.defaultOutputFor(fileName) : Path.of(outputFileName);
+
+        PostIdResolver resolver = new PostIdResolver(apiClient, topicPosts);
+        PostIdResolver.write(resolver.resolve(), output);
+    }
+
+    private static void deleteTopicImagePosts(ApiClient apiClient, long topicId, boolean force) {
+        TopicImages topicImages = new TopicImages(apiClient, topicId);
+        topicImages.deleteImagePosts(force);
+    }
+
     private static void listCategoryImages(ApiClient apiClient, final String categoryName) {
 
         List<Topic> topics = new CategoryTopics(apiClient, categoryName).getTopics();
@@ -286,10 +324,6 @@ public class Main {
                         + imageRecord.filesize
                         + " "
                         + imageRecord.fileName());
-
-                try {
-                    Thread.sleep(500);
-                } catch (InterruptedException e) {}
             }
         }
     }

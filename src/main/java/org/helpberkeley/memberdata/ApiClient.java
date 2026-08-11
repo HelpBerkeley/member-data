@@ -38,7 +38,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
+import static java.net.HttpURLConnection.HTTP_FORBIDDEN;
+import static java.net.HttpURLConnection.HTTP_NOT_FOUND;
+import static java.net.HttpURLConnection.HTTP_NO_CONTENT;
 import static java.net.HttpURLConnection.HTTP_OK;
 
 public class ApiClient {
@@ -52,6 +57,16 @@ public class ApiClient {
     // Test support
     static HttpClientFactory httpClientFactory = null;
     static long RETRY_NAP_MILLISECONDS = TimeUnit.SECONDS.toMillis(10);
+
+    // Ceiling on a server dictated wait. A site answering "wait an hour" should not silently hang
+    // the process for ten hours across the ten retries.
+    static final long MAX_RETRY_NAP_MILLISECONDS = TimeUnit.MINUTES.toMillis(5);
+    private static final long RETRY_NAP_MARGIN_MILLISECONDS = TimeUnit.SECONDS.toMillis(1);
+    private static final Pattern WAIT_SECONDS = Pattern.compile("\"wait_seconds\"\\s*:\\s*(\\d+)");
+
+    // Responses that mean "slow down", counted across retries. PostDeleter samples this to pace
+    // itself.
+    private long backpressureResponses = 0;
 
     ApiClient(final Properties properties) {
 
@@ -102,31 +117,125 @@ public class ApiClient {
 
     private <T> HttpResponse<T> send(HttpRequest request, HttpResponse.BodyHandler<T> bodyHandler) {
 
+        String lastFailure = null;
+
         for (int retry = 0; retry < 10; retry++ ) {
+
+            long napMillis = RETRY_NAP_MILLISECONDS;
+
             try {
                 HttpResponse<T> response = client.send(request, bodyHandler);
-                switch (response.statusCode()) {
-                    case Constants.HTTP_TOO_MANY_REQUESTS:
-                    case Constants.HTTP_SERVICE_UNAVAILABLE:
-                        LOGGER.warn("send {} failed: {}", request, response.body());
-                        break;
-                    default:
-                        return response;
+                int statusCode = response.statusCode();
+
+                // 429 and every 5xx are retried, and all of them tell the caller to slow down.
+                // A server error under a bulk write job usually means the job is the reason for
+                // it - a single 500, which turned out to be an upstream timeout, once aborted a
+                // 4,000 post deletion run that a retry would have carried straight through.
+                if ((statusCode == Constants.HTTP_TOO_MANY_REQUESTS) || (statusCode >= 500)) {
+                    backpressureResponses++;
+                    lastFailure = statusCode + ": " + response.body();
+                    LOGGER.warn("send {} failed: {}", request, lastFailure);
+                    napMillis = retryNapMillis(response);
+                } else {
+                    return response;
                 }
             } catch (IOException ex) {
+                lastFailure = ex.getMessage();
                 LOGGER.warn("send {} failed: {}", request, ex.getMessage());
             } catch (InterruptedException ex) {
                 throw new RuntimeException("send " + request + " was interrupted");
             }
 
             if (retry < 9) {
-                LOGGER.warn("Failure talking to Discourse, waiting 10 seconds and retrying.");
-                nap(RETRY_NAP_MILLISECONDS);
+                LOGGER.warn("Failure talking to Discourse, waiting {} seconds and retrying.",
+                        TimeUnit.MILLISECONDS.toSeconds(napMillis));
+                nap(napMillis);
             }
         }
 
         LOGGER.warn("10th retry failure seen from Discourse, exiting with a failure");
-        throw new RuntimeException("10 attempts to talk with Discourse failed");
+        // MemberDataException, not a bare RuntimeException: batch callers skip a post that will
+        // not delete and carry on, and they must be able to tell that apart from a bug in this
+        // program, which has to keep propagating.
+        throw new MemberDataException(
+                "10 attempts to talk with Discourse failed, last one with " + lastFailure);
+    }
+
+    /**
+     * Responses telling us to slow down - 429s and server errors - counted across retries. Callers
+     * running long batches pace themselves from this; see PostDeleter's use of AdaptivePacer.
+     */
+    long backpressureResponses() {
+        return backpressureResponses;
+    }
+
+    /**
+     * How long to wait before retrying, taken from what the server said rather than a fixed guess.
+     * Discourse's middleware rate limiter sets a Retry-After header; its application level one
+     * returns extras.wait_seconds in a JSON body. The stated interval is usually much shorter than
+     * ten seconds, and when it is longer, retrying early just burns one of the ten attempts.
+     */
+    long retryNapMillis(HttpResponse<?> response) {
+
+        // Tests zero RETRY_NAP_MILLISECONDS to disable napping. Honor that ahead of anything the
+        // server said, or an injected Retry-After would stall the suite.
+        if (RETRY_NAP_MILLISECONDS <= 0) {
+            return 0;
+        }
+
+        Long seconds = retryAfterSeconds(response);
+        if (seconds == null) {
+            seconds = waitSecondsFromBody(response);
+        }
+        if (seconds == null) {
+            return RETRY_NAP_MILLISECONDS;
+        }
+
+        // Discourse reports whole seconds, rounded down, so its "wait 3 seconds" can mean 3.9.
+        long millis = TimeUnit.SECONDS.toMillis(seconds) + RETRY_NAP_MARGIN_MILLISECONDS;
+
+        if (millis > MAX_RETRY_NAP_MILLISECONDS) {
+            LOGGER.warn("Discourse asked for a {} second wait, capping it at {} seconds",
+                    seconds, TimeUnit.MILLISECONDS.toSeconds(MAX_RETRY_NAP_MILLISECONDS));
+            return MAX_RETRY_NAP_MILLISECONDS;
+        }
+
+        return millis;
+    }
+
+    private Long retryAfterSeconds(HttpResponse<?> response) {
+
+        // A real HttpResponse always has headers. A simulated one need not.
+        if (response.headers() == null) {
+            return null;
+        }
+
+        // Retry-After also has an HTTP-date form. Discourse does not use it, and treating an
+        // unparsable value as absent just falls back to the body or the fixed nap.
+        return response.headers().firstValue("Retry-After")
+                .map(ApiClient::parseSeconds)
+                .orElse(null);
+    }
+
+    private Long waitSecondsFromBody(HttpResponse<?> response) {
+
+        // The body is whatever the caller's BodyHandler produced - a byte[] for image downloads,
+        // or an HTML error page. Only a String body can carry the JSON we are looking for, and a
+        // regex reads it without deserializing a shape we have no model class for.
+        if (! (response.body() instanceof String)) {
+            return null;
+        }
+
+        Matcher matcher = WAIT_SECONDS.matcher((String) response.body());
+        return matcher.find() ? parseSeconds(matcher.group(1)) : null;
+    }
+
+    private static Long parseSeconds(final String value) {
+        try {
+            return Long.parseLong(value.trim());
+        } catch (NumberFormatException ex) {
+            return null;
+        }
     }
 
     private void nap(long milliseconds) {
@@ -288,6 +397,54 @@ public class ApiClient {
                 .build();
 
         return send(request);
+    }
+
+    /**
+     * Delete a post.
+     *
+     * permanent == false soft deletes it - Discourse marks it deleted, staff can still see it.
+     * permanent == true adds force_destroy=true, which Discourse only honors for an admin API user,
+     * with the can_permanently_delete site setting enabled, on a post that is already soft deleted,
+     * and - when the same user did the soft delete - not until Post::PERMANENT_DELETE_TIMER
+     * (5 minutes) has elapsed. Any of those unmet comes back as HTTP_FORBIDDEN.
+     *
+     * @return the response. HTTP_OK/HTTP_NO_CONTENT: deleted. HTTP_NOT_FOUND: the post was already
+     *         gone, which is not an error - send() retries, and a delete whose response was lost to
+     *         a GOAWAY comes back 404 on the retry. HTTP_FORBIDDEN: refused, returned rather than
+     *         thrown so the caller can wait out the permanent delete timer and try again. The body
+     *         carries Discourse's reason, which is the only way to tell those refusals apart.
+     */
+    HttpResponse<String> deletePost(long postId, boolean permanent) {
+
+        String endpoint = Constants.POSTS_BASE + postId + (permanent ? Constants.FORCE_DESTROY : "");
+
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(endpoint))
+                .header("Api-Username", apiUser)
+                .header("Api-Key", apiKey)
+                // Ask for JSON so a refusal arrives as Discourse's errors array rather than an HTML page.
+                .header("Accept", "application/json")
+                .DELETE()
+                .build();
+
+        HttpResponse<String> response = send(request);
+
+        switch (response.statusCode()) {
+            case HTTP_OK:
+            case HTTP_NO_CONTENT:
+                break;
+            case HTTP_NOT_FOUND:
+                LOGGER.warn("deletePost({}) - post not found, treating it as already deleted", postId);
+                break;
+            case HTTP_FORBIDDEN:
+                LOGGER.warn("deletePost({}) refused: {}", endpoint, response.body());
+                break;
+            default:
+                throw new MemberDataException(
+                        "deletePost(" + endpoint + ") failed: " + response.statusCode() + ": " + response.body());
+        }
+
+        return response;
     }
 
     public HttpResponse<String> changePostOwner(long topicId, List<Long> postIds, String newOwnerUsername) {

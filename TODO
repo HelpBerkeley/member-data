@@ -1,7 +1,6 @@
 Audit/validate that the topic ids for posting are valid.
 
 Reverse engineer recipes for:
-	- Deleting a post.
 	- Uploading a file.
 	- Passing parameters to a queries
 

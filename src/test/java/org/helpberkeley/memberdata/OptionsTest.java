@@ -23,6 +23,8 @@ package org.helpberkeley.memberdata;
 
 import org.junit.Test;
 
+import java.nio.file.Path;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.ThrowableAssert.catchThrowable;
 
@@ -194,13 +196,35 @@ public class OptionsTest extends TestBase {
     @Test
     public void topicIdWithOutputDirTest() {
         String outputDir = "some-output-dir";
-        for (String command : COMMANDS_WITH_TOPIC_ID) {
+        for (String command : COMMANDS_WITH_TOPIC_ID_AND_OUTPUT_DIR) {
             Options options = new Options(new String[] { command, TEST_TOPIC_ID, outputDir });
             options.parse();
             assertThat(options.getCommand()).isEqualTo(command);
             assertThat(options.getTopicId()).isEqualTo(Long.parseLong(TEST_TOPIC_ID));
             assertThat(options.getOutputDir()).isEqualTo(outputDir);
         }
+    }
+
+    @Test
+    public void resolvePostIdsOutputFileTest() {
+        Options options = new Options(new String[] {
+                Options.COMMAND_RESOLVE_POST_IDS, TEST_FILE_NAME, "post-ids.csv" });
+        options.parse();
+
+        assertThat(options.getFileName()).isEqualTo(TEST_FILE_NAME);
+        assertThat(options.outputFileName()).isEqualTo("post-ids.csv");
+    }
+
+    @Test
+    public void resolvePostIdsDefaultOutputFileTest() {
+        Options options = new Options(new String[] {
+                Options.COMMAND_RESOLVE_POST_IDS, TEST_FILE_NAME });
+        options.parse();
+
+        // Null means "derive it" - Main asks PostIdResolver.defaultOutputFor.
+        assertThat(options.outputFileName()).isNull();
+        assertThat(PostIdResolver.defaultOutputFor(TEST_FILE_NAME))
+                .isEqualTo(Path.of("pom-post-ids.csv"));
     }
 
     @Test
@@ -240,6 +264,47 @@ public class OptionsTest extends TestBase {
             assertThat(thrown).hasMessageContaining(Options.BAD_TOPIC_ID);
             assertThat(thrown).hasMessageContaining(Options.USAGE);
         }
+    }
+
+    @Test
+    public void deleteTopicImagePostsNoForceTest() {
+        Options options = new Options(new String[] {
+                Options.COMMAND_DELETE_TOPIC_IMAGE_POSTS, TEST_TOPIC_ID });
+        options.parse();
+        assertThat(options.getCommand()).isEqualTo(Options.COMMAND_DELETE_TOPIC_IMAGE_POSTS);
+        assertThat(options.getTopicId()).isEqualTo(Long.parseLong(TEST_TOPIC_ID));
+        assertThat(options.force()).isFalse();
+    }
+
+    @Test
+    public void deleteTopicImagePostsForceTest() {
+        Options options = new Options(new String[] {
+                Options.COMMAND_DELETE_TOPIC_IMAGE_POSTS, TEST_TOPIC_ID, Options.FORCE_ARGUMENT });
+        options.parse();
+        assertThat(options.getCommand()).isEqualTo(Options.COMMAND_DELETE_TOPIC_IMAGE_POSTS);
+        assertThat(options.getTopicId()).isEqualTo(Long.parseLong(TEST_TOPIC_ID));
+        assertThat(options.force()).isTrue();
+    }
+
+    @Test
+    public void deleteTopicImagePostsBadForceTest() {
+        String badForce = "yes";
+        Options options = new Options(new String[] {
+                Options.COMMAND_DELETE_TOPIC_IMAGE_POSTS, TEST_TOPIC_ID, badForce });
+        Throwable thrown = catchThrowable(options::parse);
+        assertThat(thrown).isInstanceOf(MemberDataException.class);
+        assertThat(thrown).hasMessageContaining(Options.BAD_FORCE_ARGUMENT);
+        assertThat(thrown).hasMessageContaining(badForce);
+        assertThat(thrown).hasMessageContaining(Options.USAGE);
+    }
+
+    @Test
+    public void deleteTopicImagePostsTooManyArgsTest() {
+        Options options = new Options(new String[] {
+                Options.COMMAND_DELETE_TOPIC_IMAGE_POSTS, TEST_TOPIC_ID, Options.FORCE_ARGUMENT, "extra" });
+        Throwable thrown = catchThrowable(options::parse);
+        assertThat(thrown).isInstanceOf(MemberDataException.class);
+        assertThat(thrown).hasMessageContaining(Options.USAGE);
     }
 
     @Test
