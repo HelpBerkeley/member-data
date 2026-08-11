@@ -21,28 +21,19 @@
 //
 package org.helpberkeley.memberdata;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 /**
- * Fetches, and acts on, the Discourse-hosted images in a topic's posts. The set of images is
- * determined by the QUERY_GET_TOPIC_IMAGES data explorer query, which returns one row per image
- * upload in the topic's non-deleted posts.
+ * The topics in a category, from the QUERY_GET_CATEGORY_TOPICS data explorer query. Fetched once,
+ * in the constructor - callers iterating the topics make a request per topic of their own, and must
+ * not pay for a second listing as well.
  */
 public class CategoryTopics {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(CategoryTopics.class);
-
     static final String COLUMN_TOPIC_ID = "topic_id";
     static final String COLUMN_TITLE = "title";
-    static final String COLUMN_CREATED_AT = "created_at";
 
     private final ApiClient apiClient;
     private final List<Topic> topics;
@@ -81,23 +72,5 @@ public class CategoryTopics {
         }
 
         return topics;
-    }
-
-    private List<Long> fetchTopicIds(final String categoryName) {
-
-        String json = apiClient.runQueryWithParams(Constants.QUERY_GET_CATEGORY_TOPICS,
-                Map.of("category_name", categoryName));
-        ApiQueryResult queryResult = HBParser.parseQueryResult(json);
-
-        int topicIdIndex = queryResult.getColumnIndex(COLUMN_TOPIC_ID);
-
-        List<Long> topicIds = new ArrayList<>();
-
-        for (Object rowObject : queryResult.rows) {
-            Object[] columns = (Object[]) rowObject;
-            topicIds.add((Long)columns[topicIdIndex]);
-        }
-
-        return topicIds;
     }
 }

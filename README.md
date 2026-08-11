@@ -111,4 +111,29 @@ A post that cannot be deleted is reported and skipped rather than ending the
 run, and is left out of the destroy pass. Five failures in a row does end the
 run, on the grounds that the site is unwell rather than the posts being odd.
 
+### Listing images
+
+list-category-images writes CSV to stdout, a header and then one row per
+Discourse-hosted image in a category:
+
+```
+list-category-images category-name > images.csv
+```
+
+The columns are topic_id, topic_name, post_number, post_id and image_name.
+Those include the two that delete-posts reads, so the output feeds it with no
+conversion step - the duplicate rows a post with several uploads produces
+collapse to one post, and any first post is skipped. An empty category still
+gets the header, so the result is always readable as CSV.
+
+It runs the same per-topic query as resolve-post-ids, so a category of
+hundreds of topics is hundreds of requests, and it paces and adapts the same
+way - starting at 1100ms, set with -Dmemberdata.listNapMillis=<milliseconds>.
+Without that pacing the listing runs in bursts that collect a rate limit
+refusal every time the site's request window rolls, and those queries are
+joins across posts, upload references and uploads rather than cheap reads.
+
+A topic whose query fails is reported and left out of the listing rather than
+ending the run, since listing changes nothing. Five in a row does end it.
+
 ###[License](LICENSE)

@@ -24,8 +24,11 @@ package org.helpberkeley.memberdata;
 
 import org.junit.*;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.PrintStream;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -33,6 +36,7 @@ import java.text.MessageFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
@@ -188,12 +192,32 @@ public class MainTest extends TestBase {
 
     @Test
     public void listCategoryImagesTest() throws IOException {
-        String[] args = {
-                "list-category-images",
-                "Deliveries"
-        };
+        // Main builds everything internally, so this is the only place to disable the naps.
+        CategoryImages.NAP_MILLISECONDS = 0;
 
-        Main.main(args);
+        // The listing goes to stdout rather than the log, but logback's console appender resolves
+        // System.out per write, so its own lines land in here too and have to be filtered back out.
+        PrintStream stdout = System.out;
+        ByteArrayOutputStream captured = new ByteArrayOutputStream();
+        System.setOut(new PrintStream(captured, true, StandardCharsets.UTF_8));
+
+        try {
+            String[] args = { Options.COMMAND_LIST_CATEGORY_IMAGES, "Deliveries" };
+            Main.main(args);
+        } finally {
+            System.setOut(stdout);
+        }
+
+        // 6 topics in the category-topics.json fixture, each answered from topic-images.json,
+        // which has 4 image rows - plus the header.
+        List<String> lines = captured.toString(StandardCharsets.UTF_8).lines()
+                .filter(line -> ! line.matches("^\\d\\d:\\d\\d:\\d\\d\\.\\d\\d\\d \\[.*"))
+                .collect(Collectors.toList());
+        assertThat(lines).hasSize(25);
+        assertThat(lines.get(0)).isEqualTo(
+                "\"topic_id\",\"topic_name\",\"post_number\",\"post_id\",\"image_name\"");
+        assertThat(lines.get(1)).isEqualTo(
+                "\"193\",\"Crestonia driver availability\",\"1\",\"71300\",\"cover.png\"");
     }
 
     @Test

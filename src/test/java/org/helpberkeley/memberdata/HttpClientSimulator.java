@@ -79,6 +79,8 @@ public class HttpClientSimulator extends HttpClient {
     private static final Map<String, String> postResponseData = new HashMap<>();
     private static String getFileName = null;
     private static final AtomicInteger sendFailCount = new AtomicInteger(0);
+    // Requests to let through before the configured failure starts.
+    private static final AtomicInteger sendFailAfter = new AtomicInteger(0);
     private static SendFailType sendFailType = null;
     // Captures the body of the most recent Data Explorer query request, so tests can assert
     // the multipart form fields that were sent (params, limit).
@@ -109,8 +111,29 @@ public class HttpClientSimulator extends HttpClient {
     }
 
     static void setSendFailure(SendFailType failureType, int numFailures) {
+        setSendFailure(failureType, numFailures, 0);
+    }
+
+    /**
+     * As setSendFailure, but leaving the first afterSends requests alone. A command whose first
+     * request is a set up query - listing a category's topics before querying each of them - needs
+     * the failure to land on the loop rather than on that first request.
+     */
+    static void setSendFailure(SendFailType failureType, int numFailures, int afterSends) {
         sendFailType = failureType;
         sendFailCount.set(numFailures);
+        sendFailAfter.set(afterSends);
+    }
+
+    /**
+     * Forget any configured failure. A test whose run makes fewer requests than it armed failures
+     * for would otherwise hand the leftovers to whatever test runs next, the test classes sharing
+     * one fork.
+     */
+    static void clearSendFailures() {
+        sendFailType = null;
+        sendFailCount.set(0);
+        sendFailAfter.set(0);
     }
 
     public static void setGetResponseData(String uri, String data) {
@@ -166,7 +189,9 @@ public class HttpClientSimulator extends HttpClient {
     public <T> HttpResponse<T> send(HttpRequest request,
             HttpResponse.BodyHandler<T> responseBodyHandler) throws IOException {
 
-        if (sendFailCount.get() > 0) {
+        if (sendFailAfter.get() > 0) {
+            sendFailAfter.decrementAndGet();
+        } else if (sendFailCount.get() > 0) {
             sendFailCount.decrementAndGet();
 
             if (sendFailType == SendFailType.GOAWAY_IOEXCEPTION) {

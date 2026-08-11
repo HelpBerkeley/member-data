@@ -314,18 +314,7 @@ public class Main {
     }
 
     private static void listCategoryImages(ApiClient apiClient, final String categoryName) {
-
-        List<Topic> topics = new CategoryTopics(apiClient, categoryName).getTopics();
-        for (Topic topic : topics) {
-            List<ImageRecord> imageRecords = new TopicImages(apiClient, topic.getId()).getImages();
-            for (ImageRecord imageRecord : imageRecords) {
-                System.out.println( topic.getName()
-                        + " "
-                        + imageRecord.filesize
-                        + " "
-                        + imageRecord.fileName());
-            }
-        }
+        new CategoryImages(apiClient, categoryName).list();
     }
 
     private static void postConsumerRequests(ApiClient apiClient, final String fileName)
